@@ -36,6 +36,7 @@ class CarPlayHelper {
 
   final _finampUserHelper = GetIt.instance<FinampUserHelper>();
   final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+  final _downloadsService = GetIt.instance<DownloadsService>();
   final providerRef = GetIt.instance<ProviderContainer>();
 
   void setupCarplay() { 
@@ -62,12 +63,19 @@ class CarPlayHelper {
     final sortBy = FinampSettingsHelper.finampSettings.getTabSortBy(tabContentType);
     final sortOrder = FinampSettingsHelper.finampSettings.getSortOrder(tabContentType);
     
+    // If we are in offline mode, display all matching downloaded parents 
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      List<BaseItemDto> baseItems = [];
+      for (final downloadedParent in await _downloadsService.getAllCollections()) {
+        if (baseItems.length >= offlineModeLimit) break;
+        if (downloadedParent.baseItem != null && downloadedParent.baseItemType == tabContentType.itemType) {
+          baseItems.add(downloadedParent.baseItem!);
+        }
+      }
+      return sortItems(baseItems, sortBy, sortOrder);
+    }
     
-    
-    // Check for offline version first 
-
-    // Fetch the online version if we an't get the offline version 
-    
+    // Fetch the online version if we can't get the offline versions
     final items = await _jellyfinApiHelper.getItems(
       parentItem: tabContentType.itemType == BaseItemDtoType.playlist ? null : _finampUserHelper.currentUser?.currentView,
       includeItemTypes: tabContentType.itemType.idString, 
