@@ -55,7 +55,7 @@ class CarPlayHelper {
 
   // getTabItems is based on AndroidAutoHelper.getBaseItems() but using BaseItemDto 
   // Incomplete! 
-  Future<List<BaseItemDto>> getTabItems (TabContentType tabContentType) async { 
+  Future<List<BaseItemDto>> getTabItems ({required TabContentType tabContentType}) async { 
     // limit amount so it doesn't crash / take forever on large libraries 
     const onlineModeLimit = 250;
     const offlineModeLimit = 1000;
@@ -115,10 +115,10 @@ class CarPlayHelper {
           final parentId = MediaItemId.fromJson(jsonDecode(item.id) as Map<String, dynamic>);
 
           switch(parentId.contentType) {
-            case TabContentType.albums: showAlbumsTemplate(parentId);
-            case TabContentType.artists: showArtistsTemplate(item);
-            case TabContentType.playlists:
-            case TabContentType.genres:
+            case TabContentType.albums:     // v 
+            case TabContentType.playlists:  // v
+            case TabContentType.genres: showAlbumsTemplate(tabType: parentId.contentType);
+            case TabContentType.artists: showArtistsTemplate();
             case TabContentType.tracks: 
           }
           complete();
@@ -225,10 +225,9 @@ class CarPlayHelper {
     await FlutterCarplay.push(template: playlistTemplate);
   }
 
-  Future<void> showAlbumsTemplate(MediaItemId parent) async { 
+  Future<void> showAlbumsTemplate({required TabContentType tabType}) async { 
     // Fetch child items of root navigation 
-    List<BaseItemDto> mediaItems = await getTabItems(TabContentType.albums);
-    // List<MediaItem> childItems = await _androidAutoHelper.getMediaItems(parentId);
+    List<BaseItemDto> mediaItems = await getTabItems(tabContentType: tabType);
   
     CPListSection albumsSection = CPListSection(items: []);
 
@@ -255,9 +254,9 @@ class CarPlayHelper {
     await FlutterCarplay.push(template: albumsTemplate);
   }
 
-  Future<void> showArtistsTemplate(MediaItem parent) async { 
+  Future<void> showArtistsTemplate() async { 
     // Fetch child items of this type 
-    List<BaseItemDto> mediaItems = await getTabItems(TabContentType.artists);
+    List<BaseItemDto> mediaItems = await getTabItems(tabContentType: TabContentType.artists);
 
     CPListSection artistsSection = CPListSection(items: []);
 
