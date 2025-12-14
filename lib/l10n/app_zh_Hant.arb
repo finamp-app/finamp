@@ -3002,7 +3002,7 @@
     "@radioModeInactiveTitle": {
         "description": "Title displayed in the queue to show that the radio is enabled but not active."
     },
-    "radioModeDisableButtonTitle": "停用電台模式",
+    "radioModeDisableButtonTitle": "停用電台",
     "@radioModeDisableButtonTitle": {
         "description": "Title for the option that disables radio mode."
     },
@@ -3128,7 +3128,7 @@
     "@loopingUnavailableWhileRadioActiveWarning": {
         "description": "Warning message when trying to change the loop mode while radio is active."
     },
-    "radioModeEnableButtonTitle": "啟用電台模式",
+    "radioModeEnableButtonTitle": "啟用電台",
     "@radioModeEnableButtonTitle": {
         "description": "Title for the option that enables radio mode."
     },
