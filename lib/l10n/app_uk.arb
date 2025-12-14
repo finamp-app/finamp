@@ -102,7 +102,7 @@
     "@removeFromMix": {},
     "addToMix": "Додати до міксу",
     "@addToMix": {},
-    "bufferDurationSubtitle": "Максимальна тривалість буфера (у секундах). Потрібен перезапуск.",
+    "bufferDurationSubtitle": "Тривалість буферизації в секундах. Потрібен перезапуск.",
     "@bufferDurationSubtitle": {},
     "language": "Мова",
     "@language": {},
@@ -512,7 +512,7 @@
     "@login": {
         "description": "Label for the login button."
     },
-    "startMixNoTracksGenre": "Затисніть жанр, щоб додати або прибрати його з міксу",
+    "startMixNoTracksGenre": "Довго натискайте жанр, щоб додати або видалити його з конструктора міксів, перш ніж розпочати міксування",
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
@@ -1790,7 +1790,7 @@
     "@bufferDisableSizeConstraintsTitle": {},
     "bufferSizeTitle": "Розмір буферу",
     "@bufferSizeTitle": {},
-    "bufferSizeSubtitle": "Максимальний розмір буферу в МБ. Вимагає перезапуску",
+    "bufferSizeSubtitle": "Розмір буфера в МБ. Потрібен перезапуск",
     "@bufferSizeSubtitle": {},
     "marqueeOrTruncateButton": "Використовуйте три крапки для довгих заголовків",
     "@marqueeOrTruncateButton": {},
@@ -2722,7 +2722,7 @@
     "@addDownloadLocationsErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs fails"
     },
-    "androidImageErrorPrompt": "ПОПЕРЕДЖЕННЯ: Ми не можемо записати зображення до папки «Музика» на Android через обмеження ОС. Вам слід вибрати інше місце.",
+    "androidImageErrorPrompt": "Через обмеження ОС нам не вдається записати зображення в папку «Музика» на Android. Вам слід вибрати інше місце.",
     "@androidImageErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
     },
@@ -3127,5 +3127,49 @@
     "loopingUnavailableWhileRadioActiveWarning": "Зміна режиму циклу недоступна, поки радіо активне, оскільки черга буде продовжуватися нескінченно.",
     "@loopingUnavailableWhileRadioActiveWarning": {
         "description": "Warning message when trying to change the loop mode while radio is active."
+    },
+    "lyricsEmptyStateLoading": "Завантаження тексту пісні...",
+    "@lyricsEmptyStateLoading": {
+        "description": "Message shown while lyrics are being loaded"
+    },
+    "lyricsEmptyStateFailed": "Не вдалося завантажити текст пісні",
+    "@lyricsEmptyStateFailed": {
+        "description": "Message shown when lyrics failed to load"
+    },
+    "lyricsEmptyStateNoLyrics": "Немає текстів пісень",
+    "@lyricsEmptyStateNoLyrics": {
+        "description": "Message shown when no lyrics are available for the current track"
+    },
+    "lyricsMissingLyricLinePlaceholder": "відсутній ліричний рядок",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "radioModeEnableButtonTitle": "Увімкнути Радіо",
+    "@radioModeEnableButtonTitle": {
+        "description": "Title for the option that enables radio mode."
+    },
+    "addDownloadLocationsErrorTitle": "Не вдалося записати дані в місце завантаження",
+    "@addDownloadLocationsErrorTitle": {
+        "description": "Title of popup dialog when adding a download location fails"
+    },
+    "duckOnAudioInterruptionTitle": "Зменшення гучності під час переривань",
+    "@duckOnAudioInterruptionTitle": {
+        "description": "Title for the setting that controls ducking."
+    },
+    "duckOnAudioInterruptionSubtitle": "Зменште гучність («качка»), коли інша програма короткочасно відтворює аудіо.",
+    "@duckOnAudioInterruptionSubtitle": {
+        "description": "Subtitle for the setting that controls ducking."
+    },
+    "forceAudioOffloadingOnAndroidTitle": "Примусове вивантаження аудіо",
+    "@forceAudioOffloadingOnAndroidTitle": {
+        "description": "Title for the setting that controls audio offloading on Android."
+    },
+    "forceAudioOffloadingOnAndroidSubtitle": "Перевантажити обробку аудіо на обладнання, якщо це підтримується пристроєм.",
+    "@forceAudioOffloadingOnAndroidSubtitle": {
+        "description": "Subtitle for the setting that controls audio offloading on Android."
+    },
+    "explicit": "Відвертий",
+    "@explicit": {
+        "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
     }
 }
