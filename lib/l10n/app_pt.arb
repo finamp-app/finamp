@@ -372,7 +372,7 @@
     },
     "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Se deve mostrar os artistas das faixas no ecrã do álbum, no caso destes não serem diferentes dos do álbum.",
     "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
-    "bufferDurationSubtitle": "A duração máxima que deve ser colocada em buffer, em segundos. Requer reiniciar.",
+    "bufferDurationSubtitle": "A duração que deve ser colocada em buffer, em segundos. Requer reiniciar.",
     "@bufferDurationSubtitle": {},
     "insertedIntoQueue": "Inserido na fila.",
     "@insertedIntoQueue": {
@@ -1054,7 +1054,7 @@
     "@bufferDisableSizeConstraintsSubtitle": {},
     "bufferSizeTitle": "Tamanho do Buffer",
     "@bufferSizeTitle": {},
-    "bufferSizeSubtitle": "O tamanho máximo do buffer em MB. É necessário reiniciar",
+    "bufferSizeSubtitle": "O tamanho do buffer em MB. É necessário reiniciar",
     "@bufferSizeSubtitle": {},
     "confirmPlayNext": "{type, select, track{Track} album{Album} artist{Artist} playlist{Playlist} genre{Genre} other{Item}} vai tocar a seguir",
     "@confirmPlayNext": {
@@ -2808,7 +2808,7 @@
     "@addDownloadLocationsErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs fails"
     },
-    "androidImageErrorPrompt": "AVISO: Nós somos incapazes de escrever imagens na paste Music do android devido a restrições do SO.  Você deve escolher outra localização.",
+    "androidImageErrorPrompt": "Nós somos incapazes de escrever imagens na pasta Music do android devido a restrições do SO.  Você deve escolher outra localização.",
     "@androidImageErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
     },
@@ -3135,5 +3135,49 @@
             }
         },
         "description": "Subtitle displayed in the queue to describe what the radio is doing if enabled"
+    },
+    "lyricsEmptyStateLoading": "A carregar letras...",
+    "@lyricsEmptyStateLoading": {
+        "description": "Message shown while lyrics are being loaded"
+    },
+    "lyricsEmptyStateFailed": "Não pude carregar letras",
+    "@lyricsEmptyStateFailed": {
+        "description": "Message shown when lyrics failed to load"
+    },
+    "lyricsEmptyStateNoLyrics": "Nenhumas letras disponíveis",
+    "@lyricsEmptyStateNoLyrics": {
+        "description": "Message shown when no lyrics are available for the current track"
+    },
+    "lyricsMissingLyricLinePlaceholder": "linha de letras em falta",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "radioModeEnableButtonTitle": "Ativar Radio",
+    "@radioModeEnableButtonTitle": {
+        "description": "Title for the option that enables radio mode."
+    },
+    "addDownloadLocationsErrorTitle": "Incapaz de escrever para localização de descarga",
+    "@addDownloadLocationsErrorTitle": {
+        "description": "Title of popup dialog when adding a download location fails"
+    },
+    "duckOnAudioInterruptionTitle": "Reduz Volume nas Interrupções",
+    "@duckOnAudioInterruptionTitle": {
+        "description": "Title for the setting that controls ducking."
+    },
+    "duckOnAudioInterruptionSubtitle": "Reduz o volume (baixa) quando outra aplicação reproduz áudio brevemente.",
+    "@duckOnAudioInterruptionSubtitle": {
+        "description": "Subtitle for the setting that controls ducking."
+    },
+    "forceAudioOffloadingOnAndroidTitle": "Força Descarga de Áudio",
+    "@forceAudioOffloadingOnAndroidTitle": {
+        "description": "Title for the setting that controls audio offloading on Android."
+    },
+    "forceAudioOffloadingOnAndroidSubtitle": "Descarga de áudio processada pelo hardware, se suportado pelo dispositivo.",
+    "@forceAudioOffloadingOnAndroidSubtitle": {
+        "description": "Subtitle for the setting that controls audio offloading on Android."
+    },
+    "explicit": "Explícito",
+    "@explicit": {
+        "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
     }
 }
