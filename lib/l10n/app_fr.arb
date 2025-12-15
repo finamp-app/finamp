@@ -408,7 +408,7 @@
     },
     "bufferDuration": "Taille du tampon",
     "@bufferDuration": {},
-    "bufferDurationSubtitle": "Durée maximale de la mise en mémoire tampon, en secondes. Nécessite un redémarrage.",
+    "bufferDurationSubtitle": "Durée de la mise en mémoire tampon, en secondes. Un redémarrage est nécessaire.",
     "@bufferDurationSubtitle": {},
     "language": "Langue",
     "@language": {},
@@ -696,7 +696,7 @@
             }
         }
     },
-    "startMixNoTracksGenre": "Avant de commencer à écouter un mix, appuyez longuement sur un genre pour l’ajouter ou le retirer du créateur de mix",
+    "startMixNoTracksGenre": "Appuyez longuement sur un genre pour l'ajouter ou le supprimer du générateur de mix avant de commencer un mix.",
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
@@ -871,7 +871,7 @@
     "@savedQueue": {
         "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
     },
-    "playingFromType": "Lecture depuis {source, select, album{Album} playlist{Playlist} trackMix{Track Mix} artistMix{Artist Mix} albumMix{Album Mix} genreMix{Genre Mix} favorites{Favorites} allTracks{All Tracks} filteredList{Tracks} genre{Genre} artist{Artist} track{Track} nextUpAlbum{Album dans la liste suivante} nextUpPlaylist{Playlist dans la liste suivante} nextUpArtist{Artiste dans la liste suivante} nextUpGenre{Genre dans la liste suivante} remoteClient{un client distant} other{}}",
+    "playingFromType": "Lecture depuis {source, select, album{Album} playlist{Playlist} trackMix{Track Mix} artistMix{Artist Mix} albumMix{Album Mix} genreMix{Genre Mix} favorites{Favorites} allTracks{All Tracks} filteredList{Tracks} genre{Genre} artist{Artist} track{Track} nextUpAlbum{Album dans Next Up} nextUpPlaylist{Playlist dans Next Up} nextUpArtist{Artist dans Next Up} nextUpGenre{Genre dans Next Up} remoteClient{un client distant} radio{Radio} other{}}",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -949,7 +949,7 @@
     "@emptyFilteredListSubtitle": {
         "description": "Message shown when a list of items is filtered and no items match the filter"
     },
-    "bufferSizeSubtitle": "Taille maximale de la mémoire tampon en Mo. Nécessite un redémarrage",
+    "bufferSizeSubtitle": "Taille du tampon en Mo. Un redémarrage est nécessaire.",
     "@bufferSizeSubtitle": {},
     "playbackOrderLinearButtonLabel": "Jouer dans l'ordre",
     "@playbackOrderLinearButtonLabel": {
@@ -2732,7 +2732,7 @@
     "@addDownloadLocationsErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs fails"
     },
-    "androidImageErrorPrompt": "AVERTISSEMENT : En raison des restrictions du système d'exploitation, nous ne pouvons pas enregistrer d'images dans le dossier Musique d'Android. Veuillez choisir un autre emplacement.",
+    "androidImageErrorPrompt": "Nous ne pouvons pas enregistrer d'images dans le dossier Musique d'Android en raison de restrictions du système d'exploitation. Veuillez choisir un autre emplacement.",
     "@androidImageErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
     },
@@ -3137,5 +3137,49 @@
     "loopingUnavailableWhileRadioActiveWarning": "Le changement de mode de boucle n'est pas possible lorsque la radio est active, car la file d'attente se poursuivra indéfiniment.",
     "@loopingUnavailableWhileRadioActiveWarning": {
         "description": "Warning message when trying to change the loop mode while radio is active."
+    },
+    "lyricsMissingLyricLinePlaceholder": "paroles manquantes",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "lyricsEmptyStateNoLyrics": "Paroles indisponibles",
+    "@lyricsEmptyStateNoLyrics": {
+        "description": "Message shown when no lyrics are available for the current track"
+    },
+    "lyricsEmptyStateFailed": "Impossible de charger les paroles",
+    "@lyricsEmptyStateFailed": {
+        "description": "Message shown when lyrics failed to load"
+    },
+    "lyricsEmptyStateLoading": "Chargement des paroles...",
+    "@lyricsEmptyStateLoading": {
+        "description": "Message shown while lyrics are being loaded"
+    },
+    "radioModeEnableButtonTitle": "Activer la radio",
+    "@radioModeEnableButtonTitle": {
+        "description": "Title for the option that enables radio mode."
+    },
+    "addDownloadLocationsErrorTitle": "Impossible d'écrire dans l'emplacement de téléchargement",
+    "@addDownloadLocationsErrorTitle": {
+        "description": "Title of popup dialog when adding a download location fails"
+    },
+    "duckOnAudioInterruptionTitle": "Réduire le volume lors des interruptions",
+    "@duckOnAudioInterruptionTitle": {
+        "description": "Title for the setting that controls ducking."
+    },
+    "duckOnAudioInterruptionSubtitle": "Baissez le volume lorsqu'une autre application diffuse brièvement du son.",
+    "@duckOnAudioInterruptionSubtitle": {
+        "description": "Subtitle for the setting that controls ducking."
+    },
+    "forceAudioOffloadingOnAndroidTitle": "Forcer le déchargement audio",
+    "@forceAudioOffloadingOnAndroidTitle": {
+        "description": "Title for the setting that controls audio offloading on Android."
+    },
+    "forceAudioOffloadingOnAndroidSubtitle": "Déchargez le traitement audio sur le matériel, si celui-ci le prend en charge.",
+    "@forceAudioOffloadingOnAndroidSubtitle": {
+        "description": "Subtitle for the setting that controls audio offloading on Android."
+    },
+    "explicit": "Explicite",
+    "@explicit": {
+        "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
     }
 }
