@@ -3010,7 +3010,7 @@
     "@radioModeDisableButtonTitle": {
         "description": "Title for the option that disables radio mode."
     },
-    "radioModeDisableButtonSubtitle": "Vaihtaa takaisin edelliseen looppaustilaan",
+    "radioModeDisableButtonSubtitle": "Vaihtaa takaisin edelliseen toistotilaan",
     "@radioModeDisableButtonSubtitle": {
         "description": "Subtitle for the option that disables radio mode."
     },
