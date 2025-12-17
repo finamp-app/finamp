@@ -305,7 +305,7 @@
     },
     "bufferDuration": "버퍼 시간",
     "@bufferDuration": {},
-    "bufferDurationSubtitle": "버퍼링 해야 하는 최대 시간(초) 입니다. 변경시 다시 시작해야 합니다.",
+    "bufferDurationSubtitle": "버퍼링 해야 하는 시간(초) 입니다. 변경시 다시 시작해야 합니다.",
     "@bufferDurationSubtitle": {},
     "language": "언어",
     "@language": {},
@@ -990,7 +990,7 @@
     },
     "bufferDisableSizeConstraintsTitle": "버퍼 크기를 제한하지 않습니다",
     "@bufferDisableSizeConstraintsTitle": {},
-    "bufferSizeSubtitle": "버퍼의 최대 크기(MB단위). 변경시 재시작이 필요합니다",
+    "bufferSizeSubtitle": "버퍼의 크기(MB단위). 변경시 재시작이 필요합니다",
     "@bufferSizeSubtitle": {},
     "placeholderSource": "출처 미상",
     "@placeholderSource": {
