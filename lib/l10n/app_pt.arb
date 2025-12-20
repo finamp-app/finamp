@@ -741,7 +741,7 @@
     "@loginFlowQuickConnectInstructions": {
         "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
-    "volumeNormalizationIOSBaseGainEditorSubtitle": "Atualmente, a Normalização de Volume no iOS requer a alteração do volume de reprodução para emular a mudança de ganho. Como não podemos aumentar o volume acima de 100%, precisamos diminuir o volume predefinido para podermos aumentar o volume das faixas mais baixas. O valor é em decibéis (dB), onde -10 dB corresponde a ~30% de volume, -4,5 dB a ~60% de volume e -2 dB a ~80% de volume.",
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "Escolha um desvio de ganho de volume (em dB)",
     "@volumeNormalizationIOSBaseGainEditorSubtitle": {
         "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
@@ -2300,7 +2300,7 @@
     "@sleepTimerAfterCurrentTrack": {
         "description": "Option for the sleep timer that will stop playback after the current track finishes."
     },
-    "autoOfflineSettingDescription": "Automaticamente ativar Modo Offline.\nDesativado: Não vai ligar Automaticamente o Modo Offline. Pode poupar bateria.\nRede Local: Liga Modo Offline quando não está ligado a wifi ou ethernet.\nDesligado: Liga Modo Offline quando não está ligado a nada.\nInalcançável: Liga Modo Offline quando o servidor não pode ser pingado após mudança de rede.\nVocê pode sempre ligar manualmente o modo offline, o que pausa a automatização até que desligue o modo offline outra vez",
+    "autoOfflineSettingDescription": "{disabledModeName}:\nNão vai ligar Automaticamente o Modo Offline. Pode poupar bateria.\n\n{localNetworkModeName}:\nLiga Modo Offline quando não está ligado a wifi ou ethernet.\n\n{disconnectedModeName}:\nLiga Modo Offline quando não está ligado a nada.\n\n{unreachableModeName}:\nLiga Modo Offline quando o servidor não pode ser pingado após mudança de rede.\n\nVocê pode sempre ligar manualmente o modo offline, o que pausa a automatização até que a re-ative.",
     "@autoOfflineSettingDescription": {
         "description": "Setting description. Make sure the Mode names match the translations."
     },
@@ -3179,5 +3179,13 @@
     "explicit": "Explícito",
     "@explicit": {
         "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "Atualmente, a Normalização de Volume em plataformas diferentes de Android requer a alteração do volume de reprodução para emular a mudança de ganho. Como não podemos aumentar o volume acima de 100%, precisamos diminuir o volume predefinido para podermos aumentar o volume das faixas mais baixas. \n\nO valor é em decibéis (dB), onde -10 dB corresponde a ~30% de volume, -4,5 dB a ~60% de volume e -2 dB a ~80% de volume.\nValores positivos significam que nenhuma redução de volume é aplicada até ao limiar (isto é, ganho -6.4 dB (e mais positivo) para um desvio de +6.4 dB), mas previne que as faixas mais silenciosas sejam amplificadas.\n\nVocê deve definir isto para o inverso do ganho mais alto (mais positivo) na sua biblioteca, isto é, definir para +3 dB se o ganho mais alto na sua biblioteca for -3 dB (e todas as outras faixas terem ganhos como -5 dB, -8 dB, -10 dB, etc.).",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "autoOfflineSettingSubtitle": "Ativar automaticamente o Modo Offline com base na ligação de rede ou acesso ao servidor.",
+    "@autoOfflineSettingSubtitle": {
+        "description": "Subtitle for the automated offline mode setting."
     }
 }
