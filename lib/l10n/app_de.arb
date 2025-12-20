@@ -1639,7 +1639,7 @@
     "@volumeNormalizationModeSelectorDescription": {
         "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown"
     },
-    "volumeNormalizationIOSBaseGainEditorSubtitle": "Im Moment muss für Lautstärken-Normalisierung auf iOS der angepasste Gain-Wert über die normale Wiedergabelautstärke emuliert werden. Da die Wiedergabelautstärke nicht höher als 100% sein kann, muss sie standardmäßig etwas verringert werden, sodass leisere Tracks angehoben werden können. Der Wert wird in Dezibel (dB) angegeben. -10 dB entspricht ~30%, -4.5 dB entspricht ~60% und -2 dB entspricht ~80% der Lautstärke.",
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "Wähle einen Volume Gain Offset (in dB)",
     "@volumeNormalizationIOSBaseGainEditorSubtitle": {
         "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
@@ -1943,7 +1943,7 @@
     },
     "swipeLeftToRightActionSubtitle": "Aktion, die ausgeführt wird, wenn ein Titel in der Liste von links nach rechts geswipt wird.",
     "@swipeLeftToRightActionSubtitle": {},
-    "autoOfflineSettingDescription": "Automatisch den Offline Modus aktivieren.\nDeaktiviert: Der Offline Modus wird nicht automatisch aktiviert. Könnte Batterie sparen.\nLokales Netzwerk: Der Offline Modus wird aktiviert, wenn keine Verbindung über WLAN oder Ethernet besteht.\nGetrennt: Der Offline Modus wird aktiviert, wenn keine Internetverbindung besteht.\nNicht erreichbar: Der Offline Modus wird aktiviert, wenn der Server nach einem Netzwerkwechsel nicht erreichbar ist.\nDu kannst den Offline Modus jederzeit manuell aktivieren, wodurch die Automation pausiert wird, bis du ihn wieder manuell deaktivierst",
+    "autoOfflineSettingDescription": "{disabledModeName}:\nDer Offline Modus wird nicht automatisch aktiviert. Könnte Batterie sparen.\n\n{localNetworkModeName}:\nDer Offline Modus wird aktiviert, wenn keine Verbindung über WLAN oder Ethernet besteht.\n\n{disconnectedModeName}:\nDer Offline Modus wird aktiviert, wenn keine Internetverbindung besteht.\n\n{unreachableModeName}:\nDer Offline Modus wird aktiviert, wenn der Server nach einem Netzwerkwechsel nicht erreichbar ist.\n\nDu kannst den Online/Offline Modus jederzeit manuell ändern, wodurch die Automation pausiert wird bis du diese wieder manuell aktivierst.",
     "@autoOfflineSettingDescription": {
         "description": "Setting description. Make sure the Mode names match the translations."
     },
@@ -3161,5 +3161,13 @@
     "lyricsMissingLyricLinePlaceholder": "fehlende Liedtextzeile",
     "@lyricsMissingLyricLinePlaceholder": {
         "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "Im Moment muss für Lautstärken-Normalisierung auf Plattformen mit Ausnahme von Android der angepasste Gain-Wert über die normale Wiedergabelautstärke emuliert werden. Da die Wiedergabelautstärke nicht höher als 100% sein kann, muss sie standardmäßig etwas verringert werden, sodass leisere Tracks angehoben werden können. \n\nDer Wert wird in Dezibel (dB) angegeben. -10 dB entspricht ~30%, -4.5 dB entspricht ~60% und -2 dB entspricht ~80% der Lautstärke.\nPositive Werte bedeuten, dass bis zum Erreichen des Schwellenwerts keine Lautstärkereduzierung erfolgt (z. B. -6,4 dB Gain (und mehr positive Werte) bei einem Offset von +6,4 dB), gleichzeitig wird aber verhindert, dass leisere Titel verstärkt werden.\n\nDieser Wert sollte auf den Kehrwert des höchsten (positivsten) Gains der Bibliothek eingestellt werden, d. h. auf +3 dB, wenn der höchste Gain in der Bibliothek -3 dB beträgt (und alle anderen Titel Gains wie -5 dB, -8 dB, -10 dB usw. aufweisen).",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "autoOfflineSettingSubtitle": "Automatische Aktivierung des Offline-Modus basierend auf Netzwerkverbindung oder Servererreichbarkeit.",
+    "@autoOfflineSettingSubtitle": {
+        "description": "Subtitle for the automated offline mode setting."
     }
 }
