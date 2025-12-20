@@ -3154,7 +3154,7 @@
     "@duckOnAudioInterruptionTitle": {
         "description": "Title for the setting that controls ducking."
     },
-    "duckOnAudioInterruptionSubtitle": "Snížit hlasitost, když jiná aplikace krátce přehraje zvuk.",
+    "duckOnAudioInterruptionSubtitle": "Snížit hlasitost, když jiná aplikace krátce přehraje zvuk. Vyžaduje restart.",
     "@duckOnAudioInterruptionSubtitle": {
         "description": "Subtitle for the setting that controls ducking."
     },
