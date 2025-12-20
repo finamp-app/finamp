@@ -3156,7 +3156,7 @@
     "@duckOnAudioInterruptionTitle": {
         "description": "Title for the setting that controls ducking."
     },
-    "duckOnAudioInterruptionSubtitle": "Зменште гучність («качка»), коли інша програма короткочасно відтворює аудіо.",
+    "duckOnAudioInterruptionSubtitle": "Зменшити гучність (тихо), коли інша програма короткочасно відтворює аудіо. Потрібно перезавантажити.",
     "@duckOnAudioInterruptionSubtitle": {
         "description": "Subtitle for the setting that controls ducking."
     },
