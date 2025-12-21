@@ -1163,7 +1163,7 @@
     "@playerScreenMinimumCoverPaddingEditorSubtitle": {
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
-    "showFastScroller": "הצג גלילה מהירה",
+    "showFastScroller": "הצגת גלילה מהירה",
     "@showFastScroller": {},
     "sleepTimerRemainingTime": "ישן בעוד {time,plural,=1{פחות מדקה} other{{time} דקות}}",
     "@sleepTimerRemainingTime": {
@@ -1200,5 +1200,90 @@
     "playNext": "נגן הבא",
     "@playNext": {
         "description": "Used for adding a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
-    }
+    },
+    "shuffleCountButton": "ערבוב ({count,plural,=1{שיר {count}} other{{count} שירים}})",
+    "@shuffleCountButton": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "offlineTrackCount": "{count,plural,=1{שיר {count}} other{{count} שירים}}, {downloads} ירדו",
+    "@offlineTrackCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "downloads": {
+                "type": "int"
+            }
+        }
+    },
+    "offlineTrackCountArtist": "{count,plural,=1{שיר {count}} other{{count} שירים}} ירדו",
+    "@offlineTrackCountArtist": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "gridCrossAxisCountSubtitle": "כמות אריחי רשת לשימוש בכל שורה במצב {value}.",
+    "@gridCrossAxisCountSubtitle": {
+        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
+        "placeholders": {
+            "value": {
+                "type": "String",
+                "example": "landscape"
+            }
+        }
+    },
+    "kiloBitsPerSecondLabel": "{bitrate} קילוביט בשנייה",
+    "@kiloBitsPerSecondLabel": {
+        "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
+        "placeholders": {
+            "bitrate": {
+                "type": "int",
+                "example": "320"
+            }
+        }
+    },
+    "responseError": "{error} קוד סטטוס {statusCode}.",
+    "@responseError": {
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Forbidden"
+            },
+            "statusCode": {
+                "type": "int",
+                "example": "403"
+            }
+        }
+    },
+    "responseError401": "{error} קוד סטטוס {statusCode}. זה כנראה אומר שהשתמשת בשם משתמש/סיסמה שגויים, או שהתוכנת לקוח לא מחוברת יותר.",
+    "@responseError401": {
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Unauthorized"
+            },
+            "statusCode": {
+                "type": "int",
+                "example": "401"
+            }
+        }
+    },
+    "bufferDuration": "משך חוצץ",
+    "@bufferDuration": {},
+    "bufferDurationSubtitle": "אורך הקטע שישמר בזיכרון, נמדד בשניות. דורש הפעלה מחדש.",
+    "@bufferDurationSubtitle": {},
+    "bufferDisableSizeConstraintsTitle": "לא להגביל את גודל החוצץ",
+    "@bufferDisableSizeConstraintsTitle": {},
+    "bufferDisableSizeConstraintsSubtitle": "מבטל את מגבלות גודל החוצץ (׳גודל החוצץ׳). החוצץ תמיד יטען באורך המוגדר (׳אורך החוצץ׳), אפילו לקבצים גדולים מאוד. יכול לגרום לקריסות, דורש הפעלה מחדש.",
+    "@bufferDisableSizeConstraintsSubtitle": {},
+    "bufferSizeTitle": "גודל החוצץ",
+    "@bufferSizeTitle": {},
+    "bufferSizeSubtitle": "גודל הקטע שישמר בזיכרון במגהבייטים. דורש הפעלה מחדש",
+    "@bufferSizeSubtitle": {}
 }
