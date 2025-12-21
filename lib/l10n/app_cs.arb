@@ -1958,7 +1958,7 @@
     "@autoOfflineOptionDisconnected": {
         "description": "This is shown when the autoOffline feature is set to Disconnected, this means offline mode will be automatically enabled when either wifi, ethernet or cellular is active"
     },
-    "autoOfflineSettingDescription": "Automaticky povolit offline režim\nZakázáno: offline režim nebude automaticky zapnut. Může šetřit baterii.\nMístní síť: zapnout offline režim, když nejste připojeni k Wi-Fi nebo ethernetu.\nOdpojeno: zapnout offline režim, když nejste připojeni k ničemu.\nNedosažitelné: zapnout offline režim, pokud není možné kontaktovat server po změně sítí.\nOffline režim můžete vždy ručně zapnout. Pozastavíte tím automatické akce, dokud režim opět nevypnete",
+    "autoOfflineSettingDescription": "{disabledModeName}:\nRežim offline nebude automaticky zapnut. Může uspořit baterii.\n\n{localNetworkModeName}:\nZapnout režim offline, kdylž nejste připojeni k Wi-Fi nebo ethernetu.\n\n{disconnectedModeName}:\nZapnout režim offline, když nejste připojeni k žádné síti.\n\n{unreachableModeName}:\nZapnout režim offline, když nelze kontaktovat server po změně sítě.\n\nRežim offline můžete vždy zapnout ručně, což pozastaví automatizaci, dokud ji znovu nepovolíte.",
     "@autoOfflineSettingDescription": {
         "description": "Setting description. Make sure the Mode names match the translations."
     },
@@ -3173,5 +3173,9 @@
     "autoOfflineSettingSubtitle": "Automaticky povolit režim offline v závislosti na připojení k síti nebo dosažitelnosti serveru.",
     "@autoOfflineSettingSubtitle": {
         "description": "Subtitle for the automated offline mode setting."
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "V současné době vyžaduje normalizace hlasitosti na jiných platformách než Android změnu hlasitosti přehrávání, aby se emulovala změna zesílení. Jelikož nemůžeme zvýšit hlasitost nad 100 %, musíme hlasitost ve výchozím nastavení snížit, abychom mohli zesílit hlasitost tichých skladeb.\n\nHodnota je vyjádřena v decibelech (dB), kde -10 dB odpovídá hlasitosti ~30 %, -4,5 dB odpovídá hlasitosti ~60 % a -2 dB odpovídá hlasitosti ~80 %.\nKladné hodnoty znamenají, že až do prahové hodnoty (tj. zesílení -6,4 dB (a kladnější) pro offset +6,4 dB) není aplikováno žádné snížení hlasitosti, ale zabraňuje se zesílení tišších skladeb.\n\nMěli byste nastavit hodnotu jako inverzní k nejvyššímu (nejkladnějšímu) zisku ve vaší knihovně, tj. nastavit ji na +3 dB, pokud je nejvyšší zisk ve vaší knihovně -3 dB (a všechny ostatní skladby mají zisky jako -5 dB, -8 dB, -10 dB atd.).",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     }
 }
