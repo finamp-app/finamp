@@ -1352,7 +1352,7 @@
     "@volumeNormalizationModeSelectorDescription": {
         "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown"
     },
-    "volumeNormalizationIOSBaseGainEditorSubtitle": "Actuellement, la correction du volume sur iOS nécessite de modifier le volume de lecture pour émuler le changement de gain. Comme nous ne pouvons pas augmenter le volume au-delà de 100 %, nous devons diminuer le volume par défaut afin de pouvoir augmenter le volume des pistes calmes. La valeur est exprimée en décibels (dB), où -10 dB correspond à un volume de ~30%, -4,5 dB à un volume de ~60% et -2 dB à un volume de ~80%.",
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "Choisissez un décalage de gain de volume (en dB)",
     "@volumeNormalizationIOSBaseGainEditorSubtitle": {
         "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
@@ -1967,7 +1967,7 @@
     "@deleteFromTargetDialogText": {
         "description": "(Important: Note the space in front of some cases) A Confirm Prompt used whenever an item is about to be deleted from the device or server. The Server case should explain that this cannot be reverted, this information is not needed for the device since the user can just download the track again. The delete Type adapts the server text even more in can the user can or cant delete the item."
     },
-    "autoOfflineSettingDescription": "Activation automatique du mode hors ligne.\nDésactivé : Le mode hors ligne ne s'active pas automatiquement. Peut économiser la batterie.\nRéseau local : Activez le mode hors ligne lorsque vous n'êtes pas connecté au Wi-Fi ou à l'Ethernet.\nDéconnecté : Activez le mode hors ligne lorsque vous n'êtes connecté à aucun réseau.\nInjoignable : Activez le mode hors ligne lorsque le serveur ne peut pas être contacté après un changement de réseau.\nVous pouvez toujours activer manuellement le mode hors ligne, ce qui suspend l'automatisation jusqu'à sa désactivation.",
+    "autoOfflineSettingDescription": "{disabledModeName} :\nLe mode hors ligne ne s'active pas automatiquement. Cela peut permettre d'économiser la batterie.\n\n{localNetworkModeName} :\nLe mode hors ligne s'active lorsque vous n'êtes pas connecté au Wi-Fi ou à un réseau Ethernet.\n\n{disconnectedModeName} :\nLe mode hors ligne s'active lorsque vous n'êtes connecté à aucun réseau.\n\n{unreachableModeName} :\nLe mode hors ligne s'active lorsque le serveur est injoignable après un changement de réseau.\n\n\nVous pouvez activer ou désactiver manuellement le mode hors ligne, ce qui suspend l'automatisation jusqu'à ce que vous la réactiviez.",
     "@autoOfflineSettingDescription": {
         "description": "Setting description. Make sure the Mode names match the translations."
     },
@@ -3181,5 +3181,13 @@
     "explicit": "Explicite",
     "@explicit": {
         "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "Actuellement, la normalisation du volume sur les plateformes autres qu'Android nécessite de modifier le volume de lecture pour simuler une variation de gain. Comme il est impossible d'augmenter le volume au-delà de 100 %, il est nécessaire de le réduire par défaut afin de pouvoir amplifier le volume des morceaux à faible volume.\n\nLa valeur est exprimée en décibels (dB), où -10 dB correspond à environ 30 % du volume, -4,5 dB à environ 60 % et -2 dB à environ 80 %.\nLes valeurs positives indiquent qu'aucune réduction de volume n'est appliquée jusqu'au seuil (par exemple, un gain de -6,4 dB, et des valeurs plus positives pour un décalage de +6,4 dB), mais empêchent l'amplification des morceaux à faible volume.\n\nIl est conseillé de définir cette valeur à l'inverse du gain le plus élevé (le plus positif) de votre bibliothèque. Par exemple, définissez-la à +3 dB si le gain le plus élevé de votre bibliothèque est de -3 dB (et que tous les autres morceaux ont des gains de -5 dB, -8 dB, -10 dB, etc.).",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "autoOfflineSettingSubtitle": "Activation automatique du mode hors ligne en fonction de la connectivité réseau ou de la disponibilité du serveur.",
+    "@autoOfflineSettingSubtitle": {
+        "description": "Subtitle for the automated offline mode setting."
     }
 }
