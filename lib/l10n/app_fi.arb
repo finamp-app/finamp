@@ -1387,7 +1387,7 @@
     "@reportQueueToServerSubtitle": {
         "description": "Description of the setting that toggles reporting of the current queue to the Jellyfin server"
     },
-    "volumeNormalizationIOSBaseGainEditorSubtitle": "Tällä hetkellä, äänenvoimakkuuden normalisointi iOS-laitteilla vaatii toistovoimakkuuden muutoksen, jotta vahvistuksen muutosta voidaan jäljitellä, ja normalisointi toteuttaa. Koska ohjelma ei voi lisätä äänenvoimakkuutta yli 100 prosentin, täytyy voimakkuutta alentaa oletuksena, jotta tarvittaessa normalisointi voi vahvistaa hiljaisia kappaleita tarpeeksi. Arvot ovat desibeleissä (dB), missä -10 dB on noin ~30% voimakkuudesta, -4.5 dB on noin ~60% voimakkuudesta ja -2dB on noin ~80% täydestä voimakkuudesta.",
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "Valitse äänenvoimakkuuden vahvistuksen säätöarvo (desibeleissä)",
     "@volumeNormalizationIOSBaseGainEditorSubtitle": {
         "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
@@ -1961,7 +1961,7 @@
     "@autoOfflineOptionDisconnected": {
         "description": "This is shown when the autoOffline feature is set to Disconnected, this means offline mode will be automatically enabled when either wifi, ethernet or cellular is active"
     },
-    "autoOfflineSettingDescription": "Kytke Offline-tila automaattisesti.\nPois päältä: Ei kytke offline-tilaa automaattisesti. Saattaa säästää akkua.\nPaikallisverkko: Kytke offline-tila päälle, kun ei yhteyttä wifin tai ethernetin kautta.\nEi yhteyttä: Kytke offline-tila päälle, kun ei yhteyttä mihinkään.\nEi tavoitettavissa: Kytke offline-tila päälle, kun serveriin ei saada yhteyttä verkon vaihtamisen jälkeen.\nVoit aina kytkeä offline-tilan päälle käsin. Tämä kytkee offline-automaation pois päältä, kunnes taas kytket offline-tilan pois päältä",
+    "autoOfflineSettingDescription": "{disabledModeName}:\nEi kytke offline-tilaa automaattisesti. Saattaa säästää akkua.\n\n{localNetworkModeName}:\nKytke offline-tila päälle, kun ei yhteydessä WiFin tai ethernetin kautta.\n\n{disconnectedModeName}:\nKytke offline-tila päälle, kun ei yhteyttä mihinkään.\n\n{unreachableModeName}:\nKytke offline-tila päälle, kun serveriin ei saada yhteyttä verkon vaihtamisen jälkeen.\n\nVoit aina kytkeä offline-tilan päälle käsin. Tämä kytkee offline-automaation pois päältä, kunnes taas kytket offline-tilan pois päältä.",
     "@autoOfflineSettingDescription": {
         "description": "Setting description. Make sure the Mode names match the translations."
     },
@@ -2984,7 +2984,7 @@
         },
         "description": "Radio mode names in radio mode/algorithm dropdown"
     },
-    "radioModeOptionTitle": "{option, select, reshuffle{Uudelleensekoitustila} random{Satunnaistila} similar{Samankaltaiset-tila} continuous{Jatkuva tila} albumMix{Albumisekoitus} other{{option}}} Enabled",
+    "radioModeOptionTitle": "{option, select, reshuffle{Uudelleensekoitustila} random{Satunnaistila} similar{Samankaltaiset-tila} continuous{Jatkuva tila} albumMix{Albumisekoitus} other{{option}}} päällä",
     "@radioModeOptionTitle": {
         "placeholders": {
             "option": {
@@ -3160,7 +3160,7 @@
     "@duckOnAudioInterruptionTitle": {
         "description": "Title for the setting that controls ducking."
     },
-    "duckOnAudioInterruptionSubtitle": "Vähennä äänenvoimakkuutta kun toinen sovellus hetkellisesti toistaa audiota.",
+    "duckOnAudioInterruptionSubtitle": "Vähennä äänenvoimakkuutta kun toinen sovellus hetkellisesti toistaa audiota. Vaatii sovelluksen uudelleenkäynnistyksen.",
     "@duckOnAudioInterruptionSubtitle": {
         "description": "Subtitle for the setting that controls ducking."
     },
@@ -3175,5 +3175,13 @@
     "explicit": "Säädytön sisältö",
     "@explicit": {
         "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "Tällä hetkellä äänenvoimakkuuden normalisointi muilla alustoilla kuin Androidilla vaatii äänenvoimakkuuden muuttamista vahvistuksen muutoksen emuloimiseksi. Koska emme voi nostaa äänenvoimakkuutta yli 100 %:n, meidän on laskettava äänenvoimakkuutta oletusarvoisesti, jotta voimme vahvistaa hiljaisten kappaleiden äänenvoimakkuutta.\n\nArvo ilmoitetaan desibeleinä (dB), missä -10 dB on n. 30 % äänenvoimakkuus, -4,5 dB on n. 60 % äänenvoimakkuus ja -2 dB on n. 80 % äänenvoimakkuus.\nPositiiviset arvot tarkoittavat, ettei äänenvoimakkuuden vähennystä käytetä kynnysarvoon asti (esim. -6,4 dB vahvistus (ja sitä positiivisemmat) +6,4 dB siirtymällä), mutta tämä estää hiljaisempien kappaleiden vahvistamisen.\n\nTämä tulisi asettaa kirjastosi korkeimman (positiivisimman) vahvistuksen vastaluvuksi, eli aseta arvoksi +3 dB, jos kirjastosi korkein vahvistus on -3 dB (ja kaikilla muilla kappaleilla vahvistukset ovat esimerkiksi -5 dB, -8 dB, -10 dB jne.).",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "autoOfflineSettingSubtitle": "Kytke offline-tila automaattisesti verkkoyhteyden tai serverin tavoitettavuuden mukaan.",
+    "@autoOfflineSettingSubtitle": {
+        "description": "Subtitle for the automated offline mode setting."
     }
 }
