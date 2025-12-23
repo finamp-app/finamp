@@ -1285,5 +1285,13 @@
     "bufferSizeTitle": "גודל החוצץ",
     "@bufferSizeTitle": {},
     "bufferSizeSubtitle": "גודל הקטע שישמר בזיכרון במגהבייטים. דורש הפעלה מחדש",
-    "@bufferSizeSubtitle": {}
+    "@bufferSizeSubtitle": {},
+    "editItemTitle": "עריכת {itemType, select, playlist{פלייליסט} other{}}",
+    "@editItemTitle": {
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    }
 }
