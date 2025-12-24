@@ -227,7 +227,7 @@
     "@artists": {},
     "genres": "Gèneres",
     "@genres": {},
-    "tracks": "Pistes",
+    "tracks": "Cançons",
     "@tracks": {},
     "music": "Música",
     "@music": {},
@@ -352,7 +352,7 @@
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
     },
-    "trackCount": "{count,plural,=1{{count} Pista} other{{count} Pistes}}",
+    "trackCount": "{count,plural,=1{{count} Cançó} other{{count} Cançons}}",
     "@trackCount": {
         "placeholders": {
             "count": {
@@ -360,7 +360,7 @@
             }
         }
     },
-    "offlineTrackCount": "{count,plural,=1{{count} Pista} other{{count} Pistes}}, {downloads} Descarregat/es",
+    "offlineTrackCount": "{count,plural,=1{{count} Cançó} other{{count} Cançons}}, {downloads} Descarregada/es",
     "@offlineTrackCount": {
         "placeholders": {
             "count": {
@@ -395,7 +395,7 @@
     "@appDirectory": {},
     "addDownloadLocation": "Afegir una Ubicació de Descàrregues",
     "@addDownloadLocation": {},
-    "shuffleAllTrackCount": "Recompte Total de Pistes Barrejades",
+    "shuffleAllTrackCount": "Recompte total de cançons barrejades",
     "@shuffleAllTrackCount": {},
     "shuffleAllTrackCountSubtitle": "Quantitat de cançons que es carreguen quan s'utilitza el botó barrejador de cançons o de gènere.",
     "@shuffleAllTrackCountSubtitle": {},
@@ -529,7 +529,7 @@
     "@criticRating": {},
     "shareLogs": "Compartir registres",
     "@shareLogs": {},
-    "downloadedCountUnified": "{trackCount,plural,=1{{trackCount} pista} other{{trackCount} pistes}}, {imageCount,plural,=1{{imageCount} imatge} other{{imageCount} imatges}}\n{syncCount,plural,=1{{syncCount} node sincronitzat} other{{syncCount} nodes sincronitzats}}{repairing, plural, =0{} other{\nReparant}}",
+    "downloadedCountUnified": "{trackCount,plural,=1{{trackCount} pista} other{{trackCount} cançons}}, {imageCount,plural,=1{{imageCount} imatge} other{{imageCount} imatges}}\n{syncCount,plural,=1{{syncCount} node sincronitzat} other{{syncCount} nodes sincronitzats}}{repairing, plural, =0{} other{\nReparant}}",
     "@downloadedCountUnified": {
         "description": "Display of downloaded track and image count on downloads screen.",
         "placeholders": {
@@ -547,7 +547,7 @@
             }
         }
     },
-    "offlineTrackCountArtist": "{count,plural,=1{{count} Pista} other{{count} Pistes}} Descarregat/es",
+    "offlineTrackCountArtist": "{count,plural,=1{{count} Cançó} other{{count} Cançons}} Descarregada/es",
     "@offlineTrackCountArtist": {
         "placeholders": {
             "count": {
@@ -590,7 +590,7 @@
     "@grid": {},
     "viewTypeSubtitle": "Tipus de vista per a la pantalla de música",
     "@viewTypeSubtitle": {},
-    "playbackSpeedControlSettingDescription": "Automàtic:\nFinamp intenta identificar si la pista que estàs reproduint és un pòdcast o (part) d'un audiollibre. Es considera que aquest és el cas si la pista dura més de {trackDuration} minuts, si l'àlbum de la pista dura més de {albumDuration} hores o si la pista té assignat almenys un d’aquests gèneres: {genreList}.\nEls controls de velocitat de reproducció es mostraran aleshores al menú de la pantalla del reproductor.\n\nMostrat:\nEls controls de velocitat de reproducció sempre es mostraran al menú de la pantalla del reproductor.\n\nAmagat:\nEls controls de velocitat de reproducció al menú de la pantalla del reproductor sempre estaran ocults.",
+    "playbackSpeedControlSettingDescription": "Automàtic:\nFinamp intenta identificar si la cançó que estàs reproduint és un pòdcast o (part) d'un audiollibre. Es considera que aquest és el cas si la cançó dura més de {trackDuration} minuts, si l'àlbum de la cançó dura més de {albumDuration} hores o si la cançó té assignat almenys un d’aquests gèneres: {genreList}.\nEls controls de velocitat de reproducció es mostraran aleshores al menú de la pantalla del reproductor.\n\nMostrat:\nEls controls de velocitat de reproducció sempre es mostraran al menú de la pantalla del reproductor.\n\nAmagat:\nEls controls de velocitat de reproducció al menú de la pantalla del reproductor sempre estaran ocults.",
     "@playbackSpeedControlSettingDescription": {
         "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown",
         "placeholders": {
@@ -728,7 +728,7 @@
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
     },
-    "playlistActionsMenuButtonTooltip": "Toca per afegir a la llista de reproducció. Premer sostingut per afegir un favorit.",
+    "playlistActionsMenuButtonTooltip": "Prem per afegir a la llista de reproducció. Prem sostingudament per afegir un favorit.",
     "@playlistActionsMenuButtonTooltip": {
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
     },
@@ -748,7 +748,7 @@
     "@timeFractionTooltip": {
         "description": "Tooltip and accessibility label for the track progress. {currentTime} is the current position within the track, as a translated string like '2 minutes 40 seconds', and {totalTime} is the total duration of the track, also a translated string."
     },
-    "trackCountTooltip": "Pista {currentTrackIndex} de{totalTrackCount}",
+    "trackCountTooltip": "Cançó {currentTrackIndex} de {totalTrackCount}",
     "@trackCountTooltip": {
         "description": "Tooltip and accessibility label for the queue progress. {currentTrackIndex} and {totalTrackCount} are both numbers",
         "placeholders": {
@@ -791,7 +791,7 @@
     "@togglePlaybackButtonTooltip": {
         "description": "Tooltip for the button that toggles playback"
     },
-    "playbackOrderShuffledButtonTooltip": "Barrejant pistes. Clica per reproduir en ordre.",
+    "playbackOrderShuffledButtonTooltip": "Barrejant cançons. Prem per reproduir en ordre.",
     "@playbackOrderShuffledButtonTooltip": {
         "description": "Tooltip for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in shuffle mode"
     },
@@ -848,7 +848,7 @@
     "@shuffleNext": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "playbackOrderLinearButtonTooltip": "Reproduint en ordre. Clica per barrejar.",
+    "playbackOrderLinearButtonTooltip": "Reproduint en ordre. Prem per barrejar.",
     "@playbackOrderLinearButtonTooltip": {
         "description": "Tooltip for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in linear/in-order mode"
     },
@@ -873,7 +873,7 @@
     "@yourLikes": {
         "description": "Title for the queue source when the user is playing their liked tracks"
     },
-    "playingFromType": "Reproduint des de {source, select, album{l'Àlbum} playlist{la Llista de reproducció} trackMix{la Barreja de pistes} artistMix{la Barreja d'artistes} albumMix{la Barreja d'àlbums} genreMix{la Barreja de gèneres} favorites{els Preferits} allTracks{Totes les pistes} filteredList{les Pistes} genre{el Gènere} artist{l'Artista} track{la Pista} nextUpAlbum{l'Àlbum a Pròxims} nextUpPlaylist{la Llista de reproducció a Pròxims} nextUpArtist{l'Artista a Pròxims} nextUpGenre{el Gènere a Pròxims} remoteClient{Client remot} radio{Ràdio} other{}}",
+    "playingFromType": "Reproduint des de {source, select, album{l'Àlbum} playlist{la llista de reproducció} trackMix{la barreja de cançons} artistMix{la barreja d'artistes} albumMix{la barreja d'àlbums} genreMix{la barreja de gèneres} favorites{els preferits} allTracks{totes les cançons} filteredList{les cançons} genre{el gènere} artist{l'artista} track{la cançó} nextUpAlbum{l'àlbum a continuació} nextUpPlaylist{la llista de reproducció a continuació} nextUpArtist{l'artista a continuació} nextUpGenre{el gènere a continuació} remoteClient{el client remot} radio{la ràdio} other{}}",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -924,7 +924,7 @@
     "@playbackSpeedIncreaseLabel": {
         "description": "Label for the button in the speed menu that increases the playback speed."
     },
-    "loopModeOneButtonLabel": "Repetint aquesta pista",
+    "loopModeOneButtonLabel": "Repetint aquesta cançó",
     "@loopModeOneButtonLabel": {
         "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop one mode"
     },
@@ -990,11 +990,11 @@
     "@playNext": {
         "description": "Used for adding a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "playbackOrderShuffledButtonLabel": "Barrejant pistes",
+    "playbackOrderShuffledButtonLabel": "Barrejant cançons",
     "@playbackOrderShuffledButtonLabel": {
         "description": "Label for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in shuffle mode"
     },
-    "queueRestoreSubtitle2": "{count,plural,=1{1 Pista} other{{count} Pistes}}, {remaining} per Reproduir",
+    "queueRestoreSubtitle2": "{count,plural,=1{1 cançó} other{{count} cançons}}, {remaining} sense reproduir",
     "@queueRestoreSubtitle2": {
         "description": "Description of length of a saved queue",
         "placeholders": {
@@ -1896,11 +1896,11 @@
     "@serverSharingMenuConfirmationDialogConfirmationButtonLabel": {
         "description": "Positive action label for the dialog shown when enabling server sharing while offline mode is enabled"
     },
-    "serverSharingMenuControlSubtitleSharingDisabled": "Toca per compartir",
+    "serverSharingMenuControlSubtitleSharingDisabled": "Prem per compartir",
     "@serverSharingMenuControlSubtitleSharingDisabled": {
         "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned off"
     },
-    "serverSharingMenuControlSubtitleSharingEnabled": "Toca per aturar",
+    "serverSharingMenuControlSubtitleSharingEnabled": "Prem per aturar",
     "@serverSharingMenuControlSubtitleSharingEnabled": {
         "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned on"
     },
@@ -1987,11 +1987,11 @@
     "@radioModeMenuTitle": {
         "description": "Title for menu that allows users to choose the radio mode."
     },
-    "radioModeEnabledSubtitle": "Toca per configurar",
+    "radioModeEnabledSubtitle": "Prem per configurar",
     "@radioModeEnabledSubtitle": {
         "description": "Subtitle displayed in the queue to show when radio mode is enabled."
     },
-    "radioModeDisabledSubtitle": "Toca per activar",
+    "radioModeDisabledSubtitle": "Prem per activar",
     "@radioModeDisabledSubtitle": {
         "description": "Subtitle displayed in the queue to show that radio mode is disabled."
     },
@@ -2010,5 +2010,835 @@
     "lyricsEmptyStateNoLyrics": "No hi ha lletra disponible",
     "@lyricsEmptyStateNoLyrics": {
         "description": "Message shown when no lyrics are available for the current track"
+    },
+    "shuffleAlbumsNext": "Barreja els àlbums i afegeix-los \"A continuació\"",
+    "@shuffleAlbumsNext": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the start of Next Up"
+    },
+    "lyricsMissingLyricLinePlaceholder": "vers que falta",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "swipeInsertQueueNext": "Reprodueix la cançó lliscada a continuació",
+    "@swipeInsertQueueNext": {},
+    "periodicPlaybackSessionUpdateFrequency": "Freqüència d'actualització de la sessió de reproducció",
+    "@periodicPlaybackSessionUpdateFrequency": {
+        "description": "Label for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
+    },
+    "albumCount": "{count,plural,=1{{count} àlbum} other{{count} àlbums}}",
+    "@albumCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "shuffleAlbumsToQueue": "Barreja àlbums i afegeix al final de la cua",
+    "@shuffleAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of the regular queue"
+    },
+    "playCountValue": "{playCount,plural,=1{{playCount} reproducció} other{{playCount} reproduccions}}",
+    "@playCountValue": {
+        "placeholders": {
+            "playCount": {
+                "type": "int",
+                "example": "12"
+            }
+        }
+    },
+    "requireWifiForDownloads": "Requereix WiFi per descarregar.",
+    "@requireWifiForDownloads": {
+        "description": "Description of setting for only performing downloads while on wifi"
+    },
+    "connectionInterrupted": "Connexió interrompuda, pausant les descàrregues.",
+    "@connectionInterrupted": {
+        "description": "Message shown when the connection is interrupted during a download."
+    },
+    "cacheLibraryImagesName": "Imatges a la memòria cau per '{libraryName}'",
+    "@cacheLibraryImagesName": {
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        },
+        "description": "Localized names of special downloadable collection representing cached images for a certain library."
+    },
+    "enableVibrationSubtitle": "Habilita o deshabilita la vibració.",
+    "@enableVibrationSubtitle": {},
+    "suppressPlayerPadding": "Suprimeix el marge dels controls del reproductor",
+    "@suppressPlayerPadding": {},
+    "lockDownload": "Mantenir sempre al dispositiu",
+    "@lockDownload": {
+        "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
+    },
+    "scrollToCurrentTrack": "Desplaçar a la cançó actual",
+    "@scrollToCurrentTrack": {
+        "description": "Tooltip for button that scrolls the queue list back to the current track"
+    },
+    "trackOfflineFavorites": "Sincronitzar l'estat de tots els preferits",
+    "@trackOfflineFavorites": {},
+    "fiveLatestAlbumsSetting": "Descarrega els 5 àlbums més recents",
+    "@fiveLatestAlbumsSetting": {},
+    "cacheLibraryImagesSettings": "Emmagatzema a la memòria cau les imatges actuals de la biblioteca",
+    "@cacheLibraryImagesSettings": {},
+    "showFeatureChipsToggleTitle": "Mostra informació avançada de la cançó",
+    "@showFeatureChipsToggleTitle": {
+        "description": "Title for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
+    },
+    "downloadSizeWarningCutoff": "Llindar d'advertència de la mida de descàrregues",
+    "@downloadSizeWarningCutoff": {
+        "description": "Title for the setting controlling when to warn about a large download"
+    },
+    "releaseDateFormatMonthDayYear": "Mes, dia i any",
+    "@releaseDateFormatMonthDayYear": {
+        "description": "Date format option for the release date of an album, showing the year and month and day/date. Example: March 2, 2022"
+    },
+    "allowDeleteFromServerTitle": "Permetre l'eliminació des del servidor",
+    "@allowDeleteFromServerTitle": {
+        "description": "Title for the setting that controls if items can be deleted from the server"
+    },
+    "swipeLeftToRightAction": "Acció de lliscar cap a la dreta",
+    "@swipeLeftToRightAction": {},
+    "swipeRightToLeftAction": "Acció de lliscar cap a l'esquerra",
+    "@swipeRightToLeftAction": {},
+    "playOnStaleDelay": "Durada per l'expiració de la sessió \"Reproduir en\"",
+    "@playOnStaleDelay": {
+        "description": "Label for the setting that controls how long a PlayOn remote session is considered active"
+    },
+    "enablePlayonTitle": "Habilitar la compatibilitat amb \"Reproduir en\"",
+    "@enablePlayonTitle": {
+        "description": "Label for the setting to enable Jellyfin's 'Play On' feature (remote control)"
+    },
+    "outputMenuOpenConnectionSettingsButtonTitle": "Connectar a un dispositiu",
+    "@outputMenuOpenConnectionSettingsButtonTitle": {
+        "description": "Button title for connecting to a device from the output menu"
+    },
+    "genreItemSectionFilterChipOrderTitle": "Ordre del filtre de la secció d'elements",
+    "@genreItemSectionFilterChipOrderTitle": {
+        "description": "Label for the setting that controls the order of item sections filter chips."
+    },
+    "artistItemSectionFilterChipOrderTitle": "Ordre del filtre de la secció de cançons",
+    "@artistItemSectionFilterChipOrderTitle": {
+        "description": "Label for the setting that controls the order of the tracks sections filter chips."
+    },
+    "automaticOfflineModeOverrideActiveSubtitle": "Prem aquí per reprendre",
+    "@automaticOfflineModeOverrideActiveSubtitle": {
+        "description": "Subtitle for the label shown below the offline mode toggle when automatic offline mode switching is paused"
+    },
+    "applyFilterOnGenreChipTapTitle": "Aplicar filtre en gènere al prémer",
+    "@applyFilterOnGenreChipTapTitle": {
+        "description": "Title for the setting that controls if taps on genre chips should apply a genre filter to the current screen or should redirect to the GenreScreen."
+    },
+    "startInstantMixForIndividualTracksSwitchSubtitle": "Quan està activat, prémer una cançó a la pestanya de cançons iniciarà una mescla instantània d'aquesta cançó en comptes de reproduir només una sola cançó.",
+    "@startInstantMixForIndividualTracksSwitchSubtitle": {},
+    "playerAlbumArtworkTooltip": "Il·lustració per a {title}. Prem per alternar la reproducció. Llisca cap a l'esquerra o la dreta per canviar de cançó.",
+    "@playerAlbumArtworkTooltip": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "Abbey Road"
+            }
+        },
+        "description": "Tooltip for the album artwork on the player screen"
+    },
+    "applyFilterOnGenreChipTapSubtitle": "Per defecte, prémer un gènere l'obre, mentre que mantenir-lo premut filtra els artistes o les llistes de reproducció per aquest gènere. Quan s'activa, aquest comportament s'inverteix.",
+    "@applyFilterOnGenreChipTapSubtitle": {
+        "description": "Subtitle for the setting that controls if taps on genres should apply a genre filter to the current screen or should redirect to the GenreScreen."
+    },
+    "preferAddingToFavoritesOverPlaylistsTitle": "Afegeix a preferits en prémer la icona del cor",
+    "@preferAddingToFavoritesOverPlaylistsTitle": {
+        "description": "Title for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "preferAddingToFavoritesOverPlaylistsSubtitle": "Quan està activat, un toc curt afegirà als preferits i un toc llarg obrirà el menú \"Afegeix a la llista de reproducció\". El valor per defecte és el contrari.",
+    "@preferAddingToFavoritesOverPlaylistsSubtitle": {
+        "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "showArtistsTracksSectionSubtitle": "Mostrar o no una secció amb un màxim de cinc cançons. Quan està activat, es pot triar entre \"Més reproduïdes\", \"Preferides\", \"Aleatori\", \"Últims llançaments\", \"Afegides recentment\" i \"Cançons reproduïdes recentment\".",
+    "@showArtistsTracksSectionSubtitle": {},
+    "shuffleSomeToNextUp": "Barreja algunes cançons a continuació",
+    "@shuffleSomeToNextUp": {
+        "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
+    },
+    "shuffleSomeToQueue": "Barreja algunes cançons a la cua",
+    "@shuffleSomeToQueue": {
+        "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "moveAddToNextUp": "Moure a \"A continuació\"",
+    "@moveAddToNextUp": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
+    },
+    "queueRetryMessage": "No s'ha pogut restaurar la cua. Reintentar?",
+    "@queueRetryMessage": {
+        "description": "Message displayed on now-playing bar when all items in a saved queue fail to load."
+    },
+    "autoloadLastQueueOnStartupSubtitle": "En iniciar l'aplicació, intentar restaurar l'última cua reproduïda.",
+    "@autoloadLastQueueOnStartupSubtitle": {
+        "description": "Description of the setting to restore last queue on startup"
+    },
+    "reportQueueToServer": "Informar de la cua actual al servidor?",
+    "@reportQueueToServer": {
+        "description": "Label for the setting that toggles reporting of the current queue to the Jellyfin server"
+    },
+    "reportQueueToServerSubtitle": "Quan està habilitat, Finamp enviarà la cua actual al servidor. Això pot millorar el control remot i permetre la restauració de la cua des del servidor. Sempre està habilitat si la funció \"Reproduir en\" està habilitada.",
+    "@reportQueueToServerSubtitle": {
+        "description": "Description of the setting that toggles reporting of the current queue to the Jellyfin server"
+    },
+    "periodicPlaybackSessionUpdateFrequencySubtitle": "Freqüència amb què s'envia l'estat de reproducció actual al servidor, en segons. Hauria de ser inferior a 5 minuts (300 segons) per evitar que la sessió esgoti el temps d'espera.",
+    "@periodicPlaybackSessionUpdateFrequencySubtitle": {
+        "description": "Description of the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
+    },
+    "periodicPlaybackSessionUpdateFrequencyDetails": "Si el servidor Jellyfin no ha rebut cap actualització d'un client en els darrers 5 minuts, assumeix que la reproducció ha finalitzat. Això significa que, per a cançons de més de 5 minuts, es podria informar incorrectament que la reproducció ha finalitzat, reduint la qualitat de les dades dels informes de reproducció.",
+    "@periodicPlaybackSessionUpdateFrequencyDetails": {
+        "description": "Additional details for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
+    },
+    "playOnStaleDelaySubtitle": "Durada que es considera activa una sessió remota de \"Reproduir en\" després de rebre una ordre. Quan es considera activa, la reproducció es registra amb més freqüència, cosa que pot comportar un augment de l'ús de l'amplada de banda.",
+    "@playOnStaleDelaySubtitle": {
+        "description": "Description of the setting that controls how long a PlayOn remote session is considered active"
+    },
+    "enablePlayonSubtitle": "Activa la funció \"Reproduir en\" de Jellyfin (control remot de Finamp des d'un altre client). Desactiva-la si el teu proxy invers o servidor no admet websockets.",
+    "@enablePlayonSubtitle": {
+        "description": "Description of the setting to enable Jellyfin's 'Play On' feature (remote control)"
+    },
+    "playOnReconnectionDelay": "Retard de reconnexió de la sessió \"Reproduir en\"",
+    "@playOnReconnectionDelay": {
+        "description": "Label for the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
+    },
+    "playOnReconnectionDelaySubtitle": "Controla el retard entre els intents de reconnectar-se al websocket de \"Reproduir en\" quan es desconnecta (en segons). Un retard més baix augmenta l'ús de l'amplada de banda.",
+    "@playOnReconnectionDelaySubtitle": {
+        "description": "Description of the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
+    },
+    "itemSectionsOrderSubtitle": "Controla l'ordre de la secció d'elements.",
+    "@itemSectionsOrderSubtitle": {
+        "description": "Description of the setting that controls the order of item sections on the screens."
+    },
+    "genreItemSectionFilterChipOrderSubtitle": "Controla l'ordre dels filtres disponibles en la secció d'elements.",
+    "@genreItemSectionFilterChipOrderSubtitle": {
+        "description": "Description of the setting that controls the order of item sections filter chips."
+    },
+    "artistItemSectionFilterChipOrderSubtitle": "Controla l'ordre dels filtres disponibles en la secció de cançons.",
+    "@artistItemSectionFilterChipOrderSubtitle": {
+        "description": "Description of the setting that controls the order of the tracks sections filter chips."
+    },
+    "genreFilterArtistScreensSubtitle": "Quan està activat, els artistes (accedits a través d'un gènere) només mostraran les cançons i els àlbums que coincideixin amb el gènere que estàs navegant actualment. (Sempre és possible eliminar manualment el filtre de gènere per mostrar totes les cançons i els àlbums.)",
+    "@genreFilterArtistScreensSubtitle": {
+        "description": "Description of the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
+    },
+    "genreFilterPlaylistScreensSubtitle": "Quan està activat, les llistes de reproducció (accedides a través d'un gènere) només mostraran les cançons i els àlbums que coincideixin amb el gènere que estàs navegant actualment. (Sempre és possible eliminar manualment el filtre de gènere per mostrar totes les cançons i els àlbums.)",
+    "@genreFilterPlaylistScreensSubtitle": {
+        "description": "Description of the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
+    },
+    "genreListsInheritSortingSubtitle": "Quan està habilitat, les llistes \"Veure-ho tot\" heretaran l'ordenació i el filtratge de la pantalla de gènere. Si està deshabilitat, s'utilitzarà la configuració de la pestanya de la biblioteca corresponent. Prement en els comptadors a la part superior de la pantalla de gènere o el botó \"Navega per les llistes de reproducció\" sempre obrirà una llista completa amb la configuració d'ordenació de la pestanya de la biblioteca.",
+    "@genreListsInheritSortingSubtitle": {
+        "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
+    },
+    "curatedItemsMostPlayedOfflineTooltip": "No disponible en mode sense connexió.",
+    "@curatedItemsMostPlayedOfflineTooltip": {
+        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
+    },
+    "curatedItemsNotListenedYet": "No has escoltat cap cançó {itemType, select, artistGenreFilter{ d'aquest artista en aquest gènere} artist{ d'aquest artista} genre{ d'aquest gènere} other{}}.",
+    "@curatedItemsNotListenedYet": {
+        "description": "Tooltip for Most Played and Recently Played on Curated Items in Online Mode when not yet listened to any tracks.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "curatedItemsNoFavorites": "No tens cap preferit {itemType, select, artistGenreFilter{ per a aquest artista en aquest gènere} artist{ per a aquest artista} genre{ per a aquest gènere} other{}}.",
+    "@curatedItemsNoFavorites": {
+        "description": "Tooltip for Favorites on Curated Items in Online Mode when no favorites yet.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "genreNoItems": "No tens cap {itemType, select, playlists{llista de reproducció} artists{artista} albums{àlbum} tracks{cançó} other{element}} per a aquest gènere.",
+    "@genreNoItems": {
+        "description": "Message for empty See All lists for a genre.",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "shuffleSomeAlbumsNext": "Barreja alguns àlbums i afegeix a continuació",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "shuffleAlbumsToNextUp": "Barreja els àlbums i afegeix a continuació",
+    "@shuffleAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of Next Up"
+    },
+    "shuffleSomeAlbumsToNextUp": "Barreja alguns àlbums i afegeix a continuació",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
+    },
+    "shuffleSomeAlbumsToQueue": "Barreja alguns àlbums i afegeix a la cua",
+    "@shuffleSomeAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
+    },
+    "noMusicLibrariesBody": "Finamp no ha pogut trobar cap biblioteca de música. Assegureu-vos que el vostre servidor Jellyfin contingui com a mínim una biblioteca amb el tipus de contingut definit com a \"Música\".",
+    "@noMusicLibrariesBody": {},
+    "playbackReportingSettingsTitle": "Informes de reproducció i \"Reproduir en\"",
+    "@playbackReportingSettingsTitle": {
+        "description": "Title for the playback reporting settings screen"
+    },
+    "volumeNormalizationSwitchSubtitle": "Utilitza la informació de guany per normalitzar el volum de les cançons (\"Guany de reproducció\")",
+    "@volumeNormalizationSwitchSubtitle": {
+        "description": "Subtitle for the switch that toggles replay gain"
+    },
+    "volumeNormalizationModeSelectorSubtitle": "Quan i com aplicar la normalització de volum",
+    "@volumeNormalizationModeSelectorSubtitle": {
+        "description": "Subtitle for the dropdown that selects the replay gain mode"
+    },
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "Tria un offset de guany de volum (en dB)",
+    "@volumeNormalizationIOSBaseGainEditorSubtitle": {
+        "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "Actualment, la normalització del volum en plataformes que no siguin Android requereix canviar el volum de reproducció per emular el canvi de guany. Com que no podem augmentar el volum per sobre del 100%, hem de disminuir el volum per defecte per poder augmentar el volum de les cançons silencioses.\n\nEl valor és en decibels (dB), on -10 dB és ~30% de volum, -4.5 dB és ~60% de volum i -2 dB és ~80% de volum.\nEls valors positius signifiquen que no s'aplica cap reducció de volum fins al llindar (és a dir, guany de -6.4 dB (i més positiu) per a un offset de +6.4 dB), però impedeix que les cançons més silencioses s'augmentin.\n\nHauries de definir-ho a l'invers del guany més alt (més positiu) de la teva biblioteca, és a dir, definir-ho a +3 dB si el guany més alt de la teva biblioteca és de -3 dB (i totes les altres cançons tenen guanys com ara -5 dB, -8 dB, -10 dB, etc.).",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "swipeInsertQueueNextSubtitle": "Activa l'opció d'inserir una cançó com a següent element a la cua quan es fa lliscar el dit a la llista de cançons en comptes d'afegir-la al final.",
+    "@swipeInsertQueueNextSubtitle": {},
+    "swipeLeftToRightActionSubtitle": "Acció activada en lliscar una cançó de la llista d'esquerra a dreta.",
+    "@swipeLeftToRightActionSubtitle": {},
+    "swipeRightToLeftActionSubtitle": "Acció activada en lliscar una cançó de la llista de dreta a esquerra.",
+    "@swipeRightToLeftActionSubtitle": {},
+    "startInstantMixForIndividualTracksSwitchTitle": "Inicia mescles instantànies per a cançons individuals",
+    "@startInstantMixForIndividualTracksSwitchTitle": {
+        "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
+    },
+    "syncDownloads": "Sincronitza i descarrega els elements que falten.",
+    "@syncDownloads": {
+        "description": "Tooltip for downloads sync button."
+    },
+    "repairDownloads": "Reparar problemes amb fitxers o metadades descarregats.",
+    "@repairDownloads": {
+        "description": "Tooltip for downloads repair button."
+    },
+    "queueRestoreError": "Avís: No s'ha pogut restaurar {count,plural, =1{{count} la cançó} other{{count} les cançons}} a la cua.",
+    "@queueRestoreError": {
+        "description": "Message that shows when some, but not all, tracks in the Now-Playing queue from the previous session cannot be restored due to server issues or being offline.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "activeDownloadsListHeader": "{itemCount} {typeName, select, downloading{En execució} failed{Fallada} syncFailed{Repetidament dessincronitzada} enqueued{A la cua} other{}} {itemCount, plural, =1{Descàrrega} other{Descàrregues}}",
+    "@activeDownloadsListHeader": {
+        "description": "Header text for lists of active downloads of a particular state.",
+        "placeholders": {
+            "typeName": {
+                "type": "String"
+            },
+            "itemCount": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadLibraryPrompt": "Estàs segur que vols descarregar tot el contingut de la biblioteca ''{libraryName}''?",
+    "@downloadLibraryPrompt": {
+        "description": "Confirmation prompt before downloading entire library, which may be large.",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "onlyShowFullyDownloaded": "Mostra només els àlbums completament descarregats",
+    "@onlyShowFullyDownloaded": {
+        "description": "Tooltip for button that hides all partially downloaded albums"
+    },
+    "filesystemFull": "No es poden completar les descàrregues restants. El sistema de fitxers és ple.",
+    "@filesystemFull": {
+        "description": "Message shown when a download cannot complete due to the filesystem being full."
+    },
+    "connectionInterruptedBackground": "La connexió s'ha interromput durant la descàrrega en segon pla. Això pot ser causat per la configuració del sistema operatiu.",
+    "@connectionInterruptedBackground": {
+        "description": "Message shown when the connection is interrupted during a download while in the background. It advises checking OS settings, as they may cause background downloads to be blocked."
+    },
+    "connectionInterruptedBackgroundAndroid": "La connexió s'ha interromput durant la descàrrega en segon pla. Això pot ser causat per tenir activat \"Entra en estat de baixa prioritat en pausa\" o per la configuració del sistema operatiu.",
+    "@connectionInterruptedBackgroundAndroid": {
+        "description": "Message shown when the connection is interrupted during a download while in the background on android. It advises checking OS settings, as they may cause background downloads to be blocked, or checking the  'Enter Low-Priority State on Pause' setting."
+    },
+    "runRepairWarning": "No s'ha pogut contactar amb el servidor per finalitzar la migració de les descàrregues. Executeu \"Repara les descàrregues\" des de la pantalla de descàrregues tan bon punt torneu a estar en línia.",
+    "@runRepairWarning": {
+        "description": "Message shown when an error occurs during the downloads repair step of the Isar downloads migration, which requires a server connection."
+    },
+    "showNullLibraryItemsTitle": "Mostra multimèdia amb una biblioteca desconeguda.",
+    "@showNullLibraryItemsTitle": {
+        "description": "Title of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
+    },
+    "showNullLibraryItemsSubtitle": "És possible que alguns continguts multimèdia s'hagin descarregat amb una biblioteca desconeguda. Desactiveu per ocultar-los fora de la seva col·lecció original.",
+    "@showNullLibraryItemsSubtitle": {
+        "description": "Description of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
+    },
+    "syncPlaybackSpeedAndPitchLabel": "Sincronitza velocitat i to",
+    "@syncPlaybackSpeedAndPitchLabel": {
+        "description": "Label for the checkbox that toggled is the pitch is adjusted along with the playback speed, or if the pitch is kept constant. Shown in the speed submenu on the track menu"
+    },
+    "serverSharingMenuTitle": "Compartir servidor de la xarxa local",
+    "@serverSharingMenuTitle": {
+        "description": "Title for the server sharing menu that allows the user to share their server address with other devices on the local network"
+    },
+    "quickConnectAuthorizationMenuPrompt": "Introduir el codi de connexió ràpida",
+    "@quickConnectAuthorizationMenuPrompt": {
+        "description": "Title for the button in server sharing menu that opens the quick connect authorization menu"
+    },
+    "quickConnectAuthorizationMenuTitle": "Autoritza sol·licitud de connexió ràpida",
+    "@quickConnectAuthorizationMenuTitle": {
+        "description": "Title for the quick connect authorization menu that allows the user to authorize a quick connect request from another device"
+    },
+    "quickConnectAuthorizationMenuStateTitleProcessing": "Intentant autoritzar la sol·licitud",
+    "@quickConnectAuthorizationMenuStateTitleProcessing": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) while a request is being processed"
+    },
+    "quickConnectAuthorizationMenuStateTitleFailed": "Codi de connexió ràpida invàlid",
+    "@quickConnectAuthorizationMenuStateTitleFailed": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) when the authorization was unsuccessful"
+    },
+    "useHighContrastColorsTitle": "Utilitza colors d'alt contrast",
+    "@useHighContrastColorsTitle": {
+        "description": "Title for the setting that controls if high contrast colors are used throughout the app"
+    },
+    "discordRPCIconWhiteTransparent": "Finamp Blanc - Transparent",
+    "@discordRPCIconWhiteTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the full white Finamp logo with a Transparent Background"
+    },
+    "autoplayRestoredQueueTitle": "Reprodueix automàticament les cues restaurades",
+    "@autoplayRestoredQueueTitle": {
+        "description": "Title for the setting that controls if restored queues automatically play."
+    },
+    "rememberLastUsedPlaybackActionRowPageTitle": "Recorda l'últim mode de reproducció",
+    "@rememberLastUsedPlaybackActionRowPageTitle": {
+        "description": "Title for the setting to remember the last used playback mode."
+    },
+    "radioModeUnavailableWhileOfflineSubtitle": "{modeName} no disponible sense connexió",
+    "@radioModeUnavailableWhileOfflineSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
+    },
+    "duckOnAudioInterruptionTitle": "Reduir el volum en les interrupcions",
+    "@duckOnAudioInterruptionTitle": {
+        "description": "Title for the setting that controls ducking."
+    },
+    "syncOnStartupSwitch": "Sincronitza automàticament les descàrregues a l'inici",
+    "@syncOnStartupSwitch": {
+        "description": "Title of setting for automatically triggering a throttled resync on app startup."
+    },
+    "fixedGridSizeSwitchTitle": "Utilitza quadrícules de mida fixa",
+    "@fixedGridSizeSwitchTitle": {},
+    "removeFromPlaylistPrompt": "Eliminar '{itemName}' de la llista de reproducció '{playlistName}'?",
+    "@removeFromPlaylistPrompt": {
+        "placeholders": {
+            "itemName": {
+                "type": "String"
+            },
+            "playlistName": {
+                "type": "String"
+            }
+        },
+        "description": "Prompt on dialog to confirm a removal from playlist"
+    },
+    "addPlaylistSubheader": "Afegeix elements a una llista de reproducció",
+    "@addPlaylistSubheader": {
+        "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
+    },
+    "showLyricsTimestampsTitle": "Mostra les marques de temps per a les lletres sincronitzades",
+    "@showLyricsTimestampsTitle": {
+        "description": "Title for the setting that controls if timestamps are shown for lyrics"
+    },
+    "showLyricsScreenAlbumPreludeTitle": "Mostra la portada de l'àlbum abans de la lletra",
+    "@showLyricsScreenAlbumPreludeTitle": {
+        "description": "Title for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
+    },
+    "showCoversOnAlbumScreenTitle": "Mostra les portades dels àlbums en les cançons",
+    "@showCoversOnAlbumScreenTitle": {
+        "description": "Title for the setting that controls if album covers are shown for each track separately on the album screen"
+    },
+    "marqueeOrTruncateButton": "Utilitza els punts suspensius per a títols llargs",
+    "@marqueeOrTruncateButton": {},
+    "sleepTimerProjectedDuration": "La reproducció es posarà en pausa en ~{duration}",
+    "@sleepTimerProjectedDuration": {
+        "description": "Displays duration until playback is expected to be ended by the sleep timer (unless the queue is modified before). {duration} is a pre-formatted string.",
+        "placeholders": {
+            "duration": {
+                "type": "String",
+                "example": "36:23"
+            }
+        }
+    },
+    "itemCountLoading": "{childType, select, track{cançons} album{àlbums} other{elements}}",
+    "@itemCountLoading": {
+        "description": "Shown while the item count is being calculated.",
+        "placeholders": {
+            "childType": {
+                "type": "String",
+                "example": "album",
+                "description": "Options match BaseItemDtoType.name"
+            }
+        }
+    },
+    "clearQueueOnStopEventTitle": "Esborra la cua en parar externament",
+    "@clearQueueOnStopEventTitle": {
+        "description": "Title for the setting that controls if OS stop commands clear the queue."
+    },
+    "moreActionsOnAlbumDisc": "Més accions al disc de l'àlbum",
+    "@moreActionsOnAlbumDisc": {
+        "description": "Label for the disc header menu button."
+    },
+    "removedTracksEmptyListPlaceholder": "Les cançons eliminades apareixeran aquí",
+    "@removedTracksEmptyListPlaceholder": {
+        "description": "Placeholder text shown when there are no removed tracks"
+    },
+    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "El mode actual no està disponible sense connexió.",
+    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
+    },
+    "radioModeUnavailableForSourceItemDescription": "No disponible per a l'origen d'aquesta cua",
+    "@radioModeUnavailableForSourceItemDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
+    },
+    "radioModeRandomUnavailableNotDownloadedDescription": "No disponible perquè no s'ha descarregat '{sourceName}'",
+    "@radioModeRandomUnavailableNotDownloadedDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "showArtistChipImage": "Mostra imatges d'artistes amb el nom de l'artista",
+    "@showArtistChipImage": {},
+    "addRemoveFromPlaylist": "Afegir a / Eliminar de les llistes de reproducció",
+    "@addRemoveFromPlaylist": {
+        "description": "Header for add to/remove from playlist popup menu"
+    },
+    "showProgressOnNowPlayingBarTitle": "Mostra el progrés de la cançó al mini reproductor de l'aplicació",
+    "@showProgressOnNowPlayingBarTitle": {
+        "description": "Title for the setting that controls if the in-app miniplayer / now playing bar at the bottom of the music screen functions as a progress bar"
+    },
+    "couldNotLoad": "No s'ha pogut carregar {source, select, album{l'àlbum} playlist{la llista de reproducció} trackMix{el mix de cançons} artistMix{el mix d'artistes} albumMix{el mix d'àlbums} genreMix{el mix de gèneres} favorites{els preferits} allTracks{totes les cançons} filteredList{les cançons} genre{el gènere} artist{l'artista} track{la cançó} nextUpAlbum{l'àlbum a continuació} nextUpPlaylist{la llista de reproducció a continuació} nextUpArtist{l'artista a continuació} nextUpGenre{el gènere a continuació} other{}}",
+    "@couldNotLoad": {
+        "placeholders": {
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "volumeNormalizationModeSelectorDescription": "Dinàmic:\nQuan es reprodueixen diverses cançons del mateix àlbum seguides, s'utilitza el guany de l'àlbum (és a dir, quan es reprodueix un àlbum o cançons del mateix àlbum en una llista de reproducció). En cas contrari, es fa servir el guany de la cançó.\n\nBasat en la cançó:\nSempre es fa servir el guany de la cançó, independentment de si s'està reproduint un àlbum o no.\n\nBasat en l'àlbum:\nSempre es fa servir el guany de l'àlbum, però si no està disponible (és a dir, per a senzills), es fa servir el guany de la cançó.\n\nNomés àlbums:\nLa normalització del volum només s'aplica durant la reproducció d'àlbums (fent servir el guany de l'àlbum), però no per a cançons individuals.",
+    "@volumeNormalizationModeSelectorDescription": {
+        "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown"
+    },
+    "maxConcurrentDownloadsSubtitle": "Augmentar les descàrregues simultànies pot permetre un augment de les descàrregues en segon pla, però pot provocar que algunes descàrregues fallin si són molt grans o que en alguns casos es produeixi un lag excessiu.",
+    "@maxConcurrentDownloadsSubtitle": {
+        "description": "Description of setting controlling max concurrent downloads."
+    },
+    "downloadsWorkersSettingSubtitle": "Quantitat de treballadors per a la sincronització de metadades i l'eliminació de descàrregues. Augmentar els treballadors de descàrrega pot accelerar la sincronització i l'eliminació de descàrregues, especialment quan la latència del servidor és alta, però pot introduir lag.",
+    "@downloadsWorkersSettingSubtitle": {
+        "description": "Description of setting controlling download worker count."
+    },
+    "preferQuickSyncSwitchSubtitle": "Quan es realitzen sincronitzacions, alguns elements normalment estàtics (com ara cançons i àlbums) no s'actualitzaran. La reparació de descàrregues sempre realitzarà una sincronització completa.",
+    "@preferQuickSyncSwitchSubtitle": {
+        "description": "Description of setting that skips completed albums while syncing."
+    },
+    "itemTypeSubtitle": "{itemType, select, album{Àlbum} playlist{Llista de reproducció} artist{Artista} genre{Gènere} track{Cançó} library{Biblioteca} unknown{Element} other{{itemType}}} {itemName}",
+    "@itemTypeSubtitle": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            },
+            "itemName": {
+                "type": "String"
+            }
+        },
+        "description": "Subtitle for the type of a downloaded item, shown when syncing fails and in DownloadButton tooltip."
+    },
+    "downloadButtonDisabledGenreFilterTooltip": "Si us plau, elimina el filtre de gènere per habilitar les accions de descàrrega.",
+    "@downloadButtonDisabledGenreFilterTooltip": {
+        "description": "Tooltip shown when a download button is disabled because of an active genre filter."
+    },
+    "genreFilterNotAvailableForAlbums": "Els filtres de gènere no estan disponibles per als àlbums.",
+    "@genreFilterNotAvailableForAlbums": {
+        "description": "Message shown when the user tries to apply a genre filter to an album."
+    },
+    "genreNotFound": "No s'ha pogut trobar el gènere. {additionalInfo, select, offline{ Potser no s'ha descarregat o pot pertànyer a una biblioteca diferent.} other{ Pot pertànyer a una biblioteca diferent.}}",
+    "@genreNotFound": {
+        "placeholders": {
+            "additionalInfo": {
+                "type": "String"
+            }
+        },
+        "description": "Message shown when a genre filter or open-genre action fails because the genre item could not be found."
+    },
+    "incidentalDownloadTooltip": "Aquest element ha de ser descarregat per {parentName}.",
+    "@incidentalDownloadTooltip": {
+        "placeholders": {
+            "parentName": {
+                "type": "String"
+            }
+        },
+        "description": "Tooltip for downloadbutton on incidental downloads, which show a lock icon. It says one of the requiring downloads."
+    },
+    "finampCollectionNames": "{itemType, select, favorites{Preferits} allPlaylists{Totes les llistes de reproducció} fiveLatestAlbums{Els últims 5 àlbums} allPlaylistsMetadata{Metadades de la llista de reproducció} collectionWithLibraryFilter{Col·lecció amb filtre de biblioteca} other{{itemType}} }",
+    "@finampCollectionNames": {
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        },
+        "description": "Localized names of special downloadable collections like favorites."
+    },
+    "transcodingStreamingFormatSubtitle": "Seleccioneu el format que voleu utilitzar en reproduir àudio transcodificat. Les cançons que ja estan a la cua no es veuran afectades.",
+    "@transcodingStreamingFormatSubtitle": {},
+    "downloadTranscodeEnableOption": "{option, select, always{Sempre} never{Mai} ask{Pregunta} other{{option}} }",
+    "@downloadTranscodeEnableOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in Select Download Codec dropdown"
+    },
+    "downloadBitrateSubtitle": "Una taxa de bits més alta proporciona millor qualitat d'àudio a costa de requisits d'emmagatzematge més grans.",
+    "@downloadBitrateSubtitle": {
+        "description": "subtitle for Download Bitrate settings slider"
+    },
+    "doTranscode": "Descarregar com {codec} @ {bitrate}{size, select, null{} other{ - ~{size}}}",
+    "@doTranscode": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "123kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "OPUS"
+            },
+            "size": {
+                "type": "String",
+                "example": "167 MB"
+            }
+        },
+        "description": "Dropdown option to download transcoded version of tracks"
+    },
+    "downloadInfo": "{size} {codec}{bitrate, select, null{} other{ @ {bitrate} Transcodificat}}{location, select, null{} other{ ({location})}}",
+    "@downloadInfo": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "234kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "FLAC"
+            },
+            "size": {
+                "type": "String",
+                "example": "456"
+            },
+            "location": {
+                "type": "String",
+                "example": "Internal Storage"
+            }
+        },
+        "description": "Track info line in downloads screen lists"
+    },
+    "collectionDownloadInfo": "{size}{codec, select, ORIGINAL{} other{ com {codec} @ {bitrate}}}{location, select, null{} other{ ({location})}}",
+    "@collectionDownloadInfo": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "234kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "FLAC"
+            },
+            "size": {
+                "type": "String",
+                "example": "456"
+            },
+            "location": {
+                "type": "String",
+                "example": "Internal Storage"
+            }
+        },
+        "description": "Collection info line in downloads screen lists"
+    },
+    "dontTranscode": "Descarregar original{description, select, null{} other{ - {description}}}",
+    "@dontTranscode": {
+        "placeholders": {
+            "description": {
+                "type": "String",
+                "example": "456 MB FLAC"
+            }
+        },
+        "description": "Dropdown option to download original version of tracks"
+    },
+    "redownloadSubtitle": "Torna a descarregar automàticament les cançons que s'espera que tinguin una qualitat diferent a causa dels canvis de la col·lecció principal.",
+    "@redownloadSubtitle": {
+        "description": "subtitle for download transcode setting which redownloads tracks with higher allowed qualities"
+    },
+    "defaultDownloadLocationButton": "Estableix com a ubicació de descàrrega predeterminada.  Desactiva-ho per seleccionar-la al descarregar.",
+    "@defaultDownloadLocationButton": {
+        "description": "Tooltip for button that sets a download location as the default."
+    },
+    "fixedGridSizeSwitchSubtitle": "La mida de la quadrícula no reaccionarà a la mida de la finestra/pantalla.",
+    "@fixedGridSizeSwitchSubtitle": {},
+    "fixedGridTileSizeEnum": "{size, select, small{Petita} medium{Mitjana} large{Gran} veryLarge{Molt gran} other{???}}",
+    "@fixedGridTileSizeEnum": {
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        },
+        "description": "Localized names of fixed size grid tile sizes."
+    },
+    "allowSplitScreenSubtitle": "El reproductor es mostrarà juntament amb altres vistes en pantalles més amples.",
+    "@allowSplitScreenSubtitle": {},
+    "hideQueueButtonSubtitle": "Amaga el botó de cua a la pantalla del reproductor. Llisca cap amunt per accedir a la cua.",
+    "@hideQueueButtonSubtitle": {},
+    "oneLineMarqueeTextButtonSubtitle": "Desplaça automàticament els títols de les cançons que són massa llargs per mostrar-los en dues línies",
+    "@oneLineMarqueeTextButtonSubtitle": {},
+    "marqueeOrTruncateButtonSubtitle": "Mostra ... al final dels títols llargs en comptes de text desplaçable",
+    "@marqueeOrTruncateButtonSubtitle": {},
+    "hidePlayerBottomActionsSubtitle": "Amaga els botons de cua i lletra a la pantalla del reproductor. Llisca cap amunt per accedir a la cua, llisca cap a l'esquerra (sota la portada de l'àlbum) per veure la lletra si n'hi ha.",
+    "@hidePlayerBottomActionsSubtitle": {},
+    "prioritizePlayerCoverSubtitle": "Prioritza mostrar una portada d'àlbum més gran a la pantalla del reproductor. Els controls no essencials s'ocultaran de manera més agressiva en pantalles petites.",
+    "@prioritizePlayerCoverSubtitle": {},
+    "suppressPlayerPaddingSubtitle": "Minimitza completament els marges entre els controls de la pantalla del reproductor quan la portada de l'àlbum no està a mida completa.",
+    "@suppressPlayerPaddingSubtitle": {},
+    "showArtistChipImageSubtitle": "Això afecta les previsualitzacions d'imatges petites d'artistes, com ara a la pantalla del reproductor.",
+    "@showArtistChipImageSubtitle": {},
+    "trackOfflineFavoritesSubtitle": "Això permet mostrar estats de preferits més actualitzats quan s'està sense connexió.  No descarrega cap fitxer addicional.",
+    "@trackOfflineFavoritesSubtitle": {},
+    "allPlaylistsInfoSettingSubtitle": "Sincronitza les metadades de totes les llistes de reproducció per millorar la teva experiència a l'utilitzar-les",
+    "@allPlaylistsInfoSettingSubtitle": {},
+    "downloadAllPlaylistsSettingWarning": "Nota: Això descarregarà tots els elements de totes les llistes de reproducció, independentment de la biblioteca de la qual provinguin.",
+    "@downloadAllPlaylistsSettingWarning": {},
+    "fiveLatestAlbumsSettingSubtitle": "Les descàrregues s'eliminaran a mesura que envelleixin.  Bloqueja la descàrrega per evitar que s'elimini un àlbum.",
+    "@fiveLatestAlbumsSettingSubtitle": {},
+    "cacheLibraryImagesSettingsSubtitle": "Es descarregaran totes les portades d'àlbums, artistes, gèneres i llistes de reproducció de la biblioteca activa.",
+    "@cacheLibraryImagesSettingsSubtitle": {},
+    "showProgressOnNowPlayingBarSubtitle": "Controla si el mini reproductor / la barra de reproducció actual a la part inferior de la pantalla de música funciona com a barra de progrés.",
+    "@showProgressOnNowPlayingBarSubtitle": {
+        "description": "Subtitle for the setting that controls if the now playing bar / miniplayer at the bottom of the music screen functions as a progress bar"
+    },
+    "showLyricsTimestampsSubtitle": "Controla si la marca de temps de cada vers es mostra a la pantalla de la lletra, si està disponible.",
+    "@showLyricsTimestampsSubtitle": {
+        "description": "Subtitle for the setting that controls if timestamps are shown for lyrics"
+    },
+    "showStopButtonOnMediaNotificationTitle": "Mostra el botó d'aturada a la notificació multimèdia",
+    "@showStopButtonOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a stop button."
+    },
+    "showStopButtonOnMediaNotificationSubtitle": "Controla si la notificació multimèdia té un botó d'aturada. Això et permet aturar la reproducció sense obrir l'aplicació.",
+    "@showStopButtonOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a stop button."
+    },
+    "showShuffleButtonOnMediaNotificationTitle": "Mostra el botó de barreja a la notificació multimèdia",
+    "@showShuffleButtonOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a shuffle button."
+    },
+    "showShuffleButtonOnMediaNotificationSubtitle": "Controla si la notificació multimèdia té un botó de reproducció aleatòria. Això et permet barrejar/reordenar sense obrir l'aplicació.",
+    "@showShuffleButtonOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a shuffle button."
+    },
+    "showFavoriteButtonOnMediaNotificationTitle": "Mostra el botó de preferits a la notificació multimèdia",
+    "@showFavoriteButtonOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a favorite button."
+    },
+    "showFavoriteButtonOnMediaNotificationSubtitle": "Controla si la notificació multimèdia té un botó de preferits. Això et permet afegir/treure dels preferits la cançó actual sense obrir l'aplicació. Amagat en mode sense connexió.",
+    "@showFavoriteButtonOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a favorite button."
+    },
+    "showSeekControlsOnMediaNotificationTitle": "Permet la cerca a la notificació multimèdia",
+    "@showSeekControlsOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a seekable progress bar."
+    },
+    "showSeekControlsOnMediaNotificationSubtitle": "Controla si la notificació multimèdia té una barra de progrés que es pot cercar. Això et permet canviar la posició de reproducció sense obrir l'aplicació.",
+    "@showSeekControlsOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a seekable progress bar."
+    },
+    "lyricsAlignmentSubtitle": "Controla l'alineació de la lletra a la pantalla de lletres.",
+    "@lyricsAlignmentSubtitle": {
+        "description": "Subtitle for the setting that controls the alignment of lyrics in the lyrics view"
+    },
+    "lyricsFontSizeSubtitle": "Controla la mida de les lletres a la pantalla de lletres.",
+    "@lyricsFontSizeSubtitle": {
+        "description": "Subtitle for the setting that controls the font size of lyrics in the lyrics view"
+    },
+    "showLyricsScreenAlbumPreludeSubtitle": "Controla si la portada de l'àlbum es mostra a sobre de la lletra abans que es desplaci.",
+    "@showLyricsScreenAlbumPreludeSubtitle": {
+        "description": "Subtitle for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
+    },
+    "keepScreenOnSubtitle": "Quan mantenir la pantalla encesa",
+    "@keepScreenOnSubtitle": {},
+    "keepScreenOnWhilePluggedIn": "Mantenir la pantalla encesa només quan estigui endollat",
+    "@keepScreenOnWhilePluggedIn": {},
+    "keepScreenOnWhilePluggedInSubtitle": "Ignora l'opció \"Mantenir la pantalla encesa\" si el dispositiu està desendollat",
+    "@keepScreenOnWhilePluggedInSubtitle": {},
+    "showFeatureChipsToggleSubtitle": "Mostra informació avançada de la cançó com el còdec, taxa de bits i més a la pantalla del reproductor.",
+    "@showFeatureChipsToggleSubtitle": {
+        "description": "Subtitle for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
+    },
+    "showCoversOnAlbumScreenSubtitle": "Mostra les portades dels àlbums per a cada cançó per separat a la pantalla de l'àlbum.",
+    "@showCoversOnAlbumScreenSubtitle": {
+        "description": "Subtitle for the setting that controls if album covers are shown for each track separately on the album screen"
+    },
+    "emptyTopTracksList": "Encara no has escoltat cap cançó d'aquest artista.",
+    "@emptyTopTracksList": {
+        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
+    },
+    "emptyFilteredListSubtitle": "No hi ha cap element que coincideixi amb el filtre. Prova de desactivar el filtre o canviar el terme de cerca.",
+    "@emptyFilteredListSubtitle": {
+        "description": "Message shown when a list of items is filtered and no items match the filter"
+    },
+    "resetSettingsPromptGlobal": "Estàs segur que vols restablir TOTS els paràmetres als valors predeterminats?",
+    "@resetSettingsPromptGlobal": {
+        "description": "Prompt which gets shown when the user is about to reset all settings to their default values"
+    },
+    "resetSettingsPromptLocal": "Vols restablir aquests paràmetres als valors predeterminats?",
+    "@resetSettingsPromptLocal": {
+        "description": "Prompt which gets shown when the user is about to reset all settings in the current settings window to their default values"
+    },
+    "itemDeletedSnackbar": "{itemType, select, album{Àlbum} playlist{Llista de reproducció} artist{Artista} genre{Gènere} track{Cançó} library{Biblioteca} other{Element}} s'ha eliminat del {deviceType, select, device{dispositiu} server{servidor} other{unknown}}",
+    "@itemDeletedSnackbar": {
+        "description": "Used whenever item gets deleted from the device or server, message in snackbar"
+    },
+    "allowDeleteFromServerSubtitle": "Habilita i deshabilita l'opció per suprimir permanentment una cançó del sistema de fitxers dels servidors quan sigui possible.",
+    "@allowDeleteFromServerSubtitle": {
+        "description": "Subtitle for the setting that controls if items can be deleted from the server"
+    },
+    "deleteFromTargetDialogText": "Estàs a punt de suprimir {itemType, select, album{aquest àlbum} playlist{aquesta llista de reproducció} artist{aquest artista} genre{aquest gènere} track{aquesta cançó} library{aquesta biblioteca} other{aquest element}} {device, select, device{d'aquest dispositiu} server{del sistema de fitxers i la biblioteca dels servidors.{deleteType, select, canDelete{ Això també suprimirà aquest element d'aquest dispositiu.} cantDelete{ Aquest element romandrà en aquest dispositiu fins a la propera sincronització.} notDownloaded{} other{}}\nAquesta acció no es pot revertir} other{}}.",
+    "@deleteFromTargetDialogText": {
+        "description": "(Important: Note the space in front of some cases) A Confirm Prompt used whenever an item is about to be deleted from the device or server. The Server case should explain that this cannot be reverted, this information is not needed for the device since the user can just download the track again. The delete Type adapts the server text even more in can the user can or cant delete the item."
+    },
+    "deleteFromTargetConfirmButton": "Eliminar{target, select, device{ del dispositiu} server{ del servidor} other{}}",
+    "@deleteFromTargetConfirmButton": {
+        "description": "(Important: Note the space in front of some cases) The button the user needs to press to execute the delete action. If no target is set, the text should just be a generic 'delete' text. This button is both visible before and after the delete confirm prompt."
+    },
+    "largeDownloadWarning": "Avís: Estàs a punt de descarregar {count} cançons.",
+    "@largeDownloadWarning": {
+        "description": "A line of warning text on the download dialog when large numbers of tracks are downloaded at once.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
     }
 }
