@@ -29,7 +29,7 @@
     "@music": {},
     "finamp": "Finamp",
     "@finamp": {},
-    "offlineMode": "Modailtà Offline",
+    "offlineMode": "Modalità Offline",
     "@offlineMode": {},
     "settings": "Impostazioni",
     "@settings": {},
@@ -157,7 +157,7 @@
     },
     "showTextOnGridView": "Mostra testo nella vista a griglia",
     "@showTextOnGridView": {},
-    "gridCrossAxisCount": "{value} Numero di Colonne nella Vista a griglia",
+    "gridCrossAxisCount": "{value} Numero di colonne nella vista a griglia",
     "@gridCrossAxisCount": {
         "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
         "placeholders": {
@@ -249,7 +249,7 @@
     "@albumArtist": {},
     "albums": "Album",
     "@albums": {},
-    "bitrateSubtitle": "Un bitrate più alto permette di avere una qualità audio più alta al costo di un più alto consumo della connessione dati. Non si applica ai codec lossless, es. FLAC",
+    "bitrateSubtitle": "Un bitrate più alto permette di avere una qualità audio più alta al costo di un maggiore consumo della connessione dati. Non si applica ai codec lossless, es. FLAC",
     "@bitrateSubtitle": {},
     "shuffleAllTrackCountSubtitle": "Numero di brani da mettere in coda quando si usa il tasto per la riproduzione casuale di tutti i brani. Valido nella sezione brani o genere",
     "@shuffleAllTrackCountSubtitle": {},
@@ -358,7 +358,7 @@
             }
         }
     },
-    "stackTrace": "Stack Trace",
+    "stackTrace": "Impila Traccia",
     "@stackTrace": {},
     "customLocation": "Posizione Personalizzata",
     "@customLocation": {},
@@ -672,7 +672,7 @@
     "@customizationSettingsTitle": {
         "description": "Title for the customization settings screen"
     },
-    "playbackSpeedControlSetting": "Visibilità della Velocità di riproduzione",
+    "playbackSpeedControlSetting": "Visibilità della velocità di riproduzione",
     "@playbackSpeedControlSetting": {
         "description": "Title of the visibility setting of the playback speed controls"
     },
@@ -1622,7 +1622,7 @@
     "@emptyFilteredListSubtitle": {
         "description": "Message shown when a list of items is filtered and no items match the filter"
     },
-    "resetFiltersButton": "Resetta il filtro",
+    "resetFiltersButton": "Resetta i filtri",
     "@resetFiltersButton": {
         "description": "Button to reset filters on a list of items"
     },
@@ -2555,5 +2555,33 @@
     "discordRPCIconTransparent": "Finamp - Trasparente",
     "@discordRPCIconTransparent": {
         "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a Transparent Background"
+    },
+    "shuffleSome": "Riproduci casualmente",
+    "@shuffleSome": {},
+    "shuffleCountButton": "riproduci casualmente ({count,plural,=1{{count} Brano} other{{count} Brani}})",
+    "@shuffleCountButton": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackActionPageNewQueue": "Nuova coda d'ascolto",
+    "@playbackActionPageNewQueue": {
+        "description": "Label for the playback action page that contains all actions related to starting a new queue"
+    },
+    "save": "Salva",
+    "@save": {},
+    "invalidColorCode": "Codice colore non valido",
+    "@invalidColorCode": {
+        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
+    },
+    "startRadio": "Avvia Radio",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
+    },
+    "shuffleSomeNext": "Mescola le prossime tracce",
+    "@shuffleSomeNext": {
+        "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     }
 }
