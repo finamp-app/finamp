@@ -1174,7 +1174,7 @@
     "@volumeNormalizationModeAlbumOnly": {
         "description": "'Only for Albums' option for the replay gain mode dropdown. In albums-only mode, Volume Normalization is only applied while playing albums (using the album gain), but not for individual tracks."
     },
-    "volumeNormalizationIOSBaseGainEditorSubtitle": "현재, iOS의 음량 정규화는 게인값 변화를 구현하기 위해 재생 음량 변경이 필요합니다. 음량을 100% 초과하여 올릴 수 없으므로, 조용한 곡(들)의 음량을 증폭시키기 위해서는 기본적으로 음량을 감소시킬 필요가 있습니다. 값단위는 데시벨이며 -10dB은 ~30% 음량, -4.5dB은 ~60% 음량, -2dB은 ~80% 음량입니다.",
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "볼륨 게인 오프셋 선택 (dB 단위)",
     "@volumeNormalizationIOSBaseGainEditorSubtitle": {
         "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
@@ -2308,5 +2308,9 @@
     "removedTracksEmptyListPlaceholder": "플레이리스트에서 제거된 노래는 여기에 나타납니다",
     "@removedTracksEmptyListPlaceholder": {
         "description": "Placeholder text shown when there are no removed tracks"
+    },
+    "playbackActionPageMoveWithinQueue": "대기열로 이동",
+    "@playbackActionPageMoveWithinQueue": {
+        "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
     }
 }
