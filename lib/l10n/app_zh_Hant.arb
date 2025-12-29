@@ -3140,7 +3140,7 @@
     "@duckOnAudioInterruptionTitle": {
         "description": "Title for the setting that controls ducking."
     },
-    "duckOnAudioInterruptionSubtitle": "當其他應用程式播放音訊時，暫時降低音量。需要重新啟動才能生效。",
+    "duckOnAudioInterruptionSubtitle": "當其他應用程式播放音訊時，暫時降低音樂音量。需要重新啟動才能生效。",
     "@duckOnAudioInterruptionSubtitle": {
         "description": "Subtitle for the setting that controls ducking."
     },
