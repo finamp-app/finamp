@@ -191,7 +191,7 @@
     "@usernameHint": {
         "description": "Hint text for the username input field."
     },
-    "usernameValidationMissingUsername": "Si us plau, introdueix el teu nom d'usuari",
+    "usernameValidationMissingUsername": "Si us plau, introdueix un nom d'usuari",
     "@usernameValidationMissingUsername": {
         "description": "Error message that shows when the user submits a login without a username"
     },
@@ -199,7 +199,7 @@
     "@passwordHint": {
         "description": "Hint text for the password input field."
     },
-    "login": "Inici de sessió",
+    "login": "Iniciar Sessió",
     "@login": {
         "description": "Label for the login button."
     },
@@ -1111,7 +1111,7 @@
     "@playbackReporting": {},
     "notAvailable": "No disponible",
     "@notAvailable": {},
-    "logoutButtonSubtitle": "Accedir a un servidor diferent esborrara descarregues existents",
+    "logoutButtonSubtitle": "Accedir a un servidor diferent esborrarà descàrregues existents",
     "@logoutButtonSubtitle": {},
     "none": "Cap",
     "@none": {},
@@ -1666,7 +1666,7 @@
     },
     "resetToDefaults": "Restableix als valors predeterminats",
     "@resetToDefaults": {},
-    "volumeNormalizationSwitchTitle": "Activa la normalització del volum",
+    "volumeNormalizationSwitchTitle": "Activa la Normalització del Volum",
     "@volumeNormalizationSwitchTitle": {
         "description": "Title for the switch that toggles replay gain"
     },
@@ -1808,7 +1808,7 @@
     "@audioFadeInDurationSettingTitle": {
         "description": "Title for the audio fade-in duration setting."
     },
-    "transcodingStreamingFormatTitle": "Selecciona el format de transcodificació",
+    "transcodingStreamingFormatTitle": "Selecciona el Format de Transcodificació",
     "@transcodingStreamingFormatTitle": {
         "description": "Title for the dropdown that selects the format for transcoded streams"
     },
@@ -2292,7 +2292,7 @@
     "@volumeNormalizationSwitchSubtitle": {
         "description": "Subtitle for the switch that toggles replay gain"
     },
-    "volumeNormalizationModeSelectorSubtitle": "Quan i com aplicar la normalització de volum",
+    "volumeNormalizationModeSelectorSubtitle": "Quan i com aplicar la Normalització de Volum",
     "@volumeNormalizationModeSelectorSubtitle": {
         "description": "Subtitle for the dropdown that selects the replay gain mode"
     },
