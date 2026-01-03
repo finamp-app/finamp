@@ -384,7 +384,7 @@
     },
     "bufferDuration": "Duración del búfer",
     "@bufferDuration": {},
-    "bufferDurationSubtitle": "Máximo tiempo, en segundos, que el búfer puede almacenar. Requiere de un reinicio.",
+    "bufferDurationSubtitle": "Tiempo, en segundos, que el búfer puede almacenar. Requiere de un reinicio.",
     "@bufferDurationSubtitle": {},
     "disableGesture": "Deshabilitar los gestos",
     "@disableGesture": {},
@@ -905,7 +905,7 @@
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
     },
-    "bufferSizeSubtitle": "El tamaño máximo para el búfer en MB. Requiere reinicio",
+    "bufferSizeSubtitle": "El tamaño para el búfer en MB. Requiere reinicio",
     "@bufferSizeSubtitle": {},
     "playbackModeTranscoding": "Transcodificando",
     "@playbackModeTranscoding": {
@@ -2712,5 +2712,33 @@
     "shuffleSomeNext": "Reproducir algunas al azar después",
     "@shuffleSomeNext": {
         "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "playbackActionPageMoveWithinQueue": "Mover a la cola",
+    "@playbackActionPageMoveWithinQueue": {
+        "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
+    },
+    "playbackActionPageRegularTrackOptions": "Reproducir",
+    "@playbackActionPageRegularTrackOptions": {
+        "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "systemAccentColor": "Usar Énfasis del Sistema",
+    "@systemAccentColor": {
+        "description": "Title of the System Accent Color setting."
+    },
+    "systemAccentColorHasPriorityInfo": "El color de énfasis personalizado está deshabilitado porque Énfasis de Sistema está actualmente en uso",
+    "@systemAccentColorHasPriorityInfo": {
+        "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
+    },
+    "useMonochromeIcon": "Usar Logo Monocromático",
+    "@useMonochromeIcon": {
+        "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
+    },
+    "useMonochromeIconSubtitle": "Esto solo afecta al logo en la aplicación, no al icono del lanzador.",
+    "@useMonochromeIconSubtitle": {
+        "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
+    },
+    "startRadio": "Iniciar Radio",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
     }
 }
