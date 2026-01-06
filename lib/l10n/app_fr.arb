@@ -3,17 +3,17 @@
     "@downloadsQueued": {},
     "grid": "Mosaïque",
     "@grid": {},
-    "serverUrl": "Adresse du serveur",
+    "serverUrl": "URL du serveur",
     "@serverUrl": {},
     "internalExternalIpExplanation": "Si vous souhaitez pouvoir accéder à votre serveur Jellyfin à distance, vous devez utiliser votre adresse IP externe.\n\nSi votre serveur utilise les ports HTTP par défaut (80/443) ou le port par défaut de Jellyfin (8096), vous n'avez pas besoin de spécifier le port. \n\nSi l'URL est correcte, vous devriez voir apparaître des informations sur votre serveur sous le champ de saisie.",
     "@internalExternalIpExplanation": {
         "description": "Informations supplémentaires sur l'IP à utiliser pour l'accès à distance, et sur la nécessité ou non de spécifier un port"
     },
-    "emptyServerUrl": "Vous devez indiquer l'adresse du serveur",
+    "emptyServerUrl": "Vous devez indiquer l'URL du serveur",
     "@emptyServerUrl": {
         "description": "Cette erreur intervient lorsque l'utilisateur tente de se connecter sans indiquer l'adresse du serveur"
     },
-    "username": "Nom d'utilisateur",
+    "username": "Identifiant",
     "@username": {},
     "password": "Mot de passe",
     "@password": {},
@@ -21,7 +21,7 @@
     "@logs": {},
     "next": "Suivant",
     "@next": {},
-    "selectMusicLibraries": "Selectionner des bibliothèques",
+    "selectMusicLibraries": "Sélection de bibliothèques",
     "@selectMusicLibraries": {
         "description": "Titre de l'écran de sélection de bibliothèque"
     },
@@ -150,7 +150,7 @@
             }
         }
     },
-    "errorScreenError": "Une erreur est survenue lors de la récupération de la liste des erreurs ! À ce stade, il serait probablement préférable de créer une issue sur GitHub et de supprimer les données de l'application.",
+    "errorScreenError": "Une erreur est survenue lors de la récupération de la liste des erreurs ! À ce stade, il serait probablement préférable de créer une \"issue\" sur GitHub et de supprimer les données de l'application",
     "@errorScreenError": {},
     "failedToGetTrackFromDownloadId": "La chanson n’a pas pu être récupérée à l’aide de l’ID de téléchargement",
     "@failedToGetTrackFromDownloadId": {},
@@ -196,9 +196,9 @@
     "@logsCopied": {},
     "message": "Message",
     "@message": {},
-    "stackTrace": "Trace d'appels",
+    "stackTrace": "Trace de mémoire tampon",
     "@stackTrace": {},
-    "applicationLegalese": "Soumis à la licence Mozilla Public License 2.0.\nLe code source est disponible sur {sourceCodeLink}",
+    "applicationLegalese": "Soumis à la licence Mozilla Public License 2.0.\nLe code source est disponible sur {sourceCodeLink}.",
     "@applicationLegalese": {},
     "transcoding": "Transcodage",
     "@transcoding": {},
@@ -220,7 +220,7 @@
     "@enableTranscoding": {},
     "enableTranscodingSubtitle": "Transcode les flux musicaux côté serveur.",
     "@enableTranscodingSubtitle": {},
-    "bitrate": "Débit binaire",
+    "bitrate": "Bitrate",
     "@bitrate": {},
     "bitrateSubtitle": "Un bitrate plus élevé offre une meilleure qualité audio au prix d'une bande passante plus importante. Cela ne s'applique pas aux codecs sans perte, par exemple FLAC",
     "@bitrateSubtitle": {},
@@ -242,13 +242,13 @@
     "@customLocationsBuggy": {},
     "enterLowPriorityStateOnPauseSubtitle": "Permet de supprimer la notification lorsque la lecture est en pause. Permet également à Android de fermer le service lorsqu'il est en pause.",
     "@enterLowPriorityStateOnPauseSubtitle": {},
-    "shuffleAllTrackCount": "Nombre de titres à mélanger",
+    "shuffleAllTrackCount": "Mélanger tous les morceaux",
     "@shuffleAllTrackCount": {},
     "shuffleAllTrackCountSubtitle": "Nombre de pistes à charger lors de l'utilisation du bouton de lecture aléatoire de l'onglet Pistes ou de l'écran de genre.",
     "@shuffleAllTrackCountSubtitle": {},
     "viewType": "Disposition de l'affichage",
     "@viewType": {},
-    "viewTypeSubtitle": "Règle la manière dont les musiques sont diposées",
+    "viewTypeSubtitle": "Type d'affichage pour l'écran Musique",
     "@viewTypeSubtitle": {},
     "list": "Liste",
     "@list": {},
@@ -266,7 +266,7 @@
             }
         }
     },
-    "showTextOnGridView": "Afficher le texte dans la grille de vue",
+    "showTextOnGridView": "Afficher le texte dans la vue mosaïque",
     "@showTextOnGridView": {},
     "showTextOnGridViewSubtitle": "Afficher ou non le texte (titre, artiste, etc.) sur l'écran de la grille musicale.",
     "@showTextOnGridViewSubtitle": {},
@@ -510,7 +510,7 @@
     "@serverUrlInfoButtonTooltip": {
         "description": "Tooltip for the button that shows the extra info dialog for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
-    "serverUrlHint": "e.g. demo.jellyfin.org/stable",
+    "serverUrlHint": "ex : demo.jellyfin.org/stable",
     "@serverUrlHint": {
         "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
     },
@@ -522,7 +522,7 @@
     "@backToServerSelection": {
         "description": "Label for the button that takes the user back to the server selection step during the login flow."
     },
-    "loginFlowAuthenticationHeading": "Se connecter à votre compte",
+    "loginFlowAuthenticationHeading": "Connexion à votre compte",
     "@loginFlowAuthenticationHeading": {
         "description": "Heading for the authentication step during the login flow."
     },
@@ -530,7 +530,7 @@
     "@loginFlowQuickConnectPrompt": {
         "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
-    "usernameHint": "Entrez votre nom d’utilisateur",
+    "usernameHint": "Entrez votre identifiant",
     "@usernameHint": {
         "description": "Hint text for the username input field."
     },
@@ -549,7 +549,7 @@
             }
         }
     },
-    "confirmDownloadStarted": "Téléchargement debuté",
+    "confirmDownloadStarted": "Téléchargement lancé",
     "@confirmDownloadStarted": {
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
     },
@@ -696,7 +696,7 @@
             }
         }
     },
-    "startMixNoTracksGenre": "Appuyez longuement sur un genre pour l'ajouter ou le supprimer du générateur de mix avant de commencer un mix.",
+    "startMixNoTracksGenre": "Appuyez longuement sur un genre pour l'ajouter ou le supprimer du mix avant de commencer",
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
@@ -722,7 +722,7 @@
     "@playbackSpeedControlSetting": {
         "description": "Title of the visibility setting of the playback speed controls"
     },
-    "usernameValidationMissingUsername": "S’il vous plaît, entrez un nom d’utilisateur",
+    "usernameValidationMissingUsername": "S’il vous plaît, entrez un identifiant",
     "@usernameValidationMissingUsername": {
         "description": "Error message that shows when the user submits a login without a username"
     },
@@ -738,7 +738,7 @@
             }
         }
     },
-    "loginFlowQuickConnectInstructions": "Ouvrez l’application ou le site web Jellyfin, cliquez sur votre icône d’utilisateur et sélectionnez « Quick Connect ».",
+    "loginFlowQuickConnectInstructions": "Ouvrez l’application ou Jellyfin web, cliquez sur votre icône d’utilisateur et sélectionnez « Quick Connect ».",
     "@loginFlowQuickConnectInstructions": {
         "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
@@ -768,7 +768,7 @@
     "@loginFlowCustomUser": {
         "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
     },
-    "playbackSpeedControlSettingDescription": "Automatique:\nFinamp essaie d’identifier si le titre joué est un podcast ou un chapitre d’un livre audio. Finamp. Il est considéré que c’est le cas si le titre dure plus de {trackDuration} minutes, si l’album dure plus de {albumDuration} heures ou qu’au moins un de ces genres est assigné au titre : {genreList}\nLes contrôles le vitesse de lecture seront alors affichés dans le menu du lecteur.\n\nAffichés :\nLes contrôles de vitesse de lecture seront toujours affichés dans le menu du lecteur.\n\nCachés :\nLes contrôles de vitesse de lecture seront toujours cachés dans le menu du lecteur.",
+    "playbackSpeedControlSettingDescription": "Automatique:\nFinamp essaie d’identifier si le titre joué est un podcast ou un chapitre d’un livre audio. C’est le cas si le titre dure plus de {trackDuration} minutes, si l’album dure plus de {albumDuration} heures ou qu’au moins un de ces genres est assigné au titre : {genreList}\nLes contrôles de vitesse de lecture seront alors affichés dans le menu du lecteur.\n\nAffichés :\nLes contrôles de vitesse de lecture seront toujours affichés dans le menu du lecteur.\n\nCachés :\nLes contrôles de vitesse de lecture seront toujours cachés dans le menu du lecteur.",
     "@playbackSpeedControlSettingDescription": {
         "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown",
         "placeholders": {
