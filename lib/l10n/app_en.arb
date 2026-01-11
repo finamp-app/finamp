@@ -3271,5 +3271,25 @@
         "example": "Ctrl + ←/→"
       }
     }
+  },
+  "previousTracksPersistenceModeSelectorTitle": "Initial state of \"Previous tracks\" header in queue list",
+  "@previousTracksPersistenceModeSelectorTitle": {
+    "description": "Title for setting that allows to override state of previous tracks header in queue list"
+  },
+  "previousTracksPersistenceModeSelectorSubtitle": "Applied each time queue is opened on player screen",
+  "@previousTracksPersistenceModeSelectorSubtitle": {
+    "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
+  },
+  "previousTracksPersistenceModePersistent": "Last used",
+  "@previousTracksPersistenceModePersistent": {
+    "description": "Does nothing to previous tracks header in queue list, using its saved value"
+  },
+  "previousTracksPersistenceModeCollapsed": "Initially collapsed",
+  "@previousTracksPersistenceModePersistent": {
+    "description": "Overrides saved value to collapse previous tracks header on queue list open"
+  },
+  "previousTracksPersistenceModeExpanded": "Initially expanded",
+  "@previousTracksPersistenceModePersistent": {
+    "description": "Overrides saved value to expand previous tracks header on queue list open"
   }
 }
