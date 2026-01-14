@@ -284,7 +284,7 @@ class CarPlayHelper {
       playlistSection.items.add(CPListItem(
         text: item.name ?? "Unknown Track", // Todo localization
         detailText: item.artists?.join(", ") ?? item.albumArtist,
-        image: imageUri.toString(),
+        image: imageUri?.toString(),
         onPress: (complete, self) async {
           await playItem(parent, index: index);
           complete();
@@ -412,8 +412,8 @@ class CarPlayHelper {
       final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
 
       artistAlbums.items.add(CPListItem(
-        text: item.name ?? "Unknown Name", // TODO localization 
-        image: imageUri.toString(),
+        text: item.name ?? "Unknown Name", // TODO localization
+        image: imageUri?.toString(),
         onPress: (complete, self) async {
           await showPlaylistTemplate(item);
           complete();
@@ -426,7 +426,7 @@ class CarPlayHelper {
       final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
       topTracks.items.add(CPListItem(
         text: item.name ?? "Unknown Name",
-        image: imageUri.toString(),
+        image: imageUri?.toString(),
         onPress: (complete, self) async {
           await playTracksAsQueue(mostPlayedList, index: i, sourceName: "${parent.name} - Top Tracks");
           complete();
@@ -439,7 +439,7 @@ class CarPlayHelper {
       final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
       recentlyPlayed.items.add(CPListItem(
         text: item.name ?? "Unknown Name",
-        image: imageUri.toString(),
+        image: imageUri?.toString(),
         onPress: (complete, self) async {
           await playTracksAsQueue(recentlyPlayedList, index: i, sourceName: "${parent.name} - Recently Played");
           complete();
