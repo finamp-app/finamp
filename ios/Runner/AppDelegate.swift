@@ -54,7 +54,8 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
                 name: "CarPlay Configuration",
                 sessionRole: connectingSceneSession.role
             )
-            let delegateClass = NSClassFromString("Runner.CarPlaySceneDelegate")
+            // Use the flutter_carplay plugin's delegate directly (now that it's @objc accessible)
+            let delegateClass = NSClassFromString("flutter_carplay.FlutterCarPlaySceneDelegate")
             NSLog("[FINAMP] CarPlay delegate class: \(String(describing: delegateClass))")
             sceneConfig.delegateClass = delegateClass
             return sceneConfig
