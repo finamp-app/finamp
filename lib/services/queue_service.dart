@@ -290,13 +290,23 @@ class QueueService {
         }
         // player images should always be either the placeholder image, downloaded images, or loaded from the image cache.
         assert(artUri.scheme == "file");
+
+        // Store the file path for iOS Now Playing artwork (required by audio_service)
+        final artCacheFilePath = artUri.toFilePath();
+
         // use content provider for handling media art on Android
         if (Platform.isAndroid) {
           final packageInfo = await PackageInfo.fromPlatform();
           artUri = Uri(scheme: "content", host: packageInfo.packageName, path: artUri.path);
         }
         if (!force && _audioHandler.mediaItem.valueOrNull?.id != currentMediaItem?.id) return;
-        currentMediaItem = currentMediaItem?.copyWith(artUri: artUri);
+        currentMediaItem = currentMediaItem?.copyWith(
+          artUri: artUri,
+          extras: {
+            ...currentMediaItem?.extras ?? {},
+            'artCacheFile': artCacheFilePath,
+          },
+        );
         _audioHandler.mediaItem.add(currentMediaItem);
       }
 
