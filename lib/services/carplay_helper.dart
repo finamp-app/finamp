@@ -70,17 +70,44 @@ class CarPlayHelper {
     }
   }
 
-  // getTabItems is based on AndroidAutoHelper.getBaseItems() but using BaseItemDto 
-  // Incomplete! 
-  Future<List<BaseItemDto>> getTabItems ({required TabContentType tabContentType}) async { 
-    // limit amount so it doesn't crash / take forever on large libraries 
-    const onlineModeLimit = 250;
-    const offlineModeLimit = 1000;
+  List<CPListSection> _groupItemsIntoSections(
+    List<BaseItemDto> items,
+    CPListItem Function(BaseItemDto item, int index) itemBuilder,
+  ) {
+    Map<String, List<CPListItem>> grouped = {};
+
+    for (int i = 0; i < items.length; i++) {
+      final item = items[i];
+      final name = item.name ?? "";
+      String letter = name.isNotEmpty ? name[0].toUpperCase() : "#";
+      if (!RegExp(r'[A-Z]').hasMatch(letter)) {
+        letter = "#";
+      }
+
+      grouped.putIfAbsent(letter, () => []);
+      grouped[letter]!.add(itemBuilder(item, i));
+    }
+
+    final sortedKeys = grouped.keys.toList()..sort((a, b) {
+      if (a == "#") return 1;
+      if (b == "#") return -1;
+      return a.compareTo(b);
+    });
+
+    return sortedKeys.map((letter) => CPListSection(
+      header: letter,
+      items: grouped[letter]!,
+    )).toList();
+  }
+
+  Future<List<BaseItemDto>> getTabItems ({required TabContentType tabContentType}) async {
+    const onlineModeLimit = 5000;
+    const offlineModeLimit = 5000;
 
     final sortBy = FinampSettingsHelper.finampSettings.getTabSortBy(tabContentType);
     final sortOrder = FinampSettingsHelper.finampSettings.getSortOrder(tabContentType);
-    
-    // If we are in offline mode, display all matching downloaded parents 
+
+    // If we are in offline mode, display all matching downloaded parents
     if (FinampSettingsHelper.finampSettings.isOffline) {
       List<BaseItemDto> baseItems = [];
       for (final downloadedParent in await _downloadsService.getAllCollections()) {
@@ -91,7 +118,7 @@ class CarPlayHelper {
       }
       return sortItems(baseItems, sortBy, sortOrder);
     }
-    
+
     // Fetch the online version if we can't get the offline versions
     final items = await _jellyfinApiHelper.getItems(
       parentItem: tabContentType.itemType == BaseItemDtoType.playlist ? null : _finampUserHelper.currentUser?.currentView,
@@ -385,7 +412,7 @@ class CarPlayHelper {
             title: 'Library',
             emptyViewTitleVariants: ['Library'],
             emptyViewSubtitleVariants: [
-              'Library not yet implemented.'
+              'No library items'
             ],
             systemIcon: 'play.square.stack',
           ),
@@ -460,12 +487,10 @@ class CarPlayHelper {
     try {
       List<BaseItemDto> mediaItems = await getTabItems(tabContentType: tabType);
 
-      CPListSection albumsSection = CPListSection(items: []);
-
-      for (final item in mediaItems) {
+      final sections = _groupItemsIntoSections(mediaItems, (item, index) {
         final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
 
-        albumsSection.items.add(CPListItem(
+        return CPListItem(
           text: item.name ?? "Unknown",
           detailText: item.artists?.join(", ") ?? item.albumArtist,
           image: imageUri?.toString(),
@@ -473,12 +498,12 @@ class CarPlayHelper {
             await showPlaylistTemplate(item);
             complete();
           },
-        ));
-      }
+        );
+      });
 
       CPListTemplate albumsTemplate = CPListTemplate(
-        sections: [albumsSection],
-        systemIcon: 'gear',
+        sections: sections,
+        systemIcon: 'square.stack',
       );
 
       await FlutterCarplay.push(template: albumsTemplate);
@@ -491,34 +516,49 @@ class CarPlayHelper {
     if (_isPushing) return;
     _isPushing = true;
     try {
-      List<BaseItemDto> mediaItems = await getTabItems(tabContentType: TabContentType.tracks);
+      // Fetch tracks with a limit of 250 (CarPlay limitation for large libraries)
+      List<BaseItemDto> tracks;
+      if (FinampSettingsHelper.finampSettings.isOffline) {
+        tracks = await getTabItems(tabContentType: TabContentType.tracks);
+        if (tracks.length > 250) {
+          tracks = tracks.sublist(0, 250);
+        }
+      } else {
+        tracks = await _jellyfinApiHelper.getItems(
+          parentItem: _finampUserHelper.currentUser?.currentView,
+          includeItemTypes: "Audio",
+          sortBy: "SortName",
+          limit: 250,
+        ) ?? [];
+      }
 
-      CPListSection tracksSection = CPListSection(items: []);
+      CPListSection trackSection = CPListSection(items: [
+        CPListItem(
+          text: "Shuffle All",
+          onPress: (complete, self) async {
+            await shuffleAllTracks();
+            complete();
+          },
+        ),
+      ]);
 
-      tracksSection.items.add(CPListItem(
-        text: "Shuffle All",
-        onPress: (complete, self) async {
-          await playTracksAsQueue(mediaItems, order: FinampPlaybackOrder.shuffled, sourceName: "All Tracks");
-          complete();
-        },
-      ));
-
-      mediaItems.asMap().forEach((index, item) {
+      for (int i = 0; i < tracks.length; i++) {
+        final item = tracks[i];
         final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
 
-        tracksSection.items.add(CPListItem(
+        trackSection.items.add(CPListItem(
           text: item.name ?? "Unknown Track",
           detailText: item.artists?.join(", ") ?? item.albumArtist,
           image: imageUri?.toString(),
           onPress: (complete, self) async {
-            await playTracksAsQueue(mediaItems, index: index, sourceName: "All Tracks");
+            await playTracksAsQueue(tracks, index: i, sourceName: "Tracks");
             complete();
           },
         ));
-      });
+      }
 
       CPListTemplate tracksTemplate = CPListTemplate(
-        sections: [tracksSection],
+        sections: [trackSection],
         systemIcon: 'music.note',
       );
 
@@ -532,12 +572,26 @@ class CarPlayHelper {
     if (_isPushing) return;
     _isPushing = true;
     try {
-      List<BaseItemDto> mediaItems = await getTabItems(tabContentType: TabContentType.artists);
+      // Fetch artists with a limit of 250 (CarPlay limitation for large libraries)
+      List<BaseItemDto> artists;
+      if (FinampSettingsHelper.finampSettings.isOffline) {
+        artists = await getTabItems(tabContentType: TabContentType.artists);
+        if (artists.length > 250) {
+          artists = artists.sublist(0, 250);
+        }
+      } else {
+        artists = await _jellyfinApiHelper.getItems(
+          parentItem: _finampUserHelper.currentUser?.currentView,
+          includeItemTypes: "MusicArtist",
+          sortBy: "SortName",
+          limit: 250,
+        ) ?? [];
+      }
 
-      CPListSection artistsSection = CPListSection(items: []);
+      CPListSection artistSection = CPListSection(items: []);
 
-      for (final item in mediaItems) {
-        artistsSection.items.add(CPListItem(
+      for (final item in artists) {
+        artistSection.items.add(CPListItem(
           text: item.name ?? "Unknown Name",
           onPress: (complete, self) async {
             await showArtistTemplate(item);
@@ -547,8 +601,8 @@ class CarPlayHelper {
       }
 
       CPListTemplate artistsTemplate = CPListTemplate(
-        sections: [artistsSection],
-        systemIcon: 'gear',
+        sections: [artistSection],
+        systemIcon: 'person.2',
       );
 
       await FlutterCarplay.push(template: artistsTemplate);
@@ -556,7 +610,7 @@ class CarPlayHelper {
       _isPushing = false;
     }
   }
-  
+
   Future<void> showArtistTemplate(BaseItemDto parent) async {
     if (_isPushing) return;
     _isPushing = true;

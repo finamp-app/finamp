@@ -235,6 +235,9 @@ final class _$JellyfinApi extends JellyfinApi {
     int? startIndex,
     int? limit,
     bool? collapseMultiDiscAlbums,
+    String? nameStartsWith,
+    String? nameStartsWithOrGreater,
+    String? nameLessThan,
   }) async {
     final Uri $url = Uri.parse('/Users/${userId}/Items');
     final Map<String, dynamic> $params = <String, dynamic>{
@@ -257,6 +260,9 @@ final class _$JellyfinApi extends JellyfinApi {
       'StartIndex': startIndex,
       'Limit': limit,
       'CollapseBoxSetItems': collapseMultiDiscAlbums,
+      'NameStartsWith': nameStartsWith,
+      'NameStartsWithOrGreater': nameStartsWithOrGreater,
+      'NameLessThan': nameLessThan,
     };
     final Request $request = Request(
       'GET',
@@ -663,6 +669,7 @@ final class _$JellyfinApi extends JellyfinApi {
     int? startIndex,
     int? limit,
     bool? isFavorite,
+    String? nameStartsWith,
   }) async {
     final Uri $url = Uri.parse('/Artists');
     final Map<String, dynamic> $params = <String, dynamic>{
@@ -676,6 +683,7 @@ final class _$JellyfinApi extends JellyfinApi {
       'StartIndex': startIndex,
       'Limit': limit,
       'isFavorite': isFavorite,
+      'NameStartsWith': nameStartsWith,
     };
     final Request $request = Request(
       'GET',
@@ -707,6 +715,7 @@ final class _$JellyfinApi extends JellyfinApi {
     int? limit,
     required String userId,
     bool? isFavorite,
+    String? nameStartsWith,
   }) async {
     final Uri $url = Uri.parse('/Artists/AlbumArtists');
     final Map<String, dynamic> $params = <String, dynamic>{
@@ -724,6 +733,7 @@ final class _$JellyfinApi extends JellyfinApi {
       'Limit': limit,
       'UserId': userId,
       'isFavorite': isFavorite,
+      'NameStartsWith': nameStartsWith,
     };
     final Request $request = Request(
       'GET',

@@ -199,7 +199,7 @@
 			children = (
 				D71BDC432ED54E31006D7BB7 /* RunnerDebug.entitlements */,
 				D7E03F9C2ED4FFAF00EEBE11 /* CarPlaySceneDelegate.swift */,
-					FBA6030E2DB170CE0055CBBC /* Runner.entitlements */,
+				FBA6030E2DB170CE0055CBBC /* Runner.entitlements */,
 				D7E03F982ED4FFAE00EEBE11 /* SceneDelegate.swift */,
 				1AB3434728AEB3BA00B8C792 /* Info-Debug.plist */,
 				1AB3434828AEB3BA00B8C792 /* Info-Profile.plist */,
@@ -335,13 +335,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -409,13 +405,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
