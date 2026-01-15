@@ -185,8 +185,8 @@ class CarPlayHelper {
 
     final sortBy = FinampSettingsHelper.finampSettings.getTabSortBy(tabContentType);
     final sortOrder = FinampSettingsHelper.finampSettings.getSortOrder(tabContentType);
-
-    // If we are in offline mode, display all matching downloaded parents
+    
+    // If we are in offline mode, display all matching downloaded parents 
     if (FinampSettingsHelper.finampSettings.isOffline) {
       List<BaseItemDto> baseItems = [];
       for (final downloadedParent in await _downloadsService.getAllCollections()) {
@@ -197,7 +197,7 @@ class CarPlayHelper {
       }
       return sortItems(baseItems, sortBy, sortOrder);
     }
-
+    
     // Fetch the online version if we can't get the offline versions
     final items = await _jellyfinApiHelper.getItems(
       parentItem: tabContentType.itemType == BaseItemDtoType.playlist ? null : _finampUserHelper.currentUser?.currentView,
@@ -468,15 +468,6 @@ class CarPlayHelper {
           ),
           CPListTemplate(
             sections: [],
-            title: 'Recent',
-            emptyViewTitleVariants: ['Recent'],
-            emptyViewSubtitleVariants: [
-              'Recent not yet implemented.'
-            ],
-            systemIcon: 'clock',
-          ),
-          CPListTemplate(
-            sections: [],
             title: 'Search',
             emptyViewTitleVariants: ['Voice Search'],
             emptyViewSubtitleVariants: [
@@ -689,7 +680,7 @@ class CarPlayHelper {
       _isPushing = false;
     }
   }
-
+  
   Future<void> showArtistTemplate(BaseItemDto parent) async {
     if (_isPushing) return;
     _isPushing = true;
