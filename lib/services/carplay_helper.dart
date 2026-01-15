@@ -30,6 +30,7 @@ final _carPlayLogger = Logger("CarPlay");
 class CarPlayHelper {
   ConnectionStatusTypes connectionStatus = ConnectionStatusTypes.unknown;
   final FlutterCarplay _flutterCarplay = FlutterCarplay();
+  bool _isPushing = false;
 
   final _finampUserHelper = GetIt.instance<FinampUserHelper>();
   final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
@@ -264,174 +265,190 @@ class CarPlayHelper {
   }
 
   Future<void> showPlaylistTemplate(BaseItemDto parent) async {
-    List<BaseItemDto> mediaItems = await loadChildTracksFromBaseItem(baseItem: parent);
-    // final (alltracks, mediaItems) = await GetIt.instance<ProviderContainer>().read(getAlbumOrPlaylistTracksProvider(parent).future);
+    if (_isPushing) return;
+    _isPushing = true;
+    try {
+      List<BaseItemDto> mediaItems = await loadChildTracksFromBaseItem(baseItem: parent);
 
-    CPListSection playlistSection = CPListSection(items: []);
-
-    // Add shuffle play to top 
-    playlistSection.items.add(CPListItem(
-      text: "Shuffle Play", 
-      onPress: (complete, self) async { 
-        await playItem(parent, order: FinampPlaybackOrder.shuffled);
-        complete();
-      },
-    ));
-
-    mediaItems.asMap().forEach((index, item) { 
-      final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
+      CPListSection playlistSection = CPListSection(items: []);
 
       playlistSection.items.add(CPListItem(
-        text: item.name ?? "Unknown Track", // Todo localization
-        detailText: item.artists?.join(", ") ?? item.albumArtist,
-        image: imageUri?.toString(),
+        text: "Shuffle Play",
         onPress: (complete, self) async {
-          await playItem(parent, index: index);
+          await playItem(parent, order: FinampPlaybackOrder.shuffled);
           complete();
         },
       ));
-    });
 
-    CPListTemplate playlistTemplate = CPListTemplate(
-      sections: [
-        playlistSection,
-      ], 
-      systemIcon: 'gear');
-  
-    await FlutterCarplay.push(template: playlistTemplate);
+      mediaItems.asMap().forEach((index, item) {
+        final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
+
+        playlistSection.items.add(CPListItem(
+          text: item.name ?? "Unknown Track",
+          detailText: item.artists?.join(", ") ?? item.albumArtist,
+          image: imageUri?.toString(),
+          onPress: (complete, self) async {
+            await playItem(parent, index: index);
+            complete();
+          },
+        ));
+      });
+
+      CPListTemplate playlistTemplate = CPListTemplate(
+        sections: [playlistSection],
+        systemIcon: 'gear',
+      );
+
+      await FlutterCarplay.push(template: playlistTemplate);
+    } finally {
+      _isPushing = false;
+    }
   }
 
-  Future<void> showAlbumsTemplate({required TabContentType tabType}) async { 
-    // Fetch child items of root navigation 
-    List<BaseItemDto> mediaItems = await getTabItems(tabContentType: tabType);
-  
-    CPListSection albumsSection = CPListSection(items: []);
+  Future<void> showAlbumsTemplate({required TabContentType tabType}) async {
+    if (_isPushing) return;
+    _isPushing = true;
+    try {
+      List<BaseItemDto> mediaItems = await getTabItems(tabContentType: tabType);
 
-    for (final item in mediaItems) { 
-      final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
-      
-      albumsSection.items.add(CPListItem(
-        text: item.name ?? "Unknown", // Todo localization
-        detailText: item.artists?.join(", ") ?? item.albumArtist,
-        image: imageUri?.toString(),
-        onPress: (complete, self) async {
-          await showPlaylistTemplate(item);
-          complete();
-        }
+      CPListSection albumsSection = CPListSection(items: []);
+
+      for (final item in mediaItems) {
+        final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
+
+        albumsSection.items.add(CPListItem(
+          text: item.name ?? "Unknown",
+          detailText: item.artists?.join(", ") ?? item.albumArtist,
+          image: imageUri?.toString(),
+          onPress: (complete, self) async {
+            await showPlaylistTemplate(item);
+            complete();
+          },
         ));
-    }
+      }
 
-    CPListTemplate albumsTemplate = CPListTemplate(
-      sections: [
-        albumsSection,
-      ], 
-      systemIcon: 'gear');
-  
-    await FlutterCarplay.push(template: albumsTemplate);
+      CPListTemplate albumsTemplate = CPListTemplate(
+        sections: [albumsSection],
+        systemIcon: 'gear',
+      );
+
+      await FlutterCarplay.push(template: albumsTemplate);
+    } finally {
+      _isPushing = false;
+    }
   }
 
   Future<void> showTracksTemplate() async {
-    // Fetch tracks from library
-    List<BaseItemDto> mediaItems = await getTabItems(tabContentType: TabContentType.tracks);
+    if (_isPushing) return;
+    _isPushing = true;
+    try {
+      List<BaseItemDto> mediaItems = await getTabItems(tabContentType: TabContentType.tracks);
 
-    CPListSection tracksSection = CPListSection(items: []);
-
-    // Add shuffle play option at top
-    tracksSection.items.add(CPListItem(
-      text: "Shuffle All",
-      onPress: (complete, self) async {
-        await playTracksAsQueue(mediaItems, order: FinampPlaybackOrder.shuffled, sourceName: "All Tracks");
-        complete();
-      },
-    ));
-
-    mediaItems.asMap().forEach((index, item) {
-      final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
+      CPListSection tracksSection = CPListSection(items: []);
 
       tracksSection.items.add(CPListItem(
-        text: item.name ?? "Unknown Track",
-        detailText: item.artists?.join(", ") ?? item.albumArtist,
-        image: imageUri?.toString(),
+        text: "Shuffle All",
         onPress: (complete, self) async {
-          await playTracksAsQueue(mediaItems, index: index, sourceName: "All Tracks");
+          await playTracksAsQueue(mediaItems, order: FinampPlaybackOrder.shuffled, sourceName: "All Tracks");
           complete();
         },
       ));
-    });
 
-    CPListTemplate tracksTemplate = CPListTemplate(
-      sections: [tracksSection],
-      systemIcon: 'music.note',
-    );
+      mediaItems.asMap().forEach((index, item) {
+        final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
 
-    await FlutterCarplay.push(template: tracksTemplate);
+        tracksSection.items.add(CPListItem(
+          text: item.name ?? "Unknown Track",
+          detailText: item.artists?.join(", ") ?? item.albumArtist,
+          image: imageUri?.toString(),
+          onPress: (complete, self) async {
+            await playTracksAsQueue(mediaItems, index: index, sourceName: "All Tracks");
+            complete();
+          },
+        ));
+      });
+
+      CPListTemplate tracksTemplate = CPListTemplate(
+        sections: [tracksSection],
+        systemIcon: 'music.note',
+      );
+
+      await FlutterCarplay.push(template: tracksTemplate);
+    } finally {
+      _isPushing = false;
+    }
   }
 
   Future<void> showArtistsTemplate() async {
-    // Fetch child items of this type
-    List<BaseItemDto> mediaItems = await getTabItems(tabContentType: TabContentType.artists);
+    if (_isPushing) return;
+    _isPushing = true;
+    try {
+      List<BaseItemDto> mediaItems = await getTabItems(tabContentType: TabContentType.artists);
 
-    CPListSection artistsSection = CPListSection(items: []);
+      CPListSection artistsSection = CPListSection(items: []);
 
-    for (final item in mediaItems) { 
-      artistsSection.items.add(CPListItem(
-        text: item.name ?? "Unknown Name", // TODO localization for this
-        onPress: (complete, self) async {
-          await showArtistTemplate(item);
-          complete();
-        }
+      for (final item in mediaItems) {
+        artistsSection.items.add(CPListItem(
+          text: item.name ?? "Unknown Name",
+          onPress: (complete, self) async {
+            await showArtistTemplate(item);
+            complete();
+          },
         ));
-    }
+      }
 
-    CPListTemplate albumsTemplate = CPListTemplate(
-      sections: [
-        artistsSection,
-      ], 
-      systemIcon: 'gear');
-  
-    await FlutterCarplay.push(template: albumsTemplate);
+      CPListTemplate artistsTemplate = CPListTemplate(
+        sections: [artistsSection],
+        systemIcon: 'gear',
+      );
+
+      await FlutterCarplay.push(template: artistsTemplate);
+    } finally {
+      _isPushing = false;
+    }
   }
   
   Future<void> showArtistTemplate(BaseItemDto parent) async {
-    _carPlayLogger.info("Loading artist template for ${parent.name}");
+    if (_isPushing) return;
+    _isPushing = true;
+    try {
+      _carPlayLogger.info("Loading artist template for ${parent.name}");
 
-    // Declare template and sections
-    CPListTemplate artistTemplate = CPListTemplate(sections: [], systemIcon: 'gear');
-    CPListSection artistAlbums = CPListSection(header: "Albums", items: []);
+      CPListTemplate artistTemplate = CPListTemplate(sections: [], systemIcon: 'gear');
+      CPListSection artistAlbums = CPListSection(header: "Albums", items: []);
 
-    // Fetch only albums - this is fast
-    _carPlayLogger.fine("Fetching albums for artist ${parent.name}");
-    List<BaseItemDto> artistAlbumsList = await GetIt.instance<ProviderContainer>()
-        .read(getArtistAlbumsProvider(artist: parent, libraryFilter: _finampUserHelper.currentUser?.currentView).future);
-    _carPlayLogger.fine("Got ${artistAlbumsList.length} albums");
-
-    // Add shuffle all option at top
-    artistAlbums.items.add(CPListItem(
-      text: "Shuffle All",
-      onPress: (complete, self) async {
-        // Fetch tracks only when user wants to play
-        final tracks = await getArtistTracks(parent);
-        await playTracksAsQueue(tracks, order: FinampPlaybackOrder.shuffled, sourceName: parent.name ?? "Artist");
-        complete();
-      },
-    ));
-
-    // Populate albums section
-    for (final item in artistAlbumsList) {
-      final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
+      _carPlayLogger.fine("Fetching albums for artist ${parent.name}");
+      List<BaseItemDto> artistAlbumsList = await GetIt.instance<ProviderContainer>()
+          .read(getArtistAlbumsProvider(artist: parent, libraryFilter: _finampUserHelper.currentUser?.currentView).future);
+      _carPlayLogger.fine("Got ${artistAlbumsList.length} albums");
 
       artistAlbums.items.add(CPListItem(
-        text: item.name ?? "Unknown Name",
-        image: imageUri?.toString(),
+        text: "Shuffle All",
         onPress: (complete, self) async {
-          await showPlaylistTemplate(item);
+          final tracks = await getArtistTracks(parent);
+          await playTracksAsQueue(tracks, order: FinampPlaybackOrder.shuffled, sourceName: parent.name ?? "Artist");
           complete();
         },
       ));
-    }
-    artistTemplate.sections.add(artistAlbums);
 
-    _carPlayLogger.info("Pushing artist template with ${artistAlbumsList.length} albums");
-    await FlutterCarplay.push(template: artistTemplate);
+      for (final item in artistAlbumsList) {
+        final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
+
+        artistAlbums.items.add(CPListItem(
+          text: item.name ?? "Unknown Name",
+          image: imageUri?.toString(),
+          onPress: (complete, self) async {
+            await showPlaylistTemplate(item);
+            complete();
+          },
+        ));
+      }
+      artistTemplate.sections.add(artistAlbums);
+
+      _carPlayLogger.info("Pushing artist template with ${artistAlbumsList.length} albums");
+      await FlutterCarplay.push(template: artistTemplate);
+    } finally {
+      _isPushing = false;
+    }
   }
 }

@@ -224,6 +224,33 @@ Should the API for this improve in the future, for example by allowing us to sub
 
 Now you need to wait a bit, but it'll finish :)
 
+### CarPlay Development (iOS)
+
+CarPlay uses the `flutter_carplay` plugin. To test CarPlay in the simulator:
+
+1. Build and run the app on an iOS simulator
+2. In the Simulator menu: **I/O > External Displays > CarPlay**
+
+Note: CarPlay can only be tested on the simulator with the included entitlements. Testing on real hardware requires a CarPlay entitlement from Apple, which must be requested separately and is not included in this repository.
+
+#### CarPlay Not Appearing in Simulator
+
+If Finamp doesn't appear in the CarPlay display after enabling it, the most common cause is corruption in the Xcode project file from repeated `pod install` runs. This can break entitlement embedding for simulator builds.
+
+**Fix:**
+```bash
+# Restore project file to committed state
+git checkout -- ios/Runner.xcodeproj/project.pbxproj
+
+# Clean rebuild
+flutter clean
+flutter pub get
+cd ios && pod install && cd ..
+flutter build ios --simulator
+```
+
+Then restart the simulator and re-enable CarPlay via **I/O > External Displays > CarPlay**.
+
 ### Add dbus message
 1. Open `lib/services/dbus_manager.dart`
 2. Add another `else if (call.interface == 'com.unicornsonlsd.Finamp' && call.name == 'YOUR FUNCTION NAME')`
