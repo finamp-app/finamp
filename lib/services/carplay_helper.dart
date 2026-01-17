@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/music_player_background_task.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
@@ -19,6 +22,11 @@ import 'jellyfin_api_helper.dart';
 import 'queue_service.dart';
 import 'item_helper.dart';
 import 'artist_content_provider.dart';
+
+/// Helper to access localized strings without a BuildContext.
+/// Uses the global scaffold key's context for localization.
+AppLocalizations get _l10n =>
+    AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!;
 
 final _carPlayLogger = Logger("CarPlay");
 
@@ -59,7 +67,11 @@ class CarPlayHelper {
       },
     );
 
-    setCarplayRootTemplate();
+    // Defer initial template setup until after the first frame is rendered.
+    // This ensures GlobalSnackbar's context is available for localization.
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      setCarplayRootTemplate();
+    });
   }
 
   void disposeCarplay() {
@@ -186,7 +198,7 @@ class CarPlayHelper {
         type: QueueItemSourceType.allTracks,
         name: QueueItemSourceName(
           type: QueueItemSourceNameType.preTranslated,
-          pretranslatedName: sourceName ?? "Tracks",
+          pretranslatedName: sourceName ?? _l10n.tracks,
         ),
         id: "carplay-tracks-${DateTime.now().millisecondsSinceEpoch}",
       ),
@@ -285,14 +297,14 @@ class CarPlayHelper {
     CPListSection quickActionsSection = CPListSection(
       items: [
         CPListItem(
-          text: "Shuffle All",
+          text: _l10n.shuffleAll,
           onPress: (complete, self) async {
             await shuffleAllTracks();
             complete();
           },
         ),
         CPListItem(
-          text: "Start a Mix",
+          text: _l10n.startMix,
           onPress: (complete, self) async {
             await startInstantMix();
             complete();
@@ -305,7 +317,7 @@ class CarPlayHelper {
     final recentPlays = getRecentPlays(limit: 5);
     if (recentPlays.isNotEmpty) {
       CPListSection recentPlaysSection = CPListSection(
-        header: "Recent Plays",
+        header: _l10n.recentlyPlayed,
         items: [],
       );
 
@@ -314,7 +326,7 @@ class CarPlayHelper {
         final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: baseItem, maxHeight: 200, maxWidth: 200))).uri;
 
         recentPlaysSection.items.add(CPListItem(
-          text: baseItem.name ?? "Unknown",
+          text: baseItem.name ?? _l10n.unknown,
           detailText: baseItem.artists?.join(", ") ?? baseItem.albumArtist,
           image: imageUri?.toString(),
           onPress: (complete, self) async {
@@ -324,7 +336,7 @@ class CarPlayHelper {
                 type: QueueItemSourceType.nextUp,
                 name: QueueItemSourceName(
                   type: QueueItemSourceNameType.preTranslated,
-                  pretranslatedName: baseItem.name ?? "Track",
+                  pretranslatedName: baseItem.name ?? _l10n.tracks,
                 ),
                 id: baseItem.id,
                 item: baseItem,
@@ -345,7 +357,7 @@ class CarPlayHelper {
     _carPlayLogger.info("Got ${recentlyAdded.length} recently added albums");
     if (recentlyAdded.isNotEmpty) {
       CPListSection recentlyAddedSection = CPListSection(
-        header: "Recently Added",
+        header: _l10n.recentlyAdded,
         items: [],
       );
 
@@ -353,7 +365,7 @@ class CarPlayHelper {
         final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: album, maxHeight: 200, maxWidth: 200))).uri;
 
         recentlyAddedSection.items.add(CPListItem(
-          text: album.name ?? "Unknown Album",
+          text: album.name ?? _l10n.unknownAlbum,
           detailText: album.albumArtist,
           image: imageUri?.toString(),
           onPress: (complete, self) async {
@@ -406,31 +418,23 @@ class CarPlayHelper {
         templates: [
           CPListTemplate(
             sections: homeSections,
-            title: 'Home',
-            emptyViewTitleVariants: ['Home'],
-            emptyViewSubtitleVariants: [
-              'No content available'
-            ],
+            title: _l10n.home,
+            emptyViewTitleVariants: [_l10n.home],
+            emptyViewSubtitleVariants: [_l10n.notAvailable],
             systemIcon: 'music.note.house',
           ),
           CPListTemplate(
             sections: [],
-            title: 'Search',
-            emptyViewTitleVariants: ['Voice Search'],
-            emptyViewSubtitleVariants: [
-              'Say "Hey Siri, play [song/artist/album] on Finamp"'
-            ],
+            title: _l10n.search,
+            emptyViewTitleVariants: [_l10n.voiceSearch],
+            emptyViewSubtitleVariants: [_l10n.carPlaySiriHint],
             systemIcon: 'mic',
           ),
           CPListTemplate(
-            sections: [
-            librarySection
-            ],
-            title: 'Library',
-            emptyViewTitleVariants: ['Library'],
-            emptyViewSubtitleVariants: [
-              'No library items'
-            ],
+            sections: [librarySection],
+            title: _l10n.library,
+            emptyViewTitleVariants: [_l10n.library],
+            emptyViewSubtitleVariants: [_l10n.emptyFilteredListTitle],
             systemIcon: 'play.square.stack',
           ),
         ],
@@ -445,11 +449,9 @@ class CarPlayHelper {
     await FlutterCarplay.setRootTemplate(
       rootTemplate: CPListTemplate(
         sections: [],
-        title: 'Finamp',
-        emptyViewTitleVariants: ['Please Log In'],
-        emptyViewSubtitleVariants: [
-          'Open the Finamp app on your phone to log in to your Jellyfin server.'
-        ],
+        title: _l10n.finamp,
+        emptyViewTitleVariants: [_l10n.login],
+        emptyViewSubtitleVariants: [_l10n.carPlayLoginPrompt],
         systemIcon: 'person.crop.circle.badge.exclamationmark',
       ),
     );
@@ -466,7 +468,7 @@ class CarPlayHelper {
       CPListSection playlistSection = CPListSection(items: []);
 
       playlistSection.items.add(CPListItem(
-        text: "Shuffle Play",
+        text: _l10n.shuffleButtonLabel,
         onPress: (complete, self) async {
           await playItem(parent, order: FinampPlaybackOrder.shuffled);
           complete();
@@ -477,7 +479,7 @@ class CarPlayHelper {
         final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
 
         playlistSection.items.add(CPListItem(
-          text: item.name ?? "Unknown Track",
+          text: item.name ?? _l10n.unknownName,
           detailText: item.artists?.join(", ") ?? item.albumArtist,
           image: imageUri?.toString(),
           onPress: (complete, self) async {
@@ -508,7 +510,7 @@ class CarPlayHelper {
         final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
 
         return CPListItem(
-          text: item.name ?? "Unknown",
+          text: item.name ?? _l10n.unknown,
           detailText: item.artists?.join(", ") ?? item.albumArtist,
           image: imageUri?.toString(),
           onPress: (complete, self) async {
@@ -550,7 +552,7 @@ class CarPlayHelper {
 
       CPListSection trackSection = CPListSection(items: [
         CPListItem(
-          text: "Shuffle All",
+          text: _l10n.shuffleAll,
           onPress: (complete, self) async {
             await shuffleAllTracks();
             complete();
@@ -563,11 +565,11 @@ class CarPlayHelper {
         final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
 
         trackSection.items.add(CPListItem(
-          text: item.name ?? "Unknown Track",
+          text: item.name ?? _l10n.unknownName,
           detailText: item.artists?.join(", ") ?? item.albumArtist,
           image: imageUri?.toString(),
           onPress: (complete, self) async {
-            await playTracksAsQueue(tracks, index: i, sourceName: "Tracks");
+            await playTracksAsQueue(tracks, index: i, sourceName: _l10n.tracks);
             complete();
           },
         ));
@@ -607,7 +609,7 @@ class CarPlayHelper {
 
       for (final item in artists) {
         artistSection.items.add(CPListItem(
-          text: item.name ?? "Unknown Name",
+          text: item.name ?? _l10n.unknownName,
           onPress: (complete, self) async {
             await showArtistTemplate(item);
             complete();
@@ -633,7 +635,7 @@ class CarPlayHelper {
       _carPlayLogger.info("Loading artist template for ${parent.name}");
 
       CPListTemplate artistTemplate = CPListTemplate(sections: [], systemIcon: 'gear');
-      CPListSection artistAlbums = CPListSection(header: "Albums", items: []);
+      CPListSection artistAlbums = CPListSection(header: _l10n.albums, items: []);
 
       _carPlayLogger.fine("Fetching albums for artist ${parent.name}");
       List<BaseItemDto> artistAlbumsList = await GetIt.instance<ProviderContainer>()
@@ -641,10 +643,10 @@ class CarPlayHelper {
       _carPlayLogger.fine("Got ${artistAlbumsList.length} albums");
 
       artistAlbums.items.add(CPListItem(
-        text: "Shuffle All",
+        text: _l10n.shuffleAll,
         onPress: (complete, self) async {
           final tracks = await getArtistTracks(parent);
-          await playTracksAsQueue(tracks, order: FinampPlaybackOrder.shuffled, sourceName: parent.name ?? "Artist");
+          await playTracksAsQueue(tracks, order: FinampPlaybackOrder.shuffled, sourceName: parent.name ?? _l10n.unknownName);
           complete();
         },
       ));
@@ -653,7 +655,7 @@ class CarPlayHelper {
         final imageUri = providerRef.read(albumImageProvider(AlbumImageRequest(item: item, maxHeight: 200, maxWidth: 200))).uri;
 
         artistAlbums.items.add(CPListItem(
-          text: item.name ?? "Unknown Name",
+          text: item.name ?? _l10n.unknownName,
           image: imageUri?.toString(),
           onPress: (complete, self) async {
             await showPlaylistTemplate(item);
