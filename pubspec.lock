@@ -579,8 +579,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "3631f86"
-      resolved-ref: "3631f8639bf0c50d2d4ff9968b69552f133b1bc9"
+      ref: "1d58071"
+      resolved-ref: "1d58071394e6c258c8072ee2338291c38670ba0d"
       url: "https://github.com/APIUM/flutter_carplay.git"
     source: git
     version: "1.2.3"
