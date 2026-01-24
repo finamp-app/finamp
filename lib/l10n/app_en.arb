@@ -3272,24 +3272,24 @@
       }
     }
   },
-  "previousTracksPersistenceModeSelectorTitle": "Initial state of \"Previous tracks\" header in queue list",
+  "previousTracksPersistenceModeSelectorTitle": "Previous tracks visibility in queue panel",
   "@previousTracksPersistenceModeSelectorTitle": {
     "description": "Title for setting that allows to override state of previous tracks header in queue list"
   },
-  "previousTracksPersistenceModeSelectorSubtitle": "Applied each time queue is opened on player screen",
+  "previousTracksPersistenceModeSelectorSubtitle": "If you open the queue panel, the previous tracks section should be...",
   "@previousTracksPersistenceModeSelectorSubtitle": {
     "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
   },
-  "previousTracksPersistenceModePersistent": "Last used",
+  "previousTracksPersistenceModePersistent": "Like before (remember expanded/collapsed)",
   "@previousTracksPersistenceModePersistent": {
     "description": "Does nothing to previous tracks header in queue list, using its saved value"
   },
-  "previousTracksPersistenceModeCollapsed": "Initially collapsed",
-  "@previousTracksPersistenceModePersistent": {
+  "previousTracksPersistenceModeCollapsed": "Collapsed (hidden)",
+  "@previousTracksPersistenceModeCollapsed": {
     "description": "Overrides saved value to collapse previous tracks header on queue list open"
   },
-  "previousTracksPersistenceModeExpanded": "Initially expanded",
-  "@previousTracksPersistenceModePersistent": {
+  "previousTracksPersistenceModeExpanded": "Expanded (visible)",
+  "@previousTracksPersistenceModeExpanded": {
     "description": "Overrides saved value to expand previous tracks header on queue list open"
   }
 }
