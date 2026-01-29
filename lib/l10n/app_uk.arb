@@ -1900,7 +1900,7 @@
     "@autoReloadPromptReloadButton": {
         "description": "Button title for reloading the queue after network settings change"
     },
-    "ping": "{status, select, true_true{Обидва доступні} true_false{НЕ ВДАЛОСЯ ЗВ’ЯЗАТИСЯ З МЕСТОВОЮ АДРЕСОЮ} false_true{НЕ ВДАЛОСЯ ДОСТУПИТИ ДО ОБЩОЇ АДРЕСИ} false_false{НЕ ВІДБУЛОСЯ зв'язатися з обома} other{невідомий}}",
+    "ping": "{status, select, true_true{Обидві адреси доступні} true_false{Не вдалося зв'язатися з локальною адресою} false_true{Не вдалося зв'язатися з публічною адресою} false_false{Не вдалося зв'язатися з обома адресами} other{невідомо}}",
     "@ping": {
         "description": "Gets shown in the Snackbar when using the Test Connection Button inside the Network Settings. true means reachable, false means unreachable. the first value is for the public address, the second value is fot the home address."
     },
