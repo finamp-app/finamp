@@ -1,17 +1,17 @@
 {
-    "finampTagline": "Pemutar musik Jellyfin bersifat open source",
+    "finampTagline": "Pemutar musik Jellyfin sumber terbuka",
     "@finampTagline": {
         "description": "Tagline / short description for the app"
     },
-    "startupErrorTitle": "Terjadi kesalahan memulai aplikasi!",
+    "startupErrorTitle": "Terjadi kesalahan saat memulai aplikasi!",
     "@startupErrorTitle": {
         "description": "The title for the error screen that shows when startup fails."
     },
-    "startupErrorCallToAction": "Silahkan buat \"issue\" di \"github.com/jmshrv/finamp\" dengan mencantumkan logs (tekan tombol di bawah) dan screenshot laman ini, agar kami dapat memperbaikinya secepat mungkin.",
+    "startupErrorCallToAction": "Silakan buat issue di \\\"github.com/jmshrv/finamp\\\" dengan log (gunakan tombol di bawah) dan tangkapan layar halaman ini, agar kami dapat memperbaikinya secepat mungkin.",
     "@startupErrorCallToAction": {
         "description": "The subtitle / call to action for what to do after encountering a startup error"
     },
-    "startupErrorWorkaround": "Sebagai solusi untuk mengatasi kesalahan ini, Anda dapat menghapus data aplikasi untuk mengatur ulang aplikasi. Perlu diingat bahwa dalam hal ini semua pengaturan dan unduhan Anda akan dihapus.",
+    "startupErrorWorkaround": "Sebagai solusi sementara atas kesalahan ini, Anda dapat menghapus data aplikasi untuk mereset aplikasi. Harap diingat bahwa dalam kasus ini semua pengaturan dan unduhan Anda akan dihapus.",
     "@startupErrorWorkaround": {
         "description": "The subtitle for how to manually recover from a startup error"
     },
@@ -19,7 +19,7 @@
     "@about": {
         "description": "Label for the about/info button on the settings screen"
     },
-    "aboutContributionPrompt": "Dibuat oleh orang-orang yang luar biasa di waktu luang mereka.\nAnda bisa menjadi salah satu dari mereka!",
+    "aboutContributionPrompt": "Dibuat oleh orang-orang hebat di waktu luang mereka.\\\nAnda juga bisa menjadi salah satunya!",
     "@aboutContributionPrompt": {
         "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
     },
@@ -31,7 +31,7 @@
     "@aboutReleaseNotes": {
         "description": "Link to the release notes, shown in the about screen."
     },
-    "aboutTranslations": "Membantu menerjemahkan Finamp ke dalam bahasa Anda:",
+    "aboutTranslations": "Bantu terjemahkan Finamp ke dalam bahasa Anda:",
     "@aboutTranslations": {
         "description": "Link to the translation project, shown in the about screen."
     },
@@ -39,7 +39,7 @@
     "@aboutThanks": {
         "description": "Thank you message shown in the about screen."
     },
-    "loginFlowWelcomeHeading": "Selamat datang di ­­{styledName}",
+    "loginFlowWelcomeHeading": "Selamat datang di {styledName}",
     "@loginFlowWelcomeHeading": {
         "description": "Greeting shown on the login screen.",
         "placeholders": {
@@ -49,7 +49,7 @@
             }
         }
     },
-    "loginFlowSlogan": "Musik Anda, seperti yang Anda inginkan.",
+    "loginFlowSlogan": "Musik Anda, sesuai yang Anda inginkan.",
     "@loginFlowSlogan": {
         "description": "Slogan shown on the login screen."
     },
@@ -57,15 +57,15 @@
     "@loginFlowGetStarted": {
         "description": "Button label for the login/splash screen."
     },
-    "viewLogs": "Lihat catatan aktivitas",
+    "viewLogs": "Lihat Log",
     "@viewLogs": {
         "description": "Label for button shown during the login process that allows the user to view the app logs"
     },
-    "changeLanguage": "Ganti bahasa",
+    "changeLanguage": "Ubah Bahasa",
     "@changeLanguage": {
         "description": "Label for button shown during the login process that allows the user to change the app language"
     },
-    "loginFlowServerSelectionHeading": "Hubungkan Jellyfin",
+    "loginFlowServerSelectionHeading": "Hubungkan ke Jellyfin",
     "@loginFlowServerSelectionHeading": {
         "description": "Heading for the server selection step during the login flow."
     },
@@ -74,12 +74,11 @@
         "description": "Label for the back button."
     },
     "serverUrl": "URL Server",
-    "@serverUrl": {},
-    "internalExternalIpExplanation": "Jika Anda ingin dapat mengakses server Jellyfin Anda dari jarak jauh, Anda perlu menggunakan IP eksternal.\n\nJika server Anda menggunakan port default HTTP (80 atau 443) atau port default Jellyfin (8096), Anda tidak perlu menentukan port.\n\nJika URL-nya benar, Anda akan melihat beberapa informasi tentang server Anda muncul di bawah kolom input.",
+    "internalExternalIpExplanation": "Jika Anda ingin dapat mengakses server Jellyfin Anda dari jarak jauh, Anda perlu menggunakan IP eksternal Anda.\\\n\\\nJika server Anda berada pada port default HTTP (80 atau 443) atau port default Jellyfin (8096), Anda tidak perlu mencantumkan port.\\\n\\\nJika URL benar, Anda akan melihat beberapa informasi tentang server Anda muncul di bawah kolom input.",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
-    "serverUrlHint": "misalnya demo.jellyfin.org/stable",
+    "serverUrlHint": "mis. demo.jellyfin.org/stable",
     "@serverUrlHint": {
         "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
     },
@@ -87,7 +86,7 @@
     "@serverUrlInfoButtonTooltip": {
         "description": "Tooltip for the button that shows the extra info dialog for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
-    "emptyServerUrl": "URL Server tidak boleh kosong",
+    "emptyServerUrl": "URL server tidak boleh kosong",
     "@emptyServerUrl": {
         "description": "Error message that shows when the user submits a login without a server URL"
     },
@@ -95,31 +94,31 @@
     "@connectingToServer": {
         "description": "Text shown while the connection to the specified server is attempted"
     },
-    "loginFlowLocalNetworkServers": "Server yang berada di jaringan lokal:",
+    "loginFlowLocalNetworkServers": "Server di jaringan lokal Anda:",
     "@loginFlowLocalNetworkServers": {
         "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
     },
-    "loginFlowLocalNetworkServersScanningForServers": "Mendeteksi server…",
+    "loginFlowLocalNetworkServersScanningForServers": "Memindai server…",
     "@loginFlowLocalNetworkServersScanningForServers": {
         "description": "Text shown while servers are being discovered via UDP broadcasts"
     },
-    "loginFlowAccountSelectionHeading": "Pilih akun",
+    "loginFlowAccountSelectionHeading": "Pilih akun Anda",
     "@loginFlowAccountSelectionHeading": {
         "description": "Heading for the account selection step during the login flow."
     },
-    "backToServerSelection": "Kembali ke Pilih Server",
+    "backToServerSelection": "Kembali ke Pemilihan Server",
     "@backToServerSelection": {
         "description": "Label for the button that takes the user back to the server selection step during the login flow."
     },
-    "loginFlowNamelessUser": "User Tanpa Nama",
+    "loginFlowNamelessUser": "Pengguna tanpa nama",
     "@loginFlowNamelessUser": {
         "description": "Name for a user that doesn't have a name set on the server."
     },
-    "loginFlowCustomUser": "Pengguna Kustom",
+    "loginFlowCustomUser": "Pengguna kustom",
     "@loginFlowCustomUser": {
         "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
     },
-    "loginFlowAuthenticationHeading": "Masuk ke akun anda",
+    "loginFlowAuthenticationHeading": "Masuk ke akun Anda",
     "@loginFlowAuthenticationHeading": {
         "description": "Heading for the authentication step during the login flow."
     },
@@ -131,15 +130,15 @@
     "@loginFlowQuickConnectPrompt": {
         "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
-    "loginFlowQuickConnectInstructions": "Buka Aplikasi atau Situs Jellyfin, tekan pada ikon pengguna, lalu pilih Quick Connect.",
+    "loginFlowQuickConnectInstructions": "Buka aplikasi atau situs web Jellyfin, klik ikon pengguna Anda, lalu pilih Quick Connect.",
     "@loginFlowQuickConnectInstructions": {
         "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
-    "loginFlowQuickConnectDisabled": "Quick Connect dimatikan pada server ini.",
+    "loginFlowQuickConnectDisabled": "Quick Connect dinonaktifkan di server ini.",
     "@loginFlowQuickConnectDisabled": {
         "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
     },
-    "orDivider": "Atau",
+    "orDivider": "atau",
     "@orDivider": {
         "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
     },
@@ -147,19 +146,17 @@
     "@loginFlowSelectAUser": {
         "description": "Heading for the list of users that the user can select from during the login flow."
     },
-    "username": "Nama Pengguna",
-    "@username": {},
-    "usernameHint": "Masukan nama pengguna",
+    "username": "Nama pengguna",
+    "usernameHint": "Masukkan nama pengguna Anda",
     "@usernameHint": {
         "description": "Hint text for the username input field."
     },
-    "usernameValidationMissingUsername": "Masukan nama pengguna",
+    "usernameValidationMissingUsername": "Silakan masukkan nama pengguna",
     "@usernameValidationMissingUsername": {
         "description": "Error message that shows when the user submits a login without a username"
     },
     "password": "Kata sandi",
-    "@password": {},
-    "passwordHint": "Masukan kata sandi",
+    "passwordHint": "Masukkan kata sandi Anda",
     "@passwordHint": {
         "description": "Hint text for the password input field."
     },
@@ -167,15 +164,13 @@
     "@login": {
         "description": "Label for the login button."
     },
-    "logs": "Catatan",
-    "@logs": {},
-    "next": "Selanjutnya",
-    "@next": {},
+    "logs": "Log",
+    "next": "Berikutnya",
     "selectMusicLibraries": "Pilih Pustaka Musik",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
-    "couldNotFindLibraries": "Tidak ditemukan pustaka apapun.",
+    "couldNotFindLibraries": "Tidak dapat menemukan pustaka apa pun.",
     "@couldNotFindLibraries": {
         "description": "Error message when the user does not have any libraries"
     },
@@ -183,60 +178,2807 @@
     "@allLibraries": {
         "description": "All Libraries"
     },
-    "unknownName": "Nama Tidak Diketahui",
-    "@unknownName": {},
-    "tracks": "Musik",
-    "@tracks": {},
+    "unknownName": "Nama tidak dikenal",
+    "tracks": "Lagu",
     "albums": "Album",
-    "@albums": {},
-    "appearsOnAlbums": "Ditampilkan di",
-    "@appearsOnAlbums": {},
+    "appearsOnAlbums": "Muncul di",
     "artists": "Artis",
-    "@artists": {},
     "genres": "Genre",
-    "@genres": {},
-    "noGenres": "Tanpa genre",
+    "noGenres": "Tidak ada genre",
     "@noGenres": {
         "description": "Gets shown when there are no genres available for an album or artist"
     },
-    "playlists": "Daftar Putar",
-    "@playlists": {},
-    "startMix": "Mulai campur",
-    "@startMix": {},
-    "startMixNoTracksArtist": "Tekan tahan pada artis untuk menambahkan atau menghapusnya dari pembuat campuran sebelum memulai campur",
+    "playlists": "Playlist",
+    "startMix": "Mulai Mix",
+    "startMixNoTracksArtist": "Tekan lama pada artis untuk menambah atau menghapusnya dari pembuat mix sebelum memulai mix",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
     },
-    "startMixNoTracksAlbum": "Tekan lama album untuk menambah atau menghapusnya dari pembangun campuran sebelum memulai campuran",
+    "startMixNoTracksAlbum": "Tekan lama pada album untuk menambah atau menghapusnya dari pembuat mix sebelum memulai mix",
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
-    "startMixNoTracksGenre": "­Tekan lama genre untuk menambah atau menghapusnya dari pembuat campuran sebelum memulai campuran",
+    "startMixNoTracksGenre": "Tekan lama pada genre untuk menambah atau menghapusnya dari pembuat mix sebelum memulai mix",
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
     "music": "Musik",
-    "@music": {},
-    "clear": "Clear",
-    "@clear": {},
-    "favorite": "Disukai",
-    "@favorite": {},
-    "favorites": "Disukai",
-    "@favorites": {},
+    "clear": "Hapus",
+    "favorite": "Favorit",
+    "favorites": "Favorit",
     "shuffleAll": "Acak semua",
-    "@shuffleAll": {},
     "downloads": "Unduhan",
-    "@downloads": {},
     "settings": "Pengaturan",
-    "@settings": {},
-    "offlineMode": "Mode luring",
-    "@offlineMode": {},
-    "onlineMode": "Mode Daring",
-    "@onlineMode": {},
-    "sortOrder": "Urut berdasarkan",
-    "@sortOrder": {},
-    "sortBy": "Urut berdasarkan",
-    "@sortBy": {},
+    "offlineMode": "Mode Offline",
+    "onlineMode": "Mode Online",
+    "sortOrder": "Urutan pengurutan",
+    "sortBy": "Urutkan berdasarkan",
     "title": "Judul",
-    "@title": {}
+    "finamp": "Finamp",
+    "@finamp": {
+        "description": "App name, possibly translated"
+    },
+    "shuffleSome": "Acak beberapa",
+    "album": "Album",
+    "albumArtist": "Artis album",
+    "albumArtists": "Artis album",
+    "performingArtists": "Artis penampil",
+    "artist": "Artis",
+    "performingArtist": "Artis penampil",
+    "budget": "Anggaran",
+    "communityRating": "Rating komunitas",
+    "criticRating": "Rating kritikus",
+    "dateAdded": "Tanggal ditambahkan",
+    "datePlayed": "Tanggal terakhir diputar",
+    "playCount": "Jumlah pemutaran",
+    "premiereDate": "Tanggal rilis",
+    "productionYear": "Tahun produksi",
+    "name": "Nama",
+    "random": "Acak",
+    "revenue": "Pendapatan",
+    "duration": "Durasi",
+    "defaultOrder": "Urutan default",
+    "@defaultOrder": {
+        "description": "Default sorting order for playlists (server order)"
+    },
+    "adaptive": "Adaptif",
+    "formattedRelativeTime": "{type, select, just_now{baru saja} minutes{{value} menit yang lalu} hours{{value} jam yang lalu} yesterday{kemarin} days{{value, plural, =1{1 hari yang lalu} other{{value} hari yang lalu}}} other{value}}",
+    "@formattedRelativeTime": {
+        "description": "Returns a relative time string based on how long ago something happened. Used for various DateTime values such as Date Last Played and Date Added.",
+        "placeholders": {
+            "type": {
+                "type": "String",
+                "description": "The category of time passed: one of 'just_now', 'minutes', 'hours', 'yesterday', or 'days'."
+            },
+            "value": {
+                "type": "int",
+                "example": "5"
+            }
+        }
+    },
+    "syncDownloadedPlaylists": "Sinkronkan playlist yang diunduh",
+    "downloadMissingImages": "Unduh gambar yang hilang",
+    "downloadedMissingImages": "{count,plural, =0{Tidak ada gambar hilang yang ditemukan} =1{Mengunduh {count} gambar hilang} other{Mengunduh {count} gambar hilang}}",
+    "@downloadedMissingImages": {
+        "description": "Message that shows when the user downloads missing images",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "activeDownloads": "Unduhan aktif",
+    "downloadCount": "{count,plural, =1{{count} unduhan} other{{count} unduhan}}",
+    "@downloadCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadedCountUnified": "{trackCount,plural,=1{{trackCount} trek} other{{trackCount} trek}}, {imageCount,plural,=1{{imageCount} gambar} other{{imageCount} gambar}}\\\n{syncCount,plural,=1{{syncCount} node sedang sinkron} other{{syncCount} node sedang sinkron}}{repairing, plural, =0{} other{\\\nSaat ini sedang memperbaiki}}",
+    "@downloadedCountUnified": {
+        "description": "Display of downloaded track and image count on downloads screen.",
+        "placeholders": {
+            "trackCount": {
+                "type": "int"
+            },
+            "imageCount": {
+                "type": "int"
+            },
+            "syncCount": {
+                "type": "int"
+            },
+            "repairing": {
+                "type": "int"
+            }
+        }
+    },
+    "dlComplete": "{count} selesai",
+    "@dlComplete": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlFailed": "{count} gagal",
+    "@dlFailed": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlEnqueued": "{count} diantrikan",
+    "@dlEnqueued": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlRunning": "{count} berjalan",
+    "@dlRunning": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "activeDownloadsTitle": "Unduhan aktif",
+    "noActiveDownloads": "Tidak ada unduhan aktif.",
+    "errorScreenError": "Terjadi kesalahan saat mengambil daftar kesalahan! Pada titik ini, Anda mungkin sebaiknya membuat issue di GitHub dan menghapus data aplikasi",
+    "failedToGetTrackFromDownloadId": "Gagal mendapatkan trek dari ID unduhan",
+    "deleteDownloadsPrompt": "Apakah Anda yakin ingin menghapus {itemType, select, album{album} playlist{playlist} artist{artis} genre{genre} track{trek} library{pustaka} other{item}} '{itemName}' dari perangkat ini?",
+    "@deleteDownloadsPrompt": {
+        "placeholders": {
+            "itemName": {
+                "type": "String",
+                "example": "Abandon Ship"
+            },
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            }
+        },
+        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
+    },
+    "deleteDownloadsConfirmButtonText": "Hapus",
+    "@deleteDownloadsConfirmButtonText": {
+        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
+    },
+    "specialDownloads": "Unduhan khusus",
+    "@specialDownloads": {
+        "description": "Title for the special downloads section on the downloads screen."
+    },
+    "libraryDownloads": "Unduhan pustaka",
+    "@libraryDownloads": {
+        "description": "Title for the library downloads section on the downloads screen."
+    },
+    "noItemsDownloaded": "Tidak ada item yang diunduh.",
+    "@noItemsDownloaded": {
+        "description": "Shown on the downloads screen for sections without any downloaded items."
+    },
+    "error": "Kesalahan",
+    "discNumber": "Disk {number}",
+    "@discNumber": {
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "playButtonLabel": "Putar",
+    "shuffleButtonLabel": "Acak",
+    "shuffleCountButton": "Acak ({count,plural,=1{{count} Trek} other{{count} Trek}})",
+    "@shuffleCountButton": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackActionPageMoveWithinQueue": "Pindahkan dalam antrean",
+    "@playbackActionPageMoveWithinQueue": {
+        "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
+    },
+    "playbackActionPageRegularTrackOptions": "Putar",
+    "@playbackActionPageRegularTrackOptions": {
+        "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "playbackActionPageNewQueue": "Antrean baru",
+    "@playbackActionPageNewQueue": {
+        "description": "Label for the playback action page that contains all actions related to starting a new queue"
+    },
+    "playbackActionPageNext": "Putar berikutnya",
+    "@playbackActionPageNext": {
+        "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
+    },
+    "playbackActionPageNextUp": "Tambahkan berikutnya",
+    "@playbackActionPageNextUp": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
+    },
+    "playbackActionPageAppendToQueue": "Putar terakhir",
+    "@playbackActionPageAppendToQueue": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks at the end of the queue"
+    },
+    "trackCount": "{count,plural,=1{{count} Trek} other{{count} Trek}}",
+    "@trackCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "offlineTrackCount": "{count,plural,=1{{count} Trek} other{{count} Trek}}, {downloads} Diunduh",
+    "@offlineTrackCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "downloads": {
+                "type": "int"
+            }
+        }
+    },
+    "offlineTrackCountArtist": "{count,plural,=1{{count} Trek} other{{count} Trek}} Diunduh",
+    "@offlineTrackCountArtist": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "editItemTitle": "Edit {itemType, select, playlist{Playlist} other{}}",
+    "@editItemTitle": {
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "required": "Wajib",
+    "updateButtonLabel": "Perbarui",
+    "updatePlaylistButtonLabel": "Perbarui playlist",
+    "@updatePlaylistButtonLabel": {
+        "description": "Label for the button that updates the playlist on the edit playlist screen"
+    },
+    "savingChanges": "Menyimpan perubahan…",
+    "@savingChanges": {
+        "description": "Text shown while the changes to a playlist are being saved"
+    },
+    "playlistUpdated": "Playlist diperbarui.",
+    "downloadsDeleted": "Unduhan dihapus.",
+    "addDownloads": "Tambahkan unduhan",
+    "location": "Lokasi",
+    "confirmDownloadStarted": "Unduhan dimulai",
+    "@confirmDownloadStarted": {
+        "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
+    },
+    "downloadsQueued": "Mengunduh file",
+    "addButtonLabel": "Tambah",
+    "shareLogs": "Bagikan log",
+    "exportLogs": "Simpan log",
+    "logsCopied": "Log disalin.",
+    "message": "Pesan",
+    "stackTrace": "Jejak stack",
+    "applicationLegalese": "Dilisensikan dengan Mozilla Public License 2.0.\\\nKode sumber tersedia di {sourceCodeLink}.",
+    "@applicationLegalese": {
+        "placeholders": {
+            "sourceCodeLink": {
+                "type": "String",
+                "example": "https://github.com/jmshrv/finamp"
+            }
+        }
+    },
+    "transcoding": "Transcoding",
+    "downloadLocations": "Lokasi Unduhan",
+    "audioService": "Layanan Audio",
+    "playbackReporting": "Pelaporan Pemutaran",
+    "interactions": "Interaksi",
+    "layoutAndTheme": "Tata letak & Tema",
+    "notAvailable": "Tidak tersedia",
+    "notAvailableInOfflineMode": "Tidak tersedia dalam mode offline",
+    "logOut": "Keluar",
+    "logoutButtonSubtitle": "Masuk ke server lain akan menghapus unduhan yang ada",
+    "areYouSure": "Apakah Anda yakin?",
+    "enableTranscoding": "Aktifkan transcoding",
+    "enableTranscodingSubtitle": "Melakukan transcoding stream musik di sisi server.",
+    "bitrate": "Bitrate",
+    "bitrateSubtitle": "Bitrate yang lebih tinggi memberikan kualitas audio lebih tinggi dengan biaya bandwidth yang lebih tinggi. Tidak berlaku untuk codec lossless, misalnya FLAC",
+    "customLocation": "Lokasi kustom",
+    "appDirectory": "Direktori aplikasi",
+    "addDownloadLocation": "Tambahkan lokasi unduhan",
+    "selectDirectory": "Pilih direktori",
+    "unknownError": "Kesalahan tidak dikenal",
+    "pathReturnSlashErrorMessage": "Path yang mengembalikan \\\"/\\\" tidak dapat digunakan",
+    "directoryMustBeEmpty": "Direktori harus kosong",
+    "customLocationsBuggy": "Lokasi kustom bisa sangat penuh bug dan tidak direkomendasikan dalam kebanyakan kasus. Lokasi di bawah folder sistem 'Music' mencegah penyimpanan sampul album karena keterbatasan OS.",
+    "enterLowPriorityStateOnPause": "Masuk ke status prioritas rendah saat dijeda",
+    "enterLowPriorityStateOnPauseSubtitle": "Memungkinkan notifikasi diswipe saat dijeda. Juga memungkinkan Android mematikan layanan saat dijeda.",
+    "shuffleAllTrackCount": "Jumlah trek untuk Acak Semua",
+    "shuffleAllTrackCountSubtitle": "Jumlah trek yang dimuat saat menggunakan tombol acak semua pada tab trek atau layar genre.",
+    "viewType": "Jenis tampilan",
+    "viewTypeSubtitle": "Jenis tampilan untuk layar musik",
+    "list": "Daftar",
+    "grid": "Kisi",
+    "none": "Tidak ada",
+    "customizationSettingsTitle": "Kustomisasi",
+    "@customizationSettingsTitle": {
+        "description": "Title for the customization settings screen"
+    },
+    "playbackSpeedControlSetting": "Visibilitas kecepatan pemutaran",
+    "@playbackSpeedControlSetting": {
+        "description": "Title of the visibility setting of the playback speed controls"
+    },
+    "playbackSpeedControlSettingSubtitle": "Apakah kontrol kecepatan pemutaran ditampilkan di menu layar pemutar",
+    "@playbackSpeedControlSettingSubtitle": {
+        "description": "Subtitle for the playback speed visibility setting"
+    },
+    "playbackSpeedControlSettingDescription": "Otomatis:\\\nFinamp mencoba mengidentifikasi apakah trek yang Anda putar adalah podcast atau (bagian dari) buku audio. Ini dianggap demikian jika trek lebih panjang dari {trackDuration} menit, jika album trek tersebut lebih panjang dari {albumDuration} jam, atau jika trek memiliki setidaknya satu genre berikut: {genreList}\\\nKontrol kecepatan pemutaran kemudian akan ditampilkan di menu layar pemutar.\\\n\\\nDitampilkan:\\\nKontrol kecepatan pemutaran akan selalu ditampilkan di menu layar pemutar.\\\n\\\nDisembunyikan:\\\nKontrol kecepatan pemutaran di menu layar pemutar selalu disembunyikan.",
+    "@playbackSpeedControlSettingDescription": {
+        "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown",
+        "placeholders": {
+            "trackDuration": {
+                "type": "int",
+                "example": "30"
+            },
+            "albumDuration": {
+                "type": "int",
+                "example": "3"
+            },
+            "genreList": {
+                "type": "String",
+                "example": "Podcast, Audiobook"
+            }
+        }
+    },
+    "automatic": "Otomatis",
+    "@automatic": {
+        "description": "Used as an option in the playback speed visibility settings"
+    },
+    "shown": "Ditampilkan",
+    "@shown": {
+        "description": "Used as an option in the playback speed visibility settings"
+    },
+    "hidden": "Disembunyikan",
+    "@hidden": {
+        "description": "Used as an option in the playback speed visibility settings"
+    },
+    "speed": "Kecepatan",
+    "@speed": {
+        "description": "Used as a placeholder in the input of the playback speed menu"
+    },
+    "reset": "Reset",
+    "@reset": {
+        "description": "Used for buttons in the playback speed menu and the settings"
+    },
+    "apply": "Terapkan",
+    "@apply": {
+        "description": "Used for a button in the playback speed menu"
+    },
+    "portrait": "Potret",
+    "landscape": "Lanskap",
+    "gridCrossAxisCount": "Jumlah kolom kisi {value} (sumbu silang)",
+    "@gridCrossAxisCount": {
+        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
+        "placeholders": {
+            "value": {
+                "type": "String",
+                "example": "Portrait"
+            }
+        }
+    },
+    "gridCrossAxisCountSubtitle": "Jumlah ubin kisi per baris saat {value}.",
+    "@gridCrossAxisCountSubtitle": {
+        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
+        "placeholders": {
+            "value": {
+                "type": "String",
+                "example": "landscape"
+            }
+        }
+    },
+    "showTextOnGridView": "Tampilkan teks pada tampilan kisi",
+    "showTextOnGridViewSubtitle": "Apakah teks (judul, artis, dll.) ditampilkan pada layar musik tampilan kisi.",
+    "useCoverAsBackground": "Gunakan sampul buram sebagai latar belakang",
+    "useCoverAsBackgroundSubtitle": "Apakah akan menggunakan sampul album yang diburamkan sebagai latar belakang di berbagai bagian aplikasi.",
+    "playerScreenMinimumCoverPaddingEditorTitle": "Padding minimum sampul album",
+    "@playerScreenMinimumCoverPaddingEditorTitle": {
+        "description": "Title for the editor that allows the user to set the minimum padding around the album cover on the player screen."
+    },
+    "playerScreenMinimumCoverPaddingEditorSubtitle": "Padding minimum di sekitar sampul album pada layar pemutar, dalam % dari lebar layar.",
+    "@playerScreenMinimumCoverPaddingEditorSubtitle": {
+        "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
+    },
+    "hideTrackArtistsIfSameAsAlbumArtists": "Sembunyikan artis trek jika sama dengan artis album",
+    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Apakah artis trek ditampilkan di layar album jika tidak berbeda dari artis album.",
+    "autoSwitchItemCurationTypeTitle": "Otomatis ganti jenis kurasi item",
+    "autoSwitchItemCurationTypeSubtitle": "Saat diaktifkan, Bagian Item di layar Artis dan Genre secara otomatis beralih ke jenis kurasi lain jika tidak ada item yang tersedia (misalnya, tidak ada favorit untuk artis tertentu).",
+    "showArtistsTracksSection": "Tampilkan bagian trek",
+    "showArtistsTracksSectionSubtitle": "Apakah menampilkan sebuah bagian berisi hingga lima trek. Saat diaktifkan, Anda dapat memilih antara Paling sering diputar, Favorit, Acak, Rilis terbaru, Baru ditambahkan, dan Baru diputar untuk trek.",
+    "disableGesture": "Nonaktifkan gestur",
+    "disableGestureSubtitle": "Apakah menonaktifkan gestur.",
+    "showFastScroller": "Tampilkan penggulung cepat",
+    "theme": "Tema",
+    "system": "Sistem",
+    "light": "Terang",
+    "dark": "Gelap",
+    "accentColor": "Warna aksen",
+    "@accentColor": {
+        "description": "Title of the accent color setting"
+    },
+    "accentColorTitle": "Pilih warna aksen",
+    "@accentColorTitle": {
+        "description": "Title for the accent color picker sheet"
+    },
+    "systemAccentColor": "Gunakan aksen sistem",
+    "@systemAccentColor": {
+        "description": "Title of the System Accent Color setting."
+    },
+    "systemAccentColorHasPriorityInfo": "Warna aksen kustom dinonaktifkan karena Aksen Sistem sedang digunakan",
+    "@systemAccentColorHasPriorityInfo": {
+        "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
+    },
+    "useMonochromeIcon": "Gunakan logo monokrom",
+    "@useMonochromeIcon": {
+        "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
+    },
+    "useMonochromeIconSubtitle": "Ini hanya memengaruhi ikon di dalam aplikasi, bukan ikon peluncur.",
+    "@useMonochromeIconSubtitle": {
+        "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
+    },
+    "defaultWord": "Default",
+    "useDefaultButton": "Reset ke warna aksen default",
+    "colorCode": "Kode warna (Hex)",
+    "@colorCode": {
+        "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
+    },
+    "colorCodeHint": "mis. #FFFFFF atau #coffee",
+    "@colorCodeHint": {
+        "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
+    },
+    "save": "Simpan",
+    "invalidColorCode": "Kode warna tidak valid",
+    "@invalidColorCode": {
+        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
+    },
+    "tabs": "Tab",
+    "playerScreen": "Layar pemutar",
+    "@playerScreen": {
+        "description": "Name for the expanded player"
+    },
+    "cancelSleepTimer": "Batalkan timer tidur?",
+    "yesButtonLabel": "Ya",
+    "noButtonLabel": "Tidak",
+    "hours": "Jam",
+    "seconds": "Detik",
+    "minutes": "Menit",
+    "timeFractionTooltip": "{currentTime} dari {totalTime}",
+    "@timeFractionTooltip": {
+        "placeholders": {
+            "currentTime": {
+                "type": "String",
+                "example": "2 minutes 40 seconds"
+            },
+            "totalTime": {
+                "type": "String",
+                "example": "3 minutes 20 seconds"
+            }
+        },
+        "description": "Tooltip and accessibility label for the track progress. {currentTime} is the current position within the track, as a translated string like '2 minutes 40 seconds', and {totalTime} is the total duration of the track, also a translated string."
+    },
+    "trackCountTooltip": "Trek {currentTrackIndex} dari {totalTrackCount}",
+    "@trackCountTooltip": {
+        "description": "Tooltip and accessibility label for the queue progress. {currentTrackIndex} and {totalTrackCount} are both numbers",
+        "placeholders": {
+            "currentTrackIndex": {
+                "type": "int",
+                "example": "10"
+            },
+            "totalTrackCount": {
+                "type": "int",
+                "example": "13"
+            }
+        }
+    },
+    "invalidNumber": "Angka tidak valid",
+    "sleepTimerTooltip": "Timer tidur",
+    "sleepTimerRemainingTime": "Tidur dalam {time,plural,=1{<1 menit} other{{time} menit}}",
+    "@sleepTimerRemainingTime": {
+        "description": "Button label for sleep timer. {time} is the amount of minutes left.",
+        "placeholders": {
+            "time": {
+                "type": "int"
+            }
+        }
+    },
+    "sleepTimerRemainingTracks": "Tidur {time,plural,=1{setelah trek ini} other{dalam {time} trek}}",
+    "@sleepTimerRemainingTracks": {
+        "description": "Button label for sleep timer. {time} is the amount of minutes left.",
+        "placeholders": {
+            "time": {
+                "type": "int"
+            }
+        }
+    },
+    "addToPlaylistTooltip": "Tambahkan ke playlist",
+    "addToPlaylistTitle": "Tambahkan ke Playlist",
+    "addToMorePlaylistsTooltip": "Tambahkan ke lebih banyak playlist",
+    "addToMorePlaylistsTitle": "Tambahkan ke Lebih Banyak Playlist",
+    "removeFromPlaylistTooltip": "Hapus dari playlist ini",
+    "removeFromPlaylistTitle": "Hapus dari Playlist Ini",
+    "removeFromPlaylistNamedTooltip": "Hapus dari playlist '{playlistName}'",
+    "@removeFromPlaylistNamedTooltip": {
+        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
+        "placeholders": {
+            "playlistName": {
+                "type": "String",
+                "example": "My Favorite Tracks"
+            }
+        }
+    },
+    "removeFromPlaylistNamedTitle": "Hapus dari Playlist '{playlistName}'",
+    "@removeFromPlaylistNamedTitle": {
+        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
+        "placeholders": {
+            "playlistName": {
+                "type": "String",
+                "example": "My Favorite Tracks"
+            }
+        }
+    },
+    "newPlaylist": "Playlist Baru",
+    "createButtonLabel": "Buat",
+    "playlistCreated": "Playlist dibuat.",
+    "playlistActionsMenuButtonTooltip": "Ketuk untuk menambahkan ke playlist. Tekan lama untuk mengalihkan favorit.",
+    "@playlistActionsMenuButtonTooltip": {
+        "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
+    },
+    "browsePlaylists": "Telusuri Playlist",
+    "@browsePlaylists": {
+        "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
+    },
+    "noAlbum": "Tanpa album",
+    "noItem": "Tidak ada item",
+    "noArtist": "Tidak ada artis",
+    "unknownArtist": "Artis tidak dikenal",
+    "unknownAlbum": "Album tidak dikenal",
+    "playbackModeDirectPlaying": "Pemutaran langsung",
+    "@playbackModeDirectPlaying": {
+        "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
+    },
+    "playbackModeTranscoding": "Transcoding",
+    "@playbackModeTranscoding": {
+        "description": "Feature chip that is shown when tracks are being transcoded by the server"
+    },
+    "kiloBitsPerSecondLabel": "{bitrate} kbps",
+    "@kiloBitsPerSecondLabel": {
+        "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
+        "placeholders": {
+            "bitrate": {
+                "type": "int",
+                "example": "320"
+            }
+        }
+    },
+    "playbackModeLocal": "Diputar secara lokal",
+    "@playbackModeLocal": {
+        "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
+    },
+    "queue": "Antrean",
+    "addToQueue": "Tambahkan ke antrean",
+    "@addToQueue": {
+        "description": "Popup menu item title for adding an item to the end of the play queue."
+    },
+    "replaceQueue": "Ganti antrean",
+    "instantMix": "Mix instan",
+    "goToAlbum": "Buka album",
+    "goToArtist": "Buka artis",
+    "goToGenre": "Buka genre",
+    "removeFavorite": "Hapus favorit",
+    "addFavorite": "Tambahkan favorit",
+    "confirmFavoriteAdded": "Favorit ditambahkan",
+    "confirmFavoriteRemoved": "Favorit dihapus",
+    "addedToQueue": "Ditambahkan ke antrean.",
+    "@addedToQueue": {
+        "description": "Snackbar message that shows when the user successfully adds items to the end of the play queue."
+    },
+    "insertedIntoQueue": "Disisipkan ke antrean.",
+    "@insertedIntoQueue": {
+        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
+    },
+    "queueReplaced": "Antrean diganti.",
+    "confirmAddedToPlaylist": "Ditambahkan ke playlist.",
+    "@confirmAddedToPlaylist": {
+        "description": "Snackbar message that shows when the user successfully adds items to a playlist."
+    },
+    "removedFromPlaylist": "Dihapus dari playlist.",
+    "startingInstantMix": "Memulai mix instan.",
+    "anErrorHasOccured": "Terjadi kesalahan.",
+    "responseError": "{error} Kode status {statusCode}.",
+    "@responseError": {
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Forbidden"
+            },
+            "statusCode": {
+                "type": "int",
+                "example": "403"
+            }
+        }
+    },
+    "responseError401": "{error} Kode status {statusCode}. Ini kemungkinan berarti Anda menggunakan nama pengguna/kata sandi yang salah, atau klien Anda sudah tidak masuk lagi.",
+    "@responseError401": {
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Unauthorized"
+            },
+            "statusCode": {
+                "type": "int",
+                "example": "401"
+            }
+        }
+    },
+    "removeFromMix": "Hapus dari Mix",
+    "addToMix": "Tambahkan ke Mix",
+    "startRadio": "Mulai Radio",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
+    },
+    "redownloadedItems": "{count,plural, =0{Tidak perlu mengunduh ulang.} =1{Mengunduh ulang {count} item} other{Mengunduh ulang {count} item}}",
+    "@redownloadedItems": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bufferDuration": "Durasi buffer",
+    "bufferDurationSubtitle": "Durasi yang harus dibuffer, dalam detik. Memerlukan mulai ulang.",
+    "bufferDisableSizeConstraintsTitle": "Jangan batasi ukuran buffer",
+    "bufferDisableSizeConstraintsSubtitle": "Menonaktifkan batasan ukuran buffer ('Ukuran Buffer'). Buffer akan selalu dimuat sampai durasi yang dikonfigurasi ('Durasi Buffer'), bahkan untuk file yang sangat besar. Dapat menyebabkan crash. Memerlukan mulai ulang.",
+    "bufferSizeTitle": "Ukuran buffer",
+    "bufferSizeSubtitle": "Ukuran buffer dalam MB. Memerlukan mulai ulang",
+    "language": "Bahasa",
+    "skipToPreviousTrackButtonTooltip": "Lompat ke awal atau ke trek sebelumnya",
+    "@skipToPreviousTrackButtonTooltip": {
+        "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
+    },
+    "skipToNextTrackButtonTooltip": "Lompat ke trek berikutnya",
+    "@skipToNextTrackButtonTooltip": {
+        "description": "Tooltip for the button that skips to the next track"
+    },
+    "togglePlaybackButtonTooltip": "Alihkan pemutaran",
+    "@togglePlaybackButtonTooltip": {
+        "description": "Tooltip for the button that toggles playback"
+    },
+    "previousTracks": "Trek sebelumnya",
+    "@previousTracks": {
+        "description": "Description in the queue panel for the list of tracks that come before the current track in the queue. The tracks might not actually have been played (e.g. if the user skipped ahead to a specific track)."
+    },
+    "nextUp": "Berikutnya",
+    "@nextUp": {
+        "description": "Description in the queue panel for the list of tracks were manually added to be played after the current track. This should be capitalized (if applicable) to be more recognizable throughout the UI"
+    },
+    "clearNextUp": "Hapus Berikutnya",
+    "@clearNextUp": {
+        "description": "Label for the action that deletes all tracks added to Next Up"
+    },
+    "stopAndClearQueue": "Hentikan pemutaran dan bersihkan antrean",
+    "@stopAndClearQueue": {
+        "description": "Label for a button that stops playback and removes all tracks from the queue."
+    },
+    "createPlaylistFromCurrentQueue": "Simpan antrean ke playlist",
+    "@createPlaylistFromCurrentQueue": {
+        "description": "Label for a button that adds the current queue to an existing or new playlist."
+    },
+    "playingFrom": "Memutar dari",
+    "@playingFrom": {
+        "description": "Prefix shown before the name of the main queue source, like the album or playlist that was used to start playback. Example: \"Playing from {My Nice Playlist}\""
+    },
+    "playNext": "Putar berikutnya",
+    "@playNext": {
+        "description": "Used for adding a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "addToNextUp": "Tambahkan ke Berikutnya",
+    "@addToNextUp": {
+        "description": "Used for adding a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
+    },
+    "shuffleNext": "Acak berikutnya",
+    "@shuffleNext": {
+        "description": "Used for shuffling a list (album, playlist, etc.) to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "shuffleSomeNext": "Acak beberapa berikutnya",
+    "@shuffleSomeNext": {
+        "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "shuffleToNextUp": "Acak ke Berikutnya",
+    "@shuffleToNextUp": {
+        "description": "Used for shuffling a list (album, playlist, etc.) to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
+    },
+    "shuffleSomeToNextUp": "Acak beberapa ke Berikutnya",
+    "@shuffleSomeToNextUp": {
+        "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
+    },
+    "shuffleToQueue": "Acak ke antrean",
+    "@shuffleToQueue": {
+        "description": "Used for shuffling a list (album, playlist, etc.) to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "shuffleSomeToQueue": "Acak beberapa ke antrean",
+    "@shuffleSomeToQueue": {
+        "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "movePlayNext": "Putar berikutnya",
+    "@movePlayNext": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "moveAddToNextUp": "Pindahkan ke Berikutnya",
+    "@moveAddToNextUp": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
+    },
+    "moveAddToQueue": "Pindahkan ke akhir",
+    "@moveAddToQueue": {
+        "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
+    },
+    "confirmPlayNext": "{type, select, track{Trek} album{Album} artist{Artis} playlist{Playlist} genre{Genre} other{Item}} akan diputar berikutnya",
+    "@confirmPlayNext": {
+        "description": "A confirmation message that is shown after successfully adding a track to the front of the \"Next Up\" queue",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "confirmAddToNextUp": "Menambahkan {type, select, track{Trek} album{album} artist{artis} playlist{playlist} genre{genre} disc{disk} other{item}} ke Berikutnya",
+    "@confirmAddToNextUp": {
+        "description": "A confirmation message that is shown after successfully adding a track to the end of the \"Next Up\" queue",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "confirmAddToQueue": "Menambahkan {type, select, track{trek} album{album} artist{artis} playlist{playlist} genre{genre} disc{disk} other{item}} ke antrean",
+    "@confirmAddToQueue": {
+        "description": "A confirmation message that is shown after successfully adding a track to the end of the regular queue",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "confirmShuffleNext": "Akan mengacak berikutnya",
+    "@confirmShuffleNext": {
+        "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the front of the \"Next Up\" queue"
+    },
+    "confirmShuffleToNextUp": "Diacak ke Berikutnya",
+    "@confirmShuffleToNextUp": {
+        "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the \"Next Up\" queue"
+    },
+    "confirmShuffleToQueue": "Diacak ke antrean",
+    "@confirmShuffleToQueue": {
+        "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the regular queue"
+    },
+    "placeholderSource": "Di suatu tempat",
+    "@placeholderSource": {
+        "description": "Placeholder text used when the source of the current track/queue is unknown"
+    },
+    "playbackHistory": "Riwayat pemutaran",
+    "@playbackHistory": {
+        "description": "Title for the playback history screen, where the user can see a list of recently played tracks, sorted by "
+    },
+    "shareOfflineListens": "Bagikan pemutaran offline",
+    "@shareOfflineListens": {
+        "description": "Button for exporting the JSON file containing any playback events that couldn't be submitted to the server, either because offline mode was enabled or the connection failed"
+    },
+    "yourLikes": "Suka Anda",
+    "@yourLikes": {
+        "description": "Title for the queue source when the user is playing their liked tracks"
+    },
+    "mix": "{mixSource} - Mix",
+    "@mix": {
+        "description": "Suffix added to a queue source when playing a mix. Example: \"Never Gonna Give You Up - Mix\"",
+        "placeholders": {
+            "mixSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "tracksFormerNextUp": "Trek ditambahkan melalui Berikutnya",
+    "@tracksFormerNextUp": {
+        "description": "Title for the queue source for tracks that were once added to the queue via the \"Next Up\" feature, but have since been played"
+    },
+    "radio": "Radio",
+    "@radio": {
+        "description": "Title for the queue source when the user is playing a track added via radio"
+    },
+    "radioForItem": "{radioSource} - Radio",
+    "@radioForItem": {
+        "description": "Suffix added to a queue source when playing a radio track. Example: \"Never Gonna Give You Up - Radio\"",
+        "placeholders": {
+            "radioSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "savedQueue": "Antrean tersimpan",
+    "@savedQueue": {
+        "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
+    },
+    "playingFromType": "Memutar dari {source, select, album{Album} playlist{Playlist} trackMix{Mix Trek} artistMix{Mix Artis} albumMix{Mix Album} genreMix{Mix Genre} favorites{Favorit} allTracks{Semua Trek} filteredList{Trek} genre{Genre} artist{Artis} track{Trek} nextUpAlbum{Album di Berikutnya} nextUpPlaylist{Playlist di Berikutnya} nextUpArtist{Artis di Berikutnya} nextUpGenre{Genre di Berikutnya} remoteClient{Klien jarak jauh} radio{Radio} other{}}",
+    "@playingFromType": {
+        "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
+        "placeholders": {
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "shuffleAllQueueSource": "Acak Semua",
+    "@shuffleAllQueueSource": {
+        "description": "Title for the queue source when the user is shuffling all tracks. Should be capitalized (if applicable) to be more recognizable throughout the UI"
+    },
+    "playbackOrderLinearButtonLabel": "Memutar berurutan",
+    "@playbackOrderLinearButtonLabel": {
+        "description": "Label for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in linear/in-order mode"
+    },
+    "playbackOrderLinearButtonTooltip": "Memutar berurutan. Ketuk untuk mengacak.",
+    "@playbackOrderLinearButtonTooltip": {
+        "description": "Tooltip for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in linear/in-order mode"
+    },
+    "playbackOrderShuffledButtonLabel": "Mengacak trek",
+    "@playbackOrderShuffledButtonLabel": {
+        "description": "Label for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in shuffle mode"
+    },
+    "playbackOrderShuffledButtonTooltip": "Mengacak trek. Ketuk untuk memutar berurutan.",
+    "@playbackOrderShuffledButtonTooltip": {
+        "description": "Tooltip for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in shuffle mode"
+    },
+    "playbackSpeedButtonLabel": "Memutar pada kecepatan x{speed}",
+    "@playbackSpeedButtonLabel": {
+        "description": "Label for the button that toggles visibility. of the playback speed menu, {speed} is the current playback speed.",
+        "placeholders": {
+            "speed": {
+                "type": "double"
+            }
+        }
+    },
+    "playbackSpeedFeatureText": "Kecepatan x{speed}",
+    "@playbackSpeedFeatureText": {
+        "description": "Label for the feature chip that is shown if the playback speed is different from x1, {speed} is the current playback speed.",
+        "placeholders": {
+            "speed": {
+                "type": "double"
+            }
+        }
+    },
+    "currentVolumeFeatureText": "Volume {volume}%",
+    "@currentVolumeFeatureText": {
+        "description": "Label for the feature chip that is shown if the volume is not 100%",
+        "placeholders": {
+            "volume": {
+                "type": "int",
+                "description": "The current volume level, in percent"
+            }
+        }
+    },
+    "playbackSpeedDecreaseLabel": "Kurangi kecepatan pemutaran",
+    "@playbackSpeedDecreaseLabel": {
+        "description": "Label for the button in the speed menu that decreases the playback speed."
+    },
+    "playbackSpeedIncreaseLabel": "Tingkatkan kecepatan pemutaran",
+    "@playbackSpeedIncreaseLabel": {
+        "description": "Label for the button in the speed menu that increases the playback speed."
+    },
+    "loopModeNoneButtonLabel": "Tidak mengulang",
+    "@loopModeNoneButtonLabel": {
+        "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop off mode"
+    },
+    "loopModeOneButtonLabel": "Mengulang trek ini",
+    "@loopModeOneButtonLabel": {
+        "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop one mode"
+    },
+    "loopModeAllButtonLabel": "Mengulang semua",
+    "@loopModeAllButtonLabel": {
+        "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop all mode"
+    },
+    "queuesScreen": "Pulihkan Sedang Diputar",
+    "@queuesScreen": {
+        "description": "Title for the screen where older now playing queues can be restored"
+    },
+    "queueRestoreButtonLabel": "Pulihkan Antrean Ini",
+    "@queueRestoreButtonLabel": {
+        "description": "Button to restore archived now playing queue, overwriting current queue"
+    },
+    "queueRestoreTitle": "Disimpan {date}",
+    "@queueRestoreTitle": {
+        "description": "Description of when a saved queue was saved",
+        "placeholders": {
+            "date": {
+                "type": "DateTime",
+                "format": "yyy-MM-dd hh:mm",
+                "isCustomDateFormat": "true"
+            }
+        }
+    },
+    "queueRestoreSubtitle1": "Memutar: {track}",
+    "@queueRestoreSubtitle1": {
+        "description": "Description of playing track in a saved queue",
+        "placeholders": {
+            "track": {
+                "type": "String"
+            }
+        }
+    },
+    "queueRestoreSubtitle2": "{count,plural,=1{1 Trek} other{{count} Trek}}, {remaining} Belum diputar",
+    "@queueRestoreSubtitle2": {
+        "description": "Description of length of a saved queue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "remaining": {
+                "type": "int"
+            }
+        }
+    },
+    "queueLoadingMessage": "Memulihkan antrean…",
+    "@queueLoadingMessage": {
+        "description": "Message displayed on now-playing bar when a saved queue is loading."
+    },
+    "queueRetryMessage": "Gagal memulihkan antrean. Coba lagi?",
+    "@queueRetryMessage": {
+        "description": "Message displayed on now-playing bar when all items in a saved queue fail to load."
+    },
+    "autoloadLastQueueOnStartup": "Pulihkan otomatis antrean terakhir",
+    "@autoloadLastQueueOnStartup": {
+        "description": "Setting to restore last queue on startup"
+    },
+    "autoloadLastQueueOnStartupSubtitle": "Saat aplikasi dimulai, coba pulihkan antrean yang terakhir diputar.",
+    "@autoloadLastQueueOnStartupSubtitle": {
+        "description": "Description of the setting to restore last queue on startup"
+    },
+    "reportQueueToServer": "Laporkan antrean saat ini ke server?",
+    "@reportQueueToServer": {
+        "description": "Label for the setting that toggles reporting of the current queue to the Jellyfin server"
+    },
+    "reportQueueToServerSubtitle": "Jika diaktifkan, Finamp akan mengirim antrean saat ini ke server. Ini dapat meningkatkan kontrol jarak jauh dan memungkinkan pemulihan antrean dari sisi server. Selalu aktif jika fitur 'Play On' diaktifkan.",
+    "@reportQueueToServerSubtitle": {
+        "description": "Description of the setting that toggles reporting of the current queue to the Jellyfin server"
+    },
+    "periodicPlaybackSessionUpdateFrequency": "Frekuensi pembaruan sesi pemutaran",
+    "@periodicPlaybackSessionUpdateFrequency": {
+        "description": "Label for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
+    },
+    "periodicPlaybackSessionUpdateFrequencySubtitle": "Seberapa sering mengirim status pemutaran saat ini ke server, dalam detik. Ini harus kurang dari 5 menit (300 detik) agar sesi tidak timeout.",
+    "@periodicPlaybackSessionUpdateFrequencySubtitle": {
+        "description": "Description of the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
+    },
+    "periodicPlaybackSessionUpdateFrequencyDetails": "Jika server Jellyfin tidak menerima pembaruan apa pun dari klien dalam 5 menit terakhir, server menganggap pemutaran telah berakhir. Ini berarti untuk trek yang lebih panjang dari 5 menit, pemutaran bisa salah dilaporkan sebagai telah berakhir, yang menurunkan kualitas data pelaporan pemutaran.",
+    "@periodicPlaybackSessionUpdateFrequencyDetails": {
+        "description": "Additional details for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
+    },
+    "playOnStaleDelay": "Timeout sesi 'Play On'",
+    "@playOnStaleDelay": {
+        "description": "Label for the setting that controls how long a PlayOn remote session is considered active"
+    },
+    "playOnStaleDelaySubtitle": "Berapa lama sesi 'Play On' jarak jauh dianggap aktif setelah menerima perintah. Saat dianggap aktif, pemutaran dilaporkan lebih sering, yang dapat meningkatkan penggunaan bandwidth.",
+    "@playOnStaleDelaySubtitle": {
+        "description": "Description of the setting that controls how long a PlayOn remote session is considered active"
+    },
+    "enablePlayonTitle": "Aktifkan dukungan 'Play On'",
+    "@enablePlayonTitle": {
+        "description": "Label for the setting to enable Jellyfin's 'Play On' feature (remote control)"
+    },
+    "enablePlayonSubtitle": "Mengaktifkan fitur 'Play On' Jellyfin (mengendalikan Finamp dari jarak jauh melalui klien lain). Nonaktifkan ini jika reverse proxy atau server Anda tidak mendukung websocket.",
+    "@enablePlayonSubtitle": {
+        "description": "Description of the setting to enable Jellyfin's 'Play On' feature (remote control)"
+    },
+    "playOnReconnectionDelay": "Jeda penyambungan ulang sesi 'Play On'",
+    "@playOnReconnectionDelay": {
+        "description": "Label for the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
+    },
+    "playOnReconnectionDelaySubtitle": "Mengontrol jeda antara percobaan menyambung ulang ke websocket PlayOn saat terputus (dalam detik). Jeda yang lebih rendah meningkatkan penggunaan bandwidth.",
+    "@playOnReconnectionDelaySubtitle": {
+        "description": "Description of the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
+    },
+    "topTracks": "Trek Teratas",
+    "topAlbums": "Album Teratas",
+    "topArtists": "Artis Teratas",
+    "recentlyAddedTracks": "Trek Baru Ditambahkan",
+    "@recentlyAddedTracks": {
+        "description": "Label for the artist section that shows tracks that were recently added to the library, sorted by the date they were added."
+    },
+    "recentlyAddedAlbums": "Album Baru Ditambahkan",
+    "@recentlyAddedAlbums": {
+        "description": "Label for the genre section that shows albums that were recently added to the library, sorted by the date they were added."
+    },
+    "recentlyAddedArtists": "Artis Baru Ditambahkan",
+    "@recentlyAddedArtists": {
+        "description": "Label for the genre section that shows artists that were recently added to the library, sorted by the date they were added."
+    },
+    "latestTracks": "Trek Terbaru",
+    "latestAlbums": "Album Terbaru",
+    "latestArtists": "Artis Terbaru",
+    "recentlyPlayedTracks": "Trek Baru Diputar",
+    "recentlyPlayedAlbums": "Album Baru Diputar",
+    "recentlyPlayedArtists": "Artis Baru Diputar",
+    "favoriteTracks": "Trek Favorit",
+    "favoriteAlbums": "Album Favorit",
+    "favoriteArtists": "Artis Favorit",
+    "randomTracks": "Trek (Pilihan Acak)",
+    "randomAlbums": "Album (Pilihan Acak)",
+    "randomArtists": "Artis (Pilihan Acak)",
+    "mostPlayed": "Paling Sering Diputar",
+    "randomFavoritesFirst": "Acak (Favorit Diutamakan)",
+    "recentlyAdded": "Baru Ditambahkan",
+    "recentlyPlayed": "Baru Diputar",
+    "latestReleases": "Rilis Terbaru",
+    "itemSectionsOrder": "Urutan Bagian Item",
+    "@itemSectionsOrder": {
+        "description": "Label for the setting that controls the order of item sections on the screens."
+    },
+    "unknown": "Tidak dikenal",
+    "itemSectionsOrderSubtitle": "Mengontrol urutan Bagian Item.",
+    "@itemSectionsOrderSubtitle": {
+        "description": "Description of the setting that controls the order of item sections on the screens."
+    },
+    "genreItemSectionFilterChipOrderTitle": "Urutan Filter Bagian Item",
+    "@genreItemSectionFilterChipOrderTitle": {
+        "description": "Label for the setting that controls the order of item sections filter chips."
+    },
+    "genreItemSectionFilterChipOrderSubtitle": "Mengontrol urutan filter yang tersedia untuk bagian item.",
+    "@genreItemSectionFilterChipOrderSubtitle": {
+        "description": "Description of the setting that controls the order of item sections filter chips."
+    },
+    "artistItemSectionFilterChipOrderTitle": "Urutan Filter Bagian Trek",
+    "@artistItemSectionFilterChipOrderTitle": {
+        "description": "Label for the setting that controls the order of the tracks sections filter chips."
+    },
+    "artistItemSectionFilterChipOrderSubtitle": "Mengontrol urutan filter yang tersedia untuk bagian trek.",
+    "@artistItemSectionFilterChipOrderSubtitle": {
+        "description": "Description of the setting that controls the order of the tracks sections filter chips."
+    },
+    "genreFilterArtistScreens": "Filter artis",
+    "@genreFilterArtistScreens": {
+        "description": "Label for the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
+    },
+    "genreFilterArtistScreensSubtitle": "Jika diaktifkan, Artis (yang diakses melalui sebuah genre) hanya akan menampilkan trek dan album yang cocok dengan genre yang sedang Anda telusuri. (Selalu mungkin untuk menghapus Filter Genre secara manual guna menampilkan semua trek dan album.)",
+    "@genreFilterArtistScreensSubtitle": {
+        "description": "Description of the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
+    },
+    "genreFilterPlaylistScreens": "Filter playlist",
+    "@genreFilterPlaylistScreens": {
+        "description": "Label for the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
+    },
+    "genreFilterPlaylistScreensSubtitle": "Jika diaktifkan, Playlist (yang diakses melalui sebuah genre) hanya akan menampilkan trek yang cocok dengan genre yang sedang Anda telusuri. (Selalu mungkin untuk menghapus Filter Genre secara manual guna menampilkan semua trek.)",
+    "@genreFilterPlaylistScreensSubtitle": {
+        "description": "Description of the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
+    },
+    "genreListsInheritSorting": "Pewarisan pengurutan daftar penuh",
+    "@genreListsInheritSorting": {
+        "description": "Label for the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
+    },
+    "genreListsInheritSortingSubtitle": "Jika diaktifkan, daftar \\\"Lihat Semua\\\" akan mewarisi pengurutan dan pemfilteran dari Layar Genre. Jika dinonaktifkan, pengaturan dari tab pustaka yang sesuai akan digunakan sebagai gantinya. Mengetuk jumlah di bagian atas Layar Genre atau tombol \\\"Telusuri Playlist\\\" akan selalu membuka daftar penuh dengan pengaturan pengurutan dari tab pustaka.",
+    "@genreListsInheritSortingSubtitle": {
+        "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
+    },
+    "curatedItemsMostPlayedOfflineTooltip": "Tidak tersedia dalam Mode Offline.",
+    "@curatedItemsMostPlayedOfflineTooltip": {
+        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
+    },
+    "curatedItemsNotListenedYet": "Anda belum mendengarkan trek apa pun{itemType, select, artistGenreFilter{ oleh artis ini dalam genre ini} artist{ oleh artis ini} genre{ dalam genre ini} other{}}.",
+    "@curatedItemsNotListenedYet": {
+        "description": "Tooltip for Most Played and Recently Played on Curated Items in Online Mode when not yet listened to any tracks.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "curatedItemsNoFavorites": "Anda tidak punya favorit{itemType, select, artistGenreFilter{ untuk artis ini dalam genre ini} artist{ untuk artis ini} genre{ untuk genre ini} other{}}.",
+    "@curatedItemsNoFavorites": {
+        "description": "Tooltip for Favorites on Curated Items in Online Mode when no favorites yet.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "genreNoItems": "Anda tidak punya {itemType, select, playlists{playlist} artists{artis} albums{album} tracks{trek} other{item}} untuk genre ini.",
+    "@genreNoItems": {
+        "description": "Message for empty See All lists for a genre.",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "albumCount": "{count,plural,=1{{count} Album} other{{count} Album}}",
+    "@albumCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "shuffleAlbums": "Acak album",
+    "@shuffleAlbums": {
+        "description": "Label for action that shuffles all albums of an artist"
+    },
+    "shuffleSomeAlbums": "Acak beberapa album",
+    "@shuffleSomeAlbums": {
+        "description": "Label for action that shuffles some albums of a genre"
+    },
+    "shuffleAlbumsNext": "Acak album berikutnya",
+    "@shuffleAlbumsNext": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the start of Next Up"
+    },
+    "shuffleSomeAlbumsNext": "Acak beberapa album berikutnya",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "shuffleAlbumsToNextUp": "Acak album ke Berikutnya",
+    "@shuffleAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of Next Up"
+    },
+    "shuffleSomeAlbumsToNextUp": "Acak beberapa album ke Berikutnya",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
+    },
+    "shuffleAlbumsToQueue": "Acak album ke antrean",
+    "@shuffleAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of the regular queue"
+    },
+    "shuffleSomeAlbumsToQueue": "Acak beberapa album ke antrean",
+    "@shuffleSomeAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
+    },
+    "playCountValue": "{playCount,plural,=1{{playCount} kali putar} other{{playCount} kali putar}}",
+    "@playCountValue": {
+        "placeholders": {
+            "playCount": {
+                "type": "int",
+                "example": "12"
+            }
+        }
+    },
+    "couldNotLoad": "Tidak dapat memuat {source, select, album{album} playlist{playlist} trackMix{mix trek} artistMix{mix artis} albumMix{mix album} genreMix{mix genre} favorites{favorit} allTracks{semua trek} filteredList{trek} genre{genre} artist{artis} track{trek} nextUpAlbum{album di Berikutnya} nextUpPlaylist{playlist di Berikutnya} nextUpArtist{artis di Berikutnya} nextUpGenre{genre di Berikutnya} other{}}",
+    "@couldNotLoad": {
+        "placeholders": {
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "confirm": "Konfirmasi",
+    "close": "Tutup",
+    "showUncensoredLogMessage": "Log ini berisi informasi login Anda. Tampilkan?",
+    "resetTabs": "Reset tab",
+    "resetToDefaults": "Reset ke default",
+    "noMusicLibrariesTitle": "Tidak ada pustaka musik",
+    "@noMusicLibrariesTitle": {
+        "description": "Title for message that shows on the views screen when no music libraries could be found."
+    },
+    "noMusicLibrariesBody": "Finamp tidak dapat menemukan pustaka musik apa pun. Pastikan server Jellyfin Anda berisi setidaknya satu pustaka dengan jenis konten diatur ke \\\"Music\\\".",
+    "refresh": "Segarkan",
+    "moreInfo": "Info lebih lanjut",
+    "volumeNormalizationSettingsTitle": "Normalisasi volume",
+    "@volumeNormalizationSettingsTitle": {
+        "description": "Title for the replay gain settings screen"
+    },
+    "playbackReportingSettingsTitle": "Pelaporan pemutaran & Play On",
+    "@playbackReportingSettingsTitle": {
+        "description": "Title for the playback reporting settings screen"
+    },
+    "volumeNormalizationSwitchTitle": "Aktifkan normalisasi volume",
+    "@volumeNormalizationSwitchTitle": {
+        "description": "Title for the switch that toggles replay gain"
+    },
+    "volumeNormalizationSwitchSubtitle": "Gunakan informasi gain untuk menormalisasi tingkat kerasnya trek (\\\"Replay Gain\\\")",
+    "@volumeNormalizationSwitchSubtitle": {
+        "description": "Subtitle for the switch that toggles replay gain"
+    },
+    "volumeNormalizationModeSelectorTitle": "Mode normalisasi volume",
+    "@volumeNormalizationModeSelectorTitle": {
+        "description": "Title for the dropdown that selects the replay gain mode"
+    },
+    "volumeNormalizationModeSelectorSubtitle": "Kapan dan bagaimana menerapkan normalisasi volume",
+    "@volumeNormalizationModeSelectorSubtitle": {
+        "description": "Subtitle for the dropdown that selects the replay gain mode"
+    },
+    "volumeNormalizationModeSelectorDescription": "Dinamis:\\\nSaat memutar beberapa trek dari album yang sama secara berurutan, gain album digunakan (mis. saat memutar sebuah album, atau trek dari album yang sama dalam sebuah playlist). Jika tidak, gain trek digunakan.\\\n\\\nBerbasis trek:\\\nGain trek selalu digunakan, terlepas dari apakah album sedang diputar atau tidak.\\\n\\\nBerbasis album:\\\nGain album selalu digunakan, tetapi jika tidak tersedia (mis. untuk single), gain trek akan digunakan sebagai gantinya.\\\n\\\nHanya Album:\\\nNormalisasi volume hanya diterapkan saat memutar album (menggunakan gain album), tetapi tidak untuk trek individual.",
+    "@volumeNormalizationModeSelectorDescription": {
+        "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown"
+    },
+    "volumeNormalizationModeHybrid": "Dinamis",
+    "@volumeNormalizationModeHybrid": {
+        "description": "'Dynamic' option for the replay gain mode dropdown. In dynamic mode, the track gain is used for regular playback, but if an album is playing (either because it's the main playback queue source, or because it was added to the queue at some point), or successive tracks from a same album are in the queue, the album gain is used instead."
+    },
+    "volumeNormalizationModeTrackBased": "Berbasis trek",
+    "@volumeNormalizationModeTrackBased": {
+        "description": "'Track-based' option for the replay gain mode dropdown. In track-based mode, the track gain is always used, regardless of whether an album is playing or not."
+    },
+    "volumeNormalizationModeAlbumBased": "Berbasis album",
+    "@volumeNormalizationModeAlbumBased": {
+        "description": "'Album-based' option for the replay gain mode dropdown. In album-based mode, the album gain is always used, regardless of whether an album is playing or not."
+    },
+    "volumeNormalizationModeAlbumOnly": "Hanya untuk Album",
+    "@volumeNormalizationModeAlbumOnly": {
+        "description": "'Only for Albums' option for the replay gain mode dropdown. In albums-only mode, Volume Normalization is only applied while playing albums (using the album gain), but not for individual tracks."
+    },
+    "volumeNormalizationIOSBaseGainEditorTitle": "Gain dasar",
+    "@volumeNormalizationIOSBaseGainEditorTitle": {
+        "description": "Title for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "Pilih offset gain volume (dalam dB)",
+    "@volumeNormalizationIOSBaseGainEditorSubtitle": {
+        "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "Saat ini, Normalisasi Volume pada platform selain Android memerlukan perubahan volume pemutaran untuk meniru perubahan gain. Karena kami tidak dapat menaikkan volume di atas 100%, kami perlu menurunkan volume secara default agar kami dapat meningkatkan volume trek yang pelan.\\\n\\\nNilainya dalam desibel (dB), dengan -10 dB \\(\\sim\\)30% volume, -4.5 dB \\(\\sim\\)60% volume, dan -2 dB \\(\\sim\\)80% volume.\\\nNilai positif berarti tidak ada penurunan volume yang diterapkan hingga ambang batas (mis. gain -6.4 dB (dan yang lebih positif) untuk offset +6.4 dB), tetapi mencegah trek yang lebih pelan untuk ditingkatkan.\\\n\\\nAnda sebaiknya mengatur ini ke kebalikan dari gain tertinggi (paling positif) di pustaka Anda, yaitu atur ke +3 dB jika gain tertinggi di pustaka Anda adalah -3 dB (dan semua trek lain memiliki gain seperti -5 dB, -8 dB, -10 dB, dll.).",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "numberAsDecibel": "{value} dB",
+    "@numberAsDecibel": {
+        "description": "Label for a number that represents a decibel value. The value will be the decibel value.",
+        "placeholders": {
+            "value": {
+                "type": "double",
+                "example": "-9.6"
+            }
+        }
+    },
+    "swipeInsertQueueNext": "Putar trek yang di-swipe sebagai berikutnya",
+    "swipeInsertQueueNextSubtitle": "Aktifkan untuk menyisipkan sebuah trek sebagai item berikutnya dalam antrean saat di-swipe di daftar trek, alih-alih menambahkannya ke bagian akhir.",
+    "swipeLeftToRightAction": "Aksi swipe ke kanan",
+    "swipeLeftToRightActionSubtitle": "Aksi yang dipicu saat men-swipe trek dalam daftar dari kiri ke kanan.",
+    "swipeRightToLeftAction": "Aksi swipe ke kiri",
+    "swipeRightToLeftActionSubtitle": "Aksi yang dipicu saat men-swipe trek dalam daftar dari kanan ke kiri.",
+    "startInstantMixForIndividualTracksSwitchTitle": "Mulai mix instan untuk trek individual",
+    "@startInstantMixForIndividualTracksSwitchTitle": {
+        "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
+    },
+    "startInstantMixForIndividualTracksSwitchSubtitle": "Jika diaktifkan, mengetuk sebuah trek pada tab trek akan memulai mix instan dari trek tersebut, alih-alih hanya memutar satu trek.",
+    "downloadItem": "Unduh",
+    "@downloadItem": {
+        "description": "Option to download item in long-press menu."
+    },
+    "repairComplete": "Perbaikan unduhan selesai.",
+    "@repairComplete": {
+        "description": "Message displayed after download repair completes."
+    },
+    "syncComplete": "Semua unduhan disinkronkan ulang.",
+    "@syncComplete": {
+        "description": "Message displayed after download sync completes."
+    },
+    "syncDownloads": "Sinkronkan dan unduh item yang hilang.",
+    "@syncDownloads": {
+        "description": "Tooltip for downloads sync button."
+    },
+    "repairDownloads": "Perbaiki masalah pada file unduhan atau metadata.",
+    "@repairDownloads": {
+        "description": "Tooltip for downloads repair button."
+    },
+    "requireWifiForDownloads": "Wajibkan WiFi saat mengunduh.",
+    "@requireWifiForDownloads": {
+        "description": "Description of setting for only performing downloads while on wifi"
+    },
+    "queueRestoreError": "Peringatan: {count,plural, =1{{count} trek} other{{count} trek}} tidak dapat dipulihkan ke antrean.",
+    "@queueRestoreError": {
+        "description": "Message that shows when some, but not all, tracks in the Now-Playing queue from the previous session cannot be restored due to server issues or being offline.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "activeDownloadsListHeader": "{itemCount} {typeName, select, downloading{Berjalan} failed{Gagal} syncFailed{Berulang Kali Tidak Tersinkron} enqueued{Diantrikan} other{}} {itemCount, plural, =1{Unduhan} other{Unduhan}}",
+    "@activeDownloadsListHeader": {
+        "description": "Header text for lists of active downloads of a particular state.",
+        "placeholders": {
+            "typeName": {
+                "type": "String"
+            },
+            "itemCount": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadLibraryPrompt": "Apakah Anda yakin ingin mengunduh semua konten dari pustaka ''{libraryName}''?",
+    "@downloadLibraryPrompt": {
+        "description": "Confirmation prompt before downloading entire library, which may be large.",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "onlyShowFullyDownloaded": "Hanya tampilkan album yang sepenuhnya diunduh",
+    "@onlyShowFullyDownloaded": {
+        "description": "Tooltip for button that hides all partially downloaded albums"
+    },
+    "filesystemFull": "Sisa unduhan tidak dapat diselesaikan. Sistem file penuh.",
+    "@filesystemFull": {
+        "description": "Message shown when a download cannot complete due to the filesystem being full."
+    },
+    "connectionInterrupted": "Koneksi terputus, menjeda unduhan.",
+    "@connectionInterrupted": {
+        "description": "Message shown when the connection is interrupted during a download."
+    },
+    "connectionInterruptedBackground": "Koneksi terputus saat mengunduh di latar belakang. Ini bisa disebabkan oleh pengaturan OS.",
+    "@connectionInterruptedBackground": {
+        "description": "Message shown when the connection is interrupted during a download while in the background. It advises checking OS settings, as they may cause background downloads to be blocked."
+    },
+    "connectionInterruptedBackgroundAndroid": "Koneksi terputus saat mengunduh di latar belakang. Ini bisa disebabkan oleh mengaktifkan 'Masuk ke status prioritas rendah saat dijeda' atau pengaturan OS.",
+    "@connectionInterruptedBackgroundAndroid": {
+        "description": "Message shown when the connection is interrupted during a download while in the background on android. It advises checking OS settings, as they may cause background downloads to be blocked, or checking the  'Enter Low-Priority State on Pause' setting."
+    },
+    "activeDownloadSize": "Mengunduh…",
+    "@activeDownloadSize": {
+        "description": "Message shown for download size while item is still being downloaded"
+    },
+    "missingDownloadSize": "Menghapus…",
+    "@missingDownloadSize": {
+        "description": "Message shown for download size while item is being deleted but is not fully removed"
+    },
+    "syncingDownloadSize": "Menyinkronkan…",
+    "@syncingDownloadSize": {
+        "description": "Message shown for download size while item is still syncing."
+    },
+    "runRepairWarning": "Server tidak dapat dihubungi untuk menyelesaikan migrasi unduhan. Silakan jalankan 'Perbaiki Unduhan' dari layar unduhan sesegera mungkin saat Anda kembali online.",
+    "@runRepairWarning": {
+        "description": "Message shown when an error occurs during the downloads repair step of the Isar downloads migration, which requires a server connection."
+    },
+    "downloadSettings": "Unduhan",
+    "showNullLibraryItemsTitle": "Tampilkan media dengan pustaka tidak dikenal.",
+    "@showNullLibraryItemsTitle": {
+        "description": "Title of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
+    },
+    "showNullLibraryItemsSubtitle": "Sebagian media mungkin diunduh dengan pustaka yang tidak dikenal. Matikan untuk menyembunyikannya di luar koleksi aslinya.",
+    "@showNullLibraryItemsSubtitle": {
+        "description": "Description of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
+    },
+    "maxConcurrentDownloads": "Maks unduhan bersamaan",
+    "@maxConcurrentDownloads": {
+        "description": "Title of setting controlling max concurrent downloads."
+    },
+    "maxConcurrentDownloadsSubtitle": "Meningkatkan unduhan bersamaan dapat memungkinkan lebih banyak unduhan di latar belakang tetapi dapat menyebabkan beberapa unduhan gagal jika sangat besar, atau menyebabkan lag berlebihan dalam beberapa kasus.",
+    "@maxConcurrentDownloadsSubtitle": {
+        "description": "Description of setting controlling max concurrent downloads."
+    },
+    "maxConcurrentDownloadsLabel": "{count} unduhan bersamaan",
+    "@maxConcurrentDownloadsLabel": {
+        "description": "Label of values on max concurrent downloads slider",
+        "placeholders": {
+            "count": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadsWorkersSetting": "Jumlah worker unduhan",
+    "@downloadsWorkersSetting": {
+        "description": "Title of setting controlling download worker count."
+    },
+    "downloadsWorkersSettingSubtitle": "Jumlah worker untuk menyinkronkan metadata dan menghapus unduhan. Meningkatkan worker unduhan dapat mempercepat sinkronisasi unduhan dan penghapusan, terutama saat latensi server tinggi, tetapi dapat menimbulkan lag.",
+    "@downloadsWorkersSettingSubtitle": {
+        "description": "Description of setting controlling download worker count."
+    },
+    "downloadsWorkersSettingLabel": "{count} worker unduhan",
+    "@downloadsWorkersSettingLabel": {
+        "description": "Label of values on download worker count slider",
+        "placeholders": {
+            "count": {
+                "type": "String"
+            }
+        }
+    },
+    "syncOnStartupSwitch": "Sinkronkan unduhan secara otomatis saat startup",
+    "@syncOnStartupSwitch": {
+        "description": "Title of setting for automatically triggering a throttled resync on app startup."
+    },
+    "preferQuickSyncSwitch": "Utamakan sinkronisasi cepat",
+    "@preferQuickSyncSwitch": {
+        "description": "Title of setting that skips completed albums while syncing."
+    },
+    "preferQuickSyncSwitchSubtitle": "Saat melakukan sinkronisasi, beberapa item yang biasanya statis (seperti trek dan album) tidak akan diperbarui. Perbaikan unduhan akan selalu melakukan sinkronisasi penuh.",
+    "@preferQuickSyncSwitchSubtitle": {
+        "description": "Description of setting that skips completed albums while syncing."
+    },
+    "itemTypeSubtitle": "{itemType, select, album{Album} playlist{Playlist} artist{Artis} genre{Genre} track{Trek} library{Pustaka} unknown{Item} other{{itemType}}} {itemName}",
+    "@itemTypeSubtitle": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            },
+            "itemName": {
+                "type": "String"
+            }
+        },
+        "description": "Subtitle for the type of a downloaded item, shown when syncing fails and in DownloadButton tooltip."
+    },
+    "downloadButtonDisabledGenreFilterTooltip": "Silakan hapus filter genre untuk mengaktifkan aksi unduhan.",
+    "@downloadButtonDisabledGenreFilterTooltip": {
+        "description": "Tooltip shown when a download button is disabled because of an active genre filter."
+    },
+    "genreFilterNotAvailableForAlbums": "Filter genre tidak tersedia untuk Album.",
+    "@genreFilterNotAvailableForAlbums": {
+        "description": "Message shown when the user tries to apply a genre filter to an album."
+    },
+    "genreNotFound": "Genre tidak dapat ditemukan.{additionalInfo, select, offline{ Mungkin belum diunduh atau mungkin milik pustaka yang berbeda.} other{ Mungkin milik pustaka yang berbeda.}}",
+    "@genreNotFound": {
+        "placeholders": {
+            "additionalInfo": {
+                "type": "String"
+            }
+        },
+        "description": "Message shown when a genre filter or open-genre action fails because the genre item could not be found."
+    },
+    "incidentalDownloadTooltip": "Item ini wajib diunduh oleh {parentName}.",
+    "@incidentalDownloadTooltip": {
+        "placeholders": {
+            "parentName": {
+                "type": "String"
+            }
+        },
+        "description": "Tooltip for downloadbutton on incidental downloads, which show a lock icon. It says one of the requiring downloads."
+    },
+    "finampCollectionNames": "{itemType, select, favorites{Favorit} allPlaylists{Semua Playlist} fiveLatestAlbums{5 Album Terbaru} allPlaylistsMetadata{Metadata Playlist} collectionWithLibraryFilter{Koleksi dengan Filter Pustaka} other{{itemType}} }",
+    "@finampCollectionNames": {
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        },
+        "description": "Localized names of special downloadable collections like favorites."
+    },
+    "cacheLibraryImagesName": "Gambar cache untuk '{libraryName}'",
+    "@cacheLibraryImagesName": {
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        },
+        "description": "Localized names of special downloadable collection representing cached images for a certain library."
+    },
+    "transcodingStreamingFormatTitle": "Pilih format transcoding",
+    "@transcodingStreamingFormatTitle": {
+        "description": "Title for the dropdown that selects the format for transcoded streams"
+    },
+    "transcodingStreamingFormatSubtitle": "Pilih format yang digunakan saat streaming audio yang ditranskode. Trek yang sudah diantrikan tidak akan terpengaruh.",
+    "downloadTranscodeEnableTitle": "Aktifkan unduhan yang ditranskode",
+    "@downloadTranscodeEnableTitle": {
+        "description": "Title for Enable Transcoded Downloads dropdown"
+    },
+    "downloadTranscodeCodecTitle": "Pilih codec unduhan",
+    "@downloadTranscodeCodecTitle": {
+        "description": "Title for Select Download Codec dropdown"
+    },
+    "downloadTranscodeEnableOption": "{option, select, always{Selalu} never{Tidak pernah} ask{Tanya} other{{option}} }",
+    "@downloadTranscodeEnableOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in Select Download Codec dropdown"
+    },
+    "downloadBitrate": "Bitrate unduhan",
+    "@downloadBitrate": {
+        "description": "Title for Download Bitrate settings slider"
+    },
+    "downloadBitrateSubtitle": "Bitrate yang lebih tinggi memberikan kualitas audio lebih tinggi dengan biaya kebutuhan penyimpanan yang lebih besar.",
+    "@downloadBitrateSubtitle": {
+        "description": "subtitle for Download Bitrate settings slider"
+    },
+    "transcodeHint": "Transcode?",
+    "@transcodeHint": {
+        "description": "Initial text in downloads dropdown when 'Enable Transcoded Downloads' is set to ask."
+    },
+    "doTranscode": "Unduh sebagai {codec} @ {bitrate}{size, select, null{} other{ - \\(\\sim\\){size}}}",
+    "@doTranscode": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "123kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "OPUS"
+            },
+            "size": {
+                "type": "String",
+                "example": "167 MB"
+            }
+        },
+        "description": "Dropdown option to download transcoded version of tracks"
+    },
+    "downloadInfo": "{size} {codec}{bitrate, select, null{} other{ @ {bitrate} Ditranskode}}{location, select, null{} other{ ({location})}}",
+    "@downloadInfo": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "234kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "FLAC"
+            },
+            "size": {
+                "type": "String",
+                "example": "456"
+            },
+            "location": {
+                "type": "String",
+                "example": "Internal Storage"
+            }
+        },
+        "description": "Track info line in downloads screen lists"
+    },
+    "collectionDownloadInfo": "{size}{codec, select, ORIGINAL{} other{ sebagai {codec} @ {bitrate}}}{location, select, null{} other{ ({location})}}",
+    "@collectionDownloadInfo": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "234kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "FLAC"
+            },
+            "size": {
+                "type": "String",
+                "example": "456"
+            },
+            "location": {
+                "type": "String",
+                "example": "Internal Storage"
+            }
+        },
+        "description": "Collection info line in downloads screen lists"
+    },
+    "dontTranscode": "Unduh asli{description, select, null{} other{ - {description}}}",
+    "@dontTranscode": {
+        "placeholders": {
+            "description": {
+                "type": "String",
+                "example": "456 MB FLAC"
+            }
+        },
+        "description": "Dropdown option to download original version of tracks"
+    },
+    "redownloadcomplete": "Unduhan ulang transcode diantrikan.",
+    "@redownloadcomplete": {
+        "description": "Mesage when Automatically Redownload Transcodes transcode setting completes operations."
+    },
+    "redownloadTitle": "Unduh ulang transcode secara otomatis",
+    "@redownloadTitle": {
+        "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
+    },
+    "redownloadSubtitle": "Secara otomatis mengunduh ulang trek yang diperkirakan akan berada pada kualitas berbeda akibat perubahan koleksi induk.",
+    "@redownloadSubtitle": {
+        "description": "subtitle for download transcode setting which redownloads tracks with higher allowed qualities"
+    },
+    "defaultDownloadLocationButton": "Tetapkan sebagai lokasi unduhan default. Nonaktifkan untuk memilih per unduhan.",
+    "@defaultDownloadLocationButton": {
+        "description": "Tooltip for button that sets a download location as the default."
+    },
+    "fixedGridSizeSwitchTitle": "Gunakan ubin kisi berukuran tetap",
+    "fixedGridSizeSwitchSubtitle": "Ukuran ubin kisi tidak akan menyesuaikan ukuran jendela/layar.",
+    "fixedGridSizeTitle": "Ukuran ubin kisi",
+    "fixedGridTileSizeEnum": "{size, select, small{Kecil} medium{Sedang} large{Besar} veryLarge{Sangat besar} other{???}}",
+    "@fixedGridTileSizeEnum": {
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        },
+        "description": "Localized names of fixed size grid tile sizes."
+    },
+    "allowSplitScreenTitle": "Izinkan mode layar terbagi",
+    "allowSplitScreenSubtitle": "Pemutar akan ditampilkan berdampingan dengan tampilan lain pada layar yang lebih lebar.",
+    "enableVibration": "Aktifkan getaran",
+    "enableVibrationSubtitle": "Apakah getaran diaktifkan.",
+    "hideQueueButton": "Sembunyikan tombol antrean",
+    "hideQueueButtonSubtitle": "Sembunyikan tombol antrean pada layar pemutar. Swipe ke atas untuk mengakses antrean.",
+    "oneLineMarqueeTextButton": "Gulir otomatis judul panjang",
+    "oneLineMarqueeTextButtonSubtitle": "Gulir otomatis judul trek yang terlalu panjang untuk ditampilkan dalam dua baris",
+    "marqueeOrTruncateButton": "Gunakan elipsis untuk judul panjang",
+    "marqueeOrTruncateButtonSubtitle": "Tampilkan … di akhir judul panjang alih-alih menggulir teks",
+    "hidePlayerBottomActions": "Sembunyikan aksi bawah",
+    "hidePlayerBottomActionsSubtitle": "Sembunyikan tombol antrean dan lirik pada layar pemutar. Swipe ke atas untuk mengakses antrean, swipe ke kiri (di bawah sampul album) untuk melihat lirik jika tersedia.",
+    "prioritizePlayerCover": "Prioritaskan sampul album",
+    "prioritizePlayerCoverSubtitle": "Prioritaskan menampilkan sampul album yang lebih besar pada layar pemutar. Kontrol yang tidak kritis akan disembunyikan lebih agresif pada ukuran layar kecil.",
+    "suppressPlayerPadding": "Hilangkan padding kontrol pemutar",
+    "suppressPlayerPaddingSubtitle": "Meminimalkan sepenuhnya padding antara kontrol layar pemutar ketika sampul album tidak dalam ukuran penuh.",
+    "lockDownload": "Selalu simpan di perangkat",
+    "@lockDownload": {
+        "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
+    },
+    "showArtistChipImage": "Tampilkan gambar artis bersama nama artis",
+    "showArtistChipImageSubtitle": "Ini memengaruhi pratinjau gambar artis kecil, seperti pada layar pemutar.",
+    "scrollToCurrentTrack": "Gulir ke trek saat ini",
+    "@scrollToCurrentTrack": {
+        "description": "Tooltip for button that scrolls the queue list back to the current track"
+    },
+    "enableAutoScroll": "Aktifkan gulir otomatis",
+    "@enableAutoScroll": {
+        "description": "Tooltip for button that can be used to re-enable auto scroll on the lyrics view after the user manually scrolled"
+    },
+    "numberAsKiloHertz": "{kiloHertz} kHz",
+    "@numberAsKiloHertz": {
+        "description": "Value for the sample rate of a track, in kilohertz",
+        "placeholders": {
+            "kiloHertz": {
+                "type": "double"
+            }
+        }
+    },
+    "numberAsBit": "{bit} bit",
+    "@numberAsBit": {
+        "description": "Value for the bit depth of a track, as amount of bit used",
+        "placeholders": {
+            "bit": {
+                "type": "int"
+            }
+        }
+    },
+    "remainingDuration": "{duration} tersisa",
+    "@remainingDuration": {
+        "description": "Displays duration of unplayed tracks. {duration} is a pre-formatted string.",
+        "placeholders": {
+            "duration": {
+                "type": "String",
+                "example": "36:23"
+            }
+        }
+    },
+    "sleepTimerProjectedDuration": "Pemutaran akan dijeda dalam \\(\\sim\\){duration}",
+    "@sleepTimerProjectedDuration": {
+        "description": "Displays duration until playback is expected to be ended by the sleep timer (unless the queue is modified before). {duration} is a pre-formatted string.",
+        "placeholders": {
+            "duration": {
+                "type": "String",
+                "example": "36:23"
+            }
+        }
+    },
+    "removeFromPlaylistConfirm": "Hapus",
+    "removeFromPlaylistPrompt": "Hapus '{itemName}' dari playlist '{playlistName}'?",
+    "@removeFromPlaylistPrompt": {
+        "placeholders": {
+            "itemName": {
+                "type": "String"
+            },
+            "playlistName": {
+                "type": "String"
+            }
+        },
+        "description": "Prompt on dialog to confirm a removal from playlist"
+    },
+    "trackMenuButtonTooltip": "Menu trek",
+    "@trackMenuButtonTooltip": {
+        "description": "Tooltip for the button that opens the track menu"
+    },
+    "quickActions": "Aksi cepat",
+    "@quickActions": {
+        "description": "Title for the short menu that can be shown when long-pressing on the menu button on the player screen. Currently only used for adding to and removing from playlists."
+    },
+    "addRemoveFromPlaylist": "Tambah ke / Hapus dari playlist",
+    "@addRemoveFromPlaylist": {
+        "description": "Header for add to/remove from playlist popup menu"
+    },
+    "addPlaylistSubheader": "Tambahkan item ke sebuah playlist",
+    "@addPlaylistSubheader": {
+        "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
+    },
+    "trackOfflineFavorites": "Sinkronkan semua status favorit",
+    "trackOfflineFavoritesSubtitle": "Ini memungkinkan menampilkan status favorit yang lebih mutakhir saat offline. Tidak mengunduh file tambahan apa pun.",
+    "allPlaylistsInfoSetting": "Unduh metadata playlist",
+    "allPlaylistsInfoSettingSubtitle": "Sinkronkan metadata untuk semua playlist guna meningkatkan pengalaman playlist Anda",
+    "downloadFavoritesSetting": "Unduh semua favorit",
+    "downloadAllPlaylistsSetting": "Unduh semua playlist",
+    "downloadAllPlaylistsSettingWarning": "Catatan: Ini akan mengunduh semua item di semua playlist, apa pun pustakanya.",
+    "fiveLatestAlbumsSetting": "Unduh 5 album terbaru",
+    "fiveLatestAlbumsSettingSubtitle": "Unduhan akan dihapus seiring waktu. Kunci unduhan untuk mencegah sebuah album dihapus.",
+    "cacheLibraryImagesSettings": "Cache gambar pustaka saat ini",
+    "cacheLibraryImagesSettingsSubtitle": "Semua sampul album, artis, genre, dan playlist di pustaka yang sedang aktif akan diunduh.",
+    "showProgressOnNowPlayingBarTitle": "Tampilkan progres trek pada miniplayer di dalam aplikasi",
+    "@showProgressOnNowPlayingBarTitle": {
+        "description": "Title for the setting that controls if the in-app miniplayer / now playing bar at the bottom of the music screen functions as a progress bar"
+    },
+    "showProgressOnNowPlayingBarSubtitle": "Mengontrol apakah miniplayer/baru diputar di bagian bawah layar musik berfungsi sebagai bilah progres.",
+    "@showProgressOnNowPlayingBarSubtitle": {
+        "description": "Subtitle for the setting that controls if the now playing bar / miniplayer at the bottom of the music screen functions as a progress bar"
+    },
+    "lyricsScreenButtonTitle": "Lirik",
+    "@lyricsScreenButtonTitle": {
+        "description": "Label for the button for opening the lyrics screen"
+    },
+    "lyricsScreen": "Tampilan lirik",
+    "@lyricsScreen": {
+        "description": "Name for the view/screen that shows lyrics for the currently playing track"
+    },
+    "showLyricsTimestampsTitle": "Tampilkan cap waktu untuk lirik tersinkron",
+    "@showLyricsTimestampsTitle": {
+        "description": "Title for the setting that controls if timestamps are shown for lyrics"
+    },
+    "showLyricsTimestampsSubtitle": "Mengontrol apakah cap waktu dari setiap baris lirik ditampilkan di tampilan lirik, jika tersedia.",
+    "@showLyricsTimestampsSubtitle": {
+        "description": "Subtitle for the setting that controls if timestamps are shown for lyrics"
+    },
+    "showStopButtonOnMediaNotificationTitle": "Tampilkan tombol Berhenti pada notifikasi media",
+    "@showStopButtonOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a stop button."
+    },
+    "showStopButtonOnMediaNotificationSubtitle": "Mengontrol apakah notifikasi media memiliki tombol berhenti. Ini memungkinkan Anda menghentikan pemutaran tanpa membuka aplikasi.",
+    "@showStopButtonOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a stop button."
+    },
+    "showShuffleButtonOnMediaNotificationTitle": "Tampilkan tombol Acak pada notifikasi media",
+    "@showShuffleButtonOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a shuffle button."
+    },
+    "showShuffleButtonOnMediaNotificationSubtitle": "Mengontrol apakah notifikasi media memiliki tombol acak. Ini memungkinkan Anda mengacak/mengembalikan urutan pemutaran tanpa membuka aplikasi.",
+    "@showShuffleButtonOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a shuffle button."
+    },
+    "showFavoriteButtonOnMediaNotificationTitle": "Tampilkan tombol Favorit pada notifikasi media",
+    "@showFavoriteButtonOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a favorite button."
+    },
+    "showFavoriteButtonOnMediaNotificationSubtitle": "Mengontrol apakah notifikasi media memiliki tombol favorit. Ini memungkinkan Anda memfavoritkan/menghapus favorit trek saat ini tanpa membuka aplikasi. Disembunyikan dalam mode offline.",
+    "@showFavoriteButtonOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a favorite button."
+    },
+    "showSeekControlsOnMediaNotificationTitle": "Izinkan seek pada notifikasi media",
+    "@showSeekControlsOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a seekable progress bar."
+    },
+    "showSeekControlsOnMediaNotificationSubtitle": "Mengontrol apakah notifikasi media memiliki bilah progres yang dapat di-seek. Ini memungkinkan Anda mengubah posisi pemutaran tanpa membuka aplikasi.",
+    "@showSeekControlsOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a seekable progress bar."
+    },
+    "lyricsEmptyStateLoading": "Memuat lirik...",
+    "@lyricsEmptyStateLoading": {
+        "description": "Message shown while lyrics are being loaded"
+    },
+    "lyricsEmptyStateFailed": "Tidak dapat memuat lirik",
+    "@lyricsEmptyStateFailed": {
+        "description": "Message shown when lyrics failed to load"
+    },
+    "lyricsEmptyStateNoLyrics": "Tidak ada lirik yang tersedia",
+    "@lyricsEmptyStateNoLyrics": {
+        "description": "Message shown when no lyrics are available for the current track"
+    },
+    "lyricsMissingLyricLinePlaceholder": "baris lirik hilang",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "alignmentOptionStart": "Awal",
+    "@alignmentOptionStart": {
+        "description": "Alignment option for things like the lyrics view. Start means left-aligned in LTR languages and right-aligned in RTL languages."
+    },
+    "alignmentOptionCenter": "Tengah",
+    "@alignmentOptionCenter": {
+        "description": "Alignment option for things like the lyrics view. Center means centered."
+    },
+    "alignmentOptionEnd": "Akhir",
+    "@alignmentOptionEnd": {
+        "description": "Alignment option for things like the lyrics view. End means right-aligned in LTR languages and left-aligned in RTL languages."
+    },
+    "fontSizeOptionSmall": "Kecil",
+    "@fontSizeOptionSmall": {
+        "description": "Font size option for things like the lyrics view. Small means a smaller font size."
+    },
+    "fontSizeOptionMedium": "Sedang",
+    "@fontSizeOptionMedium": {
+        "description": "Font size option for things like the lyrics view. Medium means a medium font size."
+    },
+    "fontSizeOptionLarge": "Besar",
+    "@fontSizeOptionLarge": {
+        "description": "Font size option for things like the lyrics view. Large means a larger font size."
+    },
+    "lyricsAlignmentTitle": "Perataan lirik",
+    "@lyricsAlignmentTitle": {
+        "description": "Title for the setting that controls the alignment of lyrics in the lyrics view"
+    },
+    "lyricsAlignmentSubtitle": "Mengontrol perataan lirik di tampilan lirik.",
+    "@lyricsAlignmentSubtitle": {
+        "description": "Subtitle for the setting that controls the alignment of lyrics in the lyrics view"
+    },
+    "lyricsFontSizeTitle": "Ukuran font lirik",
+    "@lyricsFontSizeTitle": {
+        "description": "Title for the setting that controls the font size of lyrics in the lyrics view"
+    },
+    "lyricsFontSizeSubtitle": "Mengontrol ukuran font lirik di tampilan lirik.",
+    "@lyricsFontSizeSubtitle": {
+        "description": "Subtitle for the setting that controls the font size of lyrics in the lyrics view"
+    },
+    "showLyricsScreenAlbumPreludeTitle": "Tampilkan sampul album sebelum lirik",
+    "@showLyricsScreenAlbumPreludeTitle": {
+        "description": "Title for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
+    },
+    "showLyricsScreenAlbumPreludeSubtitle": "Mengontrol apakah sampul album ditampilkan di atas lirik sebelum tergulir keluar.",
+    "@showLyricsScreenAlbumPreludeSubtitle": {
+        "description": "Subtitle for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
+    },
+    "keepScreenOn": "Biarkan layar tetap menyala",
+    "@keepScreenOn": {
+        "description": "Option to keep the screen on while using the app"
+    },
+    "keepScreenOnSubtitle": "Kapan layar tetap menyala",
+    "keepScreenOnDisabled": "Dinonaktifkan",
+    "keepScreenOnAlwaysOn": "Selalu menyala",
+    "keepScreenOnWhilePlaying": "Saat memutar musik",
+    "keepScreenOnWhileLyrics": "Saat menampilkan lirik",
+    "keepScreenOnWhilePluggedIn": "Biarkan layar tetap menyala hanya saat tersambung listrik",
+    "keepScreenOnWhilePluggedInSubtitle": "Abaikan pengaturan Biarkan layar tetap menyala jika perangkat tidak tersambung listrik",
+    "genericToggleButtonTooltip": "Ketuk untuk mengalihkan.",
+    "@genericToggleButtonTooltip": {
+        "description": "Tooltip for toggle buttons that can be tapped to toggle their state"
+    },
+    "artwork": "Artwork",
+    "artworkTooltip": "Artwork untuk {title}",
+    "@artworkTooltip": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "Abbey Road"
+            }
+        },
+        "description": "Tooltip for album artwork on track and album tiles as well as the album screen"
+    },
+    "playerAlbumArtworkTooltip": "Artwork untuk {title}. Ketuk untuk mengalihkan pemutaran. Swipe ke kiri atau kanan untuk mengganti trek.",
+    "@playerAlbumArtworkTooltip": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "Abbey Road"
+            }
+        },
+        "description": "Tooltip for the album artwork on the player screen"
+    },
+    "nowPlayingBarTooltip": "Buka layar pemutar",
+    "@nowPlayingBarTooltip": {
+        "description": "Tooltip for the now playing bar at the bottom of the screen"
+    },
+    "additionalPeople": "Orang",
+    "@additionalPeople": {
+        "description": "Label for the feature chips showing additional people in the credits of a track or album"
+    },
+    "playbackMode": "Mode pemutaran",
+    "@playbackMode": {
+        "description": "Label for the feature chips showing the playback mode of a track. See [playbackModeLocal], [playbackModeDirectPlaying], and [playbackModeTranscoding]"
+    },
+    "codec": "Codec",
+    "@codec": {
+        "description": "Label for the feature chips showing the codec of a track"
+    },
+    "bitRate": "Bit rate",
+    "@bitRate": {
+        "description": "Label for the feature chips showing the bit rate of a track"
+    },
+    "bitDepth": "Kedalaman bit",
+    "@bitDepth": {
+        "description": "Label for the feature chips showing the bit depth of a track"
+    },
+    "size": "Ukuran",
+    "@size": {
+        "description": "Label for the feature chips showing the size (original file size or transcoded size, if available) of a track"
+    },
+    "normalizationGain": "Gain",
+    "@normalizationGain": {
+        "description": "Label for the feature chips showing the normalization gain / LUFS offset of a track"
+    },
+    "sampleRate": "Sample rate",
+    "@sampleRate": {
+        "description": "Label for the feature chips showing the sample rate of a track"
+    },
+    "showFeatureChipsToggleTitle": "Tampilkan info trek lanjutan",
+    "@showFeatureChipsToggleTitle": {
+        "description": "Title for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
+    },
+    "showFeatureChipsToggleSubtitle": "Tampilkan info trek lanjutan seperti codec, bitrate, dan lainnya pada layar pemutar.",
+    "@showFeatureChipsToggleSubtitle": {
+        "description": "Subtitle for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
+    },
+    "seeAll": "Lihat Semua",
+    "@seeAll": {
+        "description": ""
+    },
+    "albumScreen": "Layar album",
+    "@albumScreen": {
+        "description": "Name for the view/screen that shows albums"
+    },
+    "showCoversOnAlbumScreenTitle": "Tampilkan sampul album untuk trek",
+    "@showCoversOnAlbumScreenTitle": {
+        "description": "Title for the setting that controls if album covers are shown for each track separately on the album screen"
+    },
+    "showCoversOnAlbumScreenSubtitle": "Tampilkan sampul album untuk setiap trek secara terpisah pada layar album.",
+    "@showCoversOnAlbumScreenSubtitle": {
+        "description": "Subtitle for the setting that controls if album covers are shown for each track separately on the album screen"
+    },
+    "artistScreen": "Layar artis",
+    "@artistScreen": {
+        "description": "Name for the view/screen that shows artists"
+    },
+    "applyFilterOnGenreChipTapTitle": "Terapkan filter saat genre diketuk",
+    "@applyFilterOnGenreChipTapTitle": {
+        "description": "Title for the setting that controls if taps on genre chips should apply a genre filter to the current screen or should redirect to the GenreScreen."
+    },
+    "applyFilterOnGenreChipTapSubtitle": "Secara default, mengetuk sebuah genre akan membukanya, sedangkan menekan lama akan memfilter artis atau playlist berdasarkan genre tersebut. Jika diaktifkan, perilaku ini dibalik.",
+    "@applyFilterOnGenreChipTapSubtitle": {
+        "description": "Subtitle for the setting that controls if taps on genres should apply a genre filter to the current screen or should redirect to the GenreScreen."
+    },
+    "applyFilterOnGenreChipTapPrompt": "Filter genre diterapkan",
+    "@applyFilterOnGenreChipTapPrompt": {
+        "description": "A snackbar that is shown to the user if a genre filter was applied due to their selected settings"
+    },
+    "applyFilterOnGenreChipTapPromptButton": "Buka Genre",
+    "@applyFilterOnGenreChipTapPromptButton": {
+        "description": "The button for the snackbar that is shown to the user if a genre filter was applied due to their selected settings"
+    },
+    "genreScreen": "Layar genre",
+    "@genreScreen": {
+        "description": "Name for the view/screen that shows genres"
+    },
+    "emptyTopTracksList": "Anda belum mendengarkan trek apa pun oleh artis ini.",
+    "@emptyTopTracksList": {
+        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
+    },
+    "emptyAlbum": "Tidak ada trek.",
+    "@emptyAlbum": {
+        "description": "Message shown as a placeholder when an album or playlist is empty."
+    },
+    "emptyFilteredListTitle": "Tidak ada item yang ditemukan",
+    "@emptyFilteredListTitle": {
+        "description": "Message shown when a list of items is filtered and no items match the filter"
+    },
+    "emptyFilteredListSubtitle": "Tidak ada item yang cocok dengan filter. Coba matikan filter atau ubah istilah pencarian.",
+    "@emptyFilteredListSubtitle": {
+        "description": "Message shown when a list of items is filtered and no items match the filter"
+    },
+    "resetFiltersButton": "Reset filter",
+    "@resetFiltersButton": {
+        "description": "Button to reset filters on a list of items"
+    },
+    "resetSettingsPromptGlobal": "Apakah Anda yakin ingin mereset SEMUA pengaturan ke default?",
+    "@resetSettingsPromptGlobal": {
+        "description": "Prompt which gets shown when the user is about to reset all settings to their default values"
+    },
+    "resetSettingsPromptGlobalConfirm": "Reset SEMUA pengaturan",
+    "@resetSettingsPromptGlobalConfirm": {
+        "description": "A differently worded Confirm button to prevent the user from instandly clicking confirm because they are about to reset all settings to their default value"
+    },
+    "resetSettingsPromptLocal": "Apakah Anda ingin mereset pengaturan ini kembali ke default?",
+    "@resetSettingsPromptLocal": {
+        "description": "Prompt which gets shown when the user is about to reset all settings in the current settings window to their default values"
+    },
+    "genericCancel": "Batal",
+    "@genericCancel": {
+        "description": "Used when the user stops an action from taking place inside a popup dialog window"
+    },
+    "itemDeletedSnackbar": "{itemType, select, album{Album} playlist{Playlist} artist{Artis} genre{Genre} track{Trek} library{Pustaka} other{Item}} dihapus dari {deviceType, select, device{Perangkat} server{Server} other{tidak dikenal}}",
+    "@itemDeletedSnackbar": {
+        "description": "Used whenever item gets deleted from the device or server, message in snackbar"
+    },
+    "allowDeleteFromServerTitle": "Izinkan penghapusan dari server",
+    "@allowDeleteFromServerTitle": {
+        "description": "Title for the setting that controls if items can be deleted from the server"
+    },
+    "allowDeleteFromServerSubtitle": "Aktifkan atau nonaktifkan opsi untuk menghapus trek secara permanen dari sistem file server ketika penghapusan memungkinkan.",
+    "@allowDeleteFromServerSubtitle": {
+        "description": "Subtitle for the setting that controls if items can be deleted from the server"
+    },
+    "deleteFromTargetDialogText": "Anda akan menghapus {itemType, select, album{album} playlist{playlist} artist{artis} genre{genre} track{trek} library{pustaka} other{item}} dari {device, select, device{perangkat ini} server{sistem file dan pustaka server.{deleteType, select, canDelete{ Ini juga akan Menghapus item ini dari Perangkat ini.} cantDelete{ Item ini akan tetap berada di perangkat ini sampai sinkronisasi berikutnya.} notDownloaded{} other{}}\\\nTindakan ini tidak dapat dibatalkan} other{}}.",
+    "@deleteFromTargetDialogText": {
+        "description": "(Important: Note the space in front of some cases) A Confirm Prompt used whenever an item is about to be deleted from the device or server. The Server case should explain that this cannot be reverted, this information is not needed for the device since the user can just download the track again. The delete Type adapts the server text even more in can the user can or cant delete the item."
+    },
+    "deleteFromTargetConfirmButton": "Hapus{target, select, device{ dari Perangkat} server{ dari Server} other{}}",
+    "@deleteFromTargetConfirmButton": {
+        "description": "(Important: Note the space in front of some cases) The button the user needs to press to execute the delete action. If no target is set, the text should just be a generic 'delete' text. This button is both visible before and after the delete confirm prompt."
+    },
+    "largeDownloadWarning": "Peringatan: Anda akan mengunduh {count} trek.",
+    "@largeDownloadWarning": {
+        "description": "A line of warning text on the download dialog when large numbers of tracks are downloaded at once.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadSizeWarningCutoff": "Batas peringatan ukuran unduhan",
+    "@downloadSizeWarningCutoff": {
+        "description": "Title for the setting controlling when to warn about a large download"
+    },
+    "downloadSizeWarningCutoffSubtitle": "Pesan peringatan akan ditampilkan saat mengunduh lebih dari jumlah trek ini sekaligus.",
+    "@downloadSizeWarningCutoffSubtitle": {
+        "description": "Subtitle for the setting controlling when to warn about a large download"
+    },
+    "confirmAddCollectionItemToPlaylist": "Apakah Anda yakin ingin menambahkan semua trek dari {itemType, select, album{album} playlist{playlist} artist{artis} genre{genre} other{item}} '{itemName}' ke playlist ini? Trek tersebut hanya dapat dihapus satu per satu.",
+    "@confirmAddCollectionItemToPlaylist": {
+        "description": "Warning dialog for adding an album, artist, etc. or multiple tracks to a playlist, clarifying that this cannot be undone without removing all tracks individually and manually.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            },
+            "itemName": {
+                "type": "String"
+            }
+        }
+    },
+    "confirmAddMultipleTracksToPlaylist": "Apakah Anda yakin ingin menambahkan {trackCount} trek ke playlist ini? Trek tersebut hanya dapat dihapus satu per satu.",
+    "@confirmAddMultipleTracksToPlaylist": {
+        "description": "Warning dialog for adding multiple tracks to a playlist, clarifying that this cannot be undone without removing all tracks individually and manually.",
+        "placeholders": {
+            "trackCount": {
+                "type": "int"
+            }
+        }
+    },
+    "publiclyVisiblePlaylist": "Terlihat publik:",
+    "@publiclyVisiblePlaylist": {
+        "description": "Toggle for playlist creation where true means the playlist is publicly visible, false means only the creator can see it."
+    },
+    "releaseDateFormatYear": "Tahun",
+    "@releaseDateFormatYear": {
+        "description": "Date format option for the release date of an album, showing only the year"
+    },
+    "releaseDateFormatISO": "ISO 8601",
+    "@releaseDateFormatISO": {
+        "description": "Date format option for the release date of an album, showing the full ISO 8601 date"
+    },
+    "releaseDateFormatMonthYear": "Bulan & Tahun",
+    "@releaseDateFormatMonthYear": {
+        "description": "Date format option for the release date of an album, showing the year and month. Example: March 2022"
+    },
+    "releaseDateFormatMonthDayYear": "Bulan, Hari & Tahun",
+    "@releaseDateFormatMonthDayYear": {
+        "description": "Date format option for the release date of an album, showing the year and month and day/date. Example: March 2, 2022"
+    },
+    "showAlbumReleaseDateOnPlayerScreenTitle": "Tampilkan tanggal rilis album pada layar pemutar",
+    "@showAlbumReleaseDateOnPlayerScreenTitle": {
+        "description": "Title for the setting that controls if the release date of an album is shown on the player screen"
+    },
+    "showAlbumReleaseDateOnPlayerScreenSubtitle": "Tampilkan tanggal rilis album pada layar pemutar, di belakang nama album.",
+    "@showAlbumReleaseDateOnPlayerScreenSubtitle": {
+        "description": "Subtitle for the setting that controls if the release date of an album is shown on the player screen"
+    },
+    "releaseDateFormatTitle": "Format tanggal rilis",
+    "@releaseDateFormatTitle": {
+        "description": "Title for the setting that controls the format release dates throughout the app."
+    },
+    "releaseDateFormatSubtitle": "Mengontrol format semua tanggal rilis yang ditampilkan di aplikasi.",
+    "@releaseDateFormatSubtitle": {
+        "description": "Subtitle for the setting that controls the format release dates throughout the app."
+    },
+    "additionalBaseItemInfoTitle": "Info item tambahan",
+    "@additionalBaseItemInfoTitle": {
+        "description": "Title for the setting that controls the displayed additional item info."
+    },
+    "additionalBaseItemInfoSubtitle": "Mengontrol jenis info tambahan yang ditampilkan dalam daftar item untuk setiap jenis item. Jika diatur ke \\\"Adaptif\\\", info dipilih secara otomatis berdasarkan pengurutan atau konteks saat ini.",
+    "@additionalBaseItemInfoSubtitle": {
+        "description": "Subtitle for the setting that controls the displayed additional item info."
+    },
+    "noReleaseDate": "Tidak ada tanggal rilis",
+    "@noReleaseDate": {
+        "description": "Placeholder text if an item has no release date set."
+    },
+    "noDateAdded": "Tidak ada tanggal ditambahkan",
+    "@noDateAdded": {
+        "description": "Placeholder text if an item has no dateAdded set."
+    },
+    "noDateLastPlayed": "Belum diputar",
+    "@noDateLastPlayed": {
+        "description": "Placeholder text if an item has no lastPlayedDate set."
+    },
+    "librarySelectError": "Kesalahan saat memuat pustaka yang tersedia untuk pengguna",
+    "@librarySelectError": {
+        "description": "Error shown when the library select screen fails to load."
+    },
+    "autoOfflineOptionOff": "Dinonaktifkan",
+    "@autoOfflineOptionOff": {
+        "description": "This is shown when the autoOffline feature is turned off and has no effects"
+    },
+    "autoOfflineOptionNetwork": "Jaringan lokal",
+    "@autoOfflineOptionNetwork": {
+        "description": "This is shown when the autoOffline feature is set to \"local Network\", this means offline mode will be automatically enabled when no wifi or ethernet connection is active"
+    },
+    "autoOfflineOptionDisconnected": "Terputus",
+    "@autoOfflineOptionDisconnected": {
+        "description": "This is shown when the autoOffline feature is set to Disconnected, this means offline mode will be automatically enabled when either wifi, ethernet or cellular is active"
+    },
+    "autoOfflineOptionUnreachable": "Tidak dapat dijangkau",
+    "@autoOfflineOptionUnreachable": {
+        "description": "This is shown when the autoOffline feature is set to Unreachable, this means offline mode will be automatically enabled when - after a network change - the server cant be pinged"
+    },
+    "autoOfflineSettingSubtitle": "Aktifkan Mode Offline secara otomatis berdasarkan konektivitas jaringan atau keterjangkauan server.",
+    "@autoOfflineSettingSubtitle": {
+        "description": "Subtitle for the automated offline mode setting."
+    },
+    "autoOfflineSettingDescription": "{disabledModeName}:\\\nTidak akan mengaktifkan Mode Offline secara otomatis. Dapat menghemat baterai.\\\n\\\n{localNetworkModeName}:\\\nAktifkan Mode Offline ketika tidak terhubung ke WiFi atau ethernet.\\\n\\\n{disconnectedModeName}:\\\nAktifkan Mode Offline ketika tidak terhubung ke apa pun.\\\n\\\n{unreachableModeName}:\\\nAktifkan Mode Offline ketika server tidak dapat diping setelah berpindah jaringan.\\\n\\\nAnda selalu dapat mengalihkan mode offline secara manual, yang akan menjeda otomatisasi sampai Anda mengaktifkannya kembali.",
+    "@autoOfflineSettingDescription": {
+        "description": "Setting description. Make sure the Mode names match the translations.",
+        "placeholders": {
+            "disabledModeName": {
+                "type": "String"
+            },
+            "localNetworkModeName": {
+                "type": "String"
+            },
+            "disconnectedModeName": {
+                "type": "String"
+            },
+            "unreachableModeName": {
+                "type": "String"
+            }
+        }
+    },
+    "autoOfflineSettingTitle": "Mode Offline otomatis",
+    "autoOfflineNotification": "Mode Offline otomatis {state, select, enabled{diaktifkan} disabled{dinonaktifkan} other{mengatur posisi kuantum untuk}}",
+    "@autoOfflineNotification": {
+        "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
+    },
+    "audioFadeOutDurationSettingTitle": "Durasi fade-out audio",
+    "@audioFadeOutDurationSettingTitle": {
+        "description": "Title for the audio fade-out duration setting."
+    },
+    "audioFadeOutDurationSettingSubtitle": "Durasi fade-out audio dalam milidetik.",
+    "@audioFadeOutDurationSettingSubtitle": {
+        "description": "Subtitle for the audio fade-out duration setting. Set to 0 to disable fade-out."
+    },
+    "audioFadeInDurationSettingTitle": "Durasi fade-in audio",
+    "@audioFadeInDurationSettingTitle": {
+        "description": "Title for the audio fade-in duration setting."
+    },
+    "audioFadeInDurationSettingSubtitle": "Durasi fade-in audio dalam milidetik. Atur ke 0 untuk menonaktifkan fade-in.",
+    "@audioFadeInDurationSettingSubtitle": {
+        "description": "Subtitle for the audio fade-in duration setting. Set to 0 to disable fade-in."
+    },
+    "outputMenuButtonTitle": "Output",
+    "@outputMenuButtonTitle": {
+        "description": "Button title for opening the output menu/panel"
+    },
+    "outputMenuTitle": "Ubah output",
+    "@outputMenuTitle": {
+        "description": "Title for the output menu that allows the user to change the audio output device and volume"
+    },
+    "outputMenuVolumeSectionTitle": "Volume",
+    "@outputMenuVolumeSectionTitle": {
+        "description": "Title for the volume section in the output menu"
+    },
+    "outputMenuDevicesSectionTitle": "Perangkat yang tersedia",
+    "@outputMenuDevicesSectionTitle": {
+        "description": "Title for the available devices section in the output menu"
+    },
+    "outputMenuOpenConnectionSettingsButtonTitle": "Hubungkan ke perangkat",
+    "@outputMenuOpenConnectionSettingsButtonTitle": {
+        "description": "Button title for connecting to a device from the output menu"
+    },
+    "deviceType": "{type, select, speaker{Speaker perangkat} tv{TV} bluetooth{Bluetooth} other{Tidak dikenal}}",
+    "@deviceType": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        },
+        "description": "Label for the type of device in the output menu"
+    },
+    "itemCount": "{childType, select, track{{amount, plural, =1{1 trek} other{{amount} trek}}} album{{amount, plural, =1{1 album} other{{amount} album}}} other{{amount, plural, =1{1 item} other{{amount} item}}}}",
+    "@itemCount": {
+        "description": "Amount of various child item, like artist albums, performing artist tracks, or genre albums. Shown for example in the menu headers.",
+        "placeholders": {
+            "childType": {
+                "type": "String",
+                "example": "album",
+                "description": "Options match BaseItemDtoType.name"
+            },
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "itemCountLoading": "{childType, select, track{trek} album{album} other{item}}",
+    "@itemCountLoading": {
+        "description": "Shown while the item count is being calculated.",
+        "placeholders": {
+            "childType": {
+                "type": "String",
+                "example": "album",
+                "description": "Options match BaseItemDtoType.name"
+            }
+        }
+    },
+    "itemCountCalculating": "Menghitung jumlah item",
+    "@itemCountCalculating": {
+        "description": "Shown to screen readers while the item count is being calculated."
+    },
+    "preferLocalNetworkActiveAddressInfoText": "Alamat aktif",
+    "@preferLocalNetworkActiveAddressInfoText": {
+        "description": "Shows the active address inside the network settings screen so the user can see if this feature works"
+    },
+    "preferLocalNetworkTargetAddressLocalSettingTitle": "Alamat jaringan lokal",
+    "preferLocalNetworkTargetAddressLocalSettingDescription": "Alamat target server Jellyfin di dalam jaringan lokal Anda",
+    "preferLocalNetworkEnableSwitchTitle": "Prefer Local Network",
+    "preferLocalNetworkEnableSwitchDescription": "Whether or not to use a different address when you are in the local network of your jellyfin server",
+    "preferLocalNetworkPublicAddressSettingTitle": "Public Address",
+    "preferLocalNetworkPublicAddressSettingDescription": "The primary address used to connect to your Jellyfin server",
+    "preferLocalNetworkInfoBox": "This Feature requires Location permissions (and location needs to be enabled) to read the network name.",
+    "@preferLocalNetworkInfoBox": {
+        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
+    },
+    "networkSettingsTitle": "Network",
+    "@networkSettingsTitle": {
+        "description": "Title for the network settings screen"
+    },
+    "downloadPaused": "Downloading paused because device is not connected to WiFi",
+    "@downloadPaused": {
+        "description": "Gets shown in the snackbar if loosing wifi connection while downloads are running and the 'requireWifiForDownloads' is enabled"
+    },
+    "missingSchemaError": "Url needs to start with http(s)://",
+    "@missingSchemaError": {
+        "description": "Snackbar message when the user changes their home/public address but it doesn't start with http"
+    },
+    "testConnectionButtonLabel": "Test both connections",
+    "@testConnectionButtonLabel": {
+        "description": "Button to test the public and local url inside the network settings tab"
+    },
+    "ping": "{status, select, true_true{Both reachable} true_false{FAILED to reach local address} false_true{FAILED to reach public address} false_false{FAILED to reach both} other{unknown}}",
+    "@ping": {
+        "description": "Gets shown in the Snackbar when using the Test Connection Button inside the Network Settings. true means reachable, false means unreachable. the first value is for the public address, the second value is fot the home address."
+    },
+    "autoReloadQueueTitle": "Automatically Reload Queue",
+    "@autoReloadQueueTitle": {
+        "description": "Title for the setting that controls if the queue is automatically reloaded when the source changes"
+    },
+    "autoReloadQueueSubtitle": "Automatically reload the queue when the source changes (i.e. offline mode enabled or server address switch). If disabled, Finamp will prompt you instead.",
+    "@autoReloadQueueSubtitle": {
+        "description": "Subtitle for the setting that controls if the queue is automatically reloaded when the source changes"
+    },
+    "clearQueueOnStopEventTitle": "Clear Queue On External Stop",
+    "@clearQueueOnStopEventTitle": {
+        "description": "Title for the setting that controls if OS stop commands clear the queue."
+    },
+    "clearQueueOnStopEventSubtitle": "Clear the queue and close the player if a 'stop' command is received from the OS. In-app stop actions will always close the player and clear the queue.",
+    "@clearQueueOnStopEventSubtitle": {
+        "description": "Subtitle for the setting that controls if OS stop commands clear the queue."
+    },
+    "radioModeSettingsTitle": "Radio Mode",
+    "@radioModeSettingsTitle": {
+        "description": "Title for the setting that controls the radio mode/algorithm."
+    },
+    "radioModeSettingsSubtitle": "Sets the method that the radio feature uses to pick songs to add.",
+    "@radioModeSettingsSubtitle": {
+        "description": "Subtitle for the setting that controls the radio mode/algorithm."
+    },
+    "radioModeMenuTitle": "Choose Radio Mode",
+    "@radioModeMenuTitle": {
+        "description": "Title for menu that allows users to choose the radio mode."
+    },
+    "loopingOverriddenByRadioSubtitle": "Queue looping is disabled while radio is enabled",
+    "@loopingOverriddenByRadioSubtitle": {
+        "description": "Subtitle displayed in the radio menu to show that queue looping is disabled while radio mode is enabled."
+    },
+    "radioFailedSubtitle": "No more radio tracks found. Try changing the mode.",
+    "@radioFailedSubtitle": {
+        "description": "Subtitle displayed in the radio menu to show that no radio tracks could be generated."
+    },
+    "radioModeOptionName": "{option, select, reshuffle{Reshuffle} random{Random} similar{Similar} continuous{Continuous} albumMix{Album Mix} other{{option}}}",
+    "@radioModeOptionName": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Radio mode names in radio mode/algorithm dropdown"
+    },
+    "radioModeOptionTitle": "{option, select, reshuffle{Reshuffle Mode} random{Random Mode} similar{Similar Mode} continuous{Continuous Mode} albumMix{Album Mix} other{{option}}} Enabled",
+    "@radioModeOptionTitle": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Title displayed in the queue, showing which radio mode/algorithm is currently being used."
+    },
+    "radioModeActiveTitle": "Radio Active",
+    "@radioModeActiveTitle": {
+        "description": "Title displayed in the queue to show that radio mode is enabled and active."
+    },
+    "radioModeDisabledTitle": "Radio Disabled",
+    "@radioModeDisabledTitle": {
+        "description": "Title displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeInactiveTitle": "Radio Paused",
+    "@radioModeInactiveTitle": {
+        "description": "Title displayed in the queue to show that the radio is enabled but not active."
+    },
+    "radioModeEnableButtonTitle": "Enable Radio",
+    "@radioModeEnableButtonTitle": {
+        "description": "Title for the option that enables radio mode."
+    },
+    "radioModeDisableButtonTitle": "Disable Radio",
+    "@radioModeDisableButtonTitle": {
+        "description": "Title for the option that disables radio mode."
+    },
+    "radioModeDisableButtonSubtitle": "Switches back to the previous loop mode",
+    "@radioModeDisableButtonSubtitle": {
+        "description": "Subtitle for the option that disables radio mode."
+    },
+    "radioModeOptionConfirmation": "Switched to {option, select, reshuffle{reshuffle mode} random{random mode} similar{similar mode} continuous{continuous mode} albumMix{album mix} other{{option}}}",
+    "@radioModeOptionConfirmation": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Confirmation displayed when the radio mode is changed."
+    },
+    "radioModeEnabledSubtitle": "Tap to configure",
+    "@radioModeEnabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show when radio mode is enabled."
+    },
+    "radioModeDisabledSubtitle": "Tap to enable",
+    "@radioModeDisabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "Current mode not available offline.",
+    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
+    },
+    "radioModeDescription": "{mode, select, reshuffle{Continuously reshuffle queue} random{Append tracks randomly from the initial selection} similar{Append based on the original queue} continuous{Append based on the current track} albumMix{Append similar albums} other{}}",
+    "@radioModeDescription": {
+        "placeholders": {
+            "mode": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Subtitle displayed in the queue to describe what the radio is doing if enabled"
+    },
+    "radioModeUnavailableWhileOfflineDescription": "Unavailable while offline",
+    "@radioModeUnavailableWhileOfflineDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
+    },
+    "radioModeUnavailableWhileOfflineSubtitle": "{modeName} unavailable while offline",
+    "@radioModeUnavailableWhileOfflineSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
+    },
+    "radioModeUnavailableForSourceItemDescription": "Unavailable for this queue source",
+    "@radioModeUnavailableForSourceItemDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
+    },
+    "radioModeUnavailableForSourceItemSubtitle": "{modeName} unavailable for this queue source",
+    "@radioModeUnavailableForSourceItemSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
+    },
+    "radioModeUnavailableQueueEmptyDescription": "Unavailable because the queue is empty",
+    "@radioModeUnavailableQueueEmptyDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioModeUnavailableQueueEmptySubtitle": "{modeName} unavailable because the queue is empty",
+    "@radioModeUnavailableQueueEmptySubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioModeRandomUnavailableNotDownloadedDescription": "Unavailable because '{sourceName}' isn't downloaded",
+    "@radioModeRandomUnavailableNotDownloadedDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedSubtitle": "{modeName} unavailable because '{sourceName}' isn't downloaded",
+    "@radioModeRandomUnavailableNotDownloadedSubtitle": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            },
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericDescription": "Unavailable because source is not downloaded",
+    "@radioModeRandomUnavailableNotDownloadedGenericDescription": {
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericSubtitle": "{modeName} unavailable because source is not downloaded",
+    "@radioModeRandomUnavailableNotDownloadedGenericSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "radioNoTracksFound": "Couldn't start radio because no suitable tracks were found.",
+    "@radioNoTracksFound": {
+        "description": "Shown when the user tries to start radio mode but no suitable tracks were found to start the radio with."
+    },
+    "loopingUnavailableWhileRadioActiveWarning": "Changing the loop mode is not available while radio is active, as the queue will continue endlessly.",
+    "@loopingUnavailableWhileRadioActiveWarning": {
+        "description": "Warning message when trying to change the loop mode while radio is active."
+    },
+    "autoReloadPrompt": "Reload queue to apply new {type, select, network{network settings} transcoding{transcoding settings} other{settings}}",
+    "@autoReloadPrompt": {
+        "description": "Prompt shown when the queue needs to be reloaded after changing network settings",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "autoReloadPromptMissingTracks": "{amountUndownloadedTracks, plural, =1{1 track} other{{amountUndownloadedTracks} tracks}} will be removed from the queue because they aren't downloaded.",
+    "@autoReloadPromptMissingTracks": {
+        "description": "Additional prompt text shown when the queue needs to be reloaded after changing network settings and some undownloaded tracks are in the queue",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            }
+        }
+    },
+    "menuButtonLabel": "More actions",
+    "@menuButtonLabel": {
+        "description": "Generic label for menu buttons shown throughout the app. Used for the album, artist, playlist, etc. menus"
+    },
+    "autoReloadPromptReloadButton": "Reload",
+    "@autoReloadPromptReloadButton": {
+        "description": "Button title for reloading the queue after network settings change"
+    },
+    "notImplementedYet": "Not implemented yet.",
+    "@notImplementedYet": {
+        "description": "Message shown when a feature is not implemented yet"
+    },
+    "automaticOfflineModeOverrideActiveTitle": "Automatic switching paused",
+    "@automaticOfflineModeOverrideActiveTitle": {
+        "description": "Title for the label shown below the offline mode toggle when automatic offline mode switching is paused"
+    },
+    "automaticOfflineModeOverrideActiveSubtitle": "Tap here to resume",
+    "@automaticOfflineModeOverrideActiveSubtitle": {
+        "description": "Subtitle for the label shown below the offline mode toggle when automatic offline mode switching is paused"
+    },
+    "sleepTimerFinishLastTrack": "Finish Last Track?",
+    "@sleepTimerFinishLastTrack": {
+        "description": "Option for the sleep timer that will finish the last track before stopping playback."
+    },
+    "sleepTimerAfterCurrentTrack": "After Current Track",
+    "@sleepTimerAfterCurrentTrack": {
+        "description": "Option for the sleep timer that will stop playback after the current track finishes."
+    },
+    "sleepTimerStartTimer": "Start Timer",
+    "@sleepTimerStartTimer": {
+        "description": "Label for the button that starts the sleep timer"
+    },
+    "syncPlaybackSpeedAndPitchLabel": "Sync Speed & Pitch",
+    "@syncPlaybackSpeedAndPitchLabel": {
+        "description": "Label for the checkbox that toggled is the pitch is adjusted along with the playback speed, or if the pitch is kept constant. Shown in the speed submenu on the track menu"
+    },
+    "serverSharingMenuTitle": "Local Network Server Sharing",
+    "@serverSharingMenuTitle": {
+        "description": "Title for the server sharing menu that allows the user to share their server address with other devices on the local network"
+    },
+    "serverSharingMenuButtonTitle": "Share Server",
+    "@serverSharingMenuButtonTitle": {
+        "description": "Title for the button in the drawer that opens the server sharing menu"
+    },
+    "serverSharingMenuConfirmationDialogText": "Are you sure you want to enable server sharing even though you're in Offline Mode? This will cause Finamp to send data over the local network.",
+    "@serverSharingMenuConfirmationDialogText": {
+        "description": "Dialog text shown when enabling server sharing while offline mode is enabled"
+    },
+    "serverSharingMenuConfirmationDialogConfirmationButtonLabel": "Konfirmasi dan Aktifkan",
+    "@serverSharingMenuConfirmationDialogConfirmationButtonLabel": {
+        "description": "Positive action label for the dialog shown when enabling server sharing while offline mode is enabled"
+    },
+    "serverSharingMenuControlTitleSharingEnabled": "Berbagi server",
+    "@serverSharingMenuControlTitleSharingEnabled": {
+        "description": "Title of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned on"
+    },
+    "serverSharingMenuControlSubtitleSharingDisabled": "Ketuk untuk berbagi",
+    "@serverSharingMenuControlSubtitleSharingDisabled": {
+        "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned off"
+    },
+    "serverSharingMenuControlTitleSharingDisabled": "Tidak berbagi",
+    "@serverSharingMenuControlTitleSharingDisabled": {
+        "description": "Title of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned off"
+    },
+    "serverSharingMenuControlSubtitleSharingEnabled": "Ketuk untuk berhenti",
+    "@serverSharingMenuControlSubtitleSharingEnabled": {
+        "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned on"
+    },
+    "serverSharingMenuDescription": "Berbagi alamat server Anda dapat berguna untuk menyiapkan klien baru yang tidak berada di jaringan lokal yang sama dengan server Jellyfin Anda, misalnya TV hotel, PC Anda di kantor, atau klien baru di ponsel Anda saat bepergian.",
+    "@serverSharingMenuDescription": {
+        "description": "Description text shown in the server sharing menu, right below the controls"
+    },
+    "serverSharingMenuDetails": "Ini bekerja dengan mendengarkan permintaan penemuan server dari klien lain di jaringan lokal, lalu membalas permintaan tersebut dengan alamat server Jellyfin Anda yang telah dikonfigurasi.\\\nJika Anda mengonfigurasi alamat lokal dan publik, Finamp akan memberikan keduanya kepada klien yang meminta.",
+    "@serverSharingMenuDetails": {
+        "description": "Description text shown in the server sharing menu, below the description"
+    },
+    "quickConnectAuthorizationMenuButtonTitle": "Otorisasikan Quick Connect",
+    "@quickConnectAuthorizationMenuButtonTitle": {
+        "description": "Title for the button in the drawer that opens the quick connect authorization menu"
+    },
+    "quickConnectAuthorizationMenuPrompt": "Masukkan Kode Quick Connect",
+    "@quickConnectAuthorizationMenuPrompt": {
+        "description": "Title for the button in server sharing menu that opens the quick connect authorization menu"
+    },
+    "quickConnectAuthorizationMenuTitle": "Otorisasikan Permintaan Quick Connect",
+    "@quickConnectAuthorizationMenuTitle": {
+        "description": "Title for the quick connect authorization menu that allows the user to authorize a quick connect request from another device"
+    },
+    "quickConnectAuthorizationMenuInputLabel": "Kode Quick Connect",
+    "@quickConnectAuthorizationMenuInputLabel": {
+        "description": "Label for the quick connect code input, shown below the input field"
+    },
+    "quickConnectAuthorizationMenuStateSubtitleIdle": "Silakan masukkan atau tempel kode di bawah ini",
+    "@quickConnectAuthorizationMenuStateSubtitleIdle": {
+        "description": "Subtitle for the quick connect authorization menu state info (above the input field) while the code hasn't been submitted yet"
+    },
+    "quickConnectAuthorizationMenuStateTitleProcessing": "Mencoba mengotorisasikan permintaan",
+    "@quickConnectAuthorizationMenuStateTitleProcessing": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) while a request is being processed"
+    },
+    "quickConnectAuthorizationMenuStateTitleSuccess": "Permintaan berhasil diotorisasikan",
+    "@quickConnectAuthorizationMenuStateTitleSuccess": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) when the authorization was successful"
+    },
+    "quickConnectAuthorizationMenuStateTitleFailed": "Kode Quick Connect tidak valid",
+    "@quickConnectAuthorizationMenuStateTitleFailed": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) when the authorization was unsuccessful"
+    },
+    "quickConnectAuthorizationMenuStateSubtitleFailed": "Silakan periksa kode dan coba lagi",
+    "@quickConnectAuthorizationMenuStateSubtitleFailed": {
+        "description": "Subtitle for the quick connect authorization menu state info (above the input field) when the authorization was unsuccessful"
+    },
+    "quickConnectAuthorizationMenuDescription": "Jika Anda mencoba masuk ke klien Jellyfin lain melalui Quick Connect, Anda dapat memasukkan atau menempelkan kode 6 digit ke kolom di atas. Ini akan mengotorisasikan permintaan masuk dari klien lain, dan membuat Anda masuk ke akun yang sama dengan yang Anda gunakan untuk Finamp.",
+    "@quickConnectAuthorizationMenuDescription": {
+        "description": "Description for the quick connect authorization menu, shown at the bottom"
+    },
+    "accessibility": "Aksesibilitas",
+    "@accessibility": {
+        "description": "Title for the accessibility settings screen"
+    },
+    "useHighContrastColorsTitle": "Gunakan warna kontras tinggi",
+    "@useHighContrastColorsTitle": {
+        "description": "Title for the setting that controls if high contrast colors are used throughout the app"
+    },
+    "useHighContrastColorsSubtitle": "Gunakan warna dinamis kontras tinggi untuk visibilitas yang lebih baik.",
+    "@useHighContrastColorsSubtitle": {
+        "description": "Subtitle for the setting that controls if high contrast colors are used throughout the app"
+    },
+    "autoExpandPlayerScreenTitle": "Buka layar pemutar saat pemutaran dimulai",
+    "@autoExpandPlayerScreenTitle": {
+        "description": "Title for the setting that controls if the player screen is opened directly after starting a new queue"
+    },
+    "autoExpandPlayerScreenSubtitle": "Ini akan membuka layar sedang diputar saat memulai pemutaran antrean baru",
+    "@autoExpandPlayerScreenSubtitle": {
+        "description": "Subtitle for the setting that controls if the player screen is opened directly after starting a new queue"
+    },
+    "discordRPCSettingTitle": "Discord RPC",
+    "@discordRPCSettingTitle": {
+        "description": "Title for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
+    },
+    "discordRPCSettingDescription": "Aktifkan Discord Rich Presence untuk menampilkan apa yang sedang Anda putar pada status Discord Anda. Tidak akan terhubung ke Discord jika Mode Offline diaktifkan.",
+    "@discordRPCSettingDescription": {
+        "description": "Description for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
+    },
+    "discordRPCIconSettingTitle": "Ikon cadangan RPC",
+    "@discordRPCIconSettingTitle": {
+        "description": "Title for the setting that controls which icon gets shown in the Discord RPC (Rich Presence) in case the local address is in use"
+    },
+    "discordRPCIconSettingDescription": "Ikon cadangan yang ditampilkan ketika tidak ada alamat publik yang terdeteksi. (Karena Discord tidak dapat memuat gambar dari alamat lokal dan akan menggunakan ikon cadangannya)",
+    "@discordRPCIconSettingDescription": {
+        "description": "Description for the setting that controls which Icon the discord RPC displays as a Fallback in case no public address is detected (it doenst matter what connection is active)."
+    },
+    "discordRPCIconDark": "Finamp - Gelap",
+    "@discordRPCIconDark": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with the Dark-Theme Background"
+    },
+    "discordRPCIconBlack": "Finamp - Hitam",
+    "@discordRPCIconBlack": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a Black Background"
+    },
+    "discordRPCIconLight": "Finamp - Putih",
+    "@discordRPCIconLight": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a White Background"
+    },
+    "discordRPCIconJFTransparent": "Jellyfin - Transparan",
+    "@discordRPCIconJFTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Jellyfin logo with a Transparent Background"
+    },
+    "discordRPCIconTransparent": "Finamp - Transparan",
+    "@discordRPCIconTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a Transparent Background"
+    },
+    "discordRPCIconWhiteTransparent": "Finamp Putih - Transparan",
+    "@discordRPCIconWhiteTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the full white Finamp logo with a Transparent Background"
+    },
+    "preferAddingToFavoritesOverPlaylistsTitle": "Tambahkan ke Favorit saat mengetuk ikon hati",
+    "@preferAddingToFavoritesOverPlaylistsTitle": {
+        "description": "Title for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "preferAddingToFavoritesOverPlaylistsSubtitle": "Jika diaktifkan, ketuk singkat akan menambahkan ke favorit, dan tekan lama akan membuka menu 'Tambahkan ke Playlist'. Defaultnya adalah kebalikannya.",
+    "@preferAddingToFavoritesOverPlaylistsSubtitle": {
+        "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "preferNextUpPrependingTitle": "Utamakan menyisipkan di awal Berikutnya",
+    "@preferNextUpPrependingTitle": {
+        "description": "Title for the setting to prefer prepending to Next Up over appending"
+    },
+    "preferNextUpPrependingSubtitle": "Jika diaktifkan, tombol \\\"Putar Berikutnya\\\" akan ditampilkan ketika Berikutnya kosong. Jika tidak, \\\"Tambahkan ke Berikutnya\\\" akan menjadi default.",
+    "@preferNextUpPrependingSubtitle": {
+        "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "rememberLastUsedPlaybackActionRowPageTitle": "Ingat mode pemutaran terakhir",
+    "@rememberLastUsedPlaybackActionRowPageTitle": {
+        "description": "Title for the setting to remember the last used playback mode."
+    },
+    "rememberLastUsedPlaybackActionRowPageSubtitle": "Jika diaktifkan, mode pemutaran terakhir yang Anda gunakan (mis. Berikutnya) akan diingat.",
+    "@rememberLastUsedPlaybackActionRowPageSubtitle": {
+        "description": "Subtitle for the setting to remember the last used playback mode."
+    },
+    "discOfAlbum": "[Disk {number}] {albumName}",
+    "@discOfAlbum": {
+        "description": "Used when a single disc of album is opened, then album name is replaced with this string",
+        "placeholders": {
+            "number": {
+                "type": "int",
+                "example": "1"
+            },
+            "albumName": {
+                "type": "String"
+            }
+        }
+    },
+    "moreActionsOnAlbumDisc": "Aksi lainnya pada disk album",
+    "@moreActionsOnAlbumDisc": {
+        "description": "Label for the disc header menu button."
+    },
+    "dragToReorder": "Seret untuk mengurutkan ulang",
+    "@dragToReorder": {
+        "description": "Label shown on drag handles of track list  tiles in the queue list"
+    },
+    "addDownloadLocationsErrorTitle": "Tidak dapat menulis ke lokasi unduhan",
+    "@addDownloadLocationsErrorTitle": {
+        "description": "Title of popup dialog when adding a download location fails"
+    },
+    "addDownloadLocationsErrorPrompt": "Penulisan ke direktori yang dipilih gagal. Anda harus mengubah izin atau memilih lokasi lain.",
+    "@addDownloadLocationsErrorPrompt": {
+        "description": "Label shown on popup dialog when adding a download location when writing songs fails"
+    },
+    "androidImageErrorPrompt": "Kami tidak dapat menulis gambar ke folder Music Android karena pembatasan OS. Anda harus memilih lokasi lain.",
+    "@androidImageErrorPrompt": {
+        "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
+    },
+    "addDownloadLocationsErrorButton": "Tetap tambahkan",
+    "@addDownloadLocationsErrorButton": {
+        "description": "Label shown on button for adding a download location we suspect to be buggy"
+    },
+    "syncFailedWarningShort": "Peringatan: Gagal menyinkronkan beberapa unduhan dengan server.",
+    "@syncFailedWarningShort": {
+        "description": "Simple warning message for when download sync fails due to items being deleted from the server."
+    },
+    "syncFailedWarningLong": "Sebagian unduhan gagal disinkronkan dengan server. Item server yang cocok kemungkinan telah dihapus. Unduhan yang gagal sebaiknya dihapus untuk membersihkan file usang.",
+    "@syncFailedWarningLong": {
+        "description": "Expanded warning message for when download sync fails due to items being deleted from the server."
+    },
+    "openDownloads": "Buka Unduhan",
+    "@openDownloads": {
+        "description": "Label on a button to open the downloads screen after a sync fails."
+    },
+    "syncingFailed": "Sinkronisasi gagal. Unduhan ini kemungkinan telah dihapus dari server, dan sebaiknya dihapus.",
+    "@syncingFailed": {
+        "description": "Message shown for downloads with the sync failed status, which is generally caused by the server-side item being removed."
+    },
+    "autoplayRestoredQueueTitle": "Putar otomatis antrean yang dipulihkan",
+    "@autoplayRestoredQueueTitle": {
+        "description": "Title for the setting that controls if restored queues automatically play."
+    },
+    "autoplayRestoredQueueSubtitle": "Antrean yang dipulihkan secara otomatis saat startup atau melalui layar pemulihan antrean akan mulai diputar secara otomatis. Antrean yang gagal memulihkan semua trek tidak akan pernah diputar otomatis, terlepas dari pengaturan ini.",
+    "@autoplayRestoredQueueSubtitle": {
+        "description": "Subtitle for the setting that controls if restored queues automatically play."
+    },
+    "missingBlurhashWarning": "Peringatan: Server Jellyfin tampaknya salah dikonfigurasi dan tidak menghitung blurhash. Ini mencegah Finamp menghilangkan duplikasi unduhan gambar. Silakan perbaiki server lalu jalankan perbaikan unduhan.",
+    "@missingBlurhashWarning": {
+        "description": "A warning message displayed on the downloads screen if the jellyfin server is missing blurhashes."
+    },
+    "noPermissionToEditMetadata": "Anda harus menjadi administrator untuk mengedit gambar metadata.",
+    "@noPermissionToEditMetadata": {
+        "description": "Error message shown when the user tries to edit metadata but doesn't have permission to do so, i.e. because they are not an admin"
+    },
+    "removedTracks": "Trek yang dihapus",
+    "@removedTracks": {
+        "description": "Section header for the list of removed tracks on the playlist edit screen"
+    },
+    "removedTracksEmptyListPlaceholder": "Trek yang dihapus akan muncul di sini",
+    "@removedTracksEmptyListPlaceholder": {
+        "description": "Placeholder text shown when there are no removed tracks"
+    },
+    "restoreTrack": "Pulihkan Trek",
+    "@restoreTrack": {
+        "description": "Button title for restoring a track that was marked to be removed"
+    },
+    "discardChangesTitle": "Batalkan perubahan?",
+    "@discardChangesTitle": {
+        "description": "Title for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "discardChangesDescription": "Anda memiliki perubahan yang belum disimpan. Batalkan dan kembali?",
+    "@discardChangesDescription": {
+        "description": "Description for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "discardChangesConfirmButton": "Batalkan perubahan",
+    "@discardChangesConfirmButton": {
+        "description": "Positive action button for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "snackbarOptionsMenuTitle": "Kelola pesan",
+    "@snackbarOptionsMenuTitle": {
+        "description": "Title for the snackbar options menu that allows the user to manage snackbar messages"
+    },
+    "snackbarOptionsMenuClearAllButton": "Hapus semua pesan",
+    "@snackbarOptionsMenuClearAllButton": {
+        "description": "Button title for clearing all snackbar messages"
+    },
+    "snackbarOptionsMenuViewLogsButton": "Lihat log",
+    "@snackbarOptionsMenuViewLogsButton": {
+        "description": "Button title for opening the logs screen from the snackbar options menu"
+    },
+    "duckOnAudioInterruptionTitle": "Kurangi volume saat interupsi",
+    "@duckOnAudioInterruptionTitle": {
+        "description": "Title for the setting that controls ducking."
+    },
+    "duckOnAudioInterruptionSubtitle": "Turunkan volume (duck) saat aplikasi lain memutar audio sebentar. Memerlukan mulai ulang.",
+    "@duckOnAudioInterruptionSubtitle": {
+        "description": "Subtitle for the setting that controls ducking."
+    },
+    "forceAudioOffloadingOnAndroidTitle": "Paksa offloading audio",
+    "@forceAudioOffloadingOnAndroidTitle": {
+        "description": "Title for the setting that controls audio offloading on Android."
+    },
+    "forceAudioOffloadingOnAndroidSubtitle": "Offload pemrosesan audio ke perangkat keras, jika didukung oleh perangkat.",
+    "@forceAudioOffloadingOnAndroidSubtitle": {
+        "description": "Subtitle for the setting that controls audio offloading on Android."
+    },
+    "explicit": "Eksplisit",
+    "@explicit": {
+        "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
+    }
 }
