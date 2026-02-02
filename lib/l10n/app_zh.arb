@@ -1,42 +1,25 @@
 {
     "logs": "日志",
-    "@logs": {},
     "password": "密码",
-    "@password": {},
     "username": "用户名",
-    "@username": {},
     "selectMusicLibraries": "选择音乐库",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
     "artists": "艺术家",
-    "@artists": {},
     "genres": "流派",
-    "@genres": {},
     "tracks": "歌曲",
-    "@tracks": {},
     "unknownName": "未知名称",
-    "@unknownName": {},
     "playlists": "播放列表",
-    "@playlists": {},
     "startMix": "生成合辑",
-    "@startMix": {},
     "shuffleAll": "随机播放",
-    "@shuffleAll": {},
     "sortOrder": "排序",
-    "@sortOrder": {},
     "artist": "艺术家",
-    "@artist": {},
     "budget": "预算",
-    "@budget": {},
     "sortBy": "排序方式",
-    "@sortBy": {},
     "premiereDate": "发布日期",
-    "@premiereDate": {},
     "name": "名称",
-    "@name": {},
     "random": "随机",
-    "@random": {},
     "downloadCount": "{count,plural, =1{{count} 个下载} other{{count} 个下载}}",
     "@downloadCount": {
         "placeholders": {
@@ -46,15 +29,10 @@
         }
     },
     "error": "错误",
-    "@error": {},
     "playButtonLabel": "播放",
-    "@playButtonLabel": {},
     "shuffleButtonLabel": "随机播放",
-    "@shuffleButtonLabel": {},
     "required": "必需的",
-    "@required": {},
     "updateButtonLabel": "更新",
-    "@updateButtonLabel": {},
     "trackCount": "{count,plural,=1{{count} 首歌曲} other{{count} 首歌曲}}",
     "@trackCount": {
         "placeholders": {
@@ -64,95 +42,50 @@
         }
     },
     "addDownloads": "添加下载",
-    "@addDownloads": {},
     "downloadsQueued": "正在下载文件",
-    "@downloadsQueued": {},
     "downloadsDeleted": "已删除下载。",
-    "@downloadsDeleted": {},
     "location": "位置",
-    "@location": {},
     "playlistUpdated": "播放列表名称已更新。",
-    "@playlistUpdated": {},
     "addButtonLabel": "添加",
-    "@addButtonLabel": {},
     "message": "消息",
-    "@message": {},
     "shareLogs": "分享日志",
-    "@shareLogs": {},
     "stackTrace": "堆栈跟踪",
-    "@stackTrace": {},
     "transcoding": "转码",
-    "@transcoding": {},
     "downloadLocations": "下载位置",
-    "@downloadLocations": {},
     "layoutAndTheme": "布局和主题",
-    "@layoutAndTheme": {},
     "logOut": "登出",
-    "@logOut": {},
     "bitrate": "比特率",
-    "@bitrate": {},
     "enableTranscoding": "启用转码",
-    "@enableTranscoding": {},
     "bitrateSubtitle": "更高的比特率可以提供更高质量的音频，但需要更高的带宽。不适用于无损编解码器，例如 FLAC",
-    "@bitrateSubtitle": {},
     "appDirectory": "应用目录",
-    "@appDirectory": {},
     "customLocation": "自定义位置",
-    "@customLocation": {},
     "pathReturnSlashErrorMessage": "不能使用返回“/”的路径",
-    "@pathReturnSlashErrorMessage": {},
     "selectDirectory": "选择目录",
-    "@selectDirectory": {},
     "unknownError": "未知错误",
-    "@unknownError": {},
     "enterLowPriorityStateOnPause": "暂停时进入低优先级状态",
-    "@enterLowPriorityStateOnPause": {},
     "landscape": "横向",
-    "@landscape": {},
     "portrait": "纵向",
-    "@portrait": {},
     "viewType": "视图类型",
-    "@viewType": {},
     "viewTypeSubtitle": "音乐屏幕的视图类型",
-    "@viewTypeSubtitle": {},
     "showTextOnGridView": "在网格视图中显示文本",
-    "@showTextOnGridView": {},
     "useCoverAsBackgroundSubtitle": "是否在播放器屏幕上使用模糊的封面作为背景。",
-    "@useCoverAsBackgroundSubtitle": {},
     "system": "系统",
-    "@system": {},
     "light": "浅色",
-    "@light": {},
     "noButtonLabel": "否",
-    "@noButtonLabel": {},
     "yesButtonLabel": "是",
-    "@yesButtonLabel": {},
     "createButtonLabel": "创建",
-    "@createButtonLabel": {},
     "invalidNumber": "无效数字",
-    "@invalidNumber": {},
     "newPlaylist": "新建播放列表",
-    "@newPlaylist": {},
     "noAlbum": "没有专辑",
-    "@noAlbum": {},
     "playlistCreated": "播放列表已创建。",
-    "@playlistCreated": {},
     "sleepTimerTooltip": "睡眠定时器",
-    "@sleepTimerTooltip": {},
     "unknownArtist": "未知艺术家",
-    "@unknownArtist": {},
     "instantMix": "速成合辑",
-    "@instantMix": {},
     "replaceQueue": "替换队列",
-    "@replaceQueue": {},
     "goToAlbum": "前往专辑",
-    "@goToAlbum": {},
     "queueReplaced": "队列已被替换。",
-    "@queueReplaced": {},
     "startingInstantMix": "生成速成合辑。",
-    "@startingInstantMix": {},
     "anErrorHasOccured": "发生了一个错误。",
-    "@anErrorHasOccured": {},
     "responseError": "{error} 状态码 {statusCode}.",
     "@responseError": {
         "placeholders": {
@@ -180,21 +113,13 @@
         }
     },
     "addDownloadLocation": "添加下载路径",
-    "@addDownloadLocation": {},
     "addedToQueue": "添加至队列。",
-    "@addedToQueue": {},
     "addToQueue": "添加至队列",
-    "@addToQueue": {},
     "addToPlaylistTooltip": "添加至播放列表",
-    "@addToPlaylistTooltip": {},
     "addToPlaylistTitle": "添加至播放列表",
-    "@addToPlaylistTitle": {},
     "albumArtist": "专辑艺术家",
-    "@albumArtist": {},
     "album": "专辑",
-    "@album": {},
     "albums": "专辑",
-    "@albums": {},
     "gridCrossAxisCountSubtitle": "每行使用的网格图块数量 {value}.",
     "@gridCrossAxisCountSubtitle": {
         "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
@@ -206,25 +131,17 @@
         }
     },
     "shuffleAllTrackCountSubtitle": "在歌曲选项卡或流派页面上使用随机播放按钮时要加载的曲目数量。",
-    "@shuffleAllTrackCountSubtitle": {},
     "errorScreenError": "获取错误列表时出错！ 现在您可能应该在 GitHub 上创建一个问题并清除应用数据",
-    "@errorScreenError": {},
     "audioService": "音频服务",
-    "@audioService": {},
     "areYouSure": "你确定吗？",
-    "@areYouSure": {},
     "cancelSleepTimer": "取消睡眠定时器？",
-    "@cancelSleepTimer": {},
     "clear": "清除",
-    "@clear": {},
     "communityRating": "社区评级",
-    "@communityRating": {},
     "couldNotFindLibraries": "找不到任何库。",
     "@couldNotFindLibraries": {
         "description": "Error message when the user does not have any libraries"
     },
     "dateAdded": "添加日期",
-    "@dateAdded": {},
     "dlComplete": "{count} 完成",
     "@dlComplete": {
         "placeholders": {
@@ -258,15 +175,10 @@
         }
     },
     "criticRating": "评论家评级",
-    "@criticRating": {},
     "downloads": "下载",
-    "@downloads": {},
     "customLocationsBuggy": "自定义位置可能会有很多错误，在大多数情况下不建议使用。由于操作系统的限制，系统“Music”文件夹下无法保存专辑封面。",
-    "@customLocationsBuggy": {},
     "datePlayed": "上次播放日期",
-    "@datePlayed": {},
     "dark": "深色",
-    "@dark": {},
     "discNumber": "唱片 {number}",
     "@discNumber": {
         "placeholders": {
@@ -276,73 +188,47 @@
         }
     },
     "directoryMustBeEmpty": "目录必须为空",
-    "@directoryMustBeEmpty": {},
     "downloadMissingImages": "下载缺少的图片",
-    "@downloadMissingImages": {},
     "hideTrackArtistsIfSameAsAlbumArtists": "如果歌曲艺术家与专辑艺术家相同，则隐藏歌曲艺术家",
-    "@hideTrackArtistsIfSameAsAlbumArtists": {},
     "failedToGetTrackFromDownloadId": "无法通过下载 ID 获取歌曲",
-    "@failedToGetTrackFromDownloadId": {},
     "grid": "网格",
-    "@grid": {},
     "finamp": "Finamp",
-    "@finamp": {},
     "enableTranscodingSubtitle": "音乐流将由服务器转码。",
-    "@enableTranscodingSubtitle": {},
     "music": "音乐",
-    "@music": {},
     "internalExternalIpExplanation": "如果您希望能够远程访问您的 Jellyfin 服务器，则需要使用您的外部 IP。\n\n如果您的服务器位于 HTTP 端口 (80/443) 上，则不必指定端口。 \n\n如果URL正确，你应该能在输入框下方看到弹出的服务器信息。",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
     "list": "列表",
-    "@list": {},
     "logsCopied": "已复制日志。",
-    "@logsCopied": {},
     "next": "下一个",
-    "@next": {},
     "noArtist": "没有艺术家",
-    "@noArtist": {},
     "playCount": "播放计数",
-    "@playCount": {},
     "noItem": "没有项目",
-    "@noItem": {},
     "applicationLegalese": "以 Mozilla Public License 2.0 协议许可。\n源代码位于：{sourceCodeLink}。",
-    "@applicationLegalese": {},
     "startMixNoTracksAlbum": "长按一个专辑，可在开始生成合辑前将其从合辑生成器中添加或移除",
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
     "serverUrl": "服务器 URL",
-    "@serverUrl": {},
     "startMixNoTracksArtist": "长按一个艺术家，可在开始生成合辑前将其从合辑生成器中添加或移除",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
     },
     "notAvailableInOfflineMode": "在离线模式下不可用",
-    "@notAvailableInOfflineMode": {},
     "offlineMode": "离线模式",
-    "@offlineMode": {},
     "queue": "队列",
-    "@queue": {},
     "productionYear": "制作年份",
-    "@productionYear": {},
     "useCoverAsBackground": "将模糊的封面应用为播放器背景",
-    "@useCoverAsBackground": {},
     "revenue": "收入",
-    "@revenue": {},
     "settings": "设置",
-    "@settings": {},
     "emptyServerUrl": "服务器 URL 不能为空",
     "@emptyServerUrl": {
         "description": "Error message that shows when the user submits a login without a server URL"
     },
     "shuffleAllTrackCount": "随机播放歌曲数量",
-    "@shuffleAllTrackCount": {},
     "tabs": "选项卡",
-    "@tabs": {},
     "theme": "主题",
-    "@theme": {},
     "gridCrossAxisCount": "{value} 网格横轴数量",
     "@gridCrossAxisCount": {
         "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
@@ -354,9 +240,7 @@
         }
     },
     "enterLowPriorityStateOnPauseSubtitle": "通知可以在暂停时滑动。 启用此功能还允许 Android 在暂停时终止服务。",
-    "@enterLowPriorityStateOnPauseSubtitle": {},
     "showTextOnGridViewSubtitle": "是否在网格音乐屏幕上显示文本（标题、艺术家等）。",
-    "@showTextOnGridViewSubtitle": {},
     "downloadedMissingImages": "{count,plural, =0{未找到缺少的图片} =1{已下载 {count} 张缺少的图片} other{已下载 {count} 张缺少的图片}}",
     "@downloadedMissingImages": {
         "description": "Message that shows when the user downloads missing images",
@@ -367,19 +251,12 @@
         }
     },
     "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "是否在专辑界面隐藏歌曲艺术家（如果他们与专辑艺术家没有区别）。",
-    "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
     "removeFromMix": "从合辑中删除",
-    "@removeFromMix": {},
     "addToMix": "添加到合辑",
-    "@addToMix": {},
     "minutes": "分钟",
-    "@minutes": {},
     "bufferDuration": "媒体时长",
-    "@bufferDuration": {},
     "disableGesture": "禁用手势",
-    "@disableGesture": {},
     "disableGestureSubtitle": "是否禁用手势。",
-    "@disableGestureSubtitle": {},
     "redownloadedItems": "{count,plural, =0{无需重新下载项目} =1{{count} 项重新下载的项目} other{{count} 项重新下载的项目}}",
     "@redownloadedItems": {
         "placeholders": {
@@ -389,49 +266,33 @@
         }
     },
     "bufferDurationSubtitle": "缓冲的时间（秒）。重启生效。",
-    "@bufferDurationSubtitle": {},
     "removedFromPlaylist": "已从播放列表删除。",
-    "@removedFromPlaylist": {},
     "removeFromPlaylistTitle": "从此播放列表中移除",
-    "@removeFromPlaylistTitle": {},
     "removeFromPlaylistTooltip": "从此播放列表中移除",
-    "@removeFromPlaylistTooltip": {},
     "language": "语言",
-    "@language": {},
     "confirm": "确认",
-    "@confirm": {},
     "showUncensoredLogMessage": "该日志包含您的登录信息。显示？",
-    "@showUncensoredLogMessage": {},
     "resetTabs": "重置选项卡",
-    "@resetTabs": {},
     "insertedIntoQueue": "已插入队列。",
     "@insertedIntoQueue": {
         "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
     },
     "refresh": "刷新",
-    "@refresh": {},
     "playNext": "下一个播放",
     "@playNext": {
         "description": "Popup menu item title for inserting an item into the play queue after the currently-playing item."
     },
     "noMusicLibrariesBody": "Finamp 找不到任何音乐库。请确保您的 Jellyfin 服务器至少包含一个内容类型设置为“音乐”的媒体库。",
-    "@noMusicLibrariesBody": {},
     "noMusicLibrariesTitle": "没有音乐库",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
     "syncDownloadedPlaylists": "同步下载的播放列表",
-    "@syncDownloadedPlaylists": {},
     "showFastScroller": "显示快速滚动条",
-    "@showFastScroller": {},
     "swipeInsertQueueNext": "播放滑动的下一首歌曲",
-    "@swipeInsertQueueNext": {},
     "interactions": "交互",
-    "@interactions": {},
     "swipeInsertQueueNextSubtitle": "在歌曲列表中滑动时，可以将歌曲作为队列中的下一个项目插入，而不是将其附加到末尾。",
-    "@swipeInsertQueueNextSubtitle": {},
     "about": "关于 Finamp",
-    "@about": {},
     "changeLanguage": "切换语言",
     "@changeLanguage": {
         "description": "Label for button shown during the login process that allows the user to change the app language"
@@ -453,7 +314,6 @@
         "description": "Text shown while the connection to the specified server is attempted"
     },
     "goToArtist": "前往艺术家",
-    "@goToArtist": {},
     "remainingDuration": "剩余 {duration}",
     "@remainingDuration": {
         "description": "Displays duration of unplayed tracks. {duration} is a pre-formatted string.",
@@ -589,11 +449,8 @@
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
     "title": "标题",
-    "@title": {},
     "activeDownloads": "正在下载",
-    "@activeDownloads": {},
     "activeDownloadsTitle": "正在下载",
-    "@activeDownloadsTitle": {},
     "customizationSettingsTitle": "个性化",
     "@customizationSettingsTitle": {
         "description": "Title for the customization settings screen"
@@ -659,7 +516,6 @@
         "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
     },
     "confirmFavoriteRemoved": "已移出收藏",
-    "@confirmFavoriteRemoved": {},
     "skipToPreviousTrackButtonTooltip": "跳至开头或上一曲",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -702,13 +558,11 @@
         "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop all mode"
     },
     "topTracks": "最热门歌曲",
-    "@topTracks": {},
     "shuffleAlbums": "随机播放专辑",
     "@shuffleAlbums": {
         "description": "Label for action that shuffles all albums of an artist or genre"
     },
     "close": "关闭",
-    "@close": {},
     "volumeNormalizationSwitchSubtitle": "使用增益信息对歌曲的响度进行标准化处理（\"重放增益）",
     "@volumeNormalizationSwitchSubtitle": {
         "description": "Subtitle for the switch that toggles replay gain"
@@ -722,7 +576,6 @@
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
     },
     "startInstantMixForIndividualTracksSwitchSubtitle": "启用后，点击歌曲选项卡上的歌曲将生成速成合辑，而不仅仅是播放单个歌曲。",
-    "@startInstantMixForIndividualTracksSwitchSubtitle": {},
     "syncComplete": "所有下载已重新同步。",
     "@syncComplete": {
         "description": "Message displayed after download sync completes."
@@ -751,7 +604,7 @@
     "@preferQuickSyncSwitchSubtitle": {
         "description": "Description of setting that skips completed albums while syncing."
     },
-    "downloadInfo": "{size} {codec}{bitrate, select, null{} other{ @ {bitrate} 已转码}}",
+    "downloadInfo": "{size} {codec}{bitrate, select, null{} other{ @ {bitrate} Transcoded}}{location, select, null{} other{ ({location})}}",
     "@downloadInfo": {
         "placeholders": {
             "bitrate": {
@@ -770,21 +623,15 @@
         "description": "Track info line in downloads screen lists"
     },
     "fixedGridSizeSwitchTitle": "使用固定大小的网格图块",
-    "@fixedGridSizeSwitchTitle": {},
     "redownloadTitle": "自动重新下载转码",
     "@redownloadTitle": {
         "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
     },
     "fixedGridSizeSwitchSubtitle": "网格图块大小不会随窗口 / 屏幕大小而变化。",
-    "@fixedGridSizeSwitchSubtitle": {},
     "enableVibration": "开启震动",
-    "@enableVibration": {},
     "allowSplitScreenSubtitle": "播放界面将与其他界面一起显示在更宽的显示屏上。",
-    "@allowSplitScreenSubtitle": {},
     "prioritizePlayerCover": "优先显示专辑封面",
-    "@prioritizePlayerCover": {},
     "showArtistChipImage": "显示带有艺术家姓名的艺术家图片",
-    "@showArtistChipImage": {},
     "numberAsKiloHertz": "{kiloHertz} kHz",
     "@numberAsKiloHertz": {
         "description": "Value for the sample rate of a track, in kilohertz",
@@ -804,15 +651,12 @@
         }
     },
     "removeFromPlaylistConfirm": "移除",
-    "@removeFromPlaylistConfirm": {},
     "trackMenuButtonTooltip": "歌曲菜单",
     "@trackMenuButtonTooltip": {
         "description": "Tooltip for the button that opens the track menu"
     },
     "cacheLibraryImagesSettings": "缓存当前库图片",
-    "@cacheLibraryImagesSettings": {},
     "cacheLibraryImagesSettingsSubtitle": "将下载当前活动音乐库中的所有专辑、艺术家、流派和播放列表封面。",
-    "@cacheLibraryImagesSettingsSubtitle": {},
     "alignmentOptionEnd": "右对齐",
     "@alignmentOptionEnd": {
         "description": "Alignment option for things like the lyrics view. End means right-aligned in LTR languages and left-aligned in RTL languages."
@@ -834,9 +678,7 @@
         "description": "Message shown when a list of items is filtered and no items match the filter"
     },
     "hours": "小时",
-    "@hours": {},
     "seconds": "秒",
-    "@seconds": {},
     "sleepTimerRemainingTime": "{time,plural,=1{<1 分钟} other{{time} 分钟}}后休眠",
     "@sleepTimerRemainingTime": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
@@ -847,9 +689,7 @@
         }
     },
     "addToMorePlaylistsTooltip": "添加至更多播放列表",
-    "@addToMorePlaylistsTooltip": {},
     "unknownAlbum": "未知专辑",
-    "@unknownAlbum": {},
     "timeFractionTooltip": "{currentTime} / {totalTime}",
     "@timeFractionTooltip": {
         "description": "Tooltip and accessibility label for the track progress. {currentTime} is the current position within the track, as a translated string like '2 minutes 40 seconds', and {totalTime} is the total duration of the track, also a translated string."
@@ -869,9 +709,7 @@
         }
     },
     "goToGenre": "前往流派",
-    "@goToGenre": {},
     "confirmFavoriteAdded": "已加入收藏",
-    "@confirmFavoriteAdded": {},
     "confirmAddedToPlaylist": "已添加至播放列表。",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
@@ -895,7 +733,6 @@
         "description": "Option to download item in long-press menu."
     },
     "downloadSettings": "下载",
-    "@downloadSettings": {},
     "downloadsWorkersSettingLabel": "{count} 个下载工作进程",
     "@downloadsWorkersSettingLabel": {
         "description": "Label of values on download worker count slider",
@@ -934,7 +771,6 @@
         "description": "Option to keep the screen on while using the app"
     },
     "keepScreenOnWhileLyrics": "显示歌词时常亮",
-    "@keepScreenOnWhileLyrics": {},
     "nowPlayingBarTooltip": "打开播放界面",
     "@nowPlayingBarTooltip": {
         "description": "Tooltip for the now playing bar at the bottom of the screen"
@@ -964,9 +800,7 @@
         "description": "Prompt which gets shown when the user is about to reset all settings in the current settings window to their default values"
     },
     "bufferDisableSizeConstraintsTitle": "不限制缓冲区大小",
-    "@bufferDisableSizeConstraintsTitle": {},
     "bufferSizeTitle": "缓冲区大小",
-    "@bufferSizeTitle": {},
     "skipToNextTrackButtonTooltip": "跳至下一曲",
     "@skipToNextTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the next track"
@@ -1143,9 +977,7 @@
         }
     },
     "resetToDefaults": "重置为默认值",
-    "@resetToDefaults": {},
     "moreInfo": "详细信息",
-    "@moreInfo": {},
     "volumeNormalizationSettingsTitle": "音量标准化",
     "@volumeNormalizationSettingsTitle": {
         "description": "Title for the replay gain settings screen"
@@ -1321,7 +1153,7 @@
         },
         "description": "Dropdown option to download transcoded version of tracks"
     },
-    "collectionDownloadInfo": "{size}{codec, select, ORIGINAL{} other{{codec} @ {bitrate}}}",
+    "collectionDownloadInfo": "{size}{codec, select, ORIGINAL{} other{ as {codec} @ {bitrate}}}{location, select, null{} other{ ({location})}}",
     "@collectionDownloadInfo": {
         "placeholders": {
             "bitrate": {
@@ -1358,7 +1190,6 @@
         "description": "Tooltip for button that sets a download location as the default."
     },
     "fixedGridSizeTitle": "网格图块大小",
-    "@fixedGridSizeTitle": {},
     "fixedGridTileSizeEnum": "{size, select, small{小} medium{中} large{大} veryLarge{超大} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
@@ -1369,17 +1200,11 @@
         "description": "Localized names of fixed size grid tile sizes."
     },
     "enableVibrationSubtitle": "是否开启振动。",
-    "@enableVibrationSubtitle": {},
     "hidePlayerBottomActions": "隐藏底部按钮",
-    "@hidePlayerBottomActions": {},
     "prioritizePlayerCoverSubtitle": "在播放界面上优先显示更大的专辑封面。在小尺寸屏幕下，非关键控件将被更积极地隐藏。",
-    "@prioritizePlayerCoverSubtitle": {},
     "suppressPlayerPadding": "抑制播放控件内边距",
-    "@suppressPlayerPadding": {},
     "allowSplitScreenTitle": "允许分屏模式",
-    "@allowSplitScreenTitle": {},
     "suppressPlayerPaddingSubtitle": "当专辑封面不是全尺寸时，最小化播放界面控件之间的内边距。",
-    "@suppressPlayerPaddingSubtitle": {},
     "lockDownload": "始终保留在设备上",
     "@lockDownload": {
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
@@ -1393,19 +1218,12 @@
         "description": "Header for add to/remove from playlist popup menu"
     },
     "trackOfflineFavorites": "同步所有收藏状态",
-    "@trackOfflineFavorites": {},
     "trackOfflineFavoritesSubtitle": "这样可以在离线时显示更多最新的收藏状态。 不下载任何其他文件。",
-    "@trackOfflineFavoritesSubtitle": {},
     "allPlaylistsInfoSetting": "下载播放列表元数据",
-    "@allPlaylistsInfoSetting": {},
     "allPlaylistsInfoSettingSubtitle": "同步所有播放列表的元数据，改善播放列表体验",
-    "@allPlaylistsInfoSettingSubtitle": {},
     "downloadFavoritesSetting": "下载所有收藏",
-    "@downloadFavoritesSetting": {},
     "downloadAllPlaylistsSetting": "下载所有播放列表",
-    "@downloadAllPlaylistsSetting": {},
     "fiveLatestAlbumsSetting": "下载 5 张最新专辑",
-    "@fiveLatestAlbumsSetting": {},
     "showProgressOnNowPlayingBarTitle": "在应用内迷你播放器上显示歌曲播放进度",
     "@showProgressOnNowPlayingBarTitle": {
         "description": "Title for the setting that controls if the in-app miniplayer / now playing bar at the botton of the music screen functions as a progress bar"
@@ -1435,23 +1253,16 @@
         "description": "Subtitle for the setting that controls the alignment of lyrics in the lyrics view"
     },
     "keepScreenOnSubtitle": "何时保持屏幕常亮",
-    "@keepScreenOnSubtitle": {},
     "keepScreenOnDisabled": "禁用",
-    "@keepScreenOnDisabled": {},
     "keepScreenOnAlwaysOn": "始终常亮",
-    "@keepScreenOnAlwaysOn": {},
     "keepScreenOnWhilePlaying": "播放音乐时常亮",
-    "@keepScreenOnWhilePlaying": {},
     "keepScreenOnWhilePluggedIn": "仅在插入电源时保持屏幕常亮",
-    "@keepScreenOnWhilePluggedIn": {},
     "keepScreenOnWhilePluggedInSubtitle": "设备拔掉电源时忽略保持屏幕常亮设置",
-    "@keepScreenOnWhilePluggedInSubtitle": {},
     "genericToggleButtonTooltip": "点击切换。",
     "@genericToggleButtonTooltip": {
         "description": "Tooltip for toggle buttons that can be tapped to toggle their state"
     },
     "artwork": "作品",
-    "@artwork": {},
     "artworkTooltip": "{title}的作品",
     "@artworkTooltip": {
         "placeholders": {
@@ -1509,7 +1320,6 @@
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
     "noActiveDownloads": "无正在下载。",
-    "@noActiveDownloads": {},
     "removeFromPlaylistNamedTooltip": "从播放列表 '{playlistName}'中移除",
     "@removeFromPlaylistNamedTooltip": {
         "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
@@ -1521,9 +1331,7 @@
         }
     },
     "bufferSizeSubtitle": "缓冲区的容量（MB）。重启生效",
-    "@bufferSizeSubtitle": {},
     "addToMorePlaylistsTitle": "添加至更多播放列表",
-    "@addToMorePlaylistsTitle": {},
     "shuffleAllQueueSource": "随机播放",
     "@shuffleAllQueueSource": {
         "description": "Title for the queue source when the user is shuffling all tracks. Should be capitalized (if applicable) to be more recognizable throughout the UI"
@@ -1546,9 +1354,7 @@
         "description": "Setting to restore last queue on startup"
     },
     "showArtistChipImageSubtitle": "这会影响小尺寸艺术家图片预览，例如在播放界面上。",
-    "@showArtistChipImageSubtitle": {},
     "hidePlayerBottomActionsSubtitle": "隐藏播放界面上的队列和歌词按钮。向上滑动可访问队列，向左滑动（专辑封面下方）可查看歌词（如果有）。",
-    "@hidePlayerBottomActionsSubtitle": {},
     "scrollToCurrentTrack": "滚动至当前歌曲",
     "@scrollToCurrentTrack": {
         "description": "Tooltip for button that scrolls the queue list back to the current track"
@@ -1578,7 +1384,6 @@
         "description": "Prompt on dialog to confirm a removal from playlist"
     },
     "fiveLatestAlbumsSettingSubtitle": "下载内容过期后将被删除。锁定下载内容可防止专辑被删除。",
-    "@fiveLatestAlbumsSettingSubtitle": {},
     "lyricsFontSizeSubtitle": "控制歌词界面中歌词的字体大小。",
     "@lyricsFontSizeSubtitle": {
         "description": "Subtitle for the setting that controls the font size of lyrics in the lyrics view"
@@ -1646,7 +1451,6 @@
         }
     },
     "bufferDisableSizeConstraintsSubtitle": "禁用缓冲区大小限制（“缓冲区大小”）。缓冲区将始终按配置的持续时间（“缓冲区持续时间”）加载，即使是非常大的文件。可能会导致崩溃。重启生效。",
-    "@bufferDisableSizeConstraintsSubtitle": {},
     "downloadedCountUnified": "{trackCount,plural,=1{{trackCount} 首歌曲} other{{trackCount} 首歌曲}}, {imageCount,plural,=1{{imageCount} 张图片} other{{imageCount} 张图片}}\n{syncCount,plural,=1{{syncCount} 个节点同步} other{{syncCount} 个节点同步}}{repairing, plural, =0{} other{\nCurrently repairing}}",
     "@downloadedCountUnified": {
         "description": "Display of downloaded track and image count on downloads screen.",
@@ -1687,7 +1491,7 @@
     "@volumeNormalizationModeSelectorDescription": {
         "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown"
     },
-    "volumeNormalizationIOSBaseGainEditorSubtitle": "目前，iOS 上的音量标准化需要改变播放音量来模拟增益变化。由于我们无法将音量提高到 100% 以上，因此我们需要降低默认音量，以便提高安静歌曲的音量。该值以分贝 (dB) 为单位，-10 dB 相当于 30% 的音量，-4.5 dB 相当于 60% 的音量，-2 dB 相当于 80% 的音量。",
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "选择音量增益偏移量（以分贝为单位）",
     "@volumeNormalizationIOSBaseGainEditorSubtitle": {
         "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
@@ -1837,17 +1641,13 @@
         "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
     },
     "oneLineMarqueeTextButton": "自动滚动长标题",
-    "@oneLineMarqueeTextButton": {},
     "oneLineMarqueeTextButtonSubtitle": "自动滚动太长而无法在两行中显示的歌曲标题",
-    "@oneLineMarqueeTextButtonSubtitle": {},
     "noItemsDownloaded": "沒有下载任何项目。",
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
     },
     "marqueeOrTruncateButton": "对长标题使用省略号",
-    "@marqueeOrTruncateButton": {},
     "marqueeOrTruncateButtonSubtitle": "在长标题末尾显示...而不是滚动文本",
-    "@marqueeOrTruncateButtonSubtitle": {},
     "allowDeleteFromServerTitle": "允许从服务器删除",
     "@allowDeleteFromServerTitle": {
         "description": "Title for the setting that controls if items can be deleted from the server"
@@ -1911,25 +1711,17 @@
         "description": "Title for the special downloads section on the downloads screen."
     },
     "hideQueueButton": "隐藏队列按钮",
-    "@hideQueueButton": {},
     "hideQueueButtonSubtitle": "隐藏播放器屏幕上的队列按钮。向上滑动即可访问队列。",
-    "@hideQueueButtonSubtitle": {},
     "autoOfflineOptionDisconnected": "断开",
     "@autoOfflineOptionDisconnected": {
         "description": "This is shown when the autoOffline feature is set to Disconnected, this means offline mode will be automatically enabled when either wifi, ethernet or cellular is active"
     },
     "autoOfflineSettingTitle": "自动离线模式",
-    "@autoOfflineSettingTitle": {},
     "albumArtists": "专辑艺术家",
-    "@albumArtists": {},
     "swipeLeftToRightAction": "向右轻扫操作",
-    "@swipeLeftToRightAction": {},
     "swipeLeftToRightActionSubtitle": "从左到右滑动列表中的歌曲时触发的动作.",
-    "@swipeLeftToRightActionSubtitle": {},
     "swipeRightToLeftAction": "向左轻扫操作",
-    "@swipeRightToLeftAction": {},
     "swipeRightToLeftActionSubtitle": "从右向左滑动列表中的音轨时触发的动作.",
-    "@swipeRightToLeftActionSubtitle": {},
     "autoOfflineOptionNetwork": "本地网络",
     "@autoOfflineOptionNetwork": {
         "description": "This is shown when the autoOffline feature is set to Network, this means offline mode will be automatically enabled when no wifi or ethernet connection is active"
@@ -1938,16 +1730,13 @@
     "@transcodingStreamingFormatTitle": {
         "description": "Title for the dropdown that selects the format for transcoded streams"
     },
-    "autoOfflineSettingDescription": "自动启用脱机模式.\n已禁用:不会自动开启离线模式,可节省电池.\n本地网络: 在未连接到wifi或以太网时打开脱机模式.\n断开连接: 在未连接任何设备时打开脱机模式.\n您可以随时手动开启离线模式,它会暂停自动化,直到您再次关闭离线模式",
+    "autoOfflineSettingDescription": "{disabledModeName}：\n不会自动开启离线模式。可能有助于节省电量。\n\n{localNetworkModeName}：\n未连接 Wi-Fi 或以太网时开启离线模式。\n\n{disconnectedModeName}：\n未连接任何网络时开启离线模式。\n\n{unreachableModeName}：\n切换网络后无法 ping 通服务器时开启离线模式。\n\n您可以随时手动切换离线模式，这将暂停自动化功能，直到您重新启用它。",
     "@autoOfflineSettingDescription": {
         "description": "Setting description. Make sure the Mode names match the translations."
     },
     "transcodingStreamingFormatSubtitle": "选择串流转码音频时要使用的格式.已排队的音轨不会受到影响.",
-    "@transcodingStreamingFormatSubtitle": {},
     "audioFadeInDurationSettingSubtitle": "音频淡入的持续时间（以毫秒为单位）。设置为 0 可禁用淡入。",
-    "@audioFadeInDurationSettingSubtitle": {},
     "audioFadeInDurationSettingTitle": "音频淡入持续时间",
-    "@audioFadeInDurationSettingTitle": {},
     "audioFadeOutDurationSettingSubtitle": "音频淡出的持续时间（以毫秒为单位）。",
     "@audioFadeOutDurationSettingSubtitle": {
         "description": "Subtitle for the audio fade-in duration setting. Set to 0 to disable fade-in."
@@ -1957,9 +1746,7 @@
         "description": "Title for the audio fade-in duration setting."
     },
     "appearsOnAlbums": "出现在",
-    "@appearsOnAlbums": {},
     "performingArtists": "表演艺术家",
-    "@performingArtists": {},
     "autoOfflineOptionOff": "已禁用",
     "@autoOfflineOptionOff": {
         "description": "This is shown when the autoOffline feature is turned off and has no effects"
@@ -1969,7 +1756,6 @@
         "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
     },
     "playbackReporting": "播放报告",
-    "@playbackReporting": {},
     "playOnStaleDelay": "“继续播放”会话超时",
     "@playOnStaleDelay": {
         "description": "Label for the setting that controls how long a PlayOn remote session is considered active"
@@ -2074,7 +1860,6 @@
         "description": "The subtitle for how to manually recover from a startup error"
     },
     "exportLogs": "保存日志",
-    "@exportLogs": {},
     "testConnectionButtonLabel": "测试两个连接",
     "@testConnectionButtonLabel": {
         "description": "Button to test the public and local url inside the network settings tab"
@@ -2117,29 +1902,17 @@
         }
     },
     "autoSwitchItemCurationTypeTitle": "自动切换项目管理类型",
-    "@autoSwitchItemCurationTypeTitle": {},
     "latestAlbums": "最新专辑",
-    "@latestAlbums": {},
     "latestArtists": "最新艺术家",
-    "@latestArtists": {},
     "favoriteTracks": "收藏的歌曲",
-    "@favoriteTracks": {},
     "favoriteAlbums": "收藏的专辑",
-    "@favoriteAlbums": {},
     "favoriteArtists": "收藏的艺术家",
-    "@favoriteArtists": {},
     "randomArtists": "艺术家（随机选择）",
-    "@randomArtists": {},
     "mostPlayed": "最常播放",
-    "@mostPlayed": {},
     "favorites": "收藏",
-    "@favorites": {},
     "randomFavoritesFirst": "随机（收藏优先）",
-    "@randomFavoritesFirst": {},
     "recentlyAdded": "最近添加",
-    "@recentlyAdded": {},
     "latestReleases": "最新发布",
-    "@latestReleases": {},
     "genreItemSectionFilterChipOrderSubtitle": "控制项目部分筛选器的顺序。",
     "@genreItemSectionFilterChipOrderSubtitle": {
         "description": "Description of the setting that controls the order of item sections filter chips."
@@ -2153,17 +1926,13 @@
         "description": "Label for the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
     },
     "autoSwitchItemCurationTypeSubtitle": "启用后，如果没有可用的项目（例如，没有特定艺术家的收藏），艺术家和流派界面上的项目部分将自动切换到不同的项目类型。",
-    "@autoSwitchItemCurationTypeSubtitle": {},
     "randomTracks": "歌曲（随机选择）",
-    "@randomTracks": {},
     "randomAlbums": "专辑（随机选择）",
-    "@randomAlbums": {},
     "itemSectionsOrderSubtitle": "控制项目部分的顺序。",
     "@itemSectionsOrderSubtitle": {
         "description": "Description of the setting that controls the order of item sections on the screens."
     },
     "showArtistsTracksSection": "显示歌曲部分",
-    "@showArtistsTracksSection": {},
     "itemSectionsOrder": "项目部分顺序",
     "@itemSectionsOrder": {
         "description": "Label for the setting that controls the order of item sections on the screens."
@@ -2173,13 +1942,9 @@
         "description": "Label for the setting that controls the order of item sections filter chips."
     },
     "topAlbums": "热门专辑",
-    "@topAlbums": {},
     "topArtists": "热门艺术家",
-    "@topArtists": {},
     "showArtistsTracksSectionSubtitle": "是否显示最多包含五首曲目的版块。启用后，您可以在“最常播放”、“收藏”、“随机”、“最新发布”、“最近添加”和“最近播放”曲目之间进行选择。",
-    "@showArtistsTracksSectionSubtitle": {},
     "latestTracks": "最新歌曲",
-    "@latestTracks": {},
     "artistItemSectionFilterChipOrderTitle": "歌曲部分筛选器顺序",
     "@artistItemSectionFilterChipOrderTitle": {
         "description": "Label for the setting that controls the order of the tracks sections filter chips."
@@ -2197,25 +1962,17 @@
         "description": "Gets shown when there are no genres available for an album or artist"
     },
     "onlineMode": "在线模式",
-    "@onlineMode": {},
     "genreListsInheritSorting": "完整列表排序继承",
     "@genreListsInheritSorting": {
         "description": "Label for the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
     },
     "favorite": "收藏",
-    "@favorite": {},
     "performingArtist": "表演艺术家",
-    "@performingArtist": {},
     "duration": "持续时间",
-    "@duration": {},
     "notAvailable": "无法使用",
-    "@notAvailable": {},
     "removeFavorite": "删除收藏",
-    "@removeFavorite": {},
     "addFavorite": "添加收藏",
-    "@addFavorite": {},
     "recentlyPlayed": "最近播放",
-    "@recentlyPlayed": {},
     "downloadButtonDisabledGenreFilterTooltip": "请删除类型筛选器以启用下载操作。",
     "@downloadButtonDisabledGenreFilterTooltip": {
         "description": "Tooltip shown when a download button is disabled because of an active genre filter."
@@ -2229,9 +1986,7 @@
         "description": "Label for the genre section that shows artists that were recently added to the library, sorted by the date they were added."
     },
     "recentlyPlayedAlbums": "最近播放的专辑",
-    "@recentlyPlayedAlbums": {},
     "recentlyPlayedTracks": "最近播放的歌曲",
-    "@recentlyPlayedTracks": {},
     "genreFilterPlaylistScreens": "筛选播放列表",
     "@genreFilterPlaylistScreens": {
         "description": "Label for the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
@@ -2241,7 +1996,6 @@
         "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
     },
     "unknown": "未知",
-    "@unknown": {},
     "browsePlaylists": "浏览播放列表",
     "@browsePlaylists": {
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
@@ -2255,7 +2009,6 @@
         "description": "Label for the genre section that shows albums that were recently added to the library, sorted by the date they were added."
     },
     "recentlyPlayedArtists": "最近播放的艺术家",
-    "@recentlyPlayedArtists": {},
     "genreFilterPlaylistScreensSubtitle": "启用后，播放列表（通过类型访问）将仅显示与您当前浏览的类型匹配的歌曲。（您也可以手动移除类型筛选器以显示所有歌曲。）",
     "@genreFilterPlaylistScreensSubtitle": {
         "description": "Description of the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
@@ -2269,7 +2022,6 @@
         "description": "Default sorting order for playlists (server order)"
     },
     "adaptive": "自适应",
-    "@adaptive": {},
     "formattedRelativeTime": "{type, select, just_now{刚刚} minutes{{value} 分钟前} hours{{value} 小时前} yesterday{昨天} days{{value, plural, =1{1 天前} other{{value} 天前}}} other{value}}",
     "@formattedRelativeTime": {
         "description": "Returns a relative time string based on how long ago something happened. Used for various DateTime values such as Date Last Played and Date Added.",
@@ -2301,9 +2053,7 @@
         }
     },
     "logoutButtonSubtitle": "登录到不同的服务器将删除现有的下载",
-    "@logoutButtonSubtitle": {},
     "none": "无",
-    "@none": {},
     "sleepTimerRemainingTracks": "{time,plural,=1{当前歌曲} other{in {time} 首歌曲}}后休眠",
     "@sleepTimerRemainingTracks": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
@@ -2358,7 +2108,6 @@
         "description": "Message shown when a genre filter or open-genre action fails because the genre item could not be found."
     },
     "shuffleSome": "随机播放",
-    "@shuffleSome": {},
     "playbackActionPageNext": "下一首",
     "@playbackActionPageNext": {
         "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
@@ -2522,17 +2271,11 @@
         "description": "Shows the active address inside the network settings screen so the user can see if this feature works"
     },
     "preferLocalNetworkTargetAddressLocalSettingTitle": "本地网络地址",
-    "@preferLocalNetworkTargetAddressLocalSettingTitle": {},
     "preferLocalNetworkTargetAddressLocalSettingDescription": "本地网络中 Jellyfin 服务器的目标地址",
-    "@preferLocalNetworkTargetAddressLocalSettingDescription": {},
     "preferLocalNetworkEnableSwitchTitle": "优先使用本地网络",
-    "@preferLocalNetworkEnableSwitchTitle": {},
     "preferLocalNetworkEnableSwitchDescription": "位于服务器本地网络时，是否改用本地地址进行连接",
-    "@preferLocalNetworkEnableSwitchDescription": {},
     "preferLocalNetworkPublicAddressSettingTitle": "外部访问地址",
-    "@preferLocalNetworkPublicAddressSettingTitle": {},
     "preferLocalNetworkPublicAddressSettingDescription": "用于连接 Jellyfin 服务器的主要访问地址",
-    "@preferLocalNetworkPublicAddressSettingDescription": {},
     "preferLocalNetworkInfoBox": "需要开启定位功能并授予定位权限，才能读取当前网络名称。",
     "@preferLocalNetworkInfoBox": {
         "description": "This is only shown on ios and android since desktop doesnt require location permissions"
@@ -2715,9 +2458,7 @@
         "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
     },
     "defaultWord": "默认",
-    "@defaultWord": {},
     "useDefaultButton": "重置为默认主题色",
-    "@useDefaultButton": {},
     "colorCode": "颜色代码（十六进制）",
     "@colorCode": {
         "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
@@ -2727,7 +2468,6 @@
         "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
     },
     "save": "保存",
-    "@save": {},
     "invalidColorCode": "无效的颜色代码",
     "@invalidColorCode": {
         "description": "Snackbar message shown when the user tries to save an invalid hex color code"
@@ -2767,7 +2507,6 @@
         }
     },
     "downloadAllPlaylistsSettingWarning": "注意：这将下载所有播放列表中的所有项目，无论它们来自哪个库。",
-    "@downloadAllPlaylistsSettingWarning": {},
     "itemCountLoading": "{childType, select, track{首歌曲} album{张专辑} other{项目}}",
     "@itemCountLoading": {
         "description": "Shown while the item count is being calculated.",
@@ -3032,5 +2771,13 @@
     "forceAudioOffloadingOnAndroidTitle": "强制音频分流",
     "@forceAudioOffloadingOnAndroidTitle": {
         "description": "Title for the setting that controls audio offloading on Android."
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "目前，除 Android 平台外，其他平台上的音量标准化功能需要通过调整播放音量来模拟增益变化。由于音量无法超过 100%，我们需要默认降低音量，以便提升音量较小的曲目。\n\n该值以分贝 (dB) 为单位，其中 -10 dB 约为 30% 的音量，-4.5 dB 约为 60% 的音量，-2 dB 约为 80% 的音量。\n正值表示在达到阈值之前不会进行音量降低（例如，-6.4 dB 的增益（以及更大的正值）对应 +6.4 dB 的偏移），但会阻止提升音量较小的曲目。\n\n您应该将此值设置为音乐库中最高（最大正值）增益的倒数，例如，如果音乐库中的最高增益为 -3 dB（而其他曲目的增益分别为 -5 dB、-8 dB、-10 dB 等），则应将其设置为 +3 dB。",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "autoOfflineSettingSubtitle": "根据网络连接或服务器可达性自动启用离线模式。",
+    "@autoOfflineSettingSubtitle": {
+        "description": "Subtitle for the automated offline mode setting."
     }
 }
