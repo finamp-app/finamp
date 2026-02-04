@@ -1,8 +1,12 @@
 name: Build
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
+    # Trigger on tags OR set branches
+    tags:
+      - '*.*.*'
     branches:
       - main
       - redesign
@@ -32,6 +36,7 @@ jobs:
   #   - run: flutter doctor
   #   - run: flutter pub get
   #   - run: flutter test
+
   build-android:
     name: Build for Android
     runs-on: ubuntu-latest
@@ -72,6 +77,7 @@ jobs:
         path: build/app/outputs/flutter-apk/app-debug.apk
         compression-level: 0 # no compression
     - run: flutter build appbundle --debug --no-pub
+
   build-ios:
     name: Build for iOS
     runs-on: macos-latest
@@ -85,9 +91,18 @@ jobs:
     - run: flutter doctor
     - run: flutter pub get
     - run: flutter build ios --release --no-pub --no-codesign
+
   build-linux:
     name: Build for Linux
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            arch: x64
+          - os: ubuntu-22.04-arm
+            arch: arm64
     steps:
     - name: Clone repository
       uses: actions/checkout@v4
@@ -99,32 +114,82 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev
+    - name: Determine Flutter stable version
+      uses: subosito/flutter-action@v2
+      id: flutter-version
+      with:
+        architecture: 'x64'
+        channel: 'stable'
+        dry-run: true
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
+        # Prebuilt ARM linux builds are not provided, so build flutter from source
+        channel: master
+        flutter-version: "${{ steps.flutter-version.outputs.VERSION }}"
     - run: flutter doctor
     - run: flutter pub get
+
+    - name: Clone isar repository
+      if: matrix.arch == 'arm64'
+      uses: actions/checkout@v4
+      with:
+        path: isar
+        repository: Komodo5197/isar-community
+        ref: a602cd8999048faba043f7e1ce7ba92f4d812762
+    
+    - name: Build isar core and inject into cached isar_flutter_libs
+      if: matrix.arch == 'arm64'
+      run: |
+        sh tool/build_linux.sh aarch64
+        mv libisar_linux_arm64.so $HOME/.pub-cache/git/isar_flutter_libs-59103190aa2ac03041d61ad6d127b540be079ec8/linux/libisar.so
+      working-directory: isar
+    
     - run: flutter build linux --release --no-pub
+    
     # copy icon assets and desktop file next to bundle location for easy including in tar archive
     - run: |
-        cp -r assets/icon/linux/ build/linux/x64/release/icons \
-        && cp assets/finamp.desktop.m4 build/linux/x64/release/ \
-        && cp assets/com.unicornsonlsd.finamp.metainfo.xml build/linux/x64/release/
+        cp -r assets/icon/linux/ build/linux/${{ matrix.arch }}/release/icons \
+        && cp assets/finamp.desktop.m4 build/linux/${{ matrix.arch }}/release/ \
+        && cp assets/com.unicornsonlsd.finamp.metainfo.xml build/linux/${{ matrix.arch }}/release/
+    
+    # Create dynamic names based on architecture
+    - name: Set archive and checksum names
+      run: |
+        # For PR builds, use pr-<number>, else use branch or tag name
+        if [ "${{ github.event.pull_request.number }}" != "" ]; then
+          ref_name="pr-${{ github.event.pull_request.number }}"
+        else
+          ref_name="${{ github.ref_name }}"
+        fi
+        echo "TAR_NAME=finamp-${ref_name}-linux-${{ matrix.arch }}.tar.gz" >> $GITHUB_ENV
+        echo "SHA_NAME=finamp-${ref_name}-linux-${{ matrix.arch }}.tar.gz.sha256sum" >> $GITHUB_ENV
+    
     # archive bundle and generate checksum
     - run: |
-        tar -czf finamp-linux-release.tar.gz --directory build/linux/x64/release/ bundle icons finamp.desktop.m4 com.unicornsonlsd.finamp.metainfo.xml \
-        && sha256sum finamp-linux-release.tar.gz > finamp-linux-release.tar.gz.sha256sum
+        tar -czf ${TAR_NAME} --directory build/linux/${{ matrix.arch }}/release/ bundle icons finamp.desktop.m4 com.unicornsonlsd.finamp.metainfo.xml \
+        && sha256sum ${TAR_NAME} > ${SHA_NAME}
+
     - uses: actions/upload-artifact@v4
       with:
-        name: finamp-linux-release.tar.gz
-        path: finamp-linux-release.tar.gz
+        name: ${{ env.TAR_NAME }}
+        path: ${{ env.TAR_NAME }}
         compression-level: 0 # no compression
+    
     - uses: actions/upload-artifact@v4
       with:
-        name: finamp-linux-release.tar.gz.sha256sum
-        path: finamp-linux-release.tar.gz.sha256sum
+        name: ${{ env.SHA_NAME }}
+        path: ${{ env.SHA_NAME }}
         compression-level: 0 # no compression
+
+    - name: Upload release archive
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      uses: alexellis/upload-assets@0.4.1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        asset_paths: '["./${{ env.TAR_NAME }}", "./${{ env.SHA_NAME }}"]'
+
   build-windows:
     name: Build for Windows
     runs-on: windows-latest
@@ -146,18 +211,52 @@ jobs:
     - run: flutter doctor
     - run: flutter pub get
     - run: flutter build windows
+
+    - name: Set archive and msix base name
+      shell: bash
+      run: |
+        # For PR builds, use pr-<number>, else use branch or tag name
+        if [ "${{ github.event.pull_request.number }}" != "" ]; then
+          ref_name="pr-${{ github.event.pull_request.number }}"
+        else
+          ref_name="${{ github.ref_name }}"
+        fi
+        echo "BASE_NAME=Finamp-${ref_name}-Windows" >> $GITHUB_ENV
+
     # TODO pack in redistributables?
+    # upload original, unzipped directory. GitHub will zip it anyway
     - uses: actions/upload-artifact@v4
       with:
-        name: finamp-windows
+        name: ${{ env.BASE_NAME }}
         path: build/windows/x64/runner/Release/
-    - run: dart run msix:create --install-certificate false
+
+    - run: |
+        dart run msix:create --install-certificate false
+        # move msix file with correct naming
+        mv build/windows/x64/runner/Release/finamp.msix ./${{ env.BASE_NAME }}.msix
+
     #TODO would be nice to have an old-school installer here that can take the .exe + libraries and install them to the device + create a shortcut
     - uses: actions/upload-artifact@v4
       with:
-        name: finamp-windows.msix
-        path: build/windows/x64/runner/Release/finamp.msix
-        compression-level: 0 # no compression
+        name: ${{ env.BASE_NAME }}.msix
+        path: ./${{ env.BASE_NAME }}.msix
+        compression-level: 0 # no compression       
+
+    - name: Prepare release archive
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      run: |
+        # zip folder
+        powershell -Command "Compress-Archive -Path './build/windows/x64/runner/Release/*' -DestinationPath './${{ env.BASE_NAME }}.zip'"
+
+    - name: Upload release archive
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      uses: alexellis/upload-assets@0.4.1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        # upload zip archive here, uploading the raw directory fails
+        asset_paths: '["./${{ env.BASE_NAME }}.msix", "./${{ env.BASE_NAME }}.zip"]'
+
   # build-macos:
   #   name: Build for macOS
   #   runs-on: macos-latest

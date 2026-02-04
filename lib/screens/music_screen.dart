@@ -186,7 +186,6 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
         : ref
               .watch(finampSettingsProvider.tabOrder)
               .where((e) => ref.watch(finampSettingsProvider.showTabs(e)) ?? false);
-    refreshMap[sortedTabs.elementAt(_tabController!.index)] = MusicRefreshCallback();
 
     if (sortedTabs.length != _tabController?.length) {
       _musicScreenLogger.info(
@@ -194,6 +193,14 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
       );
       _buildTabController();
     }
+
+    if (sortedTabs.isEmpty) {
+      // TODO fallback to the home screen once implemented
+      FinampSetters.setShowTabs(TabContentType.albums, true);
+      // This widget should rebuild with an enabled tab on the next frame, just return empty for now.
+      return SizedBox.shrink();
+    }
+    refreshMap[sortedTabs.elementAt(_tabController!.index)] = MusicRefreshCallback();
 
     Timer? debounce;
 

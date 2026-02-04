@@ -11,6 +11,7 @@ class ReleaseDateHelper {
   /// Formats the release date of a [BaseItemDto] based on the user's settings.
   static String? autoFormat(BaseItemDto? baseItem) {
     final format = FinampSettingsHelper.finampSettings.releaseDateFormat;
+    final locale = getDateFormatLocaleString();
 
     final premiereDate = baseItem?.premiereDate != null ? DateTime.parse(baseItem!.premiereDate!) : null;
     if (premiereDate == null) {
@@ -18,13 +19,13 @@ class ReleaseDateHelper {
     }
     switch (format) {
       case ReleaseDateFormat.year:
-        return DateFormat.y().format(premiereDate);
+        return DateFormat.y(locale).format(premiereDate);
       case ReleaseDateFormat.iso:
         return premiereDate.toIso8601String().split("T").first;
       case ReleaseDateFormat.monthYear:
-        return "${DateFormat.MMMM().format(premiereDate)} ${DateFormat.y().format(premiereDate)}";
+        return "${DateFormat.MMMM(locale).format(premiereDate)} ${DateFormat.y(locale).format(premiereDate)}";
       case ReleaseDateFormat.monthDayYear:
-        return "${DateFormat.MMMM().format(premiereDate)} ${DateFormat.d().format(premiereDate)}, ${DateFormat.y().format(premiereDate)}";
+        return "${DateFormat.MMMM(locale).format(premiereDate)} ${DateFormat.d(locale).format(premiereDate)}, ${DateFormat.y(locale).format(premiereDate)}";
     }
   }
 }
@@ -32,7 +33,7 @@ class ReleaseDateHelper {
 class DateTimeHelper {
   static String format(DateTime dateTime) {
     final now = DateTime.now();
-    final locale = getLocaleString();
+    final locale = getDateFormatLocaleString();
 
     final isSameDay = dateTime.year == now.year && dateTime.month == now.month && dateTime.day == now.day;
 
@@ -99,7 +100,7 @@ class DateTimeHelper {
     }
 
     final isSameYear = dateTime.year == now.year;
-    final locale = getLocaleString();
+    final locale = getDateFormatLocaleString();
     final format = isSameYear ? DateFormat.MMMMd(locale) : DateFormat.yMMMd(locale);
 
     return format.format(dateTime);

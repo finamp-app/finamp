@@ -96,9 +96,12 @@ dependencies:
       ref: 8b2b0f0e1c8470183cb2df40815a05bfdb3fe219
   share_plus: ^12.0.0
   isar: ^3.1.0
+  # Use version of isar core with android compilation fix.  If this version or ref changes,
+  # the linux arm build in upload-assets.yml must be updated.
   isar_flutter_libs:
     git: 
       url: https://github.com/MrLittleWhite/isar_flutter_libs.git
+      ref: 59103190aa2ac03041d61ad6d127b540be079ec8
 
   path: ^1.9.0
   intl: # pinned by flutter version
@@ -170,9 +173,12 @@ dev_dependencies:
 dependency_overrides:
   # force isar_generator community fork to accept baseline isar.
   # generated files are identical, so there should be no incompatibilities
+  # fork also allows custom build of linux arm binaries
   isar:
-    hosted: https://pub.dev
-    version: ^3.1.0
+    git:
+      url: https://github.com/Komodo5197/isar-community.git
+      ref: a602cd8999048faba043f7e1ce7ba92f4d812762
+      path: packages/isar
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -254,7 +260,7 @@ msix_config:
   # capabilities: backgroundMediaPlayback,internetClient,musicLibrary,privateNetworkClientServer,globalMediaControl
   capabilities: internetClient,musicLibrary,privateNetworkClientServer
   enable_at_startup: false
-  certificate_path: ./windows/runner/resources/MSIX_LOCAL_CERTIFICATE.pfx
+  certificate_path: ./windows/runner/resources/FINAMP_MSIX_LOCAL_CERTIFICATE_NEW.pfx
   certificate_password: finamp
   # Building during msix:create is currently bugged, so build manually beforehand.
   build_windows: false

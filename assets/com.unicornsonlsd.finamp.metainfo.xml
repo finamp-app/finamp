@@ -16,6 +16,10 @@
     </name>
   </developer>
   <url type="homepage">https://github.com/jmshrv/finamp</url>
+  <url type="vcs-browser">https://github.com/jmshrv/finamp/tree/redesign</url>
+  <url type="translate">https://hosted.weblate.org/engage/finamp/</url>
+  <url type="bugtracker">https://github.com/jmshrv/finamp/issues</url>
+  <url type="contribute">https://github.com/jmshrv/finamp/blob/redesign/CONTRIBUTING.md</url>
   <description>
     <p>Finamp is an open source, cross-platform Jellyfin music player that supports streaming playback and offline downloads, playlists, favorites and shuffle. Linux support is currently in Beta.</p> 
   </description>

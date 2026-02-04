@@ -167,7 +167,7 @@ class DefaultSettings {
   static const showFavoriteButtonOnMediaNotification = true;
   static const showSeekControlsOnMediaNotification = true;
   static const keepScreenOnOption = KeepScreenOnOption.whileLyrics;
-  static const keepScreenOnWhilePluggedIn = true;
+  static const keepScreenOnWhilePluggedIn = false;
   static const hasDownloadedPlaylistInfo = false;
   static const transcodingStreamingFormat = FinampTranscodingStreamingFormat.aacFragmentedMp4;
   static const featureChipsConfiguration = FinampFeatureChipsConfiguration(

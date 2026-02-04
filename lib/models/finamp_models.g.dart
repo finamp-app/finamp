@@ -268,7 +268,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? KeepScreenOnOption.whileLyrics
             : fields[72] as KeepScreenOnOption,
         keepScreenOnWhilePluggedIn: fields[73] == null
-            ? true
+            ? false
             : fields[73] as bool,
         featureChipsConfiguration: fields[76] == null
             ? DefaultSettings.featureChipsConfiguration

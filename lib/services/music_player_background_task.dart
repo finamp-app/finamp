@@ -397,9 +397,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     );
 
     _loudnessEnhancerEffect?.setEnabled(FinampSettingsHelper.finampSettings.volumeNormalizationActive);
-    _loudnessEnhancerEffect?.setTargetGain(
-      0.0 / 10.0,
-    ); //!!! always divide by 10, the just_audio implementation has a bug so it expects a value in Bel and not Decibel (remove once https://github.com/ryanheise/just_audio/pull/1092/commits/436b3274d0233818a061ecc1c0856a630329c4e6 is merged)
+    _loudnessEnhancerEffect?.setTargetGain(0.0);
     // calculate base volume gain for iOS as a linear factor, because just_audio doesn't yet support AudioEffect on iOS
     iosBaseVolumeGainFactor =
         pow(10.0, FinampSettingsHelper.finampSettings.volumeNormalizationIOSBaseGain / 20.0)
@@ -1130,9 +1128,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       );
       if (effectiveGainChange != null) {
         if (Platform.isAndroid) {
-          _loudnessEnhancerEffect?.setTargetGain(
-            effectiveGainChange / 10.0,
-          ); //!!! always divide by 10, the just_audio implementation has a bug so it expects a value in Bel and not Decibel (remove once https://github.com/ryanheise/just_audio/pull/1092/commits/436b3274d0233818a061ecc1c0856a630329c4e6 is merged)
+          _loudnessEnhancerEffect?.setTargetGain(effectiveGainChange);
         } else {
           final newVolume =
               iosBaseVolumeGainFactor *
@@ -1146,9 +1142,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       } else {
         if (Platform.isAndroid) {
           // reset gain offset
-          _loudnessEnhancerEffect?.setTargetGain(
-            0 / 10.0,
-          ); //!!! always divide by 10, the just_audio implementation has a bug so it expects a value in Bel and not Decibel (remove once https://github.com/ryanheise/just_audio/pull/1092/commits/436b3274d0233818a061ecc1c0856ua630329c4e6 is merged)
+          _loudnessEnhancerEffect?.setTargetGain(0);
         }
         _volume.setReplayGainVolume(
           iosBaseVolumeGainFactor,

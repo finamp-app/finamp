@@ -437,7 +437,7 @@ class QueueService {
     }
     _queueServiceLogger.finest("Loading stored queue: $info");
 
-    SavedQueueState? finalState = SavedQueueState.failed;
+    SavedQueueState finalState = SavedQueueState.failed;
     try {
       _savedQueueState = SavedQueueState.loading;
       if (info.trackCount == 0) {
@@ -558,7 +558,6 @@ class QueueService {
       int droppedTracks = info.trackCount - loadedTracks;
 
       if (_savedQueueState != SavedQueueState.loading) {
-        finalState = null;
         return Future.error("Loading of saved Queue was interrupted.");
       }
 
@@ -592,16 +591,17 @@ class QueueService {
         }
       }
     } finally {
-      if (finalState != null) {
+      // Do not overwrite state or bump reporting if loading was interrupted by the user starting a new queue
+      if (_savedQueueState == SavedQueueState.loading) {
         _savedQueueState = finalState;
+        if (finalState == SavedQueueState.failed) {
+          _failedSavedQueue = info;
+        }
+        refreshQueueStream();
+        await Future<void>.delayed(const Duration(seconds: 1)).then((_) {
+          unawaited(playbackHistoryService.reportRestoredSessionStatus());
+        });
       }
-      if (finalState == SavedQueueState.failed) {
-        _failedSavedQueue = info;
-      }
-      refreshQueueStream();
-      await Future<void>.delayed(const Duration(seconds: 1)).then((_) {
-        unawaited(playbackHistoryService.reportRestoredSessionStatus());
-      });
     }
   }
 
