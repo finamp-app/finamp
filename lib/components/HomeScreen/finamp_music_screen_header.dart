@@ -257,75 +257,73 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
           dividerHeight: 0.0,
           dividerColor: Colors.transparent,
           padding: EdgeInsets.only(top: 2.0, bottom: 2.0, left: 12.0, right: 6.0),
-          tabs: sortedTabs
-              .map(
-                (tabType) => Tab(
-                  height: 32.0,
-                  child: Container(
-                    decoration: ShapeDecoration(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        side: BorderSide(
-                          color: tabController?.index == sortedTabs.indexOf(tabType)
-                              ? Theme.of(context).colorScheme.primaryContainer
-                              : ColorScheme.of(context).outlineVariant,
-                          strokeAlign: 1.0,
-                          width: 2.0,
-                        ),
-                      ),
+          tabs: sortedTabs.map((tabType) {
+            final textStyle = tabController?.index == sortedTabs.indexOf(tabType)
+                ? null
+                : TextTheme.of(context).bodyMedium!.copyWith(color: inactiveTabTextColor);
+            return Tab(
+              height: 32.0,
+              child: Container(
+                decoration: ShapeDecoration(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: BorderSide(
+                      color: tabController?.index == sortedTabs.indexOf(tabType)
+                          ? Theme.of(context).colorScheme.primaryContainer
+                          : ColorScheme.of(context).outlineVariant,
+                      strokeAlign: 1.0,
+                      width: 2.0,
                     ),
-                    padding: tabType == TabContentType.home
-                        ? EdgeInsets.only(left: 4, right: 8, top: 3, bottom: 3)
-                        : EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    constraints: const BoxConstraints(minWidth: 50),
-                    alignment: Alignment.center,
-                    child: tabType == TabContentType.home
-                        ? Row(
-                            spacing: 4.0,
-                            children: [
-                              FutureBuilder(
-                                future: GetIt.instance<JellyfinApiHelper>().getUser(),
-                                builder: (context, asyncSnapshot) {
-                                  if (ref.watch(finampSettingsProvider.isOffline)) {
-                                    return SizedBox.shrink();
-                                  }
-                                  if (!asyncSnapshot.hasData || asyncSnapshot.data == null) {
-                                    return SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
-                                    );
-                                  } else if (asyncSnapshot.data?.primaryImageTag == null) {
-                                    return SizedBox.shrink();
-                                  }
-                                  return Padding(
-                                    padding: const EdgeInsets.all(1.5),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(9999),
-                                      child: Image.network(
-                                        GetIt.instance<JellyfinApiHelper>()
-                                            .getUserImageUrl(
-                                              baseUrl: Uri.parse(finampUserHelper.currentUser!.baseURL),
-                                              user: asyncSnapshot.data!,
-                                            )
-                                            .toString(),
-                                        fit: BoxFit.fitHeight,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              Text(tabType.toLocalisedString(context)),
-                            ],
-                          )
-                        : Text(
-                            tabType.toLocalisedString(context),
-                            style: TextTheme.of(context).bodyMedium!.copyWith(color: inactiveTabTextColor),
-                          ),
                   ),
                 ),
-              )
-              .toList(),
+                padding: tabType == TabContentType.home
+                    ? EdgeInsets.only(left: 4, right: 8, top: 3, bottom: 3)
+                    : EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                constraints: const BoxConstraints(minWidth: 50),
+                alignment: Alignment.center,
+                child: tabType == TabContentType.home
+                    ? Row(
+                        spacing: 4.0,
+                        children: [
+                          FutureBuilder(
+                            future: GetIt.instance<JellyfinApiHelper>().getUser(),
+                            builder: (context, asyncSnapshot) {
+                              if (ref.watch(finampSettingsProvider.isOffline)) {
+                                return SizedBox.shrink();
+                              }
+                              if (!asyncSnapshot.hasData || asyncSnapshot.data == null) {
+                                return SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                );
+                              } else if (asyncSnapshot.data?.primaryImageTag == null) {
+                                return SizedBox.shrink();
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.all(1.5),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(9999),
+                                  child: Image.network(
+                                    GetIt.instance<JellyfinApiHelper>()
+                                        .getUserImageUrl(
+                                          baseUrl: Uri.parse(finampUserHelper.currentUser!.baseURL),
+                                          user: asyncSnapshot.data!,
+                                        )
+                                        .toString(),
+                                    fit: BoxFit.fitHeight,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          Text(tabType.toLocalisedString(context), style: textStyle),
+                        ],
+                      )
+                    : Text(tabType.toLocalisedString(context), style: textStyle),
+              ),
+            );
+          }).toList(),
           isScrollable: true,
           tabAlignment: TabAlignment.start,
         ),
