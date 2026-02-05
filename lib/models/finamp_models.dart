@@ -4183,20 +4183,21 @@ class HomeScreenSectionConfiguration {
     }
   }
 
+  //!!! Ignore custom title for equality, as it is not a defining feature of the section and can be changed by the user without changing the underlying section data
   @override
   bool operator ==(Object other) {
     return other is HomeScreenSectionConfiguration &&
         other.type == type &&
         other.itemId == itemId &&
         other.contentType == contentType &&
-        other.sortAndFilterConfiguration == sortAndFilterConfiguration &&
-        other.customSectionTitle == customSectionTitle &&
-        other.presetType == presetType;
+        other.sortAndFilterConfiguration == sortAndFilterConfiguration;
+    // other.customSectionTitle == customSectionTitle &&
+    // other.presetType == presetType;
   }
 
   @override
   @ignore
-  int get hashCode => Object.hash(type, itemId, sortAndFilterConfiguration, customSectionTitle, presetType);
+  int get hashCode => Object.hash(type, itemId, contentType, sortAndFilterConfiguration);
 }
 
 @HiveType(typeId: 113)
@@ -4323,6 +4324,14 @@ class SortAndFilterConfiguration {
   final Set<ItemFilter> filters;
 
   factory SortAndFilterConfiguration.fromJson(Map<String, dynamic> json) => _$SortAndFilterConfigurationFromJson(json);
+
+  SortAndFilterConfiguration copyWith({SortBy? sortBy, SortOrder? sortOrder, Set<ItemFilter>? filters}) {
+    return SortAndFilterConfiguration(
+      sortBy: sortBy ?? this.sortBy,
+      sortOrder: sortOrder ?? this.sortOrder,
+      filters: filters ?? this.filters,
+    );
+  }
 
   Map<String, dynamic> toJson() => _$SortAndFilterConfigurationToJson(this);
 

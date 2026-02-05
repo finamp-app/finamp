@@ -21,7 +21,6 @@ import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
 class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWidget {
   final List<TabContentType> sortedTabs;
-  final BaseItemDto? genreFilter;
   final TabController? tabController;
   final VoidCallback? onSearch;
   final VoidCallback? onStopSearch;
@@ -33,7 +32,6 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
   FinampMusicScreenHeader({
     super.key,
     required this.sortedTabs,
-    required this.genreFilter,
     required this.tabController,
     required this.textEditingController,
     required this.isSearching,
@@ -248,105 +246,89 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
             );
           },
         ),
-        genreFilter == null
-            ? TabBar(
-                controller: tabController,
-                indicator: BoxDecoration(borderRadius: BorderRadius.circular(8.0), color: activeTabBackgroundColor),
-                indicatorPadding: EdgeInsets.zero,
-                splashBorderRadius: BorderRadius.circular(8.0),
-                labelColor: activeTabTextColor,
-                // unselectedLabelColor: Colors.red, //!!! the label color is specified below, along with the font
-                labelPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                dividerHeight: 0.0,
-                dividerColor: Colors.transparent,
-                padding: EdgeInsets.only(top: 2.0, bottom: 2.0, left: 12.0, right: 6.0),
-                tabs: sortedTabs
-                    .map(
-                      (tabType) => Tab(
-                        height: 32.0,
-                        child: Container(
-                          decoration: ShapeDecoration(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              side: BorderSide(
-                                color: Theme.of(context).colorScheme.primaryContainer,
-                                strokeAlign: 1.0,
-                                width: 2.0,
-                              ),
-                            ),
-                          ),
-                          padding: tabType == TabContentType.home
-                              ? EdgeInsets.only(left: 4, right: 8, top: 3, bottom: 3)
-                              : EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          constraints: const BoxConstraints(minWidth: 50),
-                          alignment: Alignment.center,
-                          child: tabType == TabContentType.home
-                              ? Row(
-                                  spacing: 4.0,
-                                  children: [
-                                    FutureBuilder(
-                                      future: GetIt.instance<JellyfinApiHelper>().getUser(),
-                                      builder: (context, asyncSnapshot) {
-                                        if (ref.watch(finampSettingsProvider.isOffline)) {
-                                          return SizedBox.shrink();
-                                        }
-                                        if (!asyncSnapshot.hasData || asyncSnapshot.data == null) {
-                                          return SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child: CircularProgressIndicator(strokeWidth: 2),
-                                          );
-                                        } else if (asyncSnapshot.data?.primaryImageTag == null) {
-                                          return SizedBox.shrink();
-                                        }
-                                        return Padding(
-                                          padding: const EdgeInsets.all(1.5),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(9999),
-                                            child: Image.network(
-                                              GetIt.instance<JellyfinApiHelper>()
-                                                  .getUserImageUrl(
-                                                    baseUrl: Uri.parse(finampUserHelper.currentUser!.baseURL),
-                                                    user: asyncSnapshot.data!,
-                                                  )
-                                                  .toString(),
-                                              fit: BoxFit.fitHeight,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    Text(tabType.toLocalisedString(context)),
-                                  ],
-                                )
-                              : Text(
-                                  tabType.toLocalisedString(context),
-                                  style: TextTheme.of(context).bodyMedium!.copyWith(color: inactiveTabTextColor),
-                                ),
+        TabBar(
+          controller: tabController,
+          indicator: BoxDecoration(borderRadius: BorderRadius.circular(8.0), color: activeTabBackgroundColor),
+          indicatorPadding: EdgeInsets.zero,
+          splashBorderRadius: BorderRadius.circular(8.0),
+          labelColor: activeTabTextColor,
+          // unselectedLabelColor: Colors.red, //!!! the label color is specified below, along with the font
+          labelPadding: EdgeInsets.symmetric(horizontal: 4.0),
+          dividerHeight: 0.0,
+          dividerColor: Colors.transparent,
+          padding: EdgeInsets.only(top: 2.0, bottom: 2.0, left: 12.0, right: 6.0),
+          tabs: sortedTabs
+              .map(
+                (tabType) => Tab(
+                  height: 32.0,
+                  child: Container(
+                    decoration: ShapeDecoration(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        side: BorderSide(
+                          color: tabController?.index == sortedTabs.indexOf(tabType)
+                              ? Theme.of(context).colorScheme.primaryContainer
+                              : ColorScheme.of(context).outlineVariant,
+                          strokeAlign: 1.0,
+                          width: 2.0,
                         ),
                       ),
-                    )
-                    .toList(),
-                isScrollable: true,
-                tabAlignment: TabAlignment.start,
-              )
-            : PreferredSize(
-                preferredSize: const Size.fromHeight(36),
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  width: double.infinity,
-                  height: 36.0,
-                  padding: EdgeInsets.only(left: 12, right: 12),
-                  color: Theme.of(context).colorScheme.primary,
-                  child: Text(
-                    genreFilter?.name ?? "",
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
-                    overflow: TextOverflow.ellipsis,
+                    ),
+                    padding: tabType == TabContentType.home
+                        ? EdgeInsets.only(left: 4, right: 8, top: 3, bottom: 3)
+                        : EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    constraints: const BoxConstraints(minWidth: 50),
+                    alignment: Alignment.center,
+                    child: tabType == TabContentType.home
+                        ? Row(
+                            spacing: 4.0,
+                            children: [
+                              FutureBuilder(
+                                future: GetIt.instance<JellyfinApiHelper>().getUser(),
+                                builder: (context, asyncSnapshot) {
+                                  if (ref.watch(finampSettingsProvider.isOffline)) {
+                                    return SizedBox.shrink();
+                                  }
+                                  if (!asyncSnapshot.hasData || asyncSnapshot.data == null) {
+                                    return SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    );
+                                  } else if (asyncSnapshot.data?.primaryImageTag == null) {
+                                    return SizedBox.shrink();
+                                  }
+                                  return Padding(
+                                    padding: const EdgeInsets.all(1.5),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(9999),
+                                      child: Image.network(
+                                        GetIt.instance<JellyfinApiHelper>()
+                                            .getUserImageUrl(
+                                              baseUrl: Uri.parse(finampUserHelper.currentUser!.baseURL),
+                                              user: asyncSnapshot.data!,
+                                            )
+                                            .toString(),
+                                        fit: BoxFit.fitHeight,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              Text(tabType.toLocalisedString(context)),
+                            ],
+                          )
+                        : Text(
+                            tabType.toLocalisedString(context),
+                            style: TextTheme.of(context).bodyMedium!.copyWith(color: inactiveTabTextColor),
+                          ),
                   ),
                 ),
-              ),
+              )
+              .toList(),
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+        ),
       ],
     );
   }

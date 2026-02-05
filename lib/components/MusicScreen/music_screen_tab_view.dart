@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:finamp/components/Buttons/cta_medium.dart';
+import 'package:finamp/components/HomeScreen/home_screen_content.dart';
 import 'package:finamp/components/MusicScreen/item_card.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:isar/isar.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../models/finamp_models.dart';
@@ -37,9 +39,7 @@ class MusicScreenTabView extends ConsumerStatefulWidget {
     this.refresh,
     this.genreFilter,
     this.tabBarFiltered = false,
-    this.sortByOverride,
-    this.sortOrderOverride,
-    this.isFavoriteOverride,
+    this.sortAndFilterConfigurationOverride,
   });
 
   final TabContentType tabContentType;
@@ -48,9 +48,7 @@ class MusicScreenTabView extends ConsumerStatefulWidget {
   final MusicRefreshCallback? refresh;
   final BaseItemDto? genreFilter;
   final bool tabBarFiltered;
-  final SortBy? sortByOverride;
-  final SortOrder? sortOrderOverride;
-  final bool? isFavoriteOverride;
+  final SortAndFilterConfiguration? sortAndFilterConfigurationOverride;
 
   @override
   ConsumerState<MusicScreenTabView> createState() => _MusicScreenTabViewState();
@@ -100,10 +98,16 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     }
     int localRefreshCount = refreshCount;
     try {
-      final sortOrder =
-          (widget.sortOrderOverride ?? settings.tabSortOrder[widget.tabContentType])?.toString() ??
-          SortOrder.ascending.toString();
-      final sortBy = widget.sortByOverride ?? settings.tabSortBy[widget.tabContentType];
+      final sortAndFilterConfig =
+          widget.sortAndFilterConfigurationOverride ??
+          SortAndFilterConfiguration(
+            sortBy: settings.tabSortBy[widget.tabContentType]!,
+            sortOrder: settings.tabSortOrder[widget.tabContentType]!,
+            filters: {
+              if (settings.onlyShowFavorites) ItemFilter(type: ItemFilterType.isFavorite),
+              if (settings.onlyShowFullyDownloaded) ItemFilter(type: ItemFilterType.isFullyDownloaded),
+            },
+          );
       final newItems = await _jellyfinApiHelper.getItems(
         // starting with Jellyfin 10.9, only automatically created playlists will have a specific library as parent. user-created playlists will not be returned anymore
         // this condition fixes this by not providing a parentId when fetching playlists
@@ -113,13 +117,10 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         // If we're on the tracks tab, sort by "Album,SortName". This is what the
         // Jellyfin web client does. If this isn't the case, sort by "SortName".
         // If widget.sortBy is set, it is used instead.
-        sortBy:
-            sortBy?.jellyfinName(widget.tabContentType) ??
-            (widget.tabContentType == TabContentType.tracks ? "Album,SortName" : "SortName"),
-        sortOrder: sortOrder,
+        sortBy: sortAndFilterConfig.sortBy.jellyfinName(widget.tabContentType),
+        sortOrder: sortAndFilterConfig.sortOrder.name,
         searchTerm: widget.searchTerm?.trim(),
-        filters:
-            (widget.isFavoriteOverride == true || (widget.isFavoriteOverride == null && settings.onlyShowFavorites))
+        filters: sortAndFilterConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite)
             ? "IsFavorite"
             : null,
         // "filters" are not implemented in the Jellyfin API Endpoint for Genres
@@ -127,15 +128,14 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         // to "false", because then it will actually exclude all favorites)
         isFavorite:
             (widget.tabContentType.itemType == BaseItemDtoType.genre &&
-                (widget.isFavoriteOverride == true ||
-                    (widget.isFavoriteOverride == null && settings.onlyShowFavorites)))
+                sortAndFilterConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite))
             ? true
             : null,
         // Prevent arbitrarily stopping at size of library when using random order by always using a 0 offset.  The order
         // of items in random requests are independent, so some items may be duplicated and others may be shown multiple
         // times, making the library size limit arbitrary.  If the library size is < _pageSize, all items are fetched in
         // a single request and each item will be present exactly once, so loading will stop as normal.
-        startIndex: sortBy == SortBy.random ? 0 : pageKey,
+        startIndex: sortAndFilterConfig.sortBy == SortBy.random ? 0 : pageKey,
         limit: _pageSize,
         artistType: settings.defaultArtistType,
         genreFilter: widget.genreFilter,
@@ -169,6 +169,21 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         ? BaseItemDtoType.album
         : BaseItemDtoType.track;
 
+    final sortAndFilterConfig =
+        widget.sortAndFilterConfigurationOverride ??
+        SortAndFilterConfiguration(
+          // PlayCount and Last Played are not representative in Offline Mode
+          // so we disable it and overwrite it with the Sort Name if it was selected
+          sortBy: [SortBy.playCount, SortBy.datePlayed].contains(settings.tabSortBy[widget.tabContentType]!)
+              ? SortBy.sortName
+              : settings.tabSortBy[widget.tabContentType]!,
+          sortOrder: settings.tabSortOrder[widget.tabContentType]!,
+          filters: {
+            if (settings.onlyShowFavorites) ItemFilter(type: ItemFilterType.isFavorite),
+            if (settings.onlyShowFullyDownloaded) ItemFilter(type: ItemFilterType.isFullyDownloaded),
+          },
+        );
+
     List<DownloadStub> offlineItems;
     if (widget.tabContentType == TabContentType.tracks) {
       // If we're on the tracks tab, just get all of the downloaded items
@@ -178,7 +193,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         viewFilter: widget.view?.id,
         nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
         onlyFavorites:
-            (widget.isFavoriteOverride == true || (widget.isFavoriteOverride == null && settings.onlyShowFavorites)) &&
+            sortAndFilterConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite) &&
             settings.trackOfflineFavorites,
         genreFilter: widget.genreFilter,
       );
@@ -193,19 +208,14 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
             ? widget.view?.id
             : null,
         nullableViewFilters: widget.tabContentType == TabContentType.albums && settings.showDownloadsWithUnknownLibrary,
-        onlyFavorites: settings.onlyShowFavorites && settings.trackOfflineFavorites,
+        onlyFavorites:
+            sortAndFilterConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite) &&
+            settings.trackOfflineFavorites,
       );
     }
 
     var items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
-    var sortBy = widget.sortByOverride ?? settings.tabSortBy[widget.tabContentType];
-    // PlayCount and Last Played are not representative in Offline Mode
-    // so we disable it and overwrite it with the Sort Name if it was selected
-    if (sortBy == SortBy.playCount || sortBy == SortBy.datePlayed) {
-      sortBy = SortBy.sortName;
-    }
-    final sortOrder = widget.sortOrderOverride ?? settings.tabSortOrder[widget.tabContentType];
-    items = sortItems(items, sortBy, sortOrder);
+    items = sortItems(items, sortAndFilterConfig.sortBy, sortAndFilterConfig.sortOrder);
 
     // Playlists use different genreIds due to their cross-library functionality.
     // In Online Mode, the api still returns correct data, but in Offline Mode,
@@ -256,6 +266,39 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
   void didUpdateWidget(MusicScreenTabView oldWidget) {
     updateRefreshHash();
     super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final sectionInfo = HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      contentType: widget.tabContentType,
+      sortAndFilterConfiguration:
+          widget.sortAndFilterConfigurationOverride ??
+          SortAndFilterConfiguration(
+            sortBy: FinampSettingsHelper.finampSettings.tabSortBy[widget.tabContentType]!,
+            sortOrder: FinampSettingsHelper.finampSettings.tabSortOrder[widget.tabContentType]!,
+            filters: {
+              if (FinampSettingsHelper.finampSettings.onlyShowFavorites) ItemFilter(type: ItemFilterType.isFavorite),
+              if (FinampSettingsHelper.finampSettings.onlyShowFullyDownloaded)
+                ItemFilter(type: ItemFilterType.isFullyDownloaded),
+            },
+          ),
+    );
+    final itemsProviderInstance = loadHomeSectionItemsProvider(
+      sectionInfo: sectionInfo,
+      startIndex: 0,
+      limit: homeScreenSectionItemLimit,
+    );
+    final prefetchedItems = ref.exists(itemsProviderInstance) ? ref.read(itemsProviderInstance).value : null;
+    if (prefetchedItems != null && _pagingController.nextPageKey != null) {
+      if (prefetchedItems.length < homeScreenSectionItemLimit) {
+        _pagingController.appendLastPage(prefetchedItems);
+      } else {
+        _pagingController.appendPage(prefetchedItems, prefetchedItems.length);
+      }
+    }
   }
 
   // Scrolls the list to the first occurrence of the letter in the list
@@ -372,11 +415,9 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     var newRefreshHash = Object.hash(
       widget.searchTerm,
       settings.onlyShowFavorites,
-      widget.isFavoriteOverride,
+      widget.sortAndFilterConfigurationOverride,
       settings.tabSortBy[widget.tabContentType],
-      widget.sortByOverride,
       settings.tabSortOrder[widget.tabContentType],
-      widget.sortOrderOverride,
       settings.onlyShowFullyDownloaded,
       widget.view?.id,
       settings.isOffline,
@@ -432,7 +473,17 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         ],
       ),
     );
-    var sortBy = widget.sortByOverride ?? ref.watch(finampSettingsProvider.tabSortBy(widget.tabContentType));
+    final sortAndFilterConfig =
+        widget.sortAndFilterConfigurationOverride ??
+        SortAndFilterConfiguration(
+          sortBy: ref.watch(finampSettingsProvider.tabSortBy(widget.tabContentType))!,
+          sortOrder: ref.watch(finampSettingsProvider.tabSortOrder(widget.tabContentType))!,
+          filters: {
+            if (ref.watch(finampSettingsProvider.onlyShowFavorites)) ItemFilter(type: ItemFilterType.isFavorite),
+            if (ref.watch(finampSettingsProvider.onlyShowFullyDownloaded))
+              ItemFilter(type: ItemFilterType.isFullyDownloaded),
+          },
+        );
     var tabContent =
         ref.watch(finampSettingsProvider.contentViewType) == ContentViewType.list ||
             widget.tabContentType == TabContentType.tracks
@@ -467,11 +518,13 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                                 genreFilter: widget.genreFilter,
                                 isOnGenreScreen: (widget.genreFilter != null) ? true : false,
                                 parentItem: widget.genreFilter,
-                                forceAlbumArtists: (sortBy == SortBy.albumArtist),
-                                adaptiveAdditionalInfoSortBy: sortBy,
+                                forceAlbumArtists: (sortAndFilterConfig.sortBy == SortBy.albumArtist),
+                                adaptiveAdditionalInfoSortBy: sortAndFilterConfig.sortBy,
                                 // since we can't re-create the current random sorting, we simply pass the pre-sorted tracks along
                                 // only done in offline mode since online mode doesn't support playing the tab contents in order anyway
-                                children: FinampSettingsHelper.finampSettings.isOffline && sortBy == SortBy.random
+                                children:
+                                    FinampSettingsHelper.finampSettings.isOffline &&
+                                        sortAndFilterConfig.sortBy == SortBy.random
                                     ? _pagingController.itemList
                                     : null,
                               )
@@ -479,7 +532,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                                 key: ValueKey(item.id),
                                 item: item,
                                 genreFilter: widget.genreFilter,
-                                adaptiveAdditionalInfoSortBy: sortBy,
+                                adaptiveAdditionalInfoSortBy: sortAndFilterConfig.sortBy,
                                 showFavoriteIconOnlyWhenFilterDisabled: true,
                               ),
                       );
@@ -549,14 +602,15 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
       onRefresh: () async => _refresh(),
       child:
           showFastScroller &&
-              (widget.sortByOverride == SortBy.sortName ||
-                  widget.sortByOverride == SortBy.albumArtist ||
-                  widget.sortByOverride == null && (tabSortBy == SortBy.sortName || tabSortBy == SortBy.albumArtist))
+              (widget.sortAndFilterConfigurationOverride?.sortBy == SortBy.sortName ||
+                  widget.sortAndFilterConfigurationOverride?.sortBy == SortBy.albumArtist ||
+                  widget.sortAndFilterConfigurationOverride?.sortBy == null &&
+                      (tabSortBy == SortBy.sortName || tabSortBy == SortBy.albumArtist))
           ? AlphabetList(
               callback: scrollToLetter,
               scrollController: controller,
-              sortOrder: (widget.sortOrderOverride != null)
-                  ? widget.sortOrderOverride ?? SortOrder.ascending
+              sortOrder: (widget.sortAndFilterConfigurationOverride?.sortOrder != null)
+                  ? widget.sortAndFilterConfigurationOverride?.sortOrder ?? SortOrder.ascending
                   : (ref.watch(finampSettingsProvider.tabSortOrder(widget.tabContentType)) ?? SortOrder.ascending),
               child: tabContent,
             )

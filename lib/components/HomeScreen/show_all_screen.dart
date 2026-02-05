@@ -100,10 +100,8 @@ class _ShowAllScreenState extends ConsumerState<ShowAllScreen> with AutomaticKee
       return;
     }
     _requestedPageKey = pageKey;
-    var settings = FinampSettingsHelper.finampSettings;
     int localRefreshCount = refreshCount;
     try {
-      final sortOrder = SortOrder.ascending.toString();
       final newItems = await ref.watch(
         loadHomeSectionItemsProvider(sectionInfo: sectionInfo, startIndex: pageKey, limit: _pageSize).future,
       );
@@ -272,7 +270,11 @@ class _ShowAllScreenState extends ConsumerState<ShowAllScreen> with AutomaticKee
         scrolledUnderElevation: 0.0, // disable tint/shadow when content is scrolled under the app bar
         centerTitle: true,
         toolbarHeight: 53,
-        title: Text(sectionInfo.getTitle(context)),
+        title: Text(
+          sectionInfo.itemId != null
+              ? ref.watch(itemByIdProvider(sectionInfo.itemId!)).valueOrNull?.name ?? sectionInfo.getTitle(context)
+              : sectionInfo.getTitle(context),
+        ),
         leading: FinampAppBarButton(onPressed: () => Navigator.of(context).pop(), dismissDirection: AxisDirection.left),
         actions: [],
       ),

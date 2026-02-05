@@ -10,6 +10,7 @@ import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -182,7 +183,19 @@ class HomeScreenSection extends ConsumerWidget {
                     ),
                     ShowAllButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, ShowAllScreen.routeName, arguments: sectionInfo);
+                        if (sectionInfo.type == HomeScreenSectionType.tabView) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<MusicScreen>(
+                              builder: (context) => MusicScreen(
+                                showHeader: false,
+                                tabTypeFilter: sectionInfo.contentType,
+                                sortAndFilterConfigurationOverrideInit: sectionInfo.sortAndFilterConfiguration,
+                              ),
+                            ),
+                          );
+                        } else {
+                          Navigator.pushNamed(context, ShowAllScreen.routeName, arguments: sectionInfo);
+                        }
                       },
                     ),
                   ],
@@ -206,6 +219,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    //!!! remove the preset type to allow matching the provider content based just on its media properties
     final items = ref.watch(loadHomeSectionItemsProvider(sectionInfo: sectionInfo));
     final source = QueueItemSource.rawId(
       type: QueueItemSourceType.homeScreenSection,

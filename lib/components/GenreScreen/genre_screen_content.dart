@@ -97,11 +97,20 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
     Navigator.of(context).push(
       MaterialPageRoute<MusicScreen>(
         builder: (context) => MusicScreen(
+          showHeader: false,
           genreFilter: widget.parent,
           tabTypeFilter: tabContentType,
-          sortByOverrideInit: sortByOverride,
-          sortOrderOverrideInit: sortOrderOverride,
-          isFavoriteOverrideInit: isFavoriteOverride,
+          sortAndFilterConfigurationOverrideInit: doOverride
+              ? SortAndFilterConfiguration(
+                  sortBy:
+                      sortByOverride ??
+                      (FinampSettingsHelper.finampSettings.tabSortBy[tabContentType] ?? SortBy.sortName),
+                  sortOrder:
+                      sortOrderOverride ??
+                      (FinampSettingsHelper.finampSettings.tabSortOrder[tabContentType] ?? SortOrder.ascending),
+                  filters: {if (isFavoriteOverride) ItemFilter(type: ItemFilterType.isFavorite)},
+                )
+              : null,
         ),
       ),
     );
