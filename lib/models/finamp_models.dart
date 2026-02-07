@@ -123,6 +123,7 @@ class DefaultSettings {
   static const showTextOnGridView = false;
   static const sleepTimerDurationSeconds = 60 * 30;
   static const useCoverAsBackground = true;
+  static const useUniversalSearch = true;
   static const playerScreenCoverMinimumPadding = 1.5;
   static const showArtistsTracksSection = true;
   static const disableGesture = false;
@@ -280,6 +281,7 @@ class FinampSettings {
     this.bufferDisableSizeConstraints = DefaultSettings.bufferDisableSizeConstraints,
     this.bufferDurationSeconds = DefaultSettings.bufferDurationSeconds,
     this.bufferSizeMegabytes = DefaultSettings.bufferSizeMegabytes,
+    this.useUniversalSearch = DefaultSettings.useUniversalSearch,
     required this.tabSortBy,
     required this.tabSortOrder,
     this.loopMode = DefaultSettings.loopMode,
@@ -836,6 +838,9 @@ class FinampSettings {
 
   @HiveField(143, defaultValue: DefaultSettings.forceAudioOffloadingOnAndroid)
   bool forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid;
+
+  @HiveField(144, defaultValue: DefaultSettings.useUniversalSearch)
+  bool useUniversalSearch = DefaultSettings.useUniversalSearch;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(

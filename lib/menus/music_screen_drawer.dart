@@ -6,7 +6,9 @@ import 'package:finamp/screens/logs_screen.dart';
 import 'package:finamp/components/MusicScreen/offline_mode_status_label.dart';
 import 'package:finamp/screens/playback_history_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
+import 'package:finamp/screens/universal_search_screen.dart';
 import 'package:finamp/screens/settings_screen.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -48,6 +50,15 @@ class MusicScreenDrawer extends StatelessWidget {
                 const OfflineModeSwitchListTile(),
                 const OfflineModeStatusLabel(),
                 Divider(),
+                if (FinampSettingsHelper.finampSettings.useUniversalSearch)
+                  ListTile(
+                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.search)),
+                    title: Text(MaterialLocalizations.of(context).searchFieldLabel),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed(UniversalSearchScreen.routeName);
+                    },
+                  ),
                 ListTile(
                   leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.file_download)),
                   title: Text(AppLocalizations.of(context)!.downloads),

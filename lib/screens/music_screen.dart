@@ -18,6 +18,7 @@ import '../components/global_snackbar.dart';
 import '../components/now_playing_bar.dart';
 import '../menus/music_screen_drawer.dart';
 import '../models/finamp_models.dart';
+import '../screens/universal_search_screen.dart';
 import '../services/audio_service_helper.dart';
 import '../services/finamp_settings_helper.dart';
 import '../services/finamp_user_helper.dart';
@@ -351,9 +352,15 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                     ),
                   IconButton(
                     icon: const Icon(Icons.search),
-                    onPressed: () => setState(() {
-                      isSearching = true;
-                    }),
+                    onPressed: () {
+                      if (ref.watch(finampSettingsProvider.useUniversalSearch)) {
+                        Navigator.of(context).pushNamed(UniversalSearchScreen.routeName);
+                      } else {
+                        setState(() {
+                          isSearching = true;
+                        });
+                      }
+                    },
                     tooltip: MaterialLocalizations.of(context).searchFieldLabel,
                   ),
                 ],

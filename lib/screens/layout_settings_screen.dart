@@ -92,6 +92,7 @@ class _LayoutSettingsScreenState extends ConsumerState<LayoutSettingsScreen> {
           const ShowTextOnGridViewSelector(),
           const UseCoverAsBackgroundToggle(),
           const ShowArtistChipImageToggle(),
+          const UseClassicSearchToggle(),
           const AllowSplitScreenSwitch(),
           const ShowProgressOnNowPlayingBarToggle(),
         ],
@@ -161,6 +162,21 @@ class ShowProgressOnNowPlayingBarToggle extends ConsumerWidget {
       subtitle: Text(AppLocalizations.of(context)!.showProgressOnNowPlayingBarSubtitle),
       value: ref.watch(finampSettingsProvider.showProgressOnNowPlayingBar),
       onChanged: FinampSetters.setShowProgressOnNowPlayingBar,
+    );
+  }
+}
+
+class UseClassicSearchToggle extends ConsumerWidget {
+  const UseClassicSearchToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final useUniversalSearch = ref.watch(finampSettingsProvider.useUniversalSearch);
+    return SwitchListTile.adaptive(
+      title: Text(AppLocalizations.of(context)!.useClassicSearchTitle),
+      subtitle: Text(AppLocalizations.of(context)!.useClassicSearchSubtitle),
+      value: !useUniversalSearch,
+      onChanged: (value) => FinampSetters.setUseUniversalSearch(!value),
     );
   }
 }

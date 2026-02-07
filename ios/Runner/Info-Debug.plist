@@ -22,6 +22,8 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>FLTEnableTouchRateCorrection</key>
+	<false/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
