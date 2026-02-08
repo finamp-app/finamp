@@ -1720,12 +1720,17 @@
     "@startupErrorTitle": {
         "description": "The title for the error screen that shows when startup fails."
     },
-    "startupErrorCallToAction": "कृपया \"github.com/jmshrv/finamp\" पर हमारी मदद के लिए एक इशू बनाएं, नीचे दिए गए बटन से लोग्स और इस पेज का स्क्रीनशॉट जोड़ें। हम इसे जल्द से जल्द ठीक करेंगे।",
+    "startupErrorCallToAction": "कृपया लॉग (नीचे दिए गए बटन का उपयोग करें) और इस पृष्ठ के स्क्रीनशॉट के साथ \"github.com/jmshrv/finamp\" पर एक समस्या बनाएं, ताकि हम इसे जल्द से जल्द ठीक कर सकें।",
     "@startupErrorCallToAction": {
         "description": "The subtitle / call to action for what to do after encountering a startup error"
     },
     "startupErrorWorkaround": "आप इस गलती से बचने के लिए ऐप का डेटा मिटाकर इसे रीसेट कर सकते हैं।ये ध्यान रखें कि इससे आपकी सारी सेटिंग्स और डाउनलोड्स हट जाएंगे।",
     "@startupErrorWorkaround": {
         "description": "The subtitle for how to manually recover from a startup error"
-    }
+    },
+    "allLibraries": "सभी लाइब्रेरी",
+    "@allLibraries": {
+        "description": "All Libraries"
+    },
+    "appearsOnAlbums": "दिखाई देता है"
 }
