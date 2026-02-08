@@ -27,6 +27,7 @@ import 'package:finamp/screens/playback_reporting_settings_screen.dart';
 import 'package:finamp/screens/player_settings_screen.dart';
 import 'package:finamp/screens/playlist_edit_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
+import 'package:finamp/screens/universal_search_screen.dart';
 import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/android_auto_helper.dart';
 import 'package:finamp/services/audio_service_smtc.dart';
@@ -652,6 +653,7 @@ class FinampApp extends ConsumerWidget {
         PlaybackHistoryScreen.routeName: (context) => const PlaybackHistoryScreen(),
         LogsScreen.routeName: (context) => const LogsScreen(),
         QueueRestoreScreen.routeName: (context) => const QueueRestoreScreen(),
+        UniversalSearchScreen.routeName: (context) => const UniversalSearchScreen(),
         SettingsScreen.routeName: (context) => const SettingsScreen(),
         TranscodingSettingsScreen.routeName: (context) => const TranscodingSettingsScreen(),
         DownloadsLocationScreen.routeName: (context) => const DownloadsLocationScreen(),

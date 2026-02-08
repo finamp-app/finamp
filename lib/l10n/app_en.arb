@@ -3231,6 +3231,14 @@
   "@forceAudioOffloadingOnAndroidSubtitle": {
     "description": "Subtitle for the setting that controls audio offloading on Android."
   },
+  "useClassicSearchTitle": "Use classic search",
+  "@useClassicSearchTitle": {
+    "description": "Title for the setting that switches to classic in-page search"
+  },
+  "useClassicSearchSubtitle": "Use the classic in-page search instead of Universal Search.",
+  "@useClassicSearchSubtitle": {
+    "description": "Subtitle for the setting that switches to classic in-page search"
+  },
   "explicit": "Explicit",
   "@explicit": {
     "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"

@@ -1248,6 +1248,14 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setUseUniversalSearch(bool newUseUniversalSearch) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.useUniversalSearch = newUseUniversalSearch;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1295,6 +1303,8 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       .select((value) => value.requireValue.showTextOnGridView);
   ProviderListenable<bool> get useCoverAsBackground => finampSettingsProvider
       .select((value) => value.requireValue.useCoverAsBackground);
+  ProviderListenable<bool> get useUniversalSearch => finampSettingsProvider
+      .select((value) => value.requireValue.useUniversalSearch);
   ProviderListenable<int> get bufferDurationSeconds => finampSettingsProvider
       .select((value) => value.requireValue.bufferDurationSeconds);
   ProviderListenable<bool> get disableGesture => finampSettingsProvider.select(
