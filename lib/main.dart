@@ -456,6 +456,10 @@ void _migrateHomescreen() {
     finampSettings.showTabs[TabContentType.home] = true;
     finampSettings.tabSortBy[TabContentType.home] = SortBy.defaultOrder;
     finampSettings.tabSortOrder[TabContentType.home] = SortOrder.ascending;
+
+    // we set this here because it's a non-constant value
+    finampSettings.homeScreenConfiguration = DefaultSettings.homeScreenConfiguration;
+
     changed = true;
   }
 

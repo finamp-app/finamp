@@ -882,6 +882,7 @@ class FinampSettings {
 
   @HiveField(
     144,
+    //!!! this is a dummy value, the actual default is set in [_migrateHomescreen] because it's a non-constant value, and therefore not supported as a Hive default value
     defaultValue: FinampHomeScreenConfiguration(actions: [], sections: []),
   )
   FinampHomeScreenConfiguration homeScreenConfiguration = DefaultSettings.homeScreenConfiguration;
