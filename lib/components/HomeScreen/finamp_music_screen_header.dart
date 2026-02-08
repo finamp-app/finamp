@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/extensions/color_extensions.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/components/icon_button_with_semantics.dart';
+import 'package:finamp/menus/music_screen_drawer.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/settings_screen.dart';
@@ -80,7 +82,8 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                 child: SimpleGestureDetector(
                   onTap: () {
                     // open drawer
-                    Scaffold.of(context).openDrawer();
+                    // Scaffold.of(context).openDrawer();
+                    showFinampMainMenu(context: context);
                   },
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,7 +93,8 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                       SimpleGestureDetector(
                         onTap: () {
                           // open drawer
-                          Scaffold.of(context).openDrawer();
+                          // Scaffold.of(context).openDrawer();
+                          showFinampMainMenu(context: context);
                         },
                         child: Stack(
                           clipBehavior: Clip.none,
@@ -205,22 +209,23 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                         refreshTab();
                                       },
                                     ),
-                                  IconButton(
-                                    icon: Icon(TablerIcons.search),
-                                    iconSize: 28,
-                                    visualDensity: VisualDensity.compact,
+                                  IconButtonWithSemantics(
+                                    label: "Search*",
+                                    icon: TablerIcons.search,
+                                    iconSize: 28.0,
                                     onPressed: () {
                                       if (onSearch != null) {
                                         onSearch!();
                                       }
                                     },
                                   ),
-                                  IconButton(
-                                    icon: Icon(TablerIcons.dots),
-                                    iconSize: 28,
-                                    visualDensity: VisualDensity.compact,
+                                  IconButtonWithSemantics(
+                                    label: "Menu*",
+                                    icon: TablerIcons.dots,
+                                    iconSize: 28.0,
                                     onPressed: () {
-                                      Scaffold.of(context).openDrawer();
+                                      // Scaffold.of(context).openDrawer();
+                                      showFinampMainMenu(context: context);
                                     },
                                     onLongPress: () {
                                       Navigator.pushNamed(context, SettingsScreen.routeName);

@@ -1,6 +1,7 @@
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/components/MusicScreen/offline_mode_switch_list_tile.dart';
 import 'package:finamp/components/MusicScreen/view_list_tile.dart';
+import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/downloads_screen.dart';
@@ -9,16 +10,151 @@ import 'package:finamp/components/MusicScreen/offline_mode_status_label.dart';
 import 'package:finamp/screens/playback_history_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
 import 'package:finamp/screens/settings_screen.dart';
+import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
+const finampMainMenuRouteName = "/main-menu";
+
+Future<void> showFinampMainMenu({required BuildContext context}) async {
+  FeedbackHelper.feedback(FeedbackType.selection);
+
+  final finampUserHelper = GetIt.instance<FinampUserHelper>();
+  final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+
+  await showThemedBottomSheet<void>(
+    context: context,
+    routeName: finampMainMenuRouteName,
+    minDraggableHeight: 0.4,
+    buildSlivers: (context) {
+      var menu = [
+        Consumer(
+          builder: (context, ref, child) {
+            return SliverList(
+              delegate: SliverChildListDelegate.fixed([
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    FinampIcon(
+                      56,
+                      56,
+                      overrideColor: ref.watch(finampSettingsProvider.isOffline)
+                          ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
+                          : null,
+                    ),
+                    SizedBox(height: 8),
+                    FutureBuilder(
+                      future: PackageInfo.fromPlatform(),
+                      builder: (context, snapshot) {
+                        final appName = snapshot.data?.appName ?? AppLocalizations.of(context)!.finamp;
+                        return Text(appName, style: const TextStyle(fontSize: 20));
+                      },
+                    ),
+                    if (ref.watch(finampSettingsProvider.isOffline))
+                      Text.rich(
+                        TextSpan(
+                          text: AppLocalizations.of(context)!.offlineMode,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    else
+                      FutureBuilder<PublicSystemInfoResult?>(
+                        future: jellyfinApiHelper.loadServerPublicInfo(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Text("Connected*");
+                          }
+                          final PublicSystemInfoResult serverInfo = snapshot.data!;
+                          return Text.rich(
+                            TextSpan(
+                              text: 'Connected to* ',
+                              children: [
+                                TextSpan(
+                                  text: '${serverInfo.serverName}',
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          );
+                        },
+                      ),
+                  ],
+                ),
+                SizedBox(height: 8.0),
+                const OfflineModeSwitchListTile(),
+                const OfflineModeStatusLabel(),
+                ListTile(
+                  leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.file_download)),
+                  title: Text(AppLocalizations.of(context)!.downloads),
+                  onTap: () => Navigator.of(context).pushNamed(DownloadsScreen.routeName),
+                ),
+                ListTile(
+                  leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(TablerIcons.clock)),
+                  title: Text(AppLocalizations.of(context)!.playbackHistory),
+                  onTap: () => Navigator.of(context).pushNamed(PlaybackHistoryScreen.routeName),
+                ),
+                ListTile(
+                  leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.auto_delete)),
+                  title: Text(AppLocalizations.of(context)!.queuesScreen),
+                  onTap: () => Navigator.of(context).pushNamed(QueueRestoreScreen.routeName),
+                ),
+                const Divider(),
+              ]),
+            );
+          },
+        ),
+        // This causes an error when logging out if we show this widget
+        if (finampUserHelper.currentUser != null)
+          SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              return ViewListTile(view: finampUserHelper.currentUser!.views.values.elementAt(index));
+            }, childCount: finampUserHelper.currentUser!.views.length),
+          ),
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: SafeArea(
+            bottom: true,
+            top: false,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Divider(),
+                  ListTile(
+                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.warning)),
+                    title: Text(AppLocalizations.of(context)!.logs),
+                    onTap: () => Navigator.of(context).pushNamed(LogsScreen.routeName),
+                  ),
+                  ListTile(
+                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.settings)),
+                    title: Text(AppLocalizations.of(context)!.settings),
+                    onTap: () => Navigator.of(context).pushNamed(SettingsScreen.routeName),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ];
+      var stackHeight = MediaQuery.heightOf(context) * 0.8;
+      return (stackHeight, menu);
+    },
+  );
+}
 
 class MusicScreenDrawer extends ConsumerWidget {
   const MusicScreenDrawer({super.key});

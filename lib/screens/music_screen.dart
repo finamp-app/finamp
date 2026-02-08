@@ -352,7 +352,8 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
               return TransparentRightSwipeDetector(
                 action: () {
                   if (_tabController?.index == 0 && !ref.watch(finampSettingsProvider.disableGesture)) {
-                    Scaffold.of(context).openDrawer();
+                    // Scaffold.of(context).openDrawer();
+                    showFinampMainMenu(context: context);
                   }
                 },
                 child: child,
