@@ -148,7 +148,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                           ],
                         ),
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: 8),
                       ...isSearching
                           ? [
                               Expanded(
@@ -174,21 +174,13 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                   ),
                                 ),
                               ),
-                              GestureDetector(
-                                onDoubleTap: () => onStopSearch?.call(),
-                                child: IconButton(
-                                  icon: Icon(TablerIcons.x, color: Theme.of(context).colorScheme.onSurface),
-                                  onPressed: () {
-                                    if (textEditingController.text.isNotEmpty) {
-                                      textEditingController.clear();
-                                      onUpdateSearchQuery?.call('');
-                                    } else {
-                                      onStopSearch?.call();
-                                    }
-                                  },
-                                  tooltip: AppLocalizations.of(context)!.clear,
-                                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                ),
+                              IconButton(
+                                icon: Icon(TablerIcons.x, color: Theme.of(context).colorScheme.onSurface),
+                                onPressed: () {
+                                  onStopSearch?.call();
+                                },
+                                tooltip: AppLocalizations.of(context)!.clear,
+                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
                               ),
                             ]
                           : [
@@ -197,7 +189,10 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(appName, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+                                    Text(
+                                      finampUserHelper.currentUser?.currentView?.name ?? appName,
+                                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -221,19 +216,14 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(TablerIcons.settings),
-                                    iconSize: 28,
-                                    visualDensity: VisualDensity.compact,
-                                    onPressed: () {
-                                      Navigator.pushNamed(context, SettingsScreen.routeName);
-                                    },
-                                  ),
-                                  IconButton(
                                     icon: Icon(TablerIcons.dots),
                                     iconSize: 28,
                                     visualDensity: VisualDensity.compact,
                                     onPressed: () {
                                       Scaffold.of(context).openDrawer();
+                                    },
+                                    onLongPress: () {
+                                      Navigator.pushNamed(context, SettingsScreen.routeName);
                                     },
                                   ),
                                 ],
@@ -272,7 +262,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                           ? Theme.of(context).colorScheme.primaryContainer
                           : ColorScheme.of(context).outlineVariant,
                       strokeAlign: 1.0,
-                      width: 2.0,
+                      width: 1.5,
                     ),
                   ),
                 ),
