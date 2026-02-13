@@ -13,31 +13,18 @@
         }
     },
     "addDownloads": "Voeg downloads toe",
-    "@addDownloads": {},
     "addButtonLabel": "Toevoegen",
-    "@addButtonLabel": {},
     "artists": "Artiesten",
-    "@artists": {},
     "albumArtist": "Album Artiest",
-    "@albumArtist": {},
     "artist": "Artiest",
-    "@artist": {},
     "budget": "Budget",
-    "@budget": {},
     "bitrate": "Bitrate",
-    "@bitrate": {},
     "anErrorHasOccured": "Er is een fout opgetreden.",
-    "@anErrorHasOccured": {},
     "addToPlaylistTitle": "Toevoegen aan afspeellijst",
-    "@addToPlaylistTitle": {},
     "addedToQueue": "Toegevoegd aan rij.",
-    "@addedToQueue": {},
     "addToQueue": "Voeg toe aan rij",
-    "@addToQueue": {},
     "album": "Album",
-    "@album": {},
     "albums": "Albums",
-    "@albums": {},
     "couldNotFindLibraries": "Kon geen bibliotheken vinden.",
     "@couldNotFindLibraries": {
         "description": "Error message when the user does not have any libraries"
@@ -56,9 +43,7 @@
         }
     },
     "addDownloadLocation": "Voeg een downloadlocatie toe",
-    "@addDownloadLocation": {},
-    "shuffleAllTrackCountSubtitle": "Hoeveelheid nummers die geladen moeten worden bij gebruik van de shuffle knop.",
-    "@shuffleAllTrackCountSubtitle": {},
+    "shuffleAllTrackCountSubtitle": "Hoeveelheid nummers die ingeladen moeten worden bij gebruik van de shuffle knop.",
     "dlComplete": "{count} volledig",
     "@dlComplete": {
         "placeholders": {
@@ -68,9 +53,7 @@
         }
     },
     "clear": "Opschonen",
-    "@clear": {},
     "addToPlaylistTooltip": "Toevoegen aan afspeellijst",
-    "@addToPlaylistTooltip": {},
     "gridCrossAxisCountSubtitle": "Hoeveelheid rijen te gebruiken in {value}-modus.",
     "@gridCrossAxisCountSubtitle": {
         "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
@@ -82,17 +65,11 @@
         }
     },
     "errorScreenError": "Er is een fout opgetreden bij het opvragen van de lijst met foutmeldingen! Waarschijnlijk kun je het beste proberen een issue aan te maken op GitHub, en de app data te verwijderen",
-    "@errorScreenError": {},
     "areYouSure": "Bent u zeker?",
-    "@areYouSure": {},
     "audioService": "Audiodienst",
-    "@audioService": {},
     "bitrateSubtitle": "Het gebruik van een hogere bitrate geeft betere audiokwaliteit, maar gebruikt meer netwerkbandbreedte. Wordt niet toegepast op lossless codecs zoals FLAC.",
-    "@bitrateSubtitle": {},
     "cancelSleepTimer": "Annuleer sleep timer?",
-    "@cancelSleepTimer": {},
     "communityRating": "Gemeenschapsbeoordeling",
-    "@communityRating": {},
     "downloadCount": "{count,plural, =1{{count} download} other{{count} downloads}}",
     "@downloadCount": {
         "placeholders": {
@@ -110,13 +87,9 @@
         }
     },
     "appDirectory": "Applicatie folder",
-    "@appDirectory": {},
     "customLocation": "Persoonlijke locatie",
-    "@customLocation": {},
     "dark": "Donker",
-    "@dark": {},
     "createButtonLabel": "Creëer",
-    "@createButtonLabel": {},
     "trackCount": "{count,plural,=1{{count} Nummer} other{{count} Nummers}}",
     "@trackCount": {
         "placeholders": {
@@ -126,33 +99,23 @@
         }
     },
     "serverUrl": "Server URL",
-    "@serverUrl": {},
     "internalExternalIpExplanation": "Om toegang tot de Jellyfin server te krijgen op afstand, dien je een extern IP te gebruiken.\n\nWanneer de server een HTTP-standaardpoort (80 of 443) of Jellyfins standaardpoort (8096) gebruikt, hoef je deze niet in te vullen.\n\nAls de URL correct is, zou hieronder er wat informatie moeten verschijnen over jouw server.",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
     "username": "Gebruikersnaam",
-    "@username": {},
     "password": "Wachtwoord",
-    "@password": {},
     "logs": "Logbestanden",
-    "@logs": {},
     "next": "Volgende",
-    "@next": {},
     "selectMusicLibraries": "Selecteer Muziekbibliotheken",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
     "unknownName": "Onbekende Naam",
-    "@unknownName": {},
     "tracks": "Nummers",
-    "@tracks": {},
     "playlists": "Afspeellijsten",
-    "@playlists": {},
     "startMix": "Mix starten",
-    "@startMix": {},
     "genres": "Genres",
-    "@genres": {},
     "startMixNoTracksArtist": "Druk lang op een artiest om deze toe te voegen of te verwijderen van de mix-bouwer alvorens de mix te starten",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
@@ -162,41 +125,23 @@
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
     "music": "Muziek",
-    "@music": {},
     "shuffleAll": "Alles shufflen",
-    "@shuffleAll": {},
     "settings": "Instellingen",
-    "@settings": {},
     "offlineMode": "Offline Modus",
-    "@offlineMode": {},
     "sortOrder": "Sorteervolgorde",
-    "@sortOrder": {},
     "finamp": "Finamp",
-    "@finamp": {},
     "downloads": "Downloads",
-    "@downloads": {},
     "sortBy": "Sorteer met",
-    "@sortBy": {},
     "criticRating": "Criticusbeoordeling",
-    "@criticRating": {},
     "dateAdded": "Datum toegevoegd",
-    "@dateAdded": {},
     "datePlayed": "Datum afgespeeld",
-    "@datePlayed": {},
     "playCount": "Aantal keren afgespeeld",
-    "@playCount": {},
     "premiereDate": "Releasedatum",
-    "@premiereDate": {},
     "productionYear": "Productiejaar",
-    "@productionYear": {},
     "name": "Naam",
-    "@name": {},
     "random": "Willekeurig",
-    "@random": {},
     "revenue": "Inkomsten",
-    "@revenue": {},
     "downloadMissingImages": "Download ontbrekende plaatjes",
-    "@downloadMissingImages": {},
     "downloadedMissingImages": "{count,plural, =0{Geen ontbrekende plaatjes gevonden} =1{{count} ontbrekend plaatje gedownloaded} other{{count} ontbrekende plaatjes gedownloaded}}",
     "@downloadedMissingImages": {
         "description": "Message that shows when the user downloads missing images",
@@ -223,61 +168,33 @@
         }
     },
     "failedToGetTrackFromDownloadId": "Het nummer kon niet gevonden worden met deze download ID",
-    "@failedToGetTrackFromDownloadId": {},
     "error": "Fout",
-    "@error": {},
     "playButtonLabel": "Afspelen",
-    "@playButtonLabel": {},
     "shuffleButtonLabel": "Shuffle",
-    "@shuffleButtonLabel": {},
     "updateButtonLabel": "Update",
-    "@updateButtonLabel": {},
     "playlistUpdated": "De naam van de playlist is aangepast.",
-    "@playlistUpdated": {},
     "downloadsDeleted": "Downloads verwijderd.",
-    "@downloadsDeleted": {},
     "location": "Plaats",
-    "@location": {},
-    "downloadsQueued": "Downloads toegevoegd.",
-    "@downloadsQueued": {},
+    "downloadsQueued": "Downloads toegevoegd",
     "shareLogs": "Deel de log",
-    "@shareLogs": {},
     "stackTrace": "Strack-trace",
-    "@stackTrace": {},
     "applicationLegalese": "Uitgegeven onder de Mozilla Public License 2.0.\nBroncode beschikbaar op {sourceCodeLink}.",
-    "@applicationLegalese": {},
     "downloadLocations": "Downloadlocaties",
-    "@downloadLocations": {},
     "transcoding": "Converteren",
-    "@transcoding": {},
     "layoutAndTheme": "Layout & Thema",
-    "@layoutAndTheme": {},
     "notAvailableInOfflineMode": "Niet beschikbaar in Offline Modus",
-    "@notAvailableInOfflineMode": {},
     "logOut": "Uitloggen",
-    "@logOut": {},
     "selectDirectory": "Selecteer map",
-    "@selectDirectory": {},
     "unknownError": "Onbekende Fout",
-    "@unknownError": {},
     "directoryMustBeEmpty": "Folder moet leeg zijn",
-    "@directoryMustBeEmpty": {},
     "enterLowPriorityStateOnPause": "Ga naar Lage-Prioriteit Staat tijdens Pauzeren",
-    "@enterLowPriorityStateOnPause": {},
     "viewType": "Type bekijken",
-    "@viewType": {},
     "viewTypeSubtitle": "Type voor het muziekscherm bekijken",
-    "@viewTypeSubtitle": {},
     "shuffleAllTrackCount": "Aantal nummers in de shuffle",
-    "@shuffleAllTrackCount": {},
     "list": "Lijst",
-    "@list": {},
     "grid": "Raster",
-    "@grid": {},
     "portrait": "Portret",
-    "@portrait": {},
     "landscape": "Landschap",
-    "@landscape": {},
     "gridCrossAxisCount": "{value} Aantal assen",
     "@gridCrossAxisCount": {
         "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
@@ -289,59 +206,32 @@
         }
     },
     "showTextOnGridView": "Tekst in rooster tonen",
-    "@showTextOnGridView": {},
     "showTextOnGridViewSubtitle": "Tekst (titel, artiest, etc.) laten zien op het muziekscherm.",
-    "@showTextOnGridViewSubtitle": {},
     "theme": "Thema",
-    "@theme": {},
     "disableGestureSubtitle": "Gebaren in- of uitschakelen.",
-    "@disableGestureSubtitle": {},
     "light": "Licht",
-    "@light": {},
     "tabs": "Tabs",
-    "@tabs": {},
     "yesButtonLabel": "Ja",
-    "@yesButtonLabel": {},
     "noButtonLabel": "Nee",
-    "@noButtonLabel": {},
     "minutes": "Minuten",
-    "@minutes": {},
     "invalidNumber": "Ongeldig getal",
-    "@invalidNumber": {},
     "sleepTimerTooltip": "Slaaptimer",
-    "@sleepTimerTooltip": {},
     "newPlaylist": "Nieuwe afspeellijst",
-    "@newPlaylist": {},
     "playlistCreated": "Afspeellijst gecreëerd.",
-    "@playlistCreated": {},
     "noAlbum": "Geen album",
-    "@noAlbum": {},
     "noItem": "Geen element",
-    "@noItem": {},
     "noArtist": "Geen artiest",
-    "@noArtist": {},
     "unknownArtist": "Onbekende Artiest",
-    "@unknownArtist": {},
     "queue": "Afspeelrij",
-    "@queue": {},
     "replaceQueue": "Afspeelrij vervangen",
-    "@replaceQueue": {},
     "instantMix": "Instantmix",
-    "@instantMix": {},
     "goToAlbum": "Ga naar album",
-    "@goToAlbum": {},
     "queueReplaced": "Rij vervangen.",
-    "@queueReplaced": {},
     "startingInstantMix": "Instantmix starten.",
-    "@startingInstantMix": {},
     "removeFromMix": "Uit mix verwijderen",
-    "@removeFromMix": {},
     "addToMix": "Aan mix toevoegen",
-    "@addToMix": {},
     "bufferDuration": "Bufferlengte",
-    "@bufferDuration": {},
     "bufferDurationSubtitle": "De maximale duur van de buffer, in seconden. Dit vereist een herstart.",
-    "@bufferDurationSubtitle": {},
     "redownloadedItems": "{count,plural, =0{Geen downloads nodig.} =1{{count} element opnieuw gedownload} other{ {count} elementen opnieuw gedownload}}",
     "@redownloadedItems": {
         "placeholders": {
@@ -351,9 +241,7 @@
         }
     },
     "enterLowPriorityStateOnPauseSubtitle": "De notificatie kan weggeswiped worden wanneer gepauseerd. Hierdoor kan Android de service stoppen.",
-    "@enterLowPriorityStateOnPauseSubtitle": {},
     "logsCopied": "De log is gekopieerd.",
-    "@logsCopied": {},
     "discNumber": "Disk {number}",
     "@discNumber": {
         "placeholders": {
@@ -363,47 +251,28 @@
         }
     },
     "required": "Verplicht",
-    "@required": {},
     "message": "Bericht",
-    "@message": {},
     "enableTranscodingSubtitle": "Converteert muziekstreams op de server.",
-    "@enableTranscodingSubtitle": {},
     "enableTranscoding": "Conversie inschakelen",
-    "@enableTranscoding": {},
     "pathReturnSlashErrorMessage": "Paden met \"/\" kunnen niet worden gebruikt",
-    "@pathReturnSlashErrorMessage": {},
     "customLocationsBuggy": "Persoonlijke locaties hebben veel bugs en worden over het algemeen niet aanbevolen. Locaties onder de \"Muziek\" folder van het systeem voorkomen het opslaan van albumhoezen door begrenzingen van het besturingssysteem.",
-    "@customLocationsBuggy": {},
     "hideTrackArtistsIfSameAsAlbumArtists": "Artiest van nummer verbergen wanneer deze hetzelfde is als de albumartiest",
-    "@hideTrackArtistsIfSameAsAlbumArtists": {},
     "useCoverAsBackground": "Geblurde cover op spelerachtergrond tonen",
-    "@useCoverAsBackground": {},
     "useCoverAsBackgroundSubtitle": "Geblurde coverafbeelding gebruiken als achtergrond van het afspeelscherm.",
-    "@useCoverAsBackgroundSubtitle": {},
     "disableGesture": "Gebaren uitschakelen",
-    "@disableGesture": {},
     "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Artiest van nummer tonen wanneer deze hetzelfde is als de albumartiest.",
-    "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
     "system": "Systeem",
-    "@system": {},
     "emptyServerUrl": "De URL van je server mag niet leeg zijn",
     "@emptyServerUrl": {
         "description": "Error message that shows when the user submits a login without a server URL"
     },
     "removeFromPlaylistTooltip": "Verwijder van deze afspeellijst",
-    "@removeFromPlaylistTooltip": {},
     "removeFromPlaylistTitle": "Verwijder Van Deze Afspeellijst",
-    "@removeFromPlaylistTitle": {},
     "removedFromPlaylist": "Verwijderd van afspeellijst.",
-    "@removedFromPlaylist": {},
     "resetTabs": "Tabbladen resetten",
-    "@resetTabs": {},
     "language": "Taal",
-    "@language": {},
     "confirm": "Bevestigen",
-    "@confirm": {},
     "showUncensoredLogMessage": "Dit logboek bevat uw inloggegevens. Tonen?",
-    "@showUncensoredLogMessage": {},
     "viewLogs": "Logboeken bekijken",
     "@viewLogs": {
         "description": "Label for button shown during the login process that allows the user to view the app logs"
@@ -491,11 +360,8 @@
         "description": "Hint text for the password input field."
     },
     "activeDownloads": "Actieve Downloads",
-    "@activeDownloads": {},
     "activeDownloadsTitle": "Actieve Downloads",
-    "@activeDownloadsTitle": {},
     "noActiveDownloads": "Geen actieve downloads.",
-    "@noActiveDownloads": {},
     "playbackSpeedControlSetting": "Zichtbaarheid Afspeelsnelheid",
     "@playbackSpeedControlSetting": {
         "description": "Title of the visibility setting of the playback speed controls"
@@ -605,9 +471,7 @@
         "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
     },
     "title": "Titel",
-    "@title": {},
     "interactions": "Interacties",
-    "@interactions": {},
     "playbackSpeedControlSettingSubtitle": "Of de afspeelsnelheid-knoppen zichtbaar moeten zijn in het speler menu",
     "@playbackSpeedControlSettingSubtitle": {
         "description": "Subtitle for the playback speed visibility setting"
@@ -641,7 +505,6 @@
         "description": "Tagline / short description for the app"
     },
     "syncDownloadedPlaylists": "Sync gedownloade afspeellijsten",
-    "@syncDownloadedPlaylists": {},
     "removeFromPlaylistNamedTooltip": "Verwijderen van afspeellijst '{playlistName}'",
     "@removeFromPlaylistNamedTooltip": {
         "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
@@ -683,13 +546,11 @@
         "description": "Name for the expanded player"
     },
     "hours": "Uren",
-    "@hours": {},
     "timeFractionTooltip": "{currentTime} van {totalTime}",
     "@timeFractionTooltip": {
         "description": "Tooltip and accessibility label for the track progress. {currentTime} is the current position within the track, as a translated string like '2 minutes 40 seconds', and {totalTime} is the total duration of the track, also a translated string."
     },
     "seconds": "Seconden",
-    "@seconds": {},
     "trackCountTooltip": "Nummer {currentTrackIndex} van {totalTrackCount}",
     "@trackCountTooltip": {
         "description": "Tooltip and accessibility label for the queue progress. {currentTrackIndex} and {totalTrackCount} are both numbers",
@@ -714,9 +575,7 @@
         }
     },
     "addToMorePlaylistsTitle": "Toevoegen aan Meer Afspeellijsten",
-    "@addToMorePlaylistsTitle": {},
     "showFastScroller": "Laat snelle scroller zien",
-    "@showFastScroller": {},
     "playbackSpeedControlSettingDescription": "Automatisch:\nFinamp probeert in te schatten of het nummer waar je momenteel naar luistert een podcast is, of het (een onderdeel van) een audioboek is. Dit wordt aangenomen als het nummer langer duurt dan {trackDuration} minuten, of als het gehele album langer duurt dan {albumDuration} uur, of als het nummer tot één van de volgende genres behoort: {genreList}\nDe knoppen om de afspeelsnelheid te bedienen worden dan zichtbaar gemaakt in het muziekspeler scherm.\n\nZichtbaar:\nDe knoppen om de afspeelsnelheid te bedienen zullen altijd zichtbaar zijn in het muziekspeler scherm.\n\nVerborgen:\nDe knoppen om de afspeelsnelheid te bedienen zullen niet zichtbaar zijn in het muziekspeler scherm.",
     "@playbackSpeedControlSettingDescription": {
         "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown",
@@ -748,7 +607,6 @@
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
     "addToMorePlaylistsTooltip": "Toevoegen aan meer afspeellijsten",
-    "@addToMorePlaylistsTooltip": {},
     "offlineTrackCountArtist": "{count,plural,=1{{count} Track} other{{count} Tracks}} gedownload",
     "@offlineTrackCountArtist": {
         "placeholders": {
@@ -773,13 +631,11 @@
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
     },
     "bufferDisableSizeConstraintsSubtitle": "Schakelt buffergrootte beperking uit ('Buffergrootte'). De buffer zal altijd ingeladen worden zoals geconfigureerd volgens de bufferlengte ('Bufferlengte'), zelfs voor grotere bestanden. Dit kan een crash veroorzaken. Vereist een herstart.",
-    "@bufferDisableSizeConstraintsSubtitle": {},
     "bitRate": "Bitrate",
     "@bitRate": {
         "description": "Label for the feature chips showing the bit rate of a track"
     },
     "goToArtist": "Ga naar Artiest",
-    "@goToArtist": {},
     "connectionInterruptedBackgroundAndroid": "Connectie werd onderbroken terwijl downloads bezig waren. Dit kan veroorzaakt zijn door aanzetten 'Ga naar Lage-Prioriteit Staat tijdens Pauzeren' of OS instellingen.",
     "@connectionInterruptedBackgroundAndroid": {
         "description": "Message shown when the connection is interrupted during a download while in the background on android. It advises checking OS settings, as they may cause background downloads to be blocked, or checking the  'Enter Low-Priority State on Pause' setting."
@@ -820,7 +676,6 @@
         "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
     },
     "goToGenre": "Ga naar Genre",
-    "@goToGenre": {},
     "confirmAddedToPlaylist": "Toegevoegd aan afspeellijst.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
@@ -868,17 +723,11 @@
         "description": "Option to keep the screen on while using the app"
     },
     "keepScreenOnSubtitle": "Wanneer het scherm aan te houden",
-    "@keepScreenOnSubtitle": {},
     "keepScreenOnDisabled": "Uitgeschakeld",
-    "@keepScreenOnDisabled": {},
     "keepScreenOnAlwaysOn": "Altijd Aan",
-    "@keepScreenOnAlwaysOn": {},
     "keepScreenOnWhilePlaying": "Tijdens Muziek Afspelen",
-    "@keepScreenOnWhilePlaying": {},
     "keepScreenOnWhilePluggedIn": "Houd Scherm Aan alleen tijdens opladen",
-    "@keepScreenOnWhilePluggedIn": {},
     "artwork": "Albumhoes",
-    "@artwork": {},
     "artworkTooltip": "Albumhoes voor {title}",
     "@artworkTooltip": {
         "placeholders": {
@@ -890,7 +739,6 @@
         "description": "Tooltip for album artwork on track and album tiles as well as the album screen"
     },
     "keepScreenOnWhilePluggedInSubtitle": "Negeer de Houd Scherm Aan instelling als apparaat niet oplaad",
-    "@keepScreenOnWhilePluggedInSubtitle": {},
     "genericToggleButtonTooltip": "Tik om te schakelen.",
     "@genericToggleButtonTooltip": {
         "description": "Tooltip for toggle buttons that can be tapped to toggle their state"
@@ -966,11 +814,8 @@
         "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
     },
     "bufferDisableSizeConstraintsTitle": "Beperk bufferlimiet niet",
-    "@bufferDisableSizeConstraintsTitle": {},
     "bufferSizeTitle": "Buffergrootte",
-    "@bufferSizeTitle": {},
     "bufferSizeSubtitle": "De maximale buffergrootte in MB. Vereist een herstart",
-    "@bufferSizeSubtitle": {},
     "skipToPreviousTrackButtonTooltip": "Ga naar begin of naar vorige nummer",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -1115,7 +960,6 @@
         "description": "Subtitle for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
     },
     "unknownAlbum": "Onbekend Album",
-    "@unknownAlbum": {},
     "playbackModeTranscoding": "Transcoderen",
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
@@ -1125,9 +969,7 @@
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
     },
     "confirmFavoriteAdded": "Toevoegen aan Favorieten",
-    "@confirmFavoriteAdded": {},
     "confirmFavoriteRemoved": "Verwijderen uit Favorieten",
-    "@confirmFavoriteRemoved": {},
     "shuffleToQueue": "Shuffle naar Wachtrij",
     "@shuffleToQueue": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the regular queue, to play after all prior tracks from the queue have played"
@@ -1159,11 +1001,8 @@
         "description": "Message displayed on now-playing bar when all items in a saved queue fail to load."
     },
     "appearsOnAlbums": "Komt voor in",
-    "@appearsOnAlbums": {},
     "albumArtists": "Album Artiesten",
-    "@albumArtists": {},
     "performingArtists": "Deelnemende Artiesten",
-    "@performingArtists": {},
     "periodicPlaybackSessionUpdateFrequencySubtitle": "Hoe vaak de huidige afspeelstatus naar de server gestuurd word, in seconden. Dit moet minder dan 5 minuten (300 seconden) zijn om een time-out van de sessie te voorkomen.",
     "@periodicPlaybackSessionUpdateFrequencySubtitle": {
         "description": "Description of the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
@@ -1181,8 +1020,7 @@
         "description": "Label for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
     },
     "topTracks": "Top Nummers",
-    "@topTracks": {},
-    "queueRestoreButtonLabel": "Herstel",
+    "queueRestoreButtonLabel": "Herstel deze wachtrij",
     "@queueRestoreButtonLabel": {
         "description": "Button to restore archived now playing queue, overwriting current queue"
     },
@@ -1302,7 +1140,6 @@
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of the regular queue"
     },
     "close": "Sluiten",
-    "@close": {},
     "noMusicLibrariesTitle": "Geen Muziekbibliotheken",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
@@ -1339,7 +1176,7 @@
     "@playOnStaleDelay": {
         "description": "Label for the setting that controls how long a PlayOn remote session is considered active"
     },
-    "couldNotLoad": "Kon {source, select, album{album} playlist{afspeellijst} trackMix{nummermix} artistMix{artiestenmix} albumMix{albummix} genreMix{genremix} favorites{favorieten} allTracks{alle nummers} filteredList{nummers} genre{genre} artist{artiest} track{nummer} nextUpAlbum{album in ''Hierna''} nextUpPlaylist{playlist in ''Hierna''} nextUpArtist{artiest in ''Hierna''} other{}} niet laden",
+    "couldNotLoad": "Kon {source, select, album{album} playlist{afspeellijst} trackMix{nummermix} artistMix{artiestenmix} albumMix{albummix} genreMix{genremix} favorites{favorieten} allTracks{alle nummers} filteredList{nummers} genre{genre} artist{artiest} track{nummer} nextUpAlbum{album in ''Hierna''} nextUpPlaylist{playlist in ''Hierna''} nextUpArtist{artiest in ''Hierna''} nextUpGenre{genre in volgenden}  other{}} niet laden",
     "@couldNotLoad": {
         "placeholders": {
             "source": {
@@ -1356,21 +1193,17 @@
         "description": "'Only for Albums' option for the replay gain mode dropdown. In albums-only mode, Volume Normalization is only applied while playing albums (using the album gain), but not for individual tracks."
     },
     "moreInfo": "Meer informatie",
-    "@moreInfo": {},
     "volumeNormalizationSettingsTitle": "Volume-normalisatie",
     "@volumeNormalizationSettingsTitle": {
         "description": "Title for the replay gain settings screen"
     },
     "refresh": "Ververs",
-    "@refresh": {},
     "volumeNormalizationModeAlbumBased": "Per album",
     "@volumeNormalizationModeAlbumBased": {
         "description": "'Album-based' option for the replay gain mode dropdown. In album-based mode, the album gain is always used, regardless of whether an album is playing or not."
     },
     "resetToDefaults": "Terugzetten naar standaardinstellingen",
-    "@resetToDefaults": {},
     "noMusicLibrariesBody": "Finamp kon geen muziekbibliotheken vinden. Zorg ervoor dat je Jellyfin server minstens één bibliotheek heeft met het type \"Muziek\".",
-    "@noMusicLibrariesBody": {},
     "volumeNormalizationModeHybrid": "Hybride (Nummer + Album)",
     "@volumeNormalizationModeHybrid": {
         "description": "'Hybrid' option for the replay gain mode dropdown. In hybrid mode, the track gain is used for regular playback, but if an album is playing (either because it's the main playback queue source, or because it was added to the queue at some point), the album gain is used instead."
@@ -1388,13 +1221,9 @@
         "description": "Title for the playback reporting settings screen"
     },
     "swipeLeftToRightAction": "Swipe naar Rechts Actie",
-    "@swipeLeftToRightAction": {},
     "swipeRightToLeftAction": "Swipe naar Links Actie",
-    "@swipeRightToLeftAction": {},
     "swipeLeftToRightActionSubtitle": "Actie die uitgevoerd wordt wanneer een nummer in een lijst van links naar rechts wordt gesleept.",
-    "@swipeLeftToRightActionSubtitle": {},
     "playbackReporting": "Afspelen Rapporteren",
-    "@playbackReporting": {},
     "numberAsDecibel": "{value} dB",
     "@numberAsDecibel": {
         "description": "Label for a number that represents a decibel value. The value will be the decibel value.",
@@ -1406,7 +1235,6 @@
         }
     },
     "swipeInsertQueueNextSubtitle": "Zet dit aan om een nummer als volgende in de wachtrij te zetten wanneer het gesleept wordt in een lijst van nummers in plaats van het aan het einde van de wachtrij toevoegen.",
-    "@swipeInsertQueueNextSubtitle": {},
     "startInstantMixForIndividualTracksSwitchTitle": "Begin Instantmixes voor Losse Nummers",
     "@startInstantMixForIndividualTracksSwitchTitle": {
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
@@ -1419,14 +1247,12 @@
     "@startupErrorWorkaround": {
         "description": "The subtitle for how to manually recover from a startup error"
     },
-    "volumeNormalizationIOSBaseGainEditorSubtitle": "Op dit moment werkt Volume-normalisatie op iOS door het afspeelvolume te veranderen om veranderingen in Gain te emuleren. Omdat we het volume niet boven 100% kunnen zetten moeten we het standaardvolume lager instellen om het volume van stillere nummers hoger te krijgen. De waarde is in decibel (dB). -10dB is ~30% volume, -4.5 dB is ~60% volume en -2 dB is ~80% volume.",
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "Kies een volume compensatie (in dB)",
     "@volumeNormalizationIOSBaseGainEditorSubtitle": {
         "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
     "swipeRightToLeftActionSubtitle": "Actie die uitgevoerd wordt wanneer een nummer in een lijst van rechts naar links wordt gesleept.",
-    "@swipeRightToLeftActionSubtitle": {},
     "swipeInsertQueueNext": "Speel Geswipete Nummer Hierna",
-    "@swipeInsertQueueNext": {},
     "periodicPlaybackSessionUpdateFrequencyDetails": "Als de Jellyfin server langer dan 5 minuten geen updates ontvangt van een apparaat neemt het aan dat het afspelen is gestopt. Dit betekent dat het rapporteren van afspeeldata incorrect kan zijn voor nummers langer dan 5 minuten.",
     "@periodicPlaybackSessionUpdateFrequencyDetails": {
         "description": "Additional details for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
@@ -1460,7 +1286,6 @@
         "description": "This is shown when the autoOffline feature is set to Disconnected, this means offline mode will be automatically enabled when either wifi, ethernet or cellular is active"
     },
     "autoOfflineSettingTitle": "Automatische Offline Modus",
-    "@autoOfflineSettingTitle": {},
     "audioFadeInDurationSettingSubtitle": "De lengte van fade-in van geluid in milliseconden. Stel in op 0 om fade-in uit te zetten.",
     "@audioFadeInDurationSettingSubtitle": {
         "description": "Subtitle for the audio fade-in duration setting. Set to 0 to disable fade-in."
@@ -1502,21 +1327,13 @@
         "description": "Tooltip for button that scrolls the queue list back to the current track"
     },
     "showArtistChipImageSubtitle": "Dit beïnvloedt kleine weergaven van artiestenfoto's, zoals op het afspeelscherm.",
-    "@showArtistChipImageSubtitle": {},
     "allPlaylistsInfoSetting": "Download Metadata van Playlists",
-    "@allPlaylistsInfoSetting": {},
     "removeFromPlaylistConfirm": "Verwijderen",
-    "@removeFromPlaylistConfirm": {},
     "downloadAllPlaylistsSetting": "Download alle playlists",
-    "@downloadAllPlaylistsSetting": {},
     "downloadFavoritesSetting": "Download alle favorieten",
-    "@downloadFavoritesSetting": {},
     "allPlaylistsInfoSettingSubtitle": "Synchroniseer metadata van alle playlists om je playlist-ervaring te verbeteren",
-    "@allPlaylistsInfoSettingSubtitle": {},
     "cacheLibraryImagesSettings": "Houd covers van huidige bibliotheek in de cache",
-    "@cacheLibraryImagesSettings": {},
     "fiveLatestAlbumsSetting": "Download de 5 nieuwste albums",
-    "@fiveLatestAlbumsSetting": {},
     "showLyricsScreenAlbumPreludeTitle": "Toon albumhoes voor de songtekst",
     "@showLyricsScreenAlbumPreludeTitle": {
         "description": "Title for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
@@ -1625,7 +1442,6 @@
         "description": "Prompt on dialog to confirm a removal from playlist"
     },
     "trackOfflineFavoritesSubtitle": "Hierdoor blijven favorieten up-to-date in Offline Modus. Downloadt geen extra bestanden.",
-    "@trackOfflineFavoritesSubtitle": {},
     "showProgressOnNowPlayingBarSubtitle": "Stelt in of de miniplayer/afspeelbalk onderaan het scherm ook als voortgangsbalk dient.",
     "@showProgressOnNowPlayingBarSubtitle": {
         "description": "Subtitle for the setting that controls if the now playing bar / miniplayer at the bottom of the music screen functions as a progress bar"
@@ -1664,15 +1480,12 @@
         "description": "Tooltip for button that can be used to re-enable auto scroll on the lyrics view after the user manually scrolled"
     },
     "cacheLibraryImagesSettingsSubtitle": "Alle album-, artiesten-, genre- en playlistcovers in de actieve bibliotheek zal gedownload worden.",
-    "@cacheLibraryImagesSettingsSubtitle": {},
     "lyricsFontSizeTitle": "Songtekst lettergrootte",
     "@lyricsFontSizeTitle": {
         "description": "Title for the setting that controls the font size of lyrics in the lyrics view"
     },
     "fiveLatestAlbumsSettingSubtitle": "Downloads worden verwijderd als ze te out zijn. Zet de download op slot om te voorkomen dat een album verwijderd wordt.",
-    "@fiveLatestAlbumsSettingSubtitle": {},
     "trackOfflineFavorites": "Synchroniseer status favorieten",
-    "@trackOfflineFavorites": {},
     "addPlaylistSubheader": "Voeg nummer to aan een playlist",
     "@addPlaylistSubheader": {
         "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
@@ -1738,69 +1551,43 @@
         "description": "Title for the setting that controls if timestamps are shown for lyrics"
     },
     "keepScreenOnWhileLyrics": "Terwijl Songtekst Laten Zien Wordt",
-    "@keepScreenOnWhileLyrics": {},
     "itemDeletedSnackbar": "{itemType, select, album{Album} playlist{Playlist} artist{Artiest} genre{Genre} track{Nummer} library{Bibliotheek} other{Element}} verwijderd van {deviceType, select, device{dit Apparaat} server{de Server} other{onbekend}}",
     "@itemDeletedSnackbar": {
         "description": "Used whenever item gets deleted from the device or server, message in snackbar"
     },
     "showArtistChipImage": "Toon foto naast artiestennaam",
-    "@showArtistChipImage": {},
     "performingArtist": "Uitvoerende Artiest",
-    "@performingArtist": {},
     "duration": "Duur",
-    "@duration": {},
     "notAvailable": "Niet beschikbaar",
-    "@notAvailable": {},
     "browsePlaylists": "Bekijk Playlists",
     "@browsePlaylists": {
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
     },
     "addFavorite": "Favoriet Toevoegen",
-    "@addFavorite": {},
     "removeFavorite": "Favoriet Verwijderen",
-    "@removeFavorite": {},
     "topArtists": "Top Artiesten",
-    "@topArtists": {},
     "recentlyAddedArtists": "Recent Toegevoegde Artiesten",
     "@recentlyAddedArtists": {
         "description": "Label for the genre section that shows artists that were recently added to the library, sorted by the date they were added."
     },
     "latestTracks": "Nieuwste Nummers",
-    "@latestTracks": {},
     "latestAlbums": "Nieuwste Albums",
-    "@latestAlbums": {},
     "latestArtists": "Nieuwste Artiesten",
-    "@latestArtists": {},
     "recentlyPlayedTracks": "Laatst Gespeelde Nummers",
-    "@recentlyPlayedTracks": {},
     "recentlyPlayedAlbums": "Laatst Gespeelde Albums",
-    "@recentlyPlayedAlbums": {},
     "recentlyPlayedArtists": "Laatst Gespeelde Artiesten",
-    "@recentlyPlayedArtists": {},
     "favoriteTracks": "Favoriete Nummers",
-    "@favoriteTracks": {},
     "favoriteAlbums": "Favoriete Albums",
-    "@favoriteAlbums": {},
     "favoriteArtists": "Favoriete Artiesten",
-    "@favoriteArtists": {},
     "randomTracks": "Nummers (willekeurig)",
-    "@randomTracks": {},
     "randomAlbums": "Albums (willekeurig)",
-    "@randomAlbums": {},
     "randomArtists": "Artiesten (willekeurig)",
-    "@randomArtists": {},
     "mostPlayed": "Meest Gespeeld",
-    "@mostPlayed": {},
     "randomFavoritesFirst": "Random (Favorieten Eerst)",
-    "@randomFavoritesFirst": {},
     "recentlyAdded": "Recent Toegevoegd",
-    "@recentlyAdded": {},
     "recentlyPlayed": "Recent Afgespeeld",
-    "@recentlyPlayed": {},
     "latestReleases": "Nieuwste Releases",
-    "@latestReleases": {},
     "unknown": "Onbekend",
-    "@unknown": {},
     "recentlyAddedAlbums": "Recent Toegevoegde Albums",
     "@recentlyAddedAlbums": {
         "description": "Label for the genre section that shows albums that were recently added to the library, sorted by the date they were added."
@@ -1810,19 +1597,14 @@
         "description": "Label for the artist section that shows tracks that were recently added to the library, sorted by the date they were added."
     },
     "showArtistsTracksSection": "Toon Nummer Sectie",
-    "@showArtistsTracksSection": {},
     "stopAndClearQueue": "Stop afspelen en wis queue",
     "@stopAndClearQueue": {
         "description": "Label for a button that stops playback and removes all tracks from the queue."
     },
     "topAlbums": "Top Albums",
-    "@topAlbums": {},
     "exportLogs": "Logs opslaan",
-    "@exportLogs": {},
     "favorite": "Favoriet",
-    "@favorite": {},
     "favorites": "Favorieten",
-    "@favorites": {},
     "allLibraries": "Alle Bibliotheken",
     "@allLibraries": {
         "description": "All Libraries"
@@ -1832,13 +1614,11 @@
         "description": "Gets shown when there are no genres available for an album or artist"
     },
     "onlineMode": "Onlinemodus",
-    "@onlineMode": {},
     "defaultOrder": "Standaard ordening voor afspeellijsten (server volgorde)",
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
     },
     "adaptive": "Aanpassend",
-    "@adaptive": {},
     "formattedRelativeTime": "{type, select, just_now{zojuist} minutes{{value} min geleden} hours{{value} uur geleden} yesterday{gisteren} days{{value, plural, =1{1 dag geleden} other{{value} dagen geleden}}} other{value}}",
     "@formattedRelativeTime": {
         "description": "Returns a relative time string based on how long ago something happened. Used for various DateTime values such as Date Last Played and Date Added.",
@@ -1858,6 +1638,165 @@
         "placeholders": {
             "count": {
                 "type": "int"
+            }
+        }
+    },
+    "playbackActionPageMoveWithinQueue": "Verplaats in wachtrij",
+    "@playbackActionPageMoveWithinQueue": {
+        "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
+    },
+    "playbackActionPageRegularTrackOptions": "Speel",
+    "@playbackActionPageRegularTrackOptions": {
+        "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "playbackActionPageNewQueue": "Nieuwe wachtrij",
+    "@playbackActionPageNewQueue": {
+        "description": "Label for the playback action page that contains all actions related to starting a new queue"
+    },
+    "playbackActionPageNext": "Speel volgende",
+    "@playbackActionPageNext": {
+        "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
+    },
+    "playbackActionPageAppendToQueue": "Speel laatste",
+    "@playbackActionPageAppendToQueue": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks at the end of the queue"
+    },
+    "updatePlaylistButtonLabel": "Update Playlist",
+    "@updatePlaylistButtonLabel": {
+        "description": "Label for the button that updates the playlist on the edit playlist screen"
+    },
+    "savingChanges": "Opslaan…",
+    "@savingChanges": {
+        "description": "Text shown while the changes to a playlist are being saved"
+    },
+    "logoutButtonSubtitle": "Alle downloads worden verwijderd als je inlogt op een nieuwe server",
+    "none": "Geen",
+    "accentColor": "Accent kleur",
+    "@accentColor": {
+        "description": "Title of the accent color setting"
+    },
+    "accentColorTitle": "Kies een accent kleur",
+    "@accentColorTitle": {
+        "description": "Title for the accent color picker sheet"
+    },
+    "systemAccentColor": "gebruik systeem accent kleur",
+    "@systemAccentColor": {
+        "description": "Title of the System Accent Color setting."
+    },
+    "systemAccentColorHasPriorityInfo": "handmatige accent kleur uitgeschakeld want systeem accent kleur is in gebruik",
+    "@systemAccentColorHasPriorityInfo": {
+        "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
+    },
+    "useMonochromeIcon": "Gebruik zwart-wit logo",
+    "@useMonochromeIcon": {
+        "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
+    },
+    "useMonochromeIconSubtitle": "Dit verandert alleen het logo in de app, niet het app icoon.",
+    "@useMonochromeIconSubtitle": {
+        "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
+    },
+    "defaultWord": "Standaard",
+    "useDefaultButton": "Terug naar standaard accent kleur",
+    "colorCode": "Kleur code (Hex)",
+    "@colorCode": {
+        "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
+    },
+    "colorCodeHint": "b.v. #FFFFFF of #coffee",
+    "@colorCodeHint": {
+        "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
+    },
+    "save": "Opslaan",
+    "invalidColorCode": "Verkeerde kleur code",
+    "@invalidColorCode": {
+        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
+    },
+    "startRadio": "Start radio",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
+    },
+    "createPlaylistFromCurrentQueue": "Wachtrij opslaan als playlist",
+    "@createPlaylistFromCurrentQueue": {
+        "description": "Label for a button that adds the current queue to an existing or new playlist."
+    },
+    "movePlayNext": "Speel volgende",
+    "@movePlayNext": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "moveAddToNextUp": "Verplaats naar Volgende spelen",
+    "@moveAddToNextUp": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
+    },
+    "moveAddToQueue": "Verplaats naar Laatste spelen",
+    "@moveAddToQueue": {
+        "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
+    },
+    "radio": "Radio",
+    "@radio": {
+        "description": "Title for the queue source when the user is playing a track added via radio"
+    },
+    "itemSectionsOrder": "Hoofdstuk volgorde",
+    "@itemSectionsOrder": {
+        "description": "Label for the setting that controls the order of item sections on the screens."
+    },
+    "itemSectionsOrderSubtitle": "Verandert de hoofdstuk volgorde.",
+    "@itemSectionsOrderSubtitle": {
+        "description": "Description of the setting that controls the order of item sections on the screens."
+    },
+    "artistItemSectionFilterChipOrderTitle": "Nummers filter volgorde",
+    "@artistItemSectionFilterChipOrderTitle": {
+        "description": "Label for the setting that controls the order of the tracks sections filter chips."
+    },
+    "genreFilterArtistScreens": "Filter artiesten",
+    "@genreFilterArtistScreens": {
+        "description": "Label for the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
+    },
+    "genreFilterArtistScreensSubtitle": "Wanneer aan, Artiesten (bekeken bij genre) zullen alleen nummers en albums laten zien die overeenkomen met het geselecteerde genre. (het is altijd mogelijk om het genre filter te verwijderen en alle nummers en albums te zien)",
+    "@genreFilterArtistScreensSubtitle": {
+        "description": "Description of the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
+    },
+    "genreFilterPlaylistScreens": "Filter playlisten",
+    "@genreFilterPlaylistScreens": {
+        "description": "Label for the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
+    },
+    "genreListsInheritSorting": "Volledige lijst volgorde erven",
+    "@genreListsInheritSorting": {
+        "description": "Label for the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
+    },
+    "curatedItemsMostPlayedOfflineTooltip": "Niet mogelijk in Offline modus.",
+    "@curatedItemsMostPlayedOfflineTooltip": {
+        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
+    },
+    "genreNoItems": "Je hebt geen {itemType, select, playlists{playlists} artists{artists} albums{albums} tracks{tracks} other{items}} voor dit genre.",
+    "@genreNoItems": {
+        "description": "Message for empty See All lists for a genre.",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "shuffleSomeAlbums": "Hussel wat albums",
+    "@shuffleSomeAlbums": {
+        "description": "Label for action that shuffles some albums of a genre"
+    },
+    "shuffleSomeAlbumsNext": "Hussel wat Volgende Albums",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "Op dit moment werkt Volume-normalisatie op iOS door het afspeelvolume te veranderen om veranderingen in Gain te emuleren. Omdat we het volume niet boven 100% kunnen zetten moeten we het standaardvolume lager instellen om het volume van stillere nummers hoger te krijgen. \n\nDe waarde is in decibel (dB). -10dB is ~30% volume, -4.5 dB is ~60% volume en -2 dB is ~80% volume.\n\nPositieve waarden betekenen dat geen volume vermindering is aangezet tot de waarde overschrijding (i.e. -6.4 dB gain (and more positive) for a +6.4 dB offset), but prevents quieter tracks from being boosted.\n\n\nYou should set this to the inverse of the highest (most positive) gain in your library, i.e., set it to +3 dB if the highest gain in your library is -3 dB (and all other tracks have gains like -5 dB, -8 dB, -10 dB, etc.).",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "shuffleSome": "Hussel wat",
+    "playbackActionPageNextUp": "Voeg toe aan Volgende",
+    "@playbackActionPageNextUp": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
+    },
+    "editItemTitle": "Verander {itemType, select, playlist{Playlist} other{}}",
+    "@editItemTitle": {
+        "placeholders": {
+            "itemType": {
+                "type": "String"
             }
         }
     }
