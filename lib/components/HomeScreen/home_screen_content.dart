@@ -80,56 +80,65 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
         child: CustomScrollView(
           slivers: [
             SliverPadding(padding: const EdgeInsets.only(top: 16.0)),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Wrap(
-                  spacing: 0,
-                  runSpacing: 8,
-                  direction: Axis.horizontal,
-                  alignment: WrapAlignment.spaceAround,
-                  runAlignment: WrapAlignment.center,
-                  children: ref.watch(finampSettingsProvider.homeScreenConfiguration).actions.map((action) {
-                    return CTALarge(
-                      text: action.toLocalisedString(context),
-                      icon: switch (action) {
-                        FinampQuickAction.trackMix => TablerIcons.arrows_shuffle,
-                        FinampQuickAction.recents => TablerIcons.calendar,
-                        FinampQuickAction.surpriseMe => TablerIcons.radio,
-                      },
-                      vertical: true,
-                      minWidth: 110,
-                      onPressed: switch (action) {
-                        FinampQuickAction.trackMix => () {
-                          _audioServiceHelper.shuffleAll(onlyShowFavorites: finampSettings?.onlyShowFavorites ?? false);
-                        },
-                        FinampQuickAction.recents => () {
-                          Navigator.pushNamed(context, QueueRestoreScreen.routeName);
-                        },
-                        FinampQuickAction.surpriseMe => () async {
-                          //TODO handle offline mode (continuous radio not available, and offline request needed) - maybe just hide this?
-                          // start continuous radio with a random track?
-                          final randomTracks = await _jellyfinApiHelper.getItems(
-                            parentItem: _finampUserHelper.currentUser?.currentView,
-                            includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
-                            limit: 1,
-                            sortBy: "Random",
-                          );
-                          if (randomTracks != null && randomTracks.isNotEmpty) {
-                            await GetIt.instance<QueueService>().startPlayback(
-                              items: randomTracks,
-                              source: QueueItemSource.fromBaseItem(randomTracks.first),
-                              skipRadioCacheInvalidation: false,
-                            );
-                            FinampSetters.setRadioMode(RadioMode.continuous);
-                            toggleRadio(true);
-                          }
-                        },
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
+            SliverLayoutBuilder(
+              builder: (context, constraints) {
+                final maxWidth = 600;
+                // center action buttons
+                final horizontalPadding = max(0, (constraints.crossAxisExtent - maxWidth) / 2);
+                return SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding + 14.0),
+                  sliver: SliverToBoxAdapter(
+                    child: Wrap(
+                      spacing: 0,
+                      runSpacing: 8,
+                      direction: Axis.horizontal,
+                      alignment: WrapAlignment.spaceAround,
+                      runAlignment: WrapAlignment.center,
+                      children: ref.watch(finampSettingsProvider.homeScreenConfiguration).actions.map((action) {
+                        return CTALarge(
+                          text: action.toLocalisedString(context),
+                          icon: switch (action) {
+                            FinampQuickAction.trackMix => TablerIcons.arrows_shuffle,
+                            FinampQuickAction.recents => TablerIcons.calendar,
+                            FinampQuickAction.surpriseMe => TablerIcons.radio,
+                          },
+                          vertical: true,
+                          minWidth: 110,
+                          onPressed: switch (action) {
+                            FinampQuickAction.trackMix => () {
+                              _audioServiceHelper.shuffleAll(
+                                onlyShowFavorites: finampSettings?.onlyShowFavorites ?? false,
+                              );
+                            },
+                            FinampQuickAction.recents => () {
+                              Navigator.pushNamed(context, QueueRestoreScreen.routeName);
+                            },
+                            FinampQuickAction.surpriseMe => () async {
+                              //TODO handle offline mode (continuous radio not available, and offline request needed) - maybe just hide this?
+                              // start continuous radio with a random track?
+                              final randomTracks = await _jellyfinApiHelper.getItems(
+                                parentItem: _finampUserHelper.currentUser?.currentView,
+                                includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
+                                limit: 1,
+                                sortBy: "Random",
+                              );
+                              if (randomTracks != null && randomTracks.isNotEmpty) {
+                                await GetIt.instance<QueueService>().startPlayback(
+                                  items: randomTracks,
+                                  source: QueueItemSource.fromBaseItem(randomTracks.first),
+                                  skipRadioCacheInvalidation: false,
+                                );
+                                FinampSetters.setRadioMode(RadioMode.continuous);
+                                toggleRadio(true);
+                              }
+                            },
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                );
+              },
             ),
             const SliverPadding(padding: EdgeInsets.only(top: 8)),
             SliverMainAxisGroup(
@@ -355,6 +364,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
   }
 
   Widget _buildHorizontalSkeletonLoader(BuildContext context) {
+    final skeletonCount = 10;
     final skeletonBaseColor = Theme.of(context).brightness == Brightness.light
         ? Colors.grey.shade300
         : Colors.grey.shade800;
@@ -362,7 +372,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
       height: calculateItemCollectionCardHeight(context),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: 5 + 1, // Show 5 skeleton items
+        itemCount: skeletonCount + 1, // Show [skeletonCount] skeleton items
         itemBuilder: (context, index) {
           if (index == 0) {
             return SizedBox(width: 4.0); // initial padding, + separator

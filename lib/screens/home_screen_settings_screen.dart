@@ -56,7 +56,7 @@ class QuickActionsSelector extends ConsumerWidget {
       padding: const EdgeInsets.only(bottom: 28.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         children: [
           ListTile(
             title: Text("Quick Actions*"),
@@ -65,6 +65,7 @@ class QuickActionsSelector extends ConsumerWidget {
           ReorderableListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: false,
             itemBuilder: (context, index) {
               final action = quickActions[index];
               return Padding(
@@ -163,6 +164,7 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
           ReorderableListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: false,
             itemCount: sections.length,
             onReorderStart: (_) => FeedbackHelper.feedback(FeedbackType.light),
             onReorder: (originalIndex, newIndex) {
