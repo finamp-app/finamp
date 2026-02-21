@@ -183,6 +183,9 @@ class HomeScreenSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    var currentLibrary = ref.watch(
+      FinampUserHelper.finampCurrentUserProvider.select((value) => value.valueOrNull?.currentView),
+    );
     return SliverPadding(
       padding: const EdgeInsets.only(bottom: 8.0),
       sliver: FinampSectionHeader(
@@ -211,6 +214,7 @@ class HomeScreenSection extends ConsumerWidget {
                 final items = await ref.read(
                   loadHomeSectionItemsProvider(
                     sectionInfo: sectionInfo,
+                    library: currentLibrary,
                     limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
                   ).future,
                 );
@@ -237,6 +241,7 @@ class HomeScreenSection extends ConsumerWidget {
                 final items = await ref.read(
                   loadHomeSectionItemsProvider(
                     sectionInfo: sectionInfo,
+                    library: currentLibrary,
                     limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
                   ).future,
                 );
@@ -298,6 +303,7 @@ class HomeScreenSection extends ConsumerWidget {
           final items = await ref.read(
             loadHomeSectionItemsProvider(
               sectionInfo: sectionInfo,
+              library: currentLibrary,
               limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
             ).future,
           );
@@ -318,7 +324,10 @@ class HomeScreenSectionContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //!!! remove the preset type to allow matching the provider content based just on its media properties
-    final items = ref.watch(loadHomeSectionItemsProvider(sectionInfo: sectionInfo));
+    var currentLibrary = ref.watch(
+      FinampUserHelper.finampCurrentUserProvider.select((value) => value.valueOrNull?.currentView),
+    );
+    final items = ref.watch(loadHomeSectionItemsProvider(sectionInfo: sectionInfo, library: currentLibrary));
     final source = QueueItemSource.rawId(
       type: QueueItemSourceType.homeScreenSection,
       name: QueueItemSourceName(
@@ -452,6 +461,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
 Future<List<BaseItemDto>?> loadHomeSectionItems(
   Ref ref, {
   required HomeScreenSectionConfiguration sectionInfo,
+  required BaseItemDto? library,
   int startIndex = 0,
   int limit = homeScreenSectionItemLimit,
 }) async {
@@ -462,13 +472,19 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
   final Future<List<BaseItemDto>?> newItemsFuture;
 
   if (settings.isOffline) {
-    newItemsFuture = loadHomeSectionItemsOffline(sectionInfo: sectionInfo, startIndex: startIndex, limit: limit);
+    newItemsFuture = loadHomeSectionItemsOffline(
+      sectionInfo: sectionInfo,
+      library: library,
+      startIndex: startIndex,
+      limit: limit,
+    );
     return newItemsFuture;
   }
 
   switch (sectionInfo.type) {
     case HomeScreenSectionType.tabView:
       newItemsFuture = jellyfinApiHelper.getItems(
+        libraryFilter: library,
         parentItem: sectionInfo.contentType == TabContentType.playlists
             ? null
             : finampUserHelper.currentUser?.currentView,
@@ -521,6 +537,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
 
 Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
   required HomeScreenSectionConfiguration sectionInfo,
+  required BaseItemDto? library,
   int startIndex = 0,
   int limit = 10,
 }) async {
@@ -576,7 +593,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
       if (sectionInfo.contentType == TabContentType.tracks) {
         // tracks are not stored as collections, so we need to get them differently
         offlineItems = await downloadsService.getAllTracks(
-          viewFilter: finampUserHelper.currentUser?.currentViewId,
+          viewFilter: library?.id,
           nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
           onlyFavorites: sectionInfo.sortAndFilterConfiguration.filters.any(
             (filter) => filter.type == ItemFilterType.isFavorite,
@@ -588,7 +605,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
             sectionInfo.contentType?.itemType ?? BaseItemDtoType.album,
           ], //FIXME support allowing multiple types
           fullyDownloaded: settings.onlyShowFullyDownloaded,
-          viewFilter: finampUserHelper.currentUser?.currentViewId,
+          viewFilter: library?.id,
           childViewFilter: null,
           nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
           onlyFavorites: sectionInfo.sortAndFilterConfiguration.filters.any(

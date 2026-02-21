@@ -12,7 +12,7 @@ part of 'home_screen_content.dart';
 // **************************************************************************
 
 String _$loadHomeSectionItemsHash() =>
-    r'ae3cc50eaf6b0b053fb11ba788487453b38132e2';
+    r'8b8d388177604ffd5d47ed3e9e6c04e42976ed7b';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -48,11 +48,13 @@ class LoadHomeSectionItemsFamily
   /// See also [loadHomeSectionItems].
   LoadHomeSectionItemsProvider call({
     required HomeScreenSectionConfiguration sectionInfo,
+    required BaseItemDto? library,
     int startIndex = 0,
     int limit = homeScreenSectionItemLimit,
   }) {
     return LoadHomeSectionItemsProvider(
       sectionInfo: sectionInfo,
+      library: library,
       startIndex: startIndex,
       limit: limit,
     );
@@ -64,6 +66,7 @@ class LoadHomeSectionItemsFamily
   ) {
     return call(
       sectionInfo: provider.sectionInfo,
+      library: provider.library,
       startIndex: provider.startIndex,
       limit: provider.limit,
     );
@@ -89,12 +92,14 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
   /// See also [loadHomeSectionItems].
   LoadHomeSectionItemsProvider({
     required HomeScreenSectionConfiguration sectionInfo,
+    required BaseItemDto? library,
     int startIndex = 0,
     int limit = homeScreenSectionItemLimit,
   }) : this._internal(
          (ref) => loadHomeSectionItems(
            ref as LoadHomeSectionItemsRef,
            sectionInfo: sectionInfo,
+           library: library,
            startIndex: startIndex,
            limit: limit,
          ),
@@ -107,6 +112,7 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
          allTransitiveDependencies:
              LoadHomeSectionItemsFamily._allTransitiveDependencies,
          sectionInfo: sectionInfo,
+         library: library,
          startIndex: startIndex,
          limit: limit,
        );
@@ -119,11 +125,13 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.sectionInfo,
+    required this.library,
     required this.startIndex,
     required this.limit,
   }) : super.internal();
 
   final HomeScreenSectionConfiguration sectionInfo;
+  final BaseItemDto? library;
   final int startIndex;
   final int limit;
 
@@ -142,6 +150,7 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         sectionInfo: sectionInfo,
+        library: library,
         startIndex: startIndex,
         limit: limit,
       ),
@@ -157,6 +166,7 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
   bool operator ==(Object other) {
     return other is LoadHomeSectionItemsProvider &&
         other.sectionInfo == sectionInfo &&
+        other.library == library &&
         other.startIndex == startIndex &&
         other.limit == limit;
   }
@@ -165,6 +175,7 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, sectionInfo.hashCode);
+    hash = _SystemHash.combine(hash, library.hashCode);
     hash = _SystemHash.combine(hash, startIndex.hashCode);
     hash = _SystemHash.combine(hash, limit.hashCode);
 
@@ -177,6 +188,9 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
 mixin LoadHomeSectionItemsRef on FutureProviderRef<List<BaseItemDto>?> {
   /// The parameter `sectionInfo` of this provider.
   HomeScreenSectionConfiguration get sectionInfo;
+
+  /// The parameter `library` of this provider.
+  BaseItemDto? get library;
 
   /// The parameter `startIndex` of this provider.
   int get startIndex;
@@ -193,6 +207,8 @@ class _LoadHomeSectionItemsProviderElement
   @override
   HomeScreenSectionConfiguration get sectionInfo =>
       (origin as LoadHomeSectionItemsProvider).sectionInfo;
+  @override
+  BaseItemDto? get library => (origin as LoadHomeSectionItemsProvider).library;
   @override
   int get startIndex => (origin as LoadHomeSectionItemsProvider).startIndex;
   @override

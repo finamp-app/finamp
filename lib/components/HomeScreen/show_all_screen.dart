@@ -78,8 +78,12 @@ class _ShowAllScreenState extends ConsumerState<ShowAllScreen> with AutomaticKee
   void didChangeDependencies() {
     super.didChangeDependencies();
     sectionInfo = ModalRoute.of(context)!.settings.arguments as HomeScreenSectionConfiguration;
+    var currentLibrary = ref.watch(
+      FinampUserHelper.finampCurrentUserProvider.select((value) => value.valueOrNull?.currentView),
+    );
     final itemsProviderInstance = loadHomeSectionItemsProvider(
       sectionInfo: sectionInfo,
+      library: currentLibrary,
       startIndex: 0,
       limit: homeScreenSectionItemLimit,
     );
@@ -103,8 +107,16 @@ class _ShowAllScreenState extends ConsumerState<ShowAllScreen> with AutomaticKee
     _requestedPageKey = pageKey;
     int localRefreshCount = refreshCount;
     try {
+      var currentLibrary = ref.watch(
+        FinampUserHelper.finampCurrentUserProvider.select((value) => value.valueOrNull?.currentView),
+      );
       final newItems = await ref.watch(
-        loadHomeSectionItemsProvider(sectionInfo: sectionInfo, startIndex: pageKey, limit: _pageSize).future,
+        loadHomeSectionItemsProvider(
+          sectionInfo: sectionInfo,
+          library: currentLibrary,
+          startIndex: pageKey,
+          limit: _pageSize,
+        ).future,
       );
       if (newItems == null) {
         return;

@@ -288,6 +288,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     );
     final itemsProviderInstance = loadHomeSectionItemsProvider(
       sectionInfo: sectionInfo,
+      library: widget.view,
       startIndex: 0,
       limit: homeScreenSectionItemLimit,
     );
