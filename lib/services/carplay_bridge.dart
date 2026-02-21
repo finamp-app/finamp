@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -17,6 +20,8 @@ class CarPlayBridge {
   static StreamSubscription<PlaybackState>? _playbackStateSubscription;
   static bool _syncRegistered = false;
   static String? _lastSyncedFingerprint;
+  static String? _lastLocalizedStringsFingerprint;
+  static const String _itemTitlePlaceholder = "{itemTitle}";
 
   static Future<void> initialize() async {
     if (!Platform.isIOS) {
@@ -25,10 +30,13 @@ class CarPlayBridge {
 
     _channel.setMethodCallHandler(_onMethodCall);
     _log.info("Initialized CarPlay method channel bridge");
+    _syncLocalizedStrings();
     _registerNowPlayingSync();
   }
 
   static Future<dynamic> _onMethodCall(MethodCall call) async {
+    _syncLocalizedStrings();
+
     if (!GetIt.instance.isRegistered<MusicPlayerBackgroundTask>()) {
       throw PlatformException(
         code: "unavailable",
@@ -119,6 +127,8 @@ class CarPlayBridge {
   }
 
   static void _syncNowPlayingState(MusicPlayerBackgroundTask handler) {
+    _syncLocalizedStrings();
+
     final mediaItem = handler.mediaItem.valueOrNull;
     final playbackState = handler.playbackState.valueOrNull;
 
@@ -152,5 +162,66 @@ class CarPlayBridge {
         _log.finer("syncNowPlayingState failed: $error");
       }),
     );
+  }
+
+  static void _syncLocalizedStrings() {
+    final payload = _buildLocalizedStringsPayload();
+    final fingerprint = [
+      payload["appName"],
+      payload["loadingTitle"],
+      payload["loadingSubtitle"],
+      payload["retry"],
+      payload["couldNotLoadLibrary"],
+      payload["couldNotOpenItemTemplate"],
+      payload["playbackFailed"],
+      payload["nowPlaying"],
+      payload["openPlayerControls"],
+      payload["ok"],
+    ].join("|");
+
+    if (fingerprint == _lastLocalizedStringsFingerprint) {
+      return;
+    }
+    _lastLocalizedStringsFingerprint = fingerprint;
+
+    unawaited(
+      _channel.invokeMethod<void>("setLocalizedStrings", payload).catchError((Object error, StackTrace stackTrace) {
+        _log.finer("setLocalizedStrings failed: $error");
+      }),
+    );
+  }
+
+  static Map<String, String> _buildLocalizedStringsPayload() {
+    final context = GlobalSnackbar.materialAppNavigatorKey.currentContext;
+    final l10n = context != null ? AppLocalizations.of(context) : null;
+
+    if (l10n == null) {
+      return {
+        "appName": "Finamp",
+        "loadingTitle": "Loading…",
+        "loadingSubtitle": "Fetching your library.",
+        "retry": "Retry",
+        "couldNotLoadLibrary": "Could not load library",
+        "couldNotOpenItemTemplate": "Could not open $_itemTitlePlaceholder",
+        "playbackFailed": "Playback failed",
+        "nowPlaying": "Now Playing",
+        "openPlayerControls": "Open player controls.",
+        "ok": "OK",
+      };
+    }
+
+    final scaffoldContext = context!;
+    return {
+      "appName": "Finamp",
+      "loadingTitle": l10n.carplayLoadingTitle,
+      "loadingSubtitle": l10n.carplayLoadingSubtitle,
+      "retry": l10n.autoReloadPromptReloadButton,
+      "couldNotLoadLibrary": l10n.carplayCouldNotLoadLibrary,
+      "couldNotOpenItemTemplate": l10n.carplayCouldNotOpenItem(_itemTitlePlaceholder),
+      "playbackFailed": l10n.carplayPlaybackFailed,
+      "nowPlaying": l10n.carplayNowPlaying,
+      "openPlayerControls": l10n.nowPlayingBarTooltip,
+      "ok": MaterialLocalizations.of(scaffoldContext).okButtonLabel,
+    };
   }
 }

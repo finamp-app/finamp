@@ -96,22 +96,24 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func makeLoadingTemplate() -> CPTemplate {
-        let item = CPListItem(text: "Loading…", detailText: "Fetching your library.")
+        let localized = CarPlayFlutterBridge.shared.localizedStrings
+        let item = CPListItem(text: localized.loadingTitle, detailText: localized.loadingSubtitle)
         item.isPlaying = false
-        let section = CPListSection(items: [item], header: "Finamp", sectionIndexTitle: nil)
-        return CPListTemplate(title: "Finamp", sections: [section])
+        let section = CPListSection(items: [item], header: localized.appName, sectionIndexTitle: nil)
+        return CPListTemplate(title: localized.appName, sections: [section])
     }
 
     private func makeErrorTemplate(_ message: String) -> CPTemplate {
-        let retry = CPListItem(text: "Retry", detailText: nil)
+        let localized = CarPlayFlutterBridge.shared.localizedStrings
+        let retry = CPListItem(text: localized.retry, detailText: nil)
         retry.handler = { [weak self] _, completion in
             self?.interfaceController?.setRootTemplate(self?.makeLoadingTemplate() ?? CPNowPlayingTemplate.shared, animated: false, completion: nil)
             self?.loadRootItems()
             completion()
         }
-        let info = CPListItem(text: "Could not load library", detailText: message)
-        let section = CPListSection(items: [info, retry], header: "Finamp", sectionIndexTitle: nil)
-        return CPListTemplate(title: "Finamp", sections: [section])
+        let info = CPListItem(text: localized.couldNotLoadLibrary, detailText: message)
+        let section = CPListSection(items: [info, retry], header: localized.appName, sectionIndexTitle: nil)
+        return CPListTemplate(title: localized.appName, sections: [section])
     }
 
     private func loadRootItems() {
@@ -120,8 +122,9 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let items):
+                    let localized = CarPlayFlutterBridge.shared.localizedStrings
                     self.interfaceController?.setRootTemplate(
-                        self.makeListTemplate(title: "Finamp", items: items),
+                        self.makeListTemplate(title: localized.appName, items: items),
                         animated: false,
                         completion: nil
                     )
@@ -147,10 +150,11 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                     self.interfaceController?.pushTemplate(childTemplate, animated: true, completion: nil)
                 case .failure(let error):
                     self.logger.error("Failed to load children: \(error.localizedDescription, privacy: .public)")
+                    let localized = CarPlayFlutterBridge.shared.localizedStrings
                     let alert = CPAlertTemplate(
-                        titleVariants: ["Could not open \(item.title)"],
+                        titleVariants: [localized.couldNotOpenItem(item.title)],
                         actions: [
-                            CPAlertAction(title: "OK", style: .default, handler: { _ in }),
+                            CPAlertAction(title: localized.ok, style: .default, handler: { _ in }),
                         ]
                     )
                     self.interfaceController?.presentTemplate(alert, animated: true, completion: nil)
@@ -172,9 +176,10 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                         DispatchQueue.main.async {
                             if case .failure(let error) = result {
                                 self.logger.error("Failed to play media id \(item.id, privacy: .public): \(error.localizedDescription, privacy: .public)")
+                                let localized = CarPlayFlutterBridge.shared.localizedStrings
                                 let alert = CPAlertTemplate(
-                                    titleVariants: ["Playback failed"],
-                                    actions: [CPAlertAction(title: "OK", style: .default, handler: { _ in })]
+                                    titleVariants: [localized.playbackFailed],
+                                    actions: [CPAlertAction(title: localized.ok, style: .default, handler: { _ in })]
                                 )
                                 self.interfaceController?.presentTemplate(alert, animated: true, completion: nil)
                             } else {
@@ -190,7 +195,8 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             return listItem
         }
 
-        let nowPlayingItem = CPListItem(text: "Now Playing", detailText: "Open player controls.")
+        let localized = CarPlayFlutterBridge.shared.localizedStrings
+        let nowPlayingItem = CPListItem(text: localized.nowPlaying, detailText: localized.openPlayerControls)
         nowPlayingItem.handler = { [weak self] _, completion in
             self?.interfaceController?.pushTemplate(CPNowPlayingTemplate.shared, animated: true, completion: nil)
             completion()
@@ -225,6 +231,7 @@ private final class CarPlayFlutterBridge {
 
     private var channel: FlutterMethodChannel?
     private let logger = Logger(subsystem: "com.unicornsonlsd.finamp-ios", category: "CarPlayBridge")
+    private(set) var localizedStrings = CarPlayLocalizedStrings()
 
     private init() {}
 
@@ -307,12 +314,23 @@ private final class CarPlayFlutterBridge {
 
     private func handleMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
+        case "setLocalizedStrings":
+            setLocalizedStrings(arguments: call.arguments)
+            result(nil)
         case "syncNowPlayingState":
             syncNowPlayingState(arguments: call.arguments)
             result(nil)
         default:
             result(FlutterMethodNotImplemented)
         }
+    }
+
+    private func setLocalizedStrings(arguments: Any?) {
+        guard let payload = arguments as? [String: Any] else {
+            logger.error("setLocalizedStrings received invalid payload")
+            return
+        }
+        localizedStrings.merge(payload)
     }
 
     private func syncNowPlayingState(arguments: Any?) {
@@ -373,6 +391,43 @@ private enum CarPlayBridgeError: LocalizedError {
             return "CarPlay received an invalid response from Flutter."
         case .flutter(let message):
             return message
+        }
+    }
+}
+
+@available(iOS 14.0, *)
+private struct CarPlayLocalizedStrings {
+    var appName = "Finamp"
+    var loadingTitle = "Loading…"
+    var loadingSubtitle = "Fetching your library."
+    var retry = "Retry"
+    var couldNotLoadLibrary = "Could not load library"
+    var couldNotOpenItemTemplate = "Could not open {itemTitle}"
+    var playbackFailed = "Playback failed"
+    var nowPlaying = "Now Playing"
+    var openPlayerControls = "Open player controls."
+    var ok = "OK"
+
+    mutating func merge(_ payload: [String: Any]) {
+        set(&appName, from: payload, key: "appName")
+        set(&loadingTitle, from: payload, key: "loadingTitle")
+        set(&loadingSubtitle, from: payload, key: "loadingSubtitle")
+        set(&retry, from: payload, key: "retry")
+        set(&couldNotLoadLibrary, from: payload, key: "couldNotLoadLibrary")
+        set(&couldNotOpenItemTemplate, from: payload, key: "couldNotOpenItemTemplate")
+        set(&playbackFailed, from: payload, key: "playbackFailed")
+        set(&nowPlaying, from: payload, key: "nowPlaying")
+        set(&openPlayerControls, from: payload, key: "openPlayerControls")
+        set(&ok, from: payload, key: "ok")
+    }
+
+    func couldNotOpenItem(_ title: String) -> String {
+        couldNotOpenItemTemplate.replacingOccurrences(of: "{itemTitle}", with: title)
+    }
+
+    private func set(_ target: inout String, from payload: [String: Any], key: String) {
+        if let value = payload[key] as? String, !value.isEmpty {
+            target = value
         }
     }
 }

@@ -3223,6 +3223,35 @@
   "@duckOnAudioInterruptionSubtitle": {
     "description": "Subtitle for the setting that controls ducking."
   },
+  "carplayLoadingTitle": "Loading…",
+  "@carplayLoadingTitle": {
+    "description": "Title shown in CarPlay while the media library is loading."
+  },
+  "carplayLoadingSubtitle": "Fetching your library.",
+  "@carplayLoadingSubtitle": {
+    "description": "Subtitle shown in CarPlay while the media library is loading."
+  },
+  "carplayCouldNotLoadLibrary": "Could not load library",
+  "@carplayCouldNotLoadLibrary": {
+    "description": "Error title shown in CarPlay when loading the root library fails."
+  },
+  "carplayCouldNotOpenItem": "Could not open {itemTitle}",
+  "@carplayCouldNotOpenItem": {
+    "description": "Error title shown in CarPlay when opening a browsable item fails.",
+    "placeholders": {
+      "itemTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "carplayPlaybackFailed": "Playback failed",
+  "@carplayPlaybackFailed": {
+    "description": "Error title shown in CarPlay when playback fails to start."
+  },
+  "carplayNowPlaying": "Now Playing",
+  "@carplayNowPlaying": {
+    "description": "Label for the CarPlay shortcut that opens the Now Playing template."
+  },
   "forceAudioOffloadingOnAndroidTitle": "Force Audio Offloading",
   "@forceAudioOffloadingOnAndroidTitle": {
     "description": "Title for the setting that controls audio offloading on Android."
