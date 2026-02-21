@@ -372,7 +372,8 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
       type: selectedSectionType,
       customSectionTitle: (sectionTitle ?? "") == "" ? null : sectionTitle,
       itemId: selectedCollectionId ?? collections.firstOrNull?.id,
-      contentType: selectedContentType ?? TabContentType.tracks,
+      contentType:
+          selectedContentType ?? (selectedSectionType == HomeScreenSectionType.tabView ? TabContentType.tracks : null),
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: selectedSortBy ?? SortBy.sortName,
         sortOrder: selectedSortOrder ?? SortOrder.ascending,
@@ -383,17 +384,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
 
   // Get cached config for preview - only creates new instance when content properties change
   HomeScreenSectionConfiguration _getCachedSectionConfigForPreview() {
-    final newConfig = HomeScreenSectionConfiguration(
-      type: selectedSectionType,
-      customSectionTitle: null, // Exclude title from cache comparison
-      itemId: selectedCollectionId ?? collections.firstOrNull?.id,
-      contentType: selectedContentType ?? TabContentType.tracks,
-      sortAndFilterConfiguration: SortAndFilterConfiguration(
-        sortBy: selectedSortBy ?? SortBy.sortName,
-        sortOrder: selectedSortOrder ?? SortOrder.ascending,
-        filters: selectedFilters ?? <ItemFilter>{},
-      ),
-    );
+    final newConfig = _getCurrentSectionInfo();
 
     // Only update cache if content properties actually changed
     if (_cachedSectionConfig != newConfig) {

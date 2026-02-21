@@ -92,7 +92,11 @@ class GlobalSnackbar {
     _logger.info("Displaying message: $text");
     materialAppScaffoldKey.currentState!.showSnackBar(
       SnackBar(
-        content: GestureDetector(onLongPress: showSnackbarOptionsMenu, child: Text(text)),
+        content: GestureDetector(
+          onLongPress: showSnackbarOptionsMenu,
+          onSecondaryTap: showSnackbarOptionsMenu,
+          child: Text(text),
+        ),
         actionOverflowThreshold: 0.5,
         duration: (isConfirmation && action == null) ? const Duration(milliseconds: 1500) : const Duration(seconds: 4),
         action: action?.call(context),
@@ -165,6 +169,7 @@ class GlobalSnackbar {
       SnackBar(
         content: GestureDetector(
           onLongPress: showSnackbarOptionsMenu,
+          onSecondaryTap: showSnackbarOptionsMenu,
           child: Text(AppLocalizations.of(context)!.anErrorHasOccured),
         ),
         action: SnackBarAction(
@@ -232,7 +237,7 @@ class GlobalSnackbar {
       return (stackHeight, menu);
     }
 
-    await showThemedBottomSheet(
+    await showThemedBottomSheet<void>(
       context: materialAppNavigatorKey.currentContext!,
       routeName: snackbarOptionsRoute,
       minDraggableHeight: 0.15,
