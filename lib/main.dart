@@ -35,6 +35,7 @@ import 'package:finamp/services/dbus_manager.dart';
 import 'package:finamp/services/discord_rpc.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/downloads_service_backend.dart';
+import 'package:finamp/services/carplay_bridge.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_logs_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -408,6 +409,7 @@ Future<void> _setupPlaybackServices() async {
   audioHandler.onQueueServiceAvailable(); // breaking circular dependency
   GetIt.instance.registerSingleton(PlaybackHistoryService());
   GetIt.instance.registerSingleton(AudioServiceHelper());
+  await CarPlayBridge.initialize();
 
   // Begin to restore queue
   unawaited(queueService.performInitialQueueLoad().catchError((dynamic x) => GlobalSnackbar.error(x)));
