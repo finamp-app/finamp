@@ -276,6 +276,7 @@ class HomeScreenSection extends ConsumerWidget {
                 builder: (context) => MusicScreen(
                   showHeader: false,
                   tabTypeFilter: sectionInfo.contentType,
+                  homeScreenSectionConfiguration: sectionInfo,
                   sortAndFilterConfigurationOverrideInit: sectionInfo.sortAndFilterConfiguration,
                 ),
               ),

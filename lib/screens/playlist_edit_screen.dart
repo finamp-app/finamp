@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/components/album_image.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/components/print_duration.dart';
@@ -247,6 +248,7 @@ class _PlaylistEditScreenState extends ConsumerState<PlaylistEditScreen> {
           slivers: [
             SliverAppBar(
               title: Text(AppLocalizations.of(context)!.editItemTitle(BaseItemDtoType.fromItem(playlist).name)),
+              leading: FinampAppBarBackButton(),
               actions: [
                 if (_isDirty)
                   IconButtonWithSemantics(

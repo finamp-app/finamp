@@ -6,6 +6,7 @@ import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/buffer_duration_list_tile.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/loadQueueOnStartup_selector.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/stop_foreground_selector.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/track_shuffle_item_count_editor.dart';
@@ -26,6 +27,7 @@ class _AudioServiceSettingsScreenState extends State<AudioServiceSettingsScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.audioService),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, () {
             setState(() {

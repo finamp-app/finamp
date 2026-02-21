@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
@@ -33,7 +34,10 @@ class ActiveDownloadsScreen extends StatelessWidget {
         );
 
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.activeDownloadsTitle)),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.activeDownloadsTitle),
+        leading: FinampAppBarBackButton(),
+      ),
       body: StreamBuilder(
         stream: stream,
         builder: (context, snapshot) {

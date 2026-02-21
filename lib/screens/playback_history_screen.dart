@@ -1,3 +1,4 @@
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/PlaybackHistoryScreen/playback_history_list.dart';
 import 'package:finamp/components/PlaybackHistoryScreen/share_offline_listens_button.dart';
 import 'package:finamp/components/now_playing_bar.dart';
@@ -15,6 +16,7 @@ class PlaybackHistoryScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: Text(AppLocalizations.of(context)!.playbackHistory),
+        leading: FinampAppBarBackButton(),
         actions: const [ShareOfflineListensButton()],
       ),
       body: PlaybackHistoryList(),

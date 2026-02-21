@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
 import 'package:finamp/components/TranscodingSettingsScreen/bitrate_selector.dart';
 import 'package:finamp/components/TranscodingSettingsScreen/transcode_switch.dart';
@@ -22,6 +23,7 @@ class _TranscodingSettingsScreenState extends State<TranscodingSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.transcoding),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(
             context,

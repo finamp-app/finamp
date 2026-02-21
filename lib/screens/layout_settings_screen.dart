@@ -16,6 +16,7 @@ import '../components/LayoutSettingsScreen/accent_color_selector.dart';
 import '../components/LayoutSettingsScreen/content_grid_view_cross_axis_count_list_tile.dart';
 import '../components/LayoutSettingsScreen/content_view_type_dropdown_list_tile.dart';
 import '../components/LayoutSettingsScreen/show_artist_chip_image_toggle.dart';
+import '../components/finamp_app_bar_back_button.dart';
 import '../components/LayoutSettingsScreen/show_text_on_grid_view_selector.dart';
 import '../components/LayoutSettingsScreen/theme_selector.dart';
 import '../components/LayoutSettingsScreen/use_cover_as_background_toggle.dart';
@@ -35,6 +36,7 @@ class _LayoutSettingsScreenState extends ConsumerState<LayoutSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.layoutAndTheme),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetLayoutSettings),
         ],

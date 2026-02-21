@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:path/path.dart' as path_helper;
 import 'package:provider/provider.dart';
 import 'package:uuid/v4.dart';
@@ -54,6 +55,7 @@ class _AddDownloadLocationScreenState extends State<AddDownloadLocationScreen> w
         return Scaffold(
           appBar: AppBar(
             title: Text(AppLocalizations.of(context)!.addDownloadLocation),
+            leading: FinampAppBarBackButton(),
             bottom: TabBar(controller: _tabController, tabs: tabs),
           ),
           floatingActionButton: FloatingActionButton(

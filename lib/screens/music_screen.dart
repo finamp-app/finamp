@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:finamp/components/HomeScreen/finamp_music_screen_header.dart';
 import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/models/finamp_models.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +16,6 @@ import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/components/now_playing_bar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/music_screen_drawer.dart';
-import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/audio_service_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -30,6 +30,7 @@ class MusicScreen extends ConsumerStatefulWidget {
     this.showHeader = true,
     this.genreFilter,
     this.tabTypeFilter,
+    this.homeScreenSectionConfiguration,
     this.sortAndFilterConfigurationOverrideInit,
     this.initialTab,
   });
@@ -43,6 +44,7 @@ class MusicScreen extends ConsumerStatefulWidget {
   final bool showHeader;
   final BaseItemDto? genreFilter;
   final TabContentType? tabTypeFilter;
+  final HomeScreenSectionConfiguration? homeScreenSectionConfiguration;
   final SortAndFilterConfiguration? sortAndFilterConfigurationOverrideInit;
 
   @override
@@ -217,32 +219,32 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
       },
       child: Scaffold(
         extendBody: true,
-        appBar: widget.showHeader
-            ? FinampMusicScreenHeader(
-                sortedTabs: sortedTabs.toList(),
-                tabController: _tabController,
-                onSearch: () => setState(() {
-                  isSearching = true;
-                  if (_tabController != null &&
-                      !_tabController!.indexIsChanging &&
-                      sortedTabs.elementAt(_tabController!.index) == TabContentType.home) {
-                    // we can't search on the home tab yet
-                    _tabController!.index = sortedTabs.toList().indexWhere(
-                      (TabContentType tabType) => tabType != TabContentType.home,
-                    );
-                  }
-                }),
-                onStopSearch: _stopSearching,
-                onUpdateSearchQuery: (value) {
-                  setState(() {
-                    searchQuery = value;
-                  });
-                },
-                refreshTab: () => refreshTab(sortedTabs.elementAt(_tabController!.index)),
-                textEditingController: textEditingController,
-                isSearching: isSearching,
-              )
-            : null,
+        appBar: FinampMusicScreenHeader(
+          backButtonInsteadOfTabs: !widget.showHeader,
+          title: widget.homeScreenSectionConfiguration?.getTitle(context) ?? widget.genreFilter?.name,
+          sortedTabs: sortedTabs.toList(),
+          tabController: _tabController,
+          onSearch: () => setState(() {
+            isSearching = true;
+            if (_tabController != null &&
+                !_tabController!.indexIsChanging &&
+                sortedTabs.elementAt(_tabController!.index) == TabContentType.home) {
+              // we can't search on the home tab yet
+              _tabController!.index = sortedTabs.toList().indexWhere(
+                (TabContentType tabType) => tabType != TabContentType.home,
+              );
+            }
+          }),
+          onStopSearch: _stopSearching,
+          onUpdateSearchQuery: (value) {
+            setState(() {
+              searchQuery = value;
+            });
+          },
+          refreshTab: () => refreshTab(sortedTabs.elementAt(_tabController!.index)),
+          textEditingController: textEditingController,
+          isSearching: isSearching,
+        ),
         bottomNavigationBar: NowPlayingBar(),
         drawerEnableOpenDragGesture: widget.showHeader,
         drawer: widget.genreFilter == null ? const MusicScreenDrawer() : null,
@@ -265,31 +267,12 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                   return HomeScreenContent(refresh: refreshMap[tabType]!);
                 }
                 return SafeArea(
-                  top: !widget.showHeader,
+                  top: true,
                   bottom: false,
                   left: false,
                   right: false,
                   child: Column(
                     children: [
-                      //TODO also show this title bar for home screen sections (and maybe make it prettier)
-                      if (widget.genreFilter != null)
-                        PreferredSize(
-                          preferredSize: const Size.fromHeight(36),
-                          child: Container(
-                            alignment: Alignment.centerLeft,
-                            width: double.infinity,
-                            height: 36.0,
-                            padding: EdgeInsets.only(left: 12, right: 12),
-                            color: Theme.of(context).colorScheme.primary,
-                            child: Text(
-                              widget.genreFilter?.name ?? "",
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
                       SortAndFilterRow(
                         tabType: tabType,
                         refreshTab: refreshTab,

@@ -7,6 +7,7 @@ import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/components/favorite_button.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/finamp_section_header.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -146,6 +147,7 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
               title: (!parentIsPlaylist) ? Text(widget.parent.name ?? AppLocalizations.of(context)!.unknownName) : null,
               expandedHeight: kToolbarHeight + 125 + 18 + 100 + (parentIsPlaylist ? 40 : 0),
               // collapsedHeight: kToolbarHeight + 125 + 80,
+              leading: FinampAppBarBackButton(),
               pinned: true,
               centerTitle: false,
               titleSpacing: 0,

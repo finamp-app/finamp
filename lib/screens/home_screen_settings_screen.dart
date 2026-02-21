@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 
 class HomeScreenSettingsScreen extends StatefulWidget {
   const HomeScreenSettingsScreen({super.key});
@@ -34,6 +35,7 @@ class _HomeScreenSettingsScreenState extends State<HomeScreenSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.homeScreenSettingsTitle),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetHomeScreenSettings),
         ],

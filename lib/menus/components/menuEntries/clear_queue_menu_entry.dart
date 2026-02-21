@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/menuEntries/menu_entry.dart';
 import 'package:finamp/models/jellyfin_models.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
+import 'package:window_manager/window_manager.dart';
 
 class ClearQueueMenuEntry extends ConsumerWidget implements HideableMenuEntry {
   final BaseItemDto baseItem;
@@ -25,6 +28,9 @@ class ClearQueueMenuEntry extends ConsumerWidget implements HideableMenuEntry {
         await withRadioLock(() async {
           await queueService.stopAndClearQueue();
         });
+        if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+          await WindowManager.instance.setTitle("Finamp");
+        }
       },
     );
   }

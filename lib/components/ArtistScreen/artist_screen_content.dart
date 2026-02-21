@@ -5,6 +5,7 @@ import 'package:finamp/components/ArtistScreen/artist_screen_content_flexible_sp
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/curated_item_filter_row.dart';
 import 'package:finamp/components/favorite_button.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
@@ -182,6 +183,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
             // FlexibleSpaceBar. We add the toolbar height ([kToolbarHeight]) since the widget
             // should appear below the appbar.
             expandedHeight: kToolbarHeight + 125 + 24 + 100,
+            leading: FinampAppBarBackButton(),
             centerTitle: false,
             pinned: true,
             flexibleSpace: ArtistScreenContentFlexibleSpaceBar(

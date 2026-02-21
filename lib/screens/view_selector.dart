@@ -1,3 +1,4 @@
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/screens/music_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -34,7 +35,10 @@ class _ViewSelectorState extends State<ViewSelector> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.selectMusicLibraries)),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.selectMusicLibraries),
+        leading: FinampAppBarBackButton(),
+      ),
       floatingActionButton: isSubmitButtonEnabled
           ? FloatingActionButton(onPressed: _submitChoice, child: const Icon(Icons.check))
           : null,

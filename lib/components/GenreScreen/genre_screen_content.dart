@@ -4,6 +4,7 @@ import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/GenreScreen/genre_count_column.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/curated_item_filter_row.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
 import 'package:finamp/menus/components/playbackActions/playback_actions.dart';
 import 'package:finamp/services/genre_screen_provider.dart';
@@ -212,6 +213,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
           title: Text(widget.parent.name ?? AppLocalizations.of(context)!.unknownName),
           pinned: true,
           centerTitle: false,
+          leading: FinampAppBarBackButton(),
           actions: [
             FavoriteButton(item: widget.parent),
             if (!isLoading)

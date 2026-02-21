@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/PlaybackReportingSettingsScreen/discord_rpc_icon_selector.dart';
 import 'package:finamp/components/PlaybackReportingSettingsScreen/enabled_discord_rpc.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -27,6 +28,7 @@ class _PlaybackReportingSettingsScreenState extends State<PlaybackReportingSetti
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.playbackReportingSettingsTitle),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, () {
             setState(() {

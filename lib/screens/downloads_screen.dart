@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/DownloadsScreen/download_error_screen_button.dart';
 import 'package:finamp/components/DownloadsScreen/downloaded_items_list.dart';
 import 'package:finamp/components/DownloadsScreen/downloads_overview.dart';
@@ -20,6 +21,7 @@ class DownloadsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.downloads),
+        leading: FinampAppBarBackButton(),
         actions: const [SyncDownloadsButton(), RepairDownloadsButton(), DownloadErrorScreenButton()],
       ),
       body: PaddedCustomScrollview(

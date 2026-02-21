@@ -15,7 +15,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/HomeScreen/home_screen_content.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
-import 'package:finamp/components/finamp_app_bar_button.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/first_page_progress_indicator.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/components/new_page_progress_indicator.dart';
@@ -276,7 +276,7 @@ class _ShowAllScreenState extends ConsumerState<ShowAllScreen> with AutomaticKee
               ? ref.watch(itemByIdProvider(sectionInfo.itemId!)).valueOrNull?.name ?? sectionInfo.getTitle(context)
               : sectionInfo.getTitle(context),
         ),
-        leading: FinampAppBarButton(onPressed: () => Navigator.of(context).pop(), dismissDirection: AxisDirection.left),
+        leading: FinampAppBarBackButton(),
         actions: [],
       ),
       body: RefreshIndicator(onRefresh: () async => _refresh(), child: content),

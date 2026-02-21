@@ -27,7 +27,7 @@ import '../components/PlayerScreen/control_area.dart';
 import '../components/PlayerScreen/player_screen_album_image.dart';
 import '../components/PlayerScreen/queue_list.dart';
 import '../components/PlayerScreen/track_name_content.dart';
-import '../components/finamp_app_bar_button.dart';
+import '../components/finamp_app_bar_back_button.dart';
 import '../services/finamp_settings_helper.dart';
 import '../services/theme_provider.dart';
 import 'blurred_player_screen_background.dart';
@@ -85,10 +85,7 @@ class _LyricsScreenContentState extends ConsumerState<_LyricsScreenContent> {
           centerTitle: true,
           toolbarHeight: toolbarHeight,
           title: PlayerScreenAppBarTitle(maxLines: maxLines),
-          leading: FinampAppBarButton(
-            dismissDirection: AxisDirection.right,
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          leading: FinampAppBarBackButton(dismissDirection: AxisDirection.right),
           actions: [
             if (Platform.isIOS)
               Padding(
