@@ -548,7 +548,12 @@ class PlaybackHistoryService {
     bool includeNowPlayingQueue = false,
     bool force = false,
   }) {
-    final currentTrack = _currentTrack?.item ?? _queueService.getCurrentTrack();
+    final queueTrack = _queueService.getCurrentTrack();
+    if (queueTrack != null && queueTrack.id != _currentTrack?.item.id) {
+      // Keep reporting in sync when queue changes outpace playback-state events.
+      updateCurrentTrack(queueTrack, forceNewTrack: true);
+    }
+    final currentTrack = _currentTrack?.item ?? queueTrack;
     if (currentTrack == null) {
       return null;
     }
