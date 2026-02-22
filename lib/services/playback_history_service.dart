@@ -34,7 +34,6 @@ class PlaybackHistoryService {
   PlaybackState? _previousPlaybackState;
   DateTime _lastPositionUpdate = DateTime.now();
 
-  bool _wasOfflineBefore = false;
   FinampQueueItem?
   _lastReportedTrackStarted; // used to check if playback has already reported as "started" at some point for the current track
   FinampQueueItem? _lastReportedTrackStopped; // used to prevent reporting a track as stopped multiple times
@@ -67,7 +66,6 @@ class PlaybackHistoryService {
       if (!isOffline) {
         _updatePlaybackInfo();
       }
-      _wasOfflineBefore = FinampSettingsHelper.finampSettings.isOffline;
     });
 
     bool throttleRemoteSessionReporting = false;
@@ -520,7 +518,7 @@ class PlaybackHistoryService {
   }) {
     try {
       return jellyfin_models.PlaybackProgressInfo(
-        itemId: item.baseItem?.id ?? jellyfin_models.BaseItemId(""),
+        itemId: item.baseItem.id,
         playSessionId: item.item.extras?["playSessionId"] as String? ?? "",
         sessionId: _queueService.getQueue().id,
         isPaused: isPaused,
@@ -564,7 +562,7 @@ class PlaybackHistoryService {
 
     try {
       return jellyfin_models.PlaybackProgressInfo(
-        itemId: currentTrack.baseItem?.id ?? jellyfin_models.BaseItemId(""),
+        itemId: currentTrack.baseItem.id,
         playSessionId: currentTrack.item.extras?["playSessionId"] as String? ?? "",
         sessionId: _queueService.getQueue().id,
         canSeek: true,
@@ -592,7 +590,7 @@ class PlaybackHistoryService {
         (FinampSettingsHelper.finampSettings.enablePlayon || FinampSettingsHelper.finampSettings.reportQueueToServer)) {
       final queue = _queueService
           .peekQueue(next: _maxQueueLengthToReport)
-          .map((e) => jellyfin_models.QueueItem(id: e.baseItem?.id.raw ?? "", playlistItemId: e.type.name))
+          .map((e) => jellyfin_models.QueueItem(id: e.baseItem.id.raw, playlistItemId: e.type.name))
           .toList();
       return queue;
     } else {
