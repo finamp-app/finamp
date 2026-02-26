@@ -2,19 +2,20 @@ import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../components/LayoutSettingsScreen/TabsSettingsScreen/hide_tab_toggle.dart';
 
-class TabsSettingsScreen extends StatefulWidget {
+class TabsSettingsScreen extends ConsumerStatefulWidget {
   const TabsSettingsScreen({super.key});
 
   static const routeName = "/settings/tabs";
 
   @override
-  State<TabsSettingsScreen> createState() => _TabsSettingsScreenState();
+  ConsumerState<TabsSettingsScreen> createState() => _TabsSettingsScreenState();
 }
 
-class _TabsSettingsScreenState extends State<TabsSettingsScreen> {
+class _TabsSettingsScreenState extends ConsumerState<TabsSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,11 +29,11 @@ class _TabsSettingsScreenState extends State<TabsSettingsScreen> {
       body: ReorderableListView.builder(
         padding: const EdgeInsets.only(bottom: 200.0),
         buildDefaultDragHandles: false,
-        itemCount: FinampSettingsHelper.finampSettings.tabOrder.length,
+        itemCount: ref.watch(finampSettingsProvider.tabOrder).length,
         itemBuilder: (context, index) {
           return HideTabToggle(
-            tabContentType: FinampSettingsHelper.finampSettings.tabOrder[index],
-            key: ValueKey(FinampSettingsHelper.finampSettings.tabOrder[index]),
+            tabContentType: ref.watch(finampSettingsProvider.tabOrder)[index],
+            key: ValueKey(ref.watch(finampSettingsProvider.tabOrder)[index]),
             index: index,
           );
         },

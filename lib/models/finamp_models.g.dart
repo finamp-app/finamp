@@ -9207,12 +9207,12 @@ Map<String, dynamic> _$MediaItemIdToJson(MediaItemId instance) =>
     };
 
 const _$TabContentTypeEnumMap = {
+  TabContentType.home: 'home',
   TabContentType.albums: 'albums',
   TabContentType.artists: 'artists',
   TabContentType.playlists: 'playlists',
   TabContentType.genres: 'genres',
   TabContentType.tracks: 'tracks',
-  TabContentType.home: 'home',
 };
 
 const _$MediaItemParentTypeEnumMap = {

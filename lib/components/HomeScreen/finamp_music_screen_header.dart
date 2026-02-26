@@ -121,7 +121,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                   ? TablerIcons.plug_connected_x
                                   : ref.watch(FinampUserHelper.finampCurrentUserProvider).valueOrNull?.isLocal ?? false
                                   ? TablerIcons.server_bolt
-                                  : TablerIcons.cloud_network,
+                                  : null, // hide icon by default (remote connection)
                               size: 16,
                             ),
                           ),
@@ -185,12 +185,12 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                 ),
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(TablerIcons.x, color: Theme.of(context).colorScheme.onSurface),
+                            IconButtonWithSemantics(
+                              icon: TablerIcons.x,
+                              label: AppLocalizations.of(context)!.clear,
                               onPressed: () {
                                 onStopSearch?.call();
                               },
-                              tooltip: AppLocalizations.of(context)!.clear,
                               visualDensity: VisualDensity(horizontal: 0, vertical: -4),
                             ),
                           ]
@@ -214,42 +214,38 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                 ],
                               ),
                             ),
-                            Row(
-                              children: [
-                                if (!Platform.isIOS && !Platform.isAndroid)
-                                  IconButtonWithSemantics(
-                                    label: "Refresh*",
-                                    icon: TablerIcons.refresh,
-                                    iconSize: 28.0,
-                                    onPressed: () {
-                                      refreshTab();
-                                    },
-                                  ),
-                                IconButtonWithSemantics(
-                                  label: "Search*",
-                                  icon: TablerIcons.search,
-                                  iconSize: 28.0,
-                                  onPressed: () {
-                                    if (onSearch != null) {
-                                      onSearch!();
-                                    }
-                                  },
-                                ),
-                                IconButtonWithSemantics(
-                                  label: "Menu*",
-                                  icon: TablerIcons.dots,
-                                  iconSize: 28.0,
-                                  onPressed: () {
-                                    // Scaffold.of(context).openDrawer();
-                                    showFinampMainMenu(context: context);
-                                  },
-                                  onLongPress: () {
-                                    Navigator.pushNamed(context, SettingsScreen.routeName);
-                                  },
-                                ),
-                              ],
+                            if (!Platform.isIOS && !Platform.isAndroid)
+                              IconButtonWithSemantics(
+                                label: "Refresh*",
+                                icon: TablerIcons.refresh,
+                                iconSize: 28.0,
+                                onPressed: () {
+                                  refreshTab();
+                                },
+                              ),
+                            IconButtonWithSemantics(
+                              label: "Search*",
+                              icon: TablerIcons.search,
+                              iconSize: 28.0,
+                              onPressed: () {
+                                if (onSearch != null) {
+                                  onSearch!();
+                                }
+                              },
                             ),
                           ],
+                    IconButtonWithSemantics(
+                      label: "Menu*",
+                      icon: TablerIcons.dots,
+                      iconSize: 28.0,
+                      onPressed: () {
+                        // Scaffold.of(context).openDrawer();
+                        showFinampMainMenu(context: context);
+                      },
+                      onLongPress: () {
+                        Navigator.pushNamed(context, SettingsScreen.routeName);
+                      },
+                    ),
                   ],
                 ),
               ),

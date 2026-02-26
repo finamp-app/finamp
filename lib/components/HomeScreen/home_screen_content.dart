@@ -2,6 +2,9 @@ import 'dart:math';
 
 import 'package:balanced_text/balanced_text.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
+import 'package:finamp/components/Buttons/cta_medium.dart';
+import 'package:finamp/components/Buttons/cta_small.dart';
+import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/HomeScreen/show_all_button.dart';
 import 'package:finamp/components/HomeScreen/show_all_screen.dart';
 import 'package:finamp/components/MusicScreen/item_card.dart';
@@ -15,6 +18,7 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/icon_button_with_semantics.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
@@ -148,6 +152,31 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
                   .map((sectionInfo) => HomeScreenSection(sectionInfo: sectionInfo))
                   .toList(),
             ),
+            const SliverPadding(padding: EdgeInsets.only(top: 60)),
+            ...[
+              SliverToBoxAdapter(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 200),
+                    child: BalancedText(
+                      "Looking for something else?",
+                      textAlign: TextAlign.center,
+                      style: TextTheme.of(context).bodySmall,
+                    ),
+                  ),
+                ),
+              ),
+              const SliverPadding(padding: EdgeInsets.only(top: 12)),
+              SliverToBoxAdapter(
+                child: Center(
+                  child: CTASmall(
+                    text: "Customize home screen",
+                    icon: TablerIcons.settings,
+                    onPressed: () => Navigator.pushNamed(context, HomeScreenSettingsScreen.routeName),
+                  ),
+                ),
+              ),
+            ],
             const SliverPadding(padding: EdgeInsets.only(top: 60)),
             ...[
               // monochrome icon

@@ -1061,6 +1061,9 @@ class NewDownloadLocation {
 /// Supported tab types in MusicScreenTabView.
 @HiveType(typeId: 36)
 enum TabContentType {
+  // this is first because when resetting tab settings, home should be the first tab
+  @HiveField(5)
+  home(null),
   @HiveField(0)
   albums(BaseItemDtoType.album),
   @HiveField(1)
@@ -1070,9 +1073,7 @@ enum TabContentType {
   @HiveField(3)
   genres(BaseItemDtoType.genre),
   @HiveField(4)
-  tracks(BaseItemDtoType.track),
-  @HiveField(5)
-  home(null);
+  tracks(BaseItemDtoType.track);
 
   const TabContentType(this.itemType);
 
