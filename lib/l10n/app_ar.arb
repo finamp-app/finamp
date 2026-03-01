@@ -117,7 +117,7 @@
     "addButtonLabel": "إضافة",
     "shareLogs": "شارك السجلات",
     "addDownloads": "إضافة تنزيلات",
-    "downloadsQueued": "جارِ تنزيل الملفات",
+    "downloadsQueued": "جارٍ تنزيل الملفات",
     "location": "موقع",
     "logsCopied": "تم نسخ السجلات.",
     "transcoding": "تحويل",
@@ -175,10 +175,10 @@
     "noAlbum": "بدون البوم",
     "noItem": "لا يوجد بند",
     "goToAlbum": "إذهب إلى الألبوم",
-    "addToQueue": "أضف إلى قائمة المحتوى",
-    "queue": "قائمة المحتوى",
+    "addToQueue": "إضافة إلى قائمة الانتظار",
+    "queue": "قائمة الانتظار",
     "instantMix": "خلط فوري",
-    "addedToQueue": "أُضيف إلى قائمة المحتوى.",
+    "addedToQueue": "تَمَّت الإضافة إلى قائمة الانتظار.",
     "queueReplaced": "تم تبديل قائمة المحتوى.",
     "startingInstantMix": "ابتداء خلط فوري.",
     "addDownloadLocation": "إضافة مكان التنزيل",
@@ -214,7 +214,7 @@
     "bitrateSubtitle": "معدل بت أعلى ينتج جودة صوت أفضل على حساب زيادة في استخدام البيانات. لا ينطبق على أنواع الترميز اللتي لا تفقد الجودة أثناء الضغط، مثل FLAC",
     "dateAdded": "تاريخ الإضافة",
     "productionYear": "سنة الإنتاج",
-    "replaceQueue": "تبديل قائمة المحتوى",
+    "replaceQueue": "استبدال قائمة الانتظار",
     "system": "نظام",
     "noArtist": "بدون فنان",
     "password": "كلمة السر",
@@ -488,7 +488,7 @@
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
     },
-    "playbackActionPageMoveWithinQueue": "حرّك داخل قائمة المحتوى",
+    "playbackActionPageMoveWithinQueue": "نقل ضمن قائمة الانتظار",
     "@playbackActionPageMoveWithinQueue": {
         "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
     },
@@ -496,15 +496,15 @@
     "@playbackActionPageRegularTrackOptions": {
         "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
     },
-    "playbackActionPageNewQueue": "قائمة محتوى جديدة",
+    "playbackActionPageNewQueue": "قائمة انتظار جديدة",
     "@playbackActionPageNewQueue": {
         "description": "Label for the playback action page that contains all actions related to starting a new queue"
     },
-    "playbackActionPageNext": "تشغيل بعد الحالي",
+    "playbackActionPageNext": "تشغيل بعد الأغنية الحالية",
     "@playbackActionPageNext": {
         "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
     },
-    "playbackActionPageAppendToQueue": "تشغيل في نهاية قائمة المحتوى",
+    "playbackActionPageAppendToQueue": "التشغيل أخيراً",
     "@playbackActionPageAppendToQueue": {
         "description": "Label for the playback action page that contains all actions related to appending tracks at the end of the queue"
     },
@@ -806,7 +806,7 @@
     "@playingFrom": {
         "description": "Prefix shown before the name of the main queue source, like the album or playlist that was used to start playback. Example: \"Playing from {My Nice Playlist}\""
     },
-    "playNext": "التشغيل بعد الحالي",
+    "playNext": "التشغيل بعد الأغنية الحالية",
     "@playNext": {
         "description": "Used for adding a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
@@ -814,11 +814,11 @@
     "@addToNextUp": {
         "description": "Used for adding a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
-    "shuffleNext": "شغّل عشوائياً بعد الحالي",
+    "shuffleNext": "شغّل عشوائياً بعد الأغنية الحالية",
     "@shuffleNext": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "shuffleSomeNext": "شغّل عشوائياً البعض بعد الحالي",
+    "shuffleSomeNext": "شغّل عشوائياً البعض بعد الأغنية الحالية",
     "@shuffleSomeNext": {
         "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
@@ -838,7 +838,7 @@
     "@shuffleSomeToQueue": {
         "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
-    "movePlayNext": "تشغيل بعد الحالي",
+    "movePlayNext": "تشغيل بعد الأغنية الحالية",
     "@movePlayNext": {
         "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
@@ -850,7 +850,7 @@
     "@moveAddToQueue": {
         "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
     },
-    "confirmPlayNext": "{type, select, track{Track} album{Album} artist{Artist} playlist{Playlist} genre{Genre} other{Item}} بعد الحالي سيتم تشغيل",
+    "confirmPlayNext": "{type, select, track{الأغنية} album{الألبوم} artist{الفنان} playlist{قائمة التشغيل} genre{النوع الموسيقي} other{العنصر}} سيتم تشغيله بعد الأغنية الحالية",
     "@confirmPlayNext": {
         "description": "A confirmation message that is shown after successfully adding a track to the front of the \"Next Up\" queue",
         "placeholders": {
@@ -877,7 +877,7 @@
             }
         }
     },
-    "confirmShuffleNext": "سيتم التشغيل العشوائي بعد الحالي",
+    "confirmShuffleNext": "سيتم التشغيل العشوائي بعد الأغنية الحالية",
     "@confirmShuffleNext": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the front of the \"Next Up\" queue"
     },
@@ -1173,5 +1173,255 @@
     "latestArtists": "أحدث الفنانين",
     "recentlyPlayedTracks": "الأغاني التي تم تشغيلها مؤخراً",
     "recentlyPlayedAlbums": "الألبومات التي تم تشغيلها مؤخراً",
-    "recentlyPlayedArtists": "الفنانون الذين تم تشغيل أغانيهم مؤخراً"
+    "recentlyPlayedArtists": "الفنانون الذين تم تشغيل أغانيهم مؤخراً",
+    "genreFilterPlaylistScreensSubtitle": "عند تفعيل هذا الخيار، قوائم التشغيل (التي يتم الوصول إليها عبر النوع الموسيقي) ستعرض فقط الأغاني التي تتطابق مع النوع الموسيقي الذي تتصفحه حاليًا. (يمكنك دائمًا إزالة تصفية النوع الموسيقي يدويًا لعرض جميع الأغاني)",
+    "@genreFilterPlaylistScreensSubtitle": {
+        "description": "Description of the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
+    },
+    "genreListsInheritSorting": "وراثة فرز القوائم الكاملة",
+    "@genreListsInheritSorting": {
+        "description": "Label for the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
+    },
+    "genreListsInheritSortingSubtitle": "عند تفعيل خيار \"عرض الكل\"، سترث قوائم \"عرض الكل\" إعدادات الفرز والتصفية من شاشة النوع. أما في حال تعطيله، فسيتم استخدام الإعدادات من علامة تبويب المكتبة المقابلة. سيؤدي النقر على عدد مرات الظهور أعلى شاشة النوع أو زر \"استعراض قوائم التشغيل\" إلى فتح قائمة كاملة بإعدادات الفرز من علامة تبويب المكتبة.",
+    "@genreListsInheritSortingSubtitle": {
+        "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
+    },
+    "curatedItemsMostPlayedOfflineTooltip": "غير متوفر في وضع عدم الاتصال بالإنترنت.",
+    "@curatedItemsMostPlayedOfflineTooltip": {
+        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
+    },
+    "curatedItemsNotListenedYet": "لم تستمع إلى أي مسارات {itemType, select, artistGenreFilter{ لهذا الفنان في هذا النوع} artist{ لهذا الفنان} genre{ في هذا النوع} other{}}.",
+    "@curatedItemsNotListenedYet": {
+        "description": "Tooltip for Most Played and Recently Played on Curated Items in Online Mode when not yet listened to any tracks.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "curatedItemsNoFavorites": "ليس لديك أي مفضلات{itemType, select, artistGenreFilter{ لهذا الفنان في هذا النوع} artist{ لهذا الفنان} genre{ لهذا النوع} other{}}.",
+    "@curatedItemsNoFavorites": {
+        "description": "Tooltip for Favorites on Curated Items in Online Mode when no favorites yet.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "genreNoItems": "ليس لديك أي {itemType, select, playlists{قوائم تشغيل} artists{فنانون} albums{ألبومات} tracks{أغاني} other{عناصر}} لهذا النوع.",
+    "@genreNoItems": {
+        "description": "Message for empty See All lists for a genre.",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "albumCount": "{count,plural,=1{{count} ألبوم} other{{count} ألبومات}}",
+    "@albumCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "shuffleAlbums": "تشغيل عشوائي للألبومات",
+    "@shuffleAlbums": {
+        "description": "Label for action that shuffles all albums of an artist"
+    },
+    "shuffleSomeAlbums": "تشغيل عشوائي لبعض الألبومات",
+    "@shuffleSomeAlbums": {
+        "description": "Label for action that shuffles some albums of a genre"
+    },
+    "shuffleAlbumsNext": "تشغيل عشوائي للألبومات بعد الأغنية الحالية",
+    "@shuffleAlbumsNext": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the start of Next Up"
+    },
+    "shuffleSomeAlbumsNext": "تشغيل عشوائي لبعض الألبومات بعد الأغنية الحالية",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "shuffleAlbumsToNextUp": "تشغيل عشوائي للألبومات في آخر قائمة التالي",
+    "@shuffleAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of Next Up"
+    },
+    "shuffleSomeAlbumsToNextUp": "تشغيل عشوائي لبعض الألبومات في آخر قائمة التالي",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
+    },
+    "shuffleAlbumsToQueue": "تشغيل عشوائي للألبومات في نهاية قائمة المحتوى",
+    "@shuffleAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of the regular queue"
+    },
+    "shuffleSomeAlbumsToQueue": "تشغيل عشوائي لبعض الألبومات في نهاية قائمة المحتوى",
+    "@shuffleSomeAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
+    },
+    "playCountValue": "{playCount,plural,=1{{playCount} تشغيل} other{{playCount} تشغيل}}",
+    "@playCountValue": {
+        "placeholders": {
+            "playCount": {
+                "type": "int",
+                "example": "12"
+            }
+        }
+    },
+    "couldNotLoad": "تعذر تحميل {source, select, album{الألبوم} playlist{قائمة التشغيل} trackMix{خليط الأغاني} artistMix{خليط الفنانون} albumMix{خليط الألبوم} genreMix{خليط النوع الموسيقي} favorites{المفضلة} allTracks{كل الأغاني} filteredList{الأغاني} genre{النوع الموسيقي} artist{الفنان} track{الأغنية} nextUpAlbum{الألبوم في قائمة التالي} nextUpPlaylist{قائمة التشغيل في قائمة التالي} nextUpArtist{الفنان في قائمة التالي} nextUpGenre{النوع الموسيقي في قائمة التالي} other{}}",
+    "@couldNotLoad": {
+        "placeholders": {
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "confirm": "تأكيد",
+    "close": "إغلاق",
+    "showUncensoredLogMessage": "يحتوي هذا السجل على معلومات تسجيل دخولك. هل تريد عرضها؟",
+    "resetTabs": "إعادة ضبط علامات التبويب",
+    "resetToDefaults": "إعادة الضبط إلى الإعدادات الافتراضية",
+    "noMusicLibrariesTitle": "لا توجد مكتبات موسيقى",
+    "@noMusicLibrariesTitle": {
+        "description": "Title for message that shows on the views screen when no music libraries could be found."
+    },
+    "noMusicLibrariesBody": "لم يتمكن Finamp من العثور على أي مكتبات موسيقى. يرجى التأكد من أن خادم Jellyfin الخاص بك يحتوي على مكتبة واحدة على الأقل بنوع محتوى مُعيّن على \"موسيقى\".",
+    "refresh": "تحديث",
+    "moreInfo": "مزيد من المعلومات",
+    "volumeNormalizationSettingsTitle": "توحيد مستوى الصوت",
+    "@volumeNormalizationSettingsTitle": {
+        "description": "Title for the replay gain settings screen"
+    },
+    "playbackReportingSettingsTitle": "تقارير التشغيل و\"التشغيل على\"",
+    "@playbackReportingSettingsTitle": {
+        "description": "Title for the playback reporting settings screen"
+    },
+    "volumeNormalizationSwitchTitle": "تفعيل خاصية توحيد مستوى الصوت",
+    "@volumeNormalizationSwitchTitle": {
+        "description": "Title for the switch that toggles replay gain"
+    },
+    "volumeNormalizationSwitchSubtitle": "استخدم معلومات التضخيم لتوحيد مستوى صوت الأغاني (\"تضخيم إعادة التشغيل\")",
+    "@volumeNormalizationSwitchSubtitle": {
+        "description": "Subtitle for the switch that toggles replay gain"
+    },
+    "volumeNormalizationModeSelectorTitle": "وضع توحيد مستوى الصوت",
+    "@volumeNormalizationModeSelectorTitle": {
+        "description": "Title for the dropdown that selects the replay gain mode"
+    },
+    "downloadedCountUnified": "{trackCount,plural,=1{{trackCount} أغنية} other{{trackCount} أغاني}}, {imageCount,plural,=1{{imageCount} صورة} other{{imageCount} صور}}\n{syncCount,plural,=1{{syncCount} مزامنة عقدة} other{{syncCount} مزامنة عقد}}{repairing, plural, =0{} other{\nيتم حاليًا إصلاحها}}",
+    "@downloadedCountUnified": {
+        "description": "Display of downloaded track and image count on downloads screen.",
+        "placeholders": {
+            "trackCount": {
+                "type": "int"
+            },
+            "imageCount": {
+                "type": "int"
+            },
+            "syncCount": {
+                "type": "int"
+            },
+            "repairing": {
+                "type": "int"
+            }
+        }
+    },
+    "shuffleCountButton": "شغّل عشوائياً ({count,plural,=1{{count} الأغنية} other{{count} الأغاني}})",
+    "@shuffleCountButton": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackActionPageNextUp": "إضافة إلى قائمة التالي",
+    "@playbackActionPageNextUp": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
+    },
+    "offlineTrackCount": "{count,plural,=1{{count} أغنية} other{{count} الأغاني}}, {downloads} تم تنزيلها",
+    "@offlineTrackCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "downloads": {
+                "type": "int"
+            }
+        }
+    },
+    "offlineTrackCountArtist": "{count,plural,=1{{count} الأغنية} other{{count} الأغاني}} تم تنزيلها",
+    "@offlineTrackCountArtist": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "editItemTitle": "تعديل {itemType, select, playlist{قائمة التشغيل} other{}}",
+    "@editItemTitle": {
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "playingFromType": "تشغيل من {source, select, album{ألبوم} playlist{قائمة تشغيل} trackMix{خليط الأغاني} artistMix{خليط الفنان} albumMix{خليط الألبوم} genreMix{خليط النوع الموسيقي} favorites{المفضلة} allTracks{كل الأغاني} filteredList{الأغاني} genre{النوع الموسيقي} artist{Artist} track{الأغنية} nextUpAlbum{ألبوم في قائمة التالي} nextUpPlaylist{قائمة تشغيل في قائمة التالي} nextUpArtist{فنان في قائمة التالي} nextUpGenre{نوع موسيقي في قائمة التالي} remoteClient{عميل عن بعد} radio{الراديو} other{}}",
+    "@playingFromType": {
+        "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
+        "placeholders": {
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "volumeNormalizationModeSelectorSubtitle": "متى وكيف يتم تطبيق توحيد مستوى الصوت",
+    "@volumeNormalizationModeSelectorSubtitle": {
+        "description": "Subtitle for the dropdown that selects the replay gain mode"
+    },
+    "volumeNormalizationModeSelectorDescription": "ديناميكي:\nعند تشغيل عدة أغاني من نفس الألبوم على التوالي، يُستخدم مستوى تضخيم صوت الألبوم (أي عند تشغيل ألبوم، أو أغاني من نفس الألبوم في قائمة تشغيل). عدا ذلك، يُستخدم مستوى تضخيم صوت الأغنية.\n\nالأغنية أولاً:\nيُستخدم تضخيم صوت الأغنية دائمًا، سواءً كان الألبوم قيد التشغيل أم لا.\n\nالألبوم أولاً:\nيُستخدم مستوى تضخيم صوت الألبوم دائمًا، ولكن إذا لم يكن متاحًا (مثلًا للأغاني المنفردة)، يُستخدم مستوى تضخيم صوت الأغنية بدلًا منه.\n\nالألبومات فقط:\nيتم تطبيق توحيد مستوى الصوت فقط عند تشغيل الألبومات (باستخدام مستوى تضخيم صوت الألبوم)، وليس على الأغاني الفردية.",
+    "@volumeNormalizationModeSelectorDescription": {
+        "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown"
+    },
+    "volumeNormalizationModeHybrid": "ديناميكي",
+    "@volumeNormalizationModeHybrid": {
+        "description": "'Dynamic' option for the replay gain mode dropdown. In dynamic mode, the track gain is used for regular playback, but if an album is playing (either because it's the main playback queue source, or because it was added to the queue at some point), or successive tracks from a same album are in the queue, the album gain is used instead."
+    },
+    "volumeNormalizationModeTrackBased": "الأغنية أولاً",
+    "@volumeNormalizationModeTrackBased": {
+        "description": "'Track-based' option for the replay gain mode dropdown. In track-based mode, the track gain is always used, regardless of whether an album is playing or not."
+    },
+    "volumeNormalizationModeAlbumBased": "الألبوم أولاً",
+    "@volumeNormalizationModeAlbumBased": {
+        "description": "'Album-based' option for the replay gain mode dropdown. In album-based mode, the album gain is always used, regardless of whether an album is playing or not."
+    },
+    "volumeNormalizationModeAlbumOnly": "للألبومات فقط",
+    "@volumeNormalizationModeAlbumOnly": {
+        "description": "'Only for Albums' option for the replay gain mode dropdown. In albums-only mode, Volume Normalization is only applied while playing albums (using the album gain), but not for individual tracks."
+    },
+    "volumeNormalizationIOSBaseGainEditorTitle": "أساس تضخيم الصوت",
+    "@volumeNormalizationIOSBaseGainEditorTitle": {
+        "description": "Title for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "اختر قيمة الإزاحة لمستوى تضخيم الصوت (بالديسيبل dB)",
+    "@volumeNormalizationIOSBaseGainEditorSubtitle": {
+        "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "في الوقت الحالي، تتطلب ميزة \"تسوية الصوت\" (Volume Normalization) على المنصات غير الأندرويد تغيير مستوى صوت التشغيل لمحاكاة التغيير في الكسب (Gain). ونظراً لأنه لا يمكننا رفع مستوى الصوت ليتجاوز 100%، فإننا نضطر لخفضه افتراضياً لنتمكن من تضخيم صوت الأغاني الهادئة.\n\nتُقاس القيمة بالديسيبل (dB)، حيث يمثل -10 ديسيبل حوالي 30% من مستوى الصوت، و -4.5 ديسيبل حوالي 60%، و -2 ديسيبل حوالي 80%.\nتعني القيم الموجبة عدم تطبيق أي خفض في مستوى الصوت حتى الوصول إلى الحد المطلوب (مثلاً: كسب بقيمة -6.4 ديسيبل أو أعلى لإزاحة قدرها +6.4 ديسيبل)، ولكن هذا يمنع تضخيم الأغاني الأكثر هدوءاً.\n\nيجب ضبط هذه القيمة لتكون عكس أعلى قيمة كسب (الأكثر إيجابية) في مكتبتك؛ فمثلاً: اضبطها على +3 ديسيبل إذا كان أعلى كسب في مكتبتك هو -3 ديسيبل (وكانت بقية الأغاني ذات كسب أقل مثل -5 ديسيبل، -8 ديسيبل، -10 ديسيبل، وهكذا).",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "numberAsDecibel": "{value} dB",
+    "@numberAsDecibel": {
+        "description": "Label for a number that represents a decibel value. The value will be the decibel value.",
+        "placeholders": {
+            "value": {
+                "type": "double",
+                "example": "-9.6"
+            }
+        }
+    },
+    "swipeInsertQueueNext": "تشغيل الأغنية المسحوبة تالياً",
+    "swipeInsertQueueNextSubtitle": "تفعيل إدراج الأغنية كعنصر تالٍ في قائمة الانتظار عند سحبها من قائمة الأغاني، بدلاً من إضافتها إلى نهايتها."
 }
