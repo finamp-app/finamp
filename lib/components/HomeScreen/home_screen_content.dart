@@ -232,6 +232,7 @@ class HomeScreenSection extends ConsumerWidget {
           ...[
             IconButtonWithSemantics(
               onPressed: () async {
+                final queueService = GetIt.instance<QueueService>();
                 final source = QueueItemSource.rawId(
                   type: QueueItemSourceType.homeScreenSection,
                   name: QueueItemSourceName(
@@ -241,18 +242,28 @@ class HomeScreenSection extends ConsumerWidget {
                   ),
                   id: sectionInfo.toLocalisedString(context),
                 );
-                final items = await ref.read(
+                // only add loaded items at first, to ensure order (for random sections) is the same, and to improve responsiveness
+                final initialItems = await ref.read(
+                  loadHomeSectionItemsProvider(
+                    sectionInfo: sectionInfo,
+                    library: currentLibrary,
+                    limit: homeScreenSectionItemLimit,
+                  ).future,
+                );
+                await queueService.startPlayback(
+                  items: initialItems ?? [],
+                  source: source,
+                  order: FinampPlaybackOrder.linear,
+                );
+                // append additional items in the background
+                final items = (await ref.read(
                   loadHomeSectionItemsProvider(
                     sectionInfo: sectionInfo,
                     library: currentLibrary,
                     limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
                   ).future,
-                );
-                await GetIt.instance<QueueService>().startPlayback(
-                  items: items ?? [],
-                  source: source,
-                  order: FinampPlaybackOrder.linear,
-                );
+                ))?.skip(homeScreenSectionItemLimit).toList();
+                await queueService.addToQueue(items: items ?? []);
               },
               label: AppLocalizations.of(context)!.playButtonLabel,
               icon: TablerIcons.player_play,
@@ -268,6 +279,7 @@ class HomeScreenSection extends ConsumerWidget {
                   ),
                   id: sectionInfo.toLocalisedString(context),
                 );
+                // no need to optimize item fetching here, since the order doesn't matter and the provider doesn't support "skipping" tracks, so all [trackShuffleItemCount] items will be loaded anyway
                 final items = await ref.read(
                   loadHomeSectionItemsProvider(
                     sectionInfo: sectionInfo,
