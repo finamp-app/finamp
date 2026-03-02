@@ -2935,7 +2935,7 @@
     "@multichannelHandlingTitle": {
         "description": "Title for multi-channel handling dropdown"
     },
-    "multichannelHandlingSubtitle": "Comment gérer les pistes multicanaux (> 2 canaux) lors du transcodage ? Ceci s'applique à la fois au streaming et aux téléchargements.",
+    "multichannelHandlingSubtitle": "Comment gérer les pistes multicanales (> 2 canaux) lors du transcodage ? Cela s’applique à la fois au streaming et aux téléchargements.",
     "@multichannelHandlingSubtitle": {
         "description": "Subtitle for multi-channel handling dropdown"
     },
