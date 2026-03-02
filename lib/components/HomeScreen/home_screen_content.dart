@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:balanced_text/balanced_text.dart';
+import 'package:collection/collection.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/Buttons/cta_small.dart';
@@ -256,14 +257,35 @@ class HomeScreenSection extends ConsumerWidget {
                   order: FinampPlaybackOrder.linear,
                 );
                 // append additional items in the background
-                final items = (await ref.read(
+                final isRandomizedSection = sectionInfo.sortAndFilterConfiguration.sortBy == SortBy.random;
+                var items = (await ref.read(
                   loadHomeSectionItemsProvider(
                     sectionInfo: sectionInfo,
                     library: currentLibrary,
-                    limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+                    // skipping existing items in randomized sections isn't needed since the order will be different
+                    limit:
+                        (isRandomizedSection ? 0 : homeScreenSectionItemLimit) +
+                        FinampSettingsHelper.finampSettings.trackShuffleItemCount,
                   ).future,
-                ))?.skip(homeScreenSectionItemLimit).toList();
-                await queueService.addToQueue(items: items ?? []);
+                ));
+                if (isRandomizedSection) {
+                  // filter duplicates for randomized sections
+                  for (var existingTrack in initialItems ?? []) {
+                    items?.removeWhere((item) => item.id == existingTrack.id);
+                  }
+                } else {
+                  items = items?.skip(homeScreenSectionItemLimit).toList();
+                }
+                await queueService.addToQueue(
+                  // ensure we only add exactly [trackShuffleItemCount] items in total, since we fetched more tracks initially
+                  items:
+                      items
+                          ?.take(
+                            FinampSettingsHelper.finampSettings.trackShuffleItemCount - (initialItems?.length ?? 0),
+                          )
+                          .toList() ??
+                      [],
+                );
               },
               label: AppLocalizations.of(context)!.playButtonLabel,
               icon: TablerIcons.player_play,
