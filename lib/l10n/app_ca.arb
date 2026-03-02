@@ -2958,5 +2958,22 @@
     "forceAudioOffloadingOnAndroidSubtitle": "Transfereix el processament d'àudio al maquinari, si el dispositiu ho admet.",
     "@forceAudioOffloadingOnAndroidSubtitle": {
         "description": "Subtitle for the setting that controls audio offloading on Android."
+    },
+    "multichannelHandlingTitle": "Gestió de transcodificació multicanal",
+    "@multichannelHandlingTitle": {
+        "description": "Title for multi-channel handling dropdown"
+    },
+    "multichannelHandlingSubtitle": "Com gestionar pistes multicanal (> 2 canals) durant la transcodificació. S'aplica tant a la transmissió en temps real com a les descàrregues.",
+    "@multichannelHandlingSubtitle": {
+        "description": "Subtitle for multi-channel handling dropdown"
+    },
+    "multichannelHandlingOption": "{option, select, stereoDownmixLossy{Només downmix de formats amb pèrdua a estèreo} stereoDownmixAll{Downmix tot a estèreo} fixedBitrate{Mai fer downmix} other{{option}} }",
+    "@multichannelHandlingOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in multi-channel handling dropdown"
     }
 }
