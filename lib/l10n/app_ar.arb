@@ -1,25 +1,25 @@
 {
-    "serverUrl": "عنوان الخادم",
-    "emptyServerUrl": "لا يمكن ان يكون عنوان الخادم فارغ",
+    "serverUrl": "رابط الخادم",
+    "emptyServerUrl": "رابط الخادم لا يمكن أن يكون فارغاً",
     "@emptyServerUrl": {
         "description": "Error message that shows when the user submits a login without a server URL"
     },
     "logs": "السجلات",
     "username": "اسم المستخدم",
     "unknownName": "إسم غير معروف",
-    "couldNotFindLibraries": "لا يوجد أي مكتب.",
+    "couldNotFindLibraries": "لم يتم العثور على أي مكتبات.",
     "@couldNotFindLibraries": {
         "description": "Error message when the user does not have any libraries"
     },
-    "selectMusicLibraries": "إختار مكاتب الأغاني",
+    "selectMusicLibraries": "اختيار مكتبات الموسيقى",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
     "tracks": "الأغاني",
     "next": "التالي",
-    "albums": "ألبومات",
-    "artists": "الفنانين",
-    "genres": "التصنيفات",
+    "albums": "الألبومات",
+    "artists": "الفنانون",
+    "genres": "الأنواع الموسيقية",
     "playlists": "قوائم التشغيل",
     "startMix": "بدء مزيج",
     "startMixNoTracksArtist": "اضغط مطولاً على فنان لإضافته أو إزالته من منشئ المزيج قبل بدء المزيج",
@@ -27,31 +27,31 @@
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
     },
     "finamp": "Finamp",
-    "clear": "إمسح",
-    "shuffleAll": "استماع عشوائي للكل",
+    "clear": "مسح",
+    "shuffleAll": "تشغيل الكل عشوائيًا",
     "startMixNoTracksAlbum": "اضغط مطولاً على ألبوم لإضافته أو إزالته من منشئ المزيج قبل بدء المزيج",
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
-    "music": "موسيقى",
+    "music": "الموسيقى",
     "downloads": "التنزيلات",
     "settings": "الإعدادات",
-    "album": "ألبوم",
-    "sortBy": "فرز",
+    "album": "الألبوم",
+    "sortBy": "فرز حسب",
     "sortOrder": "ترتيب الفرز",
     "offlineMode": "وضع عدم الإتصال",
     "albumArtist": "فنان الألبوم",
     "artist": "الفنان",
     "communityRating": "تقييم الجمهور",
     "criticRating": "تقييم النقاد",
-    "datePlayed": "تاريخ الإستماع الأخير",
-    "playCount": "عدد الاستماعات",
+    "datePlayed": "تاريخ آخر تشغيل",
+    "playCount": "عدد مرات التشغيل",
     "premiereDate": "تاريخ الإصدار",
-    "budget": "ميزانية",
+    "budget": "الميزانية",
     "random": "عشوائي",
-    "name": "إسم",
-    "downloadMissingImages": "حمل الصور المفقودة",
-    "revenue": "إيرادات",
+    "name": "الاسم",
+    "downloadMissingImages": "تنزيل الصور المفقودة",
+    "revenue": "الإيرادات",
     "downloadCount": "{count,plural, =1{{count} تنزيل} other{{count} تنزيلات}}",
     "@downloadCount": {
         "placeholders": {
@@ -76,7 +76,7 @@
             }
         }
     },
-    "dlEnqueued": "{count} ينتظر النزيل",
+    "dlEnqueued": "{count} في الانتظار",
     "@dlEnqueued": {
         "placeholders": {
             "count": {
@@ -84,7 +84,7 @@
             }
         }
     },
-    "dlRunning": "{count} يتم تنزيل الآن",
+    "dlRunning": "{count} جارٍ",
     "@dlRunning": {
         "placeholders": {
             "count": {
@@ -93,7 +93,7 @@
         }
     },
     "error": "خطأ",
-    "discNumber": "القرس {number}",
+    "discNumber": "القرص {number}",
     "@discNumber": {
         "placeholders": {
             "number": {
@@ -103,7 +103,7 @@
     },
     "playButtonLabel": "تشغيل",
     "shuffleButtonLabel": "تشغيل عشوائي",
-    "trackCount": "{count,plural,=1{{count} أغتية} other{{count} أغاني}}",
+    "trackCount": "{count,plural,=1{{count} أغنية} other{{count} أغاني}}",
     "@trackCount": {
         "placeholders": {
             "count": {
@@ -113,38 +113,38 @@
     },
     "updateButtonLabel": "تحديث",
     "playlistUpdated": "تم تحديث قائمة التشغيل.",
-    "required": "ملزوم",
+    "required": "مطلوب",
     "addButtonLabel": "إضافة",
-    "shareLogs": "شارك السجلات",
-    "addDownloads": "إضافة تنزيلات",
+    "shareLogs": "مشاركة السجلات",
+    "addDownloads": "إضافة التنزيلات",
     "downloadsQueued": "جارٍ تنزيل الملفات",
-    "location": "موقع",
+    "location": "الموقع",
     "logsCopied": "تم نسخ السجلات.",
-    "transcoding": "تحويل",
+    "transcoding": "تحويل الترميز",
     "message": "رسالة",
-    "stackTrace": "إشارة تراكمية",
+    "stackTrace": "تتبع المكدس",
     "areYouSure": "هل انت متأكد؟",
     "audioService": "خدمة الصوت",
-    "enableTranscoding": "تمكين التحويل",
-    "notAvailableInOfflineMode": "عير متوفر في وضع غير الإتصال",
-    "layoutAndTheme": "تخطيط و ظاهرة",
+    "enableTranscoding": "تفعيل تحويل الترميز",
+    "notAvailableInOfflineMode": "غير متوفر في وضع عدم الاتصال",
+    "layoutAndTheme": "التخطيط والمظهر",
     "logOut": "تسجيل الخروج",
-    "bitrate": "معدل البتات",
+    "bitrate": "معدل البت",
     "customLocation": "موقع مخصص",
     "appDirectory": "مجلّد التطبيق",
     "unknownError": "خطأ غير معروف",
-    "directoryMustBeEmpty": "المجلد يجب ان يكون فارغ",
-    "enterLowPriorityStateOnPause": "تشغيل وضع <low-priority state> عندما توقف استماع مؤقتاً",
+    "directoryMustBeEmpty": "يجب أن يكون المجلد فارغاً",
+    "enterLowPriorityStateOnPause": "الدخول في حالة الأولوية المنخفضة عند الإيقاف المؤقت",
     "shuffleAllTrackCountSubtitle": "عدد الأغاني المراد تشغيلها عند استخدام زر \"تشغيل الكل عشوائياً\" في علامة تبويب الأغاني أو شاشة النوع.",
-    "shuffleAllTrackCount": "استماع عشوائي لعدد الأغاني",
+    "shuffleAllTrackCount": "تشغيل عشوائي لعدد الأغاني",
     "grid": "شبكة",
     "portrait": "عمودي",
-    "landscape": "اقفي",
+    "landscape": "أفقي",
     "list": "قائمة",
     "viewType": "نوع العرض",
-    "viewTypeSubtitle": "نوع عرض لصفة الموسيقى",
+    "viewTypeSubtitle": "نوع عرض شاشة الموسيقى",
     "showTextOnGridView": "عرض النص في عرض الشبكة",
-    "gridCrossAxisCount": "عدد محور معامد في عرض {value}",
+    "gridCrossAxisCount": "عدد أعمدة الشبكة في الوضع {value}",
     "@gridCrossAxisCount": {
         "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
         "placeholders": {
@@ -155,36 +155,36 @@
         }
     },
     "showTextOnGridViewSubtitle": "إظهار أو إخفاء النص (العنوان، الفنان، إلخ) في شاشة العرض الشبكي للموسيقى.",
-    "useCoverAsBackgroundSubtitle": "سواء ان تستعمل مخلاف البوم غائم على مشغل الموسيقى.",
-    "hideTrackArtistsIfSameAsAlbumArtists": "إخفاء أسماء فنانين اﻷغنية إذا هن نفس أسماء فنانين الأابوم",
-    "theme": "الألوان التطبيق",
-    "light": "ابيض",
-    "cancelSleepTimer": "هل تريد ان تلغي مؤقت النوم؟",
-    "dark": "غامق",
-    "tabs": "التبويبات",
+    "useCoverAsBackgroundSubtitle": "ما إذا كان سيتم استخدام غلاف الأغنية المموّه كخلفية في أجزاء مختلفة من التطبيق.",
+    "hideTrackArtistsIfSameAsAlbumArtists": "إخفاء فناني الأغنية إذا كانوا نفس فناني الألبوم",
+    "theme": "المظهر",
+    "light": "الفاتح",
+    "cancelSleepTimer": "إلغاء مؤقت النوم؟",
+    "dark": "الداكن",
+    "tabs": "علامات التبويب",
     "noButtonLabel": "لا",
     "yesButtonLabel": "نعم",
-    "addToPlaylistTooltip": "أضف إلى قائمة التشغيل",
-    "addToPlaylistTitle": "أضف إلى قائمة التشغيل",
+    "addToPlaylistTooltip": "إضافة إلى قائمة التشغيل",
+    "addToPlaylistTitle": "إضافة إلى قائمة التشغيل",
     "createButtonLabel": "إنشاء",
     "sleepTimerTooltip": "مؤقت النوم",
     "newPlaylist": "قائمة تشغيل جديدة",
-    "invalidNumber": "رقم خاطىء",
+    "invalidNumber": "رقم غير صالح",
     "unknownArtist": "فنان غير معروف",
     "playlistCreated": "تم إنشاء قائمة التشغيل.",
-    "noAlbum": "بدون البوم",
-    "noItem": "لا يوجد بند",
-    "goToAlbum": "إذهب إلى الألبوم",
+    "noAlbum": "لايوجد ألبوم",
+    "noItem": "لا يوجد عنصر",
+    "goToAlbum": "انتقال إلى الألبوم",
     "addToQueue": "إضافة إلى قائمة الانتظار",
     "queue": "قائمة الانتظار",
     "instantMix": "مزيج فوري",
     "addedToQueue": "تَمَّت الإضافة إلى قائمة الانتظار.",
-    "queueReplaced": "تم تبديل قائمة المحتوى.",
+    "queueReplaced": "تم تبديل قائمة الانتظار.",
     "startingInstantMix": "جارٍ بدء المزيج الفوري.",
-    "addDownloadLocation": "إضافة مكان التنزيل",
+    "addDownloadLocation": "إضافة موقع تنزيل",
     "errorScreenError": "حدث خطأ أثناء جلب قائمة الأخطاء! في هذه الحالة، يُنصح بإنشاء تقرير على GitHub وحذف بيانات التطبيق",
     "downloadLocations": "مواقع التنزيل",
-    "enableTranscodingSubtitle": "تحويل جودة بث الموسيقى من قبل الخادم.",
+    "enableTranscodingSubtitle": "يحول ترميز الموسيقى من جهة الخادم.",
     "responseError": "{error} رمز الحالة {statusCode}.",
     "@responseError": {
         "placeholders": {
@@ -215,22 +215,22 @@
     "dateAdded": "تاريخ الإضافة",
     "productionYear": "سنة الإنتاج",
     "replaceQueue": "استبدال قائمة الانتظار",
-    "system": "نظام",
-    "noArtist": "بدون فنان",
+    "system": "النظام",
+    "noArtist": "لا يوجد فنان",
     "password": "كلمة السر",
-    "selectDirectory": "إختار المجلد",
+    "selectDirectory": "تحديد المجلد",
     "downloadsDeleted": "تم حذف التنزيلات.",
-    "failedToGetTrackFromDownloadId": "فشل ان يجد الاغنية من رقم التنزيل",
-    "internalExternalIpExplanation": "للوصول إلى خادم Jellyfin الخاص بك من خارج الشبكة الداخلية، ستحتاج إلى استخدام عنوان IP الخارجي الخاص بك.\n\nإذا كان خادمك يعمل على منفذ HTTP الافتراضي (80 أو 443) أو منفذ Jellyfin الافتراضي (8096)، فلن تحتاج إلى تحديد المنفذ.\n\nإذا كان عنوان الـ URL صحيحًا، فستظهر لك بعض المعلومات حول خادمك أسفل حقل الإدخال.",
+    "failedToGetTrackFromDownloadId": "فشل الحصول على الأغنية من معرف التنزيل",
+    "internalExternalIpExplanation": "إذا كنت ترغب في الوصول إلى خادم Jellyfin الخاص بك عن بُعد، فأنت بحاجة إلى استخدام عنوان IP الخارجي الخاص بك.\n\nإذا كان خادمك يعمل على منفذ HTTP الافتراضي (80 أو 443) أو منفذ Jellyfin الافتراضي (8096)، فلا يتعين عليك تحديد المنفذ.\n\nإذا كان عنوان URL صحيحاً، فمن المفترض أن تظهر لك بعض المعلومات حول خادمك أسفل حقل الإدخال.",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
-    "pathReturnSlashErrorMessage": "مسارات التي ترجع \"/\" لا يمكن ان تستعمل",
-    "useCoverAsBackground": "أظهر مخلاف البوم غائم على مشغل الموسيقى",
+    "pathReturnSlashErrorMessage": "لا يمكن استخدام المسارات التي تعود بـ \"/\"",
+    "useCoverAsBackground": "استخدام غلاف الأغنية المموّه كخلفية",
     "enterLowPriorityStateOnPauseSubtitle": "يسمح بإخفاء الإشعار عند الإيقاف المؤقت. كما يسمح لنظام أندرويد بإيقاف الخدمة عند الإيقاف المؤقت.",
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "سواء ان تخفي فنانين الأغنية من صفحة الألبوم إذا يختلف من فنانين الألبوم.",
-    "applicationLegalese": "مرخص بموجب رخصة موزيلا العامة 2.0.\nالكود المصدري متاح على {sourceCodeLink}.",
-    "gridCrossAxisCountSubtitle": "كم مربعات تستعمل لكل صف عندما الشاشة تكون {value}.",
+    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "ما إذا كان سيتم إظهار فناني الأغنية في شاشة الألبوم إذا لم يختلفوا عن فناني الألبوم.",
+    "applicationLegalese": "مرخص بموجب رخصة موزيلا العامة 2.0.\nكود المصدر متاح على {sourceCodeLink}.",
+    "gridCrossAxisCountSubtitle": "عدد مربعات الشبكة في كل صف في الوضع {value}.",
     "@gridCrossAxisCountSubtitle": {
         "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
         "placeholders": {
@@ -240,7 +240,7 @@
             }
         }
     },
-    "downloadedMissingImages": "{count,plural, =0{لا يوجد صور مفقودة} =1{تم تنزيل {count} صورة مفقودة} other{ تم تنزيل {count} صور المفقودة}}",
+    "downloadedMissingImages": "{count,plural, =0{لا يوجد صور مفقودة} =1{تم تنزيل {count} صورة مفقودة} other{ تم تنزيل {count} صور مفقودة}}",
     "@downloadedMissingImages": {
         "description": "Message that shows when the user downloads missing images",
         "placeholders": {
@@ -256,33 +256,33 @@
     "minutes": "دقائق",
     "removeFromPlaylistTooltip": "إزالة من قائمة التشغيل",
     "removeFromPlaylistTitle": "إزالة من قائمة التشغيل",
-    "removedFromPlaylist": "أُزيل من قائمة التشغيل.",
+    "removedFromPlaylist": "تمت الإزالة من قائمة التشغيل.",
     "language": "اللغة",
     "favorite": "مفضل",
     "favorites": "مفضلات",
-    "shuffleSome": "خلط بعض",
+    "shuffleSome": "تشغيل بعض الأغاني عشوائيًا",
     "onlineMode": "وضع الإتصال",
     "title": "عنوان",
     "albumArtists": "فنانو الألبوم",
-    "performingArtists": "الفنانين المؤدوون",
+    "performingArtists": "الفنانون المؤدون",
     "performingArtist": "الفنان المؤدي",
     "duration": "المدة",
-    "defaultOrder": "الترتيب الإفتراضي",
+    "defaultOrder": "الترتيب الافتراضي",
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
     },
-    "adaptive": "تكييف",
+    "adaptive": "متكيف",
     "syncDownloadedPlaylists": "مزامنة قوائم التشغيل المنزلة",
-    "activeDownloads": "التنزيلات القائمة",
+    "activeDownloads": "التنزيلات النشطة",
     "startupErrorTitle": "حدث خطأ ما أثناء بدء تشغيل التطبيق!",
     "@startupErrorTitle": {
         "description": "The title for the error screen that shows when startup fails."
     },
-    "startupErrorCallToAction": "يرجى إنشاء تقرير على \"github.com/jmshrv/finamp\" مع سجل الأحداث (استخدم الزر أدناه) ولقطة شاشة لهذه الصفحة، حتى نتمكن من إصلاحها في أسرع وقت ممكن.",
+    "startupErrorCallToAction": "يرجى فتح تذكرة (issue) على \"github.com/jmshrv/finamp\" مع إرفاق سجلات الأخطاء (استخدم الزر أدناه) ولقطة شاشة لهذه الصفحة، حتى نتمكن من إصلاح المشكلة بأسرع وقت ممكن.",
     "@startupErrorCallToAction": {
         "description": "The subtitle / call to action for what to do after encountering a startup error"
     },
-    "startupErrorWorkaround": "كحل بديل للخطأ، يمكنك مسح بيانات التطبيق لإعادة ضبط التطبيق. ضع في اعتبارك أنه في هذه الحالة سيتم حذف جميع إعداداتك وتنزيلاتك.",
+    "startupErrorWorkaround": "كحل مؤقت لهذا الخطأ، يمكنك مسح بيانات التطبيق لإعادة ضبطه. يرجى العلم أنه في هذه الحالة، سيتم حذف جميع إعداداتك وتنزيلاتك.",
     "@startupErrorWorkaround": {
         "description": "The subtitle for how to manually recover from a startup error"
     },
@@ -290,7 +290,7 @@
     "@about": {
         "description": "Label for the about/info button on the settings screen"
     },
-    "aboutContributionPrompt": "صُنع على يد أشخاص رائعين في أوقات فراغهم.\nيمكنك أن تكون واحداً منهم!",
+    "aboutContributionPrompt": "صُنع بأيدي أشخاص رائعين في أوقات فراغهم.\nيمكنك أن تكون أحدهم!",
     "@aboutContributionPrompt": {
         "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
     },
@@ -328,7 +328,7 @@
     "@loginFlowGetStarted": {
         "description": "Button label for the login/splash screen."
     },
-    "viewLogs": "عرض سجلات الأحداث",
+    "viewLogs": "عرض السجلات",
     "@viewLogs": {
         "description": "Label for button shown during the login process that allows the user to view the app logs"
     },
@@ -336,11 +336,11 @@
     "@changeLanguage": {
         "description": "Label for button shown during the login process that allows the user to change the app language"
     },
-    "loginFlowServerSelectionHeading": "اتصل بـ Jellyfin",
+    "loginFlowServerSelectionHeading": "الاتصال بـ Jellyfin",
     "@loginFlowServerSelectionHeading": {
         "description": "Heading for the server selection step during the login flow."
     },
-    "back": "العودة",
+    "back": "رجوع",
     "@back": {
         "description": "Label for the back button."
     },
@@ -362,7 +362,7 @@
     },
     "activeDownloadsTitle": "التنزيلات النشطة",
     "noActiveDownloads": "لا توجد تنزيلات نشطة.",
-    "deleteDownloadsPrompt": "هل أنت متأكد من رغبتك في حذف {itemType, select, album{album} playlist{playlist} artist{artist} genre{genre} track{track} library{library} other{item}} '{itemName}' من هذا الجهاز؟",
+    "deleteDownloadsPrompt": "هل أنت متأكد أنك تريد حذف {itemType, select, album{الألبوم} playlist{قائمة التشغيل} artist{الفنان} genre{النوع الموسيقي} track{الأغنية} library{المكتبة} other{العنصر}} '{itemName}' من هذا الجهاز؟",
     "@deleteDownloadsPrompt": {
         "placeholders": {
             "itemName": {
@@ -405,11 +405,11 @@
     "@loginFlowAccountSelectionHeading": {
         "description": "Heading for the account selection step during the login flow."
     },
-    "backToServerSelection": "العودة إلى صفحة اختيار الخادم",
+    "backToServerSelection": "الرجوع إلى اختيار الخادم",
     "@backToServerSelection": {
         "description": "Label for the button that takes the user back to the server selection step during the login flow."
     },
-    "loginFlowNamelessUser": "مستخدم غير معرّف",
+    "loginFlowNamelessUser": "مستخدم بلا اسم",
     "@loginFlowNamelessUser": {
         "description": "Name for a user that doesn't have a name set on the server."
     },
@@ -421,7 +421,7 @@
     "@loginFlowAuthenticationHeading": {
         "description": "Heading for the authentication step during the login flow."
     },
-    "backToAccountSelection": "العودة إلى صفحة اختيار الحساب",
+    "backToAccountSelection": "الرجوع إلى اختيار الحساب",
     "@backToAccountSelection": {
         "description": "Label for the button that takes the user back to the account selection step during the login flow."
     },
@@ -429,7 +429,7 @@
     "@loginFlowQuickConnectPrompt": {
         "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
-    "loginFlowQuickConnectInstructions": "افتح تطبيق أو موقع ويب Jellyfin، وانقر على أيقونة المستخدم الخاصة بك، ثم حدد الاتصال السريع.",
+    "loginFlowQuickConnectInstructions": "افتح تطبيق أو موقع Jellyfin، وانقر على أيقونة المستخدم الخاصة بك، ثم اختر الاتصال السريع.",
     "@loginFlowQuickConnectInstructions": {
         "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
@@ -441,7 +441,7 @@
     "@orDivider": {
         "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
     },
-    "loginFlowSelectAUser": "اختر المستخدم",
+    "loginFlowSelectAUser": "اختر مستخدماً",
     "@loginFlowSelectAUser": {
         "description": "Heading for the list of users that the user can select from during the login flow."
     },
@@ -458,7 +458,7 @@
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
-    "formattedRelativeTime": "{type, select, just_now{الآن} minutes{دقيقة {value} منذ} hours{ساعة {value} منذ} yesterday{أمس} days{{value, plural, =1{منذ يوم واحد} other{أيام {value} منذ}}} other{value}}",
+    "formattedRelativeTime": "{type, select, just_now{الآن} minutes{{value} دقيقة مضت} hours{{value} ساعة مضت} yesterday{أمس} days{{value, plural, =1{منذ يوم واحد} =2{منذ يومين} other{منذ {value} أيام}}} other{value}}",
     "@formattedRelativeTime": {
         "description": "Returns a relative time string based on how long ago something happened. Used for various DateTime values such as Date Last Played and Date Added.",
         "placeholders": {
@@ -488,7 +488,7 @@
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
     },
-    "playbackActionPageMoveWithinQueue": "نقل ضمن قائمة الانتظار",
+    "playbackActionPageMoveWithinQueue": "التحريك داخل قائمة الانتظار",
     "@playbackActionPageMoveWithinQueue": {
         "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
     },
@@ -520,11 +520,11 @@
     "@confirmDownloadStarted": {
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
     },
-    "exportLogs": "حفظ سجل الأحداث",
+    "exportLogs": "حفظ السجلات",
     "playbackReporting": "تقارير التشغيل",
     "interactions": "التفاعلات",
     "notAvailable": "غير متوفر",
-    "logoutButtonSubtitle": "سيؤدي تسجيل الدخول إلى خادم مختلف إلى حذف التنزيلات الموجودة",
+    "logoutButtonSubtitle": "تسجيل الدخول إلى خادم مختلف سيؤدي إلى حذف التنزيلات الحالية",
     "none": "لا يوجد",
     "customizationSettingsTitle": "التخصيص",
     "@customizationSettingsTitle": {
@@ -588,12 +588,12 @@
     "@playerScreenMinimumCoverPaddingEditorSubtitle": {
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
-    "autoSwitchItemCurationTypeTitle": "التغيير التلقائي لنوع تنسيق العناصر",
-    "autoSwitchItemCurationTypeSubtitle": "عند التفعيل، تتحول أقسام العناصر في شاشات الفنان والنوع تلقائيًا إلى نوع تنسيق مختلف إذا لم تكن هناك عناصر متاحة (على سبيل المثال، لا توجد مفضلات لفنان معين).",
+    "autoSwitchItemCurationTypeTitle": "تبديل تلقائي لنوع تنسيق العناصر",
+    "autoSwitchItemCurationTypeSubtitle": "عند التفعيل، ستتحول أقسام العناصر في شاشات 'الفنان' و'النوع الموسيقي' تلقائياً إلى نوع تنسيق مختلف في حال عدم توفر أي أغنية (مثل عدم وجود مفضلات لفنان معين).",
     "showArtistsTracksSection": "قسم عرض الأغاني",
-    "showArtistsTracksSectionSubtitle": "لعرض قسم يحتوي على ما يصل إلى خمسة أغاني. عند التفعيل، يمكنك الاختيار بين الأكثر استماعًا، والمفضلة، وعشوائي، وأحدث الإصدارات، والمضافة حديثًا، والأغاني التي تم تشغيلها مؤخرًا.",
+    "showArtistsTracksSectionSubtitle": "ما إذا كان سيتم إظهار قسم يحتوي على ما يصل إلى خمس أغاني. عند التفعيل، يمكنك الاختيار بين الأغاني الأكثر استماعاً، المفضلة، العشوائية، أحدث الإصدارات، المضافة حديثاً، والأغاني المشغلة مؤخراً.",
     "disableGestureSubtitle": "ما إذا كان ينبغي تعطيل الإيماءات.",
-    "showFastScroller": "عرض شريط التمرير السريع",
+    "showFastScroller": "إظهار شريط التمرير السريع",
     "accentColor": "لون تمييز",
     "@accentColor": {
         "description": "Title of the accent color setting"
@@ -619,7 +619,7 @@
         "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
     },
     "defaultWord": "الإفتراضي",
-    "useDefaultButton": "إعادة ضبط لون التمييز إلى اللون الافتراضي",
+    "useDefaultButton": "إعادة الضبط إلى لون التمييز الافتراضي",
     "colorCode": "رمز اللون (Hex)",
     "@colorCode": {
         "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
@@ -738,12 +738,12 @@
     "@playbackModeLocal": {
         "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
     },
-    "goToArtist": "انتقل إلى صفحة الفنان",
-    "goToGenre": "انتقل إلى صفحة النوع",
-    "removeFavorite": "إزالة من المفضلة",
-    "addFavorite": "إضافة إلى المفضلة",
-    "confirmFavoriteAdded": "تمت إضافته إلى المفضلة",
-    "confirmFavoriteRemoved": "تمت إزالته من المفضلة",
+    "goToArtist": "انتقال إلى الفنان",
+    "goToGenre": "انتقل إلى النوع الموسيقي",
+    "removeFavorite": "إزالة من المفضلات",
+    "addFavorite": "إضافة إلى المفضلات",
+    "confirmFavoriteAdded": "تمت الإضافة للمفضلات",
+    "confirmFavoriteRemoved": "تمت الإزالة من المفضلات",
     "insertedIntoQueue": "تم الإدخال في قائمة المحتوى.",
     "@insertedIntoQueue": {
         "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
@@ -764,12 +764,12 @@
             }
         }
     },
-    "bufferDuration": "مدة التخزين المؤقت للبث",
-    "bufferDurationSubtitle": "المدة التي يجب تخزينها مؤقتًا للبث، بالثواني. يتطلب إعادة تشغيل.",
-    "bufferDisableSizeConstraintsTitle": "لا تُحِد حجم التخزين المؤقت للبث",
-    "bufferDisableSizeConstraintsSubtitle": "يُعطّل هذا الخيار قيود حجم التخزين المؤقت للبث (حجم التخزين المؤقت للبث). سيتم تحميل التخزين المؤقت دائمًا إلى المدة المُحددة (مدة التخزين المؤقت للبث)، حتى للملفات الكبيرة جدًا. قد يتسبب ذلك في حدوث مشاكل. يتطلب إعادة تشغيل النظام.",
-    "bufferSizeTitle": "حجم التخزين المؤقت للبث",
-    "bufferSizeSubtitle": "حجم التخزين المؤقت للبث بالميغابايت. يتطلب إعادة تشغيل",
+    "bufferDuration": "مدة التخزين المؤقت",
+    "bufferDurationSubtitle": "المدة التي يجب تخزينها مؤقتًا، بالثواني. يتطلب إعادة تشغيل.",
+    "bufferDisableSizeConstraintsTitle": "عدم تقييد حجم التخزين المؤقت",
+    "bufferDisableSizeConstraintsSubtitle": "يؤدي إلى تعطيل قيود حجم التخزين المؤقت ('حجم التخزين المؤقت'). سيتم دائمًا تحميل التخزين المؤقت للمدة المحددة ('مدة التخزين المؤقت')، حتى في الملفات الكبيرة جدًا. قد يتسبب في توقف التطبيق. يتطلب إعادة تشغيل.",
+    "bufferSizeTitle": "حجم التخزين المؤقت",
+    "bufferSizeSubtitle": "حجم التخزين المؤقت بالميغابايت. يتطلب إعادة تشغيل",
     "skipToPreviousTrackButtonTooltip": "انتقل إلى بداية الأغنية أو إلى الأغنية السابقة",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -850,7 +850,7 @@
     "@moveAddToQueue": {
         "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
     },
-    "confirmPlayNext": "{type, select, track{الأغنية} album{الألبوم} artist{الفنان} playlist{قائمة التشغيل} genre{النوع الموسيقي} other{العنصر}} سيتم تشغيله بعد الأغنية الحالية",
+    "confirmPlayNext": "{type, select, track{الأغنية} album{الألبوم} artist{الفنان} playlist{قائمة التشغيل} genre{النوع الموسيقي} other{العنصر}} سيتم تشغيله تالياً",
     "@confirmPlayNext": {
         "description": "A confirmation message that is shown after successfully adding a track to the front of the \"Next Up\" queue",
         "placeholders": {
@@ -859,7 +859,7 @@
             }
         }
     },
-    "confirmAddToNextUp": "أُضيف {type, select, track{Track} album{album} artist{artist} playlist{playlist} genre{genre} disc{disc} other{item}} إلى قائمة التالي",
+    "confirmAddToNextUp": "تمت إضافة {type, select, track{الأغنية} album{الألبوم} artist{الفنان} playlist{قائمة التشغيل} genre{النوع الموسيقي} disc{القرص} other{العنصر}} إلى قائمة التشغيل التالية",
     "@confirmAddToNextUp": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the \"Next Up\" queue",
         "placeholders": {
@@ -868,7 +868,7 @@
             }
         }
     },
-    "confirmAddToQueue": "أُضيف {type, select, track{Track} album{album} artist{artist} playlist{playlist} genre{genre} disc{disc} other{item}} إلى قائمة المحتوى",
+    "confirmAddToQueue": "تمت إضافة {type, select, track{الأغنية} album{الألبوم} artist{الفنان} playlist{قائمة التشغيل} genre{النوع الموسيقي} disc{القرص} other{العنصر}} إلى قائمة الانتظار",
     "@confirmAddToQueue": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the regular queue",
         "placeholders": {
@@ -877,7 +877,7 @@
             }
         }
     },
-    "confirmShuffleNext": "سيتم التشغيل العشوائي بعد الأغنية الحالية",
+    "confirmShuffleNext": "سيتم التشغيل العشوائي تالياً",
     "@confirmShuffleNext": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the front of the \"Next Up\" queue"
     },
@@ -885,7 +885,7 @@
     "@confirmShuffleToNextUp": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the \"Next Up\" queue"
     },
-    "confirmShuffleToQueue": "سيتم التشغيل العشوائي في قائمة المحتوى",
+    "confirmShuffleToQueue": "سيتم التشغيل العشوائي في قائمة الانتظار",
     "@confirmShuffleToQueue": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the regular queue"
     },
@@ -933,7 +933,7 @@
             }
         }
     },
-    "savedQueue": "قائمة محتوى محفوظة",
+    "savedQueue": "قائمة انتظار محفوظة",
     "@savedQueue": {
         "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
     },
@@ -1171,9 +1171,9 @@
     "latestTracks": "أحدث الأغاني",
     "latestAlbums": "أحدث الألبومات",
     "latestArtists": "أحدث الفنانين",
-    "recentlyPlayedTracks": "الأغاني التي تم تشغيلها مؤخراً",
-    "recentlyPlayedAlbums": "الألبومات التي تم تشغيلها مؤخراً",
-    "recentlyPlayedArtists": "الفنانون الذين تم تشغيل أغانيهم مؤخراً",
+    "recentlyPlayedTracks": "الأغاني المشغلة مؤخرًا",
+    "recentlyPlayedAlbums": "الألبومات المشغلة مؤخرًا",
+    "recentlyPlayedArtists": "الفنانون المشغلون مؤخرًا",
     "genreFilterPlaylistScreensSubtitle": "عند تفعيل هذا الخيار، قوائم التشغيل (التي يتم الوصول إليها عبر النوع الموسيقي) ستعرض فقط الأغاني التي تتطابق مع النوع الموسيقي الذي تتصفحه حاليًا. (يمكنك دائمًا إزالة تصفية النوع الموسيقي يدويًا لعرض جميع الأغاني)",
     "@genreFilterPlaylistScreensSubtitle": {
         "description": "Description of the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
@@ -1281,13 +1281,13 @@
     "confirm": "تأكيد",
     "close": "إغلاق",
     "showUncensoredLogMessage": "يحتوي هذا السجل على معلومات تسجيل دخولك. هل تريد عرضها؟",
-    "resetTabs": "إعادة ضبط علامات التبويب",
-    "resetToDefaults": "إعادة الضبط إلى الإعدادات الافتراضية",
+    "resetTabs": "إعادة ضبط التبويبات",
+    "resetToDefaults": "إعادة الضبط للافتراضي",
     "noMusicLibrariesTitle": "لا توجد مكتبات موسيقى",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
-    "noMusicLibrariesBody": "لم يتمكن Finamp من العثور على أي مكتبات موسيقى. يرجى التأكد من أن خادم Jellyfin الخاص بك يحتوي على مكتبة واحدة على الأقل بنوع محتوى مُعيّن على \"موسيقى\".",
+    "noMusicLibrariesBody": "تعذر على Finamp العثور على أي مكتبات موسيقية. يرجى التأكد من أن خادم Jellyfin الخاص بك يحتوي على مكتبة واحدة على الأقل بنوع محتوى \"موسيقى\".",
     "refresh": "تحديث",
     "moreInfo": "مزيد من المعلومات",
     "volumeNormalizationSettingsTitle": "توحيد مستوى الصوت",
@@ -1310,7 +1310,7 @@
     "@volumeNormalizationModeSelectorTitle": {
         "description": "Title for the dropdown that selects the replay gain mode"
     },
-    "downloadedCountUnified": "{trackCount,plural,=1{{trackCount} أغنية} other{{trackCount} أغاني}}, {imageCount,plural,=1{{imageCount} صورة} other{{imageCount} صور}}\n{syncCount,plural,=1{{syncCount} مزامنة عقدة} other{{syncCount} مزامنة عقد}}{repairing, plural, =0{} other{\nيتم حاليًا إصلاحها}}",
+    "downloadedCountUnified": "{trackCount,plural,=1{أغنية واحدة} other{{trackCount} أغنية}}، {imageCount,plural,=1{صورة واحدة} other{{imageCount} صورة}}\n{syncCount,plural,=1{جارٍ مزامنة عقدة واحدة} other{جارٍ مزامنة {syncCount} عقدة}}{repairing, plural, =0{} other{\nجارٍ الإصلاح الآن}}",
     "@downloadedCountUnified": {
         "description": "Display of downloaded track and image count on downloads screen.",
         "placeholders": {
@@ -1328,7 +1328,7 @@
             }
         }
     },
-    "shuffleCountButton": "شغّل عشوائياً ({count,plural,=1{{count} الأغنية} other{{count} الأغاني}})",
+    "shuffleCountButton": "شغّل عشوائياً ({count,plural,=1{{count} أغنية} other{{count} أغاني}})",
     "@shuffleCountButton": {
         "placeholders": {
             "count": {
@@ -1351,7 +1351,7 @@
             }
         }
     },
-    "offlineTrackCountArtist": "{count,plural,=1{{count} الأغنية} other{{count} الأغاني}} تم تنزيلها",
+    "offlineTrackCountArtist": "{count,plural,=1{{count} أغنية} other{{count} أغنية}} تم تنزيلها",
     "@offlineTrackCountArtist": {
         "placeholders": {
             "count": {
@@ -1576,5 +1576,1409 @@
     "showNullLibraryItemsTitle": "إظهار الوسائط ذات المكتبة غير المعروفة.",
     "@showNullLibraryItemsTitle": {
         "description": "Title of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
+    },
+    "preferQuickSyncSwitch": "تفضيل المزامنات السريعة",
+    "@preferQuickSyncSwitch": {
+        "description": "Title of setting that skips completed albums while syncing."
+    },
+    "showNullLibraryItemsSubtitle": "قد يتم تنزيل بعض الوسائط بمكتبة غير معروفة. قم بإيقاف التشغيل لإخفائها خارج مجموعتها الأصلية.",
+    "@showNullLibraryItemsSubtitle": {
+        "description": "Description of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
+    },
+    "maxConcurrentDownloads": "الحد الأقصى للتنزيلات المتزامنة",
+    "@maxConcurrentDownloads": {
+        "description": "Title of setting controlling max concurrent downloads."
+    },
+    "maxConcurrentDownloadsSubtitle": "زيادة عدد التنزيلات المتزامنة قد تتيح سرعة أكبر للتنزيل في الخلفية، ولكنها قد تؤدي لفشل بعض التنزيلات إذا كانت ضخمة جدًا، أو تتسبب في بطء شديد في بعض الحالات.",
+    "@maxConcurrentDownloadsSubtitle": {
+        "description": "Description of setting controlling max concurrent downloads."
+    },
+    "maxConcurrentDownloadsLabel": "{count} تنزيل متزامن",
+    "@maxConcurrentDownloadsLabel": {
+        "description": "Label of values on max concurrent downloads slider",
+        "placeholders": {
+            "count": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadsWorkersSetting": "عدد مهام التنزيل",
+    "@downloadsWorkersSetting": {
+        "description": "Title of setting controlling download worker count."
+    },
+    "downloadsWorkersSettingSubtitle": "عدد مهام مزامنة وحذف التنزيلات. زيادة عدد المهام قد يسرع مزامنة وحذف التنزيلات، خاصة عند ارتفاع وقت استجابة الخادم، ولكنها قد تسبب بطئاً في النظام.",
+    "@downloadsWorkersSettingSubtitle": {
+        "description": "Description of setting controlling download worker count."
+    },
+    "downloadsWorkersSettingLabel": "{count} مهمة تنزيل",
+    "@downloadsWorkersSettingLabel": {
+        "description": "Label of values on download worker count slider",
+        "placeholders": {
+            "count": {
+                "type": "String"
+            }
+        }
+    },
+    "syncOnStartupSwitch": "مزامنة التنزيلات تلقائيًا عند بدء التشغيل",
+    "@syncOnStartupSwitch": {
+        "description": "Title of setting for automatically triggering a throttled resync on app startup."
+    },
+    "preferQuickSyncSwitchSubtitle": "عند إجراء المزامنات، لن يتم تحديث بعض العناصر الثابتة عادةً (مثل الأغاني والألبومات). ستقوم عملية \"إصلاح التنزيلات\" دائمًا بإجراء مزامنة كاملة.",
+    "@preferQuickSyncSwitchSubtitle": {
+        "description": "Description of setting that skips completed albums while syncing."
+    },
+    "itemTypeSubtitle": "{itemType, select, album{ألبوم} playlist{قائمة تشغيل} artist{فنان} genre{نوع موسيقي} track{أغنية} library{مكتبة} unknown{عنصر} other{{itemType}}} {itemName}",
+    "@itemTypeSubtitle": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            },
+            "itemName": {
+                "type": "String"
+            }
+        },
+        "description": "Subtitle for the type of a downloaded item, shown when syncing fails and in DownloadButton tooltip."
+    },
+    "downloadButtonDisabledGenreFilterTooltip": "يرجى إزالة تصفية النوع الموسيقي لتمكين إجراءات التنزيل.",
+    "@downloadButtonDisabledGenreFilterTooltip": {
+        "description": "Tooltip shown when a download button is disabled because of an active genre filter."
+    },
+    "genreFilterNotAvailableForAlbums": "تصفية الأنواع الموسيقية غير متاحة للألبومات.",
+    "@genreFilterNotAvailableForAlbums": {
+        "description": "Message shown when the user tries to apply a genre filter to an album."
+    },
+    "genreNotFound": "تعذر العثور على النوع الموسيقي.{additionalInfo, select, offline{ قد لا يكون منزّلاً أو قد ينتمي إلى مكتبة مختلفة.} other{ قد ينتمي إلى مكتبة مختلفة.}}",
+    "@genreNotFound": {
+        "placeholders": {
+            "additionalInfo": {
+                "type": "String"
+            }
+        },
+        "description": "Message shown when a genre filter or open-genre action fails because the genre item could not be found."
+    },
+    "incidentalDownloadTooltip": "هذا العنصر مطلوب للتنزيل بواسطة {parentName}.",
+    "@incidentalDownloadTooltip": {
+        "placeholders": {
+            "parentName": {
+                "type": "String"
+            }
+        },
+        "description": "Tooltip for downloadbutton on incidental downloads, which show a lock icon. It says one of the requiring downloads."
+    },
+    "finampCollectionNames": "{itemType, select, favorites{المفضلة} allPlaylists{كافة قوائم التشغيل} fiveLatestAlbums{آخر 5 ألبومات} allPlaylistsMetadata{البيانات الوصفية لقائمة التشغيل} collectionWithLibraryFilter{مجموعة مع تصفية المكتبة} other{{itemType}} }",
+    "@finampCollectionNames": {
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        },
+        "description": "Localized names of special downloadable collections like favorites."
+    },
+    "cacheLibraryImagesName": "الصور المخزنة مؤقتًا لـ '{libraryName}'",
+    "@cacheLibraryImagesName": {
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        },
+        "description": "Localized names of special downloadable collection representing cached images for a certain library."
+    },
+    "transcodingStreamingFormatTitle": "اختر تنسيق تحويل الترميز",
+    "@transcodingStreamingFormatTitle": {
+        "description": "Title for the dropdown that selects the format for transcoded streams"
+    },
+    "transcodingStreamingFormatSubtitle": "اختر التنسيق المستخدم عند بث الصوت المُحوَّل ترميزه. لن تتأثر الأغنيات الموجودة بالفعل في قائمة الانتظار.",
+    "downloadTranscodeEnableTitle": "تفعيل تنزيلات تحويل الترميز",
+    "@downloadTranscodeEnableTitle": {
+        "description": "Title for Enable Transcoded Downloads dropdown"
+    },
+    "downloadTranscodeCodecTitle": "اختيار ترميز التنزيل",
+    "@downloadTranscodeCodecTitle": {
+        "description": "Title for Select Download Codec dropdown"
+    },
+    "downloadTranscodeEnableOption": "{option, select, always{دائمًا} never{أبدًا} ask{اسأل} other{{option}} }",
+    "@downloadTranscodeEnableOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in Select Download Codec dropdown"
+    },
+    "downloadBitrate": "معدل بت التنزيل",
+    "@downloadBitrate": {
+        "description": "Title for Download Bitrate settings slider"
+    },
+    "downloadBitrateSubtitle": "يمنحك معدل البت الأعلى جودة صوت أفضل، ولكن على حساب مساحة تخزين أكبر.",
+    "@downloadBitrateSubtitle": {
+        "description": "subtitle for Download Bitrate settings slider"
+    },
+    "multichannelHandlingTitle": "التعامل مع تحويل ترميز القنوات المتعددة",
+    "@multichannelHandlingTitle": {
+        "description": "Title for multi-channel handling dropdown"
+    },
+    "multichannelHandlingSubtitle": "كيفية التعامل مع الأغاني متعددة القنوات (أكثر من قناتين) عند تحويل الترميز. ينطبق هذا على كل من البث والتنزيلات.",
+    "@multichannelHandlingSubtitle": {
+        "description": "Subtitle for multi-channel handling dropdown"
+    },
+    "transcodeHint": "تحويل الترميز؟",
+    "@transcodeHint": {
+        "description": "Initial text in downloads dropdown when 'Enable Transcoded Downloads' is set to ask."
+    },
+    "doTranscode": "تنزيل بتنسيق {codec} @ {bitrate}{size, select, null{} other{ - ~{size}}}",
+    "@doTranscode": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "123kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "OPUS"
+            },
+            "size": {
+                "type": "String",
+                "example": "167 MB"
+            }
+        },
+        "description": "Dropdown option to download transcoded version of tracks"
+    },
+    "downloadInfo": "{size} {codec}{bitrate, select, null{} other{ @ {bitrate} تم تحويل الترميز}}{location, select, null{} other{ ({location})}}",
+    "@downloadInfo": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "234kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "FLAC"
+            },
+            "size": {
+                "type": "String",
+                "example": "456"
+            },
+            "location": {
+                "type": "String",
+                "example": "Internal Storage"
+            }
+        },
+        "description": "Track info line in downloads screen lists"
+    },
+    "collectionDownloadInfo": "{size}{codec, select, ORIGINAL{} other{ بتنسيق {codec} @ {bitrate}}}{location, select, null{} other{ ({location})}}",
+    "@collectionDownloadInfo": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "234kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "FLAC"
+            },
+            "size": {
+                "type": "String",
+                "example": "456"
+            },
+            "location": {
+                "type": "String",
+                "example": "Internal Storage"
+            }
+        },
+        "description": "Collection info line in downloads screen lists"
+    },
+    "dontTranscode": "تنزيل الأصلي{description, select, null{} other{ - {description}}}",
+    "@dontTranscode": {
+        "placeholders": {
+            "description": {
+                "type": "String",
+                "example": "456 MB FLAC"
+            }
+        },
+        "description": "Dropdown option to download original version of tracks"
+    },
+    "redownloadcomplete": "تم وضع إعادة تنزيل تحويل الترميز في قائمة الانتظار.",
+    "@redownloadcomplete": {
+        "description": "Mesage when Automatically Redownload Transcodes transcode setting completes operations."
+    },
+    "redownloadTitle": "إعادة تنزيل تحويلات الترميز تلقائيًا",
+    "@redownloadTitle": {
+        "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
+    },
+    "redownloadSubtitle": "إعادة تنزيل الأغاني تلقائيًا، والتي يُتوقع أن تكون بجودة مختلفة نتيجة تغييرات في المجموعة الأصلية.",
+    "@redownloadSubtitle": {
+        "description": "subtitle for download transcode setting which redownloads tracks with higher allowed qualities"
+    },
+    "defaultDownloadLocationButton": "تعيين كموقع تنزيل افتراضي. قم بالتعطيل للاختيار عند كل عملية تنزيل.",
+    "@defaultDownloadLocationButton": {
+        "description": "Tooltip for button that sets a download location as the default."
+    },
+    "fixedGridSizeSwitchTitle": "استخدام مربعات شبكية ثابتة الحجم",
+    "fixedGridSizeSwitchSubtitle": "لن يتغير حجم المربعات الشبكية بتغير حجم النافذة أو الشاشة.",
+    "fixedGridSizeTitle": "حجم المربعات الشبكية",
+    "fixedGridTileSizeEnum": "{size, select, small{صغير} medium{متوسط} large{كبير} veryLarge{كبير جدًا} other{???}}",
+    "@fixedGridTileSizeEnum": {
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        },
+        "description": "Localized names of fixed size grid tile sizes."
+    },
+    "allowSplitScreenTitle": "السماح بوضع تقسيم الشاشة",
+    "allowSplitScreenSubtitle": "سيظهر المشغل بجانب طرق العرض الأخرى على الشاشات الواسعة.",
+    "enableVibration": "تفعيل الاهتزاز",
+    "enableVibrationSubtitle": "ما إذا كان سيتم تفعيل الاهتزاز.",
+    "hideQueueButton": "إخفاء زر قائمة الانتظار",
+    "hideQueueButtonSubtitle": "إخفاء زر قائمة الانتظار في شاشة المشغل. اسحب للأعلى للوصول إلى قائمة الانتظار.",
+    "oneLineMarqueeTextButton": "تمرير العناوين الطويلة تلقائيًا",
+    "oneLineMarqueeTextButtonSubtitle": "تمرير عناوين الأغاني تلقائيًا عندما تكون أطول من أن تُعرض في سطرين",
+    "marqueeOrTruncateButton": "استخدام علامة الحذف للعناوين الطويلة",
+    "marqueeOrTruncateButtonSubtitle": "إظهار … في نهاية العناوين الطويلة بدلاً من تمرير النص",
+    "hidePlayerBottomActions": "إخفاء الإجراءات السفلية",
+    "hidePlayerBottomActionsSubtitle": "إخفاء زري قائمة الانتظار والكلمات في شاشة المشغل. اسحب للأعلى للوصول إلى قائمة الانتظار، واسحب لليسار (أسفل غلاف الألبوم) لعرض كلمات الأغنية إذا كانت متوفرة.",
+    "prioritizePlayerCover": "إعطاء الأولوية لغلاف الألبوم",
+    "prioritizePlayerCoverSubtitle": "إعطاء الأولوية لإظهار غلاف ألبوم أكبر في شاشة المشغل. سيتم إخفاء عناصر التحكم غير الضرورية بشكل أكبر عند استخدام أحجام الشاشات الصغيرة.",
+    "suppressPlayerPadding": "إلغاء حواف عناصر تحكم المشغل",
+    "suppressPlayerPaddingSubtitle": "إلغاء حواف عناصر تحكم شاشة المشغل بالكامل عندما لا يكون غلاف الألبوم بحجمه الكامل.",
+    "lockDownload": "الاحتفاظ الدائم على الجهاز",
+    "@lockDownload": {
+        "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
+    },
+    "showArtistChipImage": "إظهار صور الفنانين مع أسمائهم",
+    "showArtistChipImageSubtitle": "يؤثر هذا على المعاينات الصغيرة لصور الفنانين، كما هو الحال في شاشة المشغل.",
+    "scrollToCurrentTrack": "الانتقال إلى الأغنية الحالية",
+    "@scrollToCurrentTrack": {
+        "description": "Tooltip for button that scrolls the queue list back to the current track"
+    },
+    "enableAutoScroll": "تفعيل التمرير التلقائي",
+    "@enableAutoScroll": {
+        "description": "Tooltip for button that can be used to re-enable auto scroll on the lyrics view after the user manually scrolled"
+    },
+    "numberAsKiloHertz": "{kiloHertz} كيلوهرتز",
+    "@numberAsKiloHertz": {
+        "description": "Value for the sample rate of a track, in kilohertz",
+        "placeholders": {
+            "kiloHertz": {
+                "type": "double"
+            }
+        }
+    },
+    "numberAsBit": "{bit} بت",
+    "@numberAsBit": {
+        "description": "Value for the bit depth of a track, as amount of bit used",
+        "placeholders": {
+            "bit": {
+                "type": "int"
+            }
+        }
+    },
+    "remainingDuration": "{duration} متبقية",
+    "@remainingDuration": {
+        "description": "Displays duration of unplayed tracks. {duration} is a pre-formatted string.",
+        "placeholders": {
+            "duration": {
+                "type": "String",
+                "example": "36:23"
+            }
+        }
+    },
+    "sleepTimerProjectedDuration": "سيتوقف التشغيل المؤقت في غضون {duration}~",
+    "@sleepTimerProjectedDuration": {
+        "description": "Displays duration until playback is expected to be ended by the sleep timer (unless the queue is modified before). {duration} is a pre-formatted string.",
+        "placeholders": {
+            "duration": {
+                "type": "String",
+                "example": "36:23"
+            }
+        }
+    },
+    "removeFromPlaylistConfirm": "إزالة",
+    "removeFromPlaylistPrompt": "هل تريد إزالة '{itemName}' من قائمة التشغيل '{playlistName}'؟",
+    "@removeFromPlaylistPrompt": {
+        "placeholders": {
+            "itemName": {
+                "type": "String"
+            },
+            "playlistName": {
+                "type": "String"
+            }
+        },
+        "description": "Prompt on dialog to confirm a removal from playlist"
+    },
+    "trackMenuButtonTooltip": "قائمة الأغنية",
+    "@trackMenuButtonTooltip": {
+        "description": "Tooltip for the button that opens the track menu"
+    },
+    "quickActions": "إجراءات سريعة",
+    "@quickActions": {
+        "description": "Title for the short menu that can be shown when long-pressing on the menu button on the player screen. Currently only used for adding to and removing from playlists."
+    },
+    "addRemoveFromPlaylist": "الإضافة إلى / الإزالة من قوائم التشغيل",
+    "@addRemoveFromPlaylist": {
+        "description": "Header for add to/remove from playlist popup menu"
+    },
+    "addPlaylistSubheader": "إضافة عناصر إلى قائمة التشغيل",
+    "@addPlaylistSubheader": {
+        "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
+    },
+    "trackOfflineFavorites": "مزامنة جميع حالات التفضيل",
+    "trackOfflineFavoritesSubtitle": "يسمح هذا بعرض أحدث حالات التفضيل أثناء عدم الاتصال بالإنترنت. لا يتم تنزيل أي ملفات إضافية.",
+    "allPlaylistsInfoSetting": "تنزيل المعلومات الوصفية لقائمة التشغيل",
+    "allPlaylistsInfoSettingSubtitle": "مزامنة المعلومات الوصفية لجميع قوائم التشغيل لتحسين تجربة قائمة التشغيل الخاصة بك",
+    "downloadFavoritesSetting": "تنزيل جميع الأغاني المفضلة",
+    "downloadAllPlaylistsSetting": "تنزيل جميع قوائم التشغيل",
+    "downloadAllPlaylistsSettingWarning": "ملحوظة: سيؤدي هذا إلى تنزيل جميع العناصر في جميع قوائم التشغيل، بغض النظر عن المكتبة التي تنتمي إليها.",
+    "fiveLatestAlbumsSetting": "تنزيل أحدث 5 ألبومات",
+    "fiveLatestAlbumsSettingSubtitle": "ستتم إزالة التنزيلات بمجرد انتهاء صلاحيتها. يمكنك قفل التنزيل لمنع إزالة الألبوم.",
+    "cacheLibraryImagesSettings": "تخزين صور المكتبة الحالية مؤقتًا",
+    "cacheLibraryImagesSettingsSubtitle": "سيتم تنزيل جميع أغلفة الألبومات والفنانين والأنواع الموسيقيى وقوائم التشغيل الموجودة في المكتبة النشطة حاليًا.",
+    "showProgressOnNowPlayingBarTitle": "إظهار تقدم الأغنية في المشغل المصغر بالتطبيق",
+    "@showProgressOnNowPlayingBarTitle": {
+        "description": "Title for the setting that controls if the in-app miniplayer / now playing bar at the bottom of the music screen functions as a progress bar"
+    },
+    "showProgressOnNowPlayingBarSubtitle": "يتحكم في ما إذا كان المشغل المصغر بالتطبيق / شريط التشغيل أسفل شاشة الموسيقى يعمل كشريط لتقدم الأغنية.",
+    "@showProgressOnNowPlayingBarSubtitle": {
+        "description": "Subtitle for the setting that controls if the now playing bar / miniplayer at the bottom of the music screen functions as a progress bar"
+    },
+    "lyricsScreenButtonTitle": "الكلمات",
+    "@lyricsScreenButtonTitle": {
+        "description": "Label for the button for opening the lyrics screen"
+    },
+    "lyricsScreen": "عرض كلمات الأغنية",
+    "@lyricsScreen": {
+        "description": "Name for the view/screen that shows lyrics for the currently playing track"
+    },
+    "showLyricsTimestampsTitle": "إظهار الطوابع الزمنية للكلمات المتزامنة",
+    "@showLyricsTimestampsTitle": {
+        "description": "Title for the setting that controls if timestamps are shown for lyrics"
+    },
+    "showLyricsTimestampsSubtitle": "يتحكم في إظهار الطابع الزمني لكل سطر من كلمات الأغنية في شاشة العرض، في حال توفره.",
+    "@showLyricsTimestampsSubtitle": {
+        "description": "Subtitle for the setting that controls if timestamps are shown for lyrics"
+    },
+    "showStopButtonOnMediaNotificationTitle": "إظهار زر التوقف في إشعار الوسائط",
+    "@showStopButtonOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a stop button."
+    },
+    "showStopButtonOnMediaNotificationSubtitle": "يتحكم في وجود زر التوقف في إشعار الوسائط. يتيح لك هذا إيقاف التشغيل دون الحاجة لفتح التطبيق.",
+    "@showStopButtonOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a stop button."
+    },
+    "showShuffleButtonOnMediaNotificationTitle": "إظهار زر التشغيل العشوائي في إشعار الوسائط",
+    "@showShuffleButtonOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a shuffle button."
+    },
+    "showShuffleButtonOnMediaNotificationSubtitle": "يتحكم في وجود زر التشغيل العشوائي في إشعار الوسائط. يتيح لك هذا تفعيل أو إلغاء التشغيل العشوائي للأغاني دون الحاجة لفتح التطبيق.",
+    "@showShuffleButtonOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a shuffle button."
+    },
+    "showFavoriteButtonOnMediaNotificationTitle": "إظهار زر المفضلة في إشعار الوسائط",
+    "@showFavoriteButtonOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a favorite button."
+    },
+    "showFavoriteButtonOnMediaNotificationSubtitle": "يتحكم في وجود زر المفضلة في إشعار الوسائط. يتيح لك هذا إضافة أو إزالة الأغنية الحالية من المفضلة دون الحاجة لفتح التطبيق. يختفي هذا الزر في وضع عدم الاتصال.",
+    "@showFavoriteButtonOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a favorite button."
+    },
+    "showSeekControlsOnMediaNotificationTitle": "السماح بتقديم وتأخير الأغنية في إشعار الوسائط",
+    "@showSeekControlsOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a seekable progress bar."
+    },
+    "showSeekControlsOnMediaNotificationSubtitle": "يتحكم في وجود شريط تقدم قابل للسحب في إشعار الوسائط. يتيح لك هذا تغيير موضع تشغيل الأغنية دون الحاجة لفتح التطبيق.",
+    "@showSeekControlsOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a seekable progress bar."
+    },
+    "lyricsEmptyStateLoading": "جارٍ تحميل كلمات الأغنية...",
+    "@lyricsEmptyStateLoading": {
+        "description": "Message shown while lyrics are being loaded"
+    },
+    "lyricsEmptyStateFailed": "تعذر تحميل كلمات الأغنية",
+    "@lyricsEmptyStateFailed": {
+        "description": "Message shown when lyrics failed to load"
+    },
+    "lyricsEmptyStateNoLyrics": "لا توجد كلمات للأغنية",
+    "@lyricsEmptyStateNoLyrics": {
+        "description": "Message shown when no lyrics are available for the current track"
+    },
+    "lyricsMissingLyricLinePlaceholder": "سطر كلمات أغنية مفقود",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "alignmentOptionStart": "البداية",
+    "@alignmentOptionStart": {
+        "description": "Alignment option for things like the lyrics view. Start means left-aligned in LTR languages and right-aligned in RTL languages."
+    },
+    "alignmentOptionCenter": "الوسط",
+    "@alignmentOptionCenter": {
+        "description": "Alignment option for things like the lyrics view. Center means centered."
+    },
+    "alignmentOptionEnd": "النهاية",
+    "@alignmentOptionEnd": {
+        "description": "Alignment option for things like the lyrics view. End means right-aligned in LTR languages and left-aligned in RTL languages."
+    },
+    "fontSizeOptionSmall": "صغير",
+    "@fontSizeOptionSmall": {
+        "description": "Font size option for things like the lyrics view. Small means a smaller font size."
+    },
+    "fontSizeOptionMedium": "متوسط",
+    "@fontSizeOptionMedium": {
+        "description": "Font size option for things like the lyrics view. Medium means a medium font size."
+    },
+    "fontSizeOptionLarge": "كبير",
+    "@fontSizeOptionLarge": {
+        "description": "Font size option for things like the lyrics view. Large means a larger font size."
+    },
+    "lyricsAlignmentTitle": "محاذاة كلمات الأغنية",
+    "@lyricsAlignmentTitle": {
+        "description": "Title for the setting that controls the alignment of lyrics in the lyrics view"
+    },
+    "lyricsAlignmentSubtitle": "يتحكم في محاذاة كلمات الأغنية في شاشة العرض.",
+    "@lyricsAlignmentSubtitle": {
+        "description": "Subtitle for the setting that controls the alignment of lyrics in the lyrics view"
+    },
+    "lyricsFontSizeTitle": "حجم خط كلمات الأغنية",
+    "@lyricsFontSizeTitle": {
+        "description": "Title for the setting that controls the font size of lyrics in the lyrics view"
+    },
+    "lyricsFontSizeSubtitle": "يتحكم في حجم خط كلمات الأغنية في شاشة العرض.",
+    "@lyricsFontSizeSubtitle": {
+        "description": "Subtitle for the setting that controls the font size of lyrics in the lyrics view"
+    },
+    "showLyricsScreenAlbumPreludeTitle": "إظهار غلاف الألبوم قبل كلمات الأغنية",
+    "@showLyricsScreenAlbumPreludeTitle": {
+        "description": "Title for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
+    },
+    "showLyricsScreenAlbumPreludeSubtitle": "يتحكم في إظهار غلاف الألبوم فوق كلمات الأغنية قبل أن يختفي عند التمرير.",
+    "@showLyricsScreenAlbumPreludeSubtitle": {
+        "description": "Subtitle for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
+    },
+    "keepScreenOn": "إبقاء الشاشة قيد التشغيل",
+    "@keepScreenOn": {
+        "description": "Option to keep the screen on while using the app"
+    },
+    "keepScreenOnSubtitle": "متى يتم إبقاء الشاشة قيد التشغيل",
+    "keepScreenOnDisabled": "مُعطّل",
+    "keepScreenOnAlwaysOn": "قيد التشغيل دائمًا",
+    "keepScreenOnWhilePlaying": "أثناء تشغيل الموسيقى",
+    "keepScreenOnWhileLyrics": "أثناء عرض كلمات الأغنية",
+    "keepScreenOnWhilePluggedIn": "إبقاء الشاشة قيد التشغيل فقط أثناء الشحن",
+    "keepScreenOnWhilePluggedInSubtitle": "تجاهل إعداد \"إبقاء الشاشة قيد التشغيل\" عند فصل الشاحن",
+    "genericToggleButtonTooltip": "انقر للتبديل.",
+    "@genericToggleButtonTooltip": {
+        "description": "Tooltip for toggle buttons that can be tapped to toggle their state"
+    },
+    "artwork": "الغلاف",
+    "artworkTooltip": "الغلاف الخاص بـ {title}",
+    "@artworkTooltip": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "Abbey Road"
+            }
+        },
+        "description": "Tooltip for album artwork on track and album tiles as well as the album screen"
+    },
+    "playerAlbumArtworkTooltip": "الغلاف الخاص بـ {title}. انقر للتبديل بين الإيقاف والتشغيل. اسحب لليسار أو اليمين لتبديل الأغاني.",
+    "@playerAlbumArtworkTooltip": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "Abbey Road"
+            }
+        },
+        "description": "Tooltip for the album artwork on the player screen"
+    },
+    "nowPlayingBarTooltip": "فتح شاشة المشغل",
+    "@nowPlayingBarTooltip": {
+        "description": "Tooltip for the now playing bar at the bottom of the screen"
+    },
+    "additionalPeople": "الأشخاص",
+    "@additionalPeople": {
+        "description": "Label for the feature chips showing additional people in the credits of a track or album"
+    },
+    "playbackMode": "وضع التشغيل",
+    "@playbackMode": {
+        "description": "Label for the feature chips showing the playback mode of a track. See [playbackModeLocal], [playbackModeDirectPlaying], and [playbackModeTranscoding]"
+    },
+    "codec": "الترميز",
+    "@codec": {
+        "description": "Label for the feature chips showing the codec of a track"
+    },
+    "bitRate": "معدل البت",
+    "@bitRate": {
+        "description": "Label for the feature chips showing the bit rate of a track"
+    },
+    "bitDepth": "عمق البت",
+    "@bitDepth": {
+        "description": "Label for the feature chips showing the bit depth of a track"
+    },
+    "size": "الحجم",
+    "@size": {
+        "description": "Label for the feature chips showing the size (original file size or transcoded size, if available) of a track"
+    },
+    "normalizationGain": "كسب الصوت",
+    "@normalizationGain": {
+        "description": "Label for the feature chips showing the normalization gain / LUFS offset of a track"
+    },
+    "sampleRate": "معدل العينة",
+    "@sampleRate": {
+        "description": "Label for the feature chips showing the sample rate of a track"
+    },
+    "showFeatureChipsToggleTitle": "إظهار معلومات الأغنية المتقدمة",
+    "@showFeatureChipsToggleTitle": {
+        "description": "Title for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
+    },
+    "showFeatureChipsToggleSubtitle": "إظهار معلومات الأغنية المتقدمة مثل الترميز ومعدل البت والمزيد على شاشة المشغل.",
+    "@showFeatureChipsToggleSubtitle": {
+        "description": "Subtitle for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
+    },
+    "seeAll": "عرض الكل",
+    "@seeAll": {
+        "description": ""
+    },
+    "albumScreen": "شاشة الألبومات",
+    "@albumScreen": {
+        "description": "Name for the view/screen that shows albums"
+    },
+    "showCoversOnAlbumScreenTitle": "إظهار غلاف الألبوم لكل أغنية",
+    "@showCoversOnAlbumScreenTitle": {
+        "description": "Title for the setting that controls if album covers are shown for each track separately on the album screen"
+    },
+    "showCoversOnAlbumScreenSubtitle": "إظهار غلاف الألبوم لكل أغنية بشكل منفصل في شاشة الألبوم.",
+    "@showCoversOnAlbumScreenSubtitle": {
+        "description": "Subtitle for the setting that controls if album covers are shown for each track separately on the album screen"
+    },
+    "artistScreen": "شاشة الفنانين",
+    "@artistScreen": {
+        "description": "Name for the view/screen that shows artists"
+    },
+    "applyFilterOnGenreChipTapTitle": "تطبيق التصفية عند الضغط على النوع الموسيقي",
+    "@applyFilterOnGenreChipTapTitle": {
+        "description": "Title for the setting that controls if taps on genre chips should apply a genre filter to the current screen or should redirect to the GenreScreen."
+    },
+    "applyFilterOnGenreChipTapSubtitle": "بشكل افتراضي، الضغط على النوع الموسيقي يفتحه، بينما يؤدي الضغط المطول إلى تصفية الفنان أو قائمة التشغيل حسب ذلك النوع. عند تفعيل هذا الخيار، سيتم عكس هذا الإجراء.",
+    "@applyFilterOnGenreChipTapSubtitle": {
+        "description": "Subtitle for the setting that controls if taps on genres should apply a genre filter to the current screen or should redirect to the GenreScreen."
+    },
+    "applyFilterOnGenreChipTapPrompt": "تم تطبيق تصفية النوع الموسيقي",
+    "@applyFilterOnGenreChipTapPrompt": {
+        "description": "A snackbar that is shown to the user if a genre filter was applied due to their selected settings"
+    },
+    "applyFilterOnGenreChipTapPromptButton": "فتح النوع الموسيقي",
+    "@applyFilterOnGenreChipTapPromptButton": {
+        "description": "The button for the snackbar that is shown to the user if a genre filter was applied due to their selected settings"
+    },
+    "genreScreen": "شاشة الأنواع الموسيقية",
+    "@genreScreen": {
+        "description": "Name for the view/screen that shows genres"
+    },
+    "emptyTopTracksList": "لم تستمع إلى أي أغنية لهذا الفنان بعد.",
+    "@emptyTopTracksList": {
+        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
+    },
+    "emptyAlbum": "لا توجد أغاني.",
+    "@emptyAlbum": {
+        "description": "Message shown as a placeholder when an album or playlist is empty."
+    },
+    "emptyFilteredListTitle": "لا توجد عناصر",
+    "@emptyFilteredListTitle": {
+        "description": "Message shown when a list of items is filtered and no items match the filter"
+    },
+    "emptyFilteredListSubtitle": "لا توجد عناصر مطابقة للتصفية. حاول إيقاف التصفية أو تغيير عبارة البحث.",
+    "@emptyFilteredListSubtitle": {
+        "description": "Message shown when a list of items is filtered and no items match the filter"
+    },
+    "resetFiltersButton": "إعادة ضبط التصفية",
+    "@resetFiltersButton": {
+        "description": "Button to reset filters on a list of items"
+    },
+    "resetSettingsPromptGlobal": "هل أنت متأكد من رغبتك في إعادة ضبط جميع الإعدادات إلى قيمها الافتراضية؟",
+    "@resetSettingsPromptGlobal": {
+        "description": "Prompt which gets shown when the user is about to reset all settings to their default values"
+    },
+    "resetSettingsPromptGlobalConfirm": "إعادة ضبط جميع الإعدادات",
+    "@resetSettingsPromptGlobalConfirm": {
+        "description": "A differently worded Confirm button to prevent the user from instandly clicking confirm because they are about to reset all settings to their default value"
+    },
+    "resetSettingsPromptLocal": "هل تريد إعادة ضبط هذه الإعدادات إلى قيمها الافتراضية؟",
+    "@resetSettingsPromptLocal": {
+        "description": "Prompt which gets shown when the user is about to reset all settings in the current settings window to their default values"
+    },
+    "genericCancel": "إلغاء",
+    "@genericCancel": {
+        "description": "Used when the user stops an action from taking place inside a popup dialog window"
+    },
+    "itemDeletedSnackbar": "تم حذف {itemType, select, album{الألبوم} playlist{قائمة التشغيل} artist{الفنان} genre{النوع الموسيقي} track{الأغنية} library{المكتبة} other{العنصر}} من {deviceType, select, device{الجهاز} server{الخادم} other{جهة غير معروفة}}",
+    "@itemDeletedSnackbar": {
+        "description": "Used whenever item gets deleted from the device or server, message in snackbar"
+    },
+    "allowDeleteFromServerTitle": "السماح بالحذف من الخادم",
+    "@allowDeleteFromServerTitle": {
+        "description": "Title for the setting that controls if items can be deleted from the server"
+    },
+    "allowDeleteFromServerSubtitle": "تفعيل وتعطيل خيار الحذف النهائي لأي أغنية من ملفات الخادم عندما يكون الحذف متاحًا.",
+    "@allowDeleteFromServerSubtitle": {
+        "description": "Subtitle for the setting that controls if items can be deleted from the server"
+    },
+    "deleteFromTargetDialogText": "أنت على وشك حذف {itemType, select, album{الألبوم} playlist{قائمة التشغيل} artist{الفنان} genre{النوع الموسيقي} track{الأغنية} library{المكتبة} other{العنصر}} من {device, select, device{هذا الجهاز} server{ملفات ومكتبة الخادم.{deleteType, select, canDelete{ سيؤدي هذا أيضًا إلى حذف هذا العنصر من هذا الجهاز.} cantDelete{ سيبقى هذا العنصر على هذا الجهاز حتى المزامنة التالية.} notDownloaded{} other{}}\nهذا الإجراء لا يمكن التراجع عنه} other{}}.",
+    "@deleteFromTargetDialogText": {
+        "description": "(Important: Note the space in front of some cases) A Confirm Prompt used whenever an item is about to be deleted from the device or server. The Server case should explain that this cannot be reverted, this information is not needed for the device since the user can just download the track again. The delete Type adapts the server text even more in can the user can or cant delete the item."
+    },
+    "deleteFromTargetConfirmButton": "حذف{target, select, device{ من الجهاز} server{ من الخادم} other{}}",
+    "@deleteFromTargetConfirmButton": {
+        "description": "(Important: Note the space in front of some cases) The button the user needs to press to execute the delete action. If no target is set, the text should just be a generic 'delete' text. This button is both visible before and after the delete confirm prompt."
+    },
+    "largeDownloadWarning": "تحذير: أنت على وشك تنزيل {count} أغنية.",
+    "@largeDownloadWarning": {
+        "description": "A line of warning text on the download dialog when large numbers of tracks are downloaded at once.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadSizeWarningCutoff": "حد تحذير حجم التنزيل",
+    "@downloadSizeWarningCutoff": {
+        "description": "Title for the setting controlling when to warn about a large download"
+    },
+    "downloadSizeWarningCutoffSubtitle": "ستظهر رسالة تحذير عند تنزيل أكثر من هذا العدد من الأغاني في مرة واحدة.",
+    "@downloadSizeWarningCutoffSubtitle": {
+        "description": "Subtitle for the setting controlling when to warn about a large download"
+    },
+    "confirmAddCollectionItemToPlaylist": "هل أنت متأكد من رغبتك في إضافة جميع الأغاني من {itemType, select, album{الألبوم} playlist{قائمة التشغيل} artist{الفنان} genre{النوع الموسيقي} other{العنصر}} '{itemName}' إلى قائمة التشغيل هذه؟ لا يمكن إزالتها إلا بشكل فردي.",
+    "@confirmAddCollectionItemToPlaylist": {
+        "description": "Warning dialog for adding an album, artist, etc. or multiple tracks to a playlist, clarifying that this cannot be undone without removing all tracks individually and manually.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            },
+            "itemName": {
+                "type": "String"
+            }
+        }
+    },
+    "confirmAddMultipleTracksToPlaylist": "هل أنت متأكد من رغبتك في إضافة {trackCount} أغنية إلى قائمة التشغيل هذه؟ لا يمكن إزالتها إلا بشكل فردي.",
+    "@confirmAddMultipleTracksToPlaylist": {
+        "description": "Warning dialog for adding multiple tracks to a playlist, clarifying that this cannot be undone without removing all tracks individually and manually.",
+        "placeholders": {
+            "trackCount": {
+                "type": "int"
+            }
+        }
+    },
+    "publiclyVisiblePlaylist": "مرئية للعامة:",
+    "@publiclyVisiblePlaylist": {
+        "description": "Toggle for playlist creation where true means the playlist is publicly visible, false means only the creator can see it."
+    },
+    "releaseDateFormatYear": "السنة",
+    "@releaseDateFormatYear": {
+        "description": "Date format option for the release date of an album, showing only the year"
+    },
+    "releaseDateFormatISO": "ISO 8601",
+    "@releaseDateFormatISO": {
+        "description": "Date format option for the release date of an album, showing the full ISO 8601 date"
+    },
+    "releaseDateFormatMonthYear": "الشهر والسنة",
+    "@releaseDateFormatMonthYear": {
+        "description": "Date format option for the release date of an album, showing the year and month. Example: March 2022"
+    },
+    "releaseDateFormatMonthDayYear": "الشهر واليوم والسنة",
+    "@releaseDateFormatMonthDayYear": {
+        "description": "Date format option for the release date of an album, showing the year and month and day/date. Example: March 2, 2022"
+    },
+    "showAlbumReleaseDateOnPlayerScreenTitle": "إظهار تاريخ إصدار الألبوم في شاشة التشغيل",
+    "@showAlbumReleaseDateOnPlayerScreenTitle": {
+        "description": "Title for the setting that controls if the release date of an album is shown on the player screen"
+    },
+    "showAlbumReleaseDateOnPlayerScreenSubtitle": "إظهار تاريخ إصدار الألبوم في شاشة التشغيل، خلف اسم الألبوم.",
+    "@showAlbumReleaseDateOnPlayerScreenSubtitle": {
+        "description": "Subtitle for the setting that controls if the release date of an album is shown on the player screen"
+    },
+    "releaseDateFormatTitle": "تنسيق تاريخ الإصدار",
+    "@releaseDateFormatTitle": {
+        "description": "Title for the setting that controls the format release dates throughout the app."
+    },
+    "releaseDateFormatSubtitle": "التحكم في تنسيق جميع تواريخ الإصدار المعروضة في التطبيق.",
+    "@releaseDateFormatSubtitle": {
+        "description": "Subtitle for the setting that controls the format release dates throughout the app."
+    },
+    "additionalBaseItemInfoTitle": "معلومات العنصر الإضافية",
+    "@additionalBaseItemInfoTitle": {
+        "description": "Title for the setting that controls the displayed additional item info."
+    },
+    "additionalBaseItemInfoSubtitle": "التحكم في نوع المعلومات الإضافية التي تظهر في قوائم العناصر لكل نوع عنصر. عند ضبطه على \"متكيف\"، يتم اختيار المعلومات تلقائيًا بناءً على الفرز الحالي أو السياق.",
+    "@additionalBaseItemInfoSubtitle": {
+        "description": "Subtitle for the setting that controls the displayed additional item info."
+    },
+    "noReleaseDate": "لا يوجد تاريخ إصدار",
+    "@noReleaseDate": {
+        "description": "Placeholder text if an item has no release date set."
+    },
+    "noDateAdded": "لا يوجد تاريخ إضافة",
+    "@noDateAdded": {
+        "description": "Placeholder text if an item has no dateAdded set."
+    },
+    "noDateLastPlayed": "لم يتم تشغيلها بعد",
+    "@noDateLastPlayed": {
+        "description": "Placeholder text if an item has no lastPlayedDate set."
+    },
+    "librarySelectError": "خطأ في تحميل المكتبات المتاحة للمستخدم",
+    "@librarySelectError": {
+        "description": "Error shown when the library select screen fails to load."
+    },
+    "autoOfflineOptionOff": "معطل",
+    "@autoOfflineOptionOff": {
+        "description": "This is shown when the autoOffline feature is turned off and has no effects"
+    },
+    "autoOfflineOptionNetwork": "الشبكة المحلية",
+    "@autoOfflineOptionNetwork": {
+        "description": "This is shown when the autoOffline feature is set to \"local Network\", this means offline mode will be automatically enabled when no wifi or ethernet connection is active"
+    },
+    "autoOfflineOptionDisconnected": "غير متصل",
+    "@autoOfflineOptionDisconnected": {
+        "description": "This is shown when the autoOffline feature is set to Disconnected, this means offline mode will be automatically enabled when either wifi, ethernet or cellular is active"
+    },
+    "autoOfflineOptionUnreachable": "لا يمكن الوصول إليه",
+    "@autoOfflineOptionUnreachable": {
+        "description": "This is shown when the autoOffline feature is set to Unreachable, this means offline mode will be automatically enabled when - after a network change - the server cant be pinged"
+    },
+    "autoOfflineSettingSubtitle": "تفعيل وضع \"بدون اتصال\" تلقائيًا بناءً على اتصال الشبكة أو إمكانية الوصول إلى الخادم.",
+    "@autoOfflineSettingSubtitle": {
+        "description": "Subtitle for the automated offline mode setting."
+    },
+    "autoOfflineSettingDescription": "{disabledModeName}:\nلن يتم تفعيل وضع \"بدون اتصال\" تلقائيًا. قد يوفر ذلك من استهلاك البطارية.\n\n{localNetworkModeName}:\nتفعيل وضع \"بدون اتصال\" عند عدم وجود اتصال بشبكة Wi-Fi أو إيثرنت.\n\n{disconnectedModeName}:\nتفعيل وضع \"بدون اتصال\" عند انقطاع جميع سبل الاتصال.\n\n{unreachableModeName}:\nتفعيل وضع \"بدون اتصال\" عندما يتعذر الوصول إلى الخادم بعد تغيير الشبكات.\n\nيمكنك دائمًا تبديل وضع \"بدون اتصال\" يدويًا، مما سيؤدي إلى إيقاف التشغيل التلقائي مؤقتًا حتى تقوم بإعادة تفعيله.",
+    "@autoOfflineSettingDescription": {
+        "description": "Setting description. Make sure the Mode names match the translations.",
+        "placeholders": {
+            "disabledModeName": {
+                "type": "String"
+            },
+            "localNetworkModeName": {
+                "type": "String"
+            },
+            "disconnectedModeName": {
+                "type": "String"
+            },
+            "unreachableModeName": {
+                "type": "String"
+            }
+        }
+    },
+    "autoOfflineSettingTitle": "وضع \"بدون اتصال\" التلقائي",
+    "autoOfflineNotification": "تفعيل وضع \"بدون اتصال\" تلقائيًا {state, select, enabled{مُفعّل} disabled{مُعطّل} other{set quantum position for}}",
+    "@autoOfflineNotification": {
+        "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
+    },
+    "audioFadeOutDurationSettingTitle": "مدة تلاشي الصوت تدريجيًا عند النهاية",
+    "@audioFadeOutDurationSettingTitle": {
+        "description": "Title for the audio fade-out duration setting."
+    },
+    "audioFadeOutDurationSettingSubtitle": "مدة تلاشي الصوت تدريجيًا بالملي ثانية.",
+    "@audioFadeOutDurationSettingSubtitle": {
+        "description": "Subtitle for the audio fade-out duration setting. Set to 0 to disable fade-out."
+    },
+    "audioFadeInDurationSettingTitle": "مدة ظهور الصوت تدريجيًا عند البداية",
+    "@audioFadeInDurationSettingTitle": {
+        "description": "Title for the audio fade-in duration setting."
+    },
+    "audioFadeInDurationSettingSubtitle": "مدة ظهور الصوت تدريجيًا عند البداية بالملي ثانية. اضبط القيمة على 0 لتعطيل الظهور التدريجي.",
+    "@audioFadeInDurationSettingSubtitle": {
+        "description": "Subtitle for the audio fade-in duration setting. Set to 0 to disable fade-in."
+    },
+    "outputMenuButtonTitle": "مخرج الصوت",
+    "@outputMenuButtonTitle": {
+        "description": "Button title for opening the output menu/panel"
+    },
+    "outputMenuTitle": "تغيير مخرج الصوت",
+    "@outputMenuTitle": {
+        "description": "Title for the output menu that allows the user to change the audio output device and volume"
+    },
+    "outputMenuVolumeSectionTitle": "مستوى الصوت",
+    "@outputMenuVolumeSectionTitle": {
+        "description": "Title for the volume section in the output menu"
+    },
+    "outputMenuDevicesSectionTitle": "الأجهزة المتاحة",
+    "@outputMenuDevicesSectionTitle": {
+        "description": "Title for the available devices section in the output menu"
+    },
+    "outputMenuOpenConnectionSettingsButtonTitle": "الاتصال بجهاز",
+    "@outputMenuOpenConnectionSettingsButtonTitle": {
+        "description": "Button title for connecting to a device from the output menu"
+    },
+    "deviceType": "{type, select, speaker{مكبر صوت الجهاز} tv{تلفزيون} bluetooth{بلوتوث} other{غير معروف}}",
+    "@deviceType": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        },
+        "description": "Label for the type of device in the output menu"
+    },
+    "itemCount": "{childType, select, track{{amount, plural, =1{أغنية واحدة} other{{amount} أغنية}}} album{{amount, plural, =1{ألبوم واحد} other{{amount} ألبوم}}} other{{amount, plural, =1{عنصر واحد} other{{amount} عنصر}}}}",
+    "@itemCount": {
+        "description": "Amount of various child item, like artist albums, performing artist tracks, or genre albums. Shown for example in the menu headers.",
+        "placeholders": {
+            "childType": {
+                "type": "String",
+                "example": "album",
+                "description": "Options match BaseItemDtoType.name"
+            },
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "itemCountLoading": "{childType, select, track{أغنيات} album{ألبومات} other{عناصر}}",
+    "@itemCountLoading": {
+        "description": "Shown while the item count is being calculated.",
+        "placeholders": {
+            "childType": {
+                "type": "String",
+                "example": "album",
+                "description": "Options match BaseItemDtoType.name"
+            }
+        }
+    },
+    "itemCountCalculating": "جارٍ حساب عدد العناصر",
+    "@itemCountCalculating": {
+        "description": "Shown to screen readers while the item count is being calculated."
+    },
+    "preferLocalNetworkActiveAddressInfoText": "العنوان النشط",
+    "@preferLocalNetworkActiveAddressInfoText": {
+        "description": "Shows the active address inside the network settings screen so the user can see if this feature works"
+    },
+    "preferLocalNetworkTargetAddressLocalSettingTitle": "عنوان الشبكة المحلية",
+    "preferLocalNetworkTargetAddressLocalSettingDescription": "عنوان خادم Jellyfin داخل شبكتك المحلية",
+    "preferLocalNetworkEnableSwitchTitle": "تفضيل الشبكة المحلية",
+    "preferLocalNetworkEnableSwitchDescription": "ما إذا كان سيتم استخدام عنوان مختلف عند تواجدك داخل الشبكة المحلية لخادم Jellyfin الخاص بك",
+    "preferLocalNetworkPublicAddressSettingTitle": "العنوان العام",
+    "preferLocalNetworkPublicAddressSettingDescription": "العنوان الرئيسي المستخدم للاتصال بخادم Jellyfin الخاص بك",
+    "preferLocalNetworkInfoBox": "تتطلب هذه الميزة أذونات الموقع الجغرافي (ويجب تفعيل الموقع) لقراءة اسم الشبكة.",
+    "@preferLocalNetworkInfoBox": {
+        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
+    },
+    "networkSettingsTitle": "الشبكة",
+    "@networkSettingsTitle": {
+        "description": "Title for the network settings screen"
+    },
+    "downloadPaused": "تم إيقاف التنزيل مؤقتًا لأن الجهاز غير متصل بشبكة WiFi",
+    "@downloadPaused": {
+        "description": "Gets shown in the snackbar if loosing wifi connection while downloads are running and the 'requireWifiForDownloads' is enabled"
+    },
+    "missingSchemaError": "يجب أن يبدأ الرابط بـ http(s)://",
+    "@missingSchemaError": {
+        "description": "Snackbar message when the user changes their home/public address but it doesn't start with http"
+    },
+    "testConnectionButtonLabel": "اختبار الاتصالين",
+    "@testConnectionButtonLabel": {
+        "description": "Button to test the public and local url inside the network settings tab"
+    },
+    "ping": "{status, select, true_true{كلاهما متاح} true_false{فشل الوصول إلى العنوان المحلي} false_true{فشل الوصول إلى العنوان العام} false_false{فشل الوصول إلى كليهما} other{غير معروف}}",
+    "@ping": {
+        "description": "Gets shown in the Snackbar when using the Test Connection Button inside the Network Settings. true means reachable, false means unreachable. the first value is for the public address, the second value is fot the home address."
+    },
+    "autoReloadQueueTitle": "إعادة تحميل قائمة الانتظار تلقائيًا",
+    "@autoReloadQueueTitle": {
+        "description": "Title for the setting that controls if the queue is automatically reloaded when the source changes"
+    },
+    "autoReloadQueueSubtitle": "إعادة تحميل قائمة الانتظار تلقائيًا عند تغيير المصدر (مثل تفعيل الوضع غير المتصل أو تغيير عنوان الخادم). في حال التعطيل، سيقوم Finamp بسؤالك بدلاً من ذلك.",
+    "@autoReloadQueueSubtitle": {
+        "description": "Subtitle for the setting that controls if the queue is automatically reloaded when the source changes"
+    },
+    "clearQueueOnStopEventTitle": "مسح قائمة الانتظار عند الإيقاف الخارجي",
+    "@clearQueueOnStopEventTitle": {
+        "description": "Title for the setting that controls if OS stop commands clear the queue."
+    },
+    "clearQueueOnStopEventSubtitle": "مسح قائمة الانتظار وإغلاق المشغل في حال استلام أمر \"إيقاف\" من نظام التشغيل. ستؤدي إجراءات الإيقاف داخل التطبيق دائمًا إلى إغلاق المشغل ومسح قائمة الانتظار.",
+    "@clearQueueOnStopEventSubtitle": {
+        "description": "Subtitle for the setting that controls if OS stop commands clear the queue."
+    },
+    "radioModeSettingsTitle": "وضع الراديو",
+    "@radioModeSettingsTitle": {
+        "description": "Title for the setting that controls the radio mode/algorithm."
+    },
+    "radioModeSettingsSubtitle": "يضبط الطريقة التي تعتمد عليها ميزة الراديو لاختيار الأغنيات لإضافتها.",
+    "@radioModeSettingsSubtitle": {
+        "description": "Subtitle for the setting that controls the radio mode/algorithm."
+    },
+    "radioModeMenuTitle": "اختيار وضع الراديو",
+    "@radioModeMenuTitle": {
+        "description": "Title for menu that allows users to choose the radio mode."
+    },
+    "loopingOverriddenByRadioSubtitle": "يتم تعطيل تكرار قائمة الانتظار أثناء تفعيل وضع الراديو",
+    "@loopingOverriddenByRadioSubtitle": {
+        "description": "Subtitle displayed in the radio menu to show that queue looping is disabled while radio mode is enabled."
+    },
+    "radioFailedSubtitle": "لم يتم العثور على المزيد من أغنيات الراديو. جرّب تغيير الوضع.",
+    "@radioFailedSubtitle": {
+        "description": "Subtitle displayed in the radio menu to show that no radio tracks could be generated."
+    },
+    "radioModeActiveTitle": "الراديو نشط",
+    "@radioModeActiveTitle": {
+        "description": "Title displayed in the queue to show that radio mode is enabled and active."
+    },
+    "radioModeDisabledTitle": "الراديو معطل",
+    "@radioModeDisabledTitle": {
+        "description": "Title displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeInactiveTitle": "الراديو متوقف مؤقتًا",
+    "@radioModeInactiveTitle": {
+        "description": "Title displayed in the queue to show that the radio is enabled but not active."
+    },
+    "radioModeEnableButtonTitle": "تفعيل الراديو",
+    "@radioModeEnableButtonTitle": {
+        "description": "Title for the option that enables radio mode."
+    },
+    "radioModeDisableButtonTitle": "إيقاف الراديو",
+    "@radioModeDisableButtonTitle": {
+        "description": "Title for the option that disables radio mode."
+    },
+    "radioModeDisableButtonSubtitle": "يعود إلى وضع التكرار السابق",
+    "@radioModeDisableButtonSubtitle": {
+        "description": "Subtitle for the option that disables radio mode."
+    },
+    "radioModeEnabledSubtitle": "انقر للتكوين",
+    "@radioModeEnabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show when radio mode is enabled."
+    },
+    "radioModeDisabledSubtitle": "انقر للتفعيل",
+    "@radioModeDisabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "الوضع الحالي غير متاح دون اتصال.",
+    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
+    },
+    "radioModeUnavailableWhileOfflineDescription": "غير متاح دون اتصال",
+    "@radioModeUnavailableWhileOfflineDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
+    },
+    "radioModeUnavailableWhileOfflineSubtitle": "{modeName} غير متاح دون اتصال",
+    "@radioModeUnavailableWhileOfflineSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
+    },
+    "radioModeUnavailableForSourceItemDescription": "غير متاح لمصدر قائمة الانتظار هذا",
+    "@radioModeUnavailableForSourceItemDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
+    },
+    "radioModeUnavailableForSourceItemSubtitle": "{modeName} غير متاح لمصدر قائمة الانتظار هذا",
+    "@radioModeUnavailableForSourceItemSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
+    },
+    "radioModeUnavailableQueueEmptyDescription": "غير متاح لأن قائمة الانتظار فارغة",
+    "@radioModeUnavailableQueueEmptyDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioModeUnavailableQueueEmptySubtitle": "{modeName} غير متاح لأن قائمة الانتظار فارغة",
+    "@radioModeUnavailableQueueEmptySubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioModeRandomUnavailableNotDownloadedDescription": "غير متاح لأن '{sourceName}' لم يتم تنزيله",
+    "@radioModeRandomUnavailableNotDownloadedDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedSubtitle": "{modeName} غير متاح لأن '{sourceName}' لم يتم تنزيله",
+    "@radioModeRandomUnavailableNotDownloadedSubtitle": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            },
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericDescription": "غير متاح لأن المصدر لم يتم تنزيله",
+    "@radioModeRandomUnavailableNotDownloadedGenericDescription": {
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericSubtitle": "{modeName} غير متاح لأن المصدر لم يتم تنزيله",
+    "@radioModeRandomUnavailableNotDownloadedGenericSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "radioNoTracksFound": "تعذر بدء الراديو لعدم العثور على أغنية مناسبة.",
+    "@radioNoTracksFound": {
+        "description": "Shown when the user tries to start radio mode but no suitable tracks were found to start the radio with."
+    },
+    "loopingUnavailableWhileRadioActiveWarning": "تغيير وضع التكرار غير متاح أثناء تفعيل الراديو، حيث ستستمر قائمة الانتظار بلا نهاية.",
+    "@loopingUnavailableWhileRadioActiveWarning": {
+        "description": "Warning message when trying to change the loop mode while radio is active."
+    },
+    "autoReloadPrompt": "أعد تحميل قائمة الانتظار لتطبيق {type, select, network{إعدادات الشبكة} transcoding{إعدادات تحويل الترميز} other{الإعدادات}} الجديدة",
+    "@autoReloadPrompt": {
+        "description": "Prompt shown when the queue needs to be reloaded after changing network settings",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "autoReloadPromptMissingTracks": "سيتم إزالة {amountUndownloadedTracks, plural, =1{أغنية واحدة} other{{amountUndownloadedTracks} أغنية}} من قائمة الانتظار لأنها لم يتم تنزيلها.",
+    "@autoReloadPromptMissingTracks": {
+        "description": "Additional prompt text shown when the queue needs to be reloaded after changing network settings and some undownloaded tracks are in the queue",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            }
+        }
+    },
+    "menuButtonLabel": "المزيد من الإجراءات",
+    "@menuButtonLabel": {
+        "description": "Generic label for menu buttons shown throughout the app. Used for the album, artist, playlist, etc. menus"
+    },
+    "autoReloadPromptReloadButton": "إعادة التحميل",
+    "@autoReloadPromptReloadButton": {
+        "description": "Button title for reloading the queue after network settings change"
+    },
+    "notImplementedYet": "لم تُنفذ بعد.",
+    "@notImplementedYet": {
+        "description": "Message shown when a feature is not implemented yet"
+    },
+    "automaticOfflineModeOverrideActiveTitle": "التبديل التلقائي متوقف مؤقتًا",
+    "@automaticOfflineModeOverrideActiveTitle": {
+        "description": "Title for the label shown below the offline mode toggle when automatic offline mode switching is paused"
+    },
+    "automaticOfflineModeOverrideActiveSubtitle": "اضغط هنا للاستئناف",
+    "@automaticOfflineModeOverrideActiveSubtitle": {
+        "description": "Subtitle for the label shown below the offline mode toggle when automatic offline mode switching is paused"
+    },
+    "sleepTimerFinishLastTrack": "هل تنهي الأغنية الأخيرة؟",
+    "@sleepTimerFinishLastTrack": {
+        "description": "Option for the sleep timer that will finish the last track before stopping playback."
+    },
+    "sleepTimerAfterCurrentTrack": "بعد الأغنية الحالية",
+    "@sleepTimerAfterCurrentTrack": {
+        "description": "Option for the sleep timer that will stop playback after the current track finishes."
+    },
+    "sleepTimerStartTimer": "بدء المؤقت",
+    "@sleepTimerStartTimer": {
+        "description": "Label for the button that starts the sleep timer"
+    },
+    "syncPlaybackSpeedAndPitchLabel": "مزامنة السرعة وطبقة الصوت",
+    "@syncPlaybackSpeedAndPitchLabel": {
+        "description": "Label for the checkbox that toggled is the pitch is adjusted along with the playback speed, or if the pitch is kept constant. Shown in the speed submenu on the track menu"
+    },
+    "serverSharingMenuTitle": "مشاركة خادم الشبكة المحلية",
+    "@serverSharingMenuTitle": {
+        "description": "Title for the server sharing menu that allows the user to share their server address with other devices on the local network"
+    },
+    "serverSharingMenuButtonTitle": "مشاركة الخادم",
+    "@serverSharingMenuButtonTitle": {
+        "description": "Title for the button in the drawer that opens the server sharing menu"
+    },
+    "serverSharingMenuConfirmationDialogText": "هل أنت متأكد من رغبتك في تفعيل مشاركة الخادم على الرغم من أنك في وضع \"عدم الاتصال\"؟ سيؤدي هذا إلى قيام Finamp بإرسال البيانات عبر الشبكة المحلية.",
+    "@serverSharingMenuConfirmationDialogText": {
+        "description": "Dialog text shown when enabling server sharing while offline mode is enabled"
+    },
+    "serverSharingMenuConfirmationDialogConfirmationButtonLabel": "تأكيد وتفعيل",
+    "@serverSharingMenuConfirmationDialogConfirmationButtonLabel": {
+        "description": "Positive action label for the dialog shown when enabling server sharing while offline mode is enabled"
+    },
+    "serverSharingMenuControlTitleSharingEnabled": "مشاركة الخادم قيد التشغيل",
+    "@serverSharingMenuControlTitleSharingEnabled": {
+        "description": "Title of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned on"
+    },
+    "serverSharingMenuControlSubtitleSharingDisabled": "اضغط للمشاركة",
+    "@serverSharingMenuControlSubtitleSharingDisabled": {
+        "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned off"
+    },
+    "serverSharingMenuControlTitleSharingDisabled": "غير مُشارك",
+    "@serverSharingMenuControlTitleSharingDisabled": {
+        "description": "Title of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned off"
+    },
+    "serverSharingMenuControlSubtitleSharingEnabled": "اضغط للإيقاف",
+    "@serverSharingMenuControlSubtitleSharingEnabled": {
+        "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned on"
+    },
+    "serverSharingMenuDescription": "يمكن أن تكون مشاركة عنوان الخادم الخاص بك مفيدة لإعداد تطبيقات جديدة ليست على نفس الشبكة المحلية لخادم Jellyfin الخاص بك، مثل أجهزة التلفاز في الفنادق، أو حاسوبك في العمل، أو تطبيق جديد على هاتفك أثناء تنقلك.",
+    "@serverSharingMenuDescription": {
+        "description": "Description text shown in the server sharing menu, right below the controls"
+    },
+    "serverSharingMenuDetails": "تعمل هذه الميزة من خلال الاستماع لطلبات اكتشاف الخادم من التطبيقات الأخرى على الشبكة المحلية، ثم الرد عليها بالعنوان الذي تم إعداده لخادم Jellyfin الخاص بك.\nإذا قمت بإعداد عنوان محلي وعام معًا، فسيقوم Finamp بتوفيرهما معًا للتطبيق الذي أرسل الطلب.",
+    "@serverSharingMenuDetails": {
+        "description": "Description text shown in the server sharing menu, below the description"
+    },
+    "quickConnectAuthorizationMenuButtonTitle": "اعتماد الاتصال السريع",
+    "@quickConnectAuthorizationMenuButtonTitle": {
+        "description": "Title for the button in the drawer that opens the quick connect authorization menu"
+    },
+    "quickConnectAuthorizationMenuPrompt": "أدخل رمز الاتصال السريع",
+    "@quickConnectAuthorizationMenuPrompt": {
+        "description": "Title for the button in server sharing menu that opens the quick connect authorization menu"
+    },
+    "quickConnectAuthorizationMenuTitle": "اعتماد طلب الاتصال السريع",
+    "@quickConnectAuthorizationMenuTitle": {
+        "description": "Title for the quick connect authorization menu that allows the user to authorize a quick connect request from another device"
+    },
+    "quickConnectAuthorizationMenuInputLabel": "رمز الاتصال السريع",
+    "@quickConnectAuthorizationMenuInputLabel": {
+        "description": "Label for the quick connect code input, shown below the input field"
+    },
+    "quickConnectAuthorizationMenuStateSubtitleIdle": "يُرجى إدخال الرمز أو لصقه أدناه",
+    "@quickConnectAuthorizationMenuStateSubtitleIdle": {
+        "description": "Subtitle for the quick connect authorization menu state info (above the input field) while the code hasn't been submitted yet"
+    },
+    "quickConnectAuthorizationMenuStateTitleProcessing": "جارٍ محاولة اعتماد الطلب",
+    "@quickConnectAuthorizationMenuStateTitleProcessing": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) while a request is being processed"
+    },
+    "quickConnectAuthorizationMenuStateTitleSuccess": "تم اعتماد الطلب بنجاح",
+    "@quickConnectAuthorizationMenuStateTitleSuccess": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) when the authorization was successful"
+    },
+    "quickConnectAuthorizationMenuStateTitleFailed": "رمز الاتصال السريع غير صالح",
+    "@quickConnectAuthorizationMenuStateTitleFailed": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) when the authorization was unsuccessful"
+    },
+    "quickConnectAuthorizationMenuStateSubtitleFailed": "يُرجى التحقق من الرمز والمحاولة مرة أخرى",
+    "@quickConnectAuthorizationMenuStateSubtitleFailed": {
+        "description": "Subtitle for the quick connect authorization menu state info (above the input field) when the authorization was unsuccessful"
+    },
+    "quickConnectAuthorizationMenuDescription": "إذا كنت تحاول تسجيل الدخول إلى تطبيق Jellyfin آخر عبر \"الاتصال السريع\"، فيمكنك إدخال الرمز المكون من 6 أرقام أو لصقه في الحقل أعلاه. سيؤدي هذا إلى اعتماد طلب تسجيل دخول التطبيق الآخر، وتسجيل دخولك بنفس الحساب الذي تستخدمه في Finamp.",
+    "@quickConnectAuthorizationMenuDescription": {
+        "description": "Description for the quick connect authorization menu, shown at the bottom"
+    },
+    "accessibility": "إمكانية الوصول",
+    "@accessibility": {
+        "description": "Title for the accessibility settings screen"
+    },
+    "useHighContrastColorsTitle": "استخدام ألوان عالية التباين",
+    "@useHighContrastColorsTitle": {
+        "description": "Title for the setting that controls if high contrast colors are used throughout the app"
+    },
+    "useHighContrastColorsSubtitle": "استخدام ألوان ديناميكية عالية التباين لرؤية أفضل.",
+    "@useHighContrastColorsSubtitle": {
+        "description": "Subtitle for the setting that controls if high contrast colors are used throughout the app"
+    },
+    "autoExpandPlayerScreenTitle": "فتح شاشة المشغل عند بدء التشغيل",
+    "@autoExpandPlayerScreenTitle": {
+        "description": "Title for the setting that controls if the player screen is opened directly after starting a new queue"
+    },
+    "autoExpandPlayerScreenSubtitle": "سيؤدي هذا إلى فتح شاشة \"يتم تشغيله الآن\" عند بدء تشغيل قائمة تشغيل جديدة",
+    "@autoExpandPlayerScreenSubtitle": {
+        "description": "Subtitle for the setting that controls if the player screen is opened directly after starting a new queue"
+    },
+    "discordRPCSettingTitle": "Discord RPC",
+    "@discordRPCSettingTitle": {
+        "description": "Title for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
+    },
+    "discordRPCSettingDescription": "تفعيل ميزة Discord Rich Presence لإظهار ما تستمع إليه في حالتك على Discord. لن يتم الاتصال بـ Discord في حال تفعيل \"وضع عدم الاتصال\".",
+    "@discordRPCSettingDescription": {
+        "description": "Description for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
+    },
+    "discordRPCIconSettingTitle": "أيقونة RPC الاحتياطية",
+    "@discordRPCIconSettingTitle": {
+        "description": "Title for the setting that controls which icon gets shown in the Discord RPC (Rich Presence) in case the local address is in use"
+    },
+    "discordRPCIconSettingDescription": "الأيقونة الاحتياطية التي تظهر عند عدم اكتشاف عنوان عام. (بما أن Discord لا يمكنه تحميل الصور من العنوان المحلي، فسيستخدم الأيقونة الاحتياطية الخاصة به)",
+    "@discordRPCIconSettingDescription": {
+        "description": "Description for the setting that controls which Icon the discord RPC displays as a Fallback in case no public address is detected (it doenst matter what connection is active)."
+    },
+    "discordRPCIconDark": "Finamp - داكن",
+    "@discordRPCIconDark": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with the Dark-Theme Background"
+    },
+    "discordRPCIconBlack": "Finamp - أسود",
+    "@discordRPCIconBlack": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a Black Background"
+    },
+    "discordRPCIconLight": "Finamp - أبيض",
+    "@discordRPCIconLight": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a White Background"
+    },
+    "discordRPCIconJFTransparent": "Jellyfin - شفاف",
+    "@discordRPCIconJFTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Jellyfin logo with a Transparent Background"
+    },
+    "discordRPCIconTransparent": "Finamp - شفاف",
+    "@discordRPCIconTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a Transparent Background"
+    },
+    "discordRPCIconWhiteTransparent": "Finamp أبيض - شفاف",
+    "@discordRPCIconWhiteTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the full white Finamp logo with a Transparent Background"
+    },
+    "preferAddingToFavoritesOverPlaylistsTitle": "إضافة إلى المفضلة عند الضغط على أيقونة القلب",
+    "@preferAddingToFavoritesOverPlaylistsTitle": {
+        "description": "Title for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "preferAddingToFavoritesOverPlaylistsSubtitle": "عند التفعيل، سيؤدي الضغط القصير إلى الإضافة للمفضلة، بينما الضغط المطول يفتح قائمة \"إضافة إلى قائمة التشغيل\". الإعداد الافتراضي هو العكس.",
+    "@preferAddingToFavoritesOverPlaylistsSubtitle": {
+        "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "preferNextUpPrependingTitle": "تفضيل الإضافة إلى بداية \"التالي\"",
+    "@preferNextUpPrependingTitle": {
+        "description": "Title for the setting to prefer prepending to Next Up over appending"
+    },
+    "preferNextUpPrependingSubtitle": "عند التفعيل، ستظهر أزرار \"تشغيل التالي\" عندما تكون قائمة \"التالي\" فارغة. وبخلاف ذلك، ستكون \"إضافة إلى التالي\" هي الخيار الافتراضي.",
+    "@preferNextUpPrependingSubtitle": {
+        "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "rememberLastUsedPlaybackActionRowPageTitle": "تذكر آخر وضع تشغيل",
+    "@rememberLastUsedPlaybackActionRowPageTitle": {
+        "description": "Title for the setting to remember the last used playback mode."
+    },
+    "rememberLastUsedPlaybackActionRowPageSubtitle": "عند التفعيل، سيتم تذكر آخر وضع تشغيل استخدمته (مثل قائمة \"التالي\").",
+    "@rememberLastUsedPlaybackActionRowPageSubtitle": {
+        "description": "Subtitle for the setting to remember the last used playback mode."
+    },
+    "discOfAlbum": "[القرص {number}] {albumName}",
+    "@discOfAlbum": {
+        "description": "Used when a single disc of album is opened, then album name is replaced with this string",
+        "placeholders": {
+            "number": {
+                "type": "int",
+                "example": "1"
+            },
+            "albumName": {
+                "type": "String"
+            }
+        }
+    },
+    "moreActionsOnAlbumDisc": "المزيد من الإجراءات على قرص الألبوم",
+    "@moreActionsOnAlbumDisc": {
+        "description": "Label for the disc header menu button."
+    },
+    "dragToReorder": "اسحب لإعادة الترتيب",
+    "@dragToReorder": {
+        "description": "Label shown on drag handles of track list  tiles in the queue list"
+    },
+    "addDownloadLocationsErrorTitle": "تعذر حفظ الملفات في موقع التنزيل",
+    "@addDownloadLocationsErrorTitle": {
+        "description": "Title of popup dialog when adding a download location fails"
+    },
+    "addDownloadLocationsErrorPrompt": "فشل حفظ الملفات في المجلد المختار. يجب عليك تعديل الصلاحيات أو اختيار موقع آخر.",
+    "@addDownloadLocationsErrorPrompt": {
+        "description": "Label shown on popup dialog when adding a download location when writing songs fails"
+    },
+    "androidImageErrorPrompt": "تعذر حفظ الصور في مجلد الموسيقى الخاص بنظام أندرويد بسبب قيود نظام التشغيل. يجب عليك اختيار موقع آخر.",
+    "@androidImageErrorPrompt": {
+        "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
+    },
+    "addDownloadLocationsErrorButton": "الإضافة على أي حال",
+    "@addDownloadLocationsErrorButton": {
+        "description": "Label shown on button for adding a download location we suspect to be buggy"
+    },
+    "syncFailedWarningShort": "تحذير: فشلت مزامنة بعض التنزيلات مع الخادم.",
+    "@syncFailedWarningShort": {
+        "description": "Simple warning message for when download sync fails due to items being deleted from the server."
+    },
+    "syncFailedWarningLong": "فشلت مزامنة بعض التنزيلات مع الخادم. من المحتمل أنه قد تم حذف العناصر المطابقة لها من الخادم. يجب حذف هذه التنزيلات الفاشلة لتنظيف الملفات القديمة.",
+    "@syncFailedWarningLong": {
+        "description": "Expanded warning message for when download sync fails due to items being deleted from the server."
+    },
+    "openDownloads": "فتح التنزيلات",
+    "@openDownloads": {
+        "description": "Label on a button to open the downloads screen after a sync fails."
+    },
+    "syncingFailed": "فشلت المزامنة. من المحتمل أنه قد تم إزالة هذا التنزيل من الخادم، ويجب حذفه.",
+    "@syncingFailed": {
+        "description": "Message shown for downloads with the sync failed status, which is generally caused by the server-side item being removed."
+    },
+    "autoplayRestoredQueueTitle": "تشغيل قوائم الانتظار المستعادة تلقائياً",
+    "@autoplayRestoredQueueTitle": {
+        "description": "Title for the setting that controls if restored queues automatically play."
+    },
+    "autoplayRestoredQueueSubtitle": "قوائم الانتظار التي يتم استعادتها تلقائياً عند بدء التشغيل أو عبر شاشة استعادة القائمة ستبدأ التشغيل تلقائياً. القوائم التي تفشل في استعادة جميع الأغاني لن يتم تشغيلها تلقائياً أبداً، بغض النظر عن هذا الإعداد.",
+    "@autoplayRestoredQueueSubtitle": {
+        "description": "Subtitle for the setting that controls if restored queues automatically play."
+    },
+    "missingBlurhashWarning": "تحذير: يبدو أن خادم Jellyfin غير مهيأ بشكل صحيح ولا يقوم بحساب الـ blurhashes. هذا يمنع Finamp من إلغاء تكرار صور التنزيلات. يرجى تصحيح إعدادات الخادم وتشغيل عملية إصلاح التنزيلات.",
+    "@missingBlurhashWarning": {
+        "description": "A warning message displayed on the downloads screen if the jellyfin server is missing blurhashes."
+    },
+    "noPermissionToEditMetadata": "يجب أن تكون مسؤولاً (Administrator) لتتمكن من تعديل صور البيانات الوصفية.",
+    "@noPermissionToEditMetadata": {
+        "description": "Error message shown when the user tries to edit metadata but doesn't have permission to do so, i.e. because they are not an admin"
+    },
+    "removedTracks": "الأغاني المُزالة",
+    "@removedTracks": {
+        "description": "Section header for the list of removed tracks on the playlist edit screen"
+    },
+    "removedTracksEmptyListPlaceholder": "ستظهر الأغاني المُزالة هنا",
+    "@removedTracksEmptyListPlaceholder": {
+        "description": "Placeholder text shown when there are no removed tracks"
+    },
+    "restoreTrack": "استعادة الأغنية",
+    "@restoreTrack": {
+        "description": "Button title for restoring a track that was marked to be removed"
+    },
+    "discardChangesTitle": "تجاهل التغييرات؟",
+    "@discardChangesTitle": {
+        "description": "Title for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "discardChangesDescription": "لديك تغييرات غير محفوظة. هل تريد تجاهلها والعودة؟",
+    "@discardChangesDescription": {
+        "description": "Description for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "discardChangesConfirmButton": "تجاهل التغييرات",
+    "@discardChangesConfirmButton": {
+        "description": "Positive action button for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "snackbarOptionsMenuTitle": "إدارة الرسائل",
+    "@snackbarOptionsMenuTitle": {
+        "description": "Title for the snackbar options menu that allows the user to manage snackbar messages"
+    },
+    "snackbarOptionsMenuClearAllButton": "مسح كافة الرسائل",
+    "@snackbarOptionsMenuClearAllButton": {
+        "description": "Button title for clearing all snackbar messages"
+    },
+    "snackbarOptionsMenuViewLogsButton": "عرض السجلات",
+    "@snackbarOptionsMenuViewLogsButton": {
+        "description": "Button title for opening the logs screen from the snackbar options menu"
+    },
+    "duckOnAudioInterruptionTitle": "خفض مستوى الصوت عند التنبيهات",
+    "@duckOnAudioInterruptionTitle": {
+        "description": "Title for the setting that controls ducking."
+    },
+    "duckOnAudioInterruptionSubtitle": "خفض مستوى الصوت (تخفيت) عند تشغيل تطبيق آخر لمقطع صوتي لفترة وجيزة. يتطلب ذلك إعادة تشغيل التطبيق.",
+    "@duckOnAudioInterruptionSubtitle": {
+        "description": "Subtitle for the setting that controls ducking."
+    },
+    "forceAudioOffloadingOnAndroidTitle": "فرض تفريغ الصوت (Audio Offloading)",
+    "@forceAudioOffloadingOnAndroidTitle": {
+        "description": "Title for the setting that controls audio offloading on Android."
+    },
+    "forceAudioOffloadingOnAndroidSubtitle": "تفريغ معالجة الصوت إلى العتاد (Hardware)، إذا كان الجهاز يدعم ذلك.",
+    "@forceAudioOffloadingOnAndroidSubtitle": {
+        "description": "Subtitle for the setting that controls audio offloading on Android."
+    },
+    "explicit": "صريح",
+    "@explicit": {
+        "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
     }
 }
