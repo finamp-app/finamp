@@ -48,6 +48,14 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
         GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     }
 
+    // Tell iOS to dispatch media intents to this AppDelegate (in-app intent handling, iOS 14+)
+    override func application(_ application: UIApplication, handlerFor intent: INIntent) -> Any? {
+        if intent is INPlayMediaIntent {
+            return self
+        }
+        return nil
+    }
+
     // Required for scene-based lifecycle to properly configure CarPlay scene
     @available(iOS 13.0, *)
     override func application(
@@ -165,7 +173,7 @@ extension AppDelegate {
 
         siriIntentChannel?.invokeMethod("playFromSearch", arguments: searchData)
 
-        completion(INPlayMediaIntentResponse(code: .handleInApp, userActivity: nil))
+        completion(INPlayMediaIntentResponse(code: .success, userActivity: nil))
     }
 
     /// Extracts search parameters from an INPlayMediaIntent into a dictionary for Flutter.

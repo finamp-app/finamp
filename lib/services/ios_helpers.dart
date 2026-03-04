@@ -1,11 +1,17 @@
 import 'dart:io';
 
+import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/models/jellyfin_models.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 
 import 'android_auto_helper.dart';
-import 'audio_service_helper.dart';
+import 'downloads_service.dart';
+import 'finamp_settings_helper.dart';
+import 'finamp_user_helper.dart';
+import 'jellyfin_api_helper.dart';
+import 'queue_service.dart';
 
 /// iOS-specific helpers for playback state sync and Siri media intents.
 
@@ -94,15 +100,58 @@ class IosSiriHandler {
     );
 
     if (shuffle) {
-      // If shuffle requested with no specific query, shuffle all
+      // If shuffle requested with no specific query, shuffle all (fast: 30 tracks)
       if (query == null && artist == null && album == null) {
-        final audioServiceHelper = GetIt.instance<AudioServiceHelper>();
-        await audioServiceHelper.shuffleAll(onlyShowFavorites: false);
+        await _shuffleAll();
         return;
       }
     }
 
     await androidAutoHelper.playFromSearch(searchQuery);
+  }
+
+  static const _siriShuffleLimit = 30;
+
+  /// Fast shuffle (same approach as CarPlay) — fetches 30 random tracks instead of 250.
+  static Future<void> _shuffleAll() async {
+    final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+    final finampUserHelper = GetIt.instance<FinampUserHelper>();
+    final queueService = GetIt.instance<QueueService>();
+
+    List<BaseItemDto>? items;
+
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      final downloadsService = GetIt.instance<DownloadsService>();
+      items = (await downloadsService.getAllTracks(
+        viewFilter: finampUserHelper.currentUser?.currentView?.id,
+        nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
+      )).map((e) => e.baseItem!).toList();
+      items.shuffle();
+      if (items.length > _siriShuffleLimit) {
+        items = items.sublist(0, _siriShuffleLimit);
+      }
+    } else {
+      items = await jellyfinApiHelper.getItems(
+        parentItem: finampUserHelper.currentUser?.currentView,
+        includeItemTypes: "Audio",
+        sortBy: "Random",
+        limit: _siriShuffleLimit,
+      );
+    }
+
+    if (items != null && items.isNotEmpty) {
+      await queueService.startPlayback(
+        items: items,
+        source: QueueItemSource.rawId(
+          type: QueueItemSourceType.allTracks,
+          name: const QueueItemSourceName(
+            type: QueueItemSourceNameType.shuffleAll,
+          ),
+          id: "shuffleAll",
+        ),
+        order: FinampPlaybackOrder.shuffled,
+      );
+    }
   }
 
   /// Handles Siri "Search for X on Finamp" voice commands
