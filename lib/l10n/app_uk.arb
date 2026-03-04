@@ -1384,7 +1384,7 @@
     "@downloadTranscodeEnableTitle": {
         "description": "Title for Enable Transcoded Downloads dropdown"
     },
-    "lyricsScreen": "Текст пісні",
+    "lyricsScreen": "Вигляд тексту пісні",
     "@lyricsScreen": {
         "description": "Name for the view/screen that shows lyrics for the currently playing track"
     },
@@ -1770,7 +1770,7 @@
     "@playbackReportingSettingsTitle": {
         "description": "Title for the playback reporting settings screen"
     },
-    "lyricsScreenButtonTitle": "Тексти пісень",
+    "lyricsScreenButtonTitle": "Текст пісні",
     "@lyricsScreenButtonTitle": {
         "description": "Label for the button for opening the lyrics screen"
     },
@@ -2919,5 +2919,22 @@
     "autoOfflineSettingSubtitle": "Автоматично вмикати автономний режим на основі підключення до мережі або доступності сервера.",
     "@autoOfflineSettingSubtitle": {
         "description": "Subtitle for the automated offline mode setting."
+    },
+    "multichannelHandlingSubtitle": "Що робити з багатоканальними треками (> 2 каналів) під час транскодування. Стосується обидва, стримінга та завантаження.",
+    "@multichannelHandlingSubtitle": {
+        "description": "Subtitle for multi-channel handling dropdown"
+    },
+    "multichannelHandlingOption": "{option, select, stereoDownmixLossy{Даунміксити у стерео тільки lossy-файли} stereoDownmixAll{Даунміксити все у стерео} fixedBitrate{Ніколи не даунміксити} other{{option}} }",
+    "@multichannelHandlingOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in multi-channel handling dropdown"
+    },
+    "multichannelHandlingTitle": "Транскодування багатоканальних треків",
+    "@multichannelHandlingTitle": {
+        "description": "Title for multi-channel handling dropdown"
     }
 }
