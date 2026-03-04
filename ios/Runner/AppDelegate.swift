@@ -8,7 +8,7 @@ import Intents
 let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadlessExecution: true)
 
 @main
-@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate, INPlayMediaIntentHandling {
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -134,7 +134,67 @@ extension AppDelegate {
         )
     }
 
-    // Handle Siri media intents via NSUserActivity
+    // MARK: INPlayMediaIntentHandling
+
+    /// Resolves media items for Siri so it knows the app can handle the request.
+    /// Without this, Siri says "That action is not supported on Finamp."
+    func resolveMediaItems(for intent: INPlayMediaIntent, with completion: @escaping ([INPlayMediaMediaItemResolutionResult]) -> Void) {
+        // If Siri provided media items, accept them
+        if let mediaItems = intent.mediaItems, !mediaItems.isEmpty {
+            completion(mediaItems.map { INPlayMediaMediaItemResolutionResult.success(with: $0) })
+            return
+        }
+
+        // Otherwise, create a media item from the search to tell Siri we can handle it
+        let mediaSearch = intent.mediaSearch
+        let title = mediaSearch?.mediaName ?? mediaSearch?.artistName ?? mediaSearch?.albumName ?? "Music"
+        let mediaItem = INMediaItem(
+            identifier: nil,
+            title: title,
+            type: .music,
+            artwork: nil
+        )
+        completion([INPlayMediaMediaItemResolutionResult.success(with: mediaItem)])
+    }
+
+    /// Handles the play media intent from Siri by forwarding to Flutter.
+    func handle(intent: INPlayMediaIntent, completion: @escaping (INPlayMediaIntentResponse) -> Void) {
+        let searchData = extractSearchData(from: intent)
+
+        NSLog("[FINAMP] Siri handle play intent - query: \(searchData["query"] ?? "nil"), artist: \(searchData["artist"] ?? "nil"), album: \(searchData["album"] ?? "nil")")
+
+        siriIntentChannel?.invokeMethod("playFromSearch", arguments: searchData)
+
+        completion(INPlayMediaIntentResponse(code: .handleInApp, userActivity: nil))
+    }
+
+    /// Extracts search parameters from an INPlayMediaIntent into a dictionary for Flutter.
+    private func extractSearchData(from intent: INPlayMediaIntent) -> [String: Any] {
+        let mediaSearch = intent.mediaSearch
+        var searchData: [String: Any] = [:]
+
+        if let mediaName = mediaSearch?.mediaName {
+            searchData["query"] = mediaName
+        }
+        if let artistName = mediaSearch?.artistName {
+            searchData["artist"] = artistName
+        }
+        if let albumName = mediaSearch?.albumName {
+            searchData["album"] = albumName
+        }
+        if let genreNames = mediaSearch?.genreNames, !genreNames.isEmpty {
+            searchData["genre"] = genreNames.first
+        }
+        if intent.playShuffled == true {
+            searchData["shuffle"] = true
+        }
+
+        return searchData
+    }
+
+    // MARK: NSUserActivity fallback
+
+    // Handle Siri media intents via NSUserActivity (fallback path)
     override func application(
         _ application: UIApplication,
         continue userActivity: NSUserActivity,
@@ -162,30 +222,10 @@ extension AppDelegate {
             return false
         }
 
-        let mediaSearch = intent.mediaSearch
-        var searchData: [String: Any] = [:]
+        let searchData = extractSearchData(from: intent)
 
-        if let mediaName = mediaSearch?.mediaName {
-            searchData["query"] = mediaName
-        }
-        if let artistName = mediaSearch?.artistName {
-            searchData["artist"] = artistName
-        }
-        if let albumName = mediaSearch?.albumName {
-            searchData["album"] = albumName
-        }
-        if let genreNames = mediaSearch?.genreNames, !genreNames.isEmpty {
-            searchData["genre"] = genreNames.first
-        }
+        NSLog("[FINAMP] Play media intent via NSUserActivity - query: \(searchData["query"] ?? "nil"), artist: \(searchData["artist"] ?? "nil"), album: \(searchData["album"] ?? "nil")")
 
-        // Check for shuffle mode
-        if intent.playShuffled == true {
-            searchData["shuffle"] = true
-        }
-
-        NSLog("[FINAMP] Play media intent - query: \(searchData["query"] ?? "nil"), artist: \(searchData["artist"] ?? "nil"), album: \(searchData["album"] ?? "nil")")
-
-        // Send to Flutter via method channel
         siriIntentChannel?.invokeMethod("playFromSearch", arguments: searchData)
 
         return true
@@ -214,7 +254,6 @@ extension AppDelegate {
 
         NSLog("[FINAMP] Search media intent - query: \(searchData["query"] ?? "nil")")
 
-        // Send to Flutter via method channel
         siriIntentChannel?.invokeMethod("searchMedia", arguments: searchData)
 
         return true
