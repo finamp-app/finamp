@@ -2919,5 +2919,22 @@
     "autoOfflineSettingSubtitle": "根據網路連線或伺服器狀態自動切換為離線模式。",
     "@autoOfflineSettingSubtitle": {
         "description": "Subtitle for the automated offline mode setting."
+    },
+    "multichannelHandlingTitle": "多通道轉碼處理",
+    "@multichannelHandlingTitle": {
+        "description": "Title for multi-channel handling dropdown"
+    },
+    "multichannelHandlingSubtitle": "在轉碼過程中，如何處理多聲道音軌（超過2聲道）。此設定同時適用於串流播放與下載內容。",
+    "@multichannelHandlingSubtitle": {
+        "description": "Subtitle for multi-channel handling dropdown"
+    },
+    "multichannelHandlingOption": "{option, select,stereoDownmixLossy{僅將有損音訊轉為立體聲}stereoDownmixAll{將所有音訊轉為立體聲}fixedBitrate{保持原始聲道}other{{option}}}",
+    "@multichannelHandlingOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in multi-channel handling dropdown"
     }
 }
