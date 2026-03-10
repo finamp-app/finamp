@@ -148,6 +148,7 @@ class DefaultSettings {
   static const syncPlaybackSpeedAndPitch = false;
   static const autoLoadLastQueueOnStartup = true;
   static const shouldTranscodeDownloads = TranscodeDownloadsSetting.ask;
+  static const multichannelHandlingSetting = MultichannelHandlingSetting.stereoDownmixLossy;
   static const shouldRedownloadTranscodes = false;
   static const resyncOnStartup = true;
   static const fixedGridTileSize = 150;
@@ -175,7 +176,7 @@ class DefaultSettings {
   static const showFavoriteButtonOnMediaNotification = true;
   static const showSeekControlsOnMediaNotification = true;
   static const keepScreenOnOption = KeepScreenOnOption.whileLyrics;
-  static const keepScreenOnWhilePluggedIn = true;
+  static const keepScreenOnWhilePluggedIn = false;
   static const hasDownloadedPlaylistInfo = false;
   static const transcodingStreamingFormat = FinampTranscodingStreamingFormat.aacFragmentedMp4;
   static const featureChipsConfiguration = FinampFeatureChipsConfiguration(
@@ -344,6 +345,7 @@ class FinampSettings {
     this.downloadTranscodingCodec,
     this.downloadTranscodeBitrate,
     this.shouldTranscodeDownloads = DefaultSettings.shouldTranscodeDownloads,
+    this.multichannelHandlingSetting = DefaultSettings.multichannelHandlingSetting,
     this.shouldRedownloadTranscodes = DefaultSettings.shouldRedownloadTranscodes,
     this.itemSwipeActionLeftToRight = DefaultSettings.itemSwipeActionLeftToRight,
     this.itemSwipeActionRightToLeft = DefaultSettings.itemSwipeActionRightToLeft,
@@ -880,8 +882,11 @@ class FinampSettings {
   @HiveField(143, defaultValue: DefaultSettings.forceAudioOffloadingOnAndroid)
   bool forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid;
 
+  @HiveField(144, defaultValue: DefaultSettings.multichannelHandlingSetting)
+  MultichannelHandlingSetting multichannelHandlingSetting;
+
   @HiveField(
-    144,
+    145,
     //!!! this is a dummy value, the actual default is set in [_migrateHomescreen] because it's a non-constant value, and therefore not supported as a Hive default value
     defaultValue: FinampHomeScreenConfiguration(actions: [], sections: []),
   )
@@ -4035,6 +4040,21 @@ class FinampStorableQueueInfo extends FinampStorableQueueInfoLegacy {
 }
 
 @HiveType(typeId: 111)
+enum MultichannelHandlingSetting {
+  @HiveField(0)
+  stereoDownmixLossy,
+  @HiveField(1)
+  stereoDownmixAll,
+  @HiveField(2)
+  fixedBitrate,
+  /**
+    reserved for potential automatic bitrate calculation
+  @HiveField(3)
+  dynamicBitrate,
+  **/
+}
+
+@HiveType(typeId: 112)
 enum HomeScreenSectionType {
   @HiveField(0)
   tabView,
@@ -4068,7 +4088,7 @@ enum HomeScreenSectionType {
 }
 
 @JsonSerializable(converters: [BaseItemIdConverter()])
-@HiveType(typeId: 112)
+@HiveType(typeId: 113)
 class HomeScreenSectionConfiguration {
   @HiveField(0)
   final HomeScreenSectionType type;
@@ -4202,7 +4222,7 @@ class HomeScreenSectionConfiguration {
   int get hashCode => Object.hash(type, itemId, contentType, sortAndFilterConfiguration);
 }
 
-@HiveType(typeId: 113)
+@HiveType(typeId: 114)
 enum HomeScreenSectionPresetType {
   @HiveField(0)
   favoriteTracks,
@@ -4211,7 +4231,7 @@ enum HomeScreenSectionPresetType {
   //TODO add more
 }
 
-@HiveType(typeId: 114)
+@HiveType(typeId: 115)
 enum FinampQuickActions {
   @HiveField(0)
   trackMix,
@@ -4264,7 +4284,7 @@ enum FinampQuickActions {
 }
 
 @JsonSerializable()
-@HiveType(typeId: 115)
+@HiveType(typeId: 116)
 class FinampHomeScreenConfiguration {
   const FinampHomeScreenConfiguration({required this.actions, required this.sections});
 
@@ -4293,7 +4313,7 @@ class FinampHomeScreenConfiguration {
   }
 }
 
-@HiveType(typeId: 116)
+@HiveType(typeId: 117)
 enum ItemFilterType {
   @HiveField(0)
   isFavorite,
@@ -4304,7 +4324,7 @@ enum ItemFilterType {
 }
 
 @JsonSerializable()
-@HiveType(typeId: 117)
+@HiveType(typeId: 118)
 class ItemFilter {
   const ItemFilter({required this.type, this.extras});
 
@@ -4325,7 +4345,7 @@ class ItemFilter {
 }
 
 @JsonSerializable()
-@HiveType(typeId: 118)
+@HiveType(typeId: 119)
 class SortAndFilterConfiguration {
   const SortAndFilterConfiguration({required this.sortBy, required this.sortOrder, required this.filters});
 

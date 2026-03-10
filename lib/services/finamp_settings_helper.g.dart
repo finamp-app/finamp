@@ -1248,6 +1248,17 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setMultichannelHandlingSetting(
+    MultichannelHandlingSetting newMultichannelHandlingSetting,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.multichannelHandlingSetting =
+        newMultichannelHandlingSetting;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setHomeScreenConfiguration(
     FinampHomeScreenConfiguration newHomeScreenConfiguration,
   ) {
@@ -1689,6 +1700,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.forceAudioOffloadingOnAndroid,
       );
+  ProviderListenable<MultichannelHandlingSetting>
+  get multichannelHandlingSetting => finampSettingsProvider.select(
+    (value) => value.requireValue.multichannelHandlingSetting,
+  );
   ProviderListenable<FinampHomeScreenConfiguration>
   get homeScreenConfiguration => finampSettingsProvider.select(
     (value) => value.requireValue.homeScreenConfiguration,

@@ -198,6 +198,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         shouldTranscodeDownloads: fields[44] == null
             ? TranscodeDownloadsSetting.ask
             : fields[44] as TranscodeDownloadsSetting,
+        multichannelHandlingSetting: fields[144] == null
+            ? MultichannelHandlingSetting.stereoDownmixLossy
+            : fields[144] as MultichannelHandlingSetting,
         shouldRedownloadTranscodes: fields[46] == null
             ? false
             : fields[46] as bool,
@@ -269,7 +272,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? KeepScreenOnOption.whileLyrics
             : fields[72] as KeepScreenOnOption,
         keepScreenOnWhilePluggedIn: fields[73] == null
-            ? true
+            ? false
             : fields[73] as bool,
         featureChipsConfiguration: fields[76] == null
             ? DefaultSettings.featureChipsConfiguration
@@ -445,9 +448,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         forceAudioOffloadingOnAndroid: fields[143] == null
             ? false
             : fields[143] as bool,
-        homeScreenConfiguration: fields[144] == null
+        homeScreenConfiguration: fields[145] == null
             ? const FinampHomeScreenConfiguration(actions: [], sections: [])
-            : fields[144] as FinampHomeScreenConfiguration,
+            : fields[145] as FinampHomeScreenConfiguration,
       )
       ..disableGesture = fields[19] == null ? false : fields[19] as bool
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool
@@ -466,7 +469,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(138)
+      ..writeByte(139)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -742,6 +745,8 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(143)
       ..write(obj.forceAudioOffloadingOnAndroid)
       ..writeByte(144)
+      ..write(obj.multichannelHandlingSetting)
+      ..writeByte(145)
       ..write(obj.homeScreenConfiguration);
   }
 
@@ -1573,7 +1578,7 @@ class FinampStorableQueueInfoAdapter
 class HomeScreenSectionConfigurationAdapter
     extends TypeAdapter<HomeScreenSectionConfiguration> {
   @override
-  final typeId = 112;
+  final typeId = 113;
 
   @override
   HomeScreenSectionConfiguration read(BinaryReader reader) {
@@ -1623,7 +1628,7 @@ class HomeScreenSectionConfigurationAdapter
 class FinampHomeScreenConfigurationAdapter
     extends TypeAdapter<FinampHomeScreenConfiguration> {
   @override
-  final typeId = 115;
+  final typeId = 116;
 
   @override
   FinampHomeScreenConfiguration read(BinaryReader reader) {
@@ -1660,7 +1665,7 @@ class FinampHomeScreenConfigurationAdapter
 
 class ItemFilterAdapter extends TypeAdapter<ItemFilter> {
   @override
-  final typeId = 117;
+  final typeId = 118;
 
   @override
   ItemFilter read(BinaryReader reader) {
@@ -1698,7 +1703,7 @@ class ItemFilterAdapter extends TypeAdapter<ItemFilter> {
 class SortAndFilterConfigurationAdapter
     extends TypeAdapter<SortAndFilterConfiguration> {
   @override
-  final typeId = 118;
+  final typeId = 119;
 
   @override
   SortAndFilterConfiguration read(BinaryReader reader) {
@@ -3287,9 +3292,51 @@ class RadioModeAdapter extends TypeAdapter<RadioMode> {
           typeId == other.typeId;
 }
 
-class HomeScreenSectionTypeAdapter extends TypeAdapter<HomeScreenSectionType> {
+class MultichannelHandlingSettingAdapter
+    extends TypeAdapter<MultichannelHandlingSetting> {
   @override
   final typeId = 111;
+
+  @override
+  MultichannelHandlingSetting read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return MultichannelHandlingSetting.stereoDownmixLossy;
+      case 1:
+        return MultichannelHandlingSetting.stereoDownmixAll;
+      case 2:
+        return MultichannelHandlingSetting.fixedBitrate;
+      default:
+        return MultichannelHandlingSetting.stereoDownmixLossy;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, MultichannelHandlingSetting obj) {
+    switch (obj) {
+      case MultichannelHandlingSetting.stereoDownmixLossy:
+        writer.writeByte(0);
+      case MultichannelHandlingSetting.stereoDownmixAll:
+        writer.writeByte(1);
+      case MultichannelHandlingSetting.fixedBitrate:
+        writer.writeByte(2);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MultichannelHandlingSettingAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class HomeScreenSectionTypeAdapter extends TypeAdapter<HomeScreenSectionType> {
+  @override
+  final typeId = 112;
 
   @override
   HomeScreenSectionType read(BinaryReader reader) {
@@ -3327,7 +3374,7 @@ class HomeScreenSectionTypeAdapter extends TypeAdapter<HomeScreenSectionType> {
 class HomeScreenSectionPresetTypeAdapter
     extends TypeAdapter<HomeScreenSectionPresetType> {
   @override
-  final typeId = 113;
+  final typeId = 114;
 
   @override
   HomeScreenSectionPresetType read(BinaryReader reader) {
@@ -3364,7 +3411,7 @@ class HomeScreenSectionPresetTypeAdapter
 
 class FinampQuickActionsAdapter extends TypeAdapter<FinampQuickActions> {
   @override
-  final typeId = 114;
+  final typeId = 115;
 
   @override
   FinampQuickActions read(BinaryReader reader) {
@@ -3405,7 +3452,7 @@ class FinampQuickActionsAdapter extends TypeAdapter<FinampQuickActions> {
 
 class ItemFilterTypeAdapter extends TypeAdapter<ItemFilterType> {
   @override
-  final typeId = 116;
+  final typeId = 117;
 
   @override
   ItemFilterType read(BinaryReader reader) {
