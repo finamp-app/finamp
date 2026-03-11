@@ -924,7 +924,7 @@
     "@savedQueue": {
         "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
     },
-    "playingFromType": "{source, select, album{アルバムから再生} playlist{プレイリストから再生} trackMix{トラックミックスから再生} artistMix{アーティストミックスから再生} albumMix{アルバムミックスから再生} genreMix{ジャンルミックスから再生} favorites{お気に入りから再生} allTracks{全曲から再生} filteredList{トラックから再生} genre{ジャンルから再生} artist{アーティストから再生} track{曲から再生} nextUpAlbum{次に再生のアルバムから再生} nextUpPlaylist{次に再生のプレイリストから再生} nextUpArtist{次に再生のアーティストから再生} nextUpGenre{次に再生のジャンルから再生} remoteClient{リモートクライアントから再生} other{から再生}}",
+    "playingFromType": "{source, select, album{アルバムから再生} playlist{プレイリストから再生} trackMix{トラックミックスから再生} artistMix{アーティストミックスから再生} albumMix{アルバムミックスから再生} genreMix{ジャンルミックスから再生} favorites{お気に入りから再生} allTracks{全曲から再生} filteredList{トラックから再生} genre{ジャンルから再生} artist{アーティストから再生} track{曲から再生} nextUpAlbum{次に再生のアルバムから再生} nextUpPlaylist{次に再生のプレイリストから再生} nextUpArtist{次に再生のアーティストから再生} nextUpGenre{次に再生のジャンルから再生} remoteClient{リモートクライアントから再生}  radio{ラジオから再生} other{から再生}}",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -1329,5 +1329,114 @@
     "playbackActionPageRegularTrackOptions": "再生",
     "@playbackActionPageRegularTrackOptions": {
         "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "playbackActionPageNewQueue": "新しいキュー",
+    "@playbackActionPageNewQueue": {
+        "description": "Label for the playback action page that contains all actions related to starting a new queue"
+    },
+    "playbackActionPageNext": "次に再生",
+    "@playbackActionPageNext": {
+        "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
+    },
+    "playbackActionPageNextUp": "次へ追加",
+    "@playbackActionPageNextUp": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
+    },
+    "playbackActionPageAppendToQueue": "最後に再生",
+    "@playbackActionPageAppendToQueue": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks at the end of the queue"
+    },
+    "updatePlaylistButtonLabel": "プレイリストを更新",
+    "@updatePlaylistButtonLabel": {
+        "description": "Label for the button that updates the playlist on the edit playlist screen"
+    },
+    "savingChanges": "変更を保存しています…",
+    "@savingChanges": {
+        "description": "Text shown while the changes to a playlist are being saved"
+    },
+    "accentColor": "アクセントカラー",
+    "@accentColor": {
+        "description": "Title of the accent color setting"
+    },
+    "accentColorTitle": "アクセントカラーを選ぶ",
+    "@accentColorTitle": {
+        "description": "Title for the accent color picker sheet"
+    },
+    "systemAccentColor": "システムのアクセントを使用する",
+    "@systemAccentColor": {
+        "description": "Title of the System Accent Color setting."
+    },
+    "systemAccentColorHasPriorityInfo": "システムのアクセントが現在使用されているためカスタムアクセントカラーは無効になっています",
+    "@systemAccentColorHasPriorityInfo": {
+        "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
+    },
+    "useMonochromeIcon": "モノクロのロゴを使用する",
+    "@useMonochromeIcon": {
+        "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
+    },
+    "useMonochromeIconSubtitle": "これはアプリ内のアイコンにのみ影響し、ランチャーのアイコンには影響しません。",
+    "@useMonochromeIconSubtitle": {
+        "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
+    },
+    "defaultWord": "デフォルト",
+    "useDefaultButton": "デフォルトのアクセントカラーにリセット",
+    "colorCode": "カラーコード（16進数）",
+    "@colorCode": {
+        "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
+    },
+    "colorCodeHint": "例: #FFFFFF もしくは #coffee",
+    "@colorCodeHint": {
+        "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
+    },
+    "save": "保存",
+    "invalidColorCode": "無効なカラーコードです",
+    "@invalidColorCode": {
+        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
+    },
+    "startRadio": "ラジオを開始",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
+    },
+    "shuffleSomeNext": "次をシャッフルする",
+    "@shuffleSomeNext": {
+        "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "shuffleSomeToNextUp": "いくつかシャッフルして次へ追加",
+    "@shuffleSomeToNextUp": {
+        "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
+    },
+    "shuffleSomeToQueue": "一部をシャッフルしてキューへ追加する",
+    "@shuffleSomeToQueue": {
+        "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "movePlayNext": "次に再生",
+    "@movePlayNext": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "moveAddToNextUp": "次へ移動",
+    "@moveAddToNextUp": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
+    },
+    "moveAddToQueue": "最後へ移動",
+    "@moveAddToQueue": {
+        "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
+    },
+    "radio": "ラジオ",
+    "@radio": {
+        "description": "Title for the queue source when the user is playing a track added via radio"
+    },
+    "radioForItem": "{radioSource} - ラジオ",
+    "@radioForItem": {
+        "description": "Suffix added to a queue source when playing a radio track. Example: \"Never Gonna Give You Up - Radio\"",
+        "placeholders": {
+            "radioSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "genreItemSectionFilterChipOrderTitle": "アイテムセクションのフィルター順序",
+    "@genreItemSectionFilterChipOrderTitle": {
+        "description": "Label for the setting that controls the order of item sections filter chips."
     }
 }
