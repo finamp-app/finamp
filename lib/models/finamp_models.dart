@@ -140,6 +140,7 @@ class DefaultSettings {
   static const syncPlaybackSpeedAndPitch = false;
   static const autoLoadLastQueueOnStartup = true;
   static const shouldTranscodeDownloads = TranscodeDownloadsSetting.ask;
+  static const multichannelHandlingSetting = MultichannelHandlingSetting.stereoDownmixLossy;
   static const shouldRedownloadTranscodes = false;
   static const resyncOnStartup = true;
   static const fixedGridTileSize = 150;
@@ -302,6 +303,7 @@ class FinampSettings {
     this.downloadTranscodingCodec,
     this.downloadTranscodeBitrate,
     this.shouldTranscodeDownloads = DefaultSettings.shouldTranscodeDownloads,
+    this.multichannelHandlingSetting = DefaultSettings.multichannelHandlingSetting,
     this.shouldRedownloadTranscodes = DefaultSettings.shouldRedownloadTranscodes,
     this.itemSwipeActionLeftToRight = DefaultSettings.itemSwipeActionLeftToRight,
     this.itemSwipeActionRightToLeft = DefaultSettings.itemSwipeActionRightToLeft,
@@ -836,6 +838,9 @@ class FinampSettings {
 
   @HiveField(143, defaultValue: DefaultSettings.forceAudioOffloadingOnAndroid)
   bool forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid;
+
+  @HiveField(144, defaultValue: DefaultSettings.multichannelHandlingSetting)
+  MultichannelHandlingSetting multichannelHandlingSetting;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
@@ -3962,4 +3967,19 @@ class FinampStorableQueueInfo extends FinampStorableQueueInfoLegacy {
   String toString() {
     return "previous:${previousTracks.length} current:$currentTrack seek:$currentTrackSeek next:${nextUp.length} queue:${queue.length} order:${packedShuffleOrder == null ? "linear" : "shuffled"} sources $sourceList";
   }
+}
+
+@HiveType(typeId: 111)
+enum MultichannelHandlingSetting {
+  @HiveField(0)
+  stereoDownmixLossy,
+  @HiveField(1)
+  stereoDownmixAll,
+  @HiveField(2)
+  fixedBitrate,
+  /**
+    reserved for potential automatic bitrate calculation
+  @HiveField(3)
+  dynamicBitrate,
+  **/
 }

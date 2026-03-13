@@ -63,6 +63,7 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(MediaSourceInfoAdapter());
     registerAdapter(MediaStreamAdapter());
     registerAdapter(MediaUrlAdapter());
+    registerAdapter(MultichannelHandlingSettingAdapter());
     registerAdapter(NameIdPairAdapter());
     registerAdapter(NameLongIdPairAdapter());
     registerAdapter(OfflineListenAdapter());
@@ -163,6 +164,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(MediaSourceInfoAdapter());
     registerAdapter(MediaStreamAdapter());
     registerAdapter(MediaUrlAdapter());
+    registerAdapter(MultichannelHandlingSettingAdapter());
     registerAdapter(NameIdPairAdapter());
     registerAdapter(NameLongIdPairAdapter());
     registerAdapter(OfflineListenAdapter());

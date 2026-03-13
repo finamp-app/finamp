@@ -152,6 +152,7 @@ class FinampSettingsHelper {
     finampSettingsTemp.downloadTranscodingCodec =
         FinampTranscodingCodec.opus; // starts uninitilized, idk what value this should be
     finampSettingsTemp.downloadTranscodeBitrate = 128000; // starts uninitilized, idk what value this should be
+    finampSettingsTemp.multichannelHandlingSetting = DefaultSettings.multichannelHandlingSetting;
 
     Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", finampSettingsTemp);
   }

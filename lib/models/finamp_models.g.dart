@@ -197,6 +197,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         shouldTranscodeDownloads: fields[44] == null
             ? TranscodeDownloadsSetting.ask
             : fields[44] as TranscodeDownloadsSetting,
+        multichannelHandlingSetting: fields[144] == null
+            ? MultichannelHandlingSetting.stereoDownmixLossy
+            : fields[144] as MultichannelHandlingSetting,
         shouldRedownloadTranscodes: fields[46] == null
             ? false
             : fields[46] as bool,
@@ -462,7 +465,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(137)
+      ..writeByte(138)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -736,7 +739,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(142)
       ..write(obj.duckOnAudioInterruption)
       ..writeByte(143)
-      ..write(obj.forceAudioOffloadingOnAndroid);
+      ..write(obj.forceAudioOffloadingOnAndroid)
+      ..writeByte(144)
+      ..write(obj.multichannelHandlingSetting);
   }
 
   @override
@@ -3099,6 +3104,48 @@ class RadioModeAdapter extends TypeAdapter<RadioMode> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is RadioModeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class MultichannelHandlingSettingAdapter
+    extends TypeAdapter<MultichannelHandlingSetting> {
+  @override
+  final typeId = 111;
+
+  @override
+  MultichannelHandlingSetting read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return MultichannelHandlingSetting.stereoDownmixLossy;
+      case 1:
+        return MultichannelHandlingSetting.stereoDownmixAll;
+      case 2:
+        return MultichannelHandlingSetting.fixedBitrate;
+      default:
+        return MultichannelHandlingSetting.stereoDownmixLossy;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, MultichannelHandlingSetting obj) {
+    switch (obj) {
+      case MultichannelHandlingSetting.stereoDownmixLossy:
+        writer.writeByte(0);
+      case MultichannelHandlingSetting.stereoDownmixAll:
+        writer.writeByte(1);
+      case MultichannelHandlingSetting.fixedBitrate:
+        writer.writeByte(2);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MultichannelHandlingSettingAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

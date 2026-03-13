@@ -1,5 +1,5 @@
 import 'package:audio_service_platform_interface/audio_service_platform_interface.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart' hide RepeatMode;
 import 'package:smtc_windows/smtc_windows.dart';
 
 class AudioServiceSMTC extends AudioServicePlatform {

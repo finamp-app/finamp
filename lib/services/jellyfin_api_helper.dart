@@ -1148,6 +1148,14 @@ class JellyfinApiHelper {
         "audioBitRate": transcodingProfile.stereoBitrate.toString(),
       });
 
+      if (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+              MultichannelHandlingSetting.stereoDownmixAll ||
+          (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+                  MultichannelHandlingSetting.stereoDownmixLossy &&
+              FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec != "flac")) {
+        queryParameters.addAll({"maxAudioChannels": "2"});
+      }
+
       uri = uri.replace(
         pathSegments: uri.pathSegments.followedBy(["Audio", item.id.raw, "Universal"]),
         queryParameters: queryParameters,

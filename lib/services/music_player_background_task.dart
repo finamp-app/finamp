@@ -1374,6 +1374,14 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         "audioBitRate": FinampSettingsHelper.finampSettings.transcodeBitrate.toString(),
         "segmentContainer": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.container,
       });
+
+      if (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+              MultichannelHandlingSetting.stereoDownmixAll ||
+          (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+                  MultichannelHandlingSetting.stereoDownmixLossy &&
+              FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec != "flac")) {
+        queryParameters.addAll({"maxAudioChannels": "2"});
+      }
     } else {
       builtPath.addAll(["Items", mediaItem.extras!["itemJson"]["Id"] as String, "File"]);
     }

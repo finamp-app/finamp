@@ -1888,6 +1888,23 @@
   "@downloadBitrateSubtitle": {
     "description": "subtitle for Download Bitrate settings slider"
   },
+  "multichannelHandlingTitle": "Multi-Channel Transcode Handling",
+  "@multichannelHandlingTitle": {
+    "description": "Title for multi-channel handling dropdown"
+  },
+  "multichannelHandlingSubtitle": "How to deal with multi-channel tracks (> 2 channels) when transcoding. Applies to both streaming and downloads.",
+  "@multichannelHandlingSubtitle": {
+    "description": "Subtitle for multi-channel handling dropdown"
+  },
+  "multichannelHandlingOption": "{option, select, stereoDownmixLossy{Only Downmix Lossy to Stereo} stereoDownmixAll{Downmix All to Stereo} fixedBitrate{Never Downmix} other{{option}} }",
+  "@multichannelHandlingOption": {
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    },
+    "description": "Options in multi-channel handling dropdown"
+  },
   "transcodeHint": "Transcode?",
   "@transcodeHint": {
     "description": "Initial text in downloads dropdown when 'Enable Transcoded Downloads' is set to ask."
