@@ -6,6 +6,7 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/item_helper.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
   bool preferPrependingToNextUp = false,
   BaseItemDto? genreFilter,
   FinampQueueItem? queueItem,
+  int? trackCount
 }) {
   final BaseItemDtoType? itemType = item is BaseItemDto ? BaseItemDtoType.fromItem(item) : null;
 
@@ -87,6 +89,7 @@ Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
             popContext: popContext,
             compactLayout: compactLayout,
             genreFilter: genreFilter,
+            trackCount: trackCount,
           ),
           if (itemType == BaseItemDtoType.artist || itemType == BaseItemDtoType.genre)
             ShuffleAlbumsPlaybackAction(
@@ -95,6 +98,7 @@ Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
               popContext: popContext,
               compactLayout: compactLayout,
               genreFilter: genreFilter,
+              trackCount: trackCount,
             ),
         ],
       ),
@@ -117,6 +121,7 @@ Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
               popContext: popContext,
               compactLayout: compactLayout,
               genreFilter: genreFilter,
+              trackCount: trackCount,
             ),
             if (itemType == BaseItemDtoType.artist || itemType == BaseItemDtoType.genre)
               ShuffleAlbumsNextPlaybackAction(
@@ -125,6 +130,7 @@ Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
                 popContext: popContext,
                 compactLayout: compactLayout,
                 genreFilter: genreFilter,
+                trackCount: trackCount,
               ),
           ],
         ),
@@ -147,6 +153,7 @@ Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
               popContext: popContext,
               compactLayout: compactLayout,
               genreFilter: genreFilter,
+              trackCount: trackCount,
             ),
             if (itemType == BaseItemDtoType.artist || itemType == BaseItemDtoType.genre)
               ShuffleAlbumsToNextUpPlaybackAction(
@@ -155,6 +162,7 @@ Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
                 popContext: popContext,
                 compactLayout: compactLayout,
                 genreFilter: genreFilter,
+                trackCount: trackCount,
               ),
           ],
         ),
@@ -176,6 +184,7 @@ Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
             popContext: popContext,
             compactLayout: compactLayout,
             genreFilter: genreFilter,
+            trackCount: trackCount,
           ),
           if (itemType == BaseItemDtoType.artist || itemType == BaseItemDtoType.genre)
             ShuffleAlbumsToQueuePlaybackAction(
@@ -184,6 +193,7 @@ Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
               popContext: popContext,
               compactLayout: compactLayout,
               genreFilter: genreFilter,
+              trackCount: trackCount,
             ),
         ],
       ),
@@ -485,6 +495,7 @@ class ShufflePlaybackAction extends ConsumerWidget {
     this.popContext = true,
     this.compactLayout = false,
     this.genreFilter,
+    this.trackCount
   });
 
   final PlayableItem item;
@@ -492,6 +503,7 @@ class ShufflePlaybackAction extends ConsumerWidget {
   final bool popContext;
   final bool compactLayout;
   final BaseItemDto? genreFilter;
+  final int? trackCount;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -499,7 +511,7 @@ class ShufflePlaybackAction extends ConsumerWidget {
 
     return PlaybackAction(
       icon: TablerIcons.arrows_shuffle,
-      label: (itemType == BaseItemDtoType.genre)
+      label: (itemType == BaseItemDtoType.genre && ref.watch(finampSettingsProvider.trackShuffleItemCount) < (trackCount ?? 0))
           ? AppLocalizations.of(context)!.shuffleSome
           : AppLocalizations.of(context)!.shuffleButtonLabel,
       compactLayout: compactLayout,
@@ -527,6 +539,7 @@ class ShuffleNextPlaybackAction extends ConsumerWidget {
     this.popContext = true,
     this.compactLayout = false,
     this.genreFilter,
+    this.trackCount,
   });
 
   final PlayableItem item;
@@ -534,6 +547,7 @@ class ShuffleNextPlaybackAction extends ConsumerWidget {
   final bool popContext;
   final bool compactLayout;
   final BaseItemDto? genreFilter;
+  final int? trackCount;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -542,7 +556,7 @@ class ShuffleNextPlaybackAction extends ConsumerWidget {
     return PlaybackAction(
       icon: TablerIcons.corner_right_down,
       addShuffleIcon: true,
-      label: (itemType == BaseItemDtoType.genre)
+      label: (itemType == BaseItemDtoType.genre && ref.watch(finampSettingsProvider.trackShuffleItemCount) < (trackCount ?? 0))
           ? AppLocalizations.of(context)!.shuffleSomeNext
           : AppLocalizations.of(context)!.shuffleNext,
       compactLayout: compactLayout,
@@ -572,6 +586,7 @@ class ShuffleToNextUpPlaybackAction extends ConsumerWidget {
     this.popContext = true,
     this.compactLayout = false,
     this.genreFilter,
+    this.trackCount
   });
 
   final PlayableItem item;
@@ -579,6 +594,7 @@ class ShuffleToNextUpPlaybackAction extends ConsumerWidget {
   final bool popContext;
   final bool compactLayout;
   final BaseItemDto? genreFilter;
+  final int? trackCount;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -587,7 +603,7 @@ class ShuffleToNextUpPlaybackAction extends ConsumerWidget {
     return PlaybackAction(
       icon: TablerIcons.corner_right_down_double,
       addShuffleIcon: true,
-      label: (itemType == BaseItemDtoType.genre)
+      label: (itemType == BaseItemDtoType.genre && ref.watch(finampSettingsProvider.trackShuffleItemCount) < (trackCount ?? 0))
           ? AppLocalizations.of(context)!.shuffleSomeToNextUp
           : AppLocalizations.of(context)!.shuffleToNextUp,
       compactLayout: compactLayout,
@@ -620,6 +636,7 @@ class ShuffleToQueuePlaybackAction extends ConsumerWidget {
     this.popContext = true,
     this.compactLayout = false,
     this.genreFilter,
+    this.trackCount,
   });
 
   final PlayableItem item;
@@ -627,6 +644,7 @@ class ShuffleToQueuePlaybackAction extends ConsumerWidget {
   final bool popContext;
   final bool compactLayout;
   final BaseItemDto? genreFilter;
+  final int? trackCount;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -635,7 +653,7 @@ class ShuffleToQueuePlaybackAction extends ConsumerWidget {
     return PlaybackAction(
       icon: TablerIcons.playlist,
       addShuffleIcon: true,
-      label: (itemType == BaseItemDtoType.genre)
+      label: (itemType == BaseItemDtoType.genre && ref.watch(finampSettingsProvider.trackShuffleItemCount) < (trackCount ?? 0))
           ? AppLocalizations.of(context)!.shuffleSomeToQueue
           : AppLocalizations.of(context)!.shuffleToQueue,
       compactLayout: compactLayout,
@@ -668,6 +686,7 @@ class ShuffleAlbumsPlaybackAction extends ConsumerWidget {
     this.popContext = true,
     this.compactLayout = false,
     this.genreFilter,
+    this.trackCount
   });
 
   final PlayableItem item;
@@ -675,6 +694,7 @@ class ShuffleAlbumsPlaybackAction extends ConsumerWidget {
   final bool popContext;
   final bool compactLayout;
   final BaseItemDto? genreFilter;
+  final int? trackCount;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -682,7 +702,7 @@ class ShuffleAlbumsPlaybackAction extends ConsumerWidget {
 
     return PlaybackAction(
       icon: TablerIcons.arrows_shuffle,
-      label: (itemType == BaseItemDtoType.genre)
+      label: (itemType == BaseItemDtoType.genre && ref.watch(finampSettingsProvider.trackShuffleItemCount) < (trackCount ?? 0))
           ? AppLocalizations.of(context)!.shuffleSomeAlbums
           : AppLocalizations.of(context)!.shuffleAlbums,
       compactLayout: compactLayout,
@@ -717,6 +737,7 @@ class ShuffleAlbumsNextPlaybackAction extends ConsumerWidget {
     this.popContext = true,
     this.compactLayout = false,
     this.genreFilter,
+    this.trackCount
   });
 
   final PlayableItem item;
@@ -724,6 +745,7 @@ class ShuffleAlbumsNextPlaybackAction extends ConsumerWidget {
   final bool popContext;
   final bool compactLayout;
   final BaseItemDto? genreFilter;
+  final int? trackCount;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -732,7 +754,7 @@ class ShuffleAlbumsNextPlaybackAction extends ConsumerWidget {
     return PlaybackAction(
       icon: TablerIcons.corner_right_down,
       addShuffleIcon: true,
-      label: (itemType == BaseItemDtoType.genre)
+      label: (itemType == BaseItemDtoType.genre && ref.watch(finampSettingsProvider.trackShuffleItemCount) < (trackCount ?? 0))
           ? AppLocalizations.of(context)!.shuffleSomeAlbumsNext
           : AppLocalizations.of(context)!.shuffleAlbumsNext,
       compactLayout: compactLayout,
@@ -769,6 +791,7 @@ class ShuffleAlbumsToNextUpPlaybackAction extends ConsumerWidget {
     this.popContext = true,
     this.compactLayout = false,
     this.genreFilter,
+    this.trackCount
   });
 
   final PlayableItem item;
@@ -776,6 +799,7 @@ class ShuffleAlbumsToNextUpPlaybackAction extends ConsumerWidget {
   final bool popContext;
   final bool compactLayout;
   final BaseItemDto? genreFilter;
+  final int? trackCount;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -784,7 +808,7 @@ class ShuffleAlbumsToNextUpPlaybackAction extends ConsumerWidget {
     return PlaybackAction(
       icon: TablerIcons.corner_right_down_double,
       addShuffleIcon: true,
-      label: (itemType == BaseItemDtoType.genre)
+      label: (itemType == BaseItemDtoType.genre && ref.watch(finampSettingsProvider.trackShuffleItemCount) < (trackCount ?? 0))
           ? AppLocalizations.of(context)!.shuffleSomeAlbumsToNextUp
           : AppLocalizations.of(context)!.shuffleAlbumsToNextUp,
       compactLayout: compactLayout,
@@ -824,6 +848,7 @@ class ShuffleAlbumsToQueuePlaybackAction extends ConsumerWidget {
     this.popContext = true,
     this.compactLayout = false,
     this.genreFilter,
+    this.trackCount
   });
 
   final PlayableItem item;
@@ -831,6 +856,7 @@ class ShuffleAlbumsToQueuePlaybackAction extends ConsumerWidget {
   final bool popContext;
   final bool compactLayout;
   final BaseItemDto? genreFilter;
+  final int? trackCount;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -839,7 +865,7 @@ class ShuffleAlbumsToQueuePlaybackAction extends ConsumerWidget {
     return PlaybackAction(
       icon: TablerIcons.playlist,
       addShuffleIcon: true,
-      label: (itemType == BaseItemDtoType.genre)
+      label: (itemType == BaseItemDtoType.genre && ref.watch(finampSettingsProvider.trackShuffleItemCount) < (trackCount ?? 0))
           ? AppLocalizations.of(context)!.shuffleSomeAlbumsToQueue
           : AppLocalizations.of(context)!.shuffleAlbumsToQueue,
       compactLayout: compactLayout,

@@ -19,6 +19,7 @@ class PlaybackActionRow extends ConsumerStatefulWidget {
     this.compactLayout = false,
     this.genreFilter,
     this.queueItem,
+    this.trackCount
   });
 
   final PlayableItem item;
@@ -26,6 +27,7 @@ class PlaybackActionRow extends ConsumerStatefulWidget {
   final bool compactLayout;
   final BaseItemDto? genreFilter;
   final FinampQueueItem? queueItem;
+  final int? trackCount;
 
   @override
   ConsumerState<PlaybackActionRow> createState() => _PlaybackActionRowState();
@@ -48,6 +50,7 @@ class _PlaybackActionRowState extends ConsumerState<PlaybackActionRow> {
       genreFilter: widget.genreFilter,
       preferPrependingToNextUp: ref.watch(finampSettingsProvider.preferNextUpPrepending),
       queueItem: widget.queueItem,
+      trackCount: widget.trackCount
     );
 
     // initial page for regular playback action row

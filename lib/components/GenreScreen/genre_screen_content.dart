@@ -285,7 +285,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
           ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 10)),
-        SliverToBoxAdapter(child: PlaybackActionRow(compactLayout: true, item: widget.parent, popContext: false)),
+        SliverToBoxAdapter(child: PlaybackActionRow(compactLayout: true, item: widget.parent, popContext: false, trackCount: trackCount)),
         if (!isLoading)
           ...genreItemSectionsOrder.map((type) {
             switch (type) {
