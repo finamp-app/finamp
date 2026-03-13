@@ -1284,7 +1284,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       ? shuffleIndices.indexOf(_player.currentIndex!)
       : _player.currentIndex;
   SequenceState get sequenceState => _player.sequenceState;
-  double get volume => _player.volume;
+  double get volume => (_volume._internalVolume * 100).roundToDouble() / 100;
   bool get paused => !_player.playing;
   Duration get playbackPosition => _player.position;
 

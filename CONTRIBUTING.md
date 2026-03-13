@@ -187,6 +187,17 @@ Now you need to wait a bit, but it'll finish :)
 2. Add another `else if (call.interface == 'com.unicornsonlsd.Finamp' && call.name == 'YOUR FUNCTION NAME')`
 3. Profit
 
+### Add global keyboard shortcuts
+
+Finamp uses Flutter `Shortcuts`/`Actions` under `lib/components/Shortcuts/`.
+
+1. Create a new file (Example: `lib/components/Shortcuts/navigation_shortcuts.dart`).
+2. Create intents and get actions function (see example at `music_control_shortcuts.dart`).
+3. Define shortcuts and add actions to `global_shortcut_manager.dart`.
+
+Note:
+Handle `consumesKey` and `invoke` in the `CallbackAction` class for cases where text input is happening in a TextField for potentially conflicting shortcuts.
+
 ## The Redesign
 
 The biggest main piece of work being done on Finamp at the moment is the redesign. The relevant meta-issue can be found [here](https://github.com/jmshrv/finamp/issues/220).  

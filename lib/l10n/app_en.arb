@@ -3251,5 +3251,25 @@
   "explicit": "Explicit",
   "@explicit": {
     "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
+  },
+  "volumeControlHint": "Use {shortcut} to adjust volume",
+  "@volumeControlHint": {
+    "description": "Hint text displayed below the volume bar to inform users about keyboard shortcuts for volume control.",
+    "placeholders": {
+      "shortcut": {
+        "type": "String",
+        "example": "Ctrl + ↑/↓"
+      }
+    }
+  },
+  "seekControlHint": "{shortcut} to skip -5s/+30s",
+  "@seekControlHint": {
+    "description": "Shortcut hint for seeking backward 5s or forward 30s.",
+    "placeholders": {
+      "shortcut": {
+        "type": "String",
+        "example": "Ctrl + ←/→"
+      }
+    }
   }
 }
