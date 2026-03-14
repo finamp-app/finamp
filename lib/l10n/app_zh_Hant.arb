@@ -2920,7 +2920,7 @@
     "@autoOfflineSettingSubtitle": {
         "description": "Subtitle for the automated offline mode setting."
     },
-    "multichannelHandlingTitle": "多通道轉碼處理",
+    "multichannelHandlingTitle": "多聲道轉碼處理",
     "@multichannelHandlingTitle": {
         "description": "Title for multi-channel handling dropdown"
     },
