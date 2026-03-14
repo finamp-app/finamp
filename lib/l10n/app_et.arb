@@ -2963,5 +2963,22 @@
     "explicit": "Explicit (ebasobiv sisu)",
     "@explicit": {
         "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
+    },
+    "multichannelHandlingTitle": "Mitmekanalilise transkoodimise haldus",
+    "@multichannelHandlingTitle": {
+        "description": "Title for multi-channel handling dropdown"
+    },
+    "multichannelHandlingSubtitle": "Kuidas käsitleda mitmekanalilisi lugusid (> 2 kanalit) transkoodimisel. Kehtib nii voogedastuse kui ka allalaadimiste puhul.",
+    "@multichannelHandlingSubtitle": {
+        "description": "Subtitle for multi-channel handling dropdown"
+    },
+    "multichannelHandlingOption": "{option, select, stereoDownmixLossy{Taanda stereoks vaid kadudega failid} stereoDownmixAll{Taanda kõik stereoks} fixedBitrate{Ära kunagi taanda stereoks} other{{option}} }",
+    "@multichannelHandlingOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in multi-channel handling dropdown"
     }
 }
