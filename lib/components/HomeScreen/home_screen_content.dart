@@ -120,23 +120,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
                               Navigator.pushNamed(context, QueueRestoreScreen.routeName);
                             },
                             FinampQuickActions.surpriseMe => () async {
-                              //TODO handle offline mode (continuous radio not available, and offline request needed) - maybe just hide this?
-                              // start continuous radio with a random track?
-                              final randomTracks = await _jellyfinApiHelper.getItems(
-                                parentItem: _finampUserHelper.currentUser?.currentView,
-                                includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
-                                limit: 1,
-                                sortBy: "Random",
-                              );
-                              if (randomTracks != null && randomTracks.isNotEmpty) {
-                                await GetIt.instance<QueueService>().startPlayback(
-                                  items: randomTracks,
-                                  source: QueueItemSource.fromBaseItem(randomTracks.first),
-                                  skipRadioCacheInvalidation: false,
-                                );
-                                FinampSetters.setRadioMode(RadioMode.continuous);
-                                toggleRadio(true);
-                              }
+                              await GetIt.instance<AudioServiceHelper>().startSurpriseMeMix();
                             },
                           },
                         );

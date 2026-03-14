@@ -4,12 +4,10 @@ import 'dart:ui';
 
 import 'package:app_links/app_links.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:audio_session/audio_session.dart';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:collection/collection.dart';
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
-import 'package:finamp/components/HomeScreen/show_all_screen.dart';
 import 'package:finamp/components/Shortcuts/global_shortcut_manager.dart';
 import 'package:finamp/gen/assets.gen.dart';
 import 'package:finamp/hive_registrar.g.dart';
@@ -39,7 +37,6 @@ import 'package:finamp/services/dbus_manager.dart';
 import 'package:finamp/services/discord_rpc.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/downloads_service_backend.dart';
-import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_logs_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -108,6 +105,8 @@ import 'setup_logging.dart';
 
 final _mainLog = Logger("Main()");
 late DateTime startTime;
+const _androidIntentChannel = MethodChannel("com.unicornsonlsd.finamp/intent");
+const _androidIntentEvents = EventChannel("com.unicornsonlsd.finamp/intent/events");
 
 final providerScopeKey = GlobalKey();
 
@@ -562,12 +561,41 @@ class Finamp extends StatefulWidget {
 class _FinampState extends State<Finamp> with WindowListener {
   static final Logger windowManagerLogger = Logger("WindowManager");
   static final Logger linkHandlingLogger = Logger("LinkHandling");
+  static final Logger launchIntentLogger = Logger("LaunchIntentHandling");
 
   StreamSubscription<Uri>? _uriLinkSubscription;
+  StreamSubscription<dynamic>? _androidIntentSubscription;
 
   @override
   void initState() {
     super.initState();
+
+    if (Platform.isAndroid) {
+      _androidIntentSubscription = _androidIntentEvents.receiveBroadcastStream().listen(
+        (dynamic event) async {
+          final intent = event as String?;
+          if (intent != null) {
+            await _handleAndroidIntent(intent);
+          }
+        },
+        onError: (Object error, StackTrace stackTrace) {
+          launchIntentLogger.warning("Failed to receive Android intent stream event", error, stackTrace);
+        },
+      );
+
+      _androidIntentChannel.setMethodCallHandler((call) async {
+        switch (call.method) {
+          case "onIntent":
+            final intent = call.arguments as String?;
+            if (intent != null) {
+              await _handleAndroidIntent(intent);
+            }
+            return null;
+          default:
+            throw MissingPluginException("Unknown method: ${call.method}");
+        }
+      });
+    }
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _uriLinkSubscription = AppLinks().uriLinkStream.listen((uri) async {
@@ -581,6 +609,10 @@ class _FinampState extends State<Finamp> with WindowListener {
           linkHandlingLogger.warning("No context available to handle link");
         }
       });
+
+      if (Platform.isAndroid) {
+        unawaited(_consumeInitialAndroidLaunchIntent());
+      }
     });
 
     // If the app is running on desktop, we add a listener to the window manager
@@ -590,9 +622,29 @@ class _FinampState extends State<Finamp> with WindowListener {
     }
   }
 
+  Future<void> _consumeInitialAndroidLaunchIntent() async {
+    final String? action = await _androidIntentChannel.invokeMethod<String>("consumeIntent");
+    if (action != null) {
+      await _handleAndroidIntent(action);
+    }
+  }
+
+  Future<void> _handleAndroidIntent(String action) async {
+    launchIntentLogger.info("Received Android launch action: $action");
+    switch (action) {
+      case "android.intent.action.MUSIC_PLAYER":
+        {
+          await GetIt.instance<AudioServiceHelper>().startSurpriseMeMix();
+        }
+      default:
+        launchIntentLogger.warning("Unhandled Android launch action: $action");
+    }
+  }
+
   @override
   Future<void> dispose() async {
     await DiscordRpc.stop().timeout(Duration(milliseconds: 500));
+    await _androidIntentSubscription?.cancel();
     await _uriLinkSubscription?.cancel();
 
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {

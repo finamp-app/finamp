@@ -9,6 +9,7 @@ import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
 import 'jellyfin_api_helper.dart';
 import 'queue_service.dart';
+import 'package:finamp/services/radio_service_helper.dart';
 
 /// Just some functions to make talking to AudioService a bit neater.
 class AudioServiceHelper {
@@ -190,6 +191,27 @@ class AudioServiceHelper {
     } catch (e) {
       audioServiceHelperLogger.severe(e);
       return Future.error(e);
+    }
+  }
+
+  /// Start continuous radio with a random track
+  Future<void> startSurpriseMeMix() async {
+    //TODO handle offline mode (continuous radio not available, and offline request needed) - maybe just hide this?
+    final randomTracks = await _jellyfinApiHelper.getItems(
+      parentItem: _finampUserHelper.currentUser?.currentView,
+      includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
+      limit: 1,
+      sortBy: SortBy.random.jellyfinName(TabContentType.tracks),
+    );
+    if (randomTracks != null && randomTracks.isNotEmpty) {
+      await GetIt.instance<QueueService>().startPlayback(
+        items: randomTracks,
+        source: QueueItemSource.fromBaseItem(randomTracks.first),
+        skipRadioCacheInvalidation: false,
+        order: FinampPlaybackOrder.linear,
+      );
+      FinampSetters.setRadioMode(RadioMode.continuous);
+      toggleRadio(true);
     }
   }
 }
