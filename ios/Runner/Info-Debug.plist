@@ -53,7 +53,7 @@
 			<true/>
 		</dict>
 		<key>NSAppleMusicUsageDescription</key>
-	<string>Finamp can use your media library to store downloaded songs. If you don&apos;t want this, Finamp can also download songs to the app&apos;s internal directory, which doesn&apos;t use any permissions.</string>
+		<string>Finamp can use your media library to store downloaded songs. If you don't want this, Finamp can also download songs to the app's internal directory, which doesn't use any permissions.</string>
 		<key>NSBonjourServices</key>
 		<array>
 			<string>_dartobservatory._tcp</string>
@@ -61,7 +61,7 @@
 		<key>NSLocalNetworkUsageDescription</key>
 		<string>Required for debugging</string>
 		<key>NSPhotoLibraryUsageDescription</key>
-	<string>I don&apos;t know why this permission is being requested, you should probably deny it. If you can, create a GitHub issue with a screenshot of this message.</string>
+		<string>I don't know why this permission is being requested, you should probably deny it. If you can, create a GitHub issue with a screenshot of this message.</string>
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>audio</string>
