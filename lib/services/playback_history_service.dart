@@ -104,7 +104,7 @@ class PlaybackHistoryService {
               "Handling track change event from ${prevItem?.item.title} to ${currentItem.item.title}",
             );
             //TODO handle reporting track changes based on history changes, as that is more reliable
-            onTrackChanged(currentItem, currentState, prevItem, prevState, currentIndex > (prevState?.queueIndex ?? 0));
+            onTrackChanged(currentItem, currentState, prevItem, prevState);
           }
         }
         // handle events that don't change the current track (e.g. loop, pause, seek, etc.)
@@ -132,7 +132,7 @@ class PlaybackHistoryService {
               // last position was close to the end of the track
               updateCurrentTrack(currentItem, forceNewTrack: true); // add to playback history
               //TODO handle reporting track changes based on history changes, as that is more reliable
-              onTrackChanged(currentItem, currentState, prevItem, prevState, true);
+              onTrackChanged(currentItem, currentState, prevItem, prevState);
               isSeekEvent = false; // don't report seek event
             } else {
               // rewinding
@@ -145,11 +145,12 @@ class PlaybackHistoryService {
           if (isSeekEvent) {
             // rate limit updates (only send update after no changes for 3 seconds) and if the track is still the same
             Future.delayed(const Duration(seconds: 3, milliseconds: 500), () {
-              var newCurrentTrack = _audioService.queueIndex != null && _audioService.queue.hasValue
-                  ? _audioService.queue.value[_audioService.queueIndex!]
+              var newCurrentTrack =
+                  _audioService.queueIndex != null && _audioService.sequenceState.effectiveSequence.isNotEmpty
+                  ? _audioService.sequenceState.effectiveSequence[_audioService.queueIndex!].tag as FinampQueueItem
                   : null;
               if (_lastPositionUpdate.add(const Duration(seconds: 3)).isBefore(DateTime.now()) &&
-                  currentItem.item.id == newCurrentTrack?.id) {
+                  currentItem.item.id == newCurrentTrack?.item.id) {
                 _playbackHistoryServiceLogger.fine("Handling seek event for ${currentItem.item.title}");
                 onPlaybackStateChanged(currentItem, currentState, prevState);
               }
@@ -329,7 +330,6 @@ class PlaybackHistoryService {
     PlaybackState currentState,
     FinampQueueItem? previousItem,
     PlaybackState? previousState,
-    bool skippingForward,
   ) async {
     final shouldReportPreviousTrack =
         previousItem != null &&

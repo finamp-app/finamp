@@ -1269,8 +1269,10 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         ProcessingState.completed: AudioProcessingState.completed,
       }[_player.processingState]!,
       playing: _player.playing,
-      updatePosition: event.updatePosition,
-      bufferedPosition: event.bufferedPosition,
+      //!!! use the current player position, since there might be a delay before this event is processed.
+      // Do **not** use [event.updatePosition] or [event.bufferedPosition], since that could lead to a discontinuity in the playback position (resetting to 0) and cause incorrect history entries
+      updatePosition: _player.position,
+      bufferedPosition: _player.bufferedPosition,
       speed: _player.speed,
       queueIndex: _player.shuffleModeEnabled && shuffleIndices.isNotEmpty && event.currentIndex != null
           ? shuffleIndices.indexOf(event.currentIndex!)
