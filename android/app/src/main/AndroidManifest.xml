@@ -51,9 +51,12 @@
       </intent-filter>
 
       <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.APP_MUSIC"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
+        <action android:name="android.intent.action.MAIN" />
+        <action android:name="android.intent.action.MUSIC_PLAYER" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.LAUNCHER" />
+        <category android:name="android.intent.category.APP_MUSIC" />
       </intent-filter>
       <intent-filter>
         <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />

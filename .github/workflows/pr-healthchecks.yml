@@ -35,3 +35,35 @@ jobs:
           # Format locally generated localization files to prevent false positives
           dart format lib/l10n/ 
           dart format --output=none --set-exit-if-changed lib/
+  check-codegen:
+    name: Ensure correct code generation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Verify Flutter setup
+        run: flutter doctor
+      - name: Get dependencies
+        run: flutter pub get
+      - name: Verify code generation
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+          git add . # new files are not tracked by git
+          if git diff --cached --name-only | grep -q '\.g\.dart$'; then
+            echo "Code generation is different, diff follows"
+            git diff --cached | cat
+            exit 2
+          fi
