@@ -20,8 +20,8 @@ jobs:
   #   runs-on: ubuntu-latest
   #   steps:
   #   - name: Clone repository
-  #     uses: actions/checkout@v4
-  #   - uses: actions/setup-java@v4
+  #     uses: actions/checkout@v6
+  #   - uses: actions/setup-java@v5
   #     with:
   #       distribution: 'zulu'
   #       java-version: '17'
@@ -42,8 +42,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Clone repository
-      uses: actions/checkout@v4
-    - uses: actions/setup-java@v4
+      uses: actions/checkout@v6
+    - uses: actions/setup-java@v5
       with:
         distribution: 'zulu'
         java-version: '17'
@@ -71,7 +71,7 @@ jobs:
     - run: flutter doctor
     - run: flutter pub get
     - run: flutter build apk --debug --no-pub
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         name: finamp-android-debug.apk
         path: build/app/outputs/flutter-apk/app-debug.apk
@@ -82,7 +82,7 @@ jobs:
     name: Build for iOS
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
@@ -105,8 +105,8 @@ jobs:
             arch: arm64
     steps:
     - name: Clone repository
-      uses: actions/checkout@v4
-    - uses: actions/setup-java@v4
+      uses: actions/checkout@v6
+    - uses: actions/setup-java@v5
       with:
         distribution: 'zulu'
         java-version: '17'
@@ -132,7 +132,7 @@ jobs:
 
     - name: Clone isar repository
       if: matrix.arch == 'arm64'
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         path: isar
         repository: Komodo5197/isar-community
@@ -170,13 +170,13 @@ jobs:
         tar -czf ${TAR_NAME} --directory build/linux/${{ matrix.arch }}/release/ bundle icons finamp.desktop.m4 com.unicornsonlsd.finamp.metainfo.xml \
         && sha256sum ${TAR_NAME} > ${SHA_NAME}
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         name: ${{ env.TAR_NAME }}
         path: ${{ env.TAR_NAME }}
         compression-level: 0 # no compression
     
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         name: ${{ env.SHA_NAME }}
         path: ${{ env.SHA_NAME }}
@@ -197,7 +197,7 @@ jobs:
     - name: Support longpaths
       run: git config --system core.longpaths true
     - name: Clone repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     # - uses: actions/setup-java@v2
     #   with:
     #     distribution: 'zulu'
@@ -225,7 +225,7 @@ jobs:
 
     # TODO pack in redistributables?
     # upload original, unzipped directory. GitHub will zip it anyway
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         name: ${{ env.BASE_NAME }}
         path: build/windows/x64/runner/Release/
@@ -236,7 +236,7 @@ jobs:
         mv build/windows/x64/runner/Release/finamp.msix ./${{ env.BASE_NAME }}.msix
 
     #TODO would be nice to have an old-school installer here that can take the .exe + libraries and install them to the device + create a shortcut
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         name: ${{ env.BASE_NAME }}.msix
         path: ./${{ env.BASE_NAME }}.msix
@@ -261,7 +261,7 @@ jobs:
   #   name: Build for macOS
   #   runs-on: macos-latest
   #   steps:
-  #   - uses: actions/checkout@v4
+  #   - uses: actions/checkout@v6
   #   - name: Set up Flutter
   #     uses: subosito/flutter-action@v2
   #     with:
