@@ -67,3 +67,13 @@ jobs:
             git diff --cached | cat
             exit 2
           fi
+      - name: Verify splash screen generation
+        run: |
+          git reset HEAD -- . # clear any staged changes from previous steps
+          dart run flutter_native_splash:create --path=flutter_native_splash.yaml
+          git add .
+          if git diff --cached --name-only | grep -q .; then
+            echo "Splash screen generation is different, diff follows"
+            git diff --cached | cat
+            exit 2
+          fi

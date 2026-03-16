@@ -105,6 +105,18 @@ If you can't launch Finamp (e.g. with `flutter run`) after generating code you m
 - Modifying a class that is returned by Jellyfin (such as the classes in `lib/models/jellyfin_models.dart`)
 - Adding fields (annotated with `@HiveField`) to a database class (annotated with `@HiveType`)
 
+### Native Splash Screens
+
+Native splash screens are generated from `flutter_native_splash.yaml`.
+
+Run:
+
+```bash
+dart run flutter_native_splash:create --path=flutter_native_splash.yaml
+```
+
+Rerun this after changing splash colors, splash icon assets, or light/dark splash behavior. This updates the generated iOS and Android native splash resources.
+
 >[!WARNING]
 > **If you don't rebuild generated files**, you will encounter some issues:
 >

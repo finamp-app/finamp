@@ -155,6 +155,7 @@ dev_dependencies:
   build_runner: ^2.3.3
   flutter_gen_runner:
   chopper_generator: ^8.0.0
+  flutter_native_splash: ^2.4.7
   hive_ce_generator: ^1.8.1
   json_serializable: ^6.9.0
   flutter_launcher_icons: ^0.14.1
