@@ -123,7 +123,8 @@ class QueueService {
       _currentQueueIndex = event.queueIndex ?? 0;
 
       // Ignore playback events if queue is empty.
-      if (previousIndex != _currentQueueIndex && _currentTrack != null) {
+      if (_audioHandler.audioSources.isNotEmpty &&
+          (previousIndex != _currentQueueIndex || _currentTrack == null)) {
         _queueServiceLogger.finer("Play queue index changed, new index: $_currentQueueIndex");
         _buildQueueFromNativePlayerQueue();
       } else {
@@ -766,7 +767,10 @@ class QueueService {
       if (beginPlaying) {
         // only open the player screen if we actually start playing, otherwise it would open after startup + queue restore
         if (FinampSettingsHelper.finampSettings.autoExpandPlayerScreen) {
-          unawaited(NowPlayingBar.openPlayerScreen(GlobalSnackbar.materialAppNavigatorKey.currentContext!));
+          final navContext = GlobalSnackbar.materialAppNavigatorKey.currentContext;
+          if (navContext != null && navContext.mounted) {
+            unawaited(NowPlayingBar.openPlayerScreen(navContext));
+          }
         }
       }
 
