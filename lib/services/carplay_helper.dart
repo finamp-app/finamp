@@ -692,6 +692,7 @@ class CarPlayHelper {
         artists = await _jellyfinApiHelper.getItems(
           parentItem: _finampUserHelper.currentUser?.currentView,
           includeItemTypes: "MusicArtist",
+          artistType: ArtistType.albumArtist,
           sortBy: "SortName",
           limit: _carPlayOnlineLimit,
         ) ?? [];
