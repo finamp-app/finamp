@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.9.22+122
+version: 0.9.23+123
 
 environment:
   sdk: ^3.9.0
@@ -32,7 +32,7 @@ dependencies:
   get_it: ^8.2.0
   # just_audio: ^0.10.5
   just_audio:
-  # TODO switch back to official just_audio once https://github.com/ryanheise/just_audio/pull/1555 is merged
+    # TODO switch back to official just_audio once https://github.com/ryanheise/just_audio/pull/1555 is merged
     git:
       url: https://github.com/LennartEnns/just_audio_fork.git
       ref: 6dfdd07d19f6f037d3f4ff04c397639e4632c687
@@ -99,7 +99,7 @@ dependencies:
   # Use version of isar core with android compilation fix.  If this version or ref changes,
   # the linux arm build in upload-assets.yml must be updated.
   isar_flutter_libs:
-    git: 
+    git:
       url: https://github.com/MrLittleWhite/isar_flutter_libs.git
       ref: 59103190aa2ac03041d61ad6d127b540be079ec8
 
@@ -199,10 +199,10 @@ flutter:
     - images/finamp_cropped.svg
     - images/jellyfin-icon-transparent.png
     - assets/icon/icon_square_bg-black.png # preview image for Discord RPC Fallback Icon Setting
-    - assets/icon/icon_combined.png        # preview image for Discord RPC Fallback Icon Setting
+    - assets/icon/icon_combined.png # preview image for Discord RPC Fallback Icon Setting
     - assets/icon/icon_square_bg-white.png # preview image for Discord RPC Fallback Icon Setting
-    - images/finamp_cropped.png            # preview image for Discord RPC Fallback Icon Setting
-    - assets/icon/icon_white_noborder.png  # preview image for Discord RPC Fallback Icon Setting
+    - images/finamp_cropped.png # preview image for Discord RPC Fallback Icon Setting
+    - assets/icon/icon_white_noborder.png # preview image for Discord RPC Fallback Icon Setting
     - images/jellyfin-icon-transparent.png # preview image for Discord RPC Fallback Icon Setting
   #   - images/a_dot_ham.jpeg
 
@@ -249,7 +249,7 @@ msix_config:
   display_name: Finamp
   publisher_display_name: jmshrv
   identity_name: com.unicornsonlsd.finamp
-  msix_version: 0.9.22.0
+  msix_version: 0.9.23.0
   logo_path: ./images/finamp_cropped.png
   trim_logo: false # don't force logo to be square, it will be stretched
   # backgroundMediaPlayback prevents apps from getting muted or killed when being in the background (won't build if included at the moment)

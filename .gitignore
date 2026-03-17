@@ -28,6 +28,9 @@ migrate_working_dir/
 .direnv
 .envrc
 
+# Zed related
+.zed/
+
 # packages file containing multi-root paths
 .packages.generated
 
