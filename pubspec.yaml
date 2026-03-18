@@ -150,8 +150,8 @@ dependencies:
   bits: ^1.4.0
   flutter_carplay:
     git:
-      url: https://github.com/APIUM/flutter_carplay.git
-      ref: 1d58071
+      url: https://github.com/oguzhnatly/flutter_carplay.git
+      ref: 017ce2e
 
 dev_dependencies:
   flutter_test:

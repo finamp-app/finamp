@@ -595,11 +595,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "1d58071"
-      resolved-ref: "1d58071394e6c258c8072ee2338291c38670ba0d"
-      url: "https://github.com/APIUM/flutter_carplay.git"
+      ref: "017ce2e"
+      resolved-ref: "017ce2e19711d3e043ed86ade25f941f96ebb7ba"
+      url: "https://github.com/oguzhnatly/flutter_carplay.git"
     source: git
-    version: "1.2.3"
+    version: "1.2.11"
   flutter_discord_rpc:
     dependency: "direct main"
     description:
