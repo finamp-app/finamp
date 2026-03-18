@@ -77,18 +77,19 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     setState(() {});
   }
 
-  void _buildTabController() {
+  void _buildTabController(int length) {
     _tabController?.removeListener(_tabIndexCallback);
-
-    final tabs = widget.tabTypeFilter != null
-        ? [widget.tabTypeFilter!]
-        : ref
-              .watch(finampSettingsProvider.tabOrder)
-              .where((e) => ref.watch(finampSettingsProvider.select((value) => value.value?.showTabs[e])) ?? false);
-
-    _tabController = TabController(length: tabs.length, vsync: this, initialIndex: 0);
-
+    _tabController = TabController(length: length, vsync: this, initialIndex: 0);
     _tabController!.addListener(_tabIndexCallback);
+  }
+
+  /// Returns the display label for a tab, with overrides for books-only mode.
+  String _tabLabel(TabContentType tabType, BuildContext context, {required bool booksOnlyMode}) {
+    if (booksOnlyMode) {
+      if (tabType == TabContentType.audiobooks) return "TITLES";
+      if (tabType == TabContentType.artists) return "AUTHORS";
+    }
+    return tabType.toLocalisedString(context).toUpperCase();
   }
 
   @override
@@ -175,23 +176,39 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    if (_tabController == null) {
-      _buildTabController();
-    }
     ref.watch(FinampUserHelper.finampCurrentUserProvider);
-    // Get the filtered tab or the tabs from the user's tab order,
-    // and filter them to only include enabled tabs
+
+    // Drive tab set from the CURRENTLY BROWSED view, not from all saved views.
+    // When a user switches to a books library from the drawer, currentView's
+    // collectionType becomes "books" and we switch to books tabs. Switching back
+    // to a music library restores music tabs automatically.
+    final booksOnlyMode = _finampUserHelper.currentUser?.currentView?.collectionType == "books";
+
+    // Get the filtered tab or the tabs from the user's tab order.
+    // In books-only mode show Artists (Authors) / Genres / Audiobooks (Titles).
+    // In music mode show the user's enabled tabs, never the audiobooks tab.
     final sortedTabs = widget.tabTypeFilter != null
         ? [widget.tabTypeFilter!]
         : ref
               .watch(finampSettingsProvider.tabOrder)
-              .where((e) => ref.watch(finampSettingsProvider.showTabs(e)) ?? false);
+              .where((e) {
+                if (booksOnlyMode) {
+                  return e == TabContentType.artists ||
+                      e == TabContentType.genres ||
+                      e == TabContentType.audiobooks;
+                } else {
+                  return (ref.watch(finampSettingsProvider.showTabs(e)) ?? false) &&
+                      e != TabContentType.audiobooks;
+                }
+              });
 
-    if (sortedTabs.length != _tabController?.length) {
-      _musicScreenLogger.info(
-        "Rebuilding MusicScreen tab controller (${sortedTabs.length} != ${_tabController?.length})",
-      );
-      _buildTabController();
+    if (_tabController == null || sortedTabs.length != _tabController?.length) {
+      if (_tabController != null) {
+        _musicScreenLogger.info(
+          "Rebuilding MusicScreen tab controller (${sortedTabs.length} != ${_tabController?.length})",
+        );
+      }
+      _buildTabController(sortedTabs.toList().length);
     }
 
     if (sortedTabs.isEmpty) {
@@ -253,7 +270,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                           child: Container(
                             constraints: const BoxConstraints(minWidth: 50),
                             alignment: Alignment.center,
-                            child: Text(tabType.toLocalisedString(context).toUpperCase()),
+                            child: Text(_tabLabel(tabType, context, booksOnlyMode: booksOnlyMode)),
                           ),
                         ),
                       )

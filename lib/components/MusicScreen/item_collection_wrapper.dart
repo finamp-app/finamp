@@ -15,6 +15,7 @@ import 'package:finamp/screens/artist_screen.dart';
 import 'package:finamp/screens/genre_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -113,6 +114,15 @@ class _ItemCollectionWrapperState extends ConsumerState<ItemCollectionWrapper> {
                 builder: (_) =>
                     AlbumScreen(parent: mutableItem, genreFilter: playlistGenreFilter ? widget.genreFilter : null),
               ),
+            );
+          } else if (mutableItem.type == "AudioBook") {
+            // AudioBook items are single audio files — play them directly.
+            final queueService = GetIt.instance<QueueService>();
+            queueService.startPlayback(
+              items: [mutableItem],
+              startingIndex: 0,
+              order: FinampPlaybackOrder.linear,
+              source: QueueItemSource.fromBaseItem(mutableItem),
             );
           } else {
             Navigator.of(context).pushNamed(AlbumScreen.routeName, arguments: mutableItem);

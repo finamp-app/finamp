@@ -5,7 +5,9 @@ import 'package:get_it/get_it.dart';
 
 import '../components/ViewSelector/no_music_libraries_message.dart';
 import '../components/global_snackbar.dart';
+import '../models/finamp_models.dart';
 import '../models/jellyfin_models.dart';
+import '../services/finamp_settings_helper.dart';
 import '../services/finamp_user_helper.dart';
 import '../services/jellyfin_api_helper.dart';
 import 'music_screen.dart';
@@ -46,7 +48,7 @@ class _ViewSelectorState extends State<ViewSelector> {
             // Finamp only supports music libraries. We used to allow people to
             // select unsupported libraries, but some people selected "general"
             // libraries and thought Finamp was broken.
-            if (snapshot.data!.isEmpty || !snapshot.data!.any((element) => element.collectionType == "music")) {
+            if (snapshot.data!.isEmpty || !snapshot.data!.any((element) => element.collectionType == "music" || element.collectionType == "books")) {
               return NoMusicLibrariesMessage(
                 onRefresh: () {
                   setState(() {
@@ -59,11 +61,11 @@ class _ViewSelectorState extends State<ViewSelector> {
             if (_views.isEmpty) {
               _views.addEntries(
                 snapshot.data!
-                    .where((element) => element.collectionType != "playlists")
+                    .where((element) => element.collectionType == "music" || element.collectionType == "books")
                     .map(
                       (e) => MapEntry(
                         e,
-                        e.collectionType == "music" &&
+                        (e.collectionType == "music" || e.collectionType == "books") &&
                             (_finampUserHelper.currentUser!.views.isEmpty ||
                                 _finampUserHelper.currentUser!.views.keys.contains(e.id)),
                       ),
@@ -96,8 +98,9 @@ class _ViewSelectorState extends State<ViewSelector> {
                 return CheckboxListTile(
                   key: ValueKey(view.id),
                   value: isSelected,
-                  enabled: view.collectionType == "music",
+                  enabled: view.collectionType == "music" || view.collectionType == "books",
                   title: Text(_views.keys.elementAt(index).name ?? AppLocalizations.of(context)!.unknownName),
+                  subtitle: view.collectionType == "books" ? Text(AppLocalizations.of(context)!.audiobooks) : null,
                   onChanged: (value) {
                     setState(() {
                       _views[_views.keys.elementAt(index)] = value!;
@@ -155,6 +158,9 @@ class _ViewSelectorState extends State<ViewSelector> {
         _finampUserHelper.setCurrentUserViews(
           _views.entries.where((element) => element.value == true).map((e) => e.key).toList(),
         );
+
+        // Tab visibility is now derived at runtime in music_screen.dart from
+        // the user's view types, so no showTabs manipulation is needed here.
 
         // allow calling _submitChoice() while selector is being built by delaying
         // navigation changes

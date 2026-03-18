@@ -856,7 +856,7 @@ class FinampSettings {
     return FinampSettings(
       downloadLocations: [],
       // Create a map of TabContentType from TabContentType's values.
-      showTabs: Map.fromEntries(TabContentType.values.map((e) => MapEntry(e, true))),
+      showTabs: Map.fromEntries(TabContentType.values.map((e) => MapEntry(e, e != TabContentType.audiobooks))),
       downloadLocationsMap: {downloadLocation.id: downloadLocation},
       tabSortBy: {},
       tabSortOrder: {},
@@ -1029,7 +1029,9 @@ enum TabContentType {
   @HiveField(3)
   genres(BaseItemDtoType.genre),
   @HiveField(4)
-  tracks(BaseItemDtoType.track);
+  tracks(BaseItemDtoType.track),
+  @HiveField(5)
+  audiobooks(BaseItemDtoType.audioBook);
 
   const TabContentType(this.itemType);
 
@@ -1056,6 +1058,8 @@ enum TabContentType {
         return "Genres";
       case TabContentType.playlists:
         return "Playlists";
+      case TabContentType.audiobooks:
+        return "Audiobooks";
     }
   }
 
@@ -1071,6 +1075,8 @@ enum TabContentType {
         return AppLocalizations.of(context)!.genres;
       case TabContentType.playlists:
         return AppLocalizations.of(context)!.playlists;
+      case TabContentType.audiobooks:
+        return AppLocalizations.of(context)!.audiobooks;
     }
   }
 
@@ -1086,6 +1092,8 @@ enum TabContentType {
         return TabContentType.genres;
       case "Playlist":
         return TabContentType.playlists;
+      case "AudioBook":
+        return TabContentType.audiobooks;
       default:
         throw const FormatException("Unsupported itemType");
     }

@@ -57,11 +57,14 @@ class ItemCollectionListTile extends ConsumerWidget {
             artistType: ref.watch(finampSettingsProvider.defaultArtistType),
           )
         : null;
+    final isAudioBook = item.type == "AudioBook";
     final itemDownloadStub = isArtistOrGenre
         ? DownloadStub.fromFinampCollection(
             FinampCollection(type: FinampCollectionType.collectionWithLibraryFilter, library: library, item: item),
           )
-        : DownloadStub.fromItem(type: DownloadItemType.collection, item: item);
+        : isAudioBook
+            ? DownloadStub.fromItem(type: DownloadItemType.track, item: item)
+            : DownloadStub.fromItem(type: DownloadItemType.collection, item: item);
     final downloadedIndicator = DownloadedIndicator(
       item: itemDownloadStub,
       size: Theme.of(context).textTheme.bodyMedium!.fontSize! + 1,
