@@ -3308,7 +3308,7 @@
   "@voiceSearch": {
     "description": "Heading for the page that prompts the user to perform a voice search."
   },
-  "carPlaySiriHint": "Say \"Hey Siri, play [song/artist/album] on Finamp\"",
+  "carPlaySiriHint": "Say \"Hey Siri, play [track/artist/album] on Finamp\"",
   "@carPlaySiriHint": {
     "description": "Hint text for how to use Siri to search in CarPlay."
   },

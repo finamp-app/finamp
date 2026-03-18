@@ -127,7 +127,7 @@ extension AppDelegate {
 }
 
 // MARK: - Siri Media Intent Handling
-// Handles voice commands like "Hey Siri, play [song/artist] on Finamp"
+// Handles voice commands like "Hey Siri, play [track/artist] on Finamp"
 
 private var siriIntentChannel: FlutterMethodChannel?
 
