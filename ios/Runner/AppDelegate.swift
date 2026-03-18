@@ -3,6 +3,7 @@ import UIKit
 import Flutter
 import MediaPlayer
 import Intents
+import AVFoundation
 
 // Shared engine for CarPlay - the flutter_carplay plugin requires this
 let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadlessExecution: true)
@@ -163,6 +164,8 @@ extension AppDelegate {
 
     /// Handles the play media intent from Siri by forwarding to Flutter.
     func handle(intent: INPlayMediaIntent, completion: @escaping (INPlayMediaIntentResponse) -> Void) {
+        activateAudioSessionForPlayIntent()
+
         let searchData = extractSearchData(from: intent)
 
         NSLog("[FINAMP] Siri handle play intent - query: \(searchData["query"] ?? "nil"), artist: \(searchData["artist"] ?? "nil"), album: \(searchData["album"] ?? "nil")")
@@ -236,6 +239,8 @@ extension AppDelegate {
             return false
         }
 
+        activateAudioSessionForPlayIntent()
+
         let searchData = extractSearchData(from: intent)
 
         NSLog("[FINAMP] Play media intent via NSUserActivity - query: \(searchData["query"] ?? "nil"), artist: \(searchData["artist"] ?? "nil"), album: \(searchData["album"] ?? "nil")")
@@ -243,6 +248,19 @@ extension AppDelegate {
         siriIntentChannel?.invokeMethod("playFromSearch", arguments: searchData)
 
         return true
+    }
+
+    /// Activates the audio session before Flutter processes a play intent.
+    /// This prevents other apps from briefly resuming during the Siri-to-Flutter handoff gap.
+    /// Calling setActive(true) on an already-active session is a no-op.
+    private func activateAudioSessionForPlayIntent() {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback)
+            try session.setActive(true)
+        } catch {
+            NSLog("[FINAMP] Failed to activate audio session for play intent: \(error)")
+        }
     }
 
     private func handleSearchForMediaIntent(userActivity: NSUserActivity) -> Bool {

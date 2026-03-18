@@ -743,8 +743,10 @@ class QueueService {
       }
 
       if (Platform.isIOS || Platform.isMacOS) {
-        // Both iOS and macOS will start playing the first queue index if we don't stop first
-        await _audioHandler.stopPlayback();
+        // Both iOS and macOS will start playing the first queue index if we don't stop first.
+        // Use pause() instead of stop() to keep the audio session active and prevent
+        // other apps (e.g. Podcasts) from briefly resuming during Siri handoff.
+        await _audioHandler.pause();
       }
       await _audioHandler.clearFinampQueueItems();
 
