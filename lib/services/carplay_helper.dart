@@ -170,7 +170,21 @@ class CarPlayHelper {
   }
 
   void onConnectionChange(ConnectionStatusTypes status) {
+    connectionStatus = status;
     if (status == ConnectionStatusTypes.connected) {
+      // Resume playback if there's a loaded queue that's paused
+      final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+      if (_queueService.getCurrentTrack() != null &&
+          audioHandler.paused &&
+          isUserLoggedIn) {
+        _carPlayLogger.info("CarPlay connected, resuming playback");
+        try {
+          audioHandler.play();
+          FlutterCarplay.showSharedNowPlaying();
+        } catch (e) {
+          _carPlayLogger.warning("Failed to resume playback on CarPlay connect: $e");
+        }
+      }
     }
   }
 
