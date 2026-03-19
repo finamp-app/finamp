@@ -25,6 +25,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../services/music_screen_provider.dart';
+
 typedef BaseItemDtoCallback = void Function(BaseItemDto item);
 
 class AlbumScreenContent extends ConsumerStatefulWidget {
@@ -307,7 +309,7 @@ class _TracksSliverListState extends ConsumerState<TracksSliverList> {
         return TrackListTile(
           key: ValueKey(item.id),
           item: item,
-          children: widget.childrenForQueue,
+          fetchChildren: () => PlayableSlice(items: widget.childrenForQueue, startingIndex: indexOffset),
           index: indexOffset,
           showIndex: item.albumId == widget.parent.id,
           showCover: item.albumId != widget.parent.id || ref.watch(finampSettingsProvider.showCoversOnAlbumScreen),

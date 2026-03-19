@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -10,6 +9,7 @@ import '../models/jellyfin_models.dart';
 import 'downloads_service.dart';
 import 'finamp_settings_helper.dart';
 import 'jellyfin_api_helper.dart';
+import 'music_screen_provider.dart';
 
 part 'album_screen_provider.g.dart';
 

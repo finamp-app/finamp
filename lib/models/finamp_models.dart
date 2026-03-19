@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:background_downloader/background_downloader.dart';
@@ -286,7 +285,7 @@ class DefaultSettings {
         sortAndFilterConfiguration: SortAndFilterConfiguration(
           sortBy: SortBy.sortName,
           sortOrder: SortOrder.ascending,
-          filters: {ItemFilter(type: ItemFilterType.isFavorite, extras: null)},
+          filters: {ItemFilter(type: ItemFilterType.isFavorite)},
         ),
       ),
     ],
@@ -4138,7 +4137,7 @@ class HomeScreenSectionConfiguration {
       type: HomeScreenSectionType.tabView,
       itemId: null,
       contentType: TabContentType.tracks,
-      sortAndFilterConfiguration: const SortAndFilterConfiguration(
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
         sortOrder: SortOrder.ascending,
         filters: {ItemFilter(type: ItemFilterType.isFavorite)},
@@ -4150,7 +4149,7 @@ class HomeScreenSectionConfiguration {
       type: HomeScreenSectionType.tabView,
       itemId: null,
       contentType: TabContentType.tracks,
-      sortAndFilterConfiguration: const SortAndFilterConfiguration(
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.datePlayed,
         sortOrder: SortOrder.ascending,
         filters: {ItemFilter(type: ItemFilterType.isFavorite)},
@@ -4337,23 +4336,36 @@ class FinampHomeScreenConfiguration {
 @HiveType(typeId: 118)
 enum ItemFilterType {
   @HiveField(0)
-  isFavorite,
+  isFavorite(Null),
   @HiveField(1)
-  isFullyDownloaded,
+  isFullyDownloaded(Null),
   @HiveField(2)
-  startsWithCharacter,
+  startsWithCharacter(String),
+  @HiveField(3)
+  genreFilter(BaseItemDto),
+  @HiveField(4)
+  searchTerm(String);
+
+  const ItemFilterType(this.extraType);
+
+  final Type extraType;
 }
 
 @JsonSerializable()
 @HiveType(typeId: 119)
 class ItemFilter {
-  const ItemFilter({required this.type, this.extras});
+  ItemFilter({required this.type, dynamic extras}) : _extras = extras, assert(extras.runtimeType == type.extraType);
 
   @HiveField(0)
   final ItemFilterType type;
 
   @HiveField(1)
-  final dynamic extras;
+  final dynamic _extras;
+
+  /// Prefer using the [extraString] and [extraBaseItem] getters, which include a cast
+  dynamic get extras => _extras;
+  String get extraString => _extras as String;
+  BaseItemDto get extraBaseItem => _extras as BaseItemDto;
 
   factory ItemFilter.fromJson(Map<String, dynamic> json) => _$ItemFilterFromJson(json);
 
@@ -4363,6 +4375,14 @@ class ItemFilter {
   String toString() {
     return jsonEncode(toJson());
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ItemFilter && other.type == type && other.extras == extras;
+  }
+
+  @override
+  int get hashCode => Object.hash(type, extras);
 }
 
 @JsonSerializable()
@@ -4402,5 +4422,15 @@ class SortAndFilterConfiguration {
         other.sortBy == sortBy &&
         other.sortOrder == sortOrder &&
         setEquals(other.filters, filters);
+  }
+
+  @override
+  int get hashCode {
+    int filtersHash = 0;
+    // Just XOR hashes to get order independence.  Unlikely to cause collisions.
+    for (var filter in filters) {
+      filtersHash ^= filter.hashCode;
+    }
+    return Object.hash(sortBy, sortOrder, filtersHash);
   }
 }

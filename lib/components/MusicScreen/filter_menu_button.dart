@@ -1,12 +1,12 @@
 import 'package:finamp/components/Buttons/simple_button.dart';
-import 'package:finamp/components/global_snackbar.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
-import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+
+import '../../l10n/app_localizations.dart';
+import '../global_snackbar.dart';
 
 class FilterMenuButton extends ConsumerWidget {
   const FilterMenuButton({
@@ -51,6 +51,7 @@ class FilterMenuButton extends ConsumerWidget {
       textColor: activeFilterCount > 0
           ? ColorScheme.of(context).primary
           : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
+      // TODO whats going on here?
       onPressed: () =>
           {} ??
           () {
@@ -74,6 +75,8 @@ class FilterMenuButton extends ConsumerWidget {
                               ItemFilterType.startsWithCharacter => activeFilters.any(
                                 (filter) => filter.type == ItemFilterType.startsWithCharacter,
                               ),
+                              ItemFilterType.genreFilter => throw UnimplementedError(),
+                              ItemFilterType.searchTerm => throw UnimplementedError(),
                             }
                             ? Theme.of(context).colorScheme.secondary
                             : null;
@@ -101,6 +104,8 @@ class FilterMenuButton extends ConsumerWidget {
                                             ? TablerIcons.download
                                             : TablerIcons.download_off,
                                       ItemFilterType.startsWithCharacter => TablerIcons.sort_ascending,
+                                      ItemFilterType.genreFilter => throw UnimplementedError(),
+                                      ItemFilterType.searchTerm => throw UnimplementedError(),
                                     },
                                     size: 18,
                                     color: color,
@@ -140,6 +145,10 @@ class FilterMenuButton extends ConsumerWidget {
                       //TODO implement
                       GlobalSnackbar.message((context) => "Not implemented yet*");
                       break;
+                    case ItemFilterType.genreFilter:
+                      throw UnimplementedError();
+                    case ItemFilterType.searchTerm:
+                      throw UnimplementedError();
                   }
                 }
                 if (filterOverride != null && updateFilterOverride != null) {
@@ -164,6 +173,10 @@ class FilterMenuButton extends ConsumerWidget {
                     case ItemFilterType.startsWithCharacter:
                       //TODO implement
                       break;
+                    case ItemFilterType.genreFilter:
+                      throw UnimplementedError();
+                    case ItemFilterType.searchTerm:
+                      throw UnimplementedError();
                   }
                   updateFilterOverride!(newFilters);
                 }

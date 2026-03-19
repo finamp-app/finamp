@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/MusicScreen/filter_menu_button.dart';
 import 'package:finamp/components/MusicScreen/sort_menu_button.dart';
@@ -291,75 +292,87 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
             padding: const EdgeInsets.only(left: 4.0),
             child: Text("Filters*", style: Theme.of(context).textTheme.bodyMedium),
           ),
-          ...ItemFilterType.values.map(
-            (option) => ToggleableListTile(
-              title: option.name,
-              leading: Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Icon(switch (option) {
-                  ItemFilterType.isFavorite => TablerIcons.heart,
-                  ItemFilterType.isFullyDownloaded => TablerIcons.download,
-                  ItemFilterType.startsWithCharacter => TablerIcons.sort_ascending,
-                }),
-              ),
-              trailing: SizedBox.shrink(),
-              enabled: switch (option) {
-                ItemFilterType.isFullyDownloaded => ref.watch(finampSettingsProvider.isOffline),
-                _ => true,
-              },
-              state: switch (option) {
-                ItemFilterType.isFavorite =>
-                  widget.filterOverride != null
-                      ? widget.filterOverride!.any((filter) => filter.type == ItemFilterType.isFavorite)
-                      : ref.watch(finampSettingsProvider.onlyShowFavorites),
-                ItemFilterType.isFullyDownloaded =>
-                  widget.filterOverride != null
-                      ? widget.filterOverride!.any((filter) => filter.type == ItemFilterType.isFullyDownloaded)
-                      : ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
-                ItemFilterType.startsWithCharacter =>
-                  widget.filterOverride != null
-                      ? widget.filterOverride!.any((filter) => filter.type == ItemFilterType.startsWithCharacter)
-                      : false,
-              },
-              onToggle: (currentState) async {
-                if (widget.filterOverride != null) {
-                  final newFilters = Set<ItemFilter>.from(widget.filterOverride!);
-                  if (currentState) {
-                    newFilters.removeWhere((filter) => filter.type == option);
-                  } else {
-                    switch (option) {
-                      case ItemFilterType.isFavorite:
-                        newFilters.add(ItemFilter(type: ItemFilterType.isFavorite));
-                        break;
-                      case ItemFilterType.isFullyDownloaded:
-                        newFilters.add(ItemFilter(type: ItemFilterType.isFullyDownloaded));
-                        break;
-                      case ItemFilterType.startsWithCharacter:
-                        newFilters.add(ItemFilter(type: ItemFilterType.startsWithCharacter, extras: "A"));
-                        break;
+          ...ItemFilterType.values
+              .whereNot((x) => [ItemFilterType.genreFilter, ItemFilterType.searchTerm].contains(x))
+              .map(
+                (option) => ToggleableListTile(
+                  title: option.name,
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Icon(switch (option) {
+                      ItemFilterType.isFavorite => TablerIcons.heart,
+                      ItemFilterType.isFullyDownloaded => TablerIcons.download,
+                      ItemFilterType.startsWithCharacter => TablerIcons.sort_ascending,
+                      ItemFilterType.genreFilter => throw UnimplementedError(),
+                      ItemFilterType.searchTerm => throw UnimplementedError(),
+                    }),
+                  ),
+                  trailing: SizedBox.shrink(),
+                  enabled: switch (option) {
+                    ItemFilterType.isFullyDownloaded => ref.watch(finampSettingsProvider.isOffline),
+                    _ => true,
+                  },
+                  state: switch (option) {
+                    ItemFilterType.isFavorite =>
+                      widget.filterOverride != null
+                          ? widget.filterOverride!.any((filter) => filter.type == ItemFilterType.isFavorite)
+                          : ref.watch(finampSettingsProvider.onlyShowFavorites),
+                    ItemFilterType.isFullyDownloaded =>
+                      widget.filterOverride != null
+                          ? widget.filterOverride!.any((filter) => filter.type == ItemFilterType.isFullyDownloaded)
+                          : ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
+                    ItemFilterType.startsWithCharacter =>
+                      widget.filterOverride != null
+                          ? widget.filterOverride!.any((filter) => filter.type == ItemFilterType.startsWithCharacter)
+                          : false,
+                    ItemFilterType.genreFilter => throw UnimplementedError(),
+                    ItemFilterType.searchTerm => throw UnimplementedError(),
+                  },
+                  onToggle: (currentState) async {
+                    if (widget.filterOverride != null) {
+                      final newFilters = Set<ItemFilter>.from(widget.filterOverride!);
+                      if (currentState) {
+                        newFilters.removeWhere((filter) => filter.type == option);
+                      } else {
+                        switch (option) {
+                          case ItemFilterType.isFavorite:
+                            newFilters.add(ItemFilter(type: ItemFilterType.isFavorite));
+                            break;
+                          case ItemFilterType.isFullyDownloaded:
+                            newFilters.add(ItemFilter(type: ItemFilterType.isFullyDownloaded));
+                            break;
+                          case ItemFilterType.startsWithCharacter:
+                            newFilters.add(ItemFilter(type: ItemFilterType.startsWithCharacter, extras: "A"));
+                            break;
+                          case ItemFilterType.genreFilter:
+                            throw UnimplementedError();
+                          case ItemFilterType.searchTerm:
+                            throw UnimplementedError();
+                        }
+                      }
+                      if (widget.updateFilterOverride != null) {
+                        widget.updateFilterOverride!(newFilters);
+                      }
+                    } else {
+                      switch (option) {
+                        case ItemFilterType.isFavorite:
+                          FinampSetters.setOnlyShowFavorites(!ref.read(finampSettingsProvider.onlyShowFavorites));
+                          break;
+                        case ItemFilterType.isFullyDownloaded:
+                          FinampSetters.setOnlyShowFullyDownloaded(
+                            !ref.read(finampSettingsProvider.onlyShowFullyDownloaded),
+                          );
+                          break;
+                        //TODO No global setting for this filter yet
+                        case ItemFilterType.startsWithCharacter:
+                        case ItemFilterType.genreFilter:
+                        case ItemFilterType.searchTerm:
+                          throw UnimplementedError();
+                      }
                     }
-                  }
-                  if (widget.updateFilterOverride != null) {
-                    widget.updateFilterOverride!(newFilters);
-                  }
-                } else {
-                  switch (option) {
-                    case ItemFilterType.isFavorite:
-                      FinampSetters.setOnlyShowFavorites(!ref.read(finampSettingsProvider.onlyShowFavorites));
-                      break;
-                    case ItemFilterType.isFullyDownloaded:
-                      FinampSetters.setOnlyShowFullyDownloaded(
-                        !ref.read(finampSettingsProvider.onlyShowFullyDownloaded),
-                      );
-                      break;
-                    case ItemFilterType.startsWithCharacter:
-                      //TODO No global setting for this filter yet
-                      break;
-                  }
-                }
-              },
-            ),
-          ),
+                  },
+                ),
+              ),
         ],
       ),
       SizedBox(height: 32.0),

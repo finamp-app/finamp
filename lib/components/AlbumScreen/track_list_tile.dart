@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:finamp/components/AddToPlaylistScreen/add_to_playlist_button.dart';
-import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/extensions/string.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -14,16 +13,14 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/feedback_helper.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
-import 'package:finamp/services/item_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../services/audio_service_helper.dart';
 import '../../services/downloads_service.dart';
 import '../../services/finamp_settings_helper.dart';
+import '../../services/music_screen_provider.dart';
 import '../../services/queue_service.dart';
 import '../../services/theme_provider.dart';
 import '../album_image.dart';
@@ -49,10 +46,10 @@ class TrackListTile extends ConsumerWidget {
     super.key,
     required this.item,
 
-    /// Children that are related to this list tile, such as the other tracks in
+    /// Fetch children that are related to this list tile, such as the other tracks in
     /// the album. This is used to give the audio service all the tracks for the
-    /// item. If null, only this track will be given to the audio service.
-    this.children,
+    /// item.
+    required this.fetchChildren,
 
     /// Index of the track in whatever parent this widget is in. Used to start
     /// the audio service at a certain index, such as when selecting the middle
@@ -86,7 +83,7 @@ class TrackListTile extends ConsumerWidget {
   });
 
   final BaseItemDto item;
-  final List<BaseItemDto>? children;
+  final FutureOr<PlayableSlice?> Function() fetchChildren;
   final int? index;
   final bool showIndex;
   final bool showCover;
@@ -119,15 +116,18 @@ class TrackListTile extends ConsumerWidget {
 
     Future<void> trackListTileOnTap(bool playable) async {
       final queueService = GetIt.instance<QueueService>();
-      final audioServiceHelper = GetIt.instance<AudioServiceHelper>();
 
       if (!playable) return;
-      if (children != null) {
+
+      final slice = await fetchChildren();
+
+      if (slice != null) {
         // start linear playback of album from the given index
         await queueService.startPlayback(
-          items: children!,
-          startingIndex: index,
+          items: slice.items,
+          startingIndex: slice.startingIndex,
           order: FinampPlaybackOrder.linear,
+          // TODO correctly account for music screen source
           source:
               source ??
               QueueItemSource.rawId(
@@ -156,78 +156,6 @@ class TrackListTile extends ConsumerWidget {
                     : parentItem?.normalizationGain,
               ),
         );
-      } else {
-        // TODO put in a real offline tracks implementation
-        if (FinampSettingsHelper.finampSettings.isOffline) {
-          final settings = FinampSettingsHelper.finampSettings;
-          final downloadsService = GetIt.instance<DownloadsService>();
-          final finampUserHelper = GetIt.instance<FinampUserHelper>();
-
-          // get all downloaded tracks in order
-          List<DownloadStub> offlineItems;
-          // If we're on the tracks tab, just get all of the downloaded items
-          offlineItems = await downloadsService.getAllTracks(
-            // nameFilter: widget.searchTerm,
-            viewFilter: finampUserHelper.currentUser?.currentView?.id,
-            nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
-            onlyFavorites: settings.onlyShowFavorites && settings.trackOfflineFavorites,
-            genreFilter: genreFilter,
-          );
-
-          var items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
-          var sortBy = settings.tabSortBy[TabContentType.tracks];
-          if ([SortBy.playCount, SortBy.datePlayed].contains(sortBy)) {
-            sortBy = SortBy.sortName;
-          }
-
-          items = sortItems(items, sortBy, settings.tabSortOrder[TabContentType.tracks]);
-
-          int startingIndex = isShownInSearchOrHistory
-              ? items.indexWhere((element) => element.id == item.id)
-              : index ?? 0;
-          //!!! limit the amount of tracks to prevent freezing and crashing for many tracks
-          if (items.length > QueueService.maxInitialQueueItems) {
-            // take 10% of the maximum before the index, and the rest after the index
-            final firstTrackIndex = startingIndex - (QueueService.maxInitialQueueItems ~/ 10);
-            final lastTrackIndex =
-                startingIndex + (QueueService.maxInitialQueueItems - (QueueService.maxInitialQueueItems ~/ 10));
-            // update the initial index
-            if (firstTrackIndex > 0) {
-              startingIndex = startingIndex - firstTrackIndex;
-            } else {
-              startingIndex = startingIndex;
-            }
-            items = items.sublist(
-              firstTrackIndex >= 0 ? firstTrackIndex : 0,
-              lastTrackIndex <= items.length ? lastTrackIndex : items.length,
-            );
-          }
-
-          await queueService.startPlayback(
-            items: items,
-            startingIndex: startingIndex,
-            source:
-                source ??
-                QueueItemSource(
-                  name: QueueItemSourceName(
-                    type: item.name != null ? QueueItemSourceNameType.mix : QueueItemSourceNameType.instantMix,
-                    localizationParameter: item.name ?? "",
-                  ),
-                  type: QueueItemSourceType.allTracks,
-                  id: item.id,
-                  item: item,
-                ),
-          );
-        } else {
-          if (FinampSettingsHelper.finampSettings.startInstantMixForIndividualTracks) {
-            await audioServiceHelper.startInstantMixForItem(item);
-          } else {
-            await queueService.startPlayback(
-              items: await loadChildTracks(item: item, genreFilter: genreFilter),
-              source: source ?? QueueItemSource.fromBaseItem(item),
-            );
-          }
-        }
       }
     }
 

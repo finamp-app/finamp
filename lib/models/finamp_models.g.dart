@@ -1678,20 +1678,15 @@ class ItemFilterAdapter extends TypeAdapter<ItemFilter> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ItemFilter(
-      type: fields[0] as ItemFilterType,
-      extras: fields[1] as dynamic,
-    );
+    return ItemFilter(type: fields[0] as ItemFilterType);
   }
 
   @override
   void write(BinaryWriter writer, ItemFilter obj) {
     writer
-      ..writeByte(2)
-      ..writeByte(0)
-      ..write(obj.type)
       ..writeByte(1)
-      ..write(obj.extras);
+      ..writeByte(0)
+      ..write(obj.type);
   }
 
   @override
@@ -3510,6 +3505,10 @@ class ItemFilterTypeAdapter extends TypeAdapter<ItemFilterType> {
         return ItemFilterType.isFullyDownloaded;
       case 2:
         return ItemFilterType.startsWithCharacter;
+      case 3:
+        return ItemFilterType.genreFilter;
+      case 4:
+        return ItemFilterType.searchTerm;
       default:
         return ItemFilterType.isFavorite;
     }
@@ -3524,6 +3523,10 @@ class ItemFilterTypeAdapter extends TypeAdapter<ItemFilterType> {
         writer.writeByte(1);
       case ItemFilterType.startsWithCharacter:
         writer.writeByte(2);
+      case ItemFilterType.genreFilter:
+        writer.writeByte(3);
+      case ItemFilterType.searchTerm:
+        writer.writeByte(4);
     }
   }
 
@@ -9481,6 +9484,8 @@ const _$ItemFilterTypeEnumMap = {
   ItemFilterType.isFavorite: 'isFavorite',
   ItemFilterType.isFullyDownloaded: 'isFullyDownloaded',
   ItemFilterType.startsWithCharacter: 'startsWithCharacter',
+  ItemFilterType.genreFilter: 'genreFilter',
+  ItemFilterType.searchTerm: 'searchTerm',
 };
 
 SortAndFilterConfiguration _$SortAndFilterConfigurationFromJson(

@@ -1,11 +1,9 @@
 import 'dart:math';
 
 import 'package:balanced_text/balanced_text.dart';
-import 'package:collection/collection.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
-import 'package:finamp/components/Buttons/cta_medium.dart';
+import 'package:finamp/components/Buttons/cta_large.dart';
 import 'package:finamp/components/Buttons/cta_small.dart';
-import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/HomeScreen/show_all_button.dart';
 import 'package:finamp/components/HomeScreen/show_all_screen.dart';
 import 'package:finamp/components/MusicScreen/item_card.dart';
@@ -13,8 +11,6 @@ import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/components/finamp_section_header.dart';
-import 'package:finamp/components/global_snackbar.dart';
-import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/icon_button_with_semantics.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -22,27 +18,20 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
-import 'package:finamp/services/downloads_service.dart';
+import 'package:finamp/services/audio_service_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
 import 'package:finamp/services/queue_service.dart';
-import 'package:finamp/services/radio_service_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
-import 'package:finamp/services/audio_service_helper.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
-import 'package:finamp/services/jellyfin_api_helper.dart';
-import 'package:finamp/components/Buttons/cta_large.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
-part 'home_screen_content.g.dart';
+import '../../services/music_screen_provider.dart';
 
 final _homeScreenLogger = Logger("HomeScreen");
-const homeScreenSectionItemLimit = 20;
 
 class HomeScreenContent extends ConsumerStatefulWidget {
   const HomeScreenContent({super.key, this.refresh});
@@ -55,27 +44,26 @@ class HomeScreenContent extends ConsumerStatefulWidget {
 
 class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
   final _audioServiceHelper = GetIt.instance<AudioServiceHelper>();
-  final _finampUserHelper = GetIt.instance<FinampUserHelper>();
-  final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
-
-  @override
-  void initState() {
-    super.initState();
-
-    widget.refresh?.callback = _refresh;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   void _refresh() {
-    return ref.invalidate(loadHomeSectionItemsProvider);
+    var currentLibrary = ref.watch(
+      FinampUserHelper.finampCurrentUserProvider.select((value) => value.valueOrNull?.currentView),
+    );
+    for (var section in ref.watch(finampSettingsProvider.homeScreenConfiguration).sections) {
+      ref.invalidate(
+        loadHomeSectionItemsProvider(
+          sectionInfo: section,
+          library: currentLibrary,
+          startIndex: 0,
+          limit: homeScreenSectionItemLimit,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    widget.refresh?.callback = _refresh;
     return SafeArea(
       bottom: false,
       child: RefreshIndicator(
@@ -238,6 +226,7 @@ class HomeScreenSection extends ConsumerWidget {
                         loadHomeSectionItemsProvider(
                           sectionInfo: sectionInfo,
                           library: currentLibrary,
+                          startIndex: 0,
                           limit: homeScreenSectionItemLimit,
                         ).future,
                       );
@@ -253,9 +242,8 @@ class HomeScreenSection extends ConsumerWidget {
                           sectionInfo: sectionInfo,
                           library: currentLibrary,
                           // skipping existing items in randomized sections isn't needed since the order will be different
-                          limit:
-                              (isRandomizedSection ? 0 : homeScreenSectionItemLimit) +
-                              FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+                          startIndex: isRandomizedSection ? 0 : homeScreenSectionItemLimit,
+                          limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
                         ).future,
                       ));
                       if (isRandomizedSection) {
@@ -263,8 +251,6 @@ class HomeScreenSection extends ConsumerWidget {
                         for (var existingTrack in initialItems ?? []) {
                           items?.removeWhere((item) => item.id == existingTrack.id);
                         }
-                      } else {
-                        items = items?.skip(homeScreenSectionItemLimit).toList();
                       }
                       await queueService.addToQueue(
                         // ensure we only add exactly [trackShuffleItemCount] items in total, since we fetched more tracks initially
@@ -297,6 +283,7 @@ class HomeScreenSection extends ConsumerWidget {
                         loadHomeSectionItemsProvider(
                           sectionInfo: sectionInfo,
                           library: currentLibrary,
+                          startIndex: 0,
                           limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
                         ).future,
                       );
@@ -360,6 +347,7 @@ class HomeScreenSection extends ConsumerWidget {
             loadHomeSectionItemsProvider(
               sectionInfo: sectionInfo,
               library: currentLibrary,
+              startIndex: 0,
               limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
             ).future,
           );
@@ -388,7 +376,16 @@ class HomeScreenSectionContent extends ConsumerWidget {
         sectionInfo.type !=
         HomeScreenSectionType
             .collection; //TODO implement once collection downloads or generic item sections are supported
-    final items = ref.watch(loadHomeSectionItemsProvider(sectionInfo: sectionInfo, library: currentLibrary));
+    final items = ref
+        .watch(
+          loadHomeSectionItemsProvider(
+            sectionInfo: sectionInfo,
+            library: currentLibrary,
+            startIndex: 0,
+            limit: homeScreenSectionItemLimit,
+          ),
+        )
+        .unwrapPrevious();
     final source = QueueItemSource.rawId(
       type: QueueItemSourceType.homeScreenSection,
       name: QueueItemSourceName(
@@ -521,184 +518,4 @@ class HomeScreenSectionContent extends ConsumerWidget {
       ),
     );
   }
-}
-
-@Riverpod(keepAlive: true)
-Future<List<BaseItemDto>?> loadHomeSectionItems(
-  Ref ref, {
-  required HomeScreenSectionConfiguration sectionInfo,
-  required BaseItemDto? library,
-  int startIndex = 0,
-  int limit = homeScreenSectionItemLimit,
-}) async {
-  final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
-  final finampUserHelper = GetIt.instance<FinampUserHelper>();
-
-  final Future<List<BaseItemDto>?> newItemsFuture;
-
-  if (ref.watch(finampSettingsProvider.isOffline)) {
-    newItemsFuture = loadHomeSectionItemsOffline(
-      sectionInfo: sectionInfo,
-      library: library,
-      startIndex: startIndex,
-      limit: limit,
-    );
-    return newItemsFuture;
-  }
-
-  switch (sectionInfo.type) {
-    case HomeScreenSectionType.tabView:
-      newItemsFuture = jellyfinApiHelper.getItems(
-        libraryFilter: library,
-        parentItem: sectionInfo.contentType == TabContentType.playlists
-            ? null
-            : finampUserHelper.currentUser?.currentView,
-        includeItemTypes: [sectionInfo.contentType?.itemType?.jellyfinName].join(","),
-        sortBy: sectionInfo.sortAndFilterConfiguration.sortBy.jellyfinName(null),
-        sortOrder: sectionInfo.sortAndFilterConfiguration.sortOrder.toString(),
-        filters: sectionInfo.sortAndFilterConfiguration.filters
-            .map(
-              (filter) => switch (filter.type) {
-                ItemFilterType.isFavorite => "IsFavorite",
-                ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
-                // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
-                ItemFilterType.startsWithCharacter =>
-                  null, //TODO properly handle the "NameStartsWith" filter in the API helper
-              },
-            )
-            .nonNulls
-            .join(","),
-        startIndex: startIndex,
-        limit: limit,
-      );
-      break;
-    case HomeScreenSectionType.collection:
-      final baseItem = await GetIt.instance<ProviderContainer>().read(itemByIdProvider(sectionInfo.itemId!).future);
-      newItemsFuture = jellyfinApiHelper.getItems(
-        parentItem: baseItem,
-        recursive: false, //!!! prevent loading tracks and albums from inside the collection items
-        sortBy: sectionInfo.sortAndFilterConfiguration.sortBy.jellyfinName(null),
-        sortOrder: sectionInfo.sortAndFilterConfiguration.sortOrder.toString(),
-        filters: sectionInfo.sortAndFilterConfiguration.filters
-            .map(
-              (filter) => switch (filter.type) {
-                ItemFilterType.isFavorite => "IsFavorite",
-                ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
-                // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
-                ItemFilterType.startsWithCharacter =>
-                  null, //TODO properly handle the "NameStartsWith" filter in the API helper
-              },
-            )
-            .nonNulls
-            .join(","),
-        startIndex: startIndex,
-        limit: limit,
-      );
-      break;
-  }
-
-  return await newItemsFuture;
-}
-
-Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
-  required HomeScreenSectionConfiguration sectionInfo,
-  required BaseItemDto? library,
-  int startIndex = 0,
-  int limit = 10,
-}) async {
-  final FinampSettings settings = FinampSettingsHelper.finampSettings;
-  final downloadsService = GetIt.instance<DownloadsService>();
-  final finampUserHelper = GetIt.instance<FinampUserHelper>();
-
-  List<DownloadStub> offlineItems;
-  List<BaseItemDto> items;
-
-  switch (sectionInfo.type) {
-    // case HomeScreenSectionType.listenAgain:
-    //   //FIXME this seems to also return metadata-only albums which don't have any downloaded children
-    //   offlineItems = await downloadsService.getAllCollections(
-    //     includeItemTypes: [BaseItemDtoType.album, BaseItemDtoType.playlist], //FIXME support allowing multiple types
-    //     fullyDownloaded: settings.onlyShowFullyDownloaded,
-    //     viewFilter: finampUserHelper.currentUser?.currentViewId,
-    //     childViewFilter: null,
-    //     nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
-    //     onlyFavorites: settings.onlyShowFavorites && settings.trackOfflineFavorites,
-    //   );
-
-    //   items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
-    //   items = sortItems(items, SortBy.datePlayed, SortOrder.descending);
-    //   break;
-
-    // case HomeScreenSectionType.newlyAdded:
-    //   offlineItems = await downloadsService.getAllCollections(
-    //     includeItemTypes: [BaseItemDtoType.album, BaseItemDtoType.playlist], //FIXME support allowing multiple types
-    //     fullyDownloaded: settings.onlyShowFullyDownloaded,
-    //     viewFilter: finampUserHelper.currentUser?.currentViewId,
-    //     childViewFilter: null,
-    //     nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
-    //     onlyFavorites: settings.onlyShowFavorites && settings.trackOfflineFavorites,
-    //   );
-    //   items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
-    //   items = sortItems(items, SortBy.dateCreated, SortOrder.descending);
-    //   break;
-    // case HomeScreenSectionType.favoriteArtists:
-    //   offlineItems = await downloadsService.getAllCollections(
-    //     includeItemTypes: [BaseItemDtoType.artist],
-    //     fullyDownloaded: settings.onlyShowFullyDownloaded,
-    //     viewFilter: finampUserHelper.currentUser?.currentViewId,
-    //     childViewFilter: null,
-    //     nullableViewFilters: false,
-    //     onlyFavorites: settings.onlyShowFavorites && settings.trackOfflineFavorites,
-    //   );
-    //   items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
-    //   items = sortItems(items, SortBy.datePlayed, SortOrder.descending);
-    //   break;
-    case HomeScreenSectionType.tabView:
-      //FIXME this seems to also return metadata-only albums which don't have any downloaded children
-      if (sectionInfo.contentType == TabContentType.tracks) {
-        // tracks are not stored as collections, so we need to get them differently
-        offlineItems = await downloadsService.getAllTracks(
-          viewFilter: library?.id,
-          nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
-          onlyFavorites: sectionInfo.sortAndFilterConfiguration.filters.any(
-            (filter) => filter.type == ItemFilterType.isFavorite,
-          ),
-        );
-      } else {
-        offlineItems = await downloadsService.getAllCollections(
-          includeItemTypes: [
-            sectionInfo.contentType?.itemType ?? BaseItemDtoType.album,
-          ], //FIXME support allowing multiple types
-          fullyDownloaded: settings.onlyShowFullyDownloaded,
-          viewFilter: library?.id,
-          childViewFilter: null,
-          nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
-          onlyFavorites: sectionInfo.sortAndFilterConfiguration.filters.any(
-            (filter) => filter.type == ItemFilterType.isFavorite,
-          ),
-        );
-      }
-
-      items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
-      items = sortItems(items, SortBy.datePlayed, SortOrder.descending);
-      break;
-    case HomeScreenSectionType.collection:
-      final baseItem = GetIt.instance<ProviderContainer>().read(itemByIdProvider(sectionInfo.itemId!)).valueOrNull;
-      if (baseItem == null) {
-        return [];
-      }
-      offlineItems = await downloadsService.getAllCollections(
-        relatedTo: baseItem,
-        fullyDownloaded: settings.onlyShowFullyDownloaded,
-        //TODO collections are cross-library - should we really filter by library here?
-        viewFilter: finampUserHelper.currentUser?.currentViewId,
-        childViewFilter: null,
-        nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
-        onlyFavorites: settings.onlyShowFavorites && settings.trackOfflineFavorites,
-      );
-      items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
-      break;
-  }
-
-  return items.take(limit).toList();
 }

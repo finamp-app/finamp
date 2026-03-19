@@ -5,14 +5,14 @@
 // dart format off
 
 
-part of 'home_screen_content.dart';
+part of 'music_screen_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
 String _$loadHomeSectionItemsHash() =>
-    r'fc9f8e81ec8d3784a26d5e5ae32b6e5cc3374685';
+    r'abbb3d6f1ac7d6eefa2d143895e34357a2924a10';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -49,8 +49,8 @@ class LoadHomeSectionItemsFamily
   LoadHomeSectionItemsProvider call({
     required HomeScreenSectionConfiguration sectionInfo,
     required BaseItemDto? library,
-    int startIndex = 0,
-    int limit = homeScreenSectionItemLimit,
+    required int startIndex,
+    required int limit,
   }) {
     return LoadHomeSectionItemsProvider(
       sectionInfo: sectionInfo,
@@ -93,8 +93,8 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
   LoadHomeSectionItemsProvider({
     required HomeScreenSectionConfiguration sectionInfo,
     required BaseItemDto? library,
-    int startIndex = 0,
-    int limit = homeScreenSectionItemLimit,
+    required int startIndex,
+    required int limit,
   }) : this._internal(
          (ref) => loadHomeSectionItems(
            ref as LoadHomeSectionItemsRef,
@@ -213,6 +213,154 @@ class _LoadHomeSectionItemsProviderElement
   int get startIndex => (origin as LoadHomeSectionItemsProvider).startIndex;
   @override
   int get limit => (origin as LoadHomeSectionItemsProvider).limit;
+}
+
+String _$musicScreenContentHash() =>
+    r'438cae96d8579aaff2a99475de9d72d16398aa0c';
+
+abstract class _$MusicScreenContent
+    extends BuildlessAutoDisposeNotifier<PagingState<int, BaseItemDto>> {
+  late final MusicScreenRequest request;
+
+  PagingState<int, BaseItemDto> build(MusicScreenRequest request);
+}
+
+/// See also [MusicScreenContent].
+@ProviderFor(MusicScreenContent)
+const musicScreenContentProvider = MusicScreenContentFamily();
+
+/// See also [MusicScreenContent].
+class MusicScreenContentFamily extends Family<PagingState<int, BaseItemDto>> {
+  /// See also [MusicScreenContent].
+  const MusicScreenContentFamily();
+
+  /// See also [MusicScreenContent].
+  MusicScreenContentProvider call(MusicScreenRequest request) {
+    return MusicScreenContentProvider(request);
+  }
+
+  @override
+  MusicScreenContentProvider getProviderOverride(
+    covariant MusicScreenContentProvider provider,
+  ) {
+    return call(provider.request);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'musicScreenContentProvider';
+}
+
+/// See also [MusicScreenContent].
+class MusicScreenContentProvider
+    extends
+        AutoDisposeNotifierProviderImpl<
+          MusicScreenContent,
+          PagingState<int, BaseItemDto>
+        > {
+  /// See also [MusicScreenContent].
+  MusicScreenContentProvider(MusicScreenRequest request)
+    : this._internal(
+        () => MusicScreenContent()..request = request,
+        from: musicScreenContentProvider,
+        name: r'musicScreenContentProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$musicScreenContentHash,
+        dependencies: MusicScreenContentFamily._dependencies,
+        allTransitiveDependencies:
+            MusicScreenContentFamily._allTransitiveDependencies,
+        request: request,
+      );
+
+  MusicScreenContentProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.request,
+  }) : super.internal();
+
+  final MusicScreenRequest request;
+
+  @override
+  PagingState<int, BaseItemDto> runNotifierBuild(
+    covariant MusicScreenContent notifier,
+  ) {
+    return notifier.build(request);
+  }
+
+  @override
+  Override overrideWith(MusicScreenContent Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: MusicScreenContentProvider._internal(
+        () => create()..request = request,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        request: request,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeNotifierProviderElement<
+    MusicScreenContent,
+    PagingState<int, BaseItemDto>
+  >
+  createElement() {
+    return _MusicScreenContentProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MusicScreenContentProvider && other.request == request;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, request.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin MusicScreenContentRef
+    on AutoDisposeNotifierProviderRef<PagingState<int, BaseItemDto>> {
+  /// The parameter `request` of this provider.
+  MusicScreenRequest get request;
+}
+
+class _MusicScreenContentProviderElement
+    extends
+        AutoDisposeNotifierProviderElement<
+          MusicScreenContent,
+          PagingState<int, BaseItemDto>
+        >
+    with MusicScreenContentRef {
+  _MusicScreenContentProviderElement(super.provider);
+
+  @override
+  MusicScreenRequest get request =>
+      (origin as MusicScreenContentProvider).request;
 }
 
 // ignore_for_file: type=lint

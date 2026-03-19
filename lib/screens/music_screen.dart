@@ -1,26 +1,26 @@
 import 'dart:io';
 
 import 'package:finamp/components/HomeScreen/finamp_music_screen_header.dart';
+import 'package:finamp/components/HomeScreen/home_screen_content.dart';
+import 'package:finamp/components/MusicScreen/artist_type_selection_row.dart';
+import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/components/now_playing_bar.dart';
+import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/music_screen_drawer.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/services/audio_service_helper.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
-import 'package:finamp/components/HomeScreen/home_screen_content.dart';
-import 'package:finamp/components/MusicScreen/artist_type_selection_row.dart';
-import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
-import 'package:finamp/components/now_playing_bar.dart';
-import 'package:finamp/l10n/app_localizations.dart';
-import 'package:finamp/menus/music_screen_drawer.dart';
-import 'package:finamp/models/jellyfin_models.dart';
-import 'package:finamp/services/audio_service_helper.dart';
-import 'package:finamp/services/finamp_settings_helper.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
-import 'package:finamp/services/jellyfin_api_helper.dart';
 
 final _musicScreenLogger = Logger("MusicScreen");
 
@@ -264,7 +264,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
               dragStartBehavior: DragStartBehavior.down,
               children: sortedTabs.map((tabType) {
                 if (tabType == TabContentType.home) {
-                  return HomeScreenContent(refresh: refreshMap[tabType]!);
+                  return HomeScreenContent(refresh: refreshMap[tabType]);
                 }
                 return SafeArea(
                   top: true,
