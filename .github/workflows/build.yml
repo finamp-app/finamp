@@ -27,11 +27,6 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
   
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev
-
     - name: Free up disk space
       run: |
         # Remove .NET SDKs
@@ -46,10 +41,46 @@ jobs:
         sudo rm -rf /usr/local/share/powershell
         df -h
 
+    # Use the same flutter setup as the linux build to allow sharing the pub cache and it utilizing the same cache key
+    - name: Determine Flutter stable version
+      uses: subosito/flutter-action@v2
+      id: flutter-version
+      with:
+        architecture: 'x64'
+        channel: 'stable'
+        dry-run: true
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
+        # Prebuilt ARM linux builds are not provided, so build flutter from source
+        channel: master
+        flutter-version: "${{ steps.flutter-version.outputs.VERSION }}"
+        cache: false
+        pub-cache: true
+        # Include arch as linux aarch64 include isar overriding
+        # arch can be removed later once isar aarch64 is easily available on pub.dev and overriding is not needed anymore
+        pub-cache-key: "flutter-pub-:os:-:channel:-:version:-:arch:-:hash:"
+
+    
+    - name: Gradle cache
+      uses: actions/cache@v5
+      with: 
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        # If exact match is not found, fallback to OS match
+        restore-keys: ${{ runner.os }}-gradle-
+
+    - name: Cache Dart build cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          .dart_tool
+          build
+        key: ${{ runner.os }}-android-dart-build-${{ hashFiles('pubspec.lock') }}
+        restore-keys: ${{ runner.os }}-android-dart-build-
+
     - run: flutter doctor
     - run: flutter pub get
 
@@ -73,7 +104,28 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
-        architecture: x64
+        cache: false
+        pub-cache: true
+
+    - name: Cache CocoaPods
+      uses: actions/cache@v5
+      with:
+        path: |
+          ios/Pods
+          ~/.cocoapods
+        key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+        restore-keys: ${{ runner.os }}-pods-
+
+    - name: Cache Dart build cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          .dart_tool
+          build
+        key: ${{ runner.os }}-dart-build-${{ hashFiles('pubspec.lock') }}
+        restore-keys: ${{ runner.os }}-dart-build-
+
+
     - run: flutter doctor
     - run: flutter pub get
 
@@ -117,6 +169,21 @@ jobs:
         # Prebuilt ARM linux builds are not provided, so build flutter from source
         channel: master
         flutter-version: "${{ steps.flutter-version.outputs.VERSION }}"
+        cache: false
+        pub-cache: true
+        # Include arch as linux aarch64 include isar overriding
+        # arch can be removed later once isar aarch64 is easily available on pub.dev and overriding is not needed anymore
+        pub-cache-key: "flutter-pub-:os:-:channel:-:version:-:arch:-:hash:"
+
+    - name: Cache Dart build cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          .dart_tool
+          build
+        key: ${{ runner.os }}-${{ matrix.arch }}-dart-build-${{ hashFiles('pubspec.lock') }}
+        restore-keys: ${{ runner.os }}-${{ matrix.arch }}-dart-build-
+
     - run: flutter doctor
     - run: flutter pub get
 
@@ -200,8 +267,19 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
+        cache: false
+        pub-cache: true
+
     - run: flutter doctor
     - run: flutter pub get
+
+    - name: Cache Dart build cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          build
+        key: ${{ runner.os }}-dart-build-${{ hashFiles('**/pubspec.yaml') }}
+        restore-keys: ${{ runner.os }}-dart-build-
 
     - run: flutter build windows
 
