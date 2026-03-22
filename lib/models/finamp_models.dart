@@ -104,6 +104,7 @@ class DefaultSettings {
   // FinampSettings's constructor and Hive's defaultValue.
   static const isOffline = false;
   static const themeMode = ThemeMode.system;
+  static const amoledTheme = false;
   static const Locale? locale = null;
   static const Color? accentColor = null;
   static const shouldTranscode = false;
@@ -383,6 +384,7 @@ class FinampSettings {
     this.lastUsedPlaybackActionRowPageForQueueMenu = DefaultSettings.lastUsedPlaybackActionRowPageForQueueMenu,
     this.accentColor = DefaultSettings.accentColor,
     this.themeMode = DefaultSettings.themeMode,
+    this.amoledTheme = DefaultSettings.amoledTheme,
     this.locale = DefaultSettings.locale,
     // !!! Don't touch this default value, it's supposed to be hard coded to run the migration only once
     this.hasCompletedThemeModeLocaleMigration = true,
@@ -846,6 +848,9 @@ class FinampSettings {
 
   @HiveField(145, defaultValue: DefaultSettings.previousTracksPersistenceMode)
   PreviousTracksPersistenceMode previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode;
+
+  @HiveField(146, defaultValue: DefaultSettings.amoledTheme)
+  bool amoledTheme = DefaultSettings.amoledTheme;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(

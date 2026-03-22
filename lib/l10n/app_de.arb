@@ -2618,6 +2618,11 @@
     "@systemAccentColorHasPriorityInfo": {
         "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
     },
+    "amoledTheme": "AMOLED Theme benutzen",
+    "@amoledTheme": {
+        "description": "Schalter, welches dunkelgrau mit schwarz beim dunklen Farbschema ersetzt"
+    },
+    "amoledThemeSubtitle": "Ersetzt das dunkle Farbschema mit einem puren schwarzen Thema.",
     "useMonochromeIcon": "Monochromes Logo benutzen",
     "@useMonochromeIcon": {
         "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"

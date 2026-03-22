@@ -78,6 +78,7 @@ class AccentColorPopup extends ConsumerStatefulWidget {
 
 class _AccentColorPopupState extends ConsumerState<AccentColorPopup> {
   Color? previewColor = FinampSettingsHelper.finampSettings.accentColor;
+  bool amoledTheme = FinampSettingsHelper.finampSettings.amoledTheme;
   late final controller = TextEditingController(text: previewColor?.toHex());
 
   void updatePreview(String value) => setState(() {
@@ -91,7 +92,9 @@ class _AccentColorPopupState extends ConsumerState<AccentColorPopup> {
 
   @override
   Widget build(BuildContext context) {
-    final previewTheme = Theme.of(context).withColorScheme(getColorScheme(previewColor, ref.watch(brightnessProvider)));
+    final previewTheme = Theme.of(
+      context,
+    ).withColorScheme(getColorScheme(previewColor, ref.watch(brightnessProvider), amoledTheme));
 
     return Theme(
       data: previewTheme,
