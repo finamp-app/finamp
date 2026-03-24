@@ -54,7 +54,7 @@ class PlayerScreenAlbumImage extends ConsumerStatefulWidget {
   ConsumerState<PlayerScreenAlbumImage> createState() => _PlayerScreenAlbumImageState();
 }
 
-class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage> {
+class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage> with WidgetsBindingObserver {
   PageController? _pageController;
   List<FinampQueueItem> _displayQueue = [];
 
@@ -79,6 +79,11 @@ class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage>
 
   /// Fires 200 ms after the last swipe to flush [_pendingSkipTotal].
   Timer? _skipDebounceTimer;
+
+  /// Tracks whether the app is currently visible. Animations are skipped when
+  /// the app is in the background (e.g. screen off, another app in foreground)
+  /// so that the cover doesn't slide in while the player is not visible.
+  bool _appIsVisible = true;
 
   /// Whether stream-driven page sync should be suppressed right now.
   ///
@@ -107,7 +112,19 @@ class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage>
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _appIsVisible = state == AppLifecycleState.resumed;
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _skipDebounceTimer?.cancel();
     _pageController?.dispose();
     super.dispose();
@@ -153,11 +170,17 @@ class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage>
             if (_pageController?.hasClients ?? false) {
               final currentPage = _pageController!.page?.round() ?? 0;
               if (currentPage != _displayIndex) {
-                _pageController!.animateToPage(
-                  _displayIndex,
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut,
-                );
+                if (_appIsVisible) {
+                  _pageController!.animateToPage(
+                    _displayIndex,
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                  );
+                } else {
+                  // App is in the background — jump immediately so the cover
+                  // is already in the correct position when the user returns.
+                  _pageController!.jumpToPage(_displayIndex);
+                }
               }
             }
           });
