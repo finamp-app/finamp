@@ -16,14 +16,41 @@ import '../../services/favorite_provider.dart';
 import '../../menus/track_menu.dart';
 import '../album_image.dart';
 
-/// The swipeable album artwork panel displayed on the player screen.
+/// Stiffer page-snap spring so the cover settles faster after a swipe.
+/// ratio: 1.0 = critically damped — no overshoot.
+class _FastSnapPhysics extends PageScrollPhysics {
+  const _FastSnapPhysics({super.parent});
+
+  @override
+  _FastSnapPhysics applyTo(ScrollPhysics? ancestor) {
+    return _FastSnapPhysics(parent: buildParent(ancestor));
+  }
+
+  @override
+  SpringDescription get spring => SpringDescription.withDampingRatio(
+    mass: 0.4,
+    stiffness: 500.0,
+    ratio: 1.0,
+  );
+}
+
+/// Swipeable album artwork shown on the player screen.
 ///
-/// Renders a [PageView] of album images, one per track in the current queue,
-/// so the user can swipe left/right to skip forward/backward. The displayed
-/// page is kept in sync with [QueueService]: when the queue's current-track
-/// index changes externally (e.g. auto-advance, skip button) the controller
-/// animates or jumps to the correct page, and when the user swipes the page
-/// the offset is forwarded to [QueueService.skipByOffset].
+/// Renders a [PageView] with one page per track in the queue so the user can
+/// swipe left/right to skip. The view stays in sync with [QueueService]:
+/// external index changes (auto-advance, skip buttons) animate the page, and
+/// user swipes are forwarded to [QueueService.skipByOffset].
+///
+/// ## Skip flow
+/// Skips are debounced so rapid swipes are batched into a single
+/// [QueueService.skipByOffset] call after 200 ms of inactivity. The visual
+/// PageView moves immediately; only the backend call is deferred.
+///
+/// ## Rubber-band prevention
+/// After a swipe the stream may briefly reflect a stale queue index while
+/// Jellyfin processes the skip. Stream-driven page sync is suppressed while
+/// the pointer is down, while the debounce is pending, and for 400 ms after
+/// the skip is sent — long enough to cover the server round-trip.
 class PlayerScreenAlbumImage extends ConsumerStatefulWidget {
   const PlayerScreenAlbumImage({super.key});
 
@@ -32,24 +59,60 @@ class PlayerScreenAlbumImage extends ConsumerStatefulWidget {
 }
 
 class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage> {
-  /// Controller for the [PageView] that drives the swipe-to-skip animation.
-  /// Lazily initialised on the first build that has queue data.
   PageController? _pageController;
-
-  /// The queue index that was active on the previous build, used to detect
-  /// when the current track has changed so the controller can be animated.
-  int? _lastIndex;
-
-  /// A snapshot of [FinampQueueInfo.fullQueue] captured on the last build.
-  /// Kept as state so the PageView can still render after the queue stream
-  /// emits a null current-track (e.g. briefly during track transitions).
   List<FinampQueueItem> _displayQueue = [];
 
-  /// The index within [_displayQueue] that corresponds to the current track.
+  /// The page index currently shown in the PageView. Kept in sync with the
+  /// queue stream unless sync is suppressed (see [_suppressStreamSync]).
   int _displayIndex = 0;
+
+  /// Timestamp of the last [_scheduleSkip] call, used to enforce the
+  /// post-skip server-processing window in [_suppressStreamSync].
+  DateTime _lastSkipTime = DateTime.now();
+
+  /// True while a pointer is in contact with the screen.
+  bool _pointerDown = false;
+
+  /// The [_displayIndex] at the moment the current touch began, used to
+  /// compute the total swipe offset on pointer-up.
+  int _dragStartIndex = 0;
+
+  /// Accumulated page offset not yet sent to [QueueService]. Multiple rapid
+  /// swipes add up here and are flushed as a single call by [_skipDebounceTimer].
+  int _pendingSkipTotal = 0;
+
+  /// Fires 200 ms after the last swipe to flush [_pendingSkipTotal].
+  Timer? _skipDebounceTimer;
+
+  /// Whether stream-driven page sync should be suppressed right now.
+  ///
+  /// Suppression is active while:
+  /// - the pointer is down (mid-drag),
+  /// - the debounce timer is running (skip not yet sent to the server),
+  /// - within 400 ms of the last sent skip (server processing window).
+  bool get _suppressStreamSync =>
+      _pointerDown ||
+      (_skipDebounceTimer?.isActive ?? false) ||
+      DateTime.now().difference(_lastSkipTime).inMilliseconds < 400;
+
+  /// Accumulates [offset] into [_pendingSkipTotal] and (re-)starts the
+  /// debounce timer. The actual [QueueService.skipByOffset] call is deferred
+  /// so that rapid consecutive swipes are coalesced into one backend call.
+  void _scheduleSkip(int offset, QueueService queueService) {
+    _lastSkipTime = DateTime.now();
+    _pendingSkipTotal += offset;
+    _skipDebounceTimer?.cancel();
+    _skipDebounceTimer = Timer(const Duration(milliseconds: 200), () {
+      if (_pendingSkipTotal != 0) {
+        queueService.skipByOffset(_pendingSkipTotal);
+        _pendingSkipTotal = 0;
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _skipDebounceTimer?.cancel();
     _pageController?.dispose();
     super.dispose();
   }
@@ -68,22 +131,13 @@ class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage>
         }
 
         final queueInfo = snapshot.data!;
+        int streamIndex = 0;
 
-        // Refresh the local queue snapshot whenever a current track is known,
-        // or when the widget is first shown and _displayQueue is still empty.
-        // This guards against briefly-null currentTrack during transitions.
         if (queueInfo.currentTrack != null || _displayQueue.isEmpty) {
           _displayQueue = queueInfo.fullQueue;
-          _displayIndex = queueInfo.previousTracks.length;
-
-          // Clamp the index in case previousTracks is longer than fullQueue
-          // (can occur transiently at the end of a queue).
-          if (_displayIndex >= _displayQueue.length && _displayQueue.isNotEmpty) {
-            _displayIndex = _displayQueue.length - 1;
-          }
+          streamIndex = queueInfo.previousTracks.length;
         } else if (queueInfo.fullQueue.isEmpty) {
           _displayQueue = [];
-          _displayIndex = 0;
         }
 
         if (_displayQueue.isEmpty) {
@@ -91,126 +145,123 @@ class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage>
         }
 
         if (_pageController == null) {
-          // First build with data — create the controller positioned at the
-          // current track without any animation.
+          // First build: initialise the controller at the current track's page.
+          _displayIndex = streamIndex;
           _pageController = PageController(initialPage: _displayIndex);
-          _lastIndex = _displayIndex;
-        } else if (_lastIndex != _displayIndex) {
-          // The current-track index has changed since the last build (e.g. the
-          // user skipped via a button or the track auto-advanced). Animate the
-          // PageView to the new page after the current frame is painted so the
-          // controller is guaranteed to have clients attached.
-          _lastIndex = _displayIndex;
+        } else if (!_suppressStreamSync) {
+          // Stream has a new authoritative index (auto-advance, skip button,
+          // etc.) and we're not in a swipe/debounce/processing window.
+          _displayIndex = streamIndex;
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (_pageController?.hasClients ?? false) {
               final currentPage = _pageController!.page?.round() ?? 0;
               if (currentPage != _displayIndex) {
-                if ((currentPage - _displayIndex).abs() > 1) {
-                  // More than one page away — jump instantly to avoid a long
-                  // multi-page animation that would feel sluggish.
-                  _pageController!.jumpToPage(_displayIndex);
-                } else {
-                  // Adjacent page — animate smoothly.
-                  _pageController!.animateToPage(
-                    _displayIndex,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                  );
-                }
+                _pageController!.animateToPage(
+                  _displayIndex,
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                );
               }
             }
           });
         }
 
         return Semantics(
-          // Announce the current track title to screen readers; the nested
-          // image widget's own semantics are suppressed via excludeSemantics.
           label: AppLocalizations.of(context)!.playerAlbumArtworkTooltip(
               queueInfo.currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName),
           excludeSemantics: true, // replace child semantics with custom semantics
           container: true,
-
-          child: PageView.builder(
-            controller: _pageController,
-            physics: const BouncingScrollPhysics(),
-
-            itemCount: _displayQueue.length,
-            onPageChanged: (newIndex) {
-              // Swipe gestures can be globally disabled in settings.
+          child: Listener(
+            onPointerDown: (_) {
+              _pointerDown = true;
+              _dragStartIndex = _displayIndex;
+            },
+            onPointerCancel: (_) => _pointerDown = false,
+            onPointerUp: (_) {
+              if (!_pointerDown) return;
+              _pointerDown = false;
               if (FinampSettingsHelper.finampSettings.disableGesture) return;
 
-              // Calculate how many positions the user swiped relative to the
-              // track that was current when this build ran, then forward that
-              // offset to the queue service.
-              final offset = newIndex - _displayIndex;
-
+              final offset = _displayIndex - _dragStartIndex;
               if (offset != 0) {
-                queueService.skipByOffset(offset);
                 FeedbackHelper.feedback(FeedbackType.selection);
+                _scheduleSkip(offset, queueService);
               }
             },
-            itemBuilder: (context, index) {
-              final queueItem = _displayQueue[index];
+            child: PageView.builder(
+              controller: _pageController,
+              physics: const _FastSnapPhysics(),
+              itemCount: _displayQueue.length,
+              onPageChanged: (newIndex) {
+                if (FinampSettingsHelper.finampSettings.disableGesture) return;
+                final offset = newIndex - _displayIndex;
+                if (offset == 0) return;
+                _displayIndex = newIndex;
 
-              return GestureDetector(
-                // Secondary tap (right-click on desktop / two-finger tap on
-                // some devices) opens the full track context menu.
-                onSecondaryTapDown: (_) async {
-                  var inPlaylist = queueItemInPlaylist(queueItem);
-                  await showModalTrackMenu(
-                    context: context,
-                    item: queueItem.baseItem!,
-                    showPlaybackControls: true,
-                    parentItem: inPlaylist ? queueItem.source.item : null,
-                    isInPlaylist: inPlaylist,
-                  );
-                },
-                child: SimpleGestureDetector(
-                  // Single tap toggles play/pause.
-                  onTap: () {
-                    unawaited(audioService.togglePlayback());
-                    FeedbackHelper.feedback(FeedbackType.selection);
-                  },
-                  // Double tap toggles the favorite state (online only — the
-                  // Jellyfin API is not reachable in offline mode).
-                  onDoubleTap: () {
-                    if (!FinampSettingsHelper.finampSettings.isOffline) {
-                      ref.read(isFavoriteProvider(queueItem.baseItem!).notifier).toggleFavorite();
-                    }
-                  },
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      // Read the user-configured minimum padding percentage and
-                      // convert it to logical pixels relative to the available
-                      // space, so the artwork insets scale with the widget size.
-                      final minPadding = ref.watch(finampSettingsProvider.playerScreenCoverMinimumPadding);
-                      final horizontalPadding = constraints.maxWidth * (minPadding / 100.0);
-                      final verticalPadding = constraints.maxHeight * (minPadding / 100.0);
+                // The pointer is already up: this page change was driven by
+                // fling momentum after the finger lifted, so fire the skip now
+                // instead of waiting for onPointerUp (which already fired).
+                if (!_pointerDown) {
+                  FeedbackHelper.feedback(FeedbackType.selection);
+                  _scheduleSkip(offset, queueService);
+                }
+              },
+              itemBuilder: (context, index) {
+                final queueItem = _displayQueue[index];
 
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
-                        child: AlbumImage(
-                          item: queueItem.baseItem,
-                          borderRadius: BorderRadius.circular(8.0),
-                          autoScale: false,
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                blurRadius: 24,
-                                offset: const Offset(0, 4),
-                                // ~30 % opacity black shadow for depth.
-                                color: Colors.black.withAlpha(77),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
+                return GestureDetector(
+                  // Desktop / right-click: open track context menu.
+                  onSecondaryTapDown: (_) async {
+                    var inPlaylist = queueItemInPlaylist(queueItem);
+                    await showModalTrackMenu(
+                      context: context,
+                      item: queueItem.baseItem!,
+                      showPlaybackControls: true,
+                      parentItem: inPlaylist ? queueItem.source.item : null,
+                      isInPlaylist: inPlaylist,
+                    );
+                                    },
+                  child: SimpleGestureDetector(
+                    onTap: () {
+                      unawaited(audioService.togglePlayback());
+                      FeedbackHelper.feedback(FeedbackType.selection);
                     },
+                    onDoubleTap: () {
+                      if (!FinampSettingsHelper.finampSettings.isOffline) {
+                        ref.read(isFavoriteProvider(queueItem.baseItem!).notifier).toggleFavorite();
+                      }
+                    },
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final minPadding = ref.watch(finampSettingsProvider.playerScreenCoverMinimumPadding);
+                        final horizontalPadding = constraints.maxWidth * (minPadding / 100.0);
+                        final verticalPadding = constraints.maxHeight * (minPadding / 100.0);
+
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
+                          child: AlbumImage(
+                            item: queueItem.baseItem,
+                            borderRadius: BorderRadius.circular(8.0),
+                            // Load player cover at max size to allow more seamless scaling
+                            autoScale: false,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 4),
+                                  color: Colors.black.withAlpha(77),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         );
       },
