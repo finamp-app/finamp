@@ -27,11 +27,7 @@ class _FastSnapPhysics extends PageScrollPhysics {
   }
 
   @override
-  SpringDescription get spring => SpringDescription.withDampingRatio(
-    mass: 0.4,
-    stiffness: 500.0,
-    ratio: 1.0,
-  );
+  SpringDescription get spring => SpringDescription.withDampingRatio(mass: 0.4, stiffness: 500.0, ratio: 1.0);
 }
 
 /// Swipeable album artwork shown on the player screen.
@@ -168,8 +164,9 @@ class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage>
         }
 
         return Semantics(
-          label: AppLocalizations.of(context)!.playerAlbumArtworkTooltip(
-              queueInfo.currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName),
+          label: AppLocalizations.of(
+            context,
+          )!.playerAlbumArtworkTooltip(queueInfo.currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName),
           excludeSemantics: true, // replace child semantics with custom semantics
           container: true,
           child: Listener(
@@ -221,7 +218,7 @@ class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage>
                       parentItem: inPlaylist ? queueItem.source.item : null,
                       isInPlaylist: inPlaylist,
                     );
-                                    },
+                  },
                   child: SimpleGestureDetector(
                     onTap: () {
                       unawaited(audioService.togglePlayback());
