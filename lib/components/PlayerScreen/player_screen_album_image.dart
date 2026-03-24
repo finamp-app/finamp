@@ -70,6 +70,7 @@ class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage>
       stream: queueService.getQueueStream(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
+          // show loading indicator
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -134,7 +135,7 @@ class _PlayerScreenAlbumImageState extends ConsumerState<PlayerScreenAlbumImage>
           // image widget's own semantics are suppressed via excludeSemantics.
           label: AppLocalizations.of(context)!.playerAlbumArtworkTooltip(
               queueInfo.currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName),
-          excludeSemantics: true,
+          excludeSemantics: true, // replace child semantics with custom semantics
           container: true,
 
           child: PageView.builder(
