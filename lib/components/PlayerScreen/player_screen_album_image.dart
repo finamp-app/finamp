@@ -24,13 +24,6 @@ import '../album_image.dart';
 /// index changes externally (e.g. auto-advance, skip button) the controller
 /// animates or jumps to the correct page, and when the user swipes the page
 /// the offset is forwarded to [QueueService.skipByOffset].
-///
-/// Gesture summary:
-/// - **Swipe left/right** — skip to next/previous track (unless gestures are
-///   disabled in settings).
-/// - **Single tap** — toggle play/pause.
-/// - **Double tap** — toggle favorite for the current track (online mode only).
-/// - **Secondary tap / right-click** — open the track context menu.
 class PlayerScreenAlbumImage extends ConsumerStatefulWidget {
   const PlayerScreenAlbumImage({super.key});
 
