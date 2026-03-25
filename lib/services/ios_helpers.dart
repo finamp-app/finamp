@@ -85,7 +85,9 @@ class IosSiriHandler {
     final shuffle = arguments['shuffle'] as bool? ?? false;
     final mediaType = arguments['mediaType'] as String?;
 
-    _logger.info("Siri playFromSearch - query: $query, artist: $artist, album: $album, genre: $genre, mediaType: $mediaType, shuffle: $shuffle");
+    _logger.info(
+      "Siri playFromSearch - query: $query, artist: $artist, album: $album, genre: $genre, mediaType: $mediaType, shuffle: $shuffle",
+    );
 
     // Shuffle with no specific query
     if (shuffle && query == null && artist == null && album == null) {
@@ -101,7 +103,11 @@ class IosSiriHandler {
     }
 
     final extras = _buildExtrasFromSiriData(
-      query: query, artist: artist, album: album, genre: genre, mediaType: mediaType,
+      query: query,
+      artist: artist,
+      album: album,
+      genre: genre,
+      mediaType: mediaType,
     );
 
     _logger.info("Siri delegating to AA search - rawQuery: $rawQuery, extras: $extras");
@@ -118,7 +124,11 @@ class IosSiriHandler {
   /// - mediaType hint on bare query → maps query to the appropriate extra
   /// - bare query with no hints → null extras (AA does generic: playlists first, then tracks)
   static Map<String, dynamic>? _buildExtrasFromSiriData({
-    String? query, String? artist, String? album, String? genre, String? mediaType,
+    String? query,
+    String? artist,
+    String? album,
+    String? genre,
+    String? mediaType,
   }) {
     final extras = <String, dynamic>{};
 

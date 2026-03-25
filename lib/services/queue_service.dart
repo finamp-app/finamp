@@ -123,8 +123,7 @@ class QueueService {
       _currentQueueIndex = event.queueIndex ?? 0;
 
       // Ignore playback events if queue is empty.
-      if (_audioHandler.audioSources.isNotEmpty &&
-          (previousIndex != _currentQueueIndex || _currentTrack == null)) {
+      if (_audioHandler.audioSources.isNotEmpty && (previousIndex != _currentQueueIndex || _currentTrack == null)) {
         _queueServiceLogger.finer("Play queue index changed, new index: $_currentQueueIndex");
         _buildQueueFromNativePlayerQueue();
       } else {

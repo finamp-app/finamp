@@ -582,7 +582,7 @@ class _FinampState extends State<Finamp> with WindowListener {
       WindowManager.instance.removeListener(this);
     }
 
-    if(Platform.isIOS) {
+    if (Platform.isIOS) {
       GetIt.instance<CarPlayHelper>().disposeCarplay();
     }
     super.dispose();

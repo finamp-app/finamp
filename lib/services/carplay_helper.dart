@@ -26,8 +26,7 @@ import 'radio_service_helper.dart' as radio;
 
 /// Helper to access localized strings without a BuildContext.
 /// Uses the global scaffold key's context for localization.
-AppLocalizations get _l10n =>
-    AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!;
+AppLocalizations get _l10n => AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!;
 
 final _carPlayLogger = Logger("CarPlay");
 
@@ -79,12 +78,14 @@ class CarPlayHelper {
     if (FinampSettingsHelper.finampSettings.isOffline) return null;
 
     // Return network URL at reduced size
-    return _jellyfinApiHelper.getImageUrl(
-      item: item,
-      maxWidth: _carPlayImageSize,
-      maxHeight: _carPlayImageSize,
-      quality: _carPlayImageQuality,
-    )?.toString();
+    return _jellyfinApiHelper
+        .getImageUrl(
+          item: item,
+          maxWidth: _carPlayImageSize,
+          maxHeight: _carPlayImageSize,
+          quality: _carPlayImageQuality,
+        )
+        ?.toString();
   }
 
   /// Pre-downloads unique images for a list of items to local cache.
@@ -121,10 +122,7 @@ class CarPlayHelper {
     // Download unique images in parallel
     final futures = uniqueImageUrls.entries.map((entry) async {
       try {
-        final fileInfo = await _carPlayImageCache.downloadFile(
-          entry.value,
-          key: "carplay_${entry.key}",
-        );
+        final fileInfo = await _carPlayImageCache.downloadFile(entry.value, key: "carplay_${entry.key}");
         imageUriMap[entry.key] = Uri.file(fileInfo.file.path).toString();
       } catch (e) {
         // Fall back to network URL if download fails
@@ -149,13 +147,10 @@ class CarPlayHelper {
     _flutterCarplay.addListenerOnConnectionChange(onConnectionChange);
 
     // Listen for user login/logout changes and refresh CarPlay template
-    _userSubscription = providerRef.listen(
-      FinampUserHelper.finampCurrentUserProvider,
-      (previous, next) {
-        _carPlayLogger.info("User state changed, refreshing CarPlay template");
-        setCarplayRootTemplate();
-      },
-    );
+    _userSubscription = providerRef.listen(FinampUserHelper.finampCurrentUserProvider, (previous, next) {
+      _carPlayLogger.info("User state changed, refreshing CarPlay template");
+      setCarplayRootTemplate();
+    });
 
     // Defer initial template setup until after the first frame is rendered.
     // This ensures GlobalSnackbar's context is available for localization.
@@ -174,9 +169,7 @@ class CarPlayHelper {
     if (status == ConnectionStatusTypes.connected) {
       // Resume playback if there's a loaded queue that's paused
       final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
-      if (_queueService.getCurrentTrack() != null &&
-          audioHandler.paused &&
-          isUserLoggedIn) {
+      if (_queueService.getCurrentTrack() != null && audioHandler.paused && isUserLoggedIn) {
         _carPlayLogger.info("CarPlay connected, resuming playback");
         try {
           audioHandler.play();
@@ -206,23 +199,21 @@ class CarPlayHelper {
       grouped[letter]!.add(itemBuilder(item, i));
     }
 
-    final sortedKeys = grouped.keys.toList()..sort((a, b) {
-      if (a == "#") return 1;
-      if (b == "#") return -1;
-      return a.compareTo(b);
-    });
+    final sortedKeys = grouped.keys.toList()
+      ..sort((a, b) {
+        if (a == "#") return 1;
+        if (b == "#") return -1;
+        return a.compareTo(b);
+      });
 
-    return sortedKeys.map((letter) => CPListSection(
-      header: letter,
-      items: grouped[letter]!,
-    )).toList();
+    return sortedKeys.map((letter) => CPListSection(header: letter, items: grouped[letter]!)).toList();
   }
 
-  Future<List<BaseItemDto>> getTabItems ({required TabContentType tabContentType}) async {
+  Future<List<BaseItemDto>> getTabItems({required TabContentType tabContentType}) async {
     final sortBy = FinampSettingsHelper.finampSettings.getTabSortBy(tabContentType);
     final sortOrder = FinampSettingsHelper.finampSettings.getSortOrder(tabContentType);
-    
-    // If we are in offline mode, display all matching downloaded parents 
+
+    // If we are in offline mode, display all matching downloaded parents
     if (FinampSettingsHelper.finampSettings.isOffline) {
       List<BaseItemDto> baseItems = [];
       for (final downloadedParent in await _downloadsService.getAllCollections()) {
@@ -233,10 +224,12 @@ class CarPlayHelper {
       }
       return sortItems(baseItems, sortBy, sortOrder);
     }
-    
+
     // Fetch the online version if we can't get the offline versions
     final items = await _jellyfinApiHelper.getItems(
-      parentItem: tabContentType.itemType == BaseItemDtoType.playlist ? null : _finampUserHelper.currentUser?.currentView,
+      parentItem: tabContentType.itemType == BaseItemDtoType.playlist
+          ? null
+          : _finampUserHelper.currentUser?.currentView,
       includeItemTypes: tabContentType.itemType.jellyfinName,
       sortBy: sortBy.jellyfinName(tabContentType),
       sortOrder: tabContentType == TabContentType.tracks ? null : sortOrder.toString(),
@@ -252,12 +245,10 @@ class CarPlayHelper {
       final allAlbums = await _downloadsService.getAllCollections();
       final List<BaseItemDto> tracks = [];
       for (final downloadedParent in allAlbums) {
-        if (downloadedParent.baseItem != null &&
-            downloadedParent.baseItemType == BaseItemDtoType.album) {
+        if (downloadedParent.baseItem != null && downloadedParent.baseItemType == BaseItemDtoType.album) {
           final album = downloadedParent.baseItem!;
           // Check if album belongs to this artist
-          if (album.albumArtist == artist.name ||
-              (album.albumArtists?.any((aa) => aa.id == artist.id) ?? false)) {
+          if (album.albumArtist == artist.name || (album.albumArtists?.any((aa) => aa.id == artist.id) ?? false)) {
             tracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
           }
         }
@@ -276,7 +267,11 @@ class CarPlayHelper {
   }
 
   // playFromBaseItem is based on AndroidAutoHelper.playFromMediaId but using BaseItemDto
-  Future<void> playItem(BaseItemDto item, {int? index = 0, FinampPlaybackOrder? order = FinampPlaybackOrder.linear}) async {
+  Future<void> playItem(
+    BaseItemDto item, {
+    int? index = 0,
+    FinampPlaybackOrder? order = FinampPlaybackOrder.linear,
+  }) async {
     final queueService = GetIt.instance<QueueService>();
 
     final childItems = await loadChildTracksFromBaseItem(baseItem: item);
@@ -292,9 +287,11 @@ class CarPlayHelper {
 
   // Play a list of tracks as an ad-hoc queue (for tracks without a parent container)
   Future<void> playTracksAsQueue(
-    List<BaseItemDto> tracks,
-    {int? index = 0, FinampPlaybackOrder? order = FinampPlaybackOrder.linear, String? sourceName}
-  ) async {
+    List<BaseItemDto> tracks, {
+    int? index = 0,
+    FinampPlaybackOrder? order = FinampPlaybackOrder.linear,
+    String? sourceName,
+  }) async {
     final queueService = GetIt.instance<QueueService>();
 
     await queueService.startPlayback(
@@ -406,36 +403,35 @@ class CarPlayHelper {
 
     final recentPlays = getRecentPlays(limit: 5);
     if (recentPlays.isNotEmpty) {
-      CPListSection recentPlaysSection = CPListSection(
-        header: _l10n.recentlyPlayed,
-        items: [],
-      );
+      CPListSection recentPlaysSection = CPListSection(header: _l10n.recentlyPlayed, items: []);
 
       for (final queueItem in recentPlays) {
         final baseItem = queueItem.baseItem;
 
-        recentPlaysSection.items.add(CPListItem(
-          text: baseItem.name ?? _l10n.unknown,
-          detailText: baseItem.artists?.join(", ") ?? baseItem.albumArtist,
-          image: _getCarPlayImageUrl(baseItem),
-          onPress: (complete, self) async {
-            await _queueService.startPlayback(
-              items: [baseItem],
-              source: QueueItemSource(
-                type: QueueItemSourceType.nextUp,
-                name: QueueItemSourceName(
-                  type: QueueItemSourceNameType.preTranslated,
-                  pretranslatedName: baseItem.name ?? _l10n.tracks,
+        recentPlaysSection.items.add(
+          CPListItem(
+            text: baseItem.name ?? _l10n.unknown,
+            detailText: baseItem.artists?.join(", ") ?? baseItem.albumArtist,
+            image: _getCarPlayImageUrl(baseItem),
+            onPress: (complete, self) async {
+              await _queueService.startPlayback(
+                items: [baseItem],
+                source: QueueItemSource(
+                  type: QueueItemSourceType.nextUp,
+                  name: QueueItemSourceName(
+                    type: QueueItemSourceNameType.preTranslated,
+                    pretranslatedName: baseItem.name ?? _l10n.tracks,
+                  ),
+                  id: baseItem.id,
+                  item: baseItem,
                 ),
-                id: baseItem.id,
-                item: baseItem,
-              ),
-              order: FinampPlaybackOrder.linear,
-            );
-            complete();
-            await FlutterCarplay.showSharedNowPlaying();
-          },
-        ));
+                order: FinampPlaybackOrder.linear,
+              );
+              complete();
+              await FlutterCarplay.showSharedNowPlaying();
+            },
+          ),
+        );
       }
 
       if (recentPlaysSection.items.isNotEmpty) {
@@ -446,21 +442,20 @@ class CarPlayHelper {
     final recentlyAdded = await getRecentlyAddedAlbums(limit: 3);
     _carPlayLogger.info("Got ${recentlyAdded.length} recently added albums");
     if (recentlyAdded.isNotEmpty) {
-      CPListSection recentlyAddedSection = CPListSection(
-        header: _l10n.recentlyAdded,
-        items: [],
-      );
+      CPListSection recentlyAddedSection = CPListSection(header: _l10n.recentlyAdded, items: []);
 
       for (final album in recentlyAdded) {
-        recentlyAddedSection.items.add(CPListItem(
-          text: album.name ?? _l10n.unknownAlbum,
-          detailText: album.albumArtist,
-          image: _getCarPlayImageUrl(album),
-          onPress: (complete, self) async {
-            await showPlaylistTemplate(album);
-            complete();
-          },
-        ));
+        recentlyAddedSection.items.add(
+          CPListItem(
+            text: album.name ?? _l10n.unknownAlbum,
+            detailText: album.albumArtist,
+            image: _getCarPlayImageUrl(album),
+            onPress: (complete, self) async {
+              await showPlaylistTemplate(album);
+              complete();
+            },
+          ),
+        );
       }
 
       sections.add(recentlyAddedSection);
@@ -485,25 +480,29 @@ class CarPlayHelper {
 
     final homeSections = results[0] as List<CPListSection>;
     List<MediaItem> rootItems = results[1] as List<MediaItem>;
-    CPListSection librarySection = CPListSection(
-      items: []);
+    CPListSection librarySection = CPListSection(items: []);
 
     for (final item in rootItems) {
-      librarySection.items.add(CPListItem(
-        text: item.title,
-        onPress: (complete, self) {
-          final parentId = MediaItemId.fromJson(jsonDecode(item.id) as Map<String, dynamic>);
+      librarySection.items.add(
+        CPListItem(
+          text: item.title,
+          onPress: (complete, self) {
+            final parentId = MediaItemId.fromJson(jsonDecode(item.id) as Map<String, dynamic>);
 
-          switch(parentId.contentType) {
-            case TabContentType.albums:
-            case TabContentType.playlists:
-            case TabContentType.genres: showAlbumsTemplate(tabType: parentId.contentType);
-            case TabContentType.artists: showArtistsTemplate();
-            case TabContentType.tracks: showTracksTemplate();
-          }
-          complete();
-        }
-      ));
+            switch (parentId.contentType) {
+              case TabContentType.albums:
+              case TabContentType.playlists:
+              case TabContentType.genres:
+                showAlbumsTemplate(tabType: parentId.contentType);
+              case TabContentType.artists:
+                showArtistsTemplate();
+              case TabContentType.tracks:
+                showTracksTemplate();
+            }
+            complete();
+          },
+        ),
+      );
     }
 
     await FlutterCarplay.setRootTemplate(
@@ -567,30 +566,31 @@ class CarPlayHelper {
 
       CPListSection playlistSection = CPListSection(items: []);
 
-      playlistSection.items.add(CPListItem(
-        text: _l10n.shuffleButtonLabel,
-        onPress: (complete, self) async {
-          await playItem(parent, order: FinampPlaybackOrder.shuffled);
-          complete();
-        },
-      ));
-
-      mediaItems.asMap().forEach((index, item) {
-        playlistSection.items.add(CPListItem(
-          text: item.name ?? _l10n.unknownName,
-          detailText: item.artists?.join(", ") ?? item.albumArtist,
-          image: _getImageFromPreloaded(item, imageMap),
+      playlistSection.items.add(
+        CPListItem(
+          text: _l10n.shuffleButtonLabel,
           onPress: (complete, self) async {
-            await playItem(parent, index: index);
+            await playItem(parent, order: FinampPlaybackOrder.shuffled);
             complete();
           },
-        ));
+        ),
+      );
+
+      mediaItems.asMap().forEach((index, item) {
+        playlistSection.items.add(
+          CPListItem(
+            text: item.name ?? _l10n.unknownName,
+            detailText: item.artists?.join(", ") ?? item.albumArtist,
+            image: _getImageFromPreloaded(item, imageMap),
+            onPress: (complete, self) async {
+              await playItem(parent, index: index);
+              complete();
+            },
+          ),
+        );
       });
 
-      CPListTemplate playlistTemplate = CPListTemplate(
-        sections: [playlistSection],
-        systemIcon: 'gear',
-      );
+      CPListTemplate playlistTemplate = CPListTemplate(sections: [playlistSection], systemIcon: 'gear');
 
       await FlutterCarplay.push(template: playlistTemplate);
     } finally {
@@ -610,21 +610,25 @@ class CarPlayHelper {
         if (FinampSettingsHelper.finampSettings.isOffline) {
           final allCollections = await _downloadsService.getAllCollections();
           mediaItems = allCollections
-              .where((d) =>
-                  d.baseItem != null &&
-                  d.baseItemType == BaseItemDtoType.album &&
-                  (d.baseItem!.genreItems?.any((g) => g.id == genreFilter.id) ?? false))
+              .where(
+                (d) =>
+                    d.baseItem != null &&
+                    d.baseItemType == BaseItemDtoType.album &&
+                    (d.baseItem!.genreItems?.any((g) => g.id == genreFilter.id) ?? false),
+              )
               .map((d) => d.baseItem!)
               .take(_carPlayOfflineLimit)
               .toList();
         } else {
-          mediaItems = await _jellyfinApiHelper.getItems(
-            parentItem: _finampUserHelper.currentUser?.currentView,
-            includeItemTypes: "MusicAlbum",
-            sortBy: "SortName",
-            genreFilter: genreFilter,
-            limit: _carPlayOnlineLimit,
-          ) ?? [];
+          mediaItems =
+              await _jellyfinApiHelper.getItems(
+                parentItem: _finampUserHelper.currentUser?.currentView,
+                includeItemTypes: "MusicAlbum",
+                sortBy: "SortName",
+                genreFilter: genreFilter,
+                limit: _carPlayOnlineLimit,
+              ) ??
+              [];
         }
       } else {
         mediaItems = await getTabItems(tabContentType: tabType);
@@ -649,10 +653,7 @@ class CarPlayHelper {
         );
       });
 
-      CPListTemplate albumsTemplate = CPListTemplate(
-        sections: sections,
-        systemIcon: 'square.stack',
-      );
+      CPListTemplate albumsTemplate = CPListTemplate(sections: sections, systemIcon: 'square.stack');
 
       await FlutterCarplay.push(template: albumsTemplate);
     } finally {
@@ -674,12 +675,14 @@ class CarPlayHelper {
           tracks = tracks.sublist(0, _carPlayOnlineLimit);
         }
       } else {
-        tracks = await _jellyfinApiHelper.getItems(
-          parentItem: _finampUserHelper.currentUser?.currentView,
-          includeItemTypes: "Audio",
-          sortBy: "SortName",
-          limit: _carPlayOnlineLimit,
-        ) ?? [];
+        tracks =
+            await _jellyfinApiHelper.getItems(
+              parentItem: _finampUserHelper.currentUser?.currentView,
+              includeItemTypes: "Audio",
+              sortBy: "SortName",
+              limit: _carPlayOnlineLimit,
+            ) ??
+            [];
       }
 
       // Pre-cache images for all tracks
@@ -699,19 +702,19 @@ class CarPlayHelper {
 
       // Add shuffle button at the beginning
       if (sections.isNotEmpty) {
-        sections.first.items.insert(0, CPListItem(
-          text: _l10n.shuffleAll,
-          onPress: (complete, self) async {
-            await shuffleAllTracks();
-            complete();
-          },
-        ));
+        sections.first.items.insert(
+          0,
+          CPListItem(
+            text: _l10n.shuffleAll,
+            onPress: (complete, self) async {
+              await shuffleAllTracks();
+              complete();
+            },
+          ),
+        );
       }
 
-      CPListTemplate tracksTemplate = CPListTemplate(
-        sections: sections,
-        systemIcon: 'music.note',
-      );
+      CPListTemplate tracksTemplate = CPListTemplate(sections: sections, systemIcon: 'music.note');
 
       await FlutterCarplay.push(template: tracksTemplate);
     } finally {
@@ -733,13 +736,15 @@ class CarPlayHelper {
           artists = artists.sublist(0, _carPlayOnlineLimit);
         }
       } else {
-        artists = await _jellyfinApiHelper.getItems(
-          parentItem: _finampUserHelper.currentUser?.currentView,
-          includeItemTypes: "MusicArtist",
-          artistType: ArtistType.albumArtist,
-          sortBy: "SortName",
-          limit: _carPlayOnlineLimit,
-        ) ?? [];
+        artists =
+            await _jellyfinApiHelper.getItems(
+              parentItem: _finampUserHelper.currentUser?.currentView,
+              includeItemTypes: "MusicArtist",
+              artistType: ArtistType.albumArtist,
+              sortBy: "SortName",
+              limit: _carPlayOnlineLimit,
+            ) ??
+            [];
       }
 
       final sections = _groupItemsIntoSections(artists, (item, index) {
@@ -752,17 +757,14 @@ class CarPlayHelper {
         );
       });
 
-      CPListTemplate artistsTemplate = CPListTemplate(
-        sections: sections,
-        systemIcon: 'person.2',
-      );
+      CPListTemplate artistsTemplate = CPListTemplate(sections: sections, systemIcon: 'person.2');
 
       await FlutterCarplay.push(template: artistsTemplate);
     } finally {
       _isPushingPageUpdate = false;
     }
   }
-  
+
   Future<void> showArtistTemplate(BaseItemDto parent) async {
     if (_isPushingPageUpdate) {
       _carPlayLogger.warning("Navigation dropped: already pushing page update");
@@ -776,31 +778,40 @@ class CarPlayHelper {
       CPListSection artistAlbums = CPListSection(header: _l10n.albums, items: []);
 
       _carPlayLogger.fine("Fetching albums for artist ${parent.name}");
-      List<BaseItemDto> artistAlbumsList = await GetIt.instance<ProviderContainer>()
-          .read(getArtistAlbumsProvider(artist: parent, libraryFilter: _finampUserHelper.currentUser?.currentView).future);
+      List<BaseItemDto> artistAlbumsList = await GetIt.instance<ProviderContainer>().read(
+        getArtistAlbumsProvider(artist: parent, libraryFilter: _finampUserHelper.currentUser?.currentView).future,
+      );
       _carPlayLogger.fine("Got ${artistAlbumsList.length} albums");
 
-      artistAlbums.items.add(CPListItem(
-        text: _l10n.shuffleAll,
-        onPress: (complete, self) async {
-          final tracks = await getArtistTracks(parent);
-          await playTracksAsQueue(tracks, order: FinampPlaybackOrder.shuffled, sourceName: parent.name ?? _l10n.unknownName);
-          complete();
-        },
-      ));
+      artistAlbums.items.add(
+        CPListItem(
+          text: _l10n.shuffleAll,
+          onPress: (complete, self) async {
+            final tracks = await getArtistTracks(parent);
+            await playTracksAsQueue(
+              tracks,
+              order: FinampPlaybackOrder.shuffled,
+              sourceName: parent.name ?? _l10n.unknownName,
+            );
+            complete();
+          },
+        ),
+      );
 
       // Pre-cache images for artist's albums
       final imageMap = await _preloadCarPlayImages(artistAlbumsList);
 
       for (final item in artistAlbumsList) {
-        artistAlbums.items.add(CPListItem(
-          text: item.name ?? _l10n.unknownName,
-          image: _getImageFromPreloaded(item, imageMap),
-          onPress: (complete, self) async {
-            await showPlaylistTemplate(item);
-            complete();
-          },
-        ));
+        artistAlbums.items.add(
+          CPListItem(
+            text: item.name ?? _l10n.unknownName,
+            image: _getImageFromPreloaded(item, imageMap),
+            onPress: (complete, self) async {
+              await showPlaylistTemplate(item);
+              complete();
+            },
+          ),
+        );
       }
       artistTemplate.sections.add(artistAlbums);
 
