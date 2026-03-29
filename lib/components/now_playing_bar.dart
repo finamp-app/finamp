@@ -10,6 +10,7 @@ import 'package:finamp/components/print_duration.dart';
 import 'package:finamp/extensions/color_extensions.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/current_track_metadata_provider.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/theme_provider.dart';
@@ -499,21 +500,29 @@ class NowPlayingBar extends ConsumerWidget {
       tag: "nowplaying",
       createRectTween: (from, to) => RectTween(begin: from, end: from),
       child: PlayerScreenTheme(
-        child: StreamBuilder<FinampQueueInfo?>(
-          stream: queueService.getQueueStream(),
-          initialData: queueService.getQueue(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data!.saveState == SavedQueueState.loading && !usingPlayerSplitScreen) {
-              return buildLoadingQueueBar(ref, null);
-            } else if (snapshot.hasData &&
-                snapshot.data!.saveState == SavedQueueState.failed &&
-                !usingPlayerSplitScreen) {
-              return buildLoadingQueueBar(ref, queueService.retryQueueLoad);
-            } else if (snapshot.hasData && snapshot.data!.currentTrack != null && !usingPlayerSplitScreen) {
-              return buildNowPlayingBar(ref, snapshot.data!.currentTrack!);
-            } else {
-              return const SizedBox.shrink();
-            }
+        // use consumer to obtain ref of correct (player screen theme) ProviderContainer
+        child: Consumer(
+          builder: (context, ref, child) {
+            ref.listen(currentTrackMetadataProvider, (metadataOrNull, metadata) {}); // keep provider alive
+            return StreamBuilder<FinampQueueInfo?>(
+              stream: queueService.getQueueStream(),
+              initialData: queueService.getQueue(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData &&
+                    snapshot.data!.saveState == SavedQueueState.loading &&
+                    !usingPlayerSplitScreen) {
+                  return buildLoadingQueueBar(ref, null);
+                } else if (snapshot.hasData &&
+                    snapshot.data!.saveState == SavedQueueState.failed &&
+                    !usingPlayerSplitScreen) {
+                  return buildLoadingQueueBar(ref, queueService.retryQueueLoad);
+                } else if (snapshot.hasData && snapshot.data!.currentTrack != null && !usingPlayerSplitScreen) {
+                  return buildNowPlayingBar(ref, snapshot.data!.currentTrack!);
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+            );
           },
         ),
       ),
