@@ -400,16 +400,11 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
       onRefresh: () async => _refresh(),
       child:
           showFastScroller &&
-              (widget.sortAndFilterConfigurationOverride?.sortBy == SortBy.sortName ||
-                  widget.sortAndFilterConfigurationOverride?.sortBy == SortBy.albumArtist ||
-                  widget.sortAndFilterConfigurationOverride?.sortBy == null &&
-                      (tabSortBy == SortBy.sortName || tabSortBy == SortBy.albumArtist))
+              (sortAndFilterConfig.sortBy == SortBy.sortName || sortAndFilterConfig.sortBy == SortBy.albumArtist)
           ? AlphabetList(
               callback: scrollToLetter,
               scrollController: controller,
-              sortOrder: (widget.sortAndFilterConfigurationOverride?.sortOrder != null)
-                  ? widget.sortAndFilterConfigurationOverride?.sortOrder ?? SortOrder.ascending
-                  : (ref.watch(finampSettingsProvider.tabSortOrder(widget.tabContentType)) ?? SortOrder.ascending),
+              sortOrder: sortAndFilterConfig.sortOrder,
               child: tabContent,
             )
           : tabContent,

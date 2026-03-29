@@ -56,7 +56,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
   TextEditingController textEditingController = TextEditingController();
   String? searchQuery;
   final Map<TabContentType, MusicRefreshCallback> refreshMap = {};
-  SortAndFilterConfiguration? sortAndFilterConfigurationOverride;
+  SortAndFilterController? sortAndFilterController;
 
   TabController? _tabController;
 
@@ -103,7 +103,16 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
   @override
   void initState() {
     super.initState();
-    sortAndFilterConfigurationOverride = widget.sortAndFilterConfigurationOverrideInit;
+    if (widget.sortAndFilterConfigurationOverrideInit != null) {
+      sortAndFilterController = SortAndFilterController(
+        configuration: widget.sortAndFilterConfigurationOverrideInit!,
+        onConfigurationChanged: (newConfig) {
+          setState(() {
+            // re-render based on updated controller
+          });
+        },
+      );
+    }
   }
 
   @override
@@ -121,7 +130,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
           try {
             await _audioServiceHelper.shuffleAll(
               onlyShowFavorites:
-                  (sortAndFilterConfigurationOverride?.filters.any(
+                  (sortAndFilterController?.configuration.filters.any(
                     (filter) => filter.type == ItemFilterType.isFavorite,
                   ) ??
                   ref.read(finampSettingsProvider.onlyShowFavorites)),
@@ -280,30 +289,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                       SortAndFilterRow(
                         tabType: contentTabType,
                         refreshTab: refreshTab,
-                        sortByOverride: sortAndFilterConfigurationOverride?.sortBy,
-                        updateSortByOverride: (newSortBy) {
-                          setState(() {
-                            sortAndFilterConfigurationOverride = sortAndFilterConfigurationOverride?.copyWith(
-                              sortBy: newSortBy,
-                            );
-                          });
-                        },
-                        sortOrderOverride: sortAndFilterConfigurationOverride?.sortOrder,
-                        updateSortOrderOverride: (newSortOrder) {
-                          setState(() {
-                            sortAndFilterConfigurationOverride = sortAndFilterConfigurationOverride?.copyWith(
-                              sortOrder: newSortOrder,
-                            );
-                          });
-                        },
-                        filterOverride: sortAndFilterConfigurationOverride?.filters,
-                        updateFilterOverride: (newFilters) {
-                          setState(() {
-                            sortAndFilterConfigurationOverride = sortAndFilterConfigurationOverride?.copyWith(
-                              filters: newFilters,
-                            );
-                          });
-                        },
+                        controller: sortAndFilterController,
                       ),
                       ArtistTypeSelectionRow(
                         tabType: tabType,
@@ -325,7 +311,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                               ? widget.genreFilter
                               : null,
                           tabBarFiltered: (widget.tabTypeFilter != null),
-                          sortAndFilterConfigurationOverride: sortAndFilterConfigurationOverride,
+                          sortAndFilterConfigurationOverride: sortAndFilterController?.configuration,
                         ),
                       ),
                     ],

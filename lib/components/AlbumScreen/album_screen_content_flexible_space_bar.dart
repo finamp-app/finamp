@@ -46,6 +46,27 @@ class AlbumScreenContentFlexibleSpaceBar extends ConsumerStatefulWidget {
 }
 
 class _AlbumScreenContentFlexibleSpaceBarState extends ConsumerState<AlbumScreenContentFlexibleSpaceBar> {
+  SortAndFilterController? sortAndFilterController;
+
+  @override
+  void initState() {
+    super.initState();
+    sortAndFilterController = SortAndFilterController(
+      configuration: SortAndFilterConfiguration(
+        sortBy: ref.read(finampSettingsProvider.playlistTracksSortBy),
+        sortOrder: ref.read(finampSettingsProvider.playlistTracksSortOrder),
+        filters: {},
+      ),
+      onConfigurationChanged: (newConfig) {
+        setState(() {
+          // Update the settings when the configuration changes
+          FinampSetters.setPlaylistTracksSortBy(newConfig.sortBy);
+          FinampSetters.setPlaylistTracksSortOrder(newConfig.sortOrder);
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isOffline = ref.watch(finampSettingsProvider.isOffline);
@@ -96,18 +117,7 @@ class _AlbumScreenContentFlexibleSpaceBarState extends ConsumerState<AlbumScreen
                     refreshTab: (contentType) {
                       //nop, handled by providers on playlist screen
                     },
-                    sortByOverride: playlistSortBy,
-                    updateSortByOverride: (newSortBy) {
-                      if (newSortBy != null) {
-                        FinampSetters.setPlaylistTracksSortBy(newSortBy);
-                      }
-                    },
-                    sortOrderOverride: playlistSortOrderSetting,
-                    updateSortOrderOverride: (newSortOrder) {
-                      if (newSortOrder != null) {
-                        FinampSetters.setPlaylistTracksSortOrder(newSortOrder);
-                      }
-                    },
+                    controller: sortAndFilterController,
                   ),
                 ],
               ],

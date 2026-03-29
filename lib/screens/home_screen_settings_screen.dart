@@ -402,6 +402,8 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
   // Cached configuration that only updates when content properties change, not title
   HomeScreenSectionConfiguration? _cachedSectionConfig;
 
+  late SortAndFilterController sortAndFilterController;
+
   @override
   void initState() {
     super.initState();
@@ -423,6 +425,21 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
       selectedSortOrder = sectionToEdit.sortAndFilterConfiguration.sortOrder;
       selectedFilters = sectionToEdit.sortAndFilterConfiguration.filters.toSet();
     }
+
+    sortAndFilterController = SortAndFilterController(
+      configuration: SortAndFilterConfiguration(
+        sortBy: selectedSortBy ?? SortBy.sortName,
+        sortOrder: selectedSortOrder ?? SortOrder.ascending,
+        filters: selectedFilters ?? <ItemFilter>{},
+      ),
+      onConfigurationChanged: (newConfig) {
+        setState(() {
+          selectedSortBy = newConfig.sortBy;
+          selectedSortOrder = newConfig.sortOrder;
+          selectedFilters = newConfig.filters.toSet();
+        });
+      },
+    );
 
     _jellyfinApiHelper
         .getItems(includeItemTypes: [BaseItemDtoType.collection.jellyfinName].join(","), recursive: true)
@@ -479,6 +496,10 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
 
   @override
   Widget build(BuildContext context) {
+    final savingDisabled =
+        _getCurrentSectionInfo().type == HomeScreenSectionType.tabView &&
+        _getCurrentSectionInfo().presetType == null &&
+        (_getCurrentSectionInfo().customSectionTitle ?? "") == "";
     // Normal track menu entries, excluding headers
     final menuEntries = [
       SectionPreview(sectionInfo: _getCachedSectionConfigForPreview(), customTitle: sectionTitle),
@@ -606,6 +627,8 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
               child: Text("Section Title*", style: Theme.of(context).textTheme.bodyMedium),
             ),
             TextField(
+              controller: TextEditingController(text: sectionTitle ?? "")
+                ..selection = TextSelection.fromPosition(TextPosition(offset: (sectionTitle ?? "").length)),
               decoration: InputDecoration(
                 hintText: "e.g. Favorite tracks*",
                 filled: true,
@@ -667,36 +690,22 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
           ),
           SortAndFilterRow(
             tabType: _getCurrentSectionInfo().contentType ?? TabContentType.tracks,
-            sortByOverride: _getCurrentSectionInfo().sortAndFilterConfiguration.sortBy,
-            sortOrderOverride: _getCurrentSectionInfo().sortAndFilterConfiguration.sortOrder,
-            filterOverride: _getCurrentSectionInfo().sortAndFilterConfiguration.filters.toSet(),
-            updateSortByOverride: (selectedSortByValue) {
-              setState(() {
-                selectedSortBy = selectedSortByValue;
-              });
-            },
-            updateSortOrderOverride: (selectedSortOrderValue) {
-              setState(() {
-                selectedSortOrder = selectedSortOrderValue;
-              });
-            },
-            updateFilterOverride: (newFilters) {
-              setState(() {
-                selectedFilters = newFilters;
-              });
-            },
+            controller: sortAndFilterController,
             refreshTab: (_) {},
           ),
         ],
       ),
-      SizedBox(height: 32.0),
+      SizedBox(height: 24.0),
+      if (savingDisabled)
+        Text(
+          "Please give the custom section a title*",
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error),
+        ),
+      SizedBox(height: 8.0),
       CTAMedium(
         text: "Save*",
         icon: TablerIcons.device_floppy,
-        disabled:
-            _getCurrentSectionInfo().type == HomeScreenSectionType.tabView &&
-            _getCurrentSectionInfo().presetType == null &&
-            (_getCurrentSectionInfo().customSectionTitle ?? "") == "",
+        disabled: savingDisabled,
         onPressed: () {
           final sections = FinampSettingsHelper.finampSettings.homeScreenConfiguration.sections;
           //TODO remove preset type when editing section and changes are made, pre-fill name?

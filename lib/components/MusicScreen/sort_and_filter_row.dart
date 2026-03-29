@@ -1,10 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
-import 'package:finamp/components/MusicScreen/filter_menu_button.dart';
-import 'package:finamp/components/MusicScreen/sort_menu_button.dart';
+import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
 import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/components/toggleable_list_tile.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -13,15 +13,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
+class SortAndFilterController extends ValueNotifier<SortAndFilterConfiguration> {
+  SortAndFilterController({required SortAndFilterConfiguration configuration, this.onConfigurationChanged})
+    : super(configuration);
+
+  final void Function(SortAndFilterConfiguration)? onConfigurationChanged;
+
+  SortAndFilterConfiguration get configuration => value;
+
+  void updateConfiguration(SortAndFilterConfiguration newConfig) {
+    value = newConfig;
+    notifyListeners();
+    if (onConfigurationChanged != null) {
+      onConfigurationChanged!(newConfig);
+    }
+  }
+}
+
 class SortAndFilterRow extends ConsumerWidget {
   final TabContentType tabType;
   final void Function(TabContentType) refreshTab;
-  final SortBy? sortByOverride;
-  final void Function(SortBy?)? updateSortByOverride;
-  final SortOrder? sortOrderOverride;
-  final void Function(SortOrder?)? updateSortOrderOverride;
-  final Set<ItemFilter>? filterOverride;
-  final void Function(Set<ItemFilter>?)? updateFilterOverride;
+  final SortAndFilterController? controller;
 
   final bool forPlaylistTracks;
 
@@ -29,17 +41,13 @@ class SortAndFilterRow extends ConsumerWidget {
     super.key,
     required this.tabType,
     required this.refreshTab,
-    this.sortByOverride,
-    this.updateSortByOverride,
-    this.sortOrderOverride,
-    this.updateSortOrderOverride,
-    this.filterOverride,
-    this.updateFilterOverride,
+    this.controller,
     this.forPlaylistTracks = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    controller?.addListener(() => refreshTab(tabType));
     if (tabType != TabContentType.home) {
       return SafeArea(
         top: false,
@@ -49,32 +57,93 @@ class SortAndFilterRow extends ConsumerWidget {
             context,
             tabType: tabType,
             forPlaylistTracks: forPlaylistTracks,
-            sortByOverride: sortByOverride,
-            updateSortByOverride: updateSortByOverride,
-            sortOrderOverride: sortOrderOverride,
-            updateSortOrderOverride: updateSortOrderOverride,
-            filterOverride: filterOverride,
-            updateFilterOverride: updateFilterOverride,
-          ).then((_) => refreshTab(tabType)),
+            controller: controller,
+          ),
           behavior: HitTestBehavior.opaque,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                FilterMenuButton(
-                  tabType: tabType,
-                  filterOverride: filterOverride,
-                  updateFilterOverride: (newFilters) => updateFilterOverride?.call(newFilters),
+                Builder(
+                  builder: (context) {
+                    final bool isOffline = ref.watch(finampSettingsProvider.isOffline);
+                    final activeFilters =
+                        controller?.configuration.filters ??
+                        {
+                          if (ref.watch(finampSettingsProvider.onlyShowFavorites))
+                            ItemFilter(type: ItemFilterType.isFavorite),
+                          if (ref.watch(finampSettingsProvider.onlyShowFullyDownloaded))
+                            ItemFilter(type: ItemFilterType.isFullyDownloaded),
+                        };
+                    final int activeFilterCount = activeFilters.length;
+                    String statusText = activeFilterCount == 0
+                        ? "No Filter Active*"
+                        : "$activeFilterCount ${activeFilterCount == 1 ? "Filter" : "Filters"} Active*";
+                    return SimpleButton(
+                      icon: TablerIcons.filter,
+                      text: statusText,
+                      fontWeight: activeFilterCount > 0 ? FontWeight.w600 : FontWeight.normal,
+                      iconColor: activeFilterCount > 0
+                          ? ColorScheme.of(context).primary
+                          : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
+                      textColor: activeFilterCount > 0
+                          ? ColorScheme.of(context).primary
+                          : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
+                      onPressed: () => showSortAndFilterMenu(
+                        context,
+                        tabType: tabType,
+                        forPlaylistTracks: forPlaylistTracks,
+                        controller: controller,
+                      ),
+                    );
+                  },
                 ),
-                SortMenuButton(
-                  tabType: tabType,
-                  sortByOverride: sortByOverride,
-                  onSortByOverrideChanged: (newSortBy) => updateSortByOverride?.call(newSortBy),
-                  sortOrderOverride: sortOrderOverride,
-                  updateSortOrderOverride: (newSortOrder) => updateSortOrderOverride?.call(newSortOrder),
-                  forPlaylistTracks: forPlaylistTracks,
+                Builder(
+                  builder: (context) {
+                    final bool isOffline = ref.watch(finampSettingsProvider.isOffline);
+                    var selectedSortBy =
+                        (controller?.configuration.sortBy ??
+                        (forPlaylistTracks
+                            ? ref.watch(finampSettingsProvider.playlistTracksSortBy)
+                            : ref.watch(finampSettingsProvider.tabSortBy(tabType))));
+                    var selectedSortOrder =
+                        (controller?.configuration.sortOrder ??
+                        (forPlaylistTracks
+                            ? ref.watch(finampSettingsProvider.playlistTracksSortOrder)
+                            : ref.watch(finampSettingsProvider.tabSortOrder(tabType))));
+                    // PlayCount and Last Played are not representative in Offline Mode
+                    // so we disable it and overwrite it with the Sort Name if it was selected
+                    if (isOffline && (selectedSortBy == SortBy.playCount || selectedSortBy == SortBy.datePlayed)) {
+                      selectedSortBy = forPlaylistTracks ? SortBy.defaultOrder : SortBy.sortName;
+                    }
+                    return SimpleButton(
+                      icon: selectedSortOrder == SortOrder.ascending
+                          ? TablerIcons.sort_ascending
+                          : TablerIcons.sort_descending,
+                      text: selectedSortBy?.toLocalisedString(context) ?? AppLocalizations.of(context)!.sortBy,
+                      onPressed: () => showSortAndFilterMenu(
+                        context,
+                        tabType: tabType,
+                        forPlaylistTracks: forPlaylistTracks,
+                        controller: controller,
+                      ),
+                    );
+                  },
                 ),
+                // FilterMenuButton(
+                //   tabType: tabType,
+                //   filterOverride: filterOverride,
+                //   updateFilterOverride: (newFilters) => updateFilterOverride?.call(newFilters),
+                // ),
+                // SortMenuButton(
+                //   tabType: tabType,
+                //   sortByOverride: sortByOverride,
+                //   onSortByOverrideChanged: (newSortBy) => updateSortByOverride?.call(newSortBy),
+                //   sortOrderOverride: sortOrderOverride,
+                //   updateSortOrderOverride: (newSortOrder) => updateSortOrderOverride?.call(newSortOrder),
+                //   forPlaylistTracks: forPlaylistTracks,
+                // ),
               ],
             ),
           ),
@@ -89,12 +158,7 @@ Future<void> showSortAndFilterMenu(
   BuildContext context, {
   required TabContentType tabType,
   required bool forPlaylistTracks,
-  required SortBy? sortByOverride,
-  required void Function(SortBy?)? updateSortByOverride,
-  required SortOrder? sortOrderOverride,
-  required void Function(SortOrder?)? updateSortOrderOverride,
-  required Set<ItemFilter>? filterOverride,
-  required void Function(Set<ItemFilter>?)? updateFilterOverride,
+  required SortAndFilterController? controller,
 }) async {
   return await showThemedBottomSheet<void>(
     context: context,
@@ -106,12 +170,7 @@ Future<void> showSortAndFilterMenu(
         dragController: dragController,
         tabType: tabType,
         forPlaylistTracks: forPlaylistTracks,
-        sortByOverride: sortByOverride,
-        updateSortByOverride: updateSortByOverride,
-        sortOrderOverride: sortOrderOverride,
-        updateSortOrderOverride: updateSortOrderOverride,
-        filterOverride: filterOverride,
-        updateFilterOverride: updateFilterOverride,
+        controller: controller,
       );
     },
   );
@@ -130,12 +189,7 @@ class SortAndFilterMenu extends ConsumerStatefulWidget {
     required this.dragController,
     required this.tabType,
     required this.forPlaylistTracks,
-    required this.sortByOverride,
-    required this.updateSortByOverride,
-    required this.sortOrderOverride,
-    required this.updateSortOrderOverride,
-    required this.filterOverride,
-    required this.updateFilterOverride,
+    required this.controller,
   });
 
   final ScrollBuilder childBuilder;
@@ -143,12 +197,7 @@ class SortAndFilterMenu extends ConsumerStatefulWidget {
 
   final TabContentType tabType;
   final bool forPlaylistTracks;
-  final SortBy? sortByOverride;
-  final void Function(SortBy?)? updateSortByOverride;
-  final SortOrder? sortOrderOverride;
-  final void Function(SortOrder?)? updateSortOrderOverride;
-  final Set<ItemFilter>? filterOverride;
-  final void Function(Set<ItemFilter>?)? updateFilterOverride;
+  final SortAndFilterController? controller;
 
   @override
   ConsumerState<SortAndFilterMenu> createState() => _SortAndFilterMenuState();
@@ -159,6 +208,8 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
   double inputStep = 0.9;
   double oldExtent = 0.0;
 
+  late SortAndFilterConfiguration currentConfig;
+
   @override
   void initState() {
     super.initState();
@@ -166,7 +217,36 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
     initialSheetExtent = 0.85;
     oldExtent = initialSheetExtent;
 
-    //TODO compile a SortAndFilterConfiguration based on the current values and overrides, and only update the actual settings on Apply
+    if (widget.controller != null) {
+      currentConfig = widget.controller!.configuration;
+    } else {
+      final bool isOffline = FinampSettingsHelper.finampSettings.isOffline;
+      var selectedSortBy =
+          (widget.controller?.configuration.sortBy ??
+          (widget.forPlaylistTracks
+              ? FinampSettingsHelper.finampSettings.playlistTracksSortBy
+              : FinampSettingsHelper.finampSettings.tabSortBy[widget.tabType]));
+      var selectedSortOrder =
+          (widget.controller?.configuration.sortOrder ??
+          (widget.forPlaylistTracks
+              ? FinampSettingsHelper.finampSettings.playlistTracksSortOrder
+              : FinampSettingsHelper.finampSettings.tabSortOrder[widget.tabType]));
+      // PlayCount and Last Played are not representative in Offline Mode
+      // so we disable it and overwrite it with the Sort Name if it was selected
+      if (isOffline && (selectedSortBy == SortBy.playCount || selectedSortBy == SortBy.datePlayed)) {
+        selectedSortBy = widget.forPlaylistTracks ? SortBy.defaultOrder : SortBy.sortName;
+      }
+
+      currentConfig = SortAndFilterConfiguration(
+        sortBy: selectedSortBy ?? SortBy.defaultOrder,
+        sortOrder: selectedSortOrder ?? SortOrder.ascending,
+        filters: {
+          if (FinampSettingsHelper.finampSettings.onlyShowFavorites) ItemFilter(type: ItemFilterType.isFavorite),
+          if (FinampSettingsHelper.finampSettings.onlyShowFullyDownloaded)
+            ItemFilter(type: ItemFilterType.isFullyDownloaded),
+        }.toSet(),
+      );
+    }
   }
 
   void scrollToExtent(DraggableScrollableController scrollController, double? percentage) {
@@ -195,33 +275,16 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
 
   // Normal track menu entries, excluding headers
   List<Widget> _getMenuEntries(BuildContext context) {
-    final bool isOffline = ref.watch(finampSettingsProvider.isOffline);
     final rawSortOptions = SortBy.defaultsFor(
       type: widget.tabType.itemType,
       includeDefaultOrder: widget.forPlaylistTracks,
     );
-    final sortOptions = isOffline
+    final sortOptions = ref.watch(finampSettingsProvider.isOffline)
         ? [
             ...rawSortOptions.where((s) => s != SortBy.playCount && s != SortBy.datePlayed),
             ...rawSortOptions.where((s) => s == SortBy.playCount || s == SortBy.datePlayed),
           ]
         : rawSortOptions;
-    var selectedSortBy =
-        (widget.sortByOverride ??
-        (widget.forPlaylistTracks
-            ? ref.watch(finampSettingsProvider.playlistTracksSortBy)
-            : ref.watch(finampSettingsProvider.tabSortBy(widget.tabType))));
-    var selectedSortOrder =
-        (widget.sortOrderOverride ??
-        (widget.forPlaylistTracks
-            ? ref.watch(finampSettingsProvider.playlistTracksSortOrder)
-            : ref.watch(finampSettingsProvider.tabSortOrder(widget.tabType))));
-    // PlayCount and Last Played are not representative in Offline Mode
-    // so we disable it and overwrite it with the Sort Name if it was selected
-    if (isOffline && (selectedSortBy == SortBy.playCount || selectedSortBy == SortBy.datePlayed)) {
-      selectedSortBy = widget.forPlaylistTracks ? SortBy.defaultOrder : SortBy.sortName;
-    }
-
     return [
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,11 +305,11 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
                   ),
                 )
                 .toList(),
-            selectedValue: selectedSortBy!,
-            selectedIcon: selectedSortBy.getIcon(),
+            selectedValue: currentConfig.sortBy,
+            selectedIcon: currentConfig.sortBy.getIcon(),
             onSelected: (sortBy) {
               if (sortBy != null) {
-                FinampSetters.setTabSortBy(widget.tabType, sortBy);
+                currentConfig = currentConfig.copyWith(sortBy: sortBy);
               }
             },
           ),
@@ -272,11 +335,11 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
                   ),
                 )
                 .toList(),
-            selectedValue: selectedSortOrder!,
-            selectedIcon: selectedSortOrder.getIcon(),
+            selectedValue: currentConfig.sortOrder,
+            selectedIcon: currentConfig.sortOrder.getIcon(),
             onSelected: (sortOrder) {
               if (sortOrder != null) {
-                FinampSetters.setTabSortOrder(widget.tabType, sortOrder);
+                currentConfig = currentConfig.copyWith(sortOrder: sortOrder);
               }
             },
           ),
@@ -313,63 +376,42 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
                     _ => true,
                   },
                   state: switch (option) {
-                    ItemFilterType.isFavorite =>
-                      widget.filterOverride != null
-                          ? widget.filterOverride!.any((filter) => filter.type == ItemFilterType.isFavorite)
-                          : ref.watch(finampSettingsProvider.onlyShowFavorites),
-                    ItemFilterType.isFullyDownloaded =>
-                      widget.filterOverride != null
-                          ? widget.filterOverride!.any((filter) => filter.type == ItemFilterType.isFullyDownloaded)
-                          : ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
-                    ItemFilterType.startsWithCharacter =>
-                      widget.filterOverride != null
-                          ? widget.filterOverride!.any((filter) => filter.type == ItemFilterType.startsWithCharacter)
-                          : false,
+                    ItemFilterType.isFavorite => currentConfig.filters.contains(
+                      ItemFilter(type: ItemFilterType.isFavorite),
+                    ),
+                    ItemFilterType.isFullyDownloaded => currentConfig.filters.contains(
+                      ItemFilter(type: ItemFilterType.isFullyDownloaded),
+                    ),
+                    ItemFilterType.startsWithCharacter => currentConfig.filters.contains(
+                      ItemFilter(type: ItemFilterType.startsWithCharacter, extras: "A"),
+                    ),
                     ItemFilterType.genreFilter => throw UnimplementedError(),
                     ItemFilterType.searchTerm => throw UnimplementedError(),
                   },
                   onToggle: (currentState) async {
-                    if (widget.filterOverride != null) {
-                      final newFilters = Set<ItemFilter>.from(widget.filterOverride!);
-                      if (currentState) {
-                        newFilters.removeWhere((filter) => filter.type == option);
-                      } else {
-                        switch (option) {
-                          case ItemFilterType.isFavorite:
-                            newFilters.add(ItemFilter(type: ItemFilterType.isFavorite));
-                            break;
-                          case ItemFilterType.isFullyDownloaded:
-                            newFilters.add(ItemFilter(type: ItemFilterType.isFullyDownloaded));
-                            break;
-                          case ItemFilterType.startsWithCharacter:
-                            newFilters.add(ItemFilter(type: ItemFilterType.startsWithCharacter, extras: "A"));
-                            break;
-                          case ItemFilterType.genreFilter:
-                            throw UnimplementedError();
-                          case ItemFilterType.searchTerm:
-                            throw UnimplementedError();
-                        }
-                      }
-                      if (widget.updateFilterOverride != null) {
-                        widget.updateFilterOverride!(newFilters);
-                      }
+                    final newFilters = Set<ItemFilter>.from(currentConfig.filters);
+                    if (currentState) {
+                      newFilters.removeWhere((filter) => filter.type == option);
                     } else {
                       switch (option) {
                         case ItemFilterType.isFavorite:
-                          FinampSetters.setOnlyShowFavorites(!ref.read(finampSettingsProvider.onlyShowFavorites));
+                          newFilters.add(ItemFilter(type: ItemFilterType.isFavorite));
                           break;
                         case ItemFilterType.isFullyDownloaded:
-                          FinampSetters.setOnlyShowFullyDownloaded(
-                            !ref.read(finampSettingsProvider.onlyShowFullyDownloaded),
-                          );
+                          newFilters.add(ItemFilter(type: ItemFilterType.isFullyDownloaded));
                           break;
-                        //TODO No global setting for this filter yet
                         case ItemFilterType.startsWithCharacter:
+                          newFilters.add(ItemFilter(type: ItemFilterType.startsWithCharacter, extras: "A"));
+                          break;
                         case ItemFilterType.genreFilter:
+                          throw UnimplementedError();
                         case ItemFilterType.searchTerm:
                           throw UnimplementedError();
                       }
                     }
+                    setState(() {
+                      currentConfig = currentConfig.copyWith(filters: newFilters);
+                    });
                   },
                 ),
               ),
@@ -380,6 +422,41 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
         text: "Apply*",
         icon: TablerIcons.check,
         onPressed: () {
+          if (widget.controller != null) {
+            widget.controller!.updateConfiguration(currentConfig);
+          } else {
+            if (widget.forPlaylistTracks) {
+              if (currentConfig.sortBy != FinampSettingsHelper.finampSettings.playlistTracksSortBy) {
+                FinampSetters.setPlaylistTracksSortBy(currentConfig.sortBy);
+              }
+              if (currentConfig.sortOrder != FinampSettingsHelper.finampSettings.playlistTracksSortOrder) {
+                FinampSetters.setPlaylistTracksSortOrder(currentConfig.sortOrder);
+              }
+            } else {
+              if (currentConfig.sortBy != FinampSettingsHelper.finampSettings.tabSortBy[widget.tabType]) {
+                FinampSetters.setTabSortBy(widget.tabType, currentConfig.sortBy);
+              }
+              if (currentConfig.sortOrder != FinampSettingsHelper.finampSettings.tabSortOrder[widget.tabType]) {
+                FinampSetters.setTabSortOrder(widget.tabType, currentConfig.sortOrder);
+              }
+            }
+
+            if (currentConfig.filters.contains(ItemFilter(type: ItemFilterType.isFavorite)) !=
+                FinampSettingsHelper.finampSettings.onlyShowFavorites) {
+              FinampSetters.setOnlyShowFavorites(
+                currentConfig.filters.contains(ItemFilter(type: ItemFilterType.isFavorite)),
+              );
+            }
+
+            if (currentConfig.filters.contains(ItemFilter(type: ItemFilterType.isFullyDownloaded)) !=
+                FinampSettingsHelper.finampSettings.onlyShowFullyDownloaded) {
+              FinampSetters.setOnlyShowFullyDownloaded(
+                currentConfig.filters.contains(ItemFilter(type: ItemFilterType.isFullyDownloaded)),
+              );
+            }
+
+            //TODO implement other filters
+          }
           Navigator.of(context).pop();
         },
       ),
