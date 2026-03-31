@@ -718,6 +718,18 @@ class JellyfinApiHelper {
     return (BaseItemDto.fromJson(response as Map<String, dynamic>));
   }
 
+  /// Gets an item with the Chapters field included (for audiobooks).
+  Future<BaseItemDto> getItemByIdWithChapters(BaseItemId itemId) async {
+    assert(_verifyCallable());
+    final response = await jellyfinApi.getItemById(
+      userId: _finampUserHelper.currentUser!.id,
+      itemId: itemId,
+      fields: "${jellyfin_api.defaultFields},Chapters",
+    );
+
+    return (BaseItemDto.fromJson(response as Map<String, dynamic>));
+  }
+
   /// Gets the user's permission for a specific playlist.
   Future<PlaylistUser> getPlaylistUser(BaseItemId playlistId) async {
     assert(_verifyCallable());

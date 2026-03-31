@@ -361,9 +361,16 @@ final class _$JellyfinApi extends JellyfinApi {
   Future<dynamic> getItemById({
     required String userId,
     required BaseItemId itemId,
+    String? fields = defaultFields,
   }) async {
     final Uri $url = Uri.parse('/Users/${userId}/Items/${itemId}');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Map<String, dynamic> $params = <String, dynamic>{'Fields': fields};
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
     final Response $response = await client.send<dynamic, dynamic>(
       $request,
       requestConverter: JsonConverter.requestFactory,

@@ -3298,6 +3298,7 @@ enum SortBy {
         ];
       case TabContentType.playlists:
       case TabContentType.artists:
+      case TabContentType.authors:
         options = [
           SortBy.sortName,
           //SortBy.datePlayed,

@@ -611,6 +611,7 @@ class QueueService {
     QueueItemSource? customTrackSource,
     FinampPlaybackOrder? order,
     int? startingIndex,
+    Duration? initialSeekPosition,
     bool skipRadioCacheInvalidation = false,
   }) async {
     // _initialQueue = list; // save original PlaybackList for looping/restarting and meta info
@@ -621,6 +622,7 @@ class QueueService {
       customTrackSource: customTrackSource,
       order: order,
       initialIndex: startingIndex,
+      initialSeekPosition: initialSeekPosition,
       skipRadioCacheInvalidation: skipRadioCacheInvalidation,
     );
     _queueServiceLogger.info(

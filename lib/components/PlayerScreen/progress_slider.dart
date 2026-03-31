@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:finamp/components/print_duration.dart';
+import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/progress_state_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -11,6 +12,47 @@ import 'package:get_it/get_it.dart';
 import '../../services/music_player_background_task.dart';
 
 typedef DragCallback = void Function(double? value);
+
+/// Returns the (startUs, endUs) microsecond bounds of the chapter that covers
+/// [positionUs] within the given [chapters] list.
+///
+/// Returns null if [chapters] is null or empty (no chapter scoping needed).
+({int startUs, int endUs})? _chapterBoundsForPosition({
+  required int positionUs,
+  required List<ChapterInfo>? chapters,
+  required int totalDurationUs,
+}) {
+  if (chapters == null || chapters.isEmpty) return null;
+  int idx = 0;
+  for (int i = 0; i < chapters.length; i++) {
+    if (chapters[i].startPositionTicks ~/ 10 <= positionUs) {
+      idx = i;
+    } else {
+      break;
+    }
+  }
+  final startUs = chapters[idx].startPositionTicks ~/ 10;
+  final endUs = idx + 1 < chapters.length
+      ? chapters[idx + 1].startPositionTicks ~/ 10
+      : totalDurationUs;
+  return (startUs: startUs, endUs: endUs > startUs ? endUs : totalDurationUs);
+}
+
+/// Extracts [ChapterInfo] list from a [MediaItem] if the item is an AudioBook.
+List<ChapterInfo>? _chaptersFromMediaItem(MediaItem? mediaItem) {
+  if (mediaItem == null) return null;
+  if (mediaItem.extras?['itemJson']?['Type'] != 'AudioBook') return null;
+  try {
+    final raw = mediaItem.extras?['itemJson']?['Chapters'] as List<dynamic>?;
+    if (raw == null || raw.isEmpty) return null;
+    return raw
+        .cast<Map<Object?, Object?>>()
+        .map((m) => ChapterInfo.fromJson(Map<String, dynamic>.from(m as Map)))
+        .toList();
+  } catch (_) {
+    return null;
+  }
+}
 
 class ProgressSlider extends StatefulWidget {
   const ProgressSlider({
@@ -76,6 +118,16 @@ class _ProgressSliderState extends State<ProgressSlider> {
                           )
                         : const SizedBox.shrink();
                   } else if (snapshot.hasData) {
+                    final mediaItem = snapshot.data!.mediaItem;
+                    final position = snapshot.data!.position;
+                    final chapters = _chaptersFromMediaItem(mediaItem);
+                    final totalDurationUs =
+                        mediaItem?.duration?.inMicroseconds ?? 0;
+                    final chapterBounds = _chapterBoundsForPosition(
+                      positionUs: position.inMicroseconds,
+                      chapters: chapters,
+                      totalDurationUs: totalDurationUs,
+                    );
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -87,8 +139,10 @@ class _ProgressSliderState extends State<ProgressSlider> {
                               _PlaybackProgressSlider(
                                 allowSeeking: widget.allowSeeking,
                                 playbackState: snapshot.data!.playbackState,
-                                position: snapshot.data!.position,
-                                mediaItem: snapshot.data!.mediaItem,
+                                position: position,
+                                mediaItem: mediaItem,
+                                chapterStartUs: chapterBounds?.startUs,
+                                chapterEndUs: chapterBounds?.endUs,
                                 onDrag: (value) => setState(() {
                                   _dragValue = value;
                                 }),
@@ -99,9 +153,11 @@ class _ProgressSliderState extends State<ProgressSlider> {
                         if (widget.showDuration)
                           _ProgressSliderDuration(
                             position: _dragValue == null
-                                ? snapshot.data!.position
+                                ? position
                                 : Duration(microseconds: _dragValue!.toInt()),
-                            itemDuration: snapshot.data!.mediaItem?.duration,
+                            itemDuration: mediaItem?.duration,
+                            chapterStartUs: chapterBounds?.startUs,
+                            chapterEndUs: chapterBounds?.endUs,
                           ),
                       ],
                     );
@@ -121,22 +177,39 @@ class _ProgressSliderState extends State<ProgressSlider> {
 }
 
 class _ProgressSliderDuration extends StatelessWidget {
-  const _ProgressSliderDuration({required this.position, this.itemDuration});
+  const _ProgressSliderDuration({
+    required this.position,
+    this.itemDuration,
+    this.chapterStartUs,
+    this.chapterEndUs,
+  });
 
   final Duration position;
   final Duration? itemDuration;
+  /// When non-null, display time elapsed/remaining within this chapter window.
+  final int? chapterStartUs;
+  final int? chapterEndUs;
 
   @override
   Widget build(BuildContext context) {
     final showRemaining = Platform.isIOS || Platform.isMacOS;
-    final currentPosition = Duration(seconds: (position.inMilliseconds / 1000).round());
-    final roundedDuration = Duration(seconds: ((itemDuration?.inMilliseconds ?? 0) / 1000).round());
+    final int effectiveStartUs = chapterStartUs ?? 0;
+    final int effectiveEndUs =
+        chapterEndUs ?? (itemDuration?.inMicroseconds ?? 0);
+
+    final elapsed = Duration(
+      seconds: ((position.inMicroseconds - effectiveStartUs) / 1e6).round()
+          .clamp(0, (effectiveEndUs - effectiveStartUs) ~/ 1000000 + 1),
+    );
+    final chapterDuration = Duration(
+      seconds: ((effectiveEndUs - effectiveStartUs) / 1e6).round(),
+    );
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          printDuration(currentPosition),
+          printDuration(elapsed),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             height: 0.5, // reduce line height
           ),
@@ -144,7 +217,7 @@ class _ProgressSliderDuration extends StatelessWidget {
         Text(
           printDuration(
             // display remaining time if on iOS or macOS
-            showRemaining ? (roundedDuration - currentPosition) : roundedDuration,
+            showRemaining ? (chapterDuration - elapsed) : chapterDuration,
             isRemaining: showRemaining,
           ),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -163,6 +236,8 @@ class _PlaybackProgressSlider extends ConsumerStatefulWidget {
     required this.playbackState,
     required this.position,
     required this.onDrag,
+    this.chapterStartUs,
+    this.chapterEndUs,
   });
 
   final bool allowSeeking;
@@ -170,6 +245,9 @@ class _PlaybackProgressSlider extends ConsumerStatefulWidget {
   final PlaybackState playbackState;
   final Duration position;
   final DragCallback onDrag; // should probably be nullable but its never null
+  /// When non-null, the slider is scoped to this chapter window.
+  final int? chapterStartUs;
+  final int? chapterEndUs;
 
   @override
   ConsumerState<_PlaybackProgressSlider> createState() => __PlaybackProgressSliderState();
@@ -183,6 +261,13 @@ class __PlaybackProgressSliderState extends ConsumerState<_PlaybackProgressSlide
 
   @override
   Widget build(BuildContext context) {
+    final int sliderMinUs = widget.chapterStartUs ?? 0;
+    final int sliderMaxUs = widget.chapterEndUs ??
+        (widget.mediaItem?.duration?.inMicroseconds ??
+            widget.playbackState.bufferedPosition.inMicroseconds);
+    final int rawValueUs = _dragValue?.toInt() ?? widget.position.inMicroseconds;
+    final double sliderValue = rawValueUs.clamp(sliderMinUs, sliderMaxUs).toDouble();
+
     return SliderTheme(
       data: widget.allowSeeking
           // ? _sliderThemeData.copyWith(
@@ -205,13 +290,11 @@ class __PlaybackProgressSliderState extends ConsumerState<_PlaybackProgressSlide
             ),
       // ),
       child: Slider(
-        min: 0.0,
-        max: widget.mediaItem?.duration == null
-            ? widget.playbackState.bufferedPosition.inMicroseconds.toDouble()
-            : widget.mediaItem?.duration?.inMicroseconds.toDouble() ?? 0,
-        value: (_dragValue ?? widget.position.inMicroseconds)
-            .clamp(0, widget.mediaItem?.duration?.inMicroseconds.toDouble() ?? 0)
-            .toDouble(),
+        min: sliderMinUs.toDouble(),
+        max: sliderMaxUs <= sliderMinUs
+            ? (sliderMinUs + 1).toDouble()
+            : sliderMaxUs.toDouble(),
+        value: sliderValue,
         semanticFormatterCallback: (double value) {
           final positionFullMinutes = Duration(microseconds: value.toInt()).inMinutes % 60;
           final positionFullHours = Duration(microseconds: value.toInt()).inHours;
@@ -228,10 +311,8 @@ class __PlaybackProgressSliderState extends ConsumerState<_PlaybackProgressSlide
         secondaryTrackValue: widget.mediaItem?.extras?["downloadedTrackPath"] == null
             ? widget.playbackState.bufferedPosition.inMicroseconds
                   .clamp(
-                    0.0,
-                    widget.mediaItem?.duration == null
-                        ? widget.playbackState.bufferedPosition.inMicroseconds
-                        : widget.mediaItem?.duration?.inMicroseconds ?? 0,
+                    sliderMinUs.toDouble(),
+                    sliderMaxUs,
                   )
                   .toDouble()
             : 0,

@@ -1,3 +1,4 @@
+import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -16,44 +17,80 @@ class TabsSettingsScreen extends StatefulWidget {
 class _TabsSettingsScreenState extends State<TabsSettingsScreen> {
   @override
   Widget build(BuildContext context) {
+    final musicTabOrder = FinampSettingsHelper.finampSettings.tabOrder;
+    final bookTabOrder = FinampSettingsHelper.finampSettings.bookTabOrder;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.tabs),
         actions: [
-          FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetTabsSettings),
+          FinampSettingsHelper.makeSettingsResetButtonWithDialog(
+              context, FinampSettingsHelper.resetTabsSettings),
         ],
       ),
-      body: ReorderableListView.builder(
+      body: ListView(
         padding: const EdgeInsets.only(bottom: 200.0),
-        buildDefaultDragHandles: false,
-        itemCount: FinampSettingsHelper.finampSettings.tabOrder.length,
-        itemBuilder: (context, index) {
-          return HideTabToggle(
-            tabContentType: FinampSettingsHelper.finampSettings.tabOrder[index],
-            key: ValueKey(FinampSettingsHelper.finampSettings.tabOrder[index]),
-            index: index,
-          );
-        },
-        onReorder: (oldIndex, newIndex) {
-          // It's a bit of a hack to call setState with no actual widget
-          // state, but it saves us from using listeners
-          setState(() {
-            // For some weird reason newIndex is one above what it should be
-            // when oldIndex is lower. This if statement is in Flutter's
-            // ReorderableListView documentation.
-            if (oldIndex < newIndex) {
-              newIndex -= 1;
-            }
-
-            var currentTabOrder = List.of(FinampSettingsHelper.finampSettings.tabOrder);
-
-            // move all values below newIndex down by one
-            final oldTab = currentTabOrder[oldIndex];
-            currentTabOrder.removeAt(oldIndex);
-            currentTabOrder.insert(newIndex, oldTab);
-            FinampSetters.setTabOrder(currentTabOrder);
-          });
-        },
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+            child: Text(
+              AppLocalizations.of(context)!.musicTabsLabel,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+          ),
+          ReorderableListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: false,
+            itemCount: musicTabOrder.length,
+            itemBuilder: (context, index) {
+              return HideTabToggle(
+                tabContentType: musicTabOrder[index],
+                key: ValueKey(musicTabOrder[index]),
+                index: index,
+              );
+            },
+            onReorder: (oldIndex, newIndex) {
+              setState(() {
+                if (oldIndex < newIndex) newIndex -= 1;
+                var current = List.of(musicTabOrder);
+                final item = current.removeAt(oldIndex);
+                current.insert(newIndex, item);
+                FinampSetters.setTabOrder(current);
+              });
+            },
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: Text(
+              AppLocalizations.of(context)!.booksTabsLabel,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+          ),
+          ReorderableListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: false,
+            itemCount: bookTabOrder.length,
+            itemBuilder: (context, index) {
+              return HideTabToggle(
+                tabContentType: bookTabOrder[index],
+                key: ValueKey(bookTabOrder[index]),
+                index: index,
+              );
+            },
+            onReorder: (oldIndex, newIndex) {
+              setState(() {
+                if (oldIndex < newIndex) newIndex -= 1;
+                var current = List.of(bookTabOrder);
+                final item = current.removeAt(oldIndex);
+                current.insert(newIndex, item);
+                FinampSetters.setBookTabOrder(current);
+              });
+            },
+          ),
+        ],
       ),
     );
   }

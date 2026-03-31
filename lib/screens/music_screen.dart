@@ -83,12 +83,8 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     _tabController!.addListener(_tabIndexCallback);
   }
 
-  /// Returns the display label for a tab, with overrides for books-only mode.
-  String _tabLabel(TabContentType tabType, BuildContext context, {required bool booksOnlyMode}) {
-    if (booksOnlyMode) {
-      if (tabType == TabContentType.audiobooks) return "TITLES";
-      if (tabType == TabContentType.artists) return "AUTHORS";
-    }
+  /// Returns the display label for a tab.
+  String _tabLabel(TabContentType tabType, BuildContext context) {
     return tabType.toLocalisedString(context).toUpperCase();
   }
 
@@ -185,22 +181,20 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     final booksOnlyMode = _finampUserHelper.currentUser?.currentView?.collectionType == "books";
 
     // Get the filtered tab or the tabs from the user's tab order.
-    // In books-only mode show Artists (Authors) / Genres / Audiobooks (Titles).
-    // In music mode show the user's enabled tabs, never the audiobooks tab.
+    // In books-only mode show the user's bookTabOrder tabs.
+    // In music mode show the user's enabled tabs, never the audiobooks or authors tab.
     final sortedTabs = widget.tabTypeFilter != null
         ? [widget.tabTypeFilter!]
-        : ref
-              .watch(finampSettingsProvider.tabOrder)
-              .where((e) {
-                if (booksOnlyMode) {
-                  return e == TabContentType.artists ||
-                      e == TabContentType.genres ||
-                      e == TabContentType.audiobooks;
-                } else {
-                  return (ref.watch(finampSettingsProvider.showTabs(e)) ?? false) &&
-                      e != TabContentType.audiobooks;
-                }
-              });
+        : booksOnlyMode
+            ? ref.watch(finampSettingsProvider.bookTabOrder).where(
+                (e) => ref.watch(finampSettingsProvider.showTabs(e)) ?? true)
+            : ref
+                  .watch(finampSettingsProvider.tabOrder)
+                  .where((e) {
+                    return (ref.watch(finampSettingsProvider.showTabs(e)) ?? false) &&
+                        e != TabContentType.audiobooks &&
+                        e != TabContentType.authors;
+                  });
 
     if (_tabController == null || sortedTabs.length != _tabController?.length) {
       if (_tabController != null) {
@@ -270,7 +264,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                           child: Container(
                             constraints: const BoxConstraints(minWidth: 50),
                             alignment: Alignment.center,
-                            child: Text(_tabLabel(tabType, context, booksOnlyMode: booksOnlyMode)),
+                            child: Text(_tabLabel(tabType, context)),
                           ),
                         ),
                       )

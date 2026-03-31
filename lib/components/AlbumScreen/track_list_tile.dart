@@ -199,9 +199,18 @@ class TrackListTile extends ConsumerWidget {
             );
           }
 
+          // Resume from saved playback position for audiobooks
+          Duration? resumePosition;
+          if (item.type == "AudioBook") {
+            final ticks = item.userData?.playbackPositionTicks ?? 0;
+            if (ticks > 0) {
+              resumePosition = Duration(microseconds: ticks ~/ 10);
+            }
+          }
           await queueService.startPlayback(
             items: items,
             startingIndex: startingIndex,
+            initialSeekPosition: resumePosition,
             source: QueueItemSource(
               name: QueueItemSourceName(
                 type: item.name != null ? QueueItemSourceNameType.mix : QueueItemSourceNameType.instantMix,
@@ -216,9 +225,40 @@ class TrackListTile extends ConsumerWidget {
           if (FinampSettingsHelper.finampSettings.startInstantMixForIndividualTracks) {
             await audioServiceHelper.startInstantMixForItem(item);
           } else {
+            // Load chapters from server — getItems returns fresh userData including playbackPositionTicks
+            final chapters = await loadChildTracks(item: item, genreFilter: genreFilter);
+            int? resumeIndex;
+            Duration? resumePosition;
+            if (item.type == "AudioBook" && chapters.isNotEmpty) {
+              // Find the first partially-played chapter (same logic as angleramp's _resumeIndex)
+              for (int i = 0; i < chapters.length; i++) {
+                final played = chapters[i].userData?.playedPercentage ?? 0;
+                if (played > 0 && played < 99) {
+                  resumeIndex = i;
+                  break;
+                }
+              }
+              // If none found, select the first chapter that hasn't been fully played
+              if (resumeIndex == null) {
+                for (int i = 0; i < chapters.length; i++) {
+                  if (chapters[i].userData?.played != true) {
+                    resumeIndex = i;
+                    break;
+                  }
+                }
+              }
+              if (resumeIndex != null) {
+                final ticks = chapters[resumeIndex].userData?.playbackPositionTicks ?? 0;
+                if (ticks > 0) {
+                  resumePosition = Duration(microseconds: ticks ~/ 10);
+                }
+              }
+            }
             await queueService.startPlayback(
-              items: await loadChildTracks(item: item, genreFilter: genreFilter),
+              items: chapters,
               source: QueueItemSource.fromBaseItem(item),
+              startingIndex: resumeIndex,
+              initialSeekPosition: resumePosition,
             );
           }
         }

@@ -171,6 +171,13 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
                 TabContentType.audiobooks,
               ]
             : (fields[22] as List).cast<TabContentType>(),
+        bookTabOrder: fields[146] == null
+            ? [
+                TabContentType.authors,
+                TabContentType.genres,
+                TabContentType.audiobooks,
+              ]
+            : (fields[146] as List).cast<TabContentType>(),
         autoloadLastQueueOnStartup: fields[28] == null
             ? true
             : fields[28] as bool,
@@ -469,7 +476,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(139)
+      ..writeByte(140)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -747,7 +754,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(144)
       ..write(obj.multichannelHandlingSetting)
       ..writeByte(145)
-      ..write(obj.previousTracksPersistenceMode);
+      ..write(obj.previousTracksPersistenceMode)
+      ..writeByte(146)
+      ..write(obj.bookTabOrder);
   }
 
   @override
@@ -1594,6 +1603,8 @@ class TabContentTypeAdapter extends TypeAdapter<TabContentType> {
         return TabContentType.tracks;
       case 5:
         return TabContentType.audiobooks;
+      case 6:
+        return TabContentType.authors;
       default:
         return TabContentType.albums;
     }
@@ -1614,6 +1625,8 @@ class TabContentTypeAdapter extends TypeAdapter<TabContentType> {
         writer.writeByte(4);
       case TabContentType.audiobooks:
         writer.writeByte(5);
+      case TabContentType.authors:
+        writer.writeByte(6);
     }
   }
 
@@ -8968,6 +8981,7 @@ const _$TabContentTypeEnumMap = {
   TabContentType.genres: 'genres',
   TabContentType.tracks: 'tracks',
   TabContentType.audiobooks: 'audiobooks',
+  TabContentType.authors: 'authors',
 };
 
 const _$MediaItemParentTypeEnumMap = {

@@ -185,6 +185,14 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setBookTabOrder(List<TabContentType> newBookTabOrder) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.bookTabOrder = newBookTabOrder;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setShowFastScroller(bool newShowFastScroller) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showFastScroller = newShowFastScroller;
@@ -1332,6 +1340,8 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       );
   ProviderListenable<List<TabContentType>> get tabOrder =>
       finampSettingsProvider.select((value) => value.requireValue.tabOrder);
+  ProviderListenable<List<TabContentType>> get bookTabOrder =>
+      finampSettingsProvider.select((value) => value.requireValue.bookTabOrder);
   ProviderListenable<bool> get showFastScroller => finampSettingsProvider
       .select((value) => value.requireValue.showFastScroller);
   ProviderListenable<FinampLoopMode> get loopMode =>

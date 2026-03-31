@@ -238,6 +238,9 @@ abstract class JellyfinApi extends ChopperService {
 
     /// Item id.
     @Path() required BaseItemId itemId,
+
+    /// Optional. Specify additional fields to include in the response.
+    @Query("Fields") String? fields = defaultFields,
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)

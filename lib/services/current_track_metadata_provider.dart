@@ -1,5 +1,7 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -31,3 +33,10 @@ final currentTrackMetadataProvider = AutoDisposeProvider<AsyncValue<MetadataProv
 });
 
 final currentTrackProvider = StreamProvider((_) => GetIt.instance<QueueService>().getCurrentTrackStream());
+
+/// Streams the currently-playing [MediaItem] from the audio handler, including
+/// any chapter data injected after extraction. Riverpod will rebuild consumers
+/// whenever chapters (or anything else) on the current item change.
+final currentMediaItemProvider = StreamProvider<MediaItem?>((ref) {
+  return GetIt.instance<MusicPlayerBackgroundTask>().mediaItem;
+});
