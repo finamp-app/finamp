@@ -5,6 +5,7 @@ import 'package:finamp/components/confirmation_prompt_dialog.dart';
 import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/client_certificate_installer.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,6 +58,7 @@ class _ClientCertificateMenuContent extends ConsumerStatefulWidget {
 }
 
 class _ClientCertificateMenuContentState extends ConsumerState<_ClientCertificateMenuContent> {
+  final _clientCertificateInstaller = ClientCertificateInstaller();
   bool _importing = false;
 
   Future<void> _importCertificate() async {
@@ -75,6 +77,7 @@ class _ClientCertificateMenuContentState extends ConsumerState<_ClientCertificat
     try {
       final bytes = await File(filePath).readAsBytes();
       FinampSetters.setClientCertificate(ClientCertificate(data: bytes, password: password));
+      await _clientCertificateInstaller.defaultInstallClientCertificate();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.clientCertificateImportSuccess)));
       }
@@ -119,7 +122,10 @@ class _ClientCertificateMenuContentState extends ConsumerState<_ClientCertificat
       builder: (context) => ConfirmationPromptDialog(
         promptText: l10n.clientCertificateDeleteConfirm,
         confirmButtonText: l10n.removeClientCertificate,
-        onConfirmed: () => FinampSetters.setClientCertificate(null),
+        onConfirmed: () async {
+          FinampSetters.setClientCertificate(null);
+          await _clientCertificateInstaller.defaultClearClientCertificate();
+        },
       ),
     );
   }
