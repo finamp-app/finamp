@@ -1270,6 +1270,14 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setUseAndroidGainEffect(bool newUseAndroidGainEffect) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.useAndroidGainEffect = newUseAndroidGainEffect;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1709,6 +1717,8 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   get previousTracksPersistenceMode => finampSettingsProvider.select(
     (value) => value.requireValue.previousTracksPersistenceMode,
   );
+  ProviderListenable<bool> get useAndroidGainEffect => finampSettingsProvider
+      .select((value) => value.requireValue.useAndroidGainEffect);
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

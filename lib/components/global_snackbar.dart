@@ -198,6 +198,35 @@ class GlobalSnackbar {
     }
   }
 
+  /// Show a localized message to the user using the global context
+  static void popup(
+    (String, String) Function(BuildContext scaffold) message, {
+    bool isConfirmation = false,
+    SnackBarAction Function(BuildContext scaffold)? action,
+  }) => _enqueue(() => _popup(message, isConfirmation, action));
+  static void _popup(
+    (String, String) Function(BuildContext scaffold) message,
+    bool isConfirmation,
+    SnackBarAction Function(BuildContext scaffold)? action,
+  ) {
+    BuildContext context = materialAppNavigatorKey.currentContext!;
+    var text = message(context);
+    _logger.info("Displaying message: $text");
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(text.$1),
+        content: Text(text.$2),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(MaterialLocalizations.of(context).closeButtonLabel),
+          ),
+        ],
+      ),
+    );
+  }
+
   static const snackbarOptionsRoute = "/snackbar-options";
   static Future<void> showSnackbarOptionsMenu() async {
     if (materialAppNavigatorKey.currentContext == null) return;

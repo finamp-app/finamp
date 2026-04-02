@@ -249,6 +249,7 @@ class DefaultSettings {
   static const duckOnAudioInterruption = true;
   static const forceAudioOffloadingOnAndroid = false;
   static const previousTracksPersistenceMode = PreviousTracksPersistenceMode.persistent;
+  static const useAndroidGainEffect = true;
 }
 
 @HiveType(typeId: 28)
@@ -392,6 +393,7 @@ class FinampSettings {
     this.duckOnAudioInterruption = DefaultSettings.duckOnAudioInterruption,
     this.forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid,
     this.previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode,
+    this.useAndroidGainEffect = DefaultSettings.useAndroidGainEffect,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -846,6 +848,9 @@ class FinampSettings {
 
   @HiveField(145, defaultValue: DefaultSettings.previousTracksPersistenceMode)
   PreviousTracksPersistenceMode previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode;
+
+  @HiveField(146, defaultValue: DefaultSettings.useAndroidGainEffect)
+  bool useAndroidGainEffect;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(

@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:app_links/app_links.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:audio_session/audio_session.dart';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
@@ -36,7 +35,6 @@ import 'package:finamp/services/dbus_manager.dart';
 import 'package:finamp/services/discord_rpc.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/downloads_service_backend.dart';
-import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_logs_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -164,6 +162,14 @@ void main() async {
 
     PlatformDispatcher.instance.onError = (error, stack) {
       flutterLogger.severe(error, error, stack);
+
+      if (error.toString().contains('audiofx\.LoudnessEnhancer\.setTargetGain')) {
+        FinampSetters.setUseAndroidGainEffect(false);
+        GlobalSnackbar.popup(
+          (context) => (AppLocalizations.of(context)!.errorRestart, AppLocalizations.of(context)!.androidGainDisabled),
+        );
+      }
+
       // We have not handled printing to console, flutter should still do that.
       return false;
     };
