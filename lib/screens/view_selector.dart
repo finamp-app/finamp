@@ -5,9 +5,7 @@ import 'package:get_it/get_it.dart';
 
 import '../components/ViewSelector/no_music_libraries_message.dart';
 import '../components/global_snackbar.dart';
-import '../models/finamp_models.dart';
 import '../models/jellyfin_models.dart';
-import '../services/finamp_settings_helper.dart';
 import '../services/finamp_user_helper.dart';
 import '../services/jellyfin_api_helper.dart';
 import 'music_screen.dart';

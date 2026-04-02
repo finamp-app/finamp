@@ -894,8 +894,16 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           Duration(microseconds: chapters[nextIdx].startPositionTicks ~/ 10));
     } else {
       _audioServiceBackgroundTaskLogger
-          .info('[Chapters] skipToNext → at last chapter, seeking to next track');
-      await _player.seekToNext();
+          .info('[Chapters] skipToNext → at last chapter, seeking to next track or end of current track');
+      if (_player.hasNext) {
+        await _player.seekToNext();
+      } else {
+        final duration = _player.duration;
+        if (duration != null) {
+          // No next track; seek to end of current track to mimic skip-to-end behavior.
+          await _player.seek(duration);
+        }
+      }
     }
   }
 

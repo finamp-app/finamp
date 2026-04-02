@@ -58,7 +58,9 @@ import AVFoundation
                 return
             }
 
-            NSLog("[Chapters] Loading availableChapterLocales for URL: \(urlString)")
+            let safeHost = url.host ?? "unknown"
+            let safePath = url.path.isEmpty ? "n/a" : url.path
+            NSLog("[Chapters] Loading availableChapterLocales for URL host=\(safeHost) path=\(safePath)")
             let asset = AVURLAsset(url: url, options: [
                 AVURLAssetPreferPreciseDurationAndTimingKey: false
             ])
