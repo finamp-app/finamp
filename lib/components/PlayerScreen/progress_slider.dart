@@ -197,12 +197,19 @@ class _ProgressSliderDuration extends StatelessWidget {
     final int effectiveEndUs =
         chapterEndUs ?? (itemDuration?.inMicroseconds ?? 0);
 
+    // Ensure the effective end is not before the start to avoid negative durations.
+    final int normalizedEndUs =
+        effectiveEndUs < effectiveStartUs ? effectiveStartUs : effectiveEndUs;
+
+    final int totalSeconds =
+        ((normalizedEndUs - effectiveStartUs) / 1e6).round();
     final elapsed = Duration(
-      seconds: ((position.inMicroseconds - effectiveStartUs) / 1e6).round()
-          .clamp(0, (effectiveEndUs - effectiveStartUs) ~/ 1000000 + 1),
+      seconds: ((position.inMicroseconds - effectiveStartUs) / 1e6)
+          .round()
+          .clamp(0, totalSeconds + 1),
     );
     final chapterDuration = Duration(
-      seconds: ((effectiveEndUs - effectiveStartUs) / 1e6).round(),
+      seconds: totalSeconds,
     );
     return Row(
       mainAxisSize: MainAxisSize.max,
