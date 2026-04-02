@@ -22,7 +22,7 @@ class ChapterExtractorService {
     return Uri(
       scheme: base.scheme,
       host: base.host,
-      port: base.port,
+      port: base.hasPort ? base.port : null,
       userInfo: base.userInfo,
       pathSegments: segments,
       queryParameters: params,
@@ -34,7 +34,7 @@ class ChapterExtractorService {
   static Future<List<ChapterInfo>> extractChapters(String itemId) async {
     try {
       final uri = _streamUri(itemId);
-      _log.info('Calling iOS channel for $itemId → $uri');
+      _log.info('Calling chapters channel for $itemId @ ${uri.host}');
       final raw = await _channel.invokeMethod<List<dynamic>>(
         'extractChapters',
         uri.toString(),
