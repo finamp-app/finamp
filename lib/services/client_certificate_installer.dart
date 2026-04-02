@@ -1,8 +1,15 @@
 import 'dart:io';
 
+import 'package:finamp/models/finamp_models.dart';
+import 'package:flutter/services.dart';
+import 'package:logging/logging.dart';
+
 import 'finamp_settings_helper.dart';
 
 class ClientCertificateInstaller {
+  static final _logger = Logger('ClientCertificateInstaller');
+  static const _channel = MethodChannel('com.unicornsonlsd.finamp/client_certificate');
+
   /// Installs the configured [ClientCertificate] to the [SecurityContext.defaultContext], if available.
   Future<void> defaultInstallClientCertificate() async {
     await installClientCertificate(SecurityContext.defaultContext);
@@ -25,6 +32,16 @@ class ClientCertificateInstaller {
     } catch (e) {
       _logger.warning('Failed to install client certificate in SecurityContext: $e');
     }
+
+    // On Android, ExoPlayer uses HttpURLConnection (not Dart's HttpClient),
+    // so we also configure the JVM-global SSLContext via a method channel.
+    if (Platform.isAndroid) {
+      try {
+        await _channel.invokeMethod('installClientCertificate', {'bytes': cert.data, 'password': cert.password});
+      } catch (e) {
+        _logger.warning('Failed to install client certificate in Android SSL context: $e');
+      }
+    }
   }
 
   Future<void> defaultClearClientCertificate() async {
@@ -33,5 +50,13 @@ class ClientCertificateInstaller {
 
   Future<void> clearClientCertificate(SecurityContext context) async {
     // TODO: clear certificate from context
+
+    if (Platform.isAndroid) {
+      try {
+        await _channel.invokeMethod('clearClientCertificate');
+      } catch (e) {
+        _logger.warning('Failed to install client certificate in Android SSL context: $e');
+      }
+    }
   }
 }
