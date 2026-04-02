@@ -81,7 +81,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     _tabController?.removeListener(_tabIndexCallback);
     _tabController?.dispose();
     _tabController = TabController(length: length, vsync: this, initialIndex: 0);
-    _tabController.addListener(_tabIndexCallback);
+    _tabController!.addListener(_tabIndexCallback);
   }
 
   /// Returns the display label for a tab.
