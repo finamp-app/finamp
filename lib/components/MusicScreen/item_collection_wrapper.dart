@@ -12,6 +12,7 @@ import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/album_screen.dart';
 import 'package:finamp/screens/artist_screen.dart';
+import 'package:finamp/screens/audiobook_screen.dart';
 import 'package:finamp/screens/genre_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -114,6 +115,8 @@ class _ItemCollectionWrapperState extends ConsumerState<ItemCollectionWrapper> {
                     AlbumScreen(parent: mutableItem, genreFilter: playlistGenreFilter ? widget.genreFilter : null),
               ),
             );
+          } else if (mutableItem.type == "AudioBook") {
+            Navigator.of(context).pushNamed(AudiobookScreen.routeName, arguments: mutableItem);
           } else {
             Navigator.of(context).pushNamed(AlbumScreen.routeName, arguments: mutableItem);
           }

@@ -131,7 +131,22 @@ class DefaultSettings {
   static const bufferDisableSizeConstraints = false;
   static const bufferDurationSeconds = 600;
   static const bufferSizeMegabytes = 50;
-  static const tabOrder = TabContentType.values;
+  // Music library tabs (music-mode screens).  Excludes audiobooks and authors
+  // which belong to [bookTabOrder].
+  static const tabOrder = [
+    TabContentType.albums,
+    TabContentType.artists,
+    TabContentType.playlists,
+    TabContentType.genres,
+    TabContentType.tracks,
+    TabContentType.audiobooks, // kept so users who had it enabled don't lose setting
+  ];
+  // Books library tabs used in books-only mode.
+  static const bookTabOrder = [
+    TabContentType.audiobooks,
+    TabContentType.authors,
+    TabContentType.genres,
+  ];
   static const itemSwipeActionLeftToRight = ItemSwipeActions.nothing;
   static const itemSwipeActionRightToLeft = ItemSwipeActions.addToNextUp;
   static const loopMode = FinampLoopMode.none;
@@ -289,6 +304,7 @@ class FinampSettings {
     this.playbackPitch = DefaultSettings.playbackPitch,
     this.syncPlaybackSpeedAndPitch = DefaultSettings.syncPlaybackSpeedAndPitch,
     this.tabOrder = DefaultSettings.tabOrder,
+    this.bookTabOrder = DefaultSettings.bookTabOrder,
     this.autoloadLastQueueOnStartup = DefaultSettings.autoLoadLastQueueOnStartup,
     this.hasCompletedDownloadsServiceMigration =
         true, //!!! don't touch this default value, it's supposed to be hard coded to run the migration only once
@@ -474,6 +490,12 @@ class FinampSettings {
 
   @HiveField(22, defaultValue: DefaultSettings.tabOrder)
   List<TabContentType> tabOrder;
+
+  /// Ordered list of tabs shown when browsing a books/audiobook library.
+  /// Defaults to [authors, genres, audiobooks]. Separate from [tabOrder] so
+  /// users can configure music and books layouts independently.
+  @HiveField(146, defaultValue: DefaultSettings.bookTabOrder)
+  List<TabContentType> bookTabOrder;
 
   @HiveField(25, defaultValue: DefaultSettings.showFastScroller)
   bool showFastScroller = DefaultSettings.showFastScroller;
@@ -856,7 +878,7 @@ class FinampSettings {
     return FinampSettings(
       downloadLocations: [],
       // Create a map of TabContentType from TabContentType's values.
-      showTabs: Map.fromEntries(TabContentType.values.map((e) => MapEntry(e, true))),
+      showTabs: Map.fromEntries(TabContentType.values.map((e) => MapEntry(e, e != TabContentType.audiobooks))),
       downloadLocationsMap: {downloadLocation.id: downloadLocation},
       tabSortBy: {},
       tabSortOrder: {},
@@ -1029,7 +1051,13 @@ enum TabContentType {
   @HiveField(3)
   genres(BaseItemDtoType.genre),
   @HiveField(4)
-  tracks(BaseItemDtoType.track);
+  tracks(BaseItemDtoType.track),
+  @HiveField(5)
+  audiobooks(BaseItemDtoType.audioBook),
+  /// Dedicated tab for book-library authors (same query as [artists] but
+  /// labelled "Authors" and placed in the books-only tab order by default).
+  @HiveField(6)
+  authors(BaseItemDtoType.artist);
 
   const TabContentType(this.itemType);
 
@@ -1056,6 +1084,10 @@ enum TabContentType {
         return "Genres";
       case TabContentType.playlists:
         return "Playlists";
+      case TabContentType.audiobooks:
+        return "Titles";
+      case TabContentType.authors:
+        return "Authors";
     }
   }
 
@@ -1071,6 +1103,10 @@ enum TabContentType {
         return AppLocalizations.of(context)!.genres;
       case TabContentType.playlists:
         return AppLocalizations.of(context)!.playlists;
+      case TabContentType.audiobooks:
+        return AppLocalizations.of(context)!.audiobookTitles;
+      case TabContentType.authors:
+        return AppLocalizations.of(context)!.audiobookAuthors;
     }
   }
 
@@ -1086,6 +1122,8 @@ enum TabContentType {
         return TabContentType.genres;
       case "Playlist":
         return TabContentType.playlists;
+      case "AudioBook":
+        return TabContentType.audiobooks;
       default:
         throw const FormatException("Unsupported itemType");
     }

@@ -12,6 +12,7 @@ import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/services/current_track_metadata_provider.dart';
 import 'package:finamp/services/favorite_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/chapter_extractor_service.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
 import 'package:finamp/services/queue_service.dart';
@@ -469,6 +470,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     // But sleepTimer doesn't want to listen on queue changes
     mediaItem.distinct().listen((currentTrack) {
       sleepTimer?.onTrackCompleted();
+      if (currentTrack != null) _maybeLoadChaptersFromServer(currentTrack);
     });
 
     _player.errorStream.listen((error) {
@@ -711,6 +713,13 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     try {
       _audioServiceBackgroundTaskLogger.info("Audio service received stop command");
 
+      // Explicitly report position to Jellyfin before stopping. This covers the
+      // case where the app is killed while paused: paused→idle doesn't change
+      // the 'playing' flag, so PlaybackHistoryService's listener never fires
+      // stopPlaybackProgress. The dedup guard in reportPlaybackStopped prevents
+      // double-reporting if the state transition already triggered it.
+      await GetIt.instance<PlaybackHistoryService>().reportPlaybackStopped();
+
       if (FinampSettingsHelper.finampSettings.clearQueueOnStopEvent) {
         await GetIt.instance<QueueService>().stopAndClearQueue();
       } else {
@@ -766,6 +775,15 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     bool doSkip = true;
 
     try {
+      final current = mediaItem.valueOrNull;
+      if (current != null) {
+        final chapters = _getChaptersFromItem(current);
+        if (chapters != null) {
+          await _skipToPreviousChapter(chapters);
+          return;
+        }
+      }
+
       if (_queueCallbackPreviousTrack != null) {
         doSkip = await _queueCallbackPreviousTrack!();
       } else {
@@ -796,6 +814,14 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   @override
   Future<void> skipToNext() async {
     try {
+      final current = mediaItem.valueOrNull;
+      if (current != null) {
+        final chapters = _getChaptersFromItem(current);
+        if (chapters != null) {
+          await _skipToNextChapter(chapters);
+          return;
+        }
+      }
       if (_player.loopMode == LoopMode.one || !_player.hasNext) {
         // if the user manually skips to the next track, they probably want to actually skip to the next track
         await skipByOffset(1); //!!! don't use _player.nextIndex here, because that adjusts based on loop mode
@@ -848,6 +874,153 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       _audioServiceBackgroundTaskLogger.severe(e);
       return Future.error(e);
     }
+  }
+
+  Future<void> _skipToNextChapter(List<jellyfin_models.ChapterInfo> chapters) async {
+    final positionTicks = _player.position.inMicroseconds * 10;
+    int currentIdx = 0;
+    for (int i = 0; i < chapters.length; i++) {
+      if (chapters[i].startPositionTicks <= positionTicks) {
+        currentIdx = i;
+      } else {
+        break;
+      }
+    }
+    final nextIdx = currentIdx + 1;
+    if (nextIdx < chapters.length) {
+      _audioServiceBackgroundTaskLogger.info(
+          '[Chapters] skipToNext → chapter $nextIdx/${chapters.length}: ${chapters[nextIdx].name}');
+      await _player.seek(
+          Duration(microseconds: chapters[nextIdx].startPositionTicks ~/ 10));
+    } else {
+      _audioServiceBackgroundTaskLogger
+          .info('[Chapters] skipToNext → at last chapter, seeking to next track or end of current track');
+      if (_player.hasNext) {
+        await _player.seekToNext();
+      } else {
+        final duration = _player.duration;
+        if (duration != null) {
+          // No next track; seek to end of current track to mimic skip-to-end behavior.
+          await _player.seek(duration);
+        }
+      }
+    }
+  }
+
+  Future<void> _skipToPreviousChapter(List<jellyfin_models.ChapterInfo> chapters) async {
+    final positionUs = _player.position.inMicroseconds;
+    final positionTicks = positionUs * 10;
+    int currentIdx = 0;
+    for (int i = 0; i < chapters.length; i++) {
+      if (chapters[i].startPositionTicks <= positionTicks) {
+        currentIdx = i;
+      } else {
+        break;
+      }
+    }
+    final currentChapterStartUs = chapters[currentIdx].startPositionTicks ~/ 10;
+    if (positionUs - currentChapterStartUs > 3000000) {
+      // More than 3 s into this chapter → restart it
+      _audioServiceBackgroundTaskLogger.info(
+          '[Chapters] skipToPrevious → restart chapter $currentIdx: ${chapters[currentIdx].name}');
+      await _player.seek(Duration(microseconds: currentChapterStartUs));
+    } else if (currentIdx > 0) {
+      // Within 3 s → jump to previous chapter
+      _audioServiceBackgroundTaskLogger.info(
+          '[Chapters] skipToPrevious → chapter ${currentIdx - 1}/${chapters.length}: ${chapters[currentIdx - 1].name}');
+      await _player.seek(Duration(
+          microseconds: chapters[currentIdx - 1].startPositionTicks ~/ 10));
+    } else {
+      // At first chapter → seek to absolute start
+      _audioServiceBackgroundTaskLogger
+          .info('[Chapters] skipToPrevious → at first chapter, seeking to start');
+      await _player.seek(Duration.zero);
+    }
+  }
+
+  /// Returns the chapters from [item]'s extras, or null if none are present.
+  List<jellyfin_models.ChapterInfo>? _getChaptersFromItem(MediaItem item) {
+    try {
+      final json = item.extras?["itemJson"];
+      if (json == null) return null;
+      final dto = jellyfin_models.BaseItemDto.fromJson(
+          Map<String, dynamic>.from(json as Map));
+      final chapters = dto.chapters;
+      return (chapters != null && chapters.isNotEmpty) ? chapters : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Cache of previously fetched chapters, keyed by Jellyfin item id.
+  final Map<String, List<jellyfin_models.ChapterInfo>> _chapterCache = {};
+
+  /// For AudioBook items, ensures that chapter data is present in the current
+  /// [MediaItem] so that chapter-skip navigation works. If the item's serialised
+  /// JSON already contains chapters (e.g. when started from the AudiobookScreen
+  /// after a full-item fetch), this is a no-op. Otherwise the full item is
+  /// fetched from Jellyfin (which always returns all fields) and the chapters
+  /// are injected via [updateCurrentMediaItemChapters].
+  void _maybeLoadChaptersFromServer(MediaItem item) {
+    final type = item.extras?["itemJson"]?["Type"] as String?;
+    if (type != 'AudioBook') return;
+    // Chapter extraction is only implemented on iOS and Android.
+    // Other platforms (macOS, Windows, Linux) have no channel handler and
+    // would throw MissingPluginException on every track change.
+    if (!Platform.isIOS && !Platform.isAndroid) return;
+    if (FinampSettingsHelper.finampSettings.isOffline) return;
+
+    final itemId = item.extras?["itemJson"]?["Id"] as String?;
+    if (itemId == null) return;
+
+    // Already have chapters embedded in this item.
+    if (_getChaptersFromItem(item) != null) return;
+
+    // Serve from cache immediately.
+    final cached = _chapterCache[itemId];
+    if (cached != null && cached.isNotEmpty) {
+      updateCurrentMediaItemChapters(itemId, cached);
+      return;
+    }
+
+    // Extract chapters directly from the .m4b stream via AVFoundation —
+    // Jellyfin doesn't return chapter data for AudioBook items via its API.
+    ChapterExtractorService.extractChapters(itemId).then((chapters) {
+      if (chapters.isNotEmpty) {
+        _chapterCache[itemId] = chapters;
+        updateCurrentMediaItemChapters(itemId, chapters);
+      }
+    }).catchError((Object e) {
+      _audioServiceBackgroundTaskLogger.warning(
+          '[Chapters] Failed to extract chapters for $itemId: $e');
+    });
+  }
+
+  /// Inject [chapters] into the currently playing item's extras and broadcast
+  /// the updated [MediaItem] to all listeners (player screen, chapter widgets).
+  /// No-op if the current item's Jellyfin id doesn't match [itemId].
+  void updateCurrentMediaItemChapters(
+      String itemId, List<jellyfin_models.ChapterInfo> chapters) {
+    final current = mediaItem.valueOrNull;
+    final currentId = current?.extras?["itemJson"]?["Id"] as String?;
+    _audioServiceBackgroundTaskLogger.info(
+        '[Chapters] updateCurrentMediaItemChapters: target=$itemId current=$currentId');
+    if (currentId != itemId) {
+      _audioServiceBackgroundTaskLogger.warning(
+          '[Chapters] ID mismatch — skipping update (target=$itemId current=$currentId)');
+      return;
+    }
+
+    final updatedJson =
+        Map<String, dynamic>.from(current!.extras!["itemJson"] as Map)
+          ..["Chapters"] = chapters.map((c) => c.toJson()).toList();
+
+    mediaItem.add(current.copyWith(
+      extras: Map<String, dynamic>.from(current.extras!)
+        ..["itemJson"] = updatedJson,
+    ));
+    _audioServiceBackgroundTaskLogger.info(
+        '[Chapters] MediaItem updated ✓ (${chapters.length} chapters)');
   }
 
   @override

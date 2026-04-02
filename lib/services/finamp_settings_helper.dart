@@ -50,7 +50,8 @@ class FinampSettingsHelper {
 
   static void resetTabsSettings() {
     FinampSettings finampSettingsTemp = finampSettings;
-    finampSettingsTemp.tabOrder = TabContentType.values;
+    finampSettingsTemp.tabOrder = List.of(DefaultSettings.tabOrder);
+    finampSettingsTemp.bookTabOrder = List.of(DefaultSettings.bookTabOrder);
     finampSettingsTemp.showTabs = Map.fromEntries(TabContentType.values.map((e) => MapEntry(e, true)));
   }
 

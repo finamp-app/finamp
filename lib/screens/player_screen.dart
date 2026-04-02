@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:balanced_text/balanced_text.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/PlayerScreen/control_area.dart';
@@ -19,6 +20,7 @@ import 'package:finamp/menus/track_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/screens/blurred_player_screen_background.dart';
 import 'package:finamp/screens/lyrics_screen.dart';
+import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/current_track_metadata_provider.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
@@ -145,12 +147,19 @@ class _PlayerScreenContent extends ConsumerWidget {
     }
 
     final metadata = ref.watch(currentTrackMetadataProvider).unwrapPrevious();
+    final currentMediaItem = ref.watch(currentMediaItemProvider).valueOrNull;
 
     final isLyricsLoading = metadata.isLoading || metadata.isRefreshing;
     final isLyricsAvailable =
         (metadata.valueOrNull?.hasLyrics ?? false) &&
         (metadata.valueOrNull?.lyrics != null || metadata.isLoading) &&
         !metadata.hasError;
+
+    final isAudioBook =
+        currentMediaItem?.extras?["itemJson"]?["Type"] == "AudioBook";
+    final chapters = isAudioBook
+        ? _getChaptersFromMediaItem(currentMediaItem)
+        : null;
 
     return SafeArea(
       bottom: true,
@@ -170,16 +179,23 @@ class _PlayerScreenContent extends ConsumerWidget {
           }
         },
         onHorizontalSwipe: (direction) {
-          if (direction == SwipeDirection.left && isLyricsAvailable) {
+          if (direction == SwipeDirection.left) {
             if (!FinampSettingsHelper.finampSettings.disableGesture ||
                 !controller.shouldShow(PlayerHideable.bottomActions)) {
-              Navigator.of(context).push(
-                _buildSlideRouteTransition(
-                  playerScreen,
-                  const LyricsScreen(),
-                  routeSettings: const RouteSettings(name: LyricsScreen.routeName),
-                ),
-              );
+              if (isAudioBook && chapters != null && chapters.isNotEmpty) {
+                showChaptersBottomSheet(
+                    context: context,
+                    chapters: chapters,
+                    currentMediaItem: currentMediaItem);
+              } else if (!isAudioBook && isLyricsAvailable) {
+                Navigator.of(context).push(
+                  _buildSlideRouteTransition(
+                    playerScreen,
+                    const LyricsScreen(),
+                    routeSettings: const RouteSettings(name: LyricsScreen.routeName),
+                  ),
+                );
+              }
             }
           }
         },
@@ -247,6 +263,9 @@ class _PlayerScreenContent extends ConsumerWidget {
                                     controller,
                                     isLyricsLoading: isLyricsLoading,
                                     isLyricsAvailable: isLyricsAvailable,
+                                    isAudioBook: isAudioBook,
+                                    chapters: chapters,
+                                    currentMediaItem: currentMediaItem,
                                   ),
                                 const Spacer(flex: 4),
                               ],
@@ -280,6 +299,9 @@ class _PlayerScreenContent extends ConsumerWidget {
                                     controller,
                                     isLyricsLoading: isLyricsLoading,
                                     isLyricsAvailable: isLyricsAvailable,
+                                    isAudioBook: isAudioBook,
+                                    chapters: chapters,
+                                    currentMediaItem: currentMediaItem,
                                   ),
                                 if (!controller.shouldShow(PlayerHideable.bottomActions)) const SizedBox(height: 5),
                               ],
@@ -336,6 +358,9 @@ class _PlayerScreenContent extends ConsumerWidget {
     PlayerHideableController controller, {
     bool isLyricsLoading = true,
     bool isLyricsAvailable = false,
+    bool isAudioBook = false,
+    List<ChapterInfo>? chapters,
+    MediaItem? currentMediaItem,
   }) {
     IconData getLyricsIcon() {
       if (!isLyricsLoading && !isLyricsAvailable) {
@@ -344,6 +369,8 @@ class _PlayerScreenContent extends ConsumerWidget {
         return TablerIcons.microphone_2;
       }
     }
+
+    final hasChapters = chapters != null && chapters.isNotEmpty;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -369,29 +396,179 @@ class _PlayerScreenContent extends ConsumerWidget {
                 ),
               ),
               const Flexible(fit: FlexFit.tight, child: QueueButton()),
-              Flexible(
-                fit: FlexFit.tight,
-                child: SimpleButton(
-                  inactive: !isLyricsAvailable,
-                  text: AppLocalizations.of(context)!.lyricsScreenButtonTitle,
-                  icon: getLyricsIcon(),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      _buildSlideRouteTransition(
-                        playerScreen,
-                        const LyricsScreen(),
-                        routeSettings: const RouteSettings(name: LyricsScreen.routeName),
-                      ),
-                    );
-                  },
+              if (isAudioBook)
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: SimpleButton(
+                    inactive: !hasChapters,
+                    text: AppLocalizations.of(context)!.audiobookChapters,
+                    icon: hasChapters
+                        ? TablerIcons.list
+                        : TablerIcons.list_details,
+                    onPressed: () {
+                      if (hasChapters) {
+                        showChaptersBottomSheet(
+                          context: context,
+                          chapters: chapters,
+                          currentMediaItem: currentMediaItem,
+                        );
+                      }
+                    },
+                  ),
+                )
+              else
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: SimpleButton(
+                    inactive: !isLyricsAvailable,
+                    text: AppLocalizations.of(context)!.lyricsScreenButtonTitle,
+                    icon: getLyricsIcon(),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        _buildSlideRouteTransition(
+                          playerScreen,
+                          const LyricsScreen(),
+                          routeSettings: const RouteSettings(name: LyricsScreen.routeName),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
             ],
           ),
         ),
         const Spacer(flex: 1),
       ],
     );
+  }
+
+  /// Extracts [ChapterInfo] from a [MediaItem]'s extras["itemJson"]["Chapters"].
+  static List<ChapterInfo>? _getChaptersFromMediaItem(MediaItem? item) {
+    if (item == null) return null;
+    try {
+      final raw = item.extras?["itemJson"]?["Chapters"] as List<dynamic>?;
+      if (raw == null || raw.isEmpty) return null;
+      return raw
+          .cast<Map<Object?, Object?>>()
+          .map((m) => ChapterInfo.fromJson(
+              Map<String, dynamic>.from(m as Map)))
+          .toList();
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Chapters bottom sheet
+// ---------------------------------------------------------------------------
+
+void showChaptersBottomSheet({
+  required BuildContext context,
+  required List<ChapterInfo> chapters,
+  MediaItem? currentMediaItem,
+}) {
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => _ChaptersBottomSheet(chapters: chapters),
+  );
+}
+
+class _ChaptersBottomSheet extends StatelessWidget {
+  const _ChaptersBottomSheet({required this.chapters});
+
+  final List<ChapterInfo> chapters;
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.6,
+      maxChildSize: 0.92,
+      minChildSize: 0.3,
+      expand: false,
+      builder: (context, scrollController) {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Text(
+                AppLocalizations.of(context)!.audiobookChapters,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: StreamBuilder<Duration>(
+                stream: AudioService.position,
+                builder: (context, snapshot) {
+                  final posTicks =
+                      (snapshot.data ?? Duration.zero).inMicroseconds * 10;
+                  int currentIdx = 0;
+                  for (int i = 0; i < chapters.length; i++) {
+                    if (chapters[i].startPositionTicks <= posTicks) {
+                      currentIdx = i;
+                    } else {
+                      break;
+                    }
+                  }
+                  return ListView.builder(
+                    controller: scrollController,
+                    itemCount: chapters.length,
+                    itemBuilder: (context, index) {
+                      final chapter = chapters[index];
+                      final ticks = chapter.startPositionTicks;
+                      final start = Duration(microseconds: ticks ~/ 10);
+                      final isActive = index == currentIdx;
+                      return ListTile(
+                        selected: isActive,
+                        leading: CircleAvatar(
+                          backgroundColor: isActive
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                              color: isActive
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : null,
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          chapter.name ?? 'Chapter ${index + 1}',
+                          style: isActive
+                              ? TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      Theme.of(context).colorScheme.primary,
+                                )
+                              : null,
+                        ),
+                        subtitle: Text(_formatDuration(start)),
+                        onTap: () {
+                          GetIt.instance<MusicPlayerBackgroundTask>()
+                              .seek(start);
+                          Navigator.of(context).pop();
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _formatDuration(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return h > 0 ? '$h:$m:$s' : '$m:$s';
   }
 }
 

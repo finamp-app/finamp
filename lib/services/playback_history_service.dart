@@ -531,7 +531,11 @@ class PlaybackHistoryService {
         playMethod: item.item.extras?["shouldTranscode"] as bool? ?? false ? "Transcode" : "DirectPlay",
         playbackOrder: _queueService.playbackOrder == FinampPlaybackOrder.shuffled ? "Shuffle" : "Default",
         nowPlayingQueue: getQueueToReport(includeNowPlayingQueue: includeNowPlayingQueue),
-        playlistItemId: _queueService.getQueue().source.id,
+        // Use the item's own FinampQueueItem.id, not the live queue source id.
+        // If a delayed callback fires after a track change, the live source.id
+        // would already point to the new track, producing a mismatched payload
+        // (old ItemId + new PlaylistItemId) that corrupts the saved position.
+        playlistItemId: item.id,
       );
     } catch (e) {
       _playbackHistoryServiceLogger.warning(e);
@@ -571,7 +575,7 @@ class PlaybackHistoryService {
         playbackOrder: _queueService.playbackOrder == FinampPlaybackOrder.shuffled ? "Shuffle" : "Default",
         repeatMode: _toJellyfinRepeatMode(_queueService.loopMode),
         nowPlayingQueue: getQueueToReport(includeNowPlayingQueue: includeNowPlayingQueue),
-        playlistItemId: _queueService.getQueue().source.id,
+        playlistItemId: currentTrack.id,
       );
     } catch (e) {
       _playbackHistoryServiceLogger.warning(e);

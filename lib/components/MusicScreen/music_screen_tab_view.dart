@@ -169,8 +169,9 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         : BaseItemDtoType.track;
 
     List<DownloadStub> offlineItems;
-    if (widget.tabContentType == TabContentType.tracks) {
-      // If we're on the tracks tab, just get all of the downloaded items
+    if (widget.tabContentType == TabContentType.tracks ||
+        widget.tabContentType == TabContentType.audiobooks) {
+      // If we're on the tracks or audiobooks tab, just get all of the downloaded items
       // We should probably try to page this, at least if we are sorting by name
       offlineItems = await _isarDownloader.getAllTracks(
         nameFilter: widget.searchTerm,
@@ -438,7 +439,8 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     var sortBy = widget.sortByOverride ?? ref.watch(finampSettingsProvider.tabSortBy(widget.tabContentType));
     var tabContent =
         ref.watch(finampSettingsProvider.contentViewType) == ContentViewType.list ||
-            widget.tabContentType == TabContentType.tracks
+            widget.tabContentType == TabContentType.tracks ||
+            widget.tabContentType == TabContentType.audiobooks
         ? PagedListView<int, BaseItemDto>.separated(
             pagingController: _pagingController,
             scrollController: controller,
@@ -458,7 +460,8 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                         key: ValueKey(index),
                         controller: controller,
                         index: index,
-                        child: widget.tabContentType == TabContentType.tracks
+                        child: widget.tabContentType == TabContentType.tracks ||
+                                widget.tabContentType == TabContentType.audiobooks
                             ? TrackListTile(
                                 item: item,
                                 isTrack: true,
