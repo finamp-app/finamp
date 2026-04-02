@@ -964,6 +964,10 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   void _maybeLoadChaptersFromServer(MediaItem item) {
     final type = item.extras?["itemJson"]?["Type"] as String?;
     if (type != 'AudioBook') return;
+    // Chapter extraction is only implemented on iOS and Android.
+    // Other platforms (macOS, Windows, Linux) have no channel handler and
+    // would throw MissingPluginException on every track change.
+    if (!Platform.isIOS && !Platform.isAndroid) return;
     if (FinampSettingsHelper.finampSettings.isOffline) return;
 
     final itemId = item.extras?["itemJson"]?["Id"] as String?;
