@@ -396,8 +396,16 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       audioPipeline: _audioPipeline,
     );
 
-    _loudnessEnhancerEffect?.setEnabled(FinampSettingsHelper.finampSettings.volumeNormalizationActive);
-    _loudnessEnhancerEffect?.setTargetGain(0.0);
+    try {
+      _loudnessEnhancerEffect?.setEnabled(FinampSettingsHelper.finampSettings.volumeNormalizationActive);
+      _loudnessEnhancerEffect?.setTargetGain(0.0);
+    } catch (_) {
+      // Assume we've hit https://github.com/UnicornsOnLSD/finamp/issues/1343 and disable loudness enhancer effect permanently
+      FinampSetters.setUseAndroidGainEffect(false);
+      _loudnessEnhancerEffect = null;
+      GlobalSnackbar.message((context) => AppLocalizations.of(context)!.androidGainDisabled);
+    }
+
     // calculate base volume gain for iOS as a linear factor, because just_audio doesn't yet support AudioEffect on iOS
     iosBaseVolumeGainFactor =
         pow(10.0, FinampSettingsHelper.finampSettings.volumeNormalizationIOSBaseGain / 20.0)

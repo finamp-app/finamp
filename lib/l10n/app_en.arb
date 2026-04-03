@@ -3300,12 +3300,8 @@
   "@useAndroidGainEffectSubtitle": {
     "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
   },
-  "androidGainDisabled": "Enabling gain effect fallback due to error.  Please restart app.",
+  "androidGainDisabled": "Switching to gain effect fallback due to initialization error.",
   "@androidGainDisabled": {
     "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
-  },
-  "errorRestart": "Error - Restart Required",
-  "@errorRestart": {
-    "description": "Warning shown on an unrecoverable error."
   }
 }
