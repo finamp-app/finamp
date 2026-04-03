@@ -8,6 +8,7 @@ import 'package:finamp/services/server_client_discovery_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 
 import 'login_authentication_page.dart';
@@ -200,6 +201,7 @@ class ServerState {
   Timer? connectionTestDebounceTimer;
   String? baseUrlToTest;
   JellyfinServerClientDiscovery clientDiscoveryHandler;
+  bool clientCertificateRequired = false;
   VoidCallback? updateCallback;
 
   ServerState({
@@ -260,7 +262,11 @@ class ServerState {
       try {
         publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
       } catch (error) {
-        serverStateLogger.severe("Error loading server info: $error");
+        if (error is ClientException && error.message.contains("TLSV1_ALERT_CERTIFICATE_REQUIRED")) {
+          clientCertificateRequired = true;
+        } else {
+          serverStateLogger.severe("Error loading server info: $error");
+        }
       }
       if (this.baseUrlToTest != baseUrl) {
         throw Exception("Server URL changed while testing");

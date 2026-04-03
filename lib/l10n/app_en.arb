@@ -3572,5 +3572,9 @@
     "clientCertificateImportError": "Failed to import certificate.",
     "@clientCertificateImportError": {
         "description": "Error message shown when importing a client certificate fails."
+    },
+    "clientCertificateRequired": "Client certificate required.",
+    "@clientCertificateRequired": {
+        "description": "Message shown on the server selection screen when the server requires a client certificate to be provided."
     }
 }

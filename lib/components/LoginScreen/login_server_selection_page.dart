@@ -1,9 +1,11 @@
+import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/finamp_icon.dart';
+import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/client_certificate_authentication_menu.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -97,7 +99,43 @@ class _LoginServerSelectionPageState extends State<LoginServerSelectionPage> {
             _buildServerUrlInput(context),
             ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 95.0),
-              child: widget.serverState.baseUrlToTest != null && widget.serverState.manualServer == null
+              child: widget.serverState.manualServer != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: JellyfinServerSelectionWidget(
+                        baseUrl: widget.serverState.baseUrl,
+                        serverInfo: widget.serverState.manualServer,
+                        onPressed: () {
+                          widget.onServerSelected?.call(widget.serverState.manualServer!, widget.serverState.baseUrl!);
+                        },
+                      ),
+                    )
+                  : widget.serverState.clientCertificateRequired
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                          child: Text(
+                            AppLocalizations.of(context)!.clientCertificateRequired,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CTAMedium(
+                              text: AppLocalizations.of(context)!.importClientCertificate,
+                              icon: TablerIcons.certificate,
+                              onPressed: () => showClientCertificateMenu(context: context),
+                              minWidth: 0,
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  : widget.serverState.baseUrlToTest != null
                   ? Padding(
                       padding: const EdgeInsets.only(top: 12.0),
                       child: Row(
@@ -112,22 +150,7 @@ class _LoginServerSelectionPageState extends State<LoginServerSelectionPage> {
                         ],
                       ),
                     )
-                  : Visibility(
-                      visible: widget.serverState.manualServer != null,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
-                        child: JellyfinServerSelectionWidget(
-                          baseUrl: widget.serverState.baseUrl,
-                          serverInfo: widget.serverState.manualServer,
-                          onPressed: () {
-                            widget.onServerSelected?.call(
-                              widget.serverState.manualServer!,
-                              widget.serverState.baseUrl!,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
+                  : const SizedBox.shrink(),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20.0, bottom: 16.0),
