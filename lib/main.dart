@@ -163,6 +163,7 @@ void main() async {
     PlatformDispatcher.instance.onError = (error, stack) {
       flutterLogger.severe(error, error, stack);
 
+      // If we recieve a PlatformException from the loudness enhancer effect, disable and prompt to restart
       if (error.toString().contains('audiofx\.LoudnessEnhancer\.setTargetGain')) {
         FinampSetters.setUseAndroidGainEffect(false);
         GlobalSnackbar.popup(
