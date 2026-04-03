@@ -541,10 +541,10 @@ class _FinampState extends State<Finamp> with WindowListener {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _uriLinkSubscription = AppLinks().uriLinkStream.listen((uri) async {
         linkHandlingLogger.info("Received link: $uri");
-        var context = GlobalSnackbar.materialAppNavigatorKey.currentContext;
-        if (context != null) {
+        var state = GlobalSnackbar.materialAppNavigatorKey.currentState;
+        if (state != null) {
           if (uri.host == "internal") {
-            await Navigator.of(context).pushNamed(uri.path);
+            await state.pushNamed(uri.path);
           }
         } else {
           linkHandlingLogger.warning("No context available to handle link");

@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:finamp/components/print_duration.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/progress_state_stream.dart';
 import 'package:flutter/material.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
@@ -54,6 +54,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
             child: SliderTheme(
               data: SliderThemeData(trackHeight: 3.5, trackShape: CustomTrackShape()),
               child: StreamBuilder<ProgressState>(
+                initialData: progressState,
                 stream: progressStateStream,
                 builder: (context, snapshot) {
                   if (snapshot.data?.mediaItem == null) {
@@ -64,12 +65,19 @@ class _ProgressSliderState extends State<ProgressSlider> {
                     return widget.showPlaceholder
                         ? Column(
                             children: [
-                              Slider(
-                                value: 0,
-                                max: 1,
-                                onChanged: null,
-                                autofocus: false,
-                                focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
+                              SizedBox(
+                                height: 24.0,
+                                child: Stack(
+                                  children: [
+                                    Slider(
+                                      value: 0,
+                                      max: 1,
+                                      onChanged: null,
+                                      autofocus: false,
+                                      focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
+                                    ),
+                                  ],
+                                ),
                               ),
                               if (widget.showDuration) const _ProgressSliderDuration(position: Duration()),
                             ],
