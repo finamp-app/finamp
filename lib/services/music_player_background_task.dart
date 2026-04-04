@@ -924,12 +924,20 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         // ignore: deprecated_member_use_from_same_package
         title: _appLocalizations?.albums ?? TabContentType.albums.toString(),
         playable: false,
+        extras: const {
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 4,
+          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
+        },
       ),
       MediaItem(
         id: MediaItemId(contentType: TabContentType.artists, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
         title: _appLocalizations?.artists ?? TabContentType.artists.toString(),
         playable: false,
+        extras: const {
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 4,
+          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
+        },
       ),
       MediaItem(
         id: MediaItemId(
