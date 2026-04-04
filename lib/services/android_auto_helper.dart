@@ -142,6 +142,59 @@ class AndroidAutoHelper {
     return (result.items ?? [], result.totalRecordCount);
   }
 
+  /// Returns up to 20 recently played albums or artists (online only).
+  /// In offline mode returns a single non-playable placeholder.
+  Future<List<MediaItem>> _getRecentlyPlayedItems(MediaItemId itemId) async {
+    final queueService = GetIt.instance<QueueService>();
+
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      return [
+        MediaItem(
+          id: 'recently_played_offline',
+          title: 'Not available offline',
+          playable: false,
+        ),
+      ];
+    }
+
+    final parentItem = _finampUserHelper.currentUser?.currentView;
+
+    final QueryResult_BaseItemDto result;
+    if (itemId.contentType == TabContentType.artists) {
+      result = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
+        parentItem: parentItem,
+        includeItemTypes: BaseItemDtoType.artist.jellyfinName,
+        artistType: ArtistType.albumArtist,
+        sortBy: 'DatePlayed',
+        sortOrder: 'Descending',
+        filters: 'IsPlayed',
+        limit: 20,
+      );
+    } else {
+      // albums
+      result = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
+        parentItem: parentItem,
+        includeItemTypes: BaseItemDtoType.album.jellyfinName,
+        sortBy: 'DatePlayed',
+        sortOrder: 'Descending',
+        filters: 'IsPlayed',
+        limit: 20,
+      );
+    }
+
+    final List<MediaItem> mediaItems = [];
+    for (final item in result.items ?? <BaseItemDto>[]) {
+      final mediaItem = await queueService.generateMediaItem(
+        item,
+        parentType: MediaItemParentType.collection,
+        parentId: item.parentId,
+        isPlayable: _isPlayable,
+      );
+      mediaItems.add(mediaItem);
+    }
+    return mediaItems;
+  }
+
   /// Fetches a single page of [_pageSize] items for a root collection browse,
   /// returning the items and the server's total record count for pagination.
   Future<(List<BaseItemDto>, int)> _fetchRootPage(MediaItemId itemId) async {
@@ -666,6 +719,10 @@ class AndroidAutoHelper {
   Future<List<MediaItem>> getMediaItems(MediaItemId itemId) async {
     final queueService = GetIt.instance<QueueService>();
     final List<MediaItem> mediaItems = [];
+
+    if (itemId.parentType == MediaItemParentType.recentlyPlayed) {
+      return _getRecentlyPlayedItems(itemId);
+    }
 
     // Root collections are paginated to stay within the Android Auto Binder
     // IPC limit (~1MB). Each page shows _pageSize items with a "More..." node
