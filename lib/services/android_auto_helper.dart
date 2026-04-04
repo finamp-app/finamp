@@ -145,8 +145,6 @@ class AndroidAutoHelper {
   /// Returns up to 20 recently played albums or artists (online only).
   /// In offline mode returns a single non-playable placeholder.
   Future<List<MediaItem>> _getRecentlyPlayedItems(MediaItemId itemId) async {
-    final queueService = GetIt.instance<QueueService>();
-
     if (FinampSettingsHelper.finampSettings.isOffline) {
       return [
         MediaItem(
@@ -157,42 +155,48 @@ class AndroidAutoHelper {
       ];
     }
 
+    final queueService = GetIt.instance<QueueService>();
     final parentItem = _finampUserHelper.currentUser?.currentView;
 
-    final QueryResult_BaseItemDto result;
-    if (itemId.contentType == TabContentType.artists) {
-      result = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
-        parentItem: parentItem,
-        includeItemTypes: BaseItemDtoType.artist.jellyfinName,
-        artistType: ArtistType.albumArtist,
-        sortBy: 'DatePlayed',
-        sortOrder: 'Descending',
-        filters: 'IsPlayed',
-        limit: 20,
-      );
-    } else {
-      // albums
-      result = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
-        parentItem: parentItem,
-        includeItemTypes: BaseItemDtoType.album.jellyfinName,
-        sortBy: 'DatePlayed',
-        sortOrder: 'Descending',
-        filters: 'IsPlayed',
-        limit: 20,
-      );
-    }
+    try {
+      final QueryResult_BaseItemDto result;
+      if (itemId.contentType == TabContentType.artists) {
+        result = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
+          parentItem: parentItem,
+          includeItemTypes: BaseItemDtoType.artist.jellyfinName,
+          artistType: ArtistType.albumArtist,
+          sortBy: 'DatePlayed',
+          sortOrder: 'Descending',
+          filters: 'IsPlayed',
+          limit: 20,
+        );
+      } else {
+        // albums
+        result = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
+          parentItem: parentItem,
+          includeItemTypes: BaseItemDtoType.album.jellyfinName,
+          sortBy: 'DatePlayed',
+          sortOrder: 'Descending',
+          filters: 'IsPlayed',
+          limit: 20,
+        );
+      }
 
-    final List<MediaItem> mediaItems = [];
-    for (final item in result.items ?? <BaseItemDto>[]) {
-      final mediaItem = await queueService.generateMediaItem(
-        item,
-        parentType: MediaItemParentType.collection,
-        parentId: item.parentId,
-        isPlayable: _isPlayable,
-      );
-      mediaItems.add(mediaItem);
+      final List<MediaItem> mediaItems = [];
+      for (final item in result.items ?? <BaseItemDto>[]) {
+        final mediaItem = await queueService.generateMediaItem(
+          item,
+          parentType: MediaItemParentType.collection,
+          parentId: item.parentId,
+          isPlayable: _isPlayable,
+        );
+        mediaItems.add(mediaItem);
+      }
+      return mediaItems;
+    } catch (err, trace) {
+      _androidAutoHelperLogger.severe("Error loading recently played items", err, trace);
+      return [];
     }
-    return mediaItems;
   }
 
   /// Fetches a single page of [_pageSize] items for a root collection browse,
