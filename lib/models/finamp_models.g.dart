@@ -1301,13 +1301,15 @@ class MediaItemIdAdapter extends TypeAdapter<MediaItemId> {
       parentType: fields[1] as MediaItemParentType,
       itemId: fields[2] as BaseItemId?,
       parentId: fields[3] as BaseItemId?,
+      nameFilter: fields[4] as String?,
+      pageStartIndex: fields[5] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, MediaItemId obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.contentType)
       ..writeByte(1)
@@ -1315,7 +1317,11 @@ class MediaItemIdAdapter extends TypeAdapter<MediaItemId> {
       ..writeByte(2)
       ..write(obj.itemId)
       ..writeByte(3)
-      ..write(obj.parentId);
+      ..write(obj.parentId)
+      ..writeByte(4)
+      ..write(obj.nameFilter)
+      ..writeByte(5)
+      ..write(obj.pageStartIndex);
   }
 
   @override
@@ -8946,6 +8952,8 @@ MediaItemId _$MediaItemIdFromJson(Map<String, dynamic> json) => MediaItemId(
     json['parentId'],
     const BaseItemIdConverter().fromJson,
   ),
+  nameFilter: json['nameFilter'] as String?,
+  pageStartIndex: (json['pageStartIndex'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$MediaItemIdToJson(MediaItemId instance) =>
@@ -8960,6 +8968,8 @@ Map<String, dynamic> _$MediaItemIdToJson(MediaItemId instance) =>
         instance.parentId,
         const BaseItemIdConverter().toJson,
       ),
+      if (instance.nameFilter != null) 'nameFilter': instance.nameFilter,
+      if (instance.pageStartIndex != null) 'pageStartIndex': instance.pageStartIndex,
     };
 
 const _$TabContentTypeEnumMap = {
