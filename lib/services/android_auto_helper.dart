@@ -167,7 +167,6 @@ class AndroidAutoHelper {
           artistType: ArtistType.albumArtist,
           sortBy: 'DatePlayed',
           sortOrder: 'Descending',
-          filters: 'IsPlayed',
           limit: 20,
         );
       } else {
@@ -177,13 +176,19 @@ class AndroidAutoHelper {
           includeItemTypes: BaseItemDtoType.album.jellyfinName,
           sortBy: 'DatePlayed',
           sortOrder: 'Descending',
-          filters: 'IsPlayed',
           limit: 20,
         );
       }
 
+      // Filter server-side: only items that have actually been played at least once.
+      // We don't use Filters=IsPlayed because Jellyfin requires *all* tracks to be
+      // played for an album/artist to be marked "played" — far too strict for most users.
+      final playedItems = (result.items ?? <BaseItemDto>[])
+          .where((item) => item.userData?.lastPlayedDate != null)
+          .toList();
+
       final List<MediaItem> mediaItems = [];
-      for (final item in result.items ?? <BaseItemDto>[]) {
+      for (final item in playedItems) {
         final mediaItem = await queueService.generateMediaItem(
           item,
           parentType: MediaItemParentType.collection,
