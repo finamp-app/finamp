@@ -978,7 +978,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         title: _appLocalizations?.albums ?? TabContentType.albums.toString(),
         playable: false,
         extras: const {
-          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 4,
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 2,
           "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
         },
       ),
@@ -998,14 +998,6 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           parentType: MediaItemParentType.recentlyPlayed,
         ).toString(),
         title: _appLocalizations?.recentlyPlayedAlbums ?? 'Recently Played Albums',
-        playable: false,
-      ),
-      MediaItem(
-        id: MediaItemId(
-          contentType: TabContentType.artists,
-          parentType: MediaItemParentType.recentlyPlayed,
-        ).toString(),
-        title: _appLocalizations?.recentlyPlayedArtists ?? 'Recently Played Artists',
         playable: false,
       ),
       MediaItem(
