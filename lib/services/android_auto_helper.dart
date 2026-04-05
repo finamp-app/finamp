@@ -142,12 +142,12 @@ class AndroidAutoHelper {
     return (result.items ?? [], result.totalRecordCount);
   }
 
-  /// Returns up to 20 recently played albums or artists (online only).
+  /// Returns up to 20 recently played albums (online only).
   /// In offline mode returns a single non-playable placeholder.
   ///
-  /// Jellyfin only tracks DatePlayed on individual tracks, not on album/artist
-  /// items. So we query recently played tracks, deduplicate by album or artist,
-  /// then fetch those items by ID to get full artwork + metadata.
+  /// Jellyfin only tracks DatePlayed on individual tracks, not on album items.
+  /// So we query recently played tracks, deduplicate by albumId, then fetch
+  /// those albums by ID to get full artwork + metadata.
   Future<List<MediaItem>> _getRecentlyPlayedItems(MediaItemId itemId) async {
     if (FinampSettingsHelper.finampSettings.isOffline) {
       return [
@@ -173,35 +173,24 @@ class AndroidAutoHelper {
         limit: 100,
       );
 
-      // Step 2: extract ordered, deduplicated album or artist IDs.
+      // Step 2: extract ordered, deduplicated album IDs from the track results.
       final seenIds = <String>{};
       final orderedIds = <BaseItemId>[];
 
       for (final track in tracksResult.items ?? <BaseItemDto>[]) {
-        if (itemId.contentType == TabContentType.artists) {
-          for (final artist in track.albumArtists ?? <NameIdPair>[]) {
-            if (seenIds.add(artist.id.raw)) {
-              orderedIds.add(artist.id);
-              if (orderedIds.length >= 20) break;
-            }
-          }
-        } else {
-          final albumId = track.albumId;
-          if (albumId != null && seenIds.add(albumId.raw)) {
-            orderedIds.add(albumId);
-          }
+        final albumId = track.albumId;
+        if (albumId != null && seenIds.add(albumId.raw)) {
+          orderedIds.add(albumId);
+          if (orderedIds.length >= 20) break;
         }
-        if (orderedIds.length >= 20) break;
       }
 
       if (orderedIds.isEmpty) return [];
 
-      // Step 3: fetch the actual album/artist items by ID to get full metadata.
+      // Step 3: fetch the actual album items by ID to get full metadata + artwork.
       final itemsResult = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
         itemIds: orderedIds,
-        includeItemTypes: itemId.contentType == TabContentType.artists
-            ? BaseItemDtoType.artist.jellyfinName
-            : BaseItemDtoType.album.jellyfinName,
+        includeItemTypes: BaseItemDtoType.album.jellyfinName,
       );
 
       // Re-sort to match the original play order (getItems by ID returns in arbitrary order).
