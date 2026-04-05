@@ -167,11 +167,12 @@ class SortAndFilterRow extends ConsumerWidget {
                           ? TablerIcons.sort_ascending
                           : TablerIcons.sort_descending,
                       text: config.sortBy.toLocalisedString(context),
-                      onPressed: () => showSortAndFilterMenu(
-                        context,
-                        tabType: tabType,
-                        forPlaylistTracks: forPlaylistTracks,
-                        controller: controller,
+                      onPressed: () => controller.updateConfiguration(
+                        controller.value.copyWith(
+                          sortOrder: config.sortOrder == SortOrder.ascending
+                              ? SortOrder.descending
+                              : SortOrder.ascending,
+                        ),
                       ),
                     );
                   },
@@ -313,7 +314,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 4.0),
-            child: Text("Section Type*", style: Theme.of(context).textTheme.bodyMedium),
+            child: Text("Sort By*", style: Theme.of(context).textTheme.bodyMedium),
           ),
           FinampSettingsDropdown<SortBy>(
             dropdownItems: sortOptions
@@ -343,7 +344,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 4.0),
-            child: Text("Section Type*", style: Theme.of(context).textTheme.bodyMedium),
+            child: Text("Order*", style: Theme.of(context).textTheme.bodyMedium),
           ),
           FinampSettingsDropdown<SortOrder>(
             dropdownItems: SortOrder.values
@@ -376,7 +377,13 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
             child: Text("Filters*", style: Theme.of(context).textTheme.bodyMedium),
           ),
           ...ItemFilterType.values
-              .whereNot((x) => [ItemFilterType.genreFilter, ItemFilterType.searchTerm].contains(x))
+              .whereNot(
+                (x) => [
+                  ItemFilterType.startsWithCharacter,
+                  ItemFilterType.genreFilter,
+                  ItemFilterType.searchTerm,
+                ].contains(x),
+              )
               .map(
                 (option) => ToggleableListTile(
                   title: option.name,
@@ -386,8 +393,9 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
                       ItemFilterType.isFavorite => TablerIcons.heart,
                       ItemFilterType.isFullyDownloaded => TablerIcons.download,
                       ItemFilterType.startsWithCharacter => TablerIcons.sort_ascending,
-                      ItemFilterType.genreFilter => throw UnimplementedError(),
-                      ItemFilterType.searchTerm => throw UnimplementedError(),
+                      ItemFilterType.genreFilter => TablerIcons.tag,
+                      ItemFilterType.searchTerm => TablerIcons.list_search,
+                      ItemFilterType.isUnplayed => TablerIcons.headphones_off,
                     }),
                   ),
                   trailing: SizedBox.shrink(),
@@ -402,11 +410,12 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
                     ItemFilterType.isFullyDownloaded => currentConfig.filters.contains(
                       ItemFilter(type: ItemFilterType.isFullyDownloaded),
                     ),
-                    ItemFilterType.startsWithCharacter => currentConfig.filters.contains(
-                      ItemFilter(type: ItemFilterType.startsWithCharacter, extras: "A"),
-                    ),
+                    ItemFilterType.startsWithCharacter => throw UnimplementedError(),
                     ItemFilterType.genreFilter => throw UnimplementedError(),
                     ItemFilterType.searchTerm => throw UnimplementedError(),
+                    ItemFilterType.isUnplayed => currentConfig.filters.contains(
+                      ItemFilter(type: ItemFilterType.isUnplayed),
+                    ),
                   },
                   onToggle: (currentState) async {
                     final newFilters = Set<ItemFilter>.from(currentConfig.filters);
@@ -421,12 +430,14 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
                           newFilters.add(ItemFilter(type: ItemFilterType.isFullyDownloaded));
                           break;
                         case ItemFilterType.startsWithCharacter:
-                          newFilters.add(ItemFilter(type: ItemFilterType.startsWithCharacter, extras: "A"));
-                          break;
+                          throw UnimplementedError();
                         case ItemFilterType.genreFilter:
                           throw UnimplementedError();
                         case ItemFilterType.searchTerm:
                           throw UnimplementedError();
+                        case ItemFilterType.isUnplayed:
+                          newFilters.add(ItemFilter(type: ItemFilterType.isUnplayed));
+                          break;
                       }
                     }
                     setState(() {

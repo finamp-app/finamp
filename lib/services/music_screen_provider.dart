@@ -219,6 +219,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
                   null, //TODO properly handle the "NameStartsWith" filter in the API helper
                 ItemFilterType.genreFilter => null,
                 ItemFilterType.searchTerm => null,
+                ItemFilterType.isUnplayed => "IsUnplayed",
               },
             )
             .nonNulls
@@ -252,9 +253,10 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
                 ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
                 // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
                 ItemFilterType.startsWithCharacter =>
-                  null, //TODO properly handle the "NameStartsWith" filter in the API helper
+                  throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
                 ItemFilterType.genreFilter => throw UnimplementedError(),
                 ItemFilterType.searchTerm => throw UnimplementedError(),
+                ItemFilterType.isUnplayed => "IsUnplayed",
               },
             )
             .nonNulls
@@ -262,6 +264,9 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
         startIndex: startIndex,
         limit: limit,
       );
+      break;
+    case HomeScreenSectionType.queues:
+      throw UnimplementedError("Queue sections should be handled directly");
       break;
   }
 
@@ -382,9 +387,12 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
             ref.watch(finampSettingsProvider.trackOfflineFavorites),
       );
       break;
+    case HomeScreenSectionType.queues:
+      throw UnimplementedError("Queue sections should be handled directly");
   }
 
   items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
+
   var sortBy = sectionInfo.sortAndFilterConfiguration.sortBy;
   // PlayCount and Last Played are not representative in Offline Mode
   // so we disable it and overwrite it with the Sort Name if it was selected
@@ -486,9 +494,21 @@ List<BaseItemDto> sortItems(List<BaseItemDto> itemsToSort, SortBy? sortBy, SortO
           } else {
             return a.runTimeTicks!.compareTo(b.runTimeTicks!);
           }
-        // SortBy.random is handled outside this switch as per-comparison logic does not produce a good shuffle
-        default:
-          throw UnimplementedError("Unimplemented offline sort mode $sortBy");
+        case SortBy.productionYear:
+          final dateA = a.productionYear;
+          final dateB = b.productionYear;
+          if (dateA == null && dateB == null) return 0;
+          if (dateA == null) return -1;
+          if (dateB == null) return 1;
+          return dateA.compareTo(dateB);
+        case SortBy.budget:
+        case SortBy.revenue:
+        case SortBy.defaultOrder:
+          return 0;
+        case SortBy.random:
+          throw UnimplementedError(
+            "SortBy.random is handled outside this switch as per-comparison logic does not produce a good shuffle",
+          );
       }
     });
   }

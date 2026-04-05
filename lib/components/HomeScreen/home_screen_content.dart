@@ -10,6 +10,7 @@ import 'package:finamp/components/HomeScreen/show_all_screen.dart';
 import 'package:finamp/components/MusicScreen/item_card.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
+import 'package:finamp/components/QueueRestoreScreen/queue_restore_tile.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/components/finamp_section_header.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -26,10 +27,12 @@ import 'package:finamp/services/item_by_id_provider.dart';
 import 'package:finamp/services/quick_actions_service.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/music_screen_provider.dart';
+import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:logging/logging.dart';
 
 final _homeScreenLogger = Logger("HomeScreen");
@@ -73,7 +76,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
               SliverPadding(padding: const EdgeInsets.only(top: 16.0)),
             SliverLayoutBuilder(
               builder: (context, constraints) {
-                final maxWidth = 600;
+                final double maxWidth = isDesktop ? 800.0 : 600.0;
                 // center action buttons
                 final horizontalPadding = max(0, (constraints.crossAxisExtent - maxWidth) / 2) + 8.0;
                 final configuredQuickActions = ref.watch(finampSettingsProvider.homeScreenConfiguration).actions;
@@ -81,22 +84,24 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
                   padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                   sliver: SliverToBoxAdapter(
                     child: Wrap(
-                      spacing: 0,
+                      spacing: isDesktop ? 4.0 : 0,
                       runSpacing: 8,
                       direction: Axis.horizontal,
-                      alignment: WrapAlignment.spaceAround,
+                      alignment: WrapAlignment.spaceBetween,
                       runAlignment: WrapAlignment.center,
                       children: configuredQuickActions.indexed.map((indexedAction) {
                         final (index, action) = indexedAction;
                         //!!! custom adaptive grid
                         // calculate button width based on available space and number of actions per row
-                        final quickActionsWidth = min(constraints.crossAxisExtent - horizontalPadding, maxWidth);
-                        double verticalButtonWidth = (quickActionsWidth / 3) - 2 * 5.0;
-                        double horizontalButtonWidth = (quickActionsWidth / 2) - 1 * 16.0;
-                        double singleButtonWidth = quickActionsWidth - 2 * 16.0;
+                        final double quickActionsWidth = min(constraints.crossAxisExtent - horizontalPadding, maxWidth);
+                        double verticalButtonWidth = (quickActionsWidth / 3) - 2 * (5.0);
+                        double horizontalButtonWidth = (quickActionsWidth / 2) - 1 * (8.0);
+                        double singleButtonWidth = quickActionsWidth;
                         double buttonWidth;
                         // always fill each row completely
-                        if (configuredQuickActions.length % 3 == 0) {
+                        if (configuredQuickActions.length == 1) {
+                          buttonWidth = singleButtonWidth;
+                        } else if (configuredQuickActions.length % 3 == 0) {
                           buttonWidth = verticalButtonWidth;
                         } else if (configuredQuickActions.length == 4) {
                           buttonWidth = horizontalButtonWidth;
@@ -105,7 +110,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
                             (configuredQuickActions.length % 3 == 2 && configuredQuickActions.length - index < 3)) {
                           buttonWidth = horizontalButtonWidth;
                         } else {
-                          buttonWidth = singleButtonWidth;
+                          buttonWidth = verticalButtonWidth;
                         }
                         return HomeScreenQuickActionButton(
                           width: buttonWidth,
@@ -383,16 +388,40 @@ class HomeScreenSectionContent extends ConsumerWidget {
         sectionInfo.type !=
         HomeScreenSectionType
             .collection; //TODO implement once collection downloads or generic item sections are supported
-    final items = ref
-        .watch(
-          loadHomeSectionItemsProvider(
-            sectionInfo: sectionInfo,
-            library: currentLibrary,
-            startIndex: 0,
-            limit: homeScreenSectionItemLimit,
-          ),
-        )
-        .unwrapPrevious();
+    AsyncValue<List<dynamic>?> items;
+    switch (sectionInfo.type) {
+      case HomeScreenSectionType.queues:
+        {
+          final queuesBox = Hive.box<FinampStorableQueueInfo>("Queues");
+          var queueMap = queuesBox.toMap();
+          queueMap.remove("latest");
+          var queueList = queueMap.values.toList();
+          queueList.sort((x, y) {
+            return switch (sectionInfo.sortAndFilterConfiguration.sortBy) {
+              SortBy.dateCreated || SortBy.datePlayed => x.creation.compareTo(y.creation),
+              // SortBy.runtime => x.runtime.compareTo(y.runtime), //TODO add support for sorting by runtime
+              _ => 0,
+            };
+          });
+          if (sectionInfo.sortAndFilterConfiguration.sortOrder == SortOrder.descending) {
+            queueList = queueList.reversed.toList();
+          }
+          items = AsyncValue.data(queueList);
+        }
+        break;
+      case HomeScreenSectionType.tabView:
+      case HomeScreenSectionType.collection:
+        items = ref
+            .watch(
+              loadHomeSectionItemsProvider(
+                sectionInfo: sectionInfo,
+                library: currentLibrary,
+                startIndex: 0,
+                limit: homeScreenSectionItemLimit,
+              ),
+            )
+            .unwrapPrevious();
+    }
     final source = QueueItemSource.rawId(
       type: QueueItemSourceType.homeScreenSection,
       name: QueueItemSourceName(
@@ -410,11 +439,9 @@ class HomeScreenSectionContent extends ConsumerWidget {
           (isOffline && !isDownloaded)
               ? const Center(child: Text("Section contents not downloaded.*", maxLines: 1))
               : SizedBox(
-                  height: calculateItemCollectionCardHeight(
-                    context,
-                    sectionInfo.contentType?.itemType ?? BaseItemDtoType.album,
-                  ),
+                  height: calculateItemCollectionCardHeight(context: context, sectionInfo: sectionInfo, itemType: null),
                   child: ListView.separated(
+                    addAutomaticKeepAlives: true,
                     scrollDirection: Axis.horizontal,
                     itemCount: value.length + 1,
                     itemBuilder: (context, rawIndex) {
@@ -422,14 +449,21 @@ class HomeScreenSectionContent extends ConsumerWidget {
                         return SizedBox(width: 4.0); // initial padding, + separator
                       }
                       final index = rawIndex - 1;
-                      final BaseItemDto item = value[index];
-                      return ItemWrapper(
-                        key: ValueKey(item.id),
-                        item: item,
-                        isGrid: true,
-                        interactive: interactive,
-                        source: source,
-                      );
+                      switch (sectionInfo.type) {
+                        case HomeScreenSectionType.queues:
+                          final queueInfo = value[index] as FinampStorableQueueInfo;
+                          return HomeScreenQueueTile(key: ValueKey(queueInfo.creation), info: queueInfo);
+                        case HomeScreenSectionType.tabView:
+                        case HomeScreenSectionType.collection:
+                          final item = value[index] as BaseItemDto;
+                          return ItemWrapper(
+                            key: ValueKey(item.id),
+                            item: item,
+                            isGrid: true,
+                            interactive: interactive,
+                            source: source,
+                          );
+                      }
                     },
                     separatorBuilder: (context, index) => const SizedBox(width: 8, height: 1),
                   ),
@@ -450,7 +484,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
         ? Colors.grey.shade300
         : Colors.grey.shade800;
     return SizedBox(
-      height: calculateItemCollectionCardHeight(context, sectionInfo.contentType?.itemType ?? BaseItemDtoType.album),
+      height: calculateItemCollectionCardHeight(context: context, sectionInfo: sectionInfo, itemType: null),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: skeletonCount + 1, // Show [skeletonCount] skeleton items

@@ -371,8 +371,9 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
               childAspectRatio:
                   (calculateItemCollectionCardWidth(context, widget.tabContentType.itemType ?? BaseItemDtoType.album) /
                           calculateItemCollectionCardHeight(
-                            context,
-                            widget.tabContentType.itemType ?? BaseItemDtoType.album,
+                            context: context,
+                            sectionInfo: null,
+                            itemType: widget.tabContentType.itemType ?? BaseItemDtoType.album,
                           ) *
                           10.0)
                       .floorToDouble() /

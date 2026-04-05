@@ -26,9 +26,7 @@ class HomeScreenQuickActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = disabled
-        ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-        : Theme.of(context).colorScheme.primary;
+    final accentColor = disabled ? ColorScheme.of(context).primary.withOpacity(0.5) : ColorScheme.of(context).primary;
     return Semantics(
       label: text,
       tooltip: label,
@@ -51,7 +49,7 @@ class HomeScreenQuickActionButton extends StatelessWidget {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(isDesktop ? 8 : 12)),
             ),
             padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              EdgeInsets.symmetric(horizontal: 8, vertical: isDesktop ? 16 : 8),
             ),
             backgroundColor: WidgetStateProperty.all<Color>(
               Theme.brightnessOf(context) == Brightness.dark
@@ -63,7 +61,7 @@ class HomeScreenQuickActionButton extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             direction: vertical ? Axis.vertical : Axis.horizontal,
             alignment: WrapAlignment.center,
-            spacing: 6.0,
+            spacing: isDesktop ? 4.0 : 6.0,
             children: [
               Icon(icon, size: 24, color: accentColor, weight: 1.0),
               Text(
@@ -77,6 +75,7 @@ class HomeScreenQuickActionButton extends StatelessWidget {
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
+                textAlign: vertical ? TextAlign.center : TextAlign.start,
               ),
             ],
           ),

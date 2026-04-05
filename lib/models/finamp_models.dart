@@ -4106,7 +4106,9 @@ enum HomeScreenSectionType {
   @HiveField(0)
   tabView,
   @HiveField(1)
-  collection;
+  collection,
+  @HiveField(2)
+  queues;
 
   /// Human-readable version of the [HomeScreenSectionType]
   @override
@@ -4121,6 +4123,8 @@ enum HomeScreenSectionType {
         return "Tab View";
       case HomeScreenSectionType.collection:
         return "Collection";
+      case HomeScreenSectionType.queues:
+        return "Queues";
     }
   }
 
@@ -4130,6 +4134,8 @@ enum HomeScreenSectionType {
         return "Tab View*";
       case HomeScreenSectionType.collection:
         return "Collection*";
+      case HomeScreenSectionType.queues:
+        return "Queues*";
     }
   }
 }
@@ -4172,6 +4178,137 @@ class HomeScreenSectionConfiguration {
       customSectionTitle: null,
       presetType: presetType,
     ),
+    HomeScreenSectionPresetType.favoriteAlbums => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      itemId: null,
+      contentType: TabContentType.albums,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.random,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isFavorite)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.favoriteArtists => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      itemId: null,
+      contentType: TabContentType.performingArtists,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.random,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isFavorite)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.favoritePlaylists => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      itemId: null,
+      contentType: TabContentType.playlists,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.random,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isFavorite)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.favoriteGenres => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      itemId: null,
+      contentType: TabContentType.genres,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.random,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isFavorite)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.recentlyAddedAlbums => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      itemId: null,
+      contentType: TabContentType.albums,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.dateCreated,
+        sortOrder: SortOrder.descending,
+        filters: {},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.recentlyAddedTracks => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      itemId: null,
+      contentType: TabContentType.tracks,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.dateCreated,
+        sortOrder: SortOrder.descending,
+        filters: {},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    // HomeScreenSectionPresetType.recentlyPlayedPlaylists => HomeScreenSectionConfiguration(
+    //   type: HomeScreenSectionType.tabView,
+    //   itemId: null,
+    //   contentType: TabContentType.playlists,
+    //   sortAndFilterConfiguration: SortAndFilterConfiguration(
+    //     sortBy: SortBy.datePlayed,
+    //     sortOrder: SortOrder.descending,
+    //     filters: {},
+    //   ),
+    //   customSectionTitle: null,
+    //   presetType: presetType,
+    // ),
+    HomeScreenSectionPresetType.frequentlyPlayedAlbums => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      itemId: null,
+      contentType: TabContentType.albums,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.playCount,
+        sortOrder: SortOrder.descending,
+        filters: {},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.frequentlyPlayedTracks => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      itemId: null,
+      contentType: TabContentType.tracks,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.playCount,
+        sortOrder: SortOrder.descending,
+        filters: {},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.frequentlyPlayedArtists => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      itemId: null,
+      contentType: TabContentType.performingArtists,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.playCount,
+        sortOrder: SortOrder.descending,
+        filters: {},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.neverPlayedAlbums => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      itemId: null,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.random,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isUnplayed)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
     HomeScreenSectionPresetType.forgottenFavoriteTracks => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: null,
@@ -4184,7 +4321,18 @@ class HomeScreenSectionConfiguration {
       customSectionTitle: null,
       presetType: presetType,
     ),
-    _ => throw UnimplementedError("Preset type $presetType does not have a defined configuration"),
+    HomeScreenSectionPresetType.recentQueues => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.queues,
+      itemId: null,
+      contentType: null,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.datePlayed,
+        sortOrder: SortOrder.descending,
+        filters: {},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
   };
 
   String getTitle(BuildContext context) =>
@@ -4195,10 +4343,21 @@ class HomeScreenSectionConfiguration {
         HomeScreenSectionPresetType.favoriteTracks => AppLocalizations.of(
           context,
         )!.homeScreenSectionPresetFavoriteTracksTitle,
+        HomeScreenSectionPresetType.favoriteAlbums => "Favorite Albums*",
+        HomeScreenSectionPresetType.favoriteArtists => "Favorite Artists*",
+        HomeScreenSectionPresetType.favoritePlaylists => "Favorite Playlists*",
+        HomeScreenSectionPresetType.favoriteGenres => "Favorite Genres*",
+        HomeScreenSectionPresetType.recentlyAddedAlbums => "Newly Added Albums*",
+        HomeScreenSectionPresetType.recentlyAddedTracks => "Newly Added Tracks*",
+        // HomeScreenSectionPresetType.recentlyPlayedPlaylists => "Recent Playlists*",
+        HomeScreenSectionPresetType.frequentlyPlayedAlbums => "Often Played Albums*",
+        HomeScreenSectionPresetType.frequentlyPlayedTracks => "Often Played Tracks*",
+        HomeScreenSectionPresetType.frequentlyPlayedArtists => "Often Played Artists*",
+        HomeScreenSectionPresetType.neverPlayedAlbums => "Unplayed Albums*",
         HomeScreenSectionPresetType.forgottenFavoriteTracks => AppLocalizations.of(
           context,
         )!.homeScreenSectionPresetForgottenFavoriteTracksTitle,
-        _ => throw UnimplementedError("Preset type $presetType does not have a defined title"),
+        HomeScreenSectionPresetType.recentQueues => "Recent Queues*",
       };
   String getDescription(BuildContext context) => presetType != null
       ? getDescriptionForPreset(context: context, presetType: presetType!)
@@ -4210,10 +4369,27 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.favoriteTracks => AppLocalizations.of(
       context,
     )!.homeScreenSectionPresetFavoriteTracksDescription,
+    HomeScreenSectionPresetType.favoriteAlbums => "Liked Albums in random order*",
+    HomeScreenSectionPresetType.favoriteArtists => "Liked Artists in random order*",
+    HomeScreenSectionPresetType.favoritePlaylists => "Liked Playlists in random order*",
+    HomeScreenSectionPresetType.favoriteGenres => "Liked Genres in random order*",
+    HomeScreenSectionPresetType.recentlyAddedAlbums =>
+      "Albums which were recently added to your library, starting with newest*",
+    HomeScreenSectionPresetType.recentlyAddedTracks =>
+      "Tracks which were recently added to your library, starting with newest*",
+    // HomeScreenSectionPresetType.recentlyPlayedPlaylists =>
+    //   "Playlists you listened to recently, starting with last played*",
+    HomeScreenSectionPresetType.frequentlyPlayedAlbums =>
+      "Albums you have listened to a lot, starting with most frequent*",
+    HomeScreenSectionPresetType.frequentlyPlayedTracks =>
+      "Tracks you have listened to a lot, starting with most frequent*",
+    HomeScreenSectionPresetType.frequentlyPlayedArtists =>
+      "Artists you have listened to a lot, starting with most frequent*",
+    HomeScreenSectionPresetType.neverPlayedAlbums => "Albums you haven't yet listened to, in random order*",
     HomeScreenSectionPresetType.forgottenFavoriteTracks => AppLocalizations.of(
       context,
     )!.homeScreenSectionPresetForgottenFavoriteTracksDescription,
-    _ => throw UnimplementedError("Preset type $presetType does not have a defined description"),
+    HomeScreenSectionPresetType.recentQueues => "Queues you have created recently, starting with newest*",
   };
 
   factory HomeScreenSectionConfiguration.fromJson(Map<String, dynamic> json) =>
@@ -4249,9 +4425,11 @@ class HomeScreenSectionConfiguration {
   String _humanReadableLocalisedName(HomeScreenSectionConfiguration homeScreenSectionInfo, BuildContext context) {
     switch (homeScreenSectionInfo.type) {
       case HomeScreenSectionType.tabView:
-        return "${homeScreenSectionInfo.sortAndFilterConfiguration.filters.map((filter) => filter.extras != null ? "${filter.type.name} (${filter.extras})" : filter.type.name).join(", ")} ${homeScreenSectionInfo.contentType?.toLocalisedString(context) ?? "Tab View"} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortBy.toLocalisedString(context)} [${homeScreenSectionInfo.sortAndFilterConfiguration.sortOrder == SortOrder.ascending ? "^" : "v"}]*";
+        return "${homeScreenSectionInfo.sortAndFilterConfiguration.filters.map((filter) => filter.extras != null ? "${filter.type.name} (${filter.extras})" : filter.type.name).join(", ")} ${homeScreenSectionInfo.contentType?.toLocalisedString(context) ?? "Tab View"} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortBy.toLocalisedString(context)} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortOrder == SortOrder.ascending ? "↑" : "↓"}*";
       case HomeScreenSectionType.collection:
         return "Collection*";
+      case HomeScreenSectionType.queues:
+        return "Queues ${homeScreenSectionInfo.sortAndFilterConfiguration.filters.map((filter) => filter.extras != null ? "${filter.type.name} (${filter.extras})" : filter.type.name).join(", ")} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortBy.toLocalisedString(context)} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortOrder == SortOrder.ascending ? "↑" : "↓"}*";
     }
   }
 
@@ -4283,25 +4461,26 @@ enum HomeScreenSectionPresetType {
   @HiveField(3)
   favoritePlaylists,
   @HiveField(4)
-  favoriteGenre,
+  favoriteGenres,
   @HiveField(5)
   recentlyAddedAlbums,
   @HiveField(6)
   recentlyAddedTracks,
   @HiveField(7)
-  recentlyPlayedPlaylists,
-  @HiveField(8)
   frequentlyPlayedAlbums,
-  @HiveField(9)
+  @HiveField(8)
   frequentlyPlayedTracks,
-  @HiveField(10)
+  @HiveField(9)
   frequentlyPlayedArtists,
-  @HiveField(11)
+  @HiveField(10)
   neverPlayedAlbums,
-  @HiveField(12)
+  @HiveField(11)
   forgottenFavoriteTracks,
-  @HiveField(13)
+  @HiveField(12)
   recentQueues,
+  //TODO once we can track playlists plays, add this back in
+  // @HiveField(7)
+  // recentlyPlayedPlaylists,
   //TODO add section with generated mixes, e.g. via AudioMuse
   //TODO add more
 }
@@ -4472,7 +4651,9 @@ enum ItemFilterType {
   @HiveField(3)
   genreFilter(BaseItemDto),
   @HiveField(4)
-  searchTerm(String);
+  searchTerm(String),
+  @HiveField(5)
+  isUnplayed(Null);
 
   const ItemFilterType(this.extraType);
 

@@ -3397,6 +3397,8 @@ class HomeScreenSectionTypeAdapter extends TypeAdapter<HomeScreenSectionType> {
         return HomeScreenSectionType.tabView;
       case 1:
         return HomeScreenSectionType.collection;
+      case 2:
+        return HomeScreenSectionType.queues;
       default:
         return HomeScreenSectionType.tabView;
     }
@@ -3409,6 +3411,8 @@ class HomeScreenSectionTypeAdapter extends TypeAdapter<HomeScreenSectionType> {
         writer.writeByte(0);
       case HomeScreenSectionType.collection:
         writer.writeByte(1);
+      case HomeScreenSectionType.queues:
+        writer.writeByte(2);
     }
   }
 
@@ -3440,24 +3444,22 @@ class HomeScreenSectionPresetTypeAdapter
       case 3:
         return HomeScreenSectionPresetType.favoritePlaylists;
       case 4:
-        return HomeScreenSectionPresetType.favoriteGenre;
+        return HomeScreenSectionPresetType.favoriteGenres;
       case 5:
         return HomeScreenSectionPresetType.recentlyAddedAlbums;
       case 6:
         return HomeScreenSectionPresetType.recentlyAddedTracks;
       case 7:
-        return HomeScreenSectionPresetType.recentlyPlayedPlaylists;
-      case 8:
         return HomeScreenSectionPresetType.frequentlyPlayedAlbums;
-      case 9:
+      case 8:
         return HomeScreenSectionPresetType.frequentlyPlayedTracks;
-      case 10:
+      case 9:
         return HomeScreenSectionPresetType.frequentlyPlayedArtists;
-      case 11:
+      case 10:
         return HomeScreenSectionPresetType.neverPlayedAlbums;
-      case 12:
+      case 11:
         return HomeScreenSectionPresetType.forgottenFavoriteTracks;
-      case 13:
+      case 12:
         return HomeScreenSectionPresetType.recentQueues;
       default:
         return HomeScreenSectionPresetType.favoriteTracks;
@@ -3475,26 +3477,24 @@ class HomeScreenSectionPresetTypeAdapter
         writer.writeByte(2);
       case HomeScreenSectionPresetType.favoritePlaylists:
         writer.writeByte(3);
-      case HomeScreenSectionPresetType.favoriteGenre:
+      case HomeScreenSectionPresetType.favoriteGenres:
         writer.writeByte(4);
       case HomeScreenSectionPresetType.recentlyAddedAlbums:
         writer.writeByte(5);
       case HomeScreenSectionPresetType.recentlyAddedTracks:
         writer.writeByte(6);
-      case HomeScreenSectionPresetType.recentlyPlayedPlaylists:
-        writer.writeByte(7);
       case HomeScreenSectionPresetType.frequentlyPlayedAlbums:
-        writer.writeByte(8);
+        writer.writeByte(7);
       case HomeScreenSectionPresetType.frequentlyPlayedTracks:
-        writer.writeByte(9);
+        writer.writeByte(8);
       case HomeScreenSectionPresetType.frequentlyPlayedArtists:
-        writer.writeByte(10);
+        writer.writeByte(9);
       case HomeScreenSectionPresetType.neverPlayedAlbums:
-        writer.writeByte(11);
+        writer.writeByte(10);
       case HomeScreenSectionPresetType.forgottenFavoriteTracks:
-        writer.writeByte(12);
+        writer.writeByte(11);
       case HomeScreenSectionPresetType.recentQueues:
-        writer.writeByte(13);
+        writer.writeByte(12);
     }
   }
 
@@ -3595,6 +3595,8 @@ class ItemFilterTypeAdapter extends TypeAdapter<ItemFilterType> {
         return ItemFilterType.genreFilter;
       case 4:
         return ItemFilterType.searchTerm;
+      case 5:
+        return ItemFilterType.isUnplayed;
       default:
         return ItemFilterType.isFavorite;
     }
@@ -3613,6 +3615,8 @@ class ItemFilterTypeAdapter extends TypeAdapter<ItemFilterType> {
         writer.writeByte(3);
       case ItemFilterType.searchTerm:
         writer.writeByte(4);
+      case ItemFilterType.isUnplayed:
+        writer.writeByte(5);
     }
   }
 
@@ -9520,6 +9524,7 @@ Map<String, dynamic> _$HomeScreenSectionConfigurationToJson(
 const _$HomeScreenSectionTypeEnumMap = {
   HomeScreenSectionType.tabView: 'tabView',
   HomeScreenSectionType.collection: 'collection',
+  HomeScreenSectionType.queues: 'queues',
 };
 
 const _$HomeScreenSectionPresetTypeEnumMap = {
@@ -9527,11 +9532,9 @@ const _$HomeScreenSectionPresetTypeEnumMap = {
   HomeScreenSectionPresetType.favoriteAlbums: 'favoriteAlbums',
   HomeScreenSectionPresetType.favoriteArtists: 'favoriteArtists',
   HomeScreenSectionPresetType.favoritePlaylists: 'favoritePlaylists',
-  HomeScreenSectionPresetType.favoriteGenre: 'favoriteGenre',
+  HomeScreenSectionPresetType.favoriteGenres: 'favoriteGenres',
   HomeScreenSectionPresetType.recentlyAddedAlbums: 'recentlyAddedAlbums',
   HomeScreenSectionPresetType.recentlyAddedTracks: 'recentlyAddedTracks',
-  HomeScreenSectionPresetType.recentlyPlayedPlaylists:
-      'recentlyPlayedPlaylists',
   HomeScreenSectionPresetType.frequentlyPlayedAlbums: 'frequentlyPlayedAlbums',
   HomeScreenSectionPresetType.frequentlyPlayedTracks: 'frequentlyPlayedTracks',
   HomeScreenSectionPresetType.frequentlyPlayedArtists:
@@ -9595,6 +9598,7 @@ const _$ItemFilterTypeEnumMap = {
   ItemFilterType.startsWithCharacter: 'startsWithCharacter',
   ItemFilterType.genreFilter: 'genreFilter',
   ItemFilterType.searchTerm: 'searchTerm',
+  ItemFilterType.isUnplayed: 'isUnplayed',
 };
 
 SortAndFilterConfiguration _$SortAndFilterConfigurationFromJson(

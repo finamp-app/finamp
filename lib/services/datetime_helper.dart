@@ -149,7 +149,13 @@ class RelativeDateTimeText extends StatelessWidget {
           dateTime: dateTime,
           includeStaticDateTime: includeStaticDateTime,
         );
-        return Text(text, style: style, textScaler: disableTextScaling ? TextScaler.noScaling : null);
+        return Text(
+          text,
+          style: style,
+          textScaler: disableTextScaling ? TextScaler.noScaling : null,
+          maxLines: 1,
+          overflow: TextOverflow.fade,
+        );
       },
     );
   }
