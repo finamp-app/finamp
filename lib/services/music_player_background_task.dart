@@ -933,6 +933,14 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       ),
       MediaItem(
         id: MediaItemId(
+          contentType: TabContentType.albums,
+          parentType: MediaItemParentType.recentlyPlayed,
+        ).toString(),
+        title: 'Recently Played Albums',
+        playable: false,
+      ),
+      MediaItem(
+        id: MediaItemId(
           contentType: TabContentType.playlists,
           parentType: MediaItemParentType.rootCollection,
         ).toString(),
