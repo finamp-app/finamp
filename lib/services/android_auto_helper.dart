@@ -144,6 +144,10 @@ class AndroidAutoHelper {
 
   /// Returns up to 20 recently played albums or artists (online only).
   /// In offline mode returns a single non-playable placeholder.
+  ///
+  /// Jellyfin only tracks DatePlayed on individual tracks, not on album/artist
+  /// items. So we query recently played tracks, deduplicate by album or artist,
+  /// then fetch those items by ID to get full artwork + metadata.
   Future<List<MediaItem>> _getRecentlyPlayedItems(MediaItemId itemId) async {
     if (FinampSettingsHelper.finampSettings.isOffline) {
       return [
@@ -159,36 +163,58 @@ class AndroidAutoHelper {
     final parentItem = _finampUserHelper.currentUser?.currentView;
 
     try {
-      final QueryResult_BaseItemDto result;
-      if (itemId.contentType == TabContentType.artists) {
-        result = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
-          parentItem: parentItem,
-          includeItemTypes: BaseItemDtoType.artist.jellyfinName,
-          artistType: ArtistType.albumArtist,
-          sortBy: 'DatePlayed',
-          sortOrder: 'Descending',
-          limit: 20,
-        );
-      } else {
-        // albums
-        result = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
-          parentItem: parentItem,
-          includeItemTypes: BaseItemDtoType.album.jellyfinName,
-          sortBy: 'DatePlayed',
-          sortOrder: 'Descending',
-          limit: 20,
-        );
+      // Step 1: fetch recently played tracks — tracks reliably have DatePlayed set.
+      final tracksResult = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
+        parentItem: parentItem,
+        includeItemTypes: BaseItemDtoType.track.jellyfinName,
+        sortBy: 'DatePlayed',
+        sortOrder: 'Descending',
+        filters: 'IsPlayed',
+        limit: 100,
+      );
+
+      // Step 2: extract ordered, deduplicated album or artist IDs.
+      final seenIds = <String>{};
+      final orderedIds = <BaseItemId>[];
+
+      for (final track in tracksResult.items ?? <BaseItemDto>[]) {
+        if (itemId.contentType == TabContentType.artists) {
+          for (final artist in track.albumArtists ?? <NameIdPair>[]) {
+            if (seenIds.add(artist.id.raw)) {
+              orderedIds.add(artist.id);
+              if (orderedIds.length >= 20) break;
+            }
+          }
+        } else {
+          final albumId = track.albumId;
+          if (albumId != null && seenIds.add(albumId.raw)) {
+            orderedIds.add(albumId);
+          }
+        }
+        if (orderedIds.length >= 20) break;
       }
 
-      // Filter server-side: only items that have actually been played at least once.
-      // We don't use Filters=IsPlayed because Jellyfin requires *all* tracks to be
-      // played for an album/artist to be marked "played" — far too strict for most users.
-      final playedItems = (result.items ?? <BaseItemDto>[])
-          .where((item) => item.userData?.lastPlayedDate != null)
+      if (orderedIds.isEmpty) return [];
+
+      // Step 3: fetch the actual album/artist items by ID to get full metadata.
+      final itemsResult = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
+        itemIds: orderedIds,
+        includeItemTypes: itemId.contentType == TabContentType.artists
+            ? BaseItemDtoType.artist.jellyfinName
+            : BaseItemDtoType.album.jellyfinName,
+      );
+
+      // Re-sort to match the original play order (getItems by ID returns in arbitrary order).
+      final itemsById = <String, BaseItemDto>{
+        for (final item in itemsResult.items ?? <BaseItemDto>[]) item.id.raw: item,
+      };
+      final sortedItems = orderedIds
+          .map((id) => itemsById[id.raw])
+          .whereType<BaseItemDto>()
           .toList();
 
       final List<MediaItem> mediaItems = [];
-      for (final item in playedItems) {
+      for (final item in sortedItems) {
         final mediaItem = await queueService.generateMediaItem(
           item,
           parentType: MediaItemParentType.collection,
