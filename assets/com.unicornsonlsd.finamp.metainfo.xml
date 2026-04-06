@@ -5,11 +5,15 @@
   <summary>Open source Jellyfin music player</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MPL-2.0</project_license>
-  <recommends>
-    <control>pointing</control>
+  <supports>
     <control>keyboard</control>
+    <control>pointing</control>
     <control>touch</control>
-  </recommends>
+  </supports>
+  <requires>
+    <display_length side="shortest" compare="ge">250</display_length>
+    <display_length side="longest" compare="ge">400</display_length>
+  </requires>
   <developer id="com.unicornsonlsd">
     <name>
       jmshrv
