@@ -924,26 +924,6 @@ class AndroidAutoHelper {
     // get all tracks of current parent
     final parentItem = await getParentFromId(itemId.itemId!);
 
-    // start instant mix for artists
-    if (itemId.contentType == TabContentType.artists) {
-      if (FinampSettingsHelper.finampSettings.isOffline || parentItem == null) {
-        final parentBaseItems = await getBaseItems(itemId);
-
-        return await queueService.startPlayback(
-          items: parentBaseItems,
-          source: QueueItemSource(
-            type: QueueItemSourceType.artist,
-            name: QueueItemSourceName(type: QueueItemSourceNameType.preTranslated, pretranslatedName: parentItem?.name),
-            id: parentItem?.id ?? itemId.parentId!,
-            item: parentItem,
-          ),
-          order: FinampPlaybackOrder.linear,
-        );
-      } else {
-        return await audioServiceHelper.startInstantMixForArtists([parentItem]);
-      }
-    }
-
     final parentBaseItems = await getBaseItems(itemId);
 
     await queueService.startPlayback(
