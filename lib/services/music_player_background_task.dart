@@ -925,7 +925,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         title: _appLocalizations?.albums ?? TabContentType.albums.toString(),
         playable: false,
         extras: const {
-          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 2,
+          // Letter nodes are the direct children — render them as a list.
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 1,
           "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
         },
       ),
@@ -935,7 +936,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         title: _appLocalizations?.artists ?? TabContentType.artists.toString(),
         playable: false,
         extras: const {
-          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 4,
+          // Letter nodes are the direct children — render them as a list.
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 1,
           "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
         },
       ),

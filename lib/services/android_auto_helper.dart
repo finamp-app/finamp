@@ -72,6 +72,11 @@ class AndroidAutoHelper {
         ).toString(),
         title: letter,
         playable: false,
+        extras: const {
+          // Albums/artists within this letter page should render as a grid.
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 2,
+          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
+        },
       );
     }).toList();
   }
@@ -792,6 +797,13 @@ class AndroidAutoHelper {
         return mediaItems;
       }
 
+      // --- Letter-first navigation for Albums and Artists ---
+      // Skip the flat list entirely; go straight to the A–Z + # index.
+      if (itemId.contentType == TabContentType.albums ||
+          itemId.contentType == TabContentType.artists) {
+        return _getLetterNodes(itemId);
+      }
+
       // --- Flat paginated list (nameFilter == null) ---
       if (itemId.contentType == TabContentType.tracks) {
         mediaItems.add(
@@ -805,23 +817,7 @@ class AndroidAutoHelper {
         );
       }
 
-      // "Browse by Letter" node — only on the first page, and only for
-      // content types that support letter filtering (albums & artists).
       final pageStart = itemId.pageStartIndex ?? 0;
-      final supportsLetterBrowse = itemId.contentType == TabContentType.albums ||
-          itemId.contentType == TabContentType.artists;
-      if (pageStart == 0 && supportsLetterBrowse) {
-        mediaItems.add(MediaItem(
-          id: MediaItemId(
-            contentType: itemId.contentType,
-            parentType: MediaItemParentType.rootCollection,
-            nameFilter: '',
-          ).toString(),
-          title: 'Browse by Letter',
-          playable: false,
-        ));
-      }
-
       final (items, totalCount) = await _fetchRootPage(itemId);
 
       for (final item in items) {
