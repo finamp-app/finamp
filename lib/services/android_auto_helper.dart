@@ -299,11 +299,7 @@ class AndroidAutoHelper {
         )).toList().map((e) => e.baseItem).whereNotNull().toList();
         artistAlbums.sort((a, b) => (a.premiereDate ?? "").compareTo(b.premiereDate ?? ""));
 
-        final List<BaseItemDto> allTracks = [];
-        for (var album in artistAlbums) {
-          allTracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
-        }
-        return allTracks;
+        return artistAlbums;
       } else {
         var downloadedParent = await _downloadsService.getCollectionInfo(id: itemId.itemId);
         if (downloadedParent != null && downloadedParent.baseItem != null) {
@@ -666,7 +662,7 @@ class AndroidAutoHelper {
         );
       } else if (itemType == TabContentType.artists.itemType) {
         if (FinampSettingsHelper.finampSettings.isOffline) {
-          final parentBaseItems = await getBaseItems(
+          final artistAlbums = await getBaseItems(
             MediaItemId(
               contentType: TabContentType.artists,
               parentType: MediaItemParentType.collection,
@@ -675,8 +671,13 @@ class AndroidAutoHelper {
             ),
           );
 
+          final List<BaseItemDto> allTracks = [];
+          for (final album in artistAlbums) {
+            allTracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
+          }
+
           await queueService.startPlayback(
-            items: parentBaseItems,
+            items: allTracks,
             source: QueueItemSource(
               type: QueueItemSourceType.artist,
               name: QueueItemSourceName(
@@ -1399,13 +1400,11 @@ class AndroidAutoHelper {
   }
 
   // albums, playlists, and tracks should play when clicked
-  // clicking artists starts an instant mix, so they are technically playable
-  // genres has subcategories, so it should be browsable but not playable
+  // artists and genres have subcategories, so they should be browsable but not playable
   bool _isPlayable({BaseItemDto? item, TabContentType? contentType}) {
     final tabContentType = TabContentType.fromItemType(item?.type ?? contentType?.itemType.jellyfinName ?? "Audio");
     return tabContentType == TabContentType.albums ||
         tabContentType == TabContentType.playlists ||
-        tabContentType == TabContentType.artists ||
         tabContentType == TabContentType.tracks;
   }
 }
