@@ -627,6 +627,7 @@ class FinampApp extends ConsumerWidget {
       useSystemTheme ? finampSettingsProvider.systemAccentColor : finampSettingsProvider.accentColor,
     );
     final themeMode = ref.watch(finampSettingsProvider.themeMode);
+    final amoledTheme = ref.watch(finampSettingsProvider.amoledTheme);
     final locale = ref.watch(finampSettingsProvider.locale);
     final transitionBuilder = MediaQuery.disableAnimationsOf(context)
         ? PageTransitionsTheme(
@@ -683,7 +684,7 @@ class FinampApp extends ConsumerWidget {
       },
       theme: ThemeData(
         brightness: Brightness.light,
-        colorScheme: getColorScheme(accentColor, Brightness.light),
+        colorScheme: getColorScheme(accentColor, Brightness.light, amoledTheme),
         appBarTheme: const AppBarThemeData(
           systemOverlayStyle: SystemUiOverlayStyle(
             statusBarBrightness: Brightness.light,
@@ -706,7 +707,7 @@ class FinampApp extends ConsumerWidget {
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
-        colorScheme: getColorScheme(accentColor, Brightness.dark),
+        colorScheme: getColorScheme(accentColor, Brightness.dark, amoledTheme),
         snackBarTheme: const SnackBarThemeData(
           //TODO get rid of floating action buttons and re-enable the floating behavior and insetPadding
           // behavior: SnackBarBehavior.floating,

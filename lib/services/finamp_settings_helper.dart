@@ -123,6 +123,7 @@ class FinampSettingsHelper {
     FinampSettings finampSettingsTemp = finampSettings;
 
     FinampSetters.setThemeMode(DefaultSettings.themeMode);
+    FinampSetters.setAmoledTheme(DefaultSettings.amoledTheme);
     FinampSetters.setAccentColor(DefaultSettings.accentColor);
     FinampSetters.setSystemAccentColor(DefaultSettings.accentColor);
     FinampSetters.setUseSystemAccentColor(DefaultSettings.useSystemAccentColor);

@@ -740,6 +740,11 @@
   "@systemAccentColorHasPriorityInfo": {
     "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
   },
+  "amoledTheme": "Use AMOLED Theme",
+  "@amoledTheme": {
+    "description": "Toggles the dark color scheme between dark gray and pure black."
+  },
+  "amoledThemeSubtitle": "Replaces the dark color scheme with a pure black theme.",
   "useMonochromeIcon": "Use Monochrome Logo",
   "@useMonochromeIcon": {
     "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"

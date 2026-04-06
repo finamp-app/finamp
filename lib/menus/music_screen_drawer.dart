@@ -20,8 +20,10 @@ class MusicScreenDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
+    final colorScheme = ColorScheme.of(context);
     return Drawer(
-      surfaceTintColor: Colors.white,
+      surfaceTintColor: colorScheme.surfaceTint,
+      backgroundColor: colorScheme.surface,
       child: ListTileTheme(
         // Shrink trailing padding from 24 to 8
         contentPadding: const EdgeInsetsDirectional.only(start: 16.0, end: 8.0),

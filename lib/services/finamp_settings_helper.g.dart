@@ -1159,6 +1159,14 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setAmoledTheme(bool newAmoledTheme) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.amoledTheme = newAmoledTheme;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setLocale(Locale? newLocale) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.locale = newLocale;
@@ -1674,6 +1682,8 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select((value) => value.requireValue.accentColor);
   ProviderListenable<ThemeMode> get themeMode =>
       finampSettingsProvider.select((value) => value.requireValue.themeMode);
+  ProviderListenable<bool> get amoledTheme =>
+      finampSettingsProvider.select((value) => value.requireValue.amoledTheme);
   ProviderListenable<Locale?> get locale =>
       finampSettingsProvider.select((value) => value.requireValue.locale);
   ProviderListenable<bool> get hasCompletedThemeModeLocaleMigration =>
