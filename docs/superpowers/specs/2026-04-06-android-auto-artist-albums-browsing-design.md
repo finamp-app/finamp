@@ -2,21 +2,21 @@
 
 **Date:** 2026-04-06
 **Branch:** redesign (feature built on top of)
-**Status:** Approved
+**Status:** Approved (revised)
 
 ## Problem
 
-When a user taps an artist in Android Auto, music starts playing immediately via an instant mix. There is no way to browse the artist's albums and choose which one to play. This is inconvenient when the user wants to listen to a specific album rather than a shuffle of all tracks.
+When a user taps an artist in Android Auto, music starts playing immediately via an instant mix. There is no way to browse the artist's albums and choose which one to play.
 
 ## Goal
 
-Tapping an artist in Android Auto drills down into a list of that artist's albums. The user then taps an album to play it. This mirrors how genres already work.
+Tapping an artist drills down into a list that shows **Instant Mix** as the first item, followed by all the artist's albums. The user can either start an instant mix immediately or pick a specific album to play.
 
 ## Design
 
 ### Behaviour change
 
-Artists change from **playable** to **browsable-only**, consistent with genres.
+Artists change from **directly playable** to **browsable**, but retain instant mix access via a synthetic first item in the browse list.
 
 | Content type | Before | After  |
 |--------------|--------|--------|
@@ -24,14 +24,17 @@ Artists change from **playable** to **browsable-only**, consistent with genres.
 | Playlists    | playable | playable (no change) |
 | Tracks       | playable | playable (no change) |
 | Genres       | browsable | browsable (no change) |
-| Artists      | playable (instant mix) | browsable (shows albums) |
+| Artists      | playable (instant mix on tap) | browsable → Instant Mix + albums |
 
 ### Navigation flow
 
 ```
 Artists root
-  └── [Artist name]         ← tap → shows albums (was: instant mix)
-        └── [Album name]    ← tap → plays album (unchanged)
+  └── [Artist name]            ← tap → shows browse list
+        ├── Instant Mix        ← tap → starts instant mix
+        ├── [Album 1]          ← tap → plays album
+        ├── [Album 2]          ← tap → plays album
+        └── ...
 ```
 
 ### Files changed
@@ -40,53 +43,85 @@ Artists root
 
 **1. `_isPlayable` (line ~1172)**
 
-Remove `TabContentType.artists` from the return expression so artists are no longer considered playable by Android Auto:
+Remove `TabContentType.artists` so artists are browsable, not directly playable:
 
 ```dart
-// Before
-return tabContentType == TabContentType.albums ||
-    tabContentType == TabContentType.playlists ||
-    tabContentType == TabContentType.artists ||
-    tabContentType == TabContentType.tracks;
-
-// After
-return tabContentType == TabContentType.albums ||
-    tabContentType == TabContentType.playlists ||
-    tabContentType == TabContentType.tracks;
+// artists and genres have subcategories, so they should be browsable but not playable
+bool _isPlayable({BaseItemDto? item, TabContentType? contentType}) {
+  final tabContentType = TabContentType.fromItemType(item?.type ?? contentType?.itemType.jellyfinName ?? "Audio");
+  return tabContentType == TabContentType.albums ||
+      tabContentType == TabContentType.playlists ||
+      tabContentType == TabContentType.tracks;
+}
 ```
 
-**2. `getBaseItems` — offline artist path (lines ~162–175)**
+**2. `getBaseItems` — offline artist path**
 
-The offline artist branch currently flattens all tracks from every album into a single list. Since artists are now browsable, it should return albums instead (same pattern as the offline genre path directly above it):
+Return albums directly (not a flattened track list), so the browse path shows albums:
 
 ```dart
-// Before
+} else if (itemId.contentType == TabContentType.artists) {
+  final artistBaseItem = await getParentFromId(itemId.itemId!);
+  final List<BaseItemDto> artistAlbums = (await _downloadsService.getAllCollections(
+    baseTypeFilter: BaseItemDtoType.album,
+    relatedTo: artistBaseItem,
+  )).toList().map((e) => e.baseItem).whereNotNull().toList();
+  artistAlbums.sort((a, b) => (a.premiereDate ?? "").compareTo(b.premiereDate ?? ""));
+  return artistAlbums;
+}
+```
+
+**3. `_searchPlayFromQuery` — offline artist voice search**
+
+Since `getBaseItems` now returns albums for artists, the voice-search offline path must flatten them to tracks before calling `startPlayback`:
+
+```dart
+final artistAlbums = await getBaseItems(MediaItemId(...));
 final List<BaseItemDto> allTracks = [];
-for (var album in artistAlbums) {
+for (final album in artistAlbums) {
   allTracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
 }
-return allTracks;
-
-// After
-return artistAlbums;
+await queueService.startPlayback(items: allTracks, ...);
 ```
 
-**3. `playFromMediaId` — artist instant-mix block (lines ~694–712)**
+**4. `getMediaItems` — prepend Instant Mix item for artist browse**
 
-This block starts an instant mix when an artist is played. It is now unreachable since artists are no longer playable. Remove it.
+When listing an artist's contents (`contentType == artists`, `parentType == collection`), prepend a synthetic "Instant Mix" `MediaItem` before the albums. Its ID is a `MediaItemId` with `parentType: instantMix` and the artist's `itemId`:
+
+```dart
+if (itemId.contentType == TabContentType.artists &&
+    itemId.parentType == MediaItemParentType.collection) {
+  final instantMixId = MediaItemId(
+    contentType: TabContentType.artists,
+    parentType: MediaItemParentType.instantMix,
+    itemId: itemId.itemId,
+  );
+  mediaItems.add(MediaItem(
+    id: instantMixId.toString(),
+    title: AppLocalizations.of(context)!.instantMix,
+    playable: true,
+  ));
+}
+```
+
+**5. `playFromMediaId` — move `instantMix` check before `_isPlayable` guard; add artist handling**
+
+The `instantMix` block must run before the `_isPlayable` guard (since artists are no longer playable). Add artist-specific handling inside it:
+
+- **Online:** `audioServiceHelper.startInstantMixForArtists([parentItem])`
+- **Offline:** get artist albums via `getBaseItems`, flatten to tracks, call `startPlayback`
+
+The previous dead-code artist instant-mix block (which fired when artists were directly playable) is removed entirely.
 
 ### What does not change
 
-- Online browsing already returns albums for a tapped artist (`getBaseItems` sets `includeItemTypes = TabContentType.albums.itemType` for artists with `parentType == collection`). No change needed.
+- Online `getBaseItems` for artists already returns albums (no change needed there).
 - Albums remain playable — tapping an album plays it as before.
 - All other content types are unaffected.
 
-## Out of scope
-
-A settings toggle to revert to instant-mix behaviour was considered but deferred. The browsable-first experience is the correct default and the toggle can be added later if there is demand.
-
 ## Testing notes
 
-- Online mode: browse Artists → tap artist → should see album list → tap album → playback starts
-- Offline mode: same flow, using locally downloaded albums
-- Verify no regression on albums, playlists, tracks, and genres
+- Online: browse Artists → tap artist → see "Instant Mix" + album list → tap Instant Mix → instant mix starts; tap album → album plays
+- Offline: same flow using downloaded content; Instant Mix plays all downloaded tracks for that artist
+- Voice search for artist in offline mode still plays artist tracks (regression test)
+- No regression on albums, playlists, tracks, genres
