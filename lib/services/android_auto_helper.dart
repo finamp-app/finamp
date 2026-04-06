@@ -622,6 +622,21 @@ class AndroidAutoHelper {
       );
     }
 
+    if (itemId.contentType == TabContentType.artists &&
+        itemId.parentType == MediaItemParentType.collection &&
+        itemId.itemId != null) {
+      final instantMixId = MediaItemId(
+        contentType: TabContentType.artists,
+        parentType: MediaItemParentType.instantMix,
+        itemId: itemId.itemId,
+      );
+      mediaItems.add(MediaItem(
+        id: instantMixId.toString(),
+        title: AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)?.instantMix ?? "Instant Mix",
+        playable: true,
+      ));
+    }
+
     for (final item in items) {
       final mediaItem = await queueService.generateMediaItem(
         item,
@@ -640,15 +655,37 @@ class AndroidAutoHelper {
     // queue service should be initialized by time we get here
     final queueService = GetIt.instance<QueueService>();
 
-    // shouldn't happen, but just in case
-    if (!_isPlayable(contentType: itemId.contentType)) {
-      _androidAutoHelperLogger.warning(
-        "Tried to play from media id with non-playable item type ${itemId.parentType.name}",
-      );
-      return;
-    }
-
     if (itemId.parentType == MediaItemParentType.instantMix) {
+      if (itemId.contentType == TabContentType.artists) {
+        final parentItem = await getParentFromId(itemId.itemId!);
+        if (FinampSettingsHelper.finampSettings.isOffline) {
+          final artistAlbums = await getBaseItems(MediaItemId(
+            contentType: TabContentType.artists,
+            parentType: MediaItemParentType.collection,
+            itemId: itemId.itemId,
+          ));
+          final List<BaseItemDto> allTracks = [];
+          for (final album in artistAlbums) {
+            allTracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
+          }
+          return await queueService.startPlayback(
+            items: allTracks,
+            source: QueueItemSource(
+              type: QueueItemSourceType.artist,
+              name: QueueItemSourceName(type: QueueItemSourceNameType.preTranslated, pretranslatedName: parentItem?.name),
+              id: itemId.itemId!,
+              item: parentItem,
+            ),
+            order: FinampPlaybackOrder.linear,
+          );
+        } else {
+          if (parentItem == null) {
+            _androidAutoHelperLogger.warning("Could not resolve artist item for instant mix: ${itemId.itemId}");
+            return;
+          }
+          return await audioServiceHelper.startInstantMixForArtists([parentItem]);
+        }
+      }
       if (FinampSettingsHelper.finampSettings.isOffline) {
         List<DownloadStub> offlineItems;
         // If we're on the tracks tab, just get all of the downloaded items
@@ -681,6 +718,14 @@ class AndroidAutoHelper {
       } else {
         return await audioServiceHelper.startInstantMixForItem(await _jellyfinApiHelper.getItemById(itemId.itemId!));
       }
+    }
+
+    // shouldn't happen, but just in case
+    if (!_isPlayable(contentType: itemId.contentType)) {
+      _androidAutoHelperLogger.warning(
+        "Tried to play from media id with non-playable item type ${itemId.parentType.name}",
+      );
+      return;
     }
 
     if (itemId.parentType != MediaItemParentType.collection || itemId.itemId == null) {
