@@ -745,6 +745,9 @@ class QueueService {
         // Both iOS and macOS will start playing the first queue index if we don't stop first.
         // Use pause() instead of stop() to keep the audio session active and prevent
         // other apps (e.g. Podcasts) from briefly resuming during Siri handoff.
+        // Server activity reporting: pause() sends a progress update (paused state)
+        // rather than a stop event; when the new queue starts, onTrackChanged fires
+        // and correctly reports the old track stopped + new track started.
         await _audioHandler.pause();
       }
       await _audioHandler.clearFinampQueueItems();

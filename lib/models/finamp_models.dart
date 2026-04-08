@@ -111,6 +111,10 @@ class DefaultSettings {
   static const androidStopForegroundOnPause = true;
   static const onlyShowFavorites = false;
   static const trackShuffleItemCount = 250;
+
+  /// Default track count for CarPlay and Siri shuffle. Lower than default
+  /// for main app as the longer shuffle amount is slow over constrained
+  /// CarPlay interface.
   static const quickShuffleItemCount = 30;
   static const volumeNormalizationActive = true;
   // Set the base gain to 6.0 dB, which will work against any tracks that have a normalization gain of -6.0 dB or lower. For higher gains this will cause the actual volume to be lower than it should be, since we can't compensate the volume upwards beyond 100%

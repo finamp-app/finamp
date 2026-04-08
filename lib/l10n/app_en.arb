@@ -207,6 +207,10 @@
   "@playlists": {},
   "startMix": "Start Mix",
   "@startMix": {},
+  "radioMix": "Radio Mix",
+  "@radioMix": {
+    "description": "Label for the CarPlay radio mix button that starts continuous radio from a random track"
+  },
   "startMixNoTracksArtist": "Long-press an artist to add or remove it from the mix builder before starting a mix",
   "@startMixNoTracksArtist": {
     "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"

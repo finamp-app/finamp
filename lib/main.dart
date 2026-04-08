@@ -413,12 +413,12 @@ Future<void> _setupPlaybackServices() async {
   GetIt.instance.registerSingleton(PlaybackHistoryService());
   GetIt.instance.registerSingleton(AudioServiceHelper());
 
-  // Begin to restore queue
-  unawaited(queueService.performInitialQueueLoad().catchError((dynamic x) => GlobalSnackbar.error(x)));
-
   if (Platform.isIOS) {
     GetIt.instance.registerSingleton<CarPlayHelper>(CarPlayHelper());
   }
+
+  // Begin to restore queue
+  unawaited(queueService.performInitialQueueLoad().catchError((dynamic x) => GlobalSnackbar.error(x)));
 }
 
 /// Migrates the old DownloadLocations list to a map

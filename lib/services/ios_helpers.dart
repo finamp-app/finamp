@@ -38,7 +38,7 @@ class IosPlaybackStateSync {
 
 /// Handles Siri media intent commands from iOS.
 ///
-/// This enables voice commands like "Hey Siri, play [song/artist] on Finamp"
+/// This enables voice commands like "Hey Siri, play [track/artist] on Finamp"
 /// from anywhere on iOS (phone, CarPlay, AirPods, etc.).
 class IosSiriHandler {
   static const _siriIntentChannel = MethodChannel('com.unicornsonlsd.finamp-ios/siri_intent');

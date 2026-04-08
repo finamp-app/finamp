@@ -74,6 +74,8 @@ PODS:
     - Flutter
   - flutter_discord_rpc (0.0.1):
     - Flutter
+  - flutter_native_splash (2.4.3):
+    - Flutter
   - flutter_to_airplay (0.0.1):
     - Flutter
     - Mux-Stats-AVPlayer
@@ -125,6 +127,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_carplay (from `.symlinks/plugins/flutter_carplay/ios`)
   - flutter_discord_rpc (from `.symlinks/plugins/flutter_discord_rpc/ios`)
+  - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_to_airplay (from `.symlinks/plugins/flutter_to_airplay/ios`)
   - gaimon (from `.symlinks/plugins/gaimon/ios`)
   - isar_flutter_libs (from `.symlinks/plugins/isar_flutter_libs/ios`)
@@ -174,6 +177,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_carplay/ios"
   flutter_discord_rpc:
     :path: ".symlinks/plugins/flutter_discord_rpc/ios"
+  flutter_native_splash:
+    :path: ".symlinks/plugins/flutter_native_splash/ios"
   flutter_to_airplay:
     :path: ".symlinks/plugins/flutter_to_airplay/ios"
   gaimon:
@@ -216,6 +221,7 @@ SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_carplay: 0e3f943484e00399dac7f599715ae6761288f0db
   flutter_discord_rpc: 0572e8227ea730c5afe5876a37c08c728ce95f3a
+  flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
   flutter_to_airplay: 06ecea4c4458e28e1bfeff6741de84b79aa28821
   gaimon: ce0b5c042363ed957bb92ee755c361903d3ce0ef
   isar_flutter_libs: 9fc2cfb928c539e1b76c481ba5d143d556d94920

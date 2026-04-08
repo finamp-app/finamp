@@ -19,6 +19,7 @@ import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
 import 'jellyfin_api_helper.dart';
 import 'audio_service_helper.dart';
+import 'playback_history_service.dart';
 import 'queue_service.dart';
 import 'item_helper.dart';
 import 'artist_content_provider.dart';
@@ -26,6 +27,9 @@ import 'radio_service_helper.dart' as radio;
 
 /// Helper to access localized strings without a BuildContext.
 /// Uses the global scaffold key's context for localization.
+/// Safe to call after first frame — all CarPlay template setup is deferred via
+/// SchedulerBinding.addPostFrameCallback (see setupCarplay), which ensures the
+/// GlobalSnackbar context is available before any l10n access.
 AppLocalizations get _l10n => AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!;
 
 final _carPlayLogger = Logger("CarPlay");
@@ -44,9 +48,6 @@ const _carPlayImageSize = 100;
 
 /// Image quality for CarPlay artwork. Lower than default 90 for faster transfer.
 const _carPlayImageQuality = 70;
-
-/// Cache manager for CarPlay images.
-final _carPlayImageCache = DefaultCacheManager();
 
 class CarPlayHelper {
   ConnectionStatusTypes connectionStatus = ConnectionStatusTypes.unknown;
@@ -88,8 +89,8 @@ class CarPlayHelper {
         ?.toString();
   }
 
-  /// Pre-downloads unique images for a list of items to local cache.
-  /// Returns a map of imageId -> local file URI string.
+  /// Pre-downloads unique images to the shared cache (DefaultCacheManager) and
+  /// returns file URIs. CarPlay needs file paths for UIKit, not Flutter ImageProviders.
   /// Items sharing the same imageId are downloaded only once.
   Future<Map<String, String>> _preloadCarPlayImages(List<BaseItemDto> items) async {
     final Map<String, String> imageUriMap = {};
@@ -122,7 +123,7 @@ class CarPlayHelper {
     // Download unique images in parallel
     final futures = uniqueImageUrls.entries.map((entry) async {
       try {
-        final fileInfo = await _carPlayImageCache.downloadFile(entry.value, key: "carplay_${entry.key}");
+        final fileInfo = await DefaultCacheManager().downloadFile(entry.value, key: "carplay_${entry.key}");
         imageUriMap[entry.key] = Uri.file(fileInfo.file.path).toString();
       } catch (e) {
         // Fall back to network URL if download fails
@@ -215,13 +216,12 @@ class CarPlayHelper {
 
     // If we are in offline mode, display all matching downloaded parents
     if (FinampSettingsHelper.finampSettings.isOffline) {
-      List<BaseItemDto> baseItems = [];
-      for (final downloadedParent in await _downloadsService.getAllCollections()) {
-        if (baseItems.length >= _carPlayOfflineLimit) break;
-        if (downloadedParent.baseItem != null && downloadedParent.baseItemType == tabContentType.itemType) {
-          baseItems.add(downloadedParent.baseItem!);
-        }
-      }
+      final collections = await _downloadsService.getAllCollections(baseTypeFilter: tabContentType.itemType);
+      final baseItems = collections
+          .where((d) => d.baseItem != null)
+          .map((d) => d.baseItem!)
+          .take(_carPlayOfflineLimit)
+          .toList();
       return sortItems(baseItems, sortBy, sortOrder);
     }
 
@@ -236,34 +236,6 @@ class CarPlayHelper {
       limit: _carPlayOnlineLimit,
     );
     return items ?? [];
-  }
-
-  // Fetch artist tracks directly via API, bypassing Riverpod providers
-  Future<List<BaseItemDto>> getArtistTracks(BaseItemDto artist) async {
-    if (FinampSettingsHelper.finampSettings.isOffline) {
-      // Offline: Get all downloaded albums and filter by artist, then get tracks
-      final allAlbums = await _downloadsService.getAllCollections();
-      final List<BaseItemDto> tracks = [];
-      for (final downloadedParent in allAlbums) {
-        if (downloadedParent.baseItem != null && downloadedParent.baseItemType == BaseItemDtoType.album) {
-          final album = downloadedParent.baseItem!;
-          // Check if album belongs to this artist
-          if (album.albumArtist == artist.name || (album.albumArtists?.any((aa) => aa.id == artist.id) ?? false)) {
-            tracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
-          }
-        }
-      }
-      return tracks;
-    }
-
-    // Online: Direct API call for artist's tracks
-    final tracks = await _jellyfinApiHelper.getItems(
-      parentItem: artist,
-      includeItemTypes: "Audio",
-      sortBy: "Album,ParentIndexNumber,IndexNumber,SortName",
-      limit: _carPlayOnlineLimit,
-    );
-    return tracks ?? [];
   }
 
   // playFromBaseItem is based on AndroidAutoHelper.playFromMediaId but using BaseItemDto
@@ -318,8 +290,8 @@ class CarPlayHelper {
     await FlutterCarplay.showSharedNowPlaying();
   }
 
-  Future<void> startInstantMix() async {
-    _carPlayLogger.info("Starting instant mix");
+  Future<void> startRadioMix() async {
+    _carPlayLogger.info("Starting radio mix");
 
     await _queueService.stopAndClearQueue();
 
@@ -375,7 +347,9 @@ class CarPlayHelper {
   }
 
   List<FinampQueueItem> getRecentPlays({int limit = 5}) {
-    return _queueService.peekQueue(previous: limit);
+    final history = GetIt.instance<PlaybackHistoryService>().history;
+    // history is chronological (oldest first), take last N and reverse for most-recent-first
+    return history.reversed.take(limit).map((h) => h.item).toList();
   }
 
   Future<List<CPListSection>> _buildHomeSections() async {
@@ -391,9 +365,9 @@ class CarPlayHelper {
           },
         ),
         CPListItem(
-          text: _l10n.startMix,
+          text: _l10n.radioMix,
           onPress: (complete, self) async {
-            await startInstantMix();
+            await startRadioMix();
             complete();
           },
         ),
@@ -414,19 +388,24 @@ class CarPlayHelper {
             detailText: baseItem.artists?.join(", ") ?? baseItem.albumArtist,
             image: _getCarPlayImageUrl(baseItem),
             onPress: (complete, self) async {
-              await _queueService.startPlayback(
-                items: [baseItem],
-                source: QueueItemSource(
-                  type: QueueItemSourceType.nextUp,
-                  name: QueueItemSourceName(
-                    type: QueueItemSourceNameType.preTranslated,
-                    pretranslatedName: baseItem.name ?? _l10n.tracks,
+              if (!FinampSettingsHelper.finampSettings.isOffline) {
+                final audioServiceHelper = GetIt.instance<AudioServiceHelper>();
+                await audioServiceHelper.startInstantMixForItem(baseItem);
+              } else {
+                await _queueService.startPlayback(
+                  items: [baseItem],
+                  source: QueueItemSource(
+                    type: QueueItemSourceType.allTracks,
+                    name: QueueItemSourceName(
+                      type: QueueItemSourceNameType.preTranslated,
+                      pretranslatedName: baseItem.name ?? _l10n.tracks,
+                    ),
+                    id: baseItem.id,
+                    item: baseItem,
                   ),
-                  id: baseItem.id,
-                  item: baseItem,
-                ),
-                order: FinampPlaybackOrder.linear,
-              );
+                  order: FinampPlaybackOrder.linear,
+                );
+              }
               complete();
               await FlutterCarplay.showSharedNowPlaying();
             },
@@ -787,7 +766,9 @@ class CarPlayHelper {
         CPListItem(
           text: _l10n.shuffleAll,
           onPress: (complete, self) async {
-            final tracks = await getArtistTracks(parent);
+            final tracks = await GetIt.instance<ProviderContainer>().read(
+              getArtistTracksProvider(artist: parent, libraryFilter: _finampUserHelper.currentUser?.currentView).future,
+            );
             await playTracksAsQueue(
               tracks,
               order: FinampPlaybackOrder.shuffled,
