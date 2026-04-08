@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:app_links/app_links.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:audio_session/audio_session.dart';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
@@ -36,7 +35,6 @@ import 'package:finamp/services/dbus_manager.dart';
 import 'package:finamp/services/discord_rpc.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/downloads_service_backend.dart';
-import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_logs_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -164,6 +162,7 @@ void main() async {
 
     PlatformDispatcher.instance.onError = (error, stack) {
       flutterLogger.severe(error, error, stack);
+
       // We have not handled printing to console, flutter should still do that.
       return false;
     };
@@ -369,6 +368,21 @@ Future<void> _setupOSIntegration() async {
       albumBuffer.asUint8List(albumImageBytes.offsetInBytes, albumImageBytes.lengthInBytes),
     );
   }
+
+  if (Platform.isAndroid) {
+    var themeModeChannel = MethodChannel("com.unicornsonlsd.finamp/set_native_theme");
+    GetIt.instance<ProviderContainer>().listen(finampSettingsProvider.themeMode, (_, mode) {
+      _mainLog.info("Setting android native theme to $mode");
+      themeModeChannel.invokeMethod("setNativeThemeMode", {
+        "targetMode": switch (mode) {
+          ThemeMode.system => 0,
+          ThemeMode.light => 1,
+          ThemeMode.dark => 2,
+        },
+      });
+      // Fire on startup to correct desyncs and apply migration
+    }, fireImmediately: true);
+  }
 }
 
 Future<void> _setupPlaybackServices() async {
@@ -542,10 +556,10 @@ class _FinampState extends State<Finamp> with WindowListener {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _uriLinkSubscription = AppLinks().uriLinkStream.listen((uri) async {
         linkHandlingLogger.info("Received link: $uri");
-        var context = GlobalSnackbar.materialAppNavigatorKey.currentContext;
-        if (context != null) {
+        var state = GlobalSnackbar.materialAppNavigatorKey.currentState;
+        if (state != null) {
           if (uri.host == "internal") {
-            await Navigator.of(context).pushNamed(uri.path);
+            await state.pushNamed(uri.path);
           }
         } else {
           linkHandlingLogger.warning("No context available to handle link");

@@ -430,6 +430,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         themeMode: fields[133] == null
             ? ThemeMode.system
             : fields[133] as ThemeMode,
+        amoledTheme: fields[146] == null ? false : fields[146] as bool,
         locale: fields[134] == null
             ? DefaultSettings.locale
             : fields[134] as Locale?,
@@ -450,9 +451,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         previousTracksPersistenceMode: fields[145] == null
             ? PreviousTracksPersistenceMode.persistent
             : fields[145] as PreviousTracksPersistenceMode,
-        amoledTheme: fields[146] == null
-            ? false
-            : fields[146] as bool,
+        useAndroidGainEffect: fields[147] == null ? true : fields[147] as bool,
       )
       ..disableGesture = fields[19] == null ? false : fields[19] as bool
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool
@@ -471,7 +470,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(140)
+      ..writeByte(141)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -751,7 +750,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(145)
       ..write(obj.previousTracksPersistenceMode)
       ..writeByte(146)
-      ..write(obj.amoledTheme);
+      ..write(obj.amoledTheme)
+      ..writeByte(147)
+      ..write(obj.useAndroidGainEffect);
   }
 
   @override

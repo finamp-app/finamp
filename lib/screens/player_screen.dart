@@ -221,6 +221,7 @@ class _PlayerScreenContent extends ConsumerWidget {
                             width: controller.albumSize.width,
                             height: controller.albumSize.height,
                             child: Padding(
+                              // TODO Why does landscape get an additional 3% on top of minAlbumPadding?
                               padding: EdgeInsets.only(
                                 left: constraints.maxHeight * 0.03,
                                 top: constraints.maxHeight * 0.03,

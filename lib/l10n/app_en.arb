@@ -3296,5 +3296,17 @@
   "previousTracksPersistenceModeExpanded": "Expanded (visible)",
   "@previousTracksPersistenceModeExpanded": {
     "description": "Overrides saved value to expand previous tracks header on queue list open"
+  },
+  "useAndroidGainEffectTitle": "Use Gain Effect",
+  "@useAndroidGainEffectTitle": {
+    "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+  },
+  "useAndroidGainEffectSubtitle": "Use native gain effect to control volume.  This is more flexible but breaks the player on some devices.  You shouldn't need to change this manually.  Requires app restart to apply.",
+  "@useAndroidGainEffectSubtitle": {
+    "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+  },
+  "androidGainDisabled": "Switching to gain effect fallback due to initialization error.",
+  "@androidGainDisabled": {
+    "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
   }
 }
