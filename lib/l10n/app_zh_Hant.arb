@@ -1792,6 +1792,18 @@
     "@outputMenuButtonTitle": {
         "description": "Button title for opening the output menu/panel"
     },
+    "transcodeToggleButtonTitle": "轉碼",
+    "@transcodeToggleButtonTitle": {
+        "description": "Button title for toggling transcoding on/off from the player screen"
+    },
+    "transcodeToggleOnTooltip": "轉碼已開啟。點擊關閉。",
+    "@transcodeToggleOnTooltip": {
+        "description": "Tooltip shown when transcoding is enabled on the player screen toggle"
+    },
+    "transcodeToggleOffTooltip": "轉碼已關閉。點擊開啟。",
+    "@transcodeToggleOffTooltip": {
+        "description": "Tooltip shown when transcoding is disabled on the player screen toggle"
+    },
     "outputMenuTitle": "更改輸出",
     "@outputMenuTitle": {
         "description": "Title for the output menu that allows the user to change the audio output device and volume"

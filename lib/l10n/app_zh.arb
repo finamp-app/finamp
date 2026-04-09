@@ -1798,6 +1798,18 @@
     "@outputMenuButtonTitle": {
         "description": "Button title for opening the output menu/panel"
     },
+    "transcodeToggleButtonTitle": "转码",
+    "@transcodeToggleButtonTitle": {
+        "description": "Button title for toggling transcoding on/off from the player screen"
+    },
+    "transcodeToggleOnTooltip": "转码已开启。点击关闭。",
+    "@transcodeToggleOnTooltip": {
+        "description": "Tooltip shown when transcoding is enabled on the player screen toggle"
+    },
+    "transcodeToggleOffTooltip": "转码已关闭。点击开启。",
+    "@transcodeToggleOffTooltip": {
+        "description": "Tooltip shown when transcoding is disabled on the player screen toggle"
+    },
     "outputMenuVolumeSectionTitle": "音量",
     "@outputMenuVolumeSectionTitle": {
         "description": "Title for the volume section in the output menu"

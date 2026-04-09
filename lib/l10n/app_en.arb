@@ -2622,6 +2622,18 @@
   "@outputMenuButtonTitle": {
     "description": "Button title for opening the output menu/panel"
   },
+  "transcodeToggleButtonTitle": "Transcode",
+  "@transcodeToggleButtonTitle": {
+    "description": "Button title for toggling transcoding on/off from the player screen"
+  },
+  "transcodeToggleOnTooltip": "Transcoding is ON. Tap to disable.",
+  "@transcodeToggleOnTooltip": {
+    "description": "Tooltip shown when transcoding is enabled on the player screen toggle"
+  },
+  "transcodeToggleOffTooltip": "Transcoding is OFF. Tap to enable.",
+  "@transcodeToggleOffTooltip": {
+    "description": "Tooltip shown when transcoding is disabled on the player screen toggle"
+  },
   "outputMenuTitle": "Change Output",
   "@outputMenuTitle": {
     "description": "Title for the output menu that allows the user to change the audio output device and volume"
