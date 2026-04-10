@@ -1024,7 +1024,7 @@ class JellyfinApiHelper {
       final body = response.bodyOrThrow as Map<String, dynamic>;
       // If IsInNetwork doesn't exist -> catch
       // because then its not a jellyfin server
-      return body["IsInNetwork"] as bool;
+      return body.containsKey("IsInNetwork");
     } catch (e) {
       Logger("Ayoo").severe(e);
       return false;
