@@ -1022,7 +1022,7 @@ class JellyfinApiHelper {
       Response<dynamic> response = await client.send<dynamic, dynamic>($request);
       if (response.statusCode != 200) return false;
       final body = response.bodyOrThrow as Map<String, dynamic>;
-      // If IsInNetwork doesn't exist -> catch
+      // If IsInNetwork doesn't exist -> return false
       // because then its not a jellyfin server
       return body.containsKey("IsInNetwork");
     } catch (e) {
