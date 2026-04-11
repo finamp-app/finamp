@@ -1316,7 +1316,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           FinampSettingsHelper.finampSettings.volumeNormalizationMode != VolumeNormalizationMode.hybrid) {
         return;
       }
-      if (previous?.valueOrNull?.parentNormalizationGain != next.valueOrNull?.parentNormalizationGain) {
+      if (previous?.valueOrNull?.albumNormalizationGain != next.valueOrNull?.albumNormalizationGain) {
         _applyVolumeNormalization(mediaItem.valueOrNull);
       }
     });
@@ -1545,18 +1545,18 @@ double? getGainForCurrentPlayback(MediaItem currentTrack, jellyfin_models.BaseIt
     case VolumeNormalizationMode.hybrid
         when GetIt.instance<QueueService>().getQueue().isCurrentlyPlayingTracksFromSameAlbum():
     case VolumeNormalizationMode.albumBased:
-      // final parentNormalizationGain = providerContainer.read(currentTrackMetadataProvider).valueOrNull?.parentNormalizationGain;
+      // final albumNormalizationGain = providerContainer.read(currentTrackMetadataProvider).valueOrNull?.albumNormalizationGain;
       // includeLyrics is always true - fetch the metadataRequest directly.
       // Requires that provided arguments are the only fields of request,
       // along with `includeLyrics` always being true in currentTrackMetadataProvider
       // Otherwise, use code commented above
-      final parentNormalizationGain = providerContainer
+      final albumNormalizationGain = providerContainer
           .read(metadataProvider(baseItem))
           .valueOrNull
-          ?.parentNormalizationGain;
+          ?.albumNormalizationGain;
 
       effectiveGainChange =
-          parentNormalizationGain ??
+          albumNormalizationGain ??
           (currentTrack.extras?["contextNormalizationGain"] as double?) ??
           baseItem.normalizationGain;
       break;
