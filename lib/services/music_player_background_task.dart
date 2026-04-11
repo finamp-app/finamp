@@ -1545,10 +1545,10 @@ double? getGainForCurrentPlayback(MediaItem currentTrack, jellyfin_models.BaseIt
     case VolumeNormalizationMode.hybrid
         when GetIt.instance<QueueService>().getQueue().isCurrentlyPlayingTracksFromSameAlbum():
     case VolumeNormalizationMode.albumBased:
-      final albumNormalizationGain = providerContainer
-          .read(metadataProvider(baseItem))
-          .valueOrNull
-          ?.albumNormalizationGain;
+      // metadataProvider is still used for Jellyfin <12.0
+      final albumNormalizationGain =
+          baseItem.albumNormalizationGain ??
+          providerContainer.read(metadataProvider(baseItem)).valueOrNull?.albumNormalizationGain;
 
       effectiveGainChange =
           albumNormalizationGain ??
