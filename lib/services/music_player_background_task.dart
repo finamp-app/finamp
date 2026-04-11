@@ -1545,11 +1545,6 @@ double? getGainForCurrentPlayback(MediaItem currentTrack, jellyfin_models.BaseIt
     case VolumeNormalizationMode.hybrid
         when GetIt.instance<QueueService>().getQueue().isCurrentlyPlayingTracksFromSameAlbum():
     case VolumeNormalizationMode.albumBased:
-      // final albumNormalizationGain = providerContainer.read(currentTrackMetadataProvider).valueOrNull?.albumNormalizationGain;
-      // includeLyrics is always true - fetch the metadataRequest directly.
-      // Requires that provided arguments are the only fields of request,
-      // along with `includeLyrics` always being true in currentTrackMetadataProvider
-      // Otherwise, use code commented above
       final albumNormalizationGain = providerContainer
           .read(metadataProvider(baseItem))
           .valueOrNull
