@@ -618,6 +618,12 @@ class JellyfinApiHelper {
     return UserDto.fromJson(response as Map<String, dynamic>);
   }
 
+  /// Gets a user by their id.
+  Future<UserDto?> getUserById(String userId) async {
+    var response = await jellyfinApi.getUserById(userId);
+    return UserDto.fromJson(response as Map<String, dynamic>);
+  }
+
   /// Gets all the user's views.
   Future<List<BaseItemDto>> getViews() async {
     var response = await jellyfinApi.getViews(_finampUserHelper.currentUser!.id);

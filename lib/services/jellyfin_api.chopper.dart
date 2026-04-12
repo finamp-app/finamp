@@ -190,6 +190,18 @@ final class _$JellyfinApi extends JellyfinApi {
   }
 
   @override
+  Future<dynamic> getUserById(String id) async {
+    final Uri $url = Uri.parse('/Users/${id}');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    final Response $response = await client.send<dynamic, dynamic>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+      responseConverter: JsonConverter.responseFactory,
+    );
+    return $response.bodyOrThrow;
+  }
+
+  @override
   Future<dynamic> getViews(String id) async {
     final Uri $url = Uri.parse('/Users/${id}/Views');
     final Request $request = Request('GET', $url, client.baseUrl);

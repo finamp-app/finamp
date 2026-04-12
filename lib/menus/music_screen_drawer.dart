@@ -14,6 +14,7 @@ import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/server_info_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -69,27 +70,18 @@ Future<void> showFinampMainMenu({required BuildContext context}) async {
                         overflow: TextOverflow.ellipsis,
                       )
                     else
-                      FutureBuilder<PublicSystemInfoResult?>(
-                        future: jellyfinApiHelper.loadServerPublicInfo(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return Text("Connected*");
-                          }
-                          final PublicSystemInfoResult serverInfo = snapshot.data!;
-                          return Text.rich(
+                      Text.rich(
+                        TextSpan(
+                          text: 'Connected to* ',
+                          children: [
                             TextSpan(
-                              text: 'Connected to* ',
-                              children: [
-                                TextSpan(
-                                  text: '${serverInfo.serverName}',
-                                  style: const TextStyle(fontWeight: FontWeight.w600),
-                                ),
-                              ],
+                              text: '${ref.watch(currentServerInfoProvider).value?.publicServerInfo.serverName}',
+                              style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          );
-                        },
+                          ],
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                   ],
                 ),

@@ -290,38 +290,37 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                         ? Row(
                             spacing: 4.0,
                             children: [
-                              FutureBuilder(
-                                future: GetIt.instance<JellyfinApiHelper>().getUser(),
-                                builder: (context, asyncSnapshot) {
-                                  if (ref.watch(finampSettingsProvider.isOffline)) {
-                                    return SizedBox.shrink();
-                                  }
-                                  if (!asyncSnapshot.hasData || asyncSnapshot.data == null) {
-                                    return SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
-                                    );
-                                  } else if (asyncSnapshot.data?.primaryImageTag == null) {
-                                    return SizedBox.shrink();
-                                  }
-                                  return Padding(
-                                    padding: const EdgeInsets.all(1.5),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(9999),
-                                      child: Image.network(
-                                        GetIt.instance<JellyfinApiHelper>()
-                                            .getUserImageUrl(
-                                              baseUrl: Uri.parse(finampUserHelper.currentUser!.baseURL),
-                                              user: asyncSnapshot.data!,
-                                            )
-                                            .toString(),
-                                        fit: BoxFit.fitHeight,
+                              if (ref.watch(finampSettingsProvider.isOffline))
+                                SizedBox.shrink()
+                              else
+                                switch (ref.watch(currentUserInfoProvider)) {
+                                  AsyncData(:final value)
+                                      when value != null && value.jellyfinUser?.primaryImageTag != null =>
+                                    Padding(
+                                      padding: const EdgeInsets.all(1.5),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(9999),
+                                        child: Image.network(
+                                          GetIt.instance<JellyfinApiHelper>()
+                                              .getUserImageUrl(
+                                                baseUrl: Uri.parse(finampUserHelper.currentUser!.baseURL),
+                                                user: value.jellyfinUser!,
+                                              )
+                                              .toString(),
+                                          fit: BoxFit.fitHeight,
+                                        ),
                                       ),
                                     ),
-                                  );
+                                  AsyncData(:final value)
+                                      when value == null || value.jellyfinUser?.primaryImageTag == null =>
+                                    SizedBox.shrink(),
+                                  AsyncLoading() => SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: activeTabTextColor),
+                                  ),
+                                  _ => SizedBox.shrink(),
                                 },
-                              ),
                               Text(tabType.toLocalisedString(context), style: textStyle),
                             ],
                           )
