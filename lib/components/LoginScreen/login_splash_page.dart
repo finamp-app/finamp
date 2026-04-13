@@ -29,17 +29,6 @@ class LoginSplashPage extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 80.0, bottom: 40.0),
                 child: Hero(tag: "finamp_logo", child: FinampIcon(150, 150)),
               ),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    await pebbleChannel.invokeMethod('sendDataToPebble', {'data': 'Hello from Finamp! 🎉'});
-                    print("✅ Sent to Pebble");
-                  } catch (e) {
-                    print("❌ Send failed: $e");
-                  }
-                },
-                child: const Text("Send Hello to Pebble"),
-              ),
               RichText(
                 text: TextSpan(
                   style: Theme.of(context).textTheme.headlineMedium,
