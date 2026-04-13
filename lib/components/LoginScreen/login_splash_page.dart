@@ -2,6 +2,7 @@ import 'package:finamp/components/Buttons/cta_large.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -10,7 +11,9 @@ class LoginSplashPage extends StatelessWidget {
 
   final VoidCallback onGetStartedPressed;
 
-  const LoginSplashPage({super.key, required this.onGetStartedPressed});
+  LoginSplashPage({super.key, required this.onGetStartedPressed});
+
+  final pebbleChannel = MethodChannel('finamp/pebble');
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,17 @@ class LoginSplashPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 80.0, bottom: 40.0),
                 child: Hero(tag: "finamp_logo", child: FinampIcon(150, 150)),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  try {
+                    await pebbleChannel.invokeMethod('sendDataToPebble', {'data': 'Hello from Finamp! 🎉'});
+                    print("✅ Sent to Pebble");
+                  } catch (e) {
+                    print("❌ Send failed: $e");
+                  }
+                },
+                child: const Text("Send Hello to Pebble"),
               ),
               RichText(
                 text: TextSpan(

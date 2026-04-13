@@ -41,6 +41,7 @@ import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/keep_screen_on_helper.dart';
 import 'package:finamp/services/network_manager.dart';
 import 'package:finamp/services/offline_listen_helper.dart';
+import 'package:finamp/services/pebble_service.dart';
 import 'package:finamp/services/playback_history_service.dart';
 import 'package:finamp/services/playon_service.dart';
 import 'package:finamp/services/queue_service.dart';
@@ -173,6 +174,8 @@ void main() async {
     await initializeDateFormatting();
     unawaited(fetchSystemPalette());
     await initDBus();
+    
+    await PebbleService.init();
 
     _mainLog.info("Launching main app");
 
