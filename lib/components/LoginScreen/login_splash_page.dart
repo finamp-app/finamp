@@ -2,7 +2,6 @@ import 'package:finamp/components/Buttons/cta_large.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -11,7 +10,7 @@ class LoginSplashPage extends StatelessWidget {
 
   final VoidCallback onGetStartedPressed;
 
-  LoginSplashPage({super.key, required this.onGetStartedPressed});
+  const LoginSplashPage({super.key, required this.onGetStartedPressed});
 
   @override
   Widget build(BuildContext context) {
