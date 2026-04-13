@@ -13,8 +13,6 @@ class LoginSplashPage extends StatelessWidget {
 
   LoginSplashPage({super.key, required this.onGetStartedPressed});
 
-  final pebbleChannel = MethodChannel('finamp/pebble');
-
   @override
   Widget build(BuildContext context) {
     final placeholder = "FINAMP_PLACEHOLDER";
