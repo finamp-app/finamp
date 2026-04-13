@@ -231,7 +231,7 @@
     "removeFromMix": "Uit mix verwijderen",
     "addToMix": "Aan mix toevoegen",
     "bufferDuration": "Bufferlengte",
-    "bufferDurationSubtitle": "De maximale duur van de buffer, in seconden. Dit vereist een herstart.",
+    "bufferDurationSubtitle": "De duur van de buffer, in seconden. Dit vereist een herstart.",
     "redownloadedItems": "{count,plural, =0{Geen downloads nodig.} =1{{count} element opnieuw gedownload} other{ {count} elementen opnieuw gedownload}}",
     "@redownloadedItems": {
         "placeholders": {
