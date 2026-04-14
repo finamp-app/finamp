@@ -2973,5 +2973,22 @@
     "previousTracksPersistenceModeExpanded": "Rozbalená (viditelná)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "amoledTheme": "Použít motiv AMOLED",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "Nahrazuje tmavé barevné schéma plně černým motivem.",
+    "useAndroidGainEffectTitle": "Použít efekt zisku",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "Použít nativní efekt zisku k ovládání hlasitosti.  Toto je flexibilnější, ale na některých zařízeních může rozbít přehrávač.  Toto nastavení byste neměli mít potřebu ručně měnit.  Vyžaduje restart aplikace pro použití.",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "Přepínání na zálohu efektu zisku z důvodu chyby při inicializaci.",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
     }
 }
