@@ -31,6 +31,7 @@ class ItemCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final hasImage = !(item.blurHash == null && item.imageId == null);
     return Container(
       constraints: const BoxConstraints(maxWidth: _itemCollectionCardCoverSize),
       clipBehavior: Clip.antiAlias,
@@ -46,7 +47,23 @@ class ItemCard extends ConsumerWidget {
                 borderRadius: AlbumImage.defaultBorderRadius,
                 child: Stack(
                   children: [
-                    AlbumImage(item: item),
+                    if (!hasImage && !ref.watch(finampSettingsProvider.showTextOnGridView))
+                      // handle tiles with no image when text is disabled by showing a fallback text instead of the image
+                      Container(
+                        padding: const EdgeInsets.all(4.0),
+                        color: Theme.brightnessOf(context) == Brightness.dark
+                            ? ColorScheme.of(context).primary.withOpacity(0.08)
+                            : Color.alphaBlend(
+                                ColorScheme.of(context).primary.withOpacity(0.1),
+                                Colors.white,
+                              ).withOpacity(1.0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: _ItemCollectionCardText(item: item, parentType: parentType),
+                        ),
+                      )
+                    else
+                      AlbumImage(item: item),
                     Positioned.fill(
                       child: Material(
                         color: Colors.transparent,
@@ -82,24 +99,27 @@ class _ItemCollectionCardText extends ConsumerWidget {
       parentType: parentType,
       artistType: ref.watch(finampSettingsProvider.defaultArtistType),
     );
+    final centerText = !ref.watch(finampSettingsProvider.showTextOnGridView);
 
     return SizedBox(
-      height: calculateTextHeight(
+      height: _calculateInherentTextHeight(
         style: TextTheme.of(context).bodySmall!,
         lines: calculateItemCollectionTextLines(BaseItemDtoType.fromItem(item)),
       ),
       child: Align(
-        alignment: Alignment.topLeft,
+        alignment: centerText ? Alignment.center : Alignment.topLeft,
         child: Wrap(
           // Runs must be horizontal to constrain child width.  Use large
           // spacing to force subtitle to wrap to next run
           spacing: 1000,
+          alignment: centerText ? WrapAlignment.center : WrapAlignment.start,
           children: [
             Text(
               item.name ?? "Unknown Name",
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
               style: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w600),
+              textAlign: centerText ? TextAlign.center : TextAlign.left,
             ),
             if (subtitle != null)
               Text(
@@ -107,6 +127,7 @@ class _ItemCollectionCardText extends ConsumerWidget {
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: Theme.of(context).textTheme.bodySmall,
+                textAlign: centerText ? TextAlign.center : TextAlign.left,
               ),
           ],
         ),
@@ -248,6 +269,10 @@ double calculateItemCollectionCardHeight({
 
 double calculateTextHeight({required TextStyle style, required int lines}) {
   return (GetIt.instance<ProviderContainer>().read(finampSettingsProvider.showTextOnGridView)
-      ? (style.height ?? 1.0) * (style.fontSize ?? 16) * lines
+      ? _calculateInherentTextHeight(style: style, lines: lines)
       : 0);
+}
+
+double _calculateInherentTextHeight({required TextStyle style, required int lines}) {
+  return (style.height ?? 1.0) * (style.fontSize ?? 16) * lines;
 }
