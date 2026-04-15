@@ -971,14 +971,22 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
   /// Returns the top-level browsable categories for use in a media browser.
   List<MediaItem> _getRootMenu() {
+    // Choose browsing mode hints based on user settings.
+    // - flat: Grid for browsable items (traditional flat list with "Browse by Letter" node)
+    // - letterFirst: List for browsable items (letter nodes render as a list)
+    final isLetterFirst = FinampSettingsHelper.finampSettings.androidAutoBrowsingMode ==
+        AndroidAutoBrowsingMode.letterFirst;
+    final albumsBrowsableHint = isLetterFirst ? 1 : 2; // 1=list, 2=grid
+    final artistsBrowsableHint = isLetterFirst ? 1 : 4; // 1=list, 4=category
+
     return [
       MediaItem(
         id: MediaItemId(contentType: TabContentType.albums, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
         title: _appLocalizations?.albums ?? TabContentType.albums.toString(),
         playable: false,
-        extras: const {
-          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 2,
+        extras: {
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": albumsBrowsableHint,
           "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
         },
       ),
@@ -987,8 +995,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         // ignore: deprecated_member_use_from_same_package
         title: _appLocalizations?.artists ?? TabContentType.artists.toString(),
         playable: false,
-        extras: const {
-          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 4,
+        extras: {
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": artistsBrowsableHint,
           "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
         },
       ),

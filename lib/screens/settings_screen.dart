@@ -16,6 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../components/SettingsScreen/logout_list_tile.dart';
 import '../services/finamp_settings_helper.dart';
+import 'android_auto_settings_screen.dart';
 import 'audio_service_settings_screen.dart';
 import 'downloads_settings_screen.dart';
 import 'language_selection_screen.dart';
@@ -148,6 +149,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             leading: const Icon(Icons.music_note),
             title: Text(AppLocalizations.of(context)!.audioService),
             onTap: () => Navigator.of(context).pushNamed(AudioServiceSettingsScreen.routeName),
+          ),
+          ListTile(
+            leading: const Icon(TablerIcons.car),
+            title: const Text("Android Auto"),
+            onTap: () => Navigator.of(context).pushNamed(AndroidAutoSettingsScreen.routeName),
           ),
           ListTile(
             leading: const Icon(TablerIcons.cast),

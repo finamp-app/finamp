@@ -72,6 +72,11 @@ class AndroidAutoHelper {
         ).toString(),
         title: letter,
         playable: false,
+        extras: const {
+          // Items filtered by letter should render as a grid.
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 2,
+          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
+        },
       );
     }).toList();
   }
@@ -805,12 +810,19 @@ class AndroidAutoHelper {
         );
       }
 
-      // "Browse by Letter" node — only on the first page, and only for
-      // content types that support letter filtering (albums & artists).
-      final pageStart = itemId.pageStartIndex ?? 0;
+      // For Albums and Artists, check the browsing mode setting.
+      // If letterFirst, return immediately; otherwise fall through to flat list.
       final supportsLetterBrowse = itemId.contentType == TabContentType.albums ||
           itemId.contentType == TabContentType.artists;
-      if (pageStart == 0 && supportsLetterBrowse) {
+      final isLetterFirst = FinampSettingsHelper.finampSettings.androidAutoBrowsingMode ==
+          AndroidAutoBrowsingMode.letterFirst;
+      if (supportsLetterBrowse && isLetterFirst) {
+        return _getLetterNodes(itemId);
+      }
+
+      // For flat list mode: "Browse by Letter" node only on first page, if supported.
+      final pageStart = itemId.pageStartIndex ?? 0;
+      if (pageStart == 0 && supportsLetterBrowse && !isLetterFirst) {
         mediaItems.add(MediaItem(
           id: MediaItemId(
             contentType: itemId.contentType,

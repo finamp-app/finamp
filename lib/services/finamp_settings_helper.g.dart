@@ -1286,6 +1286,16 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setAndroidAutoBrowsingMode(
+    AndroidAutoBrowsingMode newAndroidAutoBrowsingMode,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.androidAutoBrowsingMode = newAndroidAutoBrowsingMode;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1729,6 +1739,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select((value) => value.requireValue.amoledTheme);
   ProviderListenable<bool> get useAndroidGainEffect => finampSettingsProvider
       .select((value) => value.requireValue.useAndroidGainEffect);
+  ProviderListenable<AndroidAutoBrowsingMode> get androidAutoBrowsingMode =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.androidAutoBrowsingMode,
+      );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,
