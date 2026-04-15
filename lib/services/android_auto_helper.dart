@@ -73,9 +73,9 @@ class AndroidAutoHelper {
         title: letter,
         playable: false,
         extras: const {
-          // Items filtered by letter should render as a grid.
-          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 2,
-          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
+          // Items filtered by letter should render as a list (no grid).
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 1,
+          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 1,
         },
       );
     }).toList();
