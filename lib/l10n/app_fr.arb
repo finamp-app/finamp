@@ -2987,5 +2987,22 @@
     "previousTracksPersistenceModeExpanded": "Développé (visible)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "amoledTheme": "Utiliser le thème AMOLED",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "Remplace la palette de couleurs sombres par un thème entièrement noir.",
+    "useAndroidGainEffectTitle": "Utiliser l'effet de gain",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "Utilisez l'effet de gain natif pour régler le volume.  Cette option offre davantage de souplesse, mais peut entraîner un dysfonctionnement du lecteur sur certains appareils.  Vous ne devriez pas avoir à modifier ce paramètre manuellement.  Un redémarrage de l'application est nécessaire pour que les modifications prennent effet.",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "Passage au mode de secours de l'effet de gain en raison d'une erreur d'initialisation.",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
     }
 }
