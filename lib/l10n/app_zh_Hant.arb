@@ -2976,5 +2976,22 @@
     "previousTracksPersistenceModeExpanded": "展開 (顯示)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "amoledTheme": "使用 AMOLED 主題",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "將深色主題替換為純黑主題。",
+    "useAndroidGainEffectTitle": "使用增益效果",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "使用原生增益效果來控制音量。此方式更具彈性，但在部分裝置上可能導致播放器異常。一般情況下不需要手動更改。需重新啟動應用程式後才會生效。",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "因初始化錯誤，已切換為增益效果備用模式。",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
     }
 }
