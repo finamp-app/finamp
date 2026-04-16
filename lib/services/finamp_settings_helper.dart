@@ -145,10 +145,14 @@ class FinampSettingsHelper {
 
   static void resetTranscodingSettings() {
     FinampSettings finampSettingsTemp = finampSettings;
-
-    finampSettingsTemp.shouldTranscode = DefaultSettings.shouldTranscode;
-    FinampSetters.setTranscodeBitrate(DefaultSettings.transcodeBitrate);
-    finampSettingsTemp.transcodingStreamingFormat = DefaultSettings.transcodingStreamingFormat;
+    finampSettingsTemp.streamingTranscodeConfigs = DefaultSettings.streamingTranscodeConfigs;
+    finampSettingsTemp.forcedTranscodeConfig = DefaultSettings.forcedTranscodeConfig;
+    finampSettingsTemp.defaultTranscodeConfig = DefaultSettings.defaultTranscodeConfig;
+    finampSettingsTemp.cellularTranscodeConfig = DefaultSettings.cellularTranscodeConfig;
+    finampSettingsTemp.remoteTranscodeConfig = DefaultSettings.remoteTranscodeConfig;
+    finampSettingsTemp.flacTranscodeConfig = DefaultSettings.flacTranscodeConfig;
+    finampSettingsTemp.incompatibleTranscodeConfig = DefaultSettings.incompatibleTranscodeConfig;
+    finampSettingsTemp.forceTranscode = DefaultSettings.forceTranscode;
     finampSettingsTemp.shouldTranscodeDownloads = DefaultSettings.shouldTranscodeDownloads;
     finampSettingsTemp.downloadTranscodingCodec =
         FinampTranscodingCodec.opus; // starts uninitilized, idk what value this should be

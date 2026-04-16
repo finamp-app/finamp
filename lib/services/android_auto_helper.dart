@@ -5,7 +5,6 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/downloads_service.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 
@@ -170,9 +169,8 @@ class AndroidAutoHelper {
       final recentItems = queueService.peekQueue(previous: 5);
       final List<MediaItem> recentMediaItems = [];
       for (final item in recentItems) {
-        if (item.baseItem == null) continue;
         final mediaItem = await queueService.generateMediaItem(
-          item.baseItem!,
+          item.baseItem,
           parentType: MediaItemParentType.collection,
           isPlayable: _isPlayable,
         );
@@ -220,33 +218,23 @@ class AndroidAutoHelper {
         switch (item.type) {
           case "Audio":
             mediaItem.extras?["android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT"] =
-                GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                ? AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.tracks
-                : "Tracks";
+                GlobalSnackbar.localizations?.tracks ?? "Tracks";
             break;
           case "MusicAlbum":
             mediaItem.extras?["android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT"] =
-                GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                ? AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.albums
-                : "Albums";
+                GlobalSnackbar.localizations?.albums ?? "Albums";
             break;
           case "MusicArtist":
             mediaItem.extras?["android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT"] =
-                GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                ? AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.artists
-                : "Artists";
+                GlobalSnackbar.localizations?.artists ?? "Artists";
             break;
           case "MusicGenre":
             mediaItem.extras?["android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT"] =
-                GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                ? AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.genres
-                : "Genres";
+                GlobalSnackbar.localizations?.genres ?? "Genres";
             break;
           case "Playlist":
             mediaItem.extras?["android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT"] =
-                GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                ? AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.playlists
-                : "Playlists";
+                GlobalSnackbar.localizations?.playlists ?? "Playlists";
             break;
           default:
             break;
@@ -532,9 +520,7 @@ class AndroidAutoHelper {
       mediaItems.add(
         MediaItem(
           id: QueueItemSourceNameType.shuffleAll.name,
-          title:
-              AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)?.shuffleAll ??
-              "Shuffle All Tracks",
+          title: GlobalSnackbar.localizations?.shuffleAll ?? "Shuffle All Tracks",
           playable: true,
         ),
       );
@@ -698,7 +684,7 @@ class AndroidAutoHelper {
               (item.albumArtists?.any(
                     (artist) =>
                         (artist.name?.isNotEmpty ?? false) &&
-                        (wantedArtist.toString().toLowerCase().contains(artist.name?.toLowerCase() ?? "") ?? false),
+                        wantedArtist.toString().toLowerCase().contains(artist.name?.toLowerCase() ?? ""),
                   ) ??
                   false)) {
         // Title matches exactly or artist matches, highest priority
@@ -779,7 +765,7 @@ class AndroidAutoHelper {
               (item.albumArtists?.any(
                     (artist) =>
                         (artist.name?.isNotEmpty ?? false) &&
-                        (wantedArtist.toString().toLowerCase().contains(artist.name?.toLowerCase() ?? "") ?? false),
+                        wantedArtist.toString().toLowerCase().contains(artist.name?.toLowerCase() ?? ""),
                   ) ??
                   false)) {
         // Title matches exactly or artist matches, highest priority

@@ -13,6 +13,7 @@ import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/current_album_image_provider.dart';
+import 'package:finamp/services/data_source_service.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -624,7 +625,7 @@ class QueueService {
       skipRadioCacheInvalidation: skipRadioCacheInvalidation,
     );
     _queueServiceLogger.info(
-      "Started playing '${GlobalSnackbar.materialAppScaffoldKey.currentContext != null ? source.name.getLocalized(GlobalSnackbar.materialAppScaffoldKey.currentContext!) : source.name.type}' (${source.type}) in order $order from index $startingIndex",
+      "Started playing '${GlobalSnackbar.localizations != null ? source.name.getLocalized2(GlobalSnackbar.localizations!) : source.name.type}' (${source.type}) in order $order from index $startingIndex",
     );
     _queueServiceLogger.info("Items for queue: [${items.map((e) => e.name).join(", ")}]");
   }
@@ -766,7 +767,7 @@ class QueueService {
       if (beginPlaying) {
         // only open the player screen if we actually start playing, otherwise it would open after startup + queue restore
         if (FinampSettingsHelper.finampSettings.autoExpandPlayerScreen) {
-          unawaited(NowPlayingBar.openPlayerScreen(GlobalSnackbar.materialAppNavigatorKey.currentContext!));
+          unawaited(NowPlayingBar.openPlayerScreen());
         }
       }
 
@@ -1407,7 +1408,7 @@ class QueueService {
 
     if (item.type == "Audio") {
       downloadedTrack = _downloadsService.getTrackDownload(item: item);
-      isDownloaded = downloadedTrack != null;
+      isDownloaded = downloadedTrack?.file != null;
     } else {
       downloadedCollection = await _downloadsService.getCollectionInfo(item: item);
       if (downloadedCollection != null) {
@@ -1453,7 +1454,7 @@ class QueueService {
         //!!! this ID has to be consistent across the transcoding URL and the playback reporting status, otherwise the server won't show that we're transcoding
         "playSessionId": uuid.v4(),
         "itemJson": item.toJson(setOffline: false),
-        "shouldTranscode": FinampSettingsHelper.finampSettings.shouldTranscode,
+        if (!isDownloaded) "transcodeProfile": DataSourceService.activeTranscodingProfile(),
         "downloadedTrackPath": downloadedTrack?.file?.path,
         "isDownloaded": isDownloaded,
         "android.media.extra.DOWNLOAD_STATUS": isDownloaded ? 2 : 0,

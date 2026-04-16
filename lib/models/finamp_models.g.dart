@@ -85,7 +85,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
     };
     return FinampSettings(
         isOffline: fields[0] == null ? false : fields[0] as bool,
-        shouldTranscode: fields[1] == null ? false : fields[1] as bool,
+        forceTranscode: fields[1] == null ? false : fields[1] as bool,
         transcodeBitrate: fields[2] == null
             ? 320000
             : (fields[2] as num).toInt(),
@@ -452,6 +452,55 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? PreviousTracksPersistenceMode.persistent
             : fields[145] as PreviousTracksPersistenceMode,
         useAndroidGainEffect: fields[147] == null ? true : fields[147] as bool,
+        streamingTranscodeConfigs: fields[148] == null
+            ? {
+                'original': const StreamingTranscodingConfig(
+                  StreamingTranscodingPreset.original,
+                  null,
+                  FinampTranscodingStreamingFormat.original,
+                  null,
+                ),
+                'lossless': const StreamingTranscodingConfig(
+                  StreamingTranscodingPreset.lossless,
+                  null,
+                  FinampTranscodingStreamingFormat.flacFragmentedMp4,
+                  null,
+                ),
+                'efficient': const StreamingTranscodingConfig(
+                  StreamingTranscodingPreset.efficient,
+                  null,
+                  FinampTranscodingStreamingFormat.opusFragmentedMp4,
+                  180000,
+                ),
+                'compatible': const StreamingTranscodingConfig(
+                  StreamingTranscodingPreset.compatible,
+                  null,
+                  FinampTranscodingStreamingFormat.aacFragmentedMp4,
+                  320000,
+                ),
+              }
+            : (fields[148] as Map).cast<String, StreamingTranscodingConfig>(),
+        hasCompletedTranscodeSettingsMigration: fields[149] == null
+            ? false
+            : fields[149] as bool,
+        forcedTranscodeConfig: fields[150] == null
+            ? 'compatible'
+            : fields[150] as String,
+        defaultTranscodeConfig: fields[151] == null
+            ? 'original'
+            : fields[151] as String,
+        cellularTranscodeConfig: fields[152] == null
+            ? 'original'
+            : fields[152] as String,
+        remoteTranscodeConfig: fields[153] == null
+            ? 'original'
+            : fields[153] as String,
+        flacTranscodeConfig: fields[154] == null
+            ? 'original'
+            : fields[154] as String,
+        incompatibleTranscodeConfig: fields[155] == null
+            ? 'lossless'
+            : fields[155] as String,
       )
       ..disableGesture = fields[19] == null ? false : fields[19] as bool
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool
@@ -470,11 +519,11 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(141)
+      ..writeByte(149)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
-      ..write(obj.shouldTranscode)
+      ..write(obj.forceTranscode)
       ..writeByte(2)
       ..write(obj.transcodeBitrate)
       ..writeByte(3)
@@ -752,7 +801,23 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(146)
       ..write(obj.amoledTheme)
       ..writeByte(147)
-      ..write(obj.useAndroidGainEffect);
+      ..write(obj.useAndroidGainEffect)
+      ..writeByte(148)
+      ..write(obj.streamingTranscodeConfigs)
+      ..writeByte(149)
+      ..write(obj.hasCompletedTranscodeSettingsMigration)
+      ..writeByte(150)
+      ..write(obj.forcedTranscodeConfig)
+      ..writeByte(151)
+      ..write(obj.defaultTranscodeConfig)
+      ..writeByte(152)
+      ..write(obj.cellularTranscodeConfig)
+      ..writeByte(153)
+      ..write(obj.remoteTranscodeConfig)
+      ..writeByte(154)
+      ..write(obj.flacTranscodeConfig)
+      ..writeByte(155)
+      ..write(obj.incompatibleTranscodeConfig);
   }
 
   @override
@@ -1576,6 +1641,50 @@ class FinampStorableQueueInfoAdapter
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is FinampStorableQueueInfoAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class StreamingTranscodingConfigAdapter
+    extends TypeAdapter<StreamingTranscodingConfig> {
+  @override
+  final typeId = 113;
+
+  @override
+  StreamingTranscodingConfig read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return StreamingTranscodingConfig(
+      fields[0] as StreamingTranscodingPreset,
+      fields[1] as String?,
+      fields[2] as FinampTranscodingStreamingFormat,
+      (fields[3] as num?)?.toInt(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, StreamingTranscodingConfig obj) {
+    writer
+      ..writeByte(4)
+      ..writeByte(0)
+      ..write(obj.preset)
+      ..writeByte(1)
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.format)
+      ..writeByte(3)
+      ..write(obj.bitrate);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StreamingTranscodingConfigAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
@@ -2458,6 +2567,8 @@ class FinampTranscodingStreamingFormatAdapter
         return FinampTranscodingStreamingFormat.vorbisMpegTS;
       case 5:
         return FinampTranscodingStreamingFormat.vorbisFragmentedMp4;
+      case 6:
+        return FinampTranscodingStreamingFormat.original;
       default:
         return FinampTranscodingStreamingFormat.aacMpegTS;
     }
@@ -2478,6 +2589,8 @@ class FinampTranscodingStreamingFormatAdapter
         writer.writeByte(4);
       case FinampTranscodingStreamingFormat.vorbisFragmentedMp4:
         writer.writeByte(5);
+      case FinampTranscodingStreamingFormat.original:
+        writer.writeByte(6);
     }
   }
 
@@ -3199,6 +3312,56 @@ class PreviousTracksPersistenceModeAdapter
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is PreviousTracksPersistenceModeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class StreamingTranscodingPresetAdapter
+    extends TypeAdapter<StreamingTranscodingPreset> {
+  @override
+  final typeId = 114;
+
+  @override
+  StreamingTranscodingPreset read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return StreamingTranscodingPreset.original;
+      case 1:
+        return StreamingTranscodingPreset.lossless;
+      case 2:
+        return StreamingTranscodingPreset.efficient;
+      case 3:
+        return StreamingTranscodingPreset.compatible;
+      case 4:
+        return StreamingTranscodingPreset.custom;
+      default:
+        return StreamingTranscodingPreset.original;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, StreamingTranscodingPreset obj) {
+    switch (obj) {
+      case StreamingTranscodingPreset.original:
+        writer.writeByte(0);
+      case StreamingTranscodingPreset.lossless:
+        writer.writeByte(1);
+      case StreamingTranscodingPreset.efficient:
+        writer.writeByte(2);
+      case StreamingTranscodingPreset.compatible:
+        writer.writeByte(3);
+      case StreamingTranscodingPreset.custom:
+        writer.writeByte(4);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StreamingTranscodingPresetAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

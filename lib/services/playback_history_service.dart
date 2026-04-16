@@ -528,7 +528,7 @@ class PlaybackHistoryService {
             : null,
         volumeLevel: (FinampSettingsHelper.finampSettings.currentVolume * 100).round(),
         repeatMode: _toJellyfinRepeatMode(_queueService.loopMode),
-        playMethod: item.item.extras?["shouldTranscode"] as bool? ?? false ? "Transcode" : "DirectPlay",
+        playMethod: item.isTranscodedStream ? "Transcode" : "DirectPlay",
         playbackOrder: _queueService.playbackOrder == FinampPlaybackOrder.shuffled ? "Shuffle" : "Default",
         nowPlayingQueue: getQueueToReport(includeNowPlayingQueue: includeNowPlayingQueue),
         playlistItemId: _queueService.getQueue().source.id,
@@ -567,7 +567,7 @@ class PlaybackHistoryService {
             ? _currentTrack!.startTime.millisecondsSinceEpoch * 1000 * 10
             : null,
         volumeLevel: (FinampSettingsHelper.finampSettings.currentVolume * 100).round(),
-        playMethod: currentTrack.item.extras!["shouldTranscode"] as bool? ?? false ? "Transcode" : "DirectPlay",
+        playMethod: currentTrack.isTranscodedStream ? "Transcode" : "DirectPlay",
         playbackOrder: _queueService.playbackOrder == FinampPlaybackOrder.shuffled ? "Shuffle" : "Default",
         repeatMode: _toJellyfinRepeatMode(_queueService.loopMode),
         nowPlayingQueue: getQueueToReport(includeNowPlayingQueue: includeNowPlayingQueue),

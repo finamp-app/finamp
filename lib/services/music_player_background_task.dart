@@ -12,7 +12,6 @@ import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/services/current_track_metadata_provider.dart';
 import 'package:finamp/services/favorite_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
-import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/radio_service_helper.dart' as RadioServiceHelper;
@@ -1085,31 +1084,10 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     }
 
     bool isFavorite = currentItem.userData?.isFavorite ?? false;
-    if (GlobalSnackbar.materialAppScaffoldKey.currentContext != null) {
-      // get current favorite status from the provider
-      isFavorite = ref.read(isFavoriteProvider(currentItem));
-      // update favorite status with the value returned by the provider
-      isFavorite = ref.read(isFavoriteProvider(currentItem).notifier).updateFavorite(!isFavorite);
-    } else {
-      // fallback if we can't find the context
-      final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
-      if (isFavorite) {
-        await jellyfinApiHelper.removeFavorite(currentItem.id);
-      } else {
-        await jellyfinApiHelper.addFavorite(currentItem.id);
-      }
-      isFavorite = !isFavorite;
-      final newUserData = currentItem.userData;
-      if (newUserData != null) {
-        newUserData.isFavorite = isFavorite;
-      }
-      currentItem.userData = newUserData;
-      mediaItem.add(
-        mediaItem.valueOrNull?.copyWith(
-          extras: {...mediaItem.valueOrNull?.extras ?? {}, "itemJson": currentItem.toJson()},
-        ),
-      );
-    }
+    // get current favorite status from the provider
+    isFavorite = ref.read(isFavoriteProvider(currentItem));
+    // update favorite status with the value returned by the provider
+    isFavorite = ref.read(isFavoriteProvider(currentItem).notifier).updateFavorite(!isFavorite);
     return refreshPlaybackStateAndMediaNotification();
   }
 
@@ -1197,11 +1175,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       currentItem = jellyfin_models.BaseItemDto.fromJson(
         mediaItem.valueOrNull?.extras!["itemJson"] as Map<String, dynamic>,
       );
-      if (GlobalSnackbar.materialAppScaffoldKey.currentContext != null) {
-        isFavorite = GetIt.instance<ProviderContainer>().read(isFavoriteProvider(currentItem));
-      } else {
-        isFavorite = currentItem.userData?.isFavorite ?? false;
-      }
+      isFavorite = GetIt.instance<ProviderContainer>().read(isFavoriteProvider(currentItem));
     }
 
     final radioEnabled = FinampSettingsHelper.finampSettings.radioEnabled;
@@ -1220,12 +1194,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
             name: CustomPlaybackActions.toggleFavorite.name,
             androidIcon: isFavorite ? "drawable/baseline_heart_filled_24" : "drawable/baseline_heart_24",
             label: isFavorite
-                ? (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                      ? AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.removeFavorite
-                      : "Remove Favorite")
-                : (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                      ? AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.addFavorite
-                      : "Add Favorite"),
+                ? GlobalSnackbar.localizations?.removeFavorite ?? "Remove Favorite"
+                : GlobalSnackbar.localizations?.addFavorite ?? "Add Favorite",
           ),
         if (FinampSettingsHelper.finampSettings.showShuffleButtonOnMediaNotification)
           //TODO eventually we probably want separate settings for this, and not store them as individual booleans in Hive
@@ -1234,16 +1204,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
                   name: CustomPlaybackActions.radio.name,
                   androidIcon: radioActive ? "drawable/tabler_icons_radio_24" : "drawable/tabler_icons_radio_off_24",
                   label: radioActive
-                      ? (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                            ? AppLocalizations.of(
-                                GlobalSnackbar.materialAppScaffoldKey.currentContext!,
-                              )!.radioModeActiveTitle
-                            : "Radio active")
-                      : (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                            ? AppLocalizations.of(
-                                GlobalSnackbar.materialAppScaffoldKey.currentContext!,
-                              )!.radioModeInactiveTitle
-                            : "Radio paused"),
+                      ? GlobalSnackbar.localizations?.radioModeActiveTitle ?? "Radio active"
+                      : GlobalSnackbar.localizations?.radioModeInactiveTitle ?? "Radio paused",
                 )
               : MediaControl.custom(
                   name: CustomPlaybackActions.shuffle.name,
@@ -1251,16 +1213,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
                       ? "drawable/baseline_shuffle_on_24"
                       : "drawable/baseline_shuffle_24",
                   label: _player.shuffleModeEnabled
-                      ? (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                            ? AppLocalizations.of(
-                                GlobalSnackbar.materialAppScaffoldKey.currentContext!,
-                              )!.playbackOrderShuffledButtonLabel
-                            : "Shuffle enabled")
-                      : (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                            ? AppLocalizations.of(
-                                GlobalSnackbar.materialAppScaffoldKey.currentContext!,
-                              )!.playbackOrderLinearButtonLabel
-                            : "Shuffle disabled"),
+                      ? GlobalSnackbar.localizations?.playbackOrderShuffledButtonLabel ?? "Shuffle enabled"
+                      : GlobalSnackbar.localizations?.playbackOrderLinearButtonLabel ?? "Shuffle disabled",
                 ),
         if (FinampSettingsHelper.finampSettings.showStopButtonOnMediaNotification)
           MediaControl.stop.copyWith(androidIcon: "drawable/baseline_stop_24"),
@@ -1368,28 +1322,28 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     // // indicate which play session this stream belongs to, this will be referenced when reporting playback progress
     // queryParameters["PlaySessionId"] = _order.id; //!!! this currently breaks transcoding for some reason
 
-    if (mediaItem.extras!["shouldTranscode"] as bool) {
+    assert(!(mediaItem.extras!["isDownloaded"] as bool));
+    final transcodeProfile = mediaItem.extras!["transcodeProfile"] as StreamingTranscodingConfig;
+    if (transcodeProfile.format != FinampTranscodingStreamingFormat.original) {
       builtPath.addAll(["Audio", mediaItem.extras!["itemJson"]["Id"] as String, "main.m3u8"]);
 
       queryParameters.addAll({
-        "audioCodec": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec,
+        "audioCodec": transcodeProfile.format.codec,
         // Ideally we'd switch between 44.1/48kHz depending on the source is,
         // realistically it doesn't matter too much
         // default to 44100, only use 48000 for opus because opus doesn't support 44100
         "playSessionId": mediaItem.extras!["playSessionId"] as String? ?? "",
-        "audioSampleRate": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec == 'opus'
-            ? '48000'
-            : '44100',
+        "audioSampleRate": transcodeProfile.format.codec == 'opus' ? '48000' : '44100',
         "maxAudioBitDepth": "16",
-        "audioBitRate": FinampSettingsHelper.finampSettings.transcodeBitrate.toString(),
-        "segmentContainer": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.container,
+        if (!transcodeProfile.format.lossless) "audioBitRate": transcodeProfile.bitrate.toString(),
+        "segmentContainer": transcodeProfile.format.container,
       });
 
       if (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
               MultichannelHandlingSetting.stereoDownmixAll ||
           (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
                   MultichannelHandlingSetting.stereoDownmixLossy &&
-              FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec != "flac")) {
+              !transcodeProfile.format.lossless)) {
         queryParameters.addAll({"maxAudioChannels": "2"});
       }
     } else {

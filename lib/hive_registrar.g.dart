@@ -94,6 +94,8 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(SleepTimerTypeAdapter());
     registerAdapter(SortByAdapter());
     registerAdapter(SortOrderAdapter());
+    registerAdapter(StreamingTranscodingConfigAdapter());
+    registerAdapter(StreamingTranscodingPresetAdapter());
     registerAdapter(SubtitleProfileAdapter());
     registerAdapter(TabContentTypeAdapter());
     registerAdapter(TileAdditionalInfoTypeAdapter());
@@ -196,6 +198,8 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(SleepTimerTypeAdapter());
     registerAdapter(SortByAdapter());
     registerAdapter(SortOrderAdapter());
+    registerAdapter(StreamingTranscodingConfigAdapter());
+    registerAdapter(StreamingTranscodingPresetAdapter());
     registerAdapter(SubtitleProfileAdapter());
     registerAdapter(TabContentTypeAdapter());
     registerAdapter(TileAdditionalInfoTypeAdapter());

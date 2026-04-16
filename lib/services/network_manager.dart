@@ -101,6 +101,7 @@ bool featureEnabled() {
 
 /// Sets the offline mode based on the current connectivity and user settings
 Future<bool> _setOfflineMode(List<ConnectivityResult> connections) async {
+  // TODO refactor this file to make a connectivity provider with wait built in
   if (!featureEnabled()) {
     return FinampSettingsHelper.finampSettings.isOffline;
   }

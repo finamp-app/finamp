@@ -15,6 +15,7 @@ import 'package:http/io_client.dart' as http;
 import 'package:isar/isar.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
+
 import '../models/finamp_models.dart';
 import '../models/jellyfin_models.dart';
 import 'downloads_service.dart';
@@ -1150,9 +1151,10 @@ class JellyfinApiHelper {
 
       if (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
               MultichannelHandlingSetting.stereoDownmixAll ||
-          (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
-                  MultichannelHandlingSetting.stereoDownmixLossy &&
-              FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec != "flac")) {
+          // We do not currently support lossless download transcoding
+          // TODO add this?  will be eventually needed for incompatible codec auto-transcode
+          FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+              MultichannelHandlingSetting.stereoDownmixLossy) {
         queryParameters.addAll({"maxAudioChannels": "2"});
       }
 

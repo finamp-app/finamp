@@ -562,9 +562,9 @@
   "@logoutButtonSubtitle": {},
   "areYouSure": "Are you sure?",
   "@areYouSure": {},
-  "enableTranscoding": "Enable Transcoding",
+  "enableTranscoding": "Use Manual Transcoding Config",
   "@enableTranscoding": {},
-  "enableTranscodingSubtitle": "Transcodes music streams on the server side.",
+  "enableTranscodingSubtitle": "Overrides dynamic transcoding configs with the selected value.  Also toggleable in player menu.",
   "@enableTranscodingSubtitle": {},
   "bitrate": "Bitrate",
   "@bitrate": {},
@@ -3308,5 +3308,19 @@
   "androidGainDisabled": "Switching to gain effect fallback due to initialization error.",
   "@androidGainDisabled": {
     "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
-  }
+  },
+  "originalTranscode": "Original",
+  "losslessTranscode": "Lossless",
+  "efficientTranscode": "Efficient",
+  "compatibleTranscode": "Compatible",
+  "customTranscode": "Custom",
+  "forcedTranscodeConfigTitle": "Manual Transcoding Config",
+  "forcedTranscodeConfigSubtitle": "Overrides all other configs when manually enabled in player menu or settings.",
+  "defaultTranscodeConfigTitle": "Default Transcoding Config",
+  "defaultTranscodeConfigSubtitle": "Always applied",
+  "cellularTranscodeConfigTitle": "Cellular Transcoding Config",
+  "cellularTranscodeConfigSubtitle": "Applied when using cellular data",
+  "remoteTranscodeConfigTitle": "Remote Transcoding Config",
+  "remoteTranscodeConfigSubtitle": "Applied when using remote URL",
+  "remoteTranscodeConfigDisabledSubtitle": "Setting is only available if local server URL configured"
 }

@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,9 @@ class DataSourceService {
       _onDataSourceChange(isOffline ? SourceChangeType.toOffline : SourceChangeType.toOnline);
     });
 
-    ref.listen(finampSettingsProvider.shouldTranscode, (_, shouldTranscode) {
+    // TODO create active transcode profile provider, just listen to that
+
+    /*ref.listen(finampSettingsProvider.shouldTranscode, (_, shouldTranscode) {
       if (shouldTranscode) {
         _dataSourceServiceLogger.info("Transcoding Enabled");
       } else {
@@ -53,6 +56,7 @@ class DataSourceService {
         _onDataSourceChange(SourceChangeType.toTranscoding);
       }
     });
+    */
 
     ref.listen(FinampUserHelper.finampCurrentUserProvider.select((user) => user.value?.baseURL), (_, newUrl) {
       _dataSourceServiceLogger.info("Base URL Changed: $newUrl");
@@ -112,7 +116,7 @@ class DataSourceService {
         case SourceChangeType.toDirectPlay:
         case SourceChangeType.toTranscoding:
           final queueInfo = queueService.getQueue();
-          final transcodingItemsExist = queueInfo.fullQueue.any((item) => item.item.extras?["shouldTranscode"] == true);
+          final transcodingItemsExist = queueInfo.fullQueue.any((item) => item.isTranscodedStream);
           if (event == SourceChangeType.toTranscoding || transcodingItemsExist) {
             if (FinampSettingsHelper.finampSettings.autoReloadQueue) {
               await queueService.reloadQueue();
@@ -133,5 +137,30 @@ class DataSourceService {
           break;
       }
     }
+  }
+
+  static StreamingTranscodingConfig activeTranscodingProfile() {
+    final settings = FinampSettingsHelper.finampSettings;
+    final allConfigs = settings.streamingTranscodeConfigs;
+    if (FinampSettingsHelper.finampSettings.forceTranscode) {
+      return allConfigs[settings.forcedTranscodeConfig] ?? StreamingTranscodingPreset.losslessPreset;
+    }
+    final validPresets = [allConfigs[settings.defaultTranscodeConfig]];
+    final user = GetIt.instance<FinampUserHelper>().currentUser;
+    if (user != null && user.preferLocalNetwork && !user.isLocal) {
+      validPresets.add(allConfigs[settings.remoteTranscodeConfig]);
+    }
+    // TODO integrate with network manager.  Need to make sure it runs if cellularTranscodeConfig is tighter than default?
+    if (true) {
+      validPresets.add(allConfigs[settings.cellularTranscodeConfig]);
+    }
+    // Use transcode config with lowest effective bitrate
+    var output = StreamingTranscodingPreset.originalPreset;
+    for (final config in validPresets) {
+      if (config != null && config.effectiveBitrate < output.effectiveBitrate) {
+        output = config;
+      }
+    }
+    return output;
   }
 }

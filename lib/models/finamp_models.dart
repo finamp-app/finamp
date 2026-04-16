@@ -107,7 +107,7 @@ class DefaultSettings {
   static const amoledTheme = false;
   static const Locale? locale = null;
   static const Color? accentColor = null;
-  static const shouldTranscode = false;
+  static const forceTranscode = false;
   static const transcodeBitrate = 320000;
   static const androidStopForegroundOnPause = true;
   static const onlyShowFavorites = false;
@@ -251,13 +251,36 @@ class DefaultSettings {
   static const forceAudioOffloadingOnAndroid = false;
   static const previousTracksPersistenceMode = PreviousTracksPersistenceMode.persistent;
   static const useAndroidGainEffect = true;
+  static const streamingTranscodeConfigs = {
+    // We need to directly use strings here instead of enum names or something to allow this to be const
+    "original": StreamingTranscodingPreset.originalPreset,
+    "lossless": StreamingTranscodingPreset.losslessPreset,
+    "efficient": StreamingTranscodingConfig(
+      StreamingTranscodingPreset.efficient,
+      null,
+      FinampTranscodingStreamingFormat.opusFragmentedMp4,
+      180000,
+    ),
+    "compatible": StreamingTranscodingConfig(
+      StreamingTranscodingPreset.compatible,
+      null,
+      FinampTranscodingStreamingFormat.aacFragmentedMp4,
+      320000,
+    ),
+  };
+  static const forcedTranscodeConfig = "compatible";
+  static const defaultTranscodeConfig = "original";
+  static const cellularTranscodeConfig = "original";
+  static const remoteTranscodeConfig = "original";
+  static const flacTranscodeConfig = "original";
+  static const incompatibleTranscodeConfig = "lossless";
 }
 
 @HiveType(typeId: 28)
 class FinampSettings {
   FinampSettings({
     this.isOffline = DefaultSettings.isOffline,
-    this.shouldTranscode = DefaultSettings.shouldTranscode,
+    this.forceTranscode = DefaultSettings.forceTranscode,
     this.transcodeBitrate = DefaultSettings.transcodeBitrate,
     // downloadLocations is required since the other values can be created with
     // default values. create() is used to return a FinampSettings with
@@ -396,12 +419,24 @@ class FinampSettings {
     this.forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid,
     this.previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode,
     this.useAndroidGainEffect = DefaultSettings.useAndroidGainEffect,
+    this.streamingTranscodeConfigs = DefaultSettings.streamingTranscodeConfigs,
+    // !!! Don't touch this default value, it's supposed to be hard coded to run the migration only once
+    this.hasCompletedTranscodeSettingsMigration = true,
+    this.forcedTranscodeConfig = DefaultSettings.forcedTranscodeConfig,
+    this.defaultTranscodeConfig = DefaultSettings.defaultTranscodeConfig,
+    this.cellularTranscodeConfig = DefaultSettings.cellularTranscodeConfig,
+    this.remoteTranscodeConfig = DefaultSettings.remoteTranscodeConfig,
+    this.flacTranscodeConfig = DefaultSettings.flacTranscodeConfig,
+    this.incompatibleTranscodeConfig = DefaultSettings.incompatibleTranscodeConfig,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
   bool isOffline;
-  @HiveField(1, defaultValue: DefaultSettings.shouldTranscode)
-  bool shouldTranscode;
+
+  @HiveField(1, defaultValue: DefaultSettings.forceTranscode)
+  bool forceTranscode;
+
+  @Deprecated("Use transcode profile map instead")
   @HiveField(2, defaultValue: DefaultSettings.transcodeBitrate)
   int transcodeBitrate;
 
@@ -628,6 +663,7 @@ class FinampSettings {
   @HiveField(74, defaultValue: DefaultSettings.hasDownloadedPlaylistInfo)
   bool hasDownloadedPlaylistInfo;
 
+  @Deprecated("Use transcode profile map instead")
   @HiveField(75, defaultValue: DefaultSettings.transcodingStreamingFormat)
   FinampTranscodingStreamingFormat transcodingStreamingFormat;
 
@@ -856,6 +892,30 @@ class FinampSettings {
 
   @HiveField(147, defaultValue: DefaultSettings.useAndroidGainEffect)
   bool useAndroidGainEffect;
+
+  @HiveField(148, defaultValue: DefaultSettings.streamingTranscodeConfigs)
+  @SettingsHelperMap("configId", "config")
+  Map<String, StreamingTranscodingConfig> streamingTranscodeConfigs;
+
+  // !!! don't touch this default value, it's supposed to be hard coded to run the migration only once
+  @HiveField(149, defaultValue: false)
+  bool hasCompletedTranscodeSettingsMigration;
+
+  @HiveField(150, defaultValue: DefaultSettings.forcedTranscodeConfig)
+  String forcedTranscodeConfig;
+  @HiveField(151, defaultValue: DefaultSettings.defaultTranscodeConfig)
+  String defaultTranscodeConfig;
+  @HiveField(152, defaultValue: DefaultSettings.cellularTranscodeConfig)
+  String cellularTranscodeConfig;
+  @HiveField(153, defaultValue: DefaultSettings.remoteTranscodeConfig)
+  String remoteTranscodeConfig;
+  @HiveField(154, defaultValue: DefaultSettings.flacTranscodeConfig)
+  // TODO it seems like fetching item codec requires getting mediaStreams data, which is large.  Is there a more efficent way?
+  // Can we limit mediaStream fetching to only items about to play?
+  String flacTranscodeConfig;
+  @HiveField(155, defaultValue: DefaultSettings.incompatibleTranscodeConfig)
+  // TODO figure out supported codecs somehow?
+  String incompatibleTranscodeConfig;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
@@ -1331,9 +1391,9 @@ class DownloadStub {
     String id = collection.id;
     // Fetch localized name from default global context.
     String? name;
-    var context = GlobalSnackbar.materialAppScaffoldKey.currentContext;
-    if (context != null) {
-      name = collection.getName(context);
+    var loc = GlobalSnackbar.localizations;
+    if (loc != null) {
+      name = collection.getName2(loc);
     }
 
     return DownloadStub._build(
@@ -1995,9 +2055,7 @@ class QueueItemSource {
           ? QueueItemSourceName(type: nameType, localizationParameter: baseItem.name ?? "")
           : QueueItemSourceName(
               type: QueueItemSourceNameType.preTranslated,
-              pretranslatedName:
-                  baseItem.name ??
-                  AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.placeholderSource,
+              pretranslatedName: baseItem.name ?? GlobalSnackbar.localizations?.placeholderSource ?? "Somewhere",
             ),
       id: baseItem.id,
       item: baseItem,
@@ -2098,33 +2156,35 @@ class QueueItemSourceName {
   @HiveField(2)
   final String? localizationParameter;
 
-  String getLocalized(BuildContext context) {
+  String getLocalized(BuildContext context) => getLocalized2(AppLocalizations.of(context)!);
+
+  String getLocalized2(AppLocalizations localizations) {
     switch (type) {
       case QueueItemSourceNameType.preTranslated:
         return pretranslatedName ?? "";
       case QueueItemSourceNameType.yourLikes:
-        return AppLocalizations.of(context)!.yourLikes;
+        return localizations.yourLikes;
       case QueueItemSourceNameType.shuffleAll:
-        return AppLocalizations.of(context)!.shuffleAllQueueSource;
+        return localizations.shuffleAllQueueSource;
       case QueueItemSourceNameType.mix:
-        return AppLocalizations.of(context)!.mix(localizationParameter ?? "");
+        return localizations.mix(localizationParameter ?? "");
       case QueueItemSourceNameType.instantMix:
-        return AppLocalizations.of(context)!.instantMix;
+        return localizations.instantMix;
       case QueueItemSourceNameType.nextUp:
-        return AppLocalizations.of(context)!.nextUp;
+        return localizations.nextUp;
       case QueueItemSourceNameType.tracksFormerNextUp:
-        return AppLocalizations.of(context)!.tracksFormerNextUp;
+        return localizations.tracksFormerNextUp;
       case QueueItemSourceNameType.savedQueue:
-        return AppLocalizations.of(context)!.savedQueue;
+        return localizations.savedQueue;
       case QueueItemSourceNameType.queue:
-        return AppLocalizations.of(context)!.queue;
+        return localizations.queue;
       case QueueItemSourceNameType.remoteClient:
         return "";
       case QueueItemSourceNameType.radio:
         if (localizationParameter != null) {
-          return AppLocalizations.of(context)!.radioForItem(localizationParameter!);
+          return localizations.radioForItem(localizationParameter!);
         } else {
-          return AppLocalizations.of(context)!.radio;
+          return localizations.radio;
         }
     }
   }
@@ -2174,6 +2234,13 @@ class FinampQueueItem {
   }
 
   BaseItemId get baseItemId => item.extras!["itemJson"]["Id"] as BaseItemId;
+
+  StreamingTranscodingConfig? get streamingTranscodeProfile =>
+      item.extras!["transcodeProfile"] as StreamingTranscodingConfig?;
+
+  bool get isTranscodedStream =>
+      streamingTranscodeProfile != null &&
+      streamingTranscodeProfile?.format != FinampTranscodingStreamingFormat.original;
 }
 
 @HiveType(typeId: 58)
@@ -2621,14 +2688,14 @@ class FinampCollection {
     FinampCollectionType.collectionWithLibraryFilter => "Collection with Library Filter:${library!.id}:${item!.id}",
   };
 
-  String getName(BuildContext context) => switch (type) {
-    FinampCollectionType.favorites => AppLocalizations.of(context)!.finampCollectionNames("favorites"),
-    FinampCollectionType.allPlaylists => AppLocalizations.of(context)!.finampCollectionNames("allPlaylists"),
-    FinampCollectionType.latest5Albums => AppLocalizations.of(context)!.finampCollectionNames("fiveLatestAlbums"),
-    FinampCollectionType.libraryImages => AppLocalizations.of(context)!.cacheLibraryImagesName(library!.name ?? ""),
-    FinampCollectionType.allPlaylistsMetadata => AppLocalizations.of(
-      context,
-    )!.finampCollectionNames("allPlaylistsMetadata"),
+  String getName(BuildContext context) => getName2(AppLocalizations.of(context)!);
+
+  String getName2(AppLocalizations localizations) => switch (type) {
+    FinampCollectionType.favorites => localizations.finampCollectionNames("favorites"),
+    FinampCollectionType.allPlaylists => localizations.finampCollectionNames("allPlaylists"),
+    FinampCollectionType.latest5Albums => localizations.finampCollectionNames("fiveLatestAlbums"),
+    FinampCollectionType.libraryImages => localizations.cacheLibraryImagesName(library!.name ?? ""),
+    FinampCollectionType.allPlaylistsMetadata => localizations.finampCollectionNames("allPlaylistsMetadata"),
     FinampCollectionType.collectionWithLibraryFilter => item!.name ?? "Unkown Item",
   };
 
@@ -2811,7 +2878,9 @@ enum FinampTranscodingStreamingFormat {
   @HiveField(4)
   vorbisMpegTS("vorbis", "ts"),
   @HiveField(5)
-  vorbisFragmentedMp4("vorbis", "mp4");
+  vorbisFragmentedMp4("vorbis", "mp4"),
+  @HiveField(6)
+  original("original", "direct");
 
   const FinampTranscodingStreamingFormat(this.codec, this.container);
 
@@ -2819,6 +2888,12 @@ enum FinampTranscodingStreamingFormat {
 
   /// The container to use to transport the segments
   final String container;
+
+  bool get lossless => switch (this) {
+    FinampTranscodingStreamingFormat.flacFragmentedMp4 => true,
+    FinampTranscodingStreamingFormat.original => true,
+    _ => false,
+  };
 }
 
 @HiveType(typeId: 74)
@@ -4013,4 +4088,86 @@ enum PreviousTracksPersistenceMode {
   /// Override state to be expanded on open
   @HiveField(2)
   initiallyExpanded,
+}
+
+@HiveType(typeId: 113)
+class StreamingTranscodingConfig {
+  const StreamingTranscodingConfig(this.preset, this.name, this.format, this.bitrate);
+
+  @HiveField(0)
+  final StreamingTranscodingPreset preset;
+  @HiveField(1)
+  final String? name;
+  @HiveField(2)
+  final FinampTranscodingStreamingFormat format;
+  @HiveField(3)
+  final int? bitrate;
+
+  String localizeName(AppLocalizations localizations) => name ?? preset.localizeName(localizations);
+
+  int get effectiveBitrate => switch (format) {
+    FinampTranscodingStreamingFormat.flacFragmentedMp4 => 888888000,
+    FinampTranscodingStreamingFormat.original => 999999000,
+    _ => bitrate!,
+  };
+
+  @override
+  bool operator ==(Object other) {
+    return other is StreamingTranscodingConfig &&
+        other.format == format &&
+        (format.lossless || other.bitrate == bitrate);
+  }
+
+  @override
+  @ignore
+  int get hashCode => Object.hash(format, format.lossless ? null : bitrate);
+}
+
+@HiveType(typeId: 114)
+enum StreamingTranscodingPreset {
+  @HiveField(0)
+  original,
+  @HiveField(1)
+  lossless,
+  @HiveField(2)
+  efficient,
+  @HiveField(3)
+  compatible,
+  @HiveField(4)
+  custom;
+
+  String localizeName(AppLocalizations localizations) {
+    switch (this) {
+      case StreamingTranscodingPreset.original:
+        return localizations.originalTranscode;
+      case StreamingTranscodingPreset.lossless:
+        return localizations.losslessTranscode;
+      case StreamingTranscodingPreset.efficient:
+        return localizations.efficientTranscode;
+      case StreamingTranscodingPreset.compatible:
+        return localizations.compatibleTranscode;
+      case StreamingTranscodingPreset.custom:
+        return localizations.customTranscode;
+    }
+  }
+
+  bool get locked => switch (this) {
+    StreamingTranscodingPreset.original => true,
+    StreamingTranscodingPreset.lossless => true,
+    _ => false,
+  };
+
+  static const originalPreset = StreamingTranscodingConfig(
+    StreamingTranscodingPreset.original,
+    null,
+    FinampTranscodingStreamingFormat.original,
+    null,
+  );
+
+  static const losslessPreset = StreamingTranscodingConfig(
+    StreamingTranscodingPreset.lossless,
+    null,
+    FinampTranscodingStreamingFormat.flacFragmentedMp4,
+    null,
+  );
 }

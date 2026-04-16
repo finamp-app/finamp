@@ -117,6 +117,7 @@ void main() async {
     await setupHive();
     _mainLog.info("Setup hive and isar");
     _migrateDownloadLocations();
+    _migrateTranscodeSettings();
     _migrateSortOptions();
     await _migrateThemeModeLocale();
     _mainLog.info("Completed applicable migrations");
@@ -480,6 +481,10 @@ void _migrateSortOptions() {
   }
 }
 
+void _migrateTranscodeSettings() {
+  // TODO add migration
+}
+
 Future<void> _migrateDownloadsFileOwner() async {
   if (!Platform.isAndroid) {
     // Only Android needs this migration
@@ -556,7 +561,7 @@ class _FinampState extends State<Finamp> with WindowListener {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _uriLinkSubscription = AppLinks().uriLinkStream.listen((uri) async {
         linkHandlingLogger.info("Received link: $uri");
-        var state = GlobalSnackbar.materialAppNavigatorKey.currentState;
+        var state = GlobalSnackbar.navigatorState;
         if (state != null) {
           if (uri.host == "internal") {
             await state.pushNamed(uri.path);

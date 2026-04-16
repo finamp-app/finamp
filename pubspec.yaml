@@ -56,6 +56,8 @@ dependencies:
       url: https://github.com/Komodo5197/frb_plugins.git
       ref: 7ece49cc16a459aaa0718ed23458802533daef37
       path: packages/smtc_windows/
+  # smtc_windows and flutter_discord_rpc have loose requirement specs but actually need specifically 2.11.1
+  flutter_rust_bridge: 2.11.1
 
   audio_service: ^0.18.18
   audio_service_mpris: ^0.2.0
