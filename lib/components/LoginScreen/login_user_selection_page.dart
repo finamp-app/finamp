@@ -6,7 +6,6 @@ import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -47,6 +46,10 @@ class _LoginUserSelectionPageState extends State<LoginUserSelectionPage> {
       _quickConnectLogger.fine("Quick connect state: ${quickConnectState.toString()}");
       return !(quickConnectState?.authenticated ?? false) && mounted;
     });
+
+    // If we exited loop due to unmount return, otherwise we have authenticated and need to finalize
+    if (!mounted) return;
+
     await jellyfinApiHelper.authenticateWithQuickConnect(widget.connectionState.quickConnectState!);
 
     if (!mounted) return;
@@ -254,7 +257,7 @@ class JellyfinUserWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final avatarUrl = user != null
+    final avatarUrl = user != null && jellyfinApiHelper.baseUrlTemp != null
         ? jellyfinApiHelper.getUserImageUrl(baseUrl: jellyfinApiHelper.baseUrlTemp!, user: user!)?.toString()
         : null;
 

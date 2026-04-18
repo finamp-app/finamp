@@ -426,9 +426,9 @@ class IsarTaskQueue implements TaskQueue {
 
   // We do not currently pause or resume the downloads
   @override
-  Future<void> pauseAll() async {}
+  Future<void> pauseAll({Iterable<DownloadTask>? tasks, String? group}) async {}
   @override
-  Future<void> resumeAll() async {}
+  Future<void> resumeAll({Iterable<DownloadTask>? tasks, String? group}) async {}
 }
 
 /// A class for storing pending deletes in Isar.  This is used to save unlinked

@@ -56,6 +56,9 @@ dependencies:
       url: https://github.com/Komodo5197/frb_plugins.git
       ref: 7ece49cc16a459aaa0718ed23458802533daef37
       path: packages/smtc_windows/
+  # Despite having loose version constraints, smtc_windows and flutter_discord_rpc actually depend on the
+  # specific vaersion 2.11.1, so we must force it.
+  flutter_rust_bridge: 2.11.1
 
   audio_service: ^0.18.18
   audio_service_mpris: ^0.2.0
@@ -104,6 +107,7 @@ dependencies:
       ref: 59103190aa2ac03041d61ad6d127b540be079ec8
 
   path: ^1.9.0
+  path_provider_platform_interface: ^2.1.2
   intl: # pinned by flutter version
   auto_size_text: ^3.0.0
   marquee: ^2.3.0
@@ -151,6 +155,8 @@ dependencies:
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
   build_runner: ^2.3.3
   flutter_gen_runner:

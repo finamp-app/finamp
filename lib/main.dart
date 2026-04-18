@@ -63,8 +63,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:isar/isar.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' as path;
 import 'package:path/path.dart' as path_helper;
 import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:uuid/uuid.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -106,9 +108,15 @@ late DateTime startTime;
 
 final providerScopeKey = GlobalKey();
 
-void main() async {
-  // If the app has failed, this is set to true. If true, we don't attempt to run the main app since the error app has started.
-  bool hasFailed = false;
+Future<void> main({bool integrationTesting = false, bool loginTesting = false}) async {
+  if (loginTesting) {
+    final data = Directory(TestingPathProvider.basePathRelative);
+    PathProviderPlatform.instance = TestingPathProvider(data);
+    if (data.existsSync()) {
+      data.deleteSync(recursive: true);
+    }
+  }
+
   try {
     startTime = DateTime.now();
     await setupLogging();
@@ -143,14 +151,18 @@ void main() async {
     await _setupDiscordRpc();
     _mainLog.info("Setup Discord RPC");
   } catch (error, trace) {
-    hasFailed = true;
-    Logger("ErrorApp").severe(error, null, trace);
-    runApp(FinampErrorApp(error: error, trace: trace));
+    if (!integrationTesting) {
+      Logger("ErrorApp").severe(error, null, trace);
+      runApp(FinampErrorApp(error: error, trace: trace));
+      return;
+    } else {
+      rethrow;
+    }
   }
 
-  if (!hasFailed) {
-    final flutterLogger = Logger("Flutter");
+  final flutterLogger = Logger("Flutter");
 
+  if (!integrationTesting) {
     FlutterError.onError = (FlutterErrorDetails details) {
       var error = details.exception;
       if (error is Error) {
@@ -166,16 +178,18 @@ void main() async {
       // We have not handled printing to console, flutter should still do that.
       return false;
     };
+  }
 
-    DartPluginRegistrant.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
 
-    await findSystemLocale();
-    await initializeDateFormatting();
-    unawaited(fetchSystemPalette());
-    await initDBus();
+  await findSystemLocale();
+  await initializeDateFormatting();
+  unawaited(fetchSystemPalette());
+  await initDBus();
 
-    _mainLog.info("Launching main app");
+  _mainLog.info("Launching main app");
 
+  if (!integrationTesting) {
     runApp(const Finamp());
   }
 }
@@ -576,13 +590,13 @@ class _FinampState extends State<Finamp> with WindowListener {
 
   @override
   Future<void> dispose() async {
+    super.dispose();
     await DiscordRpc.stop().timeout(Duration(milliseconds: 500));
     await _uriLinkSubscription?.cancel();
 
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       WindowManager.instance.removeListener(this);
     }
-    super.dispose();
   }
 
   @override
@@ -942,4 +956,34 @@ class FinampProviderObserver extends ProviderObserver {
   ) {
     GlobalSnackbar.error(error);
   }
+}
+
+class TestingPathProvider extends PathProviderPlatform {
+  static final basePathRelative = path.join('integration_test', 'data');
+
+  TestingPathProvider(Directory dataDir) {
+    basePath = dataDir.absolute.path;
+  }
+
+  late final String basePath;
+
+  Future<String> _getPath(String extension) async {
+    final directory = Directory(path.join(basePath, extension));
+    if (!directory.existsSync()) {
+      directory.createSync(recursive: true);
+    }
+    return directory.absolute.path;
+  }
+
+  @override
+  Future<String?> getTemporaryPath() => _getPath("tmp");
+
+  @override
+  Future<String?> getApplicationSupportPath() => _getPath("support");
+
+  @override
+  Future<String?> getApplicationDocumentsPath() => _getPath("documents");
+
+  @override
+  Future<String?> getApplicationCachePath() => _getPath("cache");
 }

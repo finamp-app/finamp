@@ -4763,13 +4763,13 @@ QuickConnectState _$QuickConnectStateFromJson(Map json) => QuickConnectState(
 Map<String, dynamic> _$QuickConnectStateToJson(QuickConnectState instance) =>
     <String, dynamic>{
       'Authenticated': instance.authenticated,
-      'Secret': instance.secret,
-      'Code': instance.code,
-      'DeviceId': instance.deviceId,
-      'DeviceName': instance.deviceName,
-      'AppName': instance.appName,
-      'AppVersion': instance.appVersion,
-      'DateAdded': instance.dateAdded,
+      if (instance.secret case final value?) 'Secret': value,
+      if (instance.code case final value?) 'Code': value,
+      if (instance.deviceId case final value?) 'DeviceId': value,
+      if (instance.deviceName case final value?) 'DeviceName': value,
+      if (instance.appName case final value?) 'AppName': value,
+      if (instance.appVersion case final value?) 'AppVersion': value,
+      if (instance.dateAdded case final value?) 'DateAdded': value,
     };
 
 ClientDiscoveryResponse _$ClientDiscoveryResponseFromJson(Map json) =>
