@@ -108,7 +108,7 @@ late DateTime startTime;
 
 final providerScopeKey = GlobalKey();
 
-Future<void> main({bool integrationTesting = false, bool loginTesting = false}) async {
+Future<void> main({bool integrationTesting = false, bool loginTesting = true}) async {
   if (loginTesting) {
     final data = Directory(TestingPathProvider.basePathRelative);
     PathProviderPlatform.instance = TestingPathProvider(data);
@@ -959,7 +959,7 @@ class FinampProviderObserver extends ProviderObserver {
 }
 
 class TestingPathProvider extends PathProviderPlatform {
-  static final basePathRelative = path.join('integration_test', 'data');
+  static final basePathRelative = path.join('testing', 'data');
 
   TestingPathProvider(Directory dataDir) {
     basePath = dataDir.absolute.path;
