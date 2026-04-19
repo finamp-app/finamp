@@ -2,6 +2,7 @@ import 'package:finamp/components/LayoutSettingsScreen/automatic_accent_color_se
 import 'package:finamp/components/LayoutSettingsScreen/use_monochrome_icon.dart';
 import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/screens/album_settings_screen.dart';
 import 'package:finamp/screens/artist_settings_screen.dart';
 import 'package:finamp/screens/customization_settings_screen.dart';
@@ -13,7 +14,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../components/LayoutSettingsScreen/accent_color_selector.dart';
-import '../components/LayoutSettingsScreen/content_grid_view_cross_axis_count_list_tile.dart';
 import '../components/LayoutSettingsScreen/content_view_type_dropdown_list_tile.dart';
 import '../components/LayoutSettingsScreen/show_artist_chip_image_toggle.dart';
 import '../components/finamp_app_bar_back_button.dart';
@@ -86,11 +86,7 @@ class _LayoutSettingsScreenState extends ConsumerState<LayoutSettingsScreen> {
           const AutomaticAccentColorSelector(),
           const Divider(),
           const ContentViewTypeDropdownListTile(),
-          const FixedSizeGridSwitch(),
-          if (!ref.watch(finampSettingsProvider.useFixedSizeGridTiles))
-            for (final type in ContentGridViewCrossAxisCountType.values)
-              ContentGridViewCrossAxisCountListTile(type: type),
-          if (ref.watch(finampSettingsProvider.useFixedSizeGridTiles)) const FixedGridTileSizeDropdownListTile(),
+          const GridImageSizeSelector(),
           const ShowTextOnGridViewSelector(),
           const UseCoverAsBackgroundToggle(),
           const ShowArtistChipImageToggle(),
@@ -98,20 +94,6 @@ class _LayoutSettingsScreenState extends ConsumerState<LayoutSettingsScreen> {
           const ShowProgressOnNowPlayingBarToggle(),
         ],
       ),
-    );
-  }
-}
-
-class FixedSizeGridSwitch extends ConsumerWidget {
-  const FixedSizeGridSwitch({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return SwitchListTile.adaptive(
-      title: Text(AppLocalizations.of(context)!.fixedGridSizeSwitchTitle),
-      subtitle: Text(AppLocalizations.of(context)!.fixedGridSizeSwitchSubtitle),
-      value: ref.watch(finampSettingsProvider.useFixedSizeGridTiles),
-      onChanged: FinampSetters.setUseFixedSizeGridTiles,
     );
   }
 }
@@ -130,29 +112,6 @@ class AllowSplitScreenSwitch extends ConsumerWidget {
   }
 }
 
-class FixedGridTileSizeDropdownListTile extends ConsumerWidget {
-  const FixedGridTileSizeDropdownListTile({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      title: Text(AppLocalizations.of(context)!.fixedGridSizeTitle),
-      subtitle: FinampSettingsDropdown<FixedGridTileSize>(
-        dropdownItems: FixedGridTileSize.values
-            .map(
-              (e) => DropdownMenuEntry<FixedGridTileSize>(
-                value: e,
-                label: AppLocalizations.of(context)!.fixedGridTileSizeEnum(e.name),
-              ),
-            )
-            .toList(),
-        selectedValue: FixedGridTileSize.fromInt(FinampSettingsHelper.finampSettings.fixedGridTileSize),
-        onSelected: (value) => FinampSetters.setFixedGridTileSize.ifNonNull(value?.toInt),
-      ),
-    );
-  }
-}
-
 class ShowProgressOnNowPlayingBarToggle extends ConsumerWidget {
   const ShowProgressOnNowPlayingBarToggle({super.key});
 
@@ -163,6 +122,53 @@ class ShowProgressOnNowPlayingBarToggle extends ConsumerWidget {
       subtitle: Text(AppLocalizations.of(context)!.showProgressOnNowPlayingBarSubtitle),
       value: ref.watch(finampSettingsProvider.showProgressOnNowPlayingBar),
       onChanged: FinampSetters.setShowProgressOnNowPlayingBar,
+    );
+  }
+}
+
+class GridImageSizeSelector extends ConsumerStatefulWidget {
+  const GridImageSizeSelector({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _GridImageSizeSelectorState();
+  }
+}
+
+class _GridImageSizeSelectorState extends ConsumerState<GridImageSizeSelector> {
+  var currentSize = FinampSettingsHelper.finampSettings.gridImageSize;
+
+  @override
+  Widget build(BuildContext context) {
+    ref.watch(finampSettingsProvider.gridImageSize);
+    return Column(
+      children: [
+        ListTile(title: Text("Grid Tile Size*"), subtitle: Text("Select the size of items in the grid*")),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Slider(
+              min: 0,
+              max: GridImageSizePresets.values.length - 1,
+              value: GridImageSizePresets.values.indexOf(currentSize).toDouble(),
+              divisions: GridImageSizePresets.values.length - 1,
+              label: "${currentSize.name} (? columns)",
+              onChanged: (value) {
+                setState(() {
+                  currentSize = GridImageSizePresets.values[value.toInt()];
+                });
+              },
+              onChangeEnd: (value) {
+                FinampSetters.setGridImageSize(GridImageSizePresets.values[value.toInt()]);
+              },
+              autofocus: false,
+              focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
+            ),
+            Text("${currentSize.name} (? columns)", style: Theme.of(context).textTheme.titleLarge),
+          ],
+        ),
+      ],
     );
   }
 }

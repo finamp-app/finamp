@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:finamp/components/PlayerScreen/player_split_screen_scaffold.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +28,7 @@ class AlbumImage extends ConsumerStatefulWidget {
     super.key,
     this.item,
     this.imageListenable,
+    this.sizePreset,
     this.borderRadius,
     this.placeholderBuilder,
     this.disabled = false,
@@ -40,6 +42,8 @@ class AlbumImage extends ConsumerStatefulWidget {
   final BaseItemDto? item;
 
   final ProviderListenable<FinampImage>? imageListenable;
+
+  final GridImageSizePresets? sizePreset;
 
   final BorderRadius? borderRadius;
 
@@ -67,6 +71,22 @@ class AlbumImage extends ConsumerStatefulWidget {
 
 class _AlbumImageState extends ConsumerState<AlbumImage> {
   final String zoomID = UuidV4().generate();
+  GridImageSizePresets? currentPresetSize;
+  int? currentPhysicalWidth;
+  int? currentPhysicalHeight;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final GridImageSizePresets newImageSizePreset =
+        widget.sizePreset ?? ref.watch(finampSettingsProvider.gridImageSize);
+    // reset cached image size
+    if (currentPresetSize != newImageSizePreset) {
+      currentPresetSize = newImageSizePreset;
+      currentPhysicalWidth = null;
+      currentPhysicalHeight = null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,21 +131,28 @@ class _AlbumImageState extends ConsumerState<AlbumImage> {
               // Logical pixels aren't the same as the physical pixels on the device, they're quite a bit bigger.
               // If we use logical pixels for the image request, we'll get a smaller image than we want.
               // Because of this, we convert the logical pixels to physical pixels by multiplying by the device's DPI.
-              final pixelRatio = MediaQuery.devicePixelRatioOf(context);
-              int physicalWidth = (constraints.maxWidth * pixelRatio).toInt();
-              int physicalHeight = (constraints.maxHeight * pixelRatio).toInt();
-              // If using grid music screen view without fixed size tiles, and if the view is resizable due
-              // to being on desktop and using split screen, then clamp album size to reduce server requests when resizing.
-              if ((!(Platform.isIOS || Platform.isAndroid) || usingPlayerSplitScreen) &&
-                  !FinampSettingsHelper.finampSettings.useFixedSizeGridTiles &&
-                  FinampSettingsHelper.finampSettings.contentViewType == ContentViewType.grid) {
-                physicalWidth = exp((log(physicalWidth) * 3).ceil() / 3).toInt();
-                physicalHeight = exp((log(physicalHeight) * 3).ceil() / 3).toInt();
+              if (currentPhysicalWidth == null || currentPhysicalHeight == null) {
+                final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+                currentPhysicalWidth ??= (constraints.maxWidth * pixelRatio).toInt();
+                currentPhysicalHeight ??= (constraints.maxHeight * pixelRatio).toInt();
+                // If using grid music screen view without fixed size tiles, and if the view is resizable due
+                // to being on desktop and using split screen, then clamp album size to reduce server requests when resizing.
+                // only re-clamp if the image size has changed (state vars set to null), to avoid re-requesting images with slightly different resolutions
+                //TODO these conditions can probably be simplified to apply more universally
+                if ((isDesktop || usingPlayerSplitScreen) &&
+                    FinampSettingsHelper.finampSettings.contentViewType == ContentViewType.grid) {
+                  currentPhysicalWidth = exp((log(currentPhysicalWidth!) * 3).ceil() / 3).toInt();
+                  currentPhysicalHeight = exp((log(currentPhysicalHeight!) * 3).ceil() / 3).toInt();
+                }
               }
               return _buildFromListenable(
                 true,
                 albumImageProvider(
-                  AlbumImageRequest(item: widget.item!, maxWidth: physicalWidth, maxHeight: physicalHeight),
+                  AlbumImageRequest(
+                    item: widget.item!,
+                    maxWidth: currentPhysicalWidth!,
+                    maxHeight: currentPhysicalHeight!,
+                  ),
                 ),
               );
             },

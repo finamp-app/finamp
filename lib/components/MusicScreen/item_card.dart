@@ -16,6 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
 const double _itemCollectionCardCoverSize = 110;
+const double _itemCollectionCardCoverMaximumSize = 500;
 const double _itemCollectionCardSpacing = 6;
 const double _queuesSectionWidth = 160;
 const double _queuesSectionHeight = 84;
@@ -33,7 +34,7 @@ class ItemCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasImage = !(item.blurHash == null && item.imageId == null);
     return Container(
-      constraints: const BoxConstraints(maxWidth: _itemCollectionCardCoverSize),
+      constraints: BoxConstraints(maxWidth: calculateItemCollectionCardWidth(context, BaseItemDtoType.fromItem(item))),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(borderRadius: AlbumImage.defaultBorderRadius),
       child: Column(
@@ -227,7 +228,15 @@ class HomeScreenQueueTile extends ConsumerWidget {
 
 /// This might calculate the width base on the device width in the future, or something similar
 double calculateItemCollectionCardWidth(BuildContext context, BaseItemDtoType itemType) {
-  return _itemCollectionCardCoverSize;
+  // return _itemCollectionCardCoverSize;
+  return switch (FinampSettingsHelper.finampSettings.gridImageSize) {
+    GridImageSizePresets.biggest => _itemCollectionCardCoverMaximumSize,
+    GridImageSizePresets.small => 50,
+    GridImageSizePresets.smallest => 30,
+    final size when true => _itemCollectionCardCoverMaximumSize / (GridImageSizePresets.values.indexOf(size) + 1),
+    // Dart doesn't recognize that the above case covers all possibilities, so we need a default
+    _ => _itemCollectionCardCoverSize,
+  };
 }
 
 int calculateItemCollectionTextLines(BaseItemDtoType itemType) {
@@ -256,7 +265,7 @@ double calculateItemCollectionCardHeight({
   return switch (sectionInfo?.type) {
     HomeScreenSectionType.queues => _queuesSectionHeight,
     _ =>
-      _itemCollectionCardCoverSize +
+      calculateItemCollectionCardWidth(context, actualItemType) +
           (GetIt.instance<ProviderContainer>().read(finampSettingsProvider.showTextOnGridView)
               ? _itemCollectionCardSpacing
               : 0) +

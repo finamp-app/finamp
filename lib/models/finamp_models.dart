@@ -12,6 +12,7 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/radio_service_helper.dart';
+import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,8 +120,6 @@ class DefaultSettings {
   static const volumeNormalizationMode = VolumeNormalizationMode.hybrid;
   static const contentViewType = ContentViewType.list;
   static const playbackSpeedVisibility = PlaybackSpeedVisibility.automatic;
-  static const contentGridViewCrossAxisCountPortrait = 2;
-  static const contentGridViewCrossAxisCountLandscape = 3;
   static const showTextOnGridView = true;
   static const sleepTimerDurationSeconds = 60 * 30;
   static const useCoverAsBackground = true;
@@ -151,8 +150,6 @@ class DefaultSettings {
   static const multichannelHandlingSetting = MultichannelHandlingSetting.stereoDownmixLossy;
   static const shouldRedownloadTranscodes = false;
   static const resyncOnStartup = true;
-  static const fixedGridTileSize = 150;
-  static const useFixedSizeGridTiles = false;
   static const splitScreenPlayerWidth = 400.0;
   static const enableVibration = true;
   static const prioritizeCoverFactor = 8.0;
@@ -296,6 +293,7 @@ class DefaultSettings {
       ),
     ],
   );
+  static const gridImageSize = GridImageSizePresets.cols5;
 }
 
 @HiveType(typeId: 28)
@@ -319,8 +317,6 @@ class FinampSettings {
     this.volumeNormalizationMode = DefaultSettings.volumeNormalizationMode,
     this.contentViewType = DefaultSettings.contentViewType,
     this.playbackSpeedVisibility = DefaultSettings.playbackSpeedVisibility,
-    this.contentGridViewCrossAxisCountPortrait = DefaultSettings.contentGridViewCrossAxisCountPortrait,
-    this.contentGridViewCrossAxisCountLandscape = DefaultSettings.contentGridViewCrossAxisCountLandscape,
     this.showTextOnGridView = DefaultSettings.showTextOnGridView,
     required this.downloadLocationsMap,
     this.useCoverAsBackground = DefaultSettings.useCoverAsBackground,
@@ -355,8 +351,6 @@ class FinampSettings {
     this.shouldRedownloadTranscodes = DefaultSettings.shouldRedownloadTranscodes,
     this.itemSwipeActionLeftToRight = DefaultSettings.itemSwipeActionLeftToRight,
     this.itemSwipeActionRightToLeft = DefaultSettings.itemSwipeActionRightToLeft,
-    this.useFixedSizeGridTiles = DefaultSettings.useFixedSizeGridTiles,
-    this.fixedGridTileSize = DefaultSettings.fixedGridTileSize,
     this.allowSplitScreen = DefaultSettings.allowSplitScreen,
     this.splitScreenPlayerWidth = DefaultSettings.splitScreenPlayerWidth,
     this.enableVibration = DefaultSettings.enableVibration,
@@ -438,8 +432,9 @@ class FinampSettings {
     this.useMonochromeIcon = DefaultSettings.useMonochromeIcon,
     this.duckOnAudioInterruption = DefaultSettings.duckOnAudioInterruption,
     this.forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid,
-    required this.homeScreenConfiguration,
     this.previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode,
+    required this.homeScreenConfiguration,
+    required this.gridImageSize,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -482,14 +477,6 @@ class FinampSettings {
   /// The content view type used by the music screen.
   @HiveField(10, defaultValue: DefaultSettings.contentViewType)
   ContentViewType contentViewType;
-
-  /// Amount of grid tiles to use per-row when portrait.
-  @HiveField(11, defaultValue: DefaultSettings.contentGridViewCrossAxisCountPortrait)
-  int contentGridViewCrossAxisCountPortrait;
-
-  /// Amount of grid tiles to use per-row when landscape.
-  @HiveField(12, defaultValue: DefaultSettings.contentGridViewCrossAxisCountLandscape)
-  int contentGridViewCrossAxisCountLandscape;
 
   /// Whether or not to show the text (title, artist etc) on the grid music
   /// screen.
@@ -623,12 +610,6 @@ class FinampSettings {
 
   @HiveField(58, defaultValue: null)
   String? defaultDownloadLocation;
-
-  @HiveField(59, defaultValue: DefaultSettings.useFixedSizeGridTiles)
-  bool useFixedSizeGridTiles;
-
-  @HiveField(60, defaultValue: DefaultSettings.fixedGridTileSize)
-  int fixedGridTileSize;
 
   @HiveField(61, defaultValue: DefaultSettings.allowSplitScreen)
   bool allowSplitScreen;
@@ -902,6 +883,13 @@ class FinampSettings {
   )
   FinampHomeScreenConfiguration homeScreenConfiguration = DefaultSettings.homeScreenConfiguration;
 
+  @HiveField(
+    147,
+    //!!! this is a dummy value, the actual default is set in [create()] because it's calculated dynamically
+    defaultValue: DefaultSettings.gridImageSize,
+  )
+  GridImageSizePresets gridImageSize = DefaultSettings.gridImageSize;
+
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
       name: DownloadLocation.internalStorageName,
@@ -915,8 +903,8 @@ class FinampSettings {
       downloadLocationsMap: {downloadLocation.id: downloadLocation},
       tabSortBy: {},
       tabSortOrder: {},
-      useFixedSizeGridTiles: !(Platform.isIOS || Platform.isAndroid),
       homeScreenConfiguration: DefaultSettings.homeScreenConfiguration,
+      gridImageSize: isDesktop ? GridImageSizePresets.cols6 : GridImageSizePresets.cols5,
     );
   }
 
@@ -4761,4 +4749,22 @@ class SortAndFilterConfiguration {
     }
     return Object.hash(sortBy, sortOrder, filtersHash);
   }
+}
+
+/// Size presets for images/covers in grid layout
+/// For each preset, an exact base resolution is calculated so that all horizontal space is used up (on regular tabs)
+/// This then corresponds to a specific amount of colums of the grid for the current screen/window size, which can be shown to the user
+/// This is only a base resolution, allowing for some slight variations in window size that lead to scaling of images (without re-fetching from the server), to keep using the entire horizontal space.
+/// If the scaling would exceed a certain threshold, the scaling would be inverted (e.g. from upper scaling threshold to lower scaling threshold), and the column count is adjusted. This ensures images always have roughly the configured size.
+enum GridImageSizePresets {
+  biggest, // cols1
+  cols2,
+  cols3,
+  cols4,
+  cols5,
+  cols6,
+  cols7,
+  cols8,
+  small, // mainly for desktop, where you might want more than 8 columns
+  smallest, // even smaller, should read to a "wall of tiles" that can show a ton of covers at once
 }

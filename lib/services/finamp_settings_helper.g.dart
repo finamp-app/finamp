@@ -90,28 +90,6 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setContentGridViewCrossAxisCountPortrait(
-    int newContentGridViewCrossAxisCountPortrait,
-  ) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.contentGridViewCrossAxisCountPortrait =
-        newContentGridViewCrossAxisCountPortrait;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setContentGridViewCrossAxisCountLandscape(
-    int newContentGridViewCrossAxisCountLandscape,
-  ) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.contentGridViewCrossAxisCountLandscape =
-        newContentGridViewCrossAxisCountLandscape;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
   static void setShowTextOnGridView(bool newShowTextOnGridView) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showTextOnGridView = newShowTextOnGridView;
@@ -460,22 +438,6 @@ extension FinampSetters on FinampSettingsHelper {
   static void setDefaultDownloadLocation(String? newDefaultDownloadLocation) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.defaultDownloadLocation = newDefaultDownloadLocation;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setUseFixedSizeGridTiles(bool newUseFixedSizeGridTiles) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.useFixedSizeGridTiles = newUseFixedSizeGridTiles;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setFixedGridTileSize(int newFixedGridTileSize) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.fixedGridTileSize = newFixedGridTileSize;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -1280,6 +1242,14 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setGridImageSize(GridImageSizePresets newGridImageSize) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.gridImageSize = newGridImageSize;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1314,14 +1284,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ProviderListenable<ContentViewType> get contentViewType =>
       finampSettingsProvider.select(
         (value) => value.requireValue.contentViewType,
-      );
-  ProviderListenable<int> get contentGridViewCrossAxisCountPortrait =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.contentGridViewCrossAxisCountPortrait,
-      );
-  ProviderListenable<int> get contentGridViewCrossAxisCountLandscape =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.contentGridViewCrossAxisCountLandscape,
       );
   ProviderListenable<bool> get showTextOnGridView => finampSettingsProvider
       .select((value) => value.requireValue.showTextOnGridView);
@@ -1441,10 +1403,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.defaultDownloadLocation,
       );
-  ProviderListenable<bool> get useFixedSizeGridTiles => finampSettingsProvider
-      .select((value) => value.requireValue.useFixedSizeGridTiles);
-  ProviderListenable<int> get fixedGridTileSize => finampSettingsProvider
-      .select((value) => value.requireValue.fixedGridTileSize);
   ProviderListenable<bool> get allowSplitScreen => finampSettingsProvider
       .select((value) => value.requireValue.allowSplitScreen);
   ProviderListenable<double> get splitScreenPlayerWidth =>
@@ -1723,6 +1681,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   get homeScreenConfiguration => finampSettingsProvider.select(
     (value) => value.requireValue.homeScreenConfiguration,
   );
+  ProviderListenable<GridImageSizePresets> get gridImageSize =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.gridImageSize,
+      );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

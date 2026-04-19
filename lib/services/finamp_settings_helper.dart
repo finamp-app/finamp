@@ -128,10 +128,7 @@ class FinampSettingsHelper {
     FinampSetters.setSystemAccentColor(DefaultSettings.accentColor);
     FinampSetters.setUseSystemAccentColor(DefaultSettings.useSystemAccentColor);
     FinampSetters.setContentViewType(DefaultSettings.contentViewType);
-    finampSettingsTemp.useFixedSizeGridTiles = DefaultSettings.useFixedSizeGridTiles;
-    FinampSetters.setContentGridViewCrossAxisCountPortrait(DefaultSettings.contentGridViewCrossAxisCountPortrait);
-    FinampSetters.setContentGridViewCrossAxisCountLandscape(DefaultSettings.contentGridViewCrossAxisCountLandscape);
-    finampSettingsTemp.fixedGridTileSize = DefaultSettings.fixedGridTileSize;
+    finampSettingsTemp.gridImageSize = DefaultSettings.gridImageSize;
     finampSettingsTemp.showTextOnGridView = DefaultSettings.showTextOnGridView;
     FinampSetters.setUseCoverAsBackground(DefaultSettings.useCoverAsBackground);
     finampSettingsTemp.showArtistChipImage = DefaultSettings.showArtistChipImage;
