@@ -2982,5 +2982,22 @@
     "previousTracksPersistenceModeExpanded": "Laajennettu (näkyvissä)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "amoledTheme": "Käytä AMOLED-teemaa",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "Korvaa tumman väriteeman täysin mustalla teemalla.",
+    "useAndroidGainEffectTitle": "Käytä vahvistus-, eli gain-efektiä",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "\"Käytä natiivia vahvistusefektiä äänenvoimakkuuden säätöön. Tämä on joustavampi tapa, mutta aiheuttaa toistovirheitä joillakin laitteilla. Tätä asetusta ei yleensä tarvitse muuttaa manuaalisesti. Sovellus on käynnistettävä uudelleen, jotta muutos tulee voimaan.",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "Siirrytään käyttämään varajärjestelmän vahvistusefektiä alustusvirheen vuoksi.",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
     }
 }
