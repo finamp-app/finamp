@@ -11,6 +11,10 @@ on:
       - main
       - redesign
 
+.reusable_logic:
+  if_condition: &integration_if github.event_name == 'workflow_dispatch' ||
+    (github.event_name == 'push' and github.repository == 'jmshrv/finamp' )
+
 # Due to a flutter bug, flutter build is not generating localizations
 # workaround by always running flutter pub get immediately before building,
 # and performing build for msix:create manually to allow implementing this workaround
@@ -94,6 +98,25 @@ jobs:
 
     - run: flutter build appbundle --debug --no-pub
 
+    - name: Run Integration tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 29
+        arch: x86_64
+        profile: pixel
+        disk-size: 4096M
+        script: flutter devices
+
+    - name: Run Integration tests
+      if: *integration_if
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 29
+        arch: x86_64
+        profile: pixel
+        disk-size: 4096M
+        script: flutter test integration_test/test_cases.dart -d pixel
+
   build-ios:
     name: Build for iOS
     runs-on: macos-latest
@@ -125,11 +148,26 @@ jobs:
         key: ${{ runner.os }}-dart-build-${{ hashFiles('pubspec.lock') }}
         restore-keys: ${{ runner.os }}-dart-build-
 
-
     - run: flutter doctor
     - run: flutter pub get
 
     - run: flutter build ios --release --no-pub --no-codesign
+
+    - name: Start simulator
+      if: *integration_if
+      uses: futureware-tech/simulator-action@v5
+      with:
+        model: 'iPhone 16'
+        os_version: '>= 26.0'
+        wait_for_boot: true
+        erase_before_boot: true
+        boot_timeout_seconds: 360
+
+    - run: flutter devices
+
+    - name: Run Integration Tests
+      if: *integration_if
+      run: flutter test integration_test/test_cases.dart -d 'iPhone 16
 
   build-linux:
     name: Build for Linux
@@ -239,6 +277,12 @@ jobs:
         path: ${{ env.SHA_NAME }}
         compression-level: 0 # no compression
 
+    - name: Run Integration Tests
+      if: *integration_if
+      uses: username/xvfb-action@v1.1.2
+      with:
+        run: flutter test integration_test/test_cases.dart -d linux
+
     - name: Upload release archive
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
       uses: alexellis/upload-assets@0.4.1
@@ -311,7 +355,11 @@ jobs:
       with:
         name: ${{ env.BASE_NAME }}.msix
         path: ./${{ env.BASE_NAME }}.msix
-        compression-level: 0 # no compression       
+        compression-level: 0 # no compression
+
+    - name: Run Integration Tests
+      if: *integration_if
+      run: flutter test integration_test/test_cases.dart -d windows
 
     - name: Prepare release archive
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
