@@ -1331,9 +1331,9 @@ class DownloadStub {
     String id = collection.id;
     // Fetch localized name from default global context.
     String? name;
-    var context = GlobalSnackbar.materialAppScaffoldKey.currentContext;
-    if (context != null) {
-      name = collection.getName(context);
+    var loc = GlobalSnackbar.localizations;
+    if (loc != null) {
+      name = collection.getName2(loc);
     }
 
     return DownloadStub._build(
@@ -1995,9 +1995,7 @@ class QueueItemSource {
           ? QueueItemSourceName(type: nameType, localizationParameter: baseItem.name ?? "")
           : QueueItemSourceName(
               type: QueueItemSourceNameType.preTranslated,
-              pretranslatedName:
-                  baseItem.name ??
-                  AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.placeholderSource,
+              pretranslatedName: baseItem.name ?? GlobalSnackbar.localizations?.placeholderSource ?? "Somewhere",
             ),
       id: baseItem.id,
       item: baseItem,
@@ -2098,33 +2096,35 @@ class QueueItemSourceName {
   @HiveField(2)
   final String? localizationParameter;
 
-  String getLocalized(BuildContext context) {
+  String getLocalized(BuildContext context) => getLocalized2(AppLocalizations.of(context)!);
+
+  String getLocalized2(AppLocalizations localizations) {
     switch (type) {
       case QueueItemSourceNameType.preTranslated:
         return pretranslatedName ?? "";
       case QueueItemSourceNameType.yourLikes:
-        return AppLocalizations.of(context)!.yourLikes;
+        return localizations.yourLikes;
       case QueueItemSourceNameType.shuffleAll:
-        return AppLocalizations.of(context)!.shuffleAllQueueSource;
+        return localizations.shuffleAllQueueSource;
       case QueueItemSourceNameType.mix:
-        return AppLocalizations.of(context)!.mix(localizationParameter ?? "");
+        return localizations.mix(localizationParameter ?? "");
       case QueueItemSourceNameType.instantMix:
-        return AppLocalizations.of(context)!.instantMix;
+        return localizations.instantMix;
       case QueueItemSourceNameType.nextUp:
-        return AppLocalizations.of(context)!.nextUp;
+        return localizations.nextUp;
       case QueueItemSourceNameType.tracksFormerNextUp:
-        return AppLocalizations.of(context)!.tracksFormerNextUp;
+        return localizations.tracksFormerNextUp;
       case QueueItemSourceNameType.savedQueue:
-        return AppLocalizations.of(context)!.savedQueue;
+        return localizations.savedQueue;
       case QueueItemSourceNameType.queue:
-        return AppLocalizations.of(context)!.queue;
+        return localizations.queue;
       case QueueItemSourceNameType.remoteClient:
         return "";
       case QueueItemSourceNameType.radio:
         if (localizationParameter != null) {
-          return AppLocalizations.of(context)!.radioForItem(localizationParameter!);
+          return localizations.radioForItem(localizationParameter!);
         } else {
-          return AppLocalizations.of(context)!.radio;
+          return localizations.radio;
         }
     }
   }
@@ -2621,14 +2621,14 @@ class FinampCollection {
     FinampCollectionType.collectionWithLibraryFilter => "Collection with Library Filter:${library!.id}:${item!.id}",
   };
 
-  String getName(BuildContext context) => switch (type) {
-    FinampCollectionType.favorites => AppLocalizations.of(context)!.finampCollectionNames("favorites"),
-    FinampCollectionType.allPlaylists => AppLocalizations.of(context)!.finampCollectionNames("allPlaylists"),
-    FinampCollectionType.latest5Albums => AppLocalizations.of(context)!.finampCollectionNames("fiveLatestAlbums"),
-    FinampCollectionType.libraryImages => AppLocalizations.of(context)!.cacheLibraryImagesName(library!.name ?? ""),
-    FinampCollectionType.allPlaylistsMetadata => AppLocalizations.of(
-      context,
-    )!.finampCollectionNames("allPlaylistsMetadata"),
+  String getName(BuildContext context) => getName2(AppLocalizations.of(context)!);
+
+  String getName2(AppLocalizations localizations) => switch (type) {
+    FinampCollectionType.favorites => localizations.finampCollectionNames("favorites"),
+    FinampCollectionType.allPlaylists => localizations.finampCollectionNames("allPlaylists"),
+    FinampCollectionType.latest5Albums => localizations.finampCollectionNames("fiveLatestAlbums"),
+    FinampCollectionType.libraryImages => localizations.cacheLibraryImagesName(library!.name ?? ""),
+    FinampCollectionType.allPlaylistsMetadata => localizations.finampCollectionNames("allPlaylistsMetadata"),
     FinampCollectionType.collectionWithLibraryFilter => item!.name ?? "Unkown Item",
   };
 

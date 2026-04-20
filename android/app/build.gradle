@@ -42,7 +42,7 @@ android {
     kotlinOptions {
         jvmTarget = 17
     }
-    ndkVersion = "28.2.13676358"
+    ndkVersion = flutter.ndkVersion
 
 
     defaultConfig {
@@ -79,7 +79,7 @@ android {
         profile {
             // https://github.com/flutter/flutter/issues/169215
             // applicationIdSuffix '.profile'
-            minifyEnabled true // avoid dexing issues
+            // minifyEnabled true // avoid dexing issues
             resValue "string", "app_name", "Finamp Profile"
         }
         debug {
@@ -87,7 +87,7 @@ android {
                 signingConfig signingConfigs.debug
             }
             applicationIdSuffix '.debug'
-            minifyEnabled true // avoid dexing issues
+            // minifyEnabled true // avoid dexing issues
             resValue "string", "app_name", "Finamp Debug"
         }
     }

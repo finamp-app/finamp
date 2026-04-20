@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -120,7 +119,7 @@ class FeatureState {
         features.add(
           FeatureProperties(
             type: feature,
-            text: AppLocalizations.of(context)!.playCountValue(currentTrack!.baseItem!.userData?.playCount ?? 0),
+            text: AppLocalizations.of(context)!.playCountValue(currentTrack!.baseItem.userData?.playCount ?? 0),
           ),
         );
       }

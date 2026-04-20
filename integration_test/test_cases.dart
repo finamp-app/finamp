@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:finamp/components/AlbumScreen/album_screen_content.dart';
 import 'package:finamp/components/Buttons/cta_large.dart';
 import 'package:finamp/components/MusicScreen/item_collection_wrapper.dart';
@@ -19,15 +17,28 @@ void main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   /// The ProviderContainer initialized by main().
-  /// All tests should craete and attach to descendants of this to avoid errors.
+  /// All tests should create and attach to descendants of this to avoid errors.
   ProviderContainer? container;
+  Object? mainError;
+
+  setUpAll(() async {
+    try {
+      // Login testing flag redirects file accesses to testing folder and clears it on startup.
+      // Downloaded files are still left in original folder, but they shouldn't really affect testing.
+      await app.main(integrationTesting: true, loginTesting: true);
+    } catch (e) {
+      mainError = e;
+    }
+  });
 
   // These integration tests all rely on the previous one working.  Not good practice, but whatever.
   group('Integration Tests', () {
     testWidgets('Verify app loads without errors', (tester) async {
-      // Login testing flag redirects file accesses to testing folder and clears it on startup.
-      // Downloaded files are still left in original folder, but they shouldn't really affect testing.
-      await tester.runAsync(() => app.main(integrationTesting: true, loginTesting: true));
+      // Running main in setup instead of here to prevent all logging from being attributed
+      // to this test in output.
+      if (mainError != null) {
+        throw mainError!;
+      }
 
       // Save off initialized provider container so tests can create and attach descendants
       // TODO could we get errors from background tasks also attaching to this when they need persistence?
@@ -109,7 +120,7 @@ void main() async {
       await tester.pump();
 
       // Progress into song
-      await Future.delayed(Duration(seconds: 30));
+      await Future<void>.delayed(Duration(seconds: 30));
       await tester.pump();
       final playerService = GetIt.instance<MusicPlayerBackgroundTask>();
       final playbackPosition = playerService.playbackPosition;
@@ -134,7 +145,7 @@ extension WaitForElement on WidgetTester {
       }
       i++;
       if (realtime) {
-        await Future.delayed(Duration(seconds: 1));
+        await Future<void>.delayed(Duration(seconds: 1));
       }
     }
   }

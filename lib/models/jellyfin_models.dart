@@ -8,8 +8,6 @@
 /// These classes should be correct with Jellyfin 10.7.5
 library;
 
-import 'dart:convert';
-
 import 'package:collection/collection.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -3627,7 +3625,7 @@ class PublicUsersResponse {
   List<UserDto> users;
 }
 
-@JsonSerializable(fieldRename: FieldRename.pascal, explicitToJson: true, anyMap: true, includeIfNull: false)
+@JsonSerializable(fieldRename: FieldRename.pascal, explicitToJson: true, anyMap: true)
 class QuickConnectState {
   QuickConnectState({
     required this.authenticated,
@@ -3666,9 +3664,6 @@ class QuickConnectState {
 
   factory QuickConnectState.fromJson(Map<String, dynamic> json) => _$QuickConnectStateFromJson(json);
   Map<String, dynamic> toJson() => _$QuickConnectStateToJson(this);
-
-  @override
-  String toString() => jsonEncode(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal, explicitToJson: true, anyMap: true)

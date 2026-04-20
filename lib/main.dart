@@ -108,9 +108,9 @@ late DateTime startTime;
 
 final providerScopeKey = GlobalKey();
 
-Future<void> main({bool integrationTesting = false, bool loginTesting = true}) async {
+Future<void> main({bool integrationTesting = false, bool loginTesting = false}) async {
   if (loginTesting) {
-    final data = Directory(TestingPathProvider.basePathRelative);
+    final data = await TestingPathProvider.baseDirectory();
     PathProviderPlatform.instance = TestingPathProvider(data);
     if (data.existsSync()) {
       data.deleteSync(recursive: true);
@@ -570,7 +570,7 @@ class _FinampState extends State<Finamp> with WindowListener {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _uriLinkSubscription = AppLinks().uriLinkStream.listen((uri) async {
         linkHandlingLogger.info("Received link: $uri");
-        var state = GlobalSnackbar.materialAppNavigatorKey.currentState;
+        var state = GlobalSnackbar.navigatorState;
         if (state != null) {
           if (uri.host == "internal") {
             await state.pushNamed(uri.path);
@@ -959,7 +959,16 @@ class FinampProviderObserver extends ProviderObserver {
 }
 
 class TestingPathProvider extends PathProviderPlatform {
-  static final basePathRelative = path.join('testing', 'data');
+  static Future<Directory> baseDirectory() async {
+    // If we're on desktop, use the integration_test directory in the checkout tree
+    // If we're on mobile and that doesn't exist, use cache directory.
+    Directory outerDirectory = Directory("integration_test");
+    if (!outerDirectory.existsSync()) {
+      outerDirectory = await getApplicationCacheDirectory();
+    }
+    final outerPath = outerDirectory.absolute.path;
+    return Directory(path.join(outerPath, "testing"));
+  }
 
   TestingPathProvider(Directory dataDir) {
     basePath = dataDir.absolute.path;

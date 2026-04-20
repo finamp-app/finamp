@@ -710,7 +710,9 @@ class DownloadsSyncService {
         (e) => IsarTaskData.build("info $e", type, SyncNode(stubIsarId: e, required: false, viewId: viewId), age: 1),
       ),
     );
-    _isar.isarTaskDatas.putAllSync(items, saveLinks: false);
+    if (items.isNotEmpty) {
+      _isar.isarTaskDatas.putAllSync(items, saveLinks: false);
+    }
   }
 
   /// Execute all pending syncs.
