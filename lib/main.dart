@@ -110,6 +110,8 @@ final providerScopeKey = GlobalKey();
 
 Future<void> main({bool integrationTesting = false, bool loginTesting = false}) async {
   if (loginTesting) {
+    // Note that download baseDirectories cannot be redirected, so use of this flag
+    // causes errors in downloader on mobile platforms
     final data = await TestingPathProvider.baseDirectory();
     PathProviderPlatform.instance = TestingPathProvider(data);
     if (data.existsSync()) {

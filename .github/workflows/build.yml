@@ -1,6 +1,10 @@
 name: Build
 
 on:
+  # Integration tests are slow, so we don't trigger on forks or pull
+  # requests.  To run against one of those, you can trigger manually by
+  # installing github-cli and running
+  # gh workflow run .github/workflows/build.yml --ref <branch name>
   workflow_dispatch:
   pull_request:
   push:
@@ -11,9 +15,9 @@ on:
       - main
       - redesign
 
-.reusable_logic:
+env:
   if_condition: &integration_if github.event_name == 'workflow_dispatch' ||
-    (github.event_name == 'push' and github.repository == 'jmshrv/finamp' )
+    (github.event_name == 'push' && github.repository == 'jmshrv/finamp' )
 
 # Due to a flutter bug, flutter build is not generating localizations
 # workaround by always running flutter pub get immediately before building,
@@ -98,30 +102,59 @@ jobs:
 
     - run: flutter build appbundle --debug --no-pub
 
-    - name: Run Integration tests
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: 29
-        arch: x86_64
-        profile: pixel
-        disk-size: 4096M
-        script: flutter devices
-
-    - name: Run Integration tests
+    - name: Enable KVM group perms
       if: *integration_if
-      uses: reactivecircus/android-emulator-runner@v2
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    - name: Run Integration tests on api 36
+      if: *integration_if
+      timeout-minutes: 20
+      # android emulator is flaky so we retry once
+      uses: Wandalen/wretry.action@v3.8.0
       with:
-        api-level: 29
-        arch: x86_64
-        profile: pixel
-        disk-size: 4096M
-        script: flutter test integration_test/test_cases.dart -d pixel
+        action: reactivecircus/android-emulator-runner@v2
+        # Use the newest supported version of android
+        with: |
+          api-level: 36
+          arch: x86_64
+          profile: pixel
+          disk-size: 5120M
+          script: |
+            adb logcat -c
+            adb logcat &
+            flutter test integration_test/test_cases.dart -d emulator
+
+    - name: Run Integration tests on api 25
+      if: *integration_if
+      timeout-minutes: 20
+      # Use the oldest supported version of android
+      uses: Wandalen/wretry.action@v3.8.0
+      with:
+        action: reactivecircus/android-emulator-runner@v2
+        # We can't use the oldest supported version api 24 because it doesn't recognize the certificates
+        # used by the demo server, so we use the second-oldest api 25.
+        with: |
+          api-level: 25
+          arch: x86_64
+          profile: pixel
+          disk-size: 5120M
+          script: |
+            adb logcat -c
+            adb logcat &
+            flutter test integration_test/test_cases.dart -d emulator
 
   build-ios:
     name: Build for iOS
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v6
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
@@ -163,11 +196,9 @@ jobs:
         erase_before_boot: true
         boot_timeout_seconds: 360
 
-    - run: flutter devices
-
     - name: Run Integration Tests
       if: *integration_if
-      run: flutter test integration_test/test_cases.dart -d 'iPhone 16
+      run: flutter test integration_test/test_cases.dart -d 'iPhone 16'
 
   build-linux:
     name: Build for Linux
@@ -192,7 +223,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev
+        sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev libmpv-dev
 
     - name: Determine Flutter stable version
       uses: subosito/flutter-action@v2
@@ -279,7 +310,7 @@ jobs:
 
     - name: Run Integration Tests
       if: *integration_if
-      uses: username/xvfb-action@v1.1.2
+      uses: smithki/xvfb-action@v1.1.2
       with:
         run: flutter test integration_test/test_cases.dart -d linux
 

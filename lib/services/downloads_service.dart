@@ -8,6 +8,7 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -220,15 +221,20 @@ class DownloadsService {
                   case "image/webp":
                     extension = ".webp";
                 }
-                Future.sync(() async {
-                  assert(
-                    listener.file?.path == await event.task.filePath() ||
-                        (extension != null &&
-                            listener.file?.path.replaceFirst(RegExp(r'\.image$'), extension) ==
-                                await event.task.filePath()),
-                    "${listener.name} ${listener.path} ${listener.fileDownloadLocation?.baseDirectory} ${listener.file?.path} ${await event.task.filePath()} $extension",
-                  );
-                });
+                if (kDebugMode) {
+                  Future.sync(() async {
+                    // capture listener path before we await and it is potentially changed
+                    final listenerFile = listener.file;
+                    final listenerPath = listener.path;
+                    assert(
+                      listenerFile?.path == await event.task.filePath() ||
+                          (extension != null &&
+                              listenerFile?.path.replaceFirst(RegExp(r'\.image$'), extension) ==
+                                  await event.task.filePath()),
+                      "${listener.name} $listenerPath ${listener.fileDownloadLocation?.baseDirectory} ${listenerFile?.path} ${await event.task.filePath()} $extension",
+                    );
+                  });
+                }
                 if (extension != null && listener.file!.path.endsWith(".image")) {
                   // Do not wait for file move to complete to prevent slowing isar write
                   unawaited(

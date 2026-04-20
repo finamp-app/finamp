@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:dbus/dbus.dart';
 import 'package:finamp/components/AlbumScreen/album_screen_content.dart';
 import 'package:finamp/components/Buttons/cta_large.dart';
 import 'package:finamp/components/MusicScreen/item_collection_wrapper.dart';
@@ -12,6 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 void main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -19,16 +24,36 @@ void main() async {
   /// The ProviderContainer initialized by main().
   /// All tests should create and attach to descendants of this to avoid errors.
   ProviderContainer? container;
-  Object? mainError;
+  List<FlutterErrorDetails>? mainErrors = [];
 
   setUpAll(() async {
-    try {
-      // Login testing flag redirects file accesses to testing folder and clears it on startup.
-      // Downloaded files are still left in original folder, but they shouldn't really affect testing.
-      await app.main(integrationTesting: true, loginTesting: true);
-    } catch (e) {
-      mainError = e;
+    // Disable audio output on windows and linux due to missing driver in CI
+    if (Platform.isWindows || Platform.isLinux) {
+      JustAudioMediaKit.nullBackend = true;
     }
+
+    await runZonedGuarded(
+      () async {
+        // Login testing flag redirects file accesses to testing folder and clears it on startup.
+        // Download base directories are not redirected, so loginTesting flag should be avoided on mobile.
+        await app.main(integrationTesting: true, loginTesting: !(Platform.isAndroid || Platform.isIOS));
+      },
+      (e, stack) {
+        // Linux throws DBusServiceUnknownException due to dbus service org.freedesktop.UPower
+        // missing in CI.  Ignore.
+        if (e is DBusServiceUnknownException) return;
+
+        if (mainErrors != null) {
+          mainErrors!.add(FlutterErrorDetails(exception: e, stack: stack));
+        } else {
+          debugPrint("Received background error after completion of main()");
+          debugPrint("Error: $e");
+          debugPrintStack(stackTrace: stack);
+          // If main has already completed, the app's core functionality is working, so we allow the tests to complete
+          // without rethrowing the error.
+        }
+      },
+    );
   });
 
   // These integration tests all rely on the previous one working.  Not good practice, but whatever.
@@ -36,9 +61,15 @@ void main() async {
     testWidgets('Verify app loads without errors', (tester) async {
       // Running main in setup instead of here to prevent all logging from being attributed
       // to this test in output.
-      if (mainError != null) {
-        throw mainError!;
+      for (var error in mainErrors!) {
+        debugPrint("Error thrown in main: ${error.exception}");
+        if (error.stack != null) {
+          debugPrintStack(stackTrace: error.stack!);
+        }
       }
+
+      expect(mainErrors!.length, equals(0));
+      mainErrors = null;
 
       // Save off initialized provider container so tests can create and attach descendants
       // TODO could we get errors from background tasks also attaching to this when they need persistence?
