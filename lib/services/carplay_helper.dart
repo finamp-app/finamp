@@ -121,7 +121,10 @@ class CarPlayHelper {
 
     for (int i = 0; i < items.length; i++) {
       final item = items[i];
-      final name = item.name ?? "";
+      // Use nameForSorting for bucketing so diacritic items (e.g. "Ärzte")
+      // land under their base letter — Jellyfin strips diacritics server-side
+      // when computing sortName.
+      final name = item.nameForSorting ?? item.name ?? "";
       String letter = name.isNotEmpty ? name[0].toUpperCase() : "#";
       if (!RegExp(r'[A-Z]').hasMatch(letter)) {
         letter = "#";
