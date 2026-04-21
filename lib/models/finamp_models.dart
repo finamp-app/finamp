@@ -2002,7 +2002,9 @@ class QueueItemSource {
               type: QueueItemSourceNameType.preTranslated,
               pretranslatedName:
                   baseItem.name ??
-                  AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.placeholderSource,
+                  (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
+                      ? AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.placeholderSource
+                      : "Playing"),
             ),
       id: baseItem.id,
       item: baseItem,

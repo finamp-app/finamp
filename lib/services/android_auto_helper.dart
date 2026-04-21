@@ -532,9 +532,10 @@ class AndroidAutoHelper {
       mediaItems.add(
         MediaItem(
           id: QueueItemSourceNameType.shuffleAll.name,
-          title:
-              AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)?.shuffleAll ??
-              "Shuffle All Tracks",
+          title: GlobalSnackbar.materialAppScaffoldKey.currentContext != null
+              ? (AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)?.shuffleAll ??
+                    "Shuffle All Tracks")
+              : "Shuffle All Tracks",
           playable: true,
         ),
       );
