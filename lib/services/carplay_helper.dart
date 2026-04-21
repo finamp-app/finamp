@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/music_player_background_task.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:audio_service/audio_service.dart';
@@ -46,9 +46,6 @@ const _carPlayOfflineLimit = 1000;
 /// and transfers much faster than 200x200.
 const _carPlayImageSize = 100;
 
-/// Image quality for CarPlay artwork. Lower than default 90 for faster transfer.
-const _carPlayImageQuality = 70;
-
 class CarPlayHelper {
   ConnectionStatusTypes connectionStatus = ConnectionStatusTypes.unknown;
   final FlutterCarplay _flutterCarplay = FlutterCarplay();
@@ -65,83 +62,17 @@ class CarPlayHelper {
 
   final _queueService = GetIt.instance<QueueService>();
 
-  /// Returns the image URI string for a CarPlay list item.
-  /// Checks downloaded images first, then falls back to network URL.
-  String? _getCarPlayImageUrl(BaseItemDto item) {
+  /// Resolves the image URI for a CarPlay list item via [albumImageProvider],
+  /// so CarPlay shares Finamp's image cache. Returns a `file://` URI for
+  /// downloaded images and a network URL otherwise.
+  String? _getCarPlayImageUri(BaseItemDto item) {
     if (item.imageId == null) return null;
-
-    // Check for locally downloaded image first (instant)
-    final downloadedFile = _downloadsService.getImageDownload(item: item)?.file;
-    if (downloadedFile != null) {
-      return Uri.file(downloadedFile.path).toString();
-    }
-
-    if (FinampSettingsHelper.finampSettings.isOffline) return null;
-
-    // Return network URL at reduced size
-    return _jellyfinApiHelper
-        .getImageUrl(
-          item: item,
-          maxWidth: _carPlayImageSize,
-          maxHeight: _carPlayImageSize,
-          quality: _carPlayImageQuality,
+    return providerRef
+        .read(
+          albumImageProvider(AlbumImageRequest(item: item, maxHeight: _carPlayImageSize, maxWidth: _carPlayImageSize)),
         )
+        .uri
         ?.toString();
-  }
-
-  /// Pre-downloads unique images to the shared cache (DefaultCacheManager) and
-  /// returns file URIs. CarPlay needs file paths for UIKit, not Flutter ImageProviders.
-  /// Items sharing the same imageId are downloaded only once.
-  Future<Map<String, String>> _preloadCarPlayImages(List<BaseItemDto> items) async {
-    final Map<String, String> imageUriMap = {};
-    if (FinampSettingsHelper.finampSettings.isOffline) return imageUriMap;
-
-    // Collect unique image IDs and their URLs
-    final Map<String, String> uniqueImageUrls = {};
-    for (final item in items) {
-      final imageId = item.imageId;
-      if (imageId == null || uniqueImageUrls.containsKey(imageId)) continue;
-
-      // Skip items with downloaded images
-      final downloadedFile = _downloadsService.getImageDownload(item: item)?.file;
-      if (downloadedFile != null) {
-        imageUriMap[imageId] = Uri.file(downloadedFile.path).toString();
-        continue;
-      }
-
-      final url = _jellyfinApiHelper.getImageUrl(
-        item: item,
-        maxWidth: _carPlayImageSize,
-        maxHeight: _carPlayImageSize,
-        quality: _carPlayImageQuality,
-      );
-      if (url != null) {
-        uniqueImageUrls[imageId] = url.toString();
-      }
-    }
-
-    // Download unique images in parallel
-    final futures = uniqueImageUrls.entries.map((entry) async {
-      try {
-        final fileInfo = await DefaultCacheManager().downloadFile(entry.value, key: "carplay_${entry.key}");
-        imageUriMap[entry.key] = Uri.file(fileInfo.file.path).toString();
-      } catch (e) {
-        // Fall back to network URL if download fails
-        imageUriMap[entry.key] = entry.value;
-      }
-    });
-    await Future.wait(futures);
-
-    return imageUriMap;
-  }
-
-  /// Gets the image URI for an item, using pre-loaded cache map if available.
-  String? _getImageFromPreloaded(BaseItemDto item, Map<String, String>? preloaded) {
-    if (item.imageId == null) return null;
-    if (preloaded != null && preloaded.containsKey(item.imageId)) {
-      return preloaded[item.imageId];
-    }
-    return _getCarPlayImageUrl(item);
   }
 
   void setupCarplay() {
@@ -374,9 +305,6 @@ class CarPlayHelper {
 
     final recentPlays = getRecentPlays(limit: 5);
     if (recentPlays.isNotEmpty) {
-      final recentPlayItems = recentPlays.map((q) => q.baseItem).toList();
-      final recentPlayImageMap = await _preloadCarPlayImages(recentPlayItems);
-
       CPListSection recentPlaysSection = CPListSection(header: _l10n.recentlyPlayed, items: []);
 
       for (final queueItem in recentPlays) {
@@ -386,7 +314,7 @@ class CarPlayHelper {
           CPListItem(
             text: baseItem.name ?? _l10n.unknown,
             detailText: baseItem.artists?.join(", ") ?? baseItem.albumArtist,
-            image: _getImageFromPreloaded(baseItem, recentPlayImageMap),
+            image: _getCarPlayImageUri(baseItem),
             onPress: (complete, self) async {
               if (!FinampSettingsHelper.finampSettings.isOffline) {
                 final audioServiceHelper = GetIt.instance<AudioServiceHelper>();
@@ -421,8 +349,6 @@ class CarPlayHelper {
     final recentlyAdded = await getRecentlyAddedAlbums(limit: 3);
     _carPlayLogger.info("Got ${recentlyAdded.length} recently added albums");
     if (recentlyAdded.isNotEmpty) {
-      final recentlyAddedImageMap = await _preloadCarPlayImages(recentlyAdded);
-
       CPListSection recentlyAddedSection = CPListSection(header: _l10n.recentlyAdded, items: []);
 
       for (final album in recentlyAdded) {
@@ -430,7 +356,7 @@ class CarPlayHelper {
           CPListItem(
             text: album.name ?? _l10n.unknownAlbum,
             detailText: album.albumArtist,
-            image: _getImageFromPreloaded(album, recentlyAddedImageMap),
+            image: _getCarPlayImageUri(album),
             onPress: (complete, self) async {
               await showCollectionTracksTemplate(album);
               complete();
@@ -544,9 +470,6 @@ class CarPlayHelper {
     try {
       List<BaseItemDto> mediaItems = await loadChildTracksFromBaseItem(baseItem: parent);
 
-      // Pre-cache images — deduplicates shared album art across tracks
-      final imageMap = await _preloadCarPlayImages(mediaItems);
-
       CPListSection playlistSection = CPListSection(items: []);
 
       playlistSection.items.add(
@@ -564,7 +487,7 @@ class CarPlayHelper {
           CPListItem(
             text: item.name ?? _l10n.unknownName,
             detailText: item.artists?.join(", ") ?? item.albumArtist,
-            image: _getImageFromPreloaded(item, imageMap),
+            image: _getCarPlayImageUri(item),
             onPress: (complete, self) async {
               await playItem(parent, index: index);
               complete();
@@ -613,14 +536,11 @@ class CarPlayHelper {
         mediaItems = await getTabItems(tabContentType: tabType);
       }
 
-      // Pre-cache images for all items in the list
-      final imageMap = await _preloadCarPlayImages(mediaItems);
-
       final sections = _groupItemsIntoSections(mediaItems, (item, index) {
         return CPListItem(
           text: item.name ?? _l10n.unknown,
           detailText: item.artists?.join(", ") ?? item.albumArtist,
-          image: _getImageFromPreloaded(item, imageMap),
+          image: _getCarPlayImageUri(item),
           onPress: (complete, self) async {
             if (tabType == TabContentType.genres && genreFilter == null) {
               await showBrowsableListTemplate(tabType: tabType, genreFilter: item);
@@ -664,14 +584,11 @@ class CarPlayHelper {
             [];
       }
 
-      // Pre-cache images for all tracks
-      final imageMap = await _preloadCarPlayImages(tracks);
-
       final sections = _groupItemsIntoSections(tracks, (item, index) {
         return CPListItem(
           text: item.name ?? _l10n.unknownName,
           detailText: item.artists?.join(", ") ?? item.albumArtist,
-          image: _getImageFromPreloaded(item, imageMap),
+          image: _getCarPlayImageUri(item),
           onPress: (complete, self) async {
             await playTracksAsQueue(tracks, index: index, sourceName: _l10n.tracks);
             complete();
@@ -779,14 +696,11 @@ class CarPlayHelper {
         ),
       );
 
-      // Pre-cache images for artist's albums
-      final imageMap = await _preloadCarPlayImages(artistAlbumsList);
-
       for (final item in artistAlbumsList) {
         artistAlbums.items.add(
           CPListItem(
             text: item.name ?? _l10n.unknownName,
-            image: _getImageFromPreloaded(item, imageMap),
+            image: _getCarPlayImageUri(item),
             onPress: (complete, self) async {
               await showCollectionTracksTemplate(item);
               complete();
