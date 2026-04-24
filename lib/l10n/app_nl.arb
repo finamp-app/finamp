@@ -565,7 +565,7 @@
             }
         }
     },
-    "sleepTimerRemainingTime": "Slapen over {time} minuten",
+    "sleepTimerRemainingTime": "Slapen over {time,plural,=1{<1 minuuut} other{{time} minuten}}",
     "@sleepTimerRemainingTime": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
         "placeholders": {
@@ -1797,6 +1797,21 @@
         "placeholders": {
             "itemType": {
                 "type": "String"
+            }
+        }
+    },
+    "showArtistsTracksSectionSubtitle": "Of een sectie met tot 5 nummers weergegeven moet worden. Wanneer ingschakeld, kan je kiezen tussen Meest Gespeeld, Favoriet, Willekeurig, Nieuwste Releases, Recent Toegevoegde Nummers en Laatst Gespeelde Nummers.",
+    "amoledTheme": "Wisselt het donkere kleurschema tussen donkergrijs en diep zwart.",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "Vervangt het donkere kleurschema met een diep zwart thema.",
+    "sleepTimerRemainingTracks": "Slapen over {time,plural,=1{na dit nummer} other{in {time} nummers}}.",
+    "@sleepTimerRemainingTracks": {
+        "description": "Button label for sleep timer. {time} is the amount of minutes left.",
+        "placeholders": {
+            "time": {
+                "type": "int"
             }
         }
     }
