@@ -1011,7 +1011,7 @@
     "@useMonochromeIcon": {
         "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
     },
-    "useMonochromeIconSubtitle": "Només afecta la icona dins l'aplicació, no la icona de llençament.",
+    "useMonochromeIconSubtitle": "Només afecta la icona dins l'aplicació, no la icona de llançament.",
     "@useMonochromeIconSubtitle": {
         "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
     },
