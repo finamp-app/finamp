@@ -1,7 +1,6 @@
 package com.unicornsonlsd.finamp
 
 import android.app.UiModeManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -71,7 +70,7 @@ class MainActivity : AudioServiceActivity() {
             when (call.method) {
                 "setNativeThemeMode" -> {
                     val uiManager: UiModeManager =
-                        getApplicationContext().getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+                        applicationContext.getSystemService(UI_MODE_SERVICE) as UiModeManager
 
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                         // Only api >= 31 supports uiManager.setApplicationNightMode
