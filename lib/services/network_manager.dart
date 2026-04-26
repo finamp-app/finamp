@@ -9,6 +9,7 @@ import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/playon_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -35,12 +36,29 @@ final StreamSubscription<List<ConnectivityResult>> _listener = Connectivity().on
   _onConnectivityChange,
 );
 
-@riverpod
-class AutoOffline extends _$AutoOffline {
+enum FinampConnectivityState { localNetwork, cellular, none, pending }
+
+@immutable
+class ConnectivityState {
+  const ConnectivityState(this.state, this.pingState);
+  final FinampConnectivityState state;
+  final bool? pingState;
+
+  @override
+  bool operator ==(Object other) {
+    return other is ConnectivityState && other.state == state && other.pingState == pingState;
+  }
+
+  @override
+  int get hashCode => Object.hash(state, pingState);
+}
+
+@Riverpod(keepAlive: true)
+class LatestConnectivity extends _$LatestConnectivity {
   static void startWatching() {
     ProviderContainer container = GetIt.instance<ProviderContainer>();
 
-    container.listen(autoOfflineProvider, (_, automationState) {
+    container.listen(latestConnectivityProvider, (_, automationState) {
       bool automationEnabled = automationState > 0;
       _networkAutomationLogger.info("${automationEnabled ? "Enabled" : "Paused"} Automation");
 
@@ -49,37 +67,39 @@ class AutoOffline extends _$AutoOffline {
         // instantly check if offline mode should be on
         _onConnectivityChange(null);
       } else {
+        // TODO it seems pausing doesn't actually do anything?  And this doesn't fire on startup anyway.
+        // Either cancel, or strip out this logic.
         _listener.pause();
       }
     });
   }
 
   @override
-  int build() {
-    bool autoOfflineEnabled = ref.watch(finampSettingsProvider.autoOffline) != AutoOfflineOption.disabled;
-
-    // false = user overwrote offline mode
-    bool autoOfflineActive = ref.watch(finampSettingsProvider.autoOfflineListenerActive);
-
+  ConnectivityState build() {
+    bool autoOfflinePing =
+        ref.watch(finampSettingsProvider.autoOffline) == AutoOfflineOption.unreachable &&
+        ref.watch(finampSettingsProvider.autoOfflineListenerActive);
     bool preferLocalNetwork =
         ref.watch(FinampUserHelper.finampCurrentUserProvider).valueOrNull?.preferLocalNetwork ??
         DefaultSettings.preferLocalNetwork;
+    if (autoOfflinePing || preferLocalNetwork) {
+      // This starts an async ping
+      _pingServer();
+    }
 
-    // Why this integer magic?
-    // If the function would return a bool aka. `(autoOfflineEnabled && autoOfflineActive) || autoServerSwitch`
-    // The container.listen would only trigger when the value actually changes (doesn't stay the same).
-    // This means when preferLocalNetwork is true, the method will always return `true`. Thus not firing the listener.
-    // Why does the listener need to trigger?
-    // When the user paused automation by manually changing offline mode, and then reengages automation
-    // The listener wouldn't fire (since the value doesn't actually change, it stays `true`), this results in _onConnectivityChange
-    // not being called which means autoOffline wont reevaluate the offline-state immediately, meaning offlineMode stays where the
-    // user last changed it to and wont update until a network change happens
-    int state = 0;
-    if (autoOfflineEnabled && autoOfflineActive) state += 1;
-    if (preferLocalNetwork) state += 2;
-
-    return state;
+    return ConnectivityState(FinampConnectivityState.pending, null);
   }
+}
+
+Future<void> _pingServer() async {
+  // Set state, change target url
+}
+
+Future<void> _checkConnectivity() async {
+  // TODO instead of calling checkConnectivity, we can just record when listener gives us a later connection
+  // use index values instead of timestamps?
+  // So we wait 7 seconds, then see if latest <state> is later than our given event stamp.  Also need to be given starting state?
+  // Maybe have AsynLoading or sepearte loading bool, because some people watch that but others want last valid.
 }
 
 Future<void> _onConnectivityChange(List<ConnectivityResult>? connections) async {

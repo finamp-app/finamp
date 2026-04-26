@@ -3322,5 +3322,7 @@
   "cellularTranscodeConfigSubtitle": "Applied when using cellular data",
   "remoteTranscodeConfigTitle": "Remote Transcoding Config",
   "remoteTranscodeConfigSubtitle": "Applied when using remote URL",
-  "remoteTranscodeConfigDisabledSubtitle": "Setting is only available if local server URL configured"
+  "remoteTranscodeConfigDisabledSubtitle": "Setting is only available if local server URL configured",
+  "flacTranscodeConfigTitle": "Flac Transcoding Config",
+  "flacTranscodeConfigSubtitle": "Applied when streaming flac files"
 }

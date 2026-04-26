@@ -910,8 +910,6 @@ class FinampSettings {
   @HiveField(153, defaultValue: DefaultSettings.remoteTranscodeConfig)
   String remoteTranscodeConfig;
   @HiveField(154, defaultValue: DefaultSettings.flacTranscodeConfig)
-  // TODO it seems like fetching item codec requires getting mediaStreams data, which is large.  Is there a more efficent way?
-  // Can we limit mediaStream fetching to only items about to play?
   String flacTranscodeConfig;
   @HiveField(155, defaultValue: DefaultSettings.incompatibleTranscodeConfig)
   // TODO figure out supported codecs somehow?

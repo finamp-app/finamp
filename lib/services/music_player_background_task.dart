@@ -5,11 +5,13 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:collection/collection.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/services/current_track_metadata_provider.dart';
+import 'package:finamp/services/data_source_service.dart';
 import 'package:finamp/services/favorite_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
@@ -1282,8 +1284,26 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       if (queueItem.item.extras!["isOffline"] as bool) {
         return Future.error("Offline mode enabled but downloaded track not found.");
       } else {
-        final trackUri = await _trackUri(queueItem.item);
-        return AudioSource.uri(trackUri, tag: queueItem);
+        final trackUri = _trackUri(queueItem.item, null);
+        StreamingTranscodingConfig? transcodeConfig;
+        return AudioSource.uri(
+          trackUri.replace(host: "localhost"),
+          tag: queueItem,
+          // Android only last-minute URL resolving
+          resolver: (oldURI) async {
+            // The transcoding config for an item will be fixed as soon as the player resolves the URI to begin fetching
+            // The remote vs local url can change for every request.
+            if (transcodeConfig == null) {
+              final metadata = await GetIt.instance<ProviderContainer>().read(
+                metadataProvider(queueItem.baseItem).future,
+              );
+              final audioStream = metadata?.mediaSourceInfo.mediaStreams.firstWhereOrNull((s) => s.type == "Audio");
+              // TODO add this back into metadataProvider and/or queueItem?
+              transcodeConfig ??= DataSourceService.activeTranscodingProfile(audioStream?.codec);
+            }
+            return _trackUri(queueItem.item, transcodeConfig);
+          },
+        );
         // if (queueItem.item.extras!["shouldTranscode"] == true) {
         //   return HlsAudioSource(trackUri, tag: queueItem);
         // } else {
@@ -1302,7 +1322,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     }
   }
 
-  Future<Uri> _trackUri(MediaItem mediaItem) async {
+  Uri _trackUri(MediaItem mediaItem, StreamingTranscodingConfig? justInTimeTranscodeConfig) {
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
     // When creating the MediaItem (usually in AudioServiceHelper), we specify
     // whether or not to transcode. We used to pull from FinampSettings here,
@@ -1323,7 +1343,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     // queryParameters["PlaySessionId"] = _order.id; //!!! this currently breaks transcoding for some reason
 
     assert(!(mediaItem.extras!["isDownloaded"] as bool));
-    final transcodeProfile = mediaItem.extras!["transcodeProfile"] as StreamingTranscodingConfig;
+    final transcodeProfile =
+        justInTimeTranscodeConfig ?? mediaItem.extras!["transcodeProfile"] as StreamingTranscodingConfig;
     if (transcodeProfile.format != FinampTranscodingStreamingFormat.original) {
       builtPath.addAll(["Audio", mediaItem.extras!["itemJson"]["Id"] as String, "main.m3u8"]);
 

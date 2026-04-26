@@ -998,11 +998,11 @@ packages:
     dependency: "direct main"
     description:
       path: just_audio
-      ref: "6dfdd07d19f6f037d3f4ff04c397639e4632c687"
-      resolved-ref: "6dfdd07d19f6f037d3f4ff04c397639e4632c687"
-      url: "https://github.com/LennartEnns/just_audio_fork.git"
+      ref: minor-android-late-uri
+      resolved-ref: "82dddf4c6a1d38ac9266b4128bc89d989eeab7b4"
+      url: "https://github.com/Komodo5197/just_audio.git"
     source: git
-    version: "0.10.6"
+    version: "0.10.5"
   just_audio_media_kit:
     dependency: "direct main"
     description:
@@ -1013,12 +1013,13 @@ packages:
     source: git
     version: "2.1.0"
   just_audio_platform_interface:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: just_audio_platform_interface
-      sha256: "2532c8d6702528824445921c5ff10548b518b13f808c2e34c2fd54793b999a6a"
-      url: "https://pub.dev"
-    source: hosted
+      path: just_audio_platform_interface
+      ref: minor-android-late-uri
+      resolved-ref: "82dddf4c6a1d38ac9266b4128bc89d989eeab7b4"
+      url: "https://github.com/Komodo5197/just_audio.git"
+    source: git
     version: "4.6.0"
   just_audio_web:
     dependency: transitive

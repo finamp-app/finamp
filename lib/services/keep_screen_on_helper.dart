@@ -36,7 +36,7 @@ class KeepScreenOnHelper {
     var battery = Battery();
     BatteryState prevBattState = BatteryState.unknown;
     battery.onBatteryStateChanged.listen((BatteryState state) {
-      if (prevBattState != state) {
+      if (prevBattState.isPluggedIn != state.isPluggedIn) {
         prevBattState = state;
         setCondition(batteryState: state);
       }
@@ -83,23 +83,7 @@ class KeepScreenOnHelper {
   void setCondition({bool? isPlaying, bool? isLyricsShowing, BatteryState? batteryState}) {
     if (isPlaying != null) _isPlaying = isPlaying;
     if (isLyricsShowing != null) _isLyricsShowing = isLyricsShowing;
-    if (batteryState != null) {
-      _keepScreenOnLogger.fine("reported battery state: $batteryState");
-      switch (batteryState) {
-        case BatteryState.charging:
-        case BatteryState.connectedNotCharging:
-        case BatteryState.full:
-          _isPluggedIn = true;
-          break;
-        case BatteryState.discharging:
-        case BatteryState.unknown:
-          _isPluggedIn = false;
-          break;
-        default:
-          // Do nothing
-          break;
-      }
-    }
+    if (batteryState != null) _isPluggedIn = batteryState.isPluggedIn;
 
     setKeepScreenOn();
   }
@@ -107,6 +91,7 @@ class KeepScreenOnHelper {
   void _turnOn() {
     if (!_keepingScreenOn) {
       _keepingScreenOn = true;
+      _keepScreenOnLogger.fine("Enabling WakeLock");
       WakelockPlus.enable();
     }
   }
@@ -114,9 +99,20 @@ class KeepScreenOnHelper {
   void _turnOff() {
     if (_keepingScreenOn) {
       _keepingScreenOn = false;
+      _keepScreenOnLogger.fine("Disabling WakeLock");
       WakelockPlus.disable();
     }
   }
+}
+
+extension PluggedIn on BatteryState {
+  bool get isPluggedIn => switch (this) {
+    BatteryState.full => true,
+    BatteryState.charging => true,
+    BatteryState.connectedNotCharging => true,
+    BatteryState.discharging => false,
+    BatteryState.unknown => false,
+  };
 }
 
 class KeepScreenOnObserver extends NavigatorObserver {

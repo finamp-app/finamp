@@ -1454,7 +1454,7 @@ class QueueService {
         //!!! this ID has to be consistent across the transcoding URL and the playback reporting status, otherwise the server won't show that we're transcoding
         "playSessionId": uuid.v4(),
         "itemJson": item.toJson(setOffline: false),
-        if (!isDownloaded) "transcodeProfile": DataSourceService.activeTranscodingProfile(),
+        if (!isDownloaded) "transcodeProfile": DataSourceService.activeTranscodingProfile(null),
         "downloadedTrackPath": downloadedTrack?.file?.path,
         "isDownloaded": isDownloaded,
         "android.media.extra.DOWNLOAD_STATUS": isDownloaded ? 2 : 0,

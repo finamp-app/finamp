@@ -33,6 +33,7 @@ class DataSourceService {
     });
 
     // TODO create active transcode profile provider, just listen to that
+    // TODO listen to network provider
 
     /*ref.listen(finampSettingsProvider.shouldTranscode, (_, shouldTranscode) {
       if (shouldTranscode) {
@@ -139,7 +140,7 @@ class DataSourceService {
     }
   }
 
-  static StreamingTranscodingConfig activeTranscodingProfile() {
+  static StreamingTranscodingConfig activeTranscodingProfile(String? codec) {
     final settings = FinampSettingsHelper.finampSettings;
     final allConfigs = settings.streamingTranscodeConfigs;
     if (FinampSettingsHelper.finampSettings.forceTranscode) {
@@ -154,6 +155,12 @@ class DataSourceService {
     if (true) {
       validPresets.add(allConfigs[settings.cellularTranscodeConfig]);
     }
+    // TODO should we just be checking bitrate?
+    // IF so, would it make sense to allow configuring bitrate cutoff?
+    if (codec == "flac") {
+      validPresets.add(allConfigs[settings.flacTranscodeConfig]);
+    }
+    // TODO can we validate codecs are readable somehow?
     // Use transcode config with lowest effective bitrate
     var output = StreamingTranscodingPreset.originalPreset;
     for (final config in validPresets) {

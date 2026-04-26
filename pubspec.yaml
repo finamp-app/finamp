@@ -33,9 +33,10 @@ dependencies:
   # just_audio: ^0.10.5
   just_audio:
     # TODO switch back to official just_audio once https://github.com/ryanheise/just_audio/pull/1555 is merged
+    # fork also has android uri hotswap feature
     git:
-      url: https://github.com/LennartEnns/just_audio_fork.git
-      ref: 6dfdd07d19f6f037d3f4ff04c397639e4632c687
+      url: https://github.com/Komodo5197/just_audio.git
+      ref: minor-android-late-uri
       path: just_audio
   just_audio_media_kit:
     git:
@@ -182,6 +183,11 @@ dependency_overrides:
       url: https://github.com/Komodo5197/isar-community.git
       ref: a602cd8999048faba043f7e1ce7ba92f4d812762
       path: packages/isar
+  just_audio_platform_interface:
+    git:
+      url: https://github.com/Komodo5197/just_audio.git
+      ref: minor-android-late-uri
+      path: just_audio_platform_interface
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

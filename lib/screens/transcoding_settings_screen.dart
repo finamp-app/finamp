@@ -36,7 +36,8 @@ class _TranscodingSettingsScreenState extends State<TranscodingSettingsScreen> {
           const DefaultTranscodeConfigDropdownListTile(),
           const CellularTranscodeConfigDropdownListTile(),
           const RemoteTranscodeConfigDropdownListTile(),
-          // TODO add flac and incompatible settings once available
+          const FlacTranscodeConfigDropdownListTile(),
+          // TODO add incompatible codec setting once available
           Divider(),
           const TranscodeSwitch(),
           const ForcedTranscodeConfigDropdownListTile(),
@@ -269,6 +270,29 @@ class RemoteTranscodeConfigDropdownListTile extends ConsumerWidget {
             dropdownItems: ref.watch(transcodeConfigDropdownProvider(AppLocalizations.of(context)!)),
             selectedValue: ref.watch(finampSettingsProvider.remoteTranscodeConfig),
             onSelected: FinampSetters.setRemoteTranscodeConfig.ifNonNull,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FlacTranscodeConfigDropdownListTile extends ConsumerWidget {
+  const FlacTranscodeConfigDropdownListTile({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.flacTranscodeConfigTitle),
+      subtitle: Column(
+        spacing: 4.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.flacTranscodeConfigSubtitle),
+          FinampSettingsDropdown<String>(
+            dropdownItems: ref.watch(transcodeConfigDropdownProvider(AppLocalizations.of(context)!)),
+            selectedValue: ref.watch(finampSettingsProvider.flacTranscodeConfig),
+            onSelected: FinampSetters.setFlacTranscodeConfig.ifNonNull,
           ),
         ],
       ),
