@@ -36,21 +36,21 @@ class LocalNetworkAddressSelectorState extends ConsumerState<LocalNetworkAddress
     });
   }
 
-  Future<void> _updateUrl(String url) async {
+  void _updateUrl(String url) {
     if (url.isEmpty) return; // Ignore empty
     if (!url.startsWith('http')) {
       GlobalSnackbar.message((context) => AppLocalizations.of(context)!.missingSchemaError);
       return;
     }
     GetIt.instance<FinampUserHelper>().currentUser?.update(newLocalAddress: url);
-    await changeTargetUrl();
+    ref.invalidate(serverReachabilityProvider);
   }
 
-  Future<void> commitIfChanged() async {
+  void commitIfChanged() {
     final current = _controller?.text.trim() ?? '';
     if (current == _lastCommittedValue) return;
     _lastCommittedValue = current;
-    await _updateUrl(current);
+    _updateUrl(current);
   }
 
   @override

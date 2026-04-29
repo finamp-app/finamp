@@ -1284,26 +1284,25 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       if (queueItem.item.extras!["isOffline"] as bool) {
         return Future.error("Offline mode enabled but downloaded track not found.");
       } else {
-        final trackUri = _trackUri(queueItem.item, null);
-        StreamingTranscodingConfig? transcodeConfig;
-        return AudioSource.uri(
-          trackUri.replace(host: "localhost"),
-          tag: queueItem,
-          // Android only last-minute URL resolving
-          resolver: (oldURI) async {
-            // The transcoding config for an item will be fixed as soon as the player resolves the URI to begin fetching
-            // The remote vs local url can change for every request.
-            if (transcodeConfig == null) {
-              final metadata = await GetIt.instance<ProviderContainer>().read(
-                metadataProvider(queueItem.baseItem).future,
-              );
-              final audioStream = metadata?.mediaSourceInfo.mediaStreams.firstWhereOrNull((s) => s.type == "Audio");
-              // TODO add this back into metadataProvider and/or queueItem?
-              transcodeConfig ??= DataSourceService.activeTranscodingProfile(audioStream?.codec);
-            }
-            return _trackUri(queueItem.item, transcodeConfig);
-          },
-        );
+        // Android-only audiosource that delays resolution until buffering starts.
+        // TODO figure out why this is breaking audio_service.
+        // TODO add fallback to old code
+        return MappingAudioSource(null, (_) async {
+          final metadata = await GetIt.instance<ProviderContainer>().read(metadataProvider(queueItem.baseItem).future);
+          final audioStream = metadata?.mediaSourceInfo.mediaStreams.firstWhereOrNull((s) => s.type == "Audio");
+          // TODO add this back into metadataProvider and/or queueItem?
+          final transcodeConfig = DataSourceService.activeTranscodingProfile(audioStream?.codec);
+          final trackUri = _trackUri(queueItem.item, transcodeConfig);
+          return AudioSource.uri(
+            trackUri,
+            tag: queueItem,
+            // Android only last-minute URL resolving
+            // This is used for individual data chunks, so it must always point to the same resource
+            resolver: (oldURI) async {
+              return _trackUri(queueItem.item, transcodeConfig);
+            },
+          );
+        }, tag: queueItem);
         // if (queueItem.item.extras!["shouldTranscode"] == true) {
         //   return HlsAudioSource(trackUri, tag: queueItem);
         // } else {

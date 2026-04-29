@@ -44,7 +44,7 @@ class _PublicAddressSelector extends ConsumerState<PublicAddressSelector> {
                 return GlobalSnackbar.message((context) => AppLocalizations.of(context)!.missingSchemaError);
               }
               GetIt.instance<FinampUserHelper>().currentUser?.update(newPublicAddress: value);
-              await changeTargetUrl();
+              ref.invalidate(serverReachabilityProvider);
             },
           ),
         ],

@@ -999,7 +999,7 @@ packages:
     description:
       path: just_audio
       ref: minor-android-late-uri
-      resolved-ref: "82dddf4c6a1d38ac9266b4128bc89d989eeab7b4"
+      resolved-ref: "69b9ffc6b0a8f0944b9b4b42f7a3312531e8b7fc"
       url: "https://github.com/Komodo5197/just_audio.git"
     source: git
     version: "0.10.5"
@@ -1017,7 +1017,7 @@ packages:
     description:
       path: just_audio_platform_interface
       ref: minor-android-late-uri
-      resolved-ref: "82dddf4c6a1d38ac9266b4128bc89d989eeab7b4"
+      resolved-ref: "69b9ffc6b0a8f0944b9b4b42f7a3312531e8b7fc"
       url: "https://github.com/Komodo5197/just_audio.git"
     source: git
     version: "4.6.0"

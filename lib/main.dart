@@ -317,8 +317,10 @@ Future<void> _setupProviders() async {
   await initImageCache();
 
   DataSourceService.create();
-  LatestConnectivity.startWatching();
+  await startNetworkAutomation();
 
+  // Make sure that providers keep rebuilding when app is in the background
+  // This kkeps track metadata and similar reported to the OS correct
   unawaited(
     Stream<void>.periodic(Duration(seconds: 1)).forEach((_) {
       if (!SchedulerBinding.instance.framesEnabled) {
