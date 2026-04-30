@@ -1438,5 +1438,302 @@
     "genreItemSectionFilterChipOrderTitle": "アイテムセクションのフィルター順序",
     "@genreItemSectionFilterChipOrderTitle": {
         "description": "Label for the setting that controls the order of item sections filter chips."
+    },
+    "amoledTheme": "AMOLEDテーマを使用する",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "暗い配色を純粋な黒を基調としたデザインに変更します。",
+    "genreItemSectionFilterChipOrderSubtitle": "アイテムセクションごとに利用可能なフィルターの順序を制御します。",
+    "@genreItemSectionFilterChipOrderSubtitle": {
+        "description": "Description of the setting that controls the order of item sections filter chips."
+    },
+    "artistItemSectionFilterChipOrderTitle": "トラックセクションのフィルター順",
+    "@artistItemSectionFilterChipOrderTitle": {
+        "description": "Label for the setting that controls the order of the tracks sections filter chips."
+    },
+    "artistItemSectionFilterChipOrderSubtitle": "トラックセクションで使用可能なフィルターの順序を制御します。",
+    "@artistItemSectionFilterChipOrderSubtitle": {
+        "description": "Description of the setting that controls the order of the tracks sections filter chips."
+    },
+    "genreFilterArtistScreens": "アーティストフィルタ",
+    "@genreFilterArtistScreens": {
+        "description": "Label for the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
+    },
+    "genreFilterArtistScreensSubtitle": "有効にすると、アーティスト（ジャンル経由でアクセス）には現在閲覧しているジャンルに一致するトラックとアルバムのみが表示されます。（ジャンルフィルタはいつでも手動で解除してすべてのトラックとアルバムを表示できます。）",
+    "@genreFilterArtistScreensSubtitle": {
+        "description": "Description of the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
+    },
+    "genreFilterPlaylistScreens": "プレイリストフィルタ",
+    "@genreFilterPlaylistScreens": {
+        "description": "Label for the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
+    },
+    "genreFilterPlaylistScreensSubtitle": "有効にすると、プレイリスト（ジャンル経由でアクセス）には現在閲覧しているジャンルに一致するトラックのみが表示されます。（ジャンルフィルタはいつでも手動で解除してすべてのトラックを表示できます。）",
+    "@genreFilterPlaylistScreensSubtitle": {
+        "description": "Description of the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
+    },
+    "genreListsInheritSorting": "完全なリストのソート継承",
+    "@genreListsInheritSorting": {
+        "description": "Label for the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
+    },
+    "genreListsInheritSortingSubtitle": "有効にすると「すべて表示」リストはジャンル画面の並べ替えとフィルタリング設定を継承します。無効にすると対応するライブラリタブの設定が代わりに使用されます。ジャンル画面上部のカウントまたは「プレイリストを閲覧」ボタンをタップすると常にライブラリタブの並べ替え設定が適用された完全なリストが表示されます。",
+    "@genreListsInheritSortingSubtitle": {
+        "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
+    },
+    "curatedItemsNotListenedYet": "{itemType, select, artistGenreFilter{このアーティストによるこのジャンルの} artist{このアーティストによる} genre{このジャンルの} other{}} のトラックをまだ聴いていません。",
+    "@curatedItemsNotListenedYet": {
+        "description": "Tooltip for Most Played and Recently Played on Curated Items in Online Mode when not yet listened to any tracks.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "curatedItemsNoFavorites": "お気に入りに{itemType, select, artistGenreFilter{このジャンルのこのアーティスト} artist{このアーティスト} genre{このジャンル} other{}}がありません。",
+    "@curatedItemsNoFavorites": {
+        "description": "Tooltip for Favorites on Curated Items in Online Mode when no favorites yet.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "genreNoItems": "このジャンルには {itemType, select, playlists{プレイリスト} artists{アーティスト} albums{アルバム} tracks{トラック} other{アイテム}} がありません。",
+    "@genreNoItems": {
+        "description": "Message for empty See All lists for a genre.",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "albumCount": "{count,plural,=1{{count} アルバム} other{{count} アルバム}}",
+    "@albumCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "shuffleAlbums": "アルバムシャッフル",
+    "@shuffleAlbums": {
+        "description": "Label for action that shuffles all albums of an artist"
+    },
+    "shuffleSomeAlbums": "アルバムシャッフル",
+    "@shuffleSomeAlbums": {
+        "description": "Label for action that shuffles some albums of a genre"
+    },
+    "shuffleAlbumsNext": "次のアルバムをシャッフル",
+    "@shuffleAlbumsNext": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the start of Next Up"
+    },
+    "shuffleSomeAlbumsNext": "次のアルバムをシャッフル",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "shuffleAlbumsToNextUp": "次のアルバムへシャッフル",
+    "@shuffleAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of Next Up"
+    },
+    "shuffleSomeAlbumsToNextUp": "次のアルバムへシャッフル",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
+    },
+    "shuffleAlbumsToQueue": "アルバムをシャッフルしてキューに追加",
+    "@shuffleAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of the regular queue"
+    },
+    "shuffleSomeAlbumsToQueue": "アルバムをシャッフルしてキューに追加",
+    "@shuffleSomeAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
+    },
+    "couldNotLoad": "{source, select, album{アルバム} playlist{プレイリスト} trackMix{トラックミックス} artistMix{アーティストミックス} albumMix{アルバムミックス} genreMix{ジャンルミックス} favorites{お気に入り} allTracks{すべてのトラック} filteredList{トラック} genre{ジャンル} artist{アーティスト} track{トラック} nextUpAlbum{次のアルバム} nextUpPlaylist{次のプレイリスト} nextUpArtist{次のアーティスト} nextUpGenre{次のジャンル} other{}} を読み込めませんでした",
+    "@couldNotLoad": {
+        "placeholders": {
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "close": "閉じる",
+    "resetToDefaults": "デフォルトにリセット",
+    "moreInfo": "詳細情報",
+    "volumeNormalizationSettingsTitle": "音量ノーマライズ",
+    "@volumeNormalizationSettingsTitle": {
+        "description": "Title for the replay gain settings screen"
+    },
+    "playbackReportingSettingsTitle": "再生レポートと再生機能",
+    "@playbackReportingSettingsTitle": {
+        "description": "Title for the playback reporting settings screen"
+    },
+    "volumeNormalizationSwitchTitle": "音量ノーマライズを有効にする",
+    "@volumeNormalizationSwitchTitle": {
+        "description": "Title for the switch that toggles replay gain"
+    },
+    "volumeNormalizationSwitchSubtitle": "ゲイン情報を使用してトラックの音量をノーマライズします（「リプレイゲイン」）",
+    "@volumeNormalizationSwitchSubtitle": {
+        "description": "Subtitle for the switch that toggles replay gain"
+    },
+    "volumeNormalizationModeSelectorTitle": "音量ノーマライズモード",
+    "@volumeNormalizationModeSelectorTitle": {
+        "description": "Title for the dropdown that selects the replay gain mode"
+    },
+    "volumeNormalizationModeSelectorSubtitle": "音量ノーマライズをいつ、どのように適用しますか",
+    "@volumeNormalizationModeSelectorSubtitle": {
+        "description": "Subtitle for the dropdown that selects the replay gain mode"
+    },
+    "volumeNormalizationModeSelectorDescription": "ダイナミック：\n同じアルバムの複数のトラックを連続して再生する場合、アルバムゲインが使用されます（つまり、アルバムを再生する場合、またはプレイリスト内で同じアルバムのトラックを再生する場合）。それ以外の場合は、トラックゲインが使用されます。\n\nトラック単位:\nアルバムの再生中かどうかに関わらず、常にトラックゲインが使用されます。\n\nアルバム単位:\n常にアルバムゲインが使用されますが、利用できない場合（例：シングル曲など）は、代わりにトラックゲインが使用されます。\n\nアルバムのみ:\n音量ノーマライゼーションは、アルバム再生中（アルバムゲインを使用）にのみ適用され、個々のトラックには適用されません。",
+    "@volumeNormalizationModeSelectorDescription": {
+        "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown"
+    },
+    "volumeNormalizationModeHybrid": "ダイナミック",
+    "@volumeNormalizationModeHybrid": {
+        "description": "'Dynamic' option for the replay gain mode dropdown. In dynamic mode, the track gain is used for regular playback, but if an album is playing (either because it's the main playback queue source, or because it was added to the queue at some point), or successive tracks from a same album are in the queue, the album gain is used instead."
+    },
+    "volumeNormalizationModeTrackBased": "トラック単位",
+    "@volumeNormalizationModeTrackBased": {
+        "description": "'Track-based' option for the replay gain mode dropdown. In track-based mode, the track gain is always used, regardless of whether an album is playing or not."
+    },
+    "volumeNormalizationModeAlbumBased": "アルバム単位",
+    "@volumeNormalizationModeAlbumBased": {
+        "description": "'Album-based' option for the replay gain mode dropdown. In album-based mode, the album gain is always used, regardless of whether an album is playing or not."
+    },
+    "volumeNormalizationModeAlbumOnly": "アルバムのみ",
+    "@volumeNormalizationModeAlbumOnly": {
+        "description": "'Only for Albums' option for the replay gain mode dropdown. In albums-only mode, Volume Normalization is only applied while playing albums (using the album gain), but not for individual tracks."
+    },
+    "volumeNormalizationIOSBaseGainEditorTitle": "ベースゲイン",
+    "@volumeNormalizationIOSBaseGainEditorTitle": {
+        "description": "Title for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "音量ゲインのオフセット（dB単位）を選択してください",
+    "@volumeNormalizationIOSBaseGainEditorSubtitle": {
+        "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "現在、Android以外のプラットフォームでは音量ノーマライズを行うために、ゲインの変化をエミュレートするよう再生音量を変更する必要があります。音量を100%以上に上げることができないため、音量の小さいトラックの音量を上げられるようにデフォルトで音量を下げる必要があります。\n\n値はデシベル(dB)単位で、-10 dBは約30%の音量、-4.5 dBは約60%の音量、-2 dBは約80%の音量に相当します。\n正の値は、しきい値までは音量低減が適用されないことを意味します（つまり、+6.4 dBのオフセットの場合、-6.4 dBのゲイン（およびそれより正の値））。ただし、音量の小さいトラックがブーストされるのを防ぎます。\n\nこの値は、ライブラリ内の最も高い（最も正の）ゲインの逆数に設定する必要があります。つまり、ライブラリ内の最高ゲインが -3 dB の場合（他のすべてのトラックのゲインが -5 dB、-8 dB、-10 dB などである場合）、+3 dB に設定します。",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "numberAsDecibel": "{value} dB",
+    "@numberAsDecibel": {
+        "description": "Label for a number that represents a decibel value. The value will be the decibel value.",
+        "placeholders": {
+            "value": {
+                "type": "double",
+                "example": "-9.6"
+            }
+        }
+    },
+    "swipeLeftToRightAction": "右スワイプのアクション",
+    "swipeLeftToRightActionSubtitle": "リスト内のトラックを左から右にスワイプしたときに実行されるアクション。",
+    "swipeRightToLeftAction": "左スワイプのアクション",
+    "swipeRightToLeftActionSubtitle": "リスト内のトラックを右から左にスワイプしたときに実行されるアクション。",
+    "startInstantMixForIndividualTracksSwitchTitle": "各トラックのインスタントミックスを開始",
+    "@startInstantMixForIndividualTracksSwitchTitle": {
+        "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
+    },
+    "startInstantMixForIndividualTracksSwitchSubtitle": "有効にすると、トラックタブでトラックをタップした際に単一のトラックを再生するのではなく、そのトラックのミックスが即座に再生されます。",
+    "repairComplete": "ダウンロードの修復が完了しました。",
+    "@repairComplete": {
+        "description": "Message displayed after download repair completes."
+    },
+    "syncComplete": "すべてのダウンロードが再同期されました。",
+    "@syncComplete": {
+        "description": "Message displayed after download sync completes."
+    },
+    "syncDownloads": "同期して不足しているアイテムをダウンロードします。",
+    "@syncDownloads": {
+        "description": "Tooltip for downloads sync button."
+    },
+    "repairDownloads": "ダウンロードしたファイルまたはメタデータに関する問題を修復します。",
+    "@repairDownloads": {
+        "description": "Tooltip for downloads repair button."
+    },
+    "requireWifiForDownloads": "ダウンロードにはWi-Fi接続が必要です。",
+    "@requireWifiForDownloads": {
+        "description": "Description of setting for only performing downloads while on wifi"
+    },
+    "queueRestoreError": "警告: {count,plural, =1{{count} トラック} other{{count} トラック}} をキューに復元できませんでした。",
+    "@queueRestoreError": {
+        "description": "Message that shows when some, but not all, tracks in the Now-Playing queue from the previous session cannot be restored due to server issues or being offline.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "activeDownloadsListHeader": "{itemCount} {typeName, select, downloading{実行中} failed{失敗} syncFailed{繰り返し同期の解除} enqueued{待機中} other{}} {itemCount, plural, =1{ダウンロード} other{ダウンロード}}",
+    "@activeDownloadsListHeader": {
+        "description": "Header text for lists of active downloads of a particular state.",
+        "placeholders": {
+            "typeName": {
+                "type": "String"
+            },
+            "itemCount": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadLibraryPrompt": "ライブラリ「{libraryName}」のすべてのコンテンツをダウンロードしてもよろしいですか？",
+    "@downloadLibraryPrompt": {
+        "description": "Confirmation prompt before downloading entire library, which may be large.",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "onlyShowFullyDownloaded": "ダウンロード済みのアルバムのみを表示する",
+    "@onlyShowFullyDownloaded": {
+        "description": "Tooltip for button that hides all partially downloaded albums"
+    },
+    "filesystemFull": "残りのダウンロードは完了できません。ファイルシステムがいっぱいです。",
+    "@filesystemFull": {
+        "description": "Message shown when a download cannot complete due to the filesystem being full."
+    },
+    "connectionInterrupted": "接続が切断されました。ダウンロードを一時停止します。",
+    "@connectionInterrupted": {
+        "description": "Message shown when the connection is interrupted during a download."
+    },
+    "connectionInterruptedBackground": "バックグラウンドでのダウンロード中に接続が切断されました。これはOSの設定が原因である可能性があります。",
+    "@connectionInterruptedBackground": {
+        "description": "Message shown when the connection is interrupted during a download while in the background. It advises checking OS settings, as they may cause background downloads to be blocked."
+    },
+    "connectionInterruptedBackgroundAndroid": "バックグラウンドでのダウンロード中に接続が切断されました。これは「一時停止時に低優先度状態に移行する」設定が有効になっているか、OSの設定が原因である可能性があります。",
+    "@connectionInterruptedBackgroundAndroid": {
+        "description": "Message shown when the connection is interrupted during a download while in the background on android. It advises checking OS settings, as they may cause background downloads to be blocked, or checking the  'Enter Low-Priority State on Pause' setting."
+    },
+    "runRepairWarning": "ダウンロードの移行を完了するためにサーバーに接続できませんでした。インターネットに接続でき次第、ダウンロード画面から「ダウンロードの修復」を実行してください。",
+    "@runRepairWarning": {
+        "description": "Message shown when an error occurs during the downloads repair step of the Isar downloads migration, which requires a server connection."
+    },
+    "showNullLibraryItemsTitle": "ライブラリが不明なメディアを表示する。",
+    "@showNullLibraryItemsTitle": {
+        "description": "Title of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
+    },
+    "showNullLibraryItemsSubtitle": "一部のメディアにはライブラリが不明なものが含まれている場合があります。これをオフにすると、元のコレクションの外ではこれらのメディアが表示されなくなります。",
+    "@showNullLibraryItemsSubtitle": {
+        "description": "Description of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
+    },
+    "maxConcurrentDownloads": "最大同時ダウンロード数",
+    "@maxConcurrentDownloads": {
+        "description": "Title of setting controlling max concurrent downloads."
+    },
+    "maxConcurrentDownloadsSubtitle": "同時ダウンロード数を増やすとバックグラウンドでのダウンロードが増える可能性がありますが、ファイルサイズが非常に大きい場合はダウンロードが失敗したり過度の遅延が発生したりする可能性があります。",
+    "@maxConcurrentDownloadsSubtitle": {
+        "description": "Description of setting controlling max concurrent downloads."
+    },
+    "maxConcurrentDownloadsLabel": "同時ダウンロード数: {count}",
+    "@maxConcurrentDownloadsLabel": {
+        "description": "Label of values on max concurrent downloads slider",
+        "placeholders": {
+            "count": {
+                "type": "String"
+            }
+        }
     }
 }
