@@ -84,9 +84,11 @@
               exec "$@"
             elif [[ "$1" == "target" && "$2" == "list" ]]; then
               # This handles rustup "target" "list" "--toolchain" "stable-x86_64-unknown-linux-gnu" "--installed"
-              # if cross-compiling (e.g. for android), add all four targets here (idk separator though) and to fenix
-              # Currently looks like discord rpc is not enabled on mobile
               echo "${targetName}"
+              echo "armv7-linux-androideabi"
+              echo "aarch64-linux-android"
+              echo "x86_64-linux-android"
+              echo "i686-linux-android"
             else
               echo "Can't run $*"
               exit 2
@@ -117,6 +119,11 @@
                 stable.cargo
                 stable.rustc
                 # rust-src in case of any issues
+
+                targets."armv7-linux-androideabi".stable.rust-std
+                targets."aarch64-linux-android".stable.rust-std
+                targets."x86_64-linux-android".stable.rust-std
+                targets."i686-linux-android".stable.rust-std
               ])
             ] else [
               rustup
