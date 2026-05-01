@@ -2458,6 +2458,8 @@ class FinampTranscodingStreamingFormatAdapter
         return FinampTranscodingStreamingFormat.vorbisMpegTS;
       case 5:
         return FinampTranscodingStreamingFormat.vorbisFragmentedMp4;
+      case 6:
+        return FinampTranscodingStreamingFormat.opusNonFragmented;
       default:
         return FinampTranscodingStreamingFormat.aacMpegTS;
     }
@@ -2478,6 +2480,8 @@ class FinampTranscodingStreamingFormatAdapter
         writer.writeByte(4);
       case FinampTranscodingStreamingFormat.vorbisFragmentedMp4:
         writer.writeByte(5);
+      case FinampTranscodingStreamingFormat.opusNonFragmented:
+        writer.writeByte(6);
     }
   }
 

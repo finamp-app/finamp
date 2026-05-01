@@ -1414,28 +1414,65 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     // queryParameters["PlaySessionId"] = _order.id; //!!! this currently breaks transcoding for some reason
 
     if (mediaItem.extras!["shouldTranscode"] as bool) {
-      builtPath.addAll(["Audio", mediaItem.extras!["itemJson"]["Id"] as String, "main.m3u8"]);
+      if (FinampSettingsHelper.finampSettings.transcodingStreamingFormat.isFragmented) {
+        builtPath.addAll([
+          "Audio",
+          mediaItem.extras!["itemJson"]["Id"] as String,
+          "main.m3u8"
+        ]);
 
-      queryParameters.addAll({
-        "audioCodec": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec,
-        // Ideally we'd switch between 44.1/48kHz depending on the source is,
-        // realistically it doesn't matter too much
-        // default to 44100, only use 48000 for opus because opus doesn't support 44100
-        "playSessionId": mediaItem.extras!["playSessionId"] as String? ?? "",
-        "audioSampleRate": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec == 'opus'
-            ? '48000'
-            : '44100',
-        "maxAudioBitDepth": "16",
-        "audioBitRate": FinampSettingsHelper.finampSettings.transcodeBitrate.toString(),
-        "segmentContainer": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.container,
-      });
+        queryParameters.addAll({
+          "audioCodec": FinampSettingsHelper.finampSettings
+              .transcodingStreamingFormat.codec,
+          // Ideally we'd switch between 44.1/48kHz depending on the source is,
+          // realistically it doesn't matter too much
+          // default to 44100, only use 48000 for opus because opus doesn't support 44100
+          "playSessionId": mediaItem.extras!["playSessionId"] as String? ?? "",
+          "audioSampleRate": FinampSettingsHelper.finampSettings
+              .transcodingStreamingFormat.codec == 'opus'
+              ? '48000'
+              : '44100',
+          "maxAudioBitDepth": "16",
+          "audioBitRate": FinampSettingsHelper.finampSettings.transcodeBitrate
+              .toString(),
+          "segmentContainer": FinampSettingsHelper.finampSettings
+              .transcodingStreamingFormat.container,
+        });
 
-      if (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
-              MultichannelHandlingSetting.stereoDownmixAll ||
-          (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
-                  MultichannelHandlingSetting.stereoDownmixLossy &&
-              FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec != "flac")) {
-        queryParameters.addAll({"maxAudioChannels": "2"});
+        if (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+            MultichannelHandlingSetting.stereoDownmixAll ||
+            (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+                MultichannelHandlingSetting.stereoDownmixLossy &&
+                FinampSettingsHelper.finampSettings.transcodingStreamingFormat
+                    .codec != "flac")) {
+          queryParameters.addAll({"maxAudioChannels": "2"});
+        }
+      } else {
+        builtPath.addAll([
+          "Audio",
+          mediaItem.extras!["itemJson"]["Id"] as String,
+          "Universal"
+        ]);
+
+        queryParameters.addAll({
+          "transcodingContainer": FinampSettingsHelper.finampSettings
+              .transcodingStreamingFormat.container,
+          "audioCodec": FinampSettingsHelper.finampSettings
+              .transcodingStreamingFormat.codec,
+          // not supported here
+          //"playSessionId": mediaItem.extras!["playSessionId"] as String? ?? "",
+          "audioBitRate": FinampSettingsHelper.finampSettings.transcodeBitrate
+              .toString(),
+        });
+
+        if (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+            MultichannelHandlingSetting.stereoDownmixAll ||
+            (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+                MultichannelHandlingSetting.stereoDownmixLossy &&
+                FinampSettingsHelper.finampSettings.transcodingStreamingFormat
+                    .codec != "flac")) {
+          queryParameters.addAll({"maxAudioChannels": "2"});
+        }
       }
     } else {
       builtPath.addAll(["Items", mediaItem.extras!["itemJson"]["Id"] as String, "File"]);

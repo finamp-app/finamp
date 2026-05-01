@@ -2801,24 +2801,28 @@ enum KeepScreenOnOption {
 @HiveType(typeId: 73)
 enum FinampTranscodingStreamingFormat {
   @HiveField(0)
-  aacMpegTS("aac", "ts"),
+  aacMpegTS("aac", "ts", true),
   @HiveField(1)
-  aacFragmentedMp4("aac", "mp4"),
+  aacFragmentedMp4("aac", "mp4", true),
   @HiveField(2)
-  opusFragmentedMp4("opus", "mp4"),
+  opusFragmentedMp4("opus", "mp4", true),
   @HiveField(3)
-  flacFragmentedMp4("flac", "mp4"),
+  flacFragmentedMp4("flac", "mp4", true),
   @HiveField(4)
-  vorbisMpegTS("vorbis", "ts"),
+  vorbisMpegTS("vorbis", "ts", true),
   @HiveField(5)
-  vorbisFragmentedMp4("vorbis", "mp4");
+  vorbisFragmentedMp4("vorbis", "mp4", true),
+  @HiveField(6)
+  opusNonFragmented("opus", "ogg", false);
 
-  const FinampTranscodingStreamingFormat(this.codec, this.container);
+  const FinampTranscodingStreamingFormat(this.codec, this.container, this.isFragmented);
 
   final String codec;
 
   /// The container to use to transport the segments
   final String container;
+
+  final bool isFragmented;
 }
 
 @HiveType(typeId: 74)
