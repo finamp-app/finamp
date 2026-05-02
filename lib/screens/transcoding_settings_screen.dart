@@ -32,11 +32,13 @@ class _TranscodingSettingsScreenState extends State<TranscodingSettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.only(bottom: 200.0),
         children: [
+          // TODO some sort of header saying lowest applicable bitrate chosen
+          // Also mention buffer cleared on reload?
           // TODO add config edit screen.
           const DefaultTranscodeConfigDropdownListTile(),
           const CellularTranscodeConfigDropdownListTile(),
           const RemoteTranscodeConfigDropdownListTile(),
-          const FlacTranscodeConfigDropdownListTile(),
+          if (Platform.isAndroid) const FlacTranscodeConfigDropdownListTile(),
           // TODO add incompatible codec setting once available
           Divider(),
           const TranscodeSwitch(),

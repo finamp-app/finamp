@@ -341,6 +341,7 @@ class QueueService {
     // if we exceeded the queue size limit, remove as many tracks from previousTracks as needed
     if (queueToSave.fullQueue.length > maxQueueItems) {
       final excess = queueToSave.fullQueue.length - maxQueueItems;
+      _queueServiceLogger.info("Current queue is $excess tracks oversized.  Trimming before saving.");
       // create a copy of previous tracks to avoid modifying the original list, which is tied directly to Finamp's internal queue
       var trimmedPreviousTracks = [...queueToSave.previousTracks];
       List<int> indicesToRemove = [];
@@ -369,7 +370,10 @@ class QueueService {
         }
       }
     }
-    assert(queueToSave.trackCount == shuffleIndices.length);
+    assert(
+      queueToSave.trackCount == shuffleIndices.length,
+      "Current tracks ${queueToSave.fullQueue} trackCount ${queueToSave.trackCount} shuffleIndicies $shuffleIndices length ${shuffleIndices.length}",
+    );
     FinampStorableQueueInfo info = FinampStorableQueueInfo.fromQueueInfo(
       queueToSave,
       withPosition ? _audioHandler.playbackPosition.inMilliseconds : null,
@@ -712,6 +716,7 @@ class QueueService {
       _queuePreviousTracks.clear();
       _queueNextUp.clear();
       _currentTrack = null;
+      _latestShuffleIndices.clear();
       playlistRemovalsCache.clear();
 
       List<FinampQueueItem> newItems = [];
@@ -1454,7 +1459,8 @@ class QueueService {
         //!!! this ID has to be consistent across the transcoding URL and the playback reporting status, otherwise the server won't show that we're transcoding
         "playSessionId": uuid.v4(),
         "itemJson": item.toJson(setOffline: false),
-        if (!isDownloaded) "transcodeProfile": DataSourceService.activeTranscodingProfile(null),
+        if (!isDownloaded)
+          "transcodeProfile": _providers.read(DataSourceService.activeTranscodingProfile(null)).toJson(),
         "downloadedTrackPath": downloadedTrack?.file?.path,
         "isDownloaded": isDownloaded,
         "android.media.extra.DOWNLOAD_STATUS": isDownloaded ? 2 : 0,

@@ -9213,3 +9213,39 @@ Map<String, dynamic> _$FinampOutputRouteToJson(FinampOutputRoute instance) =>
       'extras': instance.extras,
       'iconUri': instance.iconUri,
     };
+
+StreamingTranscodingConfig _$StreamingTranscodingConfigFromJson(
+  Map<String, dynamic> json,
+) => StreamingTranscodingConfig(
+  $enumDecode(_$StreamingTranscodingPresetEnumMap, json['preset']),
+  json['name'] as String?,
+  $enumDecode(_$FinampTranscodingStreamingFormatEnumMap, json['format']),
+  (json['bitrate'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$StreamingTranscodingConfigToJson(
+  StreamingTranscodingConfig instance,
+) => <String, dynamic>{
+  'preset': _$StreamingTranscodingPresetEnumMap[instance.preset]!,
+  if (instance.name case final value?) 'name': value,
+  'format': _$FinampTranscodingStreamingFormatEnumMap[instance.format]!,
+  if (instance.bitrate case final value?) 'bitrate': value,
+};
+
+const _$StreamingTranscodingPresetEnumMap = {
+  StreamingTranscodingPreset.original: 'original',
+  StreamingTranscodingPreset.lossless: 'lossless',
+  StreamingTranscodingPreset.efficient: 'efficient',
+  StreamingTranscodingPreset.compatible: 'compatible',
+  StreamingTranscodingPreset.custom: 'custom',
+};
+
+const _$FinampTranscodingStreamingFormatEnumMap = {
+  FinampTranscodingStreamingFormat.aacMpegTS: 'aacMpegTS',
+  FinampTranscodingStreamingFormat.aacFragmentedMp4: 'aacFragmentedMp4',
+  FinampTranscodingStreamingFormat.opusFragmentedMp4: 'opusFragmentedMp4',
+  FinampTranscodingStreamingFormat.flacFragmentedMp4: 'flacFragmentedMp4',
+  FinampTranscodingStreamingFormat.vorbisMpegTS: 'vorbisMpegTS',
+  FinampTranscodingStreamingFormat.vorbisFragmentedMp4: 'vorbisFragmentedMp4',
+  FinampTranscodingStreamingFormat.original: 'original',
+};

@@ -1220,6 +1220,9 @@ class JellyfinApiHelper {
     if (stack.contains('ProviderElementBase.buildState') ||
         stack.contains('initState ') ||
         stack.contains('didUpdateWidget') ||
+        // These involve network requests in provider listeners, so they need unique exceptions
+        // TODO should we be allowing provider listeners in a more principled way?
+        stack.contains('DataSourceService._onDataSourceChange') ||
         stack.contains('new QueueService') ||
         stack.contains('PagingController.notifyPageRequestListeners')) {
       return true;

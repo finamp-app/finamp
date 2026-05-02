@@ -12,7 +12,7 @@ part of 'network_manager.dart';
 // **************************************************************************
 
 String _$networkConnectivityHash() =>
-    r'1cc9077420cebb8508807040e7ac651db9ddebdb';
+    r'753134809e1589b4da4141abc28baac237d21783';
 
 /// See also [networkConnectivity].
 @ProviderFor(networkConnectivity)
@@ -32,7 +32,7 @@ final networkConnectivityProvider =
 typedef NetworkConnectivityRef =
     AutoDisposeFutureProviderRef<FinampConnectivityState>;
 String _$serverReachabilityHash() =>
-    r'8a194cfe868cf2daa174aa41e6b66038c37691be';
+    r'015e8b6b81ee9ee7f66834b3c10c08f5e46913ab';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -60,7 +60,7 @@ class _SystemHash {
 const serverReachabilityProvider = ServerReachabilityFamily();
 
 /// See also [serverReachability].
-class ServerReachabilityFamily extends Family<AsyncValue<bool>> {
+class ServerReachabilityFamily extends Family<AsyncValue<bool?>> {
   /// See also [serverReachability].
   const ServerReachabilityFamily();
 
@@ -92,7 +92,7 @@ class ServerReachabilityFamily extends Family<AsyncValue<bool>> {
 }
 
 /// See also [serverReachability].
-class ServerReachabilityProvider extends AutoDisposeFutureProvider<bool> {
+class ServerReachabilityProvider extends AutoDisposeFutureProvider<bool?> {
   /// See also [serverReachability].
   ServerReachabilityProvider(ServerPingType target)
     : this._internal(
@@ -122,7 +122,7 @@ class ServerReachabilityProvider extends AutoDisposeFutureProvider<bool> {
 
   @override
   Override overrideWith(
-    FutureOr<bool> Function(ServerReachabilityRef provider) create,
+    FutureOr<bool?> Function(ServerReachabilityRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -139,7 +139,7 @@ class ServerReachabilityProvider extends AutoDisposeFutureProvider<bool> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<bool> createElement() {
+  AutoDisposeFutureProviderElement<bool?> createElement() {
     return _ServerReachabilityProviderElement(this);
   }
 
@@ -159,13 +159,13 @@ class ServerReachabilityProvider extends AutoDisposeFutureProvider<bool> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin ServerReachabilityRef on AutoDisposeFutureProviderRef<bool> {
+mixin ServerReachabilityRef on AutoDisposeFutureProviderRef<bool?> {
   /// The parameter `target` of this provider.
   ServerPingType get target;
 }
 
 class _ServerReachabilityProviderElement
-    extends AutoDisposeFutureProviderElement<bool>
+    extends AutoDisposeFutureProviderElement<bool?>
     with ServerReachabilityRef {
   _ServerReachabilityProviderElement(super.provider);
 
@@ -190,7 +190,7 @@ final setOfflineModeProvider = AutoDisposeProvider<bool?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SetOfflineModeRef = AutoDisposeProviderRef<bool?>;
-String _$setLocalUrlHash() => r'c02273e921a5d35a5a8a174bdf4756be44488101';
+String _$setLocalUrlHash() => r'9aa25aea4f32ac5b3fcb0d7f989fd8df8d48c9bb';
 
 /// See also [setLocalUrl].
 @ProviderFor(setLocalUrl)

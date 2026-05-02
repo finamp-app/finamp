@@ -37,14 +37,14 @@ Future<void> startNetworkAutomation() async {
 
   container.listen(setLocalUrlProvider, (_, value) {
     if (value == null) return;
-    _networkAutomationLogger.info("Setting user isLocal to $value");
     final user = GetIt.instance<FinampUserHelper>().currentUser;
     if (user == null || user.isLocal == value) return;
+    _networkAutomationLogger.info("Setting user isLocal to $value");
     user.update(newIsLocal: value);
     _reconnectPlayOnService();
   });
   container.listen(setOfflineModeProvider, (_, value) {
-    if (value == null) return;
+    if (value == null || value == FinampSettingsHelper.finampSettings.isOffline) return;
     _networkAutomationLogger.info("Setting isOffline to $value");
     GlobalSnackbar.message(
       (context) => AppLocalizations.of(context)!.autoOfflineNotification(value ? "enabled" : "disabled"),
@@ -73,29 +73,6 @@ Future<void> startNetworkAutomation() async {
   });
 }
 
-int _getDownloads() {
-  final downloadsService = GetIt.instance<DownloadsService>();
-  downloadsService.updateDownloadCounts();
-
-  final nodesSyncing = downloadsService.downloadCounts["sync"]!;
-  final downloadingEnqueued = downloadsService.downloadStatuses[DownloadItemState.enqueued]!;
-  final downloadingRunning = downloadsService.downloadStatuses[DownloadItemState.downloading]!;
-
-  final activeDownloads = nodesSyncing + downloadingEnqueued + downloadingRunning;
-  return activeDownloads;
-}
-
-void _reconnectPlayOnService() async {
-  final playOnService = GetIt.instance<PlayOnService>();
-  playOnService.closeListener();
-
-  final container = GetIt.instance<ProviderContainer>();
-  final connectivityState = await container.read(networkConnectivityProvider.future);
-  if (connectivityState != FinampConnectivityState.none) {
-    await playOnService.startListener();
-  }
-}
-
 @riverpod
 Future<FinampConnectivityState> networkConnectivity(Ref ref) async {
   // Wait 7 seconds to avoid firing for temporary network blips or incidental errors in connectivity
@@ -113,7 +90,10 @@ Future<FinampConnectivityState> networkConnectivity(Ref ref) async {
 }
 
 @riverpod
-Future<bool> serverReachability(Ref ref, ServerPingType target) {
+Future<bool?> serverReachability(Ref ref, ServerPingType target) {
+  final user = GetIt.instance<FinampUserHelper>().currentUser;
+  if (user == null) return Future.value(null);
+  // All pings implicitly rely on the current user
   switch (target) {
     case ServerPingType.local:
       return GetIt.instance<JellyfinApiHelper>().pingLocalServer();
@@ -160,4 +140,27 @@ Future<void> _onConnectivityChange(List<ConnectivityResult> connections) async {
   ProviderContainer container = GetIt.instance<ProviderContainer>();
   container.invalidate(serverReachabilityProvider);
   container.invalidate(networkConnectivityProvider);
+}
+
+int _getDownloads() {
+  final downloadsService = GetIt.instance<DownloadsService>();
+  downloadsService.updateDownloadCounts();
+
+  final nodesSyncing = downloadsService.downloadCounts["sync"]!;
+  final downloadingEnqueued = downloadsService.downloadStatuses[DownloadItemState.enqueued]!;
+  final downloadingRunning = downloadsService.downloadStatuses[DownloadItemState.downloading]!;
+
+  final activeDownloads = nodesSyncing + downloadingEnqueued + downloadingRunning;
+  return activeDownloads;
+}
+
+void _reconnectPlayOnService() async {
+  final playOnService = GetIt.instance<PlayOnService>();
+  playOnService.closeListener();
+
+  final container = GetIt.instance<ProviderContainer>();
+  final connectivityState = await container.read(networkConnectivityProvider.future);
+  if (connectivityState != FinampConnectivityState.none) {
+    await playOnService.startListener();
+  }
 }

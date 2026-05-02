@@ -33,6 +33,8 @@ import 'metadata_provider.dart';
 
 enum FadeDirection { fadeIn, fadeOut, none }
 
+const dummyHost = "dummyhost";
+
 class FadeState {
   // current fade volume
   late final double fadeVolume;
@@ -1285,29 +1287,38 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         return Future.error("Offline mode enabled but downloaded track not found.");
       } else {
         // Android-only audiosource that delays resolution until buffering starts.
-        // TODO figure out why this is breaking audio_service.
-        // TODO add fallback to old code
-        return MappingAudioSource(null, (_) async {
-          final metadata = await GetIt.instance<ProviderContainer>().read(metadataProvider(queueItem.baseItem).future);
-          final audioStream = metadata?.mediaSourceInfo.mediaStreams.firstWhereOrNull((s) => s.type == "Audio");
-          // TODO add this back into metadataProvider and/or queueItem?
-          final transcodeConfig = DataSourceService.activeTranscodingProfile(audioStream?.codec);
-          final trackUri = _trackUri(queueItem.item, transcodeConfig);
-          return AudioSource.uri(
-            trackUri,
-            tag: queueItem,
-            // Android only last-minute URL resolving
-            // This is used for individual data chunks, so it must always point to the same resource
-            resolver: (oldURI) async {
-              return _trackUri(queueItem.item, transcodeConfig);
-            },
-          );
-        }, tag: queueItem);
-        // if (queueItem.item.extras!["shouldTranscode"] == true) {
-        //   return HlsAudioSource(trackUri, tag: queueItem);
-        // } else {
-        //   return AudioSource.uri(trackUri, tag: queueItem);
-        // }
+        if (Platform.isAndroid) {
+          // TODO make sure we aren't capturing extra junk in the lambda.
+          // Probably should actually use a meaningful identifier and a fixed function.
+          return MappingAudioSource(null, (_) async {
+            final container = GetIt.instance<ProviderContainer>();
+            // TODO stick a timeout on this and just fallback to null codec?
+            final metadata = await container.read(metadataProvider(queueItem.baseItem).future);
+            final audioStream = metadata?.mediaSourceInfo.mediaStreams.firstWhereOrNull((s) => s.type == "Audio");
+            // TODO add this back into metadataProvider and/or queueItem?
+            final transcodeConfig = container.read(DataSourceService.activeTranscodingProfile(audioStream?.codec));
+            return AudioSource.uri(
+              _dummyTrackUri(queueItem.item, transcodeConfig),
+              tag: queueItem,
+              // Android only last-minute URL resolving
+              // This is used for individual data chunks, so it must always point to the same resource
+              resolver: (oldUri) {
+                // HLS streams will resolve the main index file, and then try to resolve all the internal chunk urls.
+                // They will all be based off the resolved url of the index.
+                // TODO handle this better - write better uri merging?  Might need to save off initial uri
+                // Will it eventually reload the main index and update all the chunk urls that way?
+                if (oldUri.host == dummyHost) {
+                  return _mergeTrackUri(oldUri);
+                } else {
+                  return oldUri;
+                }
+              },
+            );
+          }, tag: queueItem);
+        } else {
+          final trackUri = _trackUri(queueItem.item, null);
+          return AudioSource.uri(trackUri, tag: queueItem);
+        }
       }
     } else {
       // We have to deserialise this because Dart is stupid and can't handle
@@ -1321,16 +1332,15 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     }
   }
 
-  Uri _trackUri(MediaItem mediaItem, StreamingTranscodingConfig? justInTimeTranscodeConfig) {
+  /// Returns the full track Uri.
+  Uri _trackUri(MediaItem mediaItem, StreamingTranscodingConfig? justInTimeTranscodeConfig) =>
+      _mergeTrackUri(_dummyTrackUri(mediaItem, justInTimeTranscodeConfig));
+
+  /// Merges a dummy track Uri to apply relative to the current active server URL
+  Uri _mergeTrackUri(Uri dummyTrackUri) {
+    assert(dummyTrackUri.host == dummyHost, "_mergeTrackUri received unexpected uri $dummyTrackUri");
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
-    // When creating the MediaItem (usually in AudioServiceHelper), we specify
-    // whether or not to transcode. We used to pull from FinampSettings here,
-    // but since audio_service runs in an isolate (or at least, it does until
-    // 0.18), the value would be wrong if changed while a track was playing since
-    // Hive is bad at multi-isolate stuff.
-
     final parsedBaseUrl = Uri.parse(finampUserHelper.currentUser!.baseURL);
-
     List<String> builtPath = List.from(parsedBaseUrl.pathSegments);
 
     Map<String, String> queryParameters = Map.from(parsedBaseUrl.queryParameters);
@@ -1338,12 +1348,41 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     // We include the user token as a query parameter because just_audio used to
     // have issues with headers in HLS, and this solution still works fine
     queryParameters["ApiKey"] = finampUserHelper.currentUser!.accessToken;
+
+    builtPath.addAll(dummyTrackUri.pathSegments);
+    queryParameters.addAll(dummyTrackUri.queryParameters);
+
+    final out = Uri(
+      host: parsedBaseUrl.host,
+      port: parsedBaseUrl.port,
+      scheme: parsedBaseUrl.scheme,
+      userInfo: parsedBaseUrl.userInfo,
+      pathSegments: builtPath,
+      queryParameters: queryParameters,
+    );
+    return out;
+  }
+
+  /// Fetches the track-specific path segments and query parameters
+  Uri _dummyTrackUri(MediaItem mediaItem, StreamingTranscodingConfig? justInTimeTranscodeConfig) {
+    // TODO This comment is outdated?  Maybe we should pull data out of mediaItem.
+    // When creating the MediaItem (usually in AudioServiceHelper), we specify
+    // whether or not to transcode. We used to pull from FinampSettings here,
+    // but since audio_service runs in an isolate (or at least, it does until
+    // 0.18), the value would be wrong if changed while a track was playing since
+    // Hive is bad at multi-isolate stuff.
+
+    List<String> builtPath = [];
+
+    Map<String, String> queryParameters = {};
+
     // // indicate which play session this stream belongs to, this will be referenced when reporting playback progress
     // queryParameters["PlaySessionId"] = _order.id; //!!! this currently breaks transcoding for some reason
 
     assert(!(mediaItem.extras!["isDownloaded"] as bool));
     final transcodeProfile =
-        justInTimeTranscodeConfig ?? mediaItem.extras!["transcodeProfile"] as StreamingTranscodingConfig;
+        justInTimeTranscodeConfig ??
+        StreamingTranscodingConfig.fromJson(mediaItem.extras!["transcodeProfile"] as Map<String, dynamic>);
     if (transcodeProfile.format != FinampTranscodingStreamingFormat.original) {
       builtPath.addAll(["Audio", mediaItem.extras!["itemJson"]["Id"] as String, "main.m3u8"]);
 
@@ -1370,14 +1409,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       builtPath.addAll(["Items", mediaItem.extras!["itemJson"]["Id"] as String, "File"]);
     }
 
-    return Uri(
-      host: parsedBaseUrl.host,
-      port: parsedBaseUrl.port,
-      scheme: parsedBaseUrl.scheme,
-      userInfo: parsedBaseUrl.userInfo,
-      pathSegments: builtPath,
-      queryParameters: queryParameters,
-    );
+    return Uri(host: dummyHost, scheme: "http", pathSegments: builtPath, queryParameters: queryParameters);
   }
 
   @override

@@ -999,7 +999,7 @@ packages:
     description:
       path: just_audio
       ref: minor-android-late-uri
-      resolved-ref: "69b9ffc6b0a8f0944b9b4b42f7a3312531e8b7fc"
+      resolved-ref: "80a8bc6602ba707c0fe19c5ae275e042a9a2b917"
       url: "https://github.com/Komodo5197/just_audio.git"
     source: git
     version: "0.10.5"
@@ -1008,7 +1008,7 @@ packages:
     description:
       path: "."
       ref: "feat/queue-shuffle"
-      resolved-ref: "05b4e08269fcede4cdfe7eb29433814707437f05"
+      resolved-ref: "29eb2557b75f4afb460c24138da667b4c088400a"
       url: "https://github.com/Komodo5197/just_audio_media_kit.git"
     source: git
     version: "2.1.0"
@@ -1017,7 +1017,7 @@ packages:
     description:
       path: just_audio_platform_interface
       ref: minor-android-late-uri
-      resolved-ref: "69b9ffc6b0a8f0944b9b4b42f7a3312531e8b7fc"
+      resolved-ref: "80a8bc6602ba707c0fe19c5ae275e042a9a2b917"
       url: "https://github.com/Komodo5197/just_audio.git"
     source: git
     version: "4.6.0"

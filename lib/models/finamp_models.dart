@@ -2233,8 +2233,10 @@ class FinampQueueItem {
 
   BaseItemId get baseItemId => item.extras!["itemJson"]["Id"] as BaseItemId;
 
-  StreamingTranscodingConfig? get streamingTranscodeProfile =>
-      item.extras!["transcodeProfile"] as StreamingTranscodingConfig?;
+  StreamingTranscodingConfig? get streamingTranscodeProfile {
+    final json = item.extras!["transcodeProfile"] as Map<String, dynamic>?;
+    return json == null ? null : StreamingTranscodingConfig.fromJson(json);
+  }
 
   bool get isTranscodedStream =>
       streamingTranscodeProfile != null &&
@@ -4089,6 +4091,7 @@ enum PreviousTracksPersistenceMode {
 }
 
 @HiveType(typeId: 113)
+@JsonSerializable(includeIfNull: false)
 class StreamingTranscodingConfig {
   const StreamingTranscodingConfig(this.preset, this.name, this.format, this.bitrate);
 
@@ -4119,6 +4122,14 @@ class StreamingTranscodingConfig {
   @override
   @ignore
   int get hashCode => Object.hash(format, format.lossless ? null : bitrate);
+
+  factory StreamingTranscodingConfig.fromJson(Map<String, dynamic> json) {
+    return _$StreamingTranscodingConfigFromJson(json);
+  }
+
+  Map<String, dynamic> toJson() {
+    return _$StreamingTranscodingConfigToJson(this);
+  }
 }
 
 @HiveType(typeId: 114)
