@@ -161,6 +161,7 @@ class PlayOnService {
         await _connectWebsocket();
       }
     } catch (e) {
+      // TODO don't log time outs? Should we be going slower than 10 seconds if failing?
       _playOnServiceLogger.severe("Error starting PlayOn listener: $e");
       assert(socketState != SocketState.connected);
       socketState = SocketState.disconnected;

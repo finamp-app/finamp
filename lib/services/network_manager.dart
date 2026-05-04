@@ -157,10 +157,8 @@ int _getDownloads() {
 void _reconnectPlayOnService() async {
   final playOnService = GetIt.instance<PlayOnService>();
   playOnService.closeListener();
-
-  final container = GetIt.instance<ProviderContainer>();
-  final connectivityState = await container.read(networkConnectivityProvider.future);
-  if (connectivityState != FinampConnectivityState.none) {
-    await playOnService.startListener();
-  }
+  // TODO this was previously gated behind a check if network state was not none.  I think that's bad logic?
+  // It seems like this socket gets disconnected when the app gets backgrounded, at least while not playing - is this showing as a full network disconnect?
+  // Hopefully it isn't, because that would be wrecking autooffline mode with auto-reload queue.
+  await playOnService.startListener();
 }

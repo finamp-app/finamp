@@ -1296,6 +1296,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
             final metadata = await container.read(metadataProvider(queueItem.baseItem).future);
             final audioStream = metadata?.mediaSourceInfo.mediaStreams.firstWhereOrNull((s) => s.type == "Audio");
             // TODO add this back into metadataProvider and/or queueItem?
+            // TODO prevent this from being disposed if we outrun the metadata precache?
             final transcodeConfig = container.read(DataSourceService.activeTranscodingProfile(audioStream?.codec));
             return AudioSource.uri(
               _dummyTrackUri(queueItem.item, transcodeConfig),
