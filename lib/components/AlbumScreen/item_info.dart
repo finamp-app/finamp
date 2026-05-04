@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/jellyfin_models.dart';
+import '../format_bytes.dart';
 import '../icon_and_text.dart';
 import '../print_duration.dart';
 
@@ -30,6 +31,16 @@ class ItemInfo extends ConsumerWidget {
     final trackDurationString = (genreFilter == null && (itemTracks.length == item.childCount))
         ? "$trackCountString (${printDuration(item.runTimeTicksDuration())})"
         : "$trackCountString (${printDuration(itemTracks.map((t) => t.runTimeTicksDuration()).whereType<Duration>().fold<Duration>(Duration.zero, (sum, dur) => sum + dur))})";
+
+    // Sum the size of every track that has it; if no track reports a size,
+    // skip showing the row entirely (mirrors the maintainer's "only if the
+    // server gives us the size" guidance from #1146). The size lives on
+    // each track's first MediaSourceInfo rather than on BaseItemDto itself.
+    final totalSizeBytes = itemTracks.fold<int>(0, (sum, t) {
+      final sources = t.mediaSources;
+      final trackBytes = (sources != null && sources.isNotEmpty) ? (sources.first.size ?? 0) : 0;
+      return sum + trackBytes;
+    });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,6 +65,11 @@ class ItemInfo extends ConsumerWidget {
           iconData: Icons.music_note,
           textSpan: TextSpan(text: trackDurationString),
         ),
+        if (totalSizeBytes > 0)
+          IconAndText(
+            iconData: Icons.sd_storage,
+            textSpan: TextSpan(text: formatBytes(totalSizeBytes)),
+          ),
         if (item.type != "Playlist")
           IconAndText(
             iconData: Icons.event,
