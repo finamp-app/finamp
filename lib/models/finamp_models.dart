@@ -859,7 +859,7 @@ class FinampSettings {
   @HiveField(147, defaultValue: DefaultSettings.useAndroidGainEffect)
   bool useAndroidGainEffect;
 
-  @HiveField(148, defaultValue: DefaultSettings.disableOverscroll)
+  @HiveField(149, defaultValue: DefaultSettings.disableOverscroll)
   bool disableOverscroll;
 
   static Future<FinampSettings> create() async {
