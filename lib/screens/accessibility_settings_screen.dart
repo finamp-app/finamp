@@ -26,7 +26,12 @@ class _AccessibilitySettingsScreenState extends State<AccessibilitySettingsScree
       ),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 200.0),
-        children: const [UseHighContrastColorsToggle(), DisableGestureSelector(), DisableVibrationSelector()],
+        children: const [
+          UseHighContrastColorsToggle(),
+          DisableGestureSelector(),
+          DisableVibrationSelector(),
+          DisableOverscrollToggle(),
+        ],
       ),
     );
   }
@@ -70,6 +75,20 @@ class DisableVibrationSelector extends ConsumerWidget {
       subtitle: Text(AppLocalizations.of(context)!.enableVibrationSubtitle),
       value: ref.watch(finampSettingsProvider.enableVibration),
       onChanged: (value) => FinampSetters.setEnableVibration(value),
+    );
+  }
+}
+
+class DisableOverscrollToggle extends ConsumerWidget {
+  const DisableOverscrollToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SwitchListTile.adaptive(
+      title: Text(AppLocalizations.of(context)!.disableOverscrollTitle),
+      subtitle: Text(AppLocalizations.of(context)!.disableOverscrollSubtitle),
+      value: ref.watch(finampSettingsProvider.disableOverscroll),
+      onChanged: FinampSetters.setDisableOverscroll,
     );
   }
 }

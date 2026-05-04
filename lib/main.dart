@@ -735,7 +735,7 @@ class FinampApp extends ConsumerWidget {
         ),
         pageTransitionsTheme: transitionBuilder,
       ),
-      scrollBehavior: FinampScrollBehavior(),
+      scrollBehavior: FinampScrollBehavior(disableOverscroll: ref.watch(finampSettingsProvider.disableOverscroll)),
       themeMode: themeMode,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -895,11 +895,12 @@ class ErrorScreen extends StatelessWidget {
 
 // Show scrollbars on all vertically scrolling widgets by default
 class FinampScrollBehavior extends MaterialScrollBehavior {
-  const FinampScrollBehavior({this.interactive, this.scrollbars = true});
+  const FinampScrollBehavior({this.interactive, this.scrollbars = true, this.disableOverscroll = false});
 
   // If interactive is null, platform default will be used
   final bool? interactive;
   final bool scrollbars;
+  final bool disableOverscroll;
 
   @override
   Widget buildScrollbar(BuildContext context, Widget child, ScrollableDetails details) {
@@ -913,6 +914,14 @@ class FinampScrollBehavior extends MaterialScrollBehavior {
         assert(details.controller != null);
         return Scrollbar(controller: details.controller, interactive: interactive, child: child);
     }
+  }
+
+  @override
+  Widget buildOverscrollIndicator(BuildContext context, Widget child, ScrollableDetails details) {
+    if (disableOverscroll) {
+      return child;
+    }
+    return super.buildOverscrollIndicator(context, child, details);
   }
 }
 

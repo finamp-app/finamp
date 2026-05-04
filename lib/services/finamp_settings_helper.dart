@@ -248,6 +248,7 @@ class FinampSettingsHelper {
     FinampSetters.setUseHighContrastColors(DefaultSettings.useHighContrastColors);
     FinampSetters.setDisableGesture(DefaultSettings.disableGesture);
     FinampSetters.setEnableVibration(DefaultSettings.enableVibration);
+    FinampSetters.setDisableOverscroll(DefaultSettings.disableOverscroll);
   }
 
   static void resetLocale() {

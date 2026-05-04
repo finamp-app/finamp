@@ -251,6 +251,7 @@ class DefaultSettings {
   static const forceAudioOffloadingOnAndroid = false;
   static const previousTracksPersistenceMode = PreviousTracksPersistenceMode.persistent;
   static const useAndroidGainEffect = true;
+  static const disableOverscroll = false;
 }
 
 @HiveType(typeId: 28)
@@ -396,6 +397,7 @@ class FinampSettings {
     this.forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid,
     this.previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode,
     this.useAndroidGainEffect = DefaultSettings.useAndroidGainEffect,
+    this.disableOverscroll = DefaultSettings.disableOverscroll,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -856,6 +858,9 @@ class FinampSettings {
 
   @HiveField(147, defaultValue: DefaultSettings.useAndroidGainEffect)
   bool useAndroidGainEffect;
+
+  @HiveField(148, defaultValue: DefaultSettings.disableOverscroll)
+  bool disableOverscroll;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
