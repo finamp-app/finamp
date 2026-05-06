@@ -269,7 +269,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                     Navigator.pushNamed(context, TabsSettingsScreen.routeName);
                   },
                   child: Container(
-                    decoration: ShapeDecoration(
+                    /*decoration: ShapeDecoration(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         side: BorderSide(
@@ -280,7 +280,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                           width: 1.5,
                         ),
                       ),
-                    ),
+                    ),*/
                     padding: tabType == TabContentType.home
                         ? EdgeInsets.only(left: 4, right: 8, top: 3, bottom: 3)
                         : EdgeInsets.symmetric(horizontal: 8, vertical: 3),

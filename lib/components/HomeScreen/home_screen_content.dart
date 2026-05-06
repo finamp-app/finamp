@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:balanced_text/balanced_text.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
-import 'package:finamp/components/Buttons/cta_large.dart';
 import 'package:finamp/components/Buttons/cta_small.dart';
 import 'package:finamp/components/HomeScreen/home_screen_quick_action_button.dart';
 import 'package:finamp/components/HomeScreen/show_all_button.dart';
@@ -10,7 +9,6 @@ import 'package:finamp/components/HomeScreen/show_all_screen.dart';
 import 'package:finamp/components/MusicScreen/item_card.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
-import 'package:finamp/components/QueueRestoreScreen/queue_restore_tile.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/components/finamp_section_header.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -19,14 +17,12 @@ import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/screens/music_screen.dart';
-import 'package:finamp/screens/queue_restore_screen.dart';
-import 'package:finamp/services/audio_service_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
-import 'package:finamp/services/quick_actions_service.dart';
-import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/music_screen_provider.dart';
+import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/services/quick_actions_service.dart';
 import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -433,13 +429,13 @@ class HomeScreenSectionContent extends ConsumerWidget {
     );
     return switch (items) {
       AsyncData(:final value) => switch (value) {
-        null => _buildHorizontalSkeletonLoader(context),
+        null => _buildHorizontalSkeletonLoader(ref),
         [] => const Center(child: Text("No items available.*", maxLines: 1)),
         _ =>
           (isOffline && !isDownloaded)
               ? const Center(child: Text("Section contents not downloaded.*", maxLines: 1))
               : SizedBox(
-                  height: calculateItemCollectionCardHeight(context: context, sectionInfo: sectionInfo, itemType: null),
+                  height: calculateItemCollectionCardHeight(ref: ref, sectionInfo: sectionInfo, itemType: null),
                   child: ListView.separated(
                     addAutomaticKeepAlives: true,
                     scrollDirection: Axis.horizontal,
@@ -460,6 +456,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
                             key: ValueKey(item.id),
                             item: item,
                             isGrid: true,
+                            forceText: true,
                             interactive: interactive,
                             source: source,
                           );
@@ -474,17 +471,17 @@ class HomeScreenSectionContent extends ConsumerWidget {
         _homeScreenLogger.severe("Error loading items: $error");
         return Center(child: Text("Failed to load items.", maxLines: 1));
       }(),
-      _ => _buildHorizontalSkeletonLoader(context),
+      _ => _buildHorizontalSkeletonLoader(ref),
     };
   }
 
-  Widget _buildHorizontalSkeletonLoader(BuildContext context) {
+  Widget _buildHorizontalSkeletonLoader(WidgetRef ref) {
     final skeletonCount = 10;
-    final skeletonBaseColor = Theme.brightnessOf(context) == Brightness.light
+    final skeletonBaseColor = Theme.brightnessOf(ref.context) == Brightness.light
         ? Colors.grey.shade300
         : Colors.grey.shade800;
     return SizedBox(
-      height: calculateItemCollectionCardHeight(context: context, sectionInfo: sectionInfo, itemType: null),
+      height: calculateItemCollectionCardHeight(ref: ref, sectionInfo: sectionInfo, itemType: null),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: skeletonCount + 1, // Show [skeletonCount] skeleton items
@@ -492,10 +489,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
           if (index == 0) {
             return SizedBox(width: 4.0); // initial padding, + separator
           }
-          final cardWidth = calculateItemCollectionCardWidth(
-            context,
-            sectionInfo.contentType?.itemType ?? BaseItemDtoType.album,
-          );
+          final cardWidth = calculateItemCollectionCardWidth(ref).$1;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

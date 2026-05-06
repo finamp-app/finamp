@@ -280,43 +280,34 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                             tabType.itemType == BaseItemDtoType.playlist))
                     ? widget.genreFilter
                     : null;
-                return SafeArea(
-                  top: true,
-                  bottom: false,
-                  left: false,
-                  right: false,
-                  child: Column(
-                    children: [
-                      SortAndFilterRow(
-                        tabType: contentTabType,
-                        controller: sortAndFilterControllerMap[contentTabType]!,
+                return Column(
+                  children: [
+                    SortAndFilterRow(tabType: contentTabType, controller: sortAndFilterControllerMap[contentTabType]!),
+                    ArtistTypeSelectionRow(
+                      tabType: tabType,
+                      defaultArtistType: ref.watch(finampSettingsProvider.defaultArtistType),
+                      refreshTab: refreshTab,
+                    ),
+                    Expanded(
+                      child: ValueListenableBuilder(
+                        valueListenable: sortAndFilterControllerMap[contentTabType]!,
+                        builder: (context, value, child) {
+                          return MusicScreenTabView(
+                            tabContentType: contentTabType,
+                            view: _finampUserHelper.currentUser?.currentView,
+                            refresh: refreshMap[tabType],
+                            tabBarFiltered: (widget.tabTypeFilter != null),
+                            sortAndFilterConfiguration: value.resolve(
+                              isOffline: ref.watch(finampSettingsProvider.isOffline),
+                              inPlaylist: false,
+                              searchQuery: searchQuery,
+                              genreFilter: genreFilter,
+                            ),
+                          );
+                        },
                       ),
-                      ArtistTypeSelectionRow(
-                        tabType: tabType,
-                        defaultArtistType: ref.watch(finampSettingsProvider.defaultArtistType),
-                        refreshTab: refreshTab,
-                      ),
-                      Expanded(
-                        child: ValueListenableBuilder(
-                          valueListenable: sortAndFilterControllerMap[contentTabType]!,
-                          builder: (context, value, child) {
-                            return MusicScreenTabView(
-                              tabContentType: contentTabType,
-                              view: _finampUserHelper.currentUser?.currentView,
-                              refresh: refreshMap[tabType],
-                              tabBarFiltered: (widget.tabTypeFilter != null),
-                              sortAndFilterConfiguration: value.resolve(
-                                isOffline: ref.watch(finampSettingsProvider.isOffline),
-                                inPlaylist: false,
-                                searchQuery: searchQuery,
-                                genreFilter: genreFilter,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 );
               }).toList(),
             );

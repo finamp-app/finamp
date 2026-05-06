@@ -249,81 +249,94 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         ],
       ),
     );
+    final itemPadding = calculateItemCollectionCardWidth(ref).$2;
     var tabContent =
         ref.watch(finampSettingsProvider.contentViewType) == ContentViewType.list ||
             widget.tabContentType == TabContentType.tracks
-        ? PagedListView<int, BaseItemDto>.separated(
-            state: ref.watch(pageControl),
-            fetchNextPage: () {
-              ref.read(pageControl.notifier).newPage();
-            },
-            scrollController: controller,
-            physics: _DeferredLoadingAlwaysScrollableScrollPhysics(tabState: this),
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            builderDelegate: PagedChildBuilderDelegate<BaseItemDto>(
-              itemBuilder: (context, item, index) {
-                // Use right padding inherited from fast scroller minus
-                // built-in icon padding
-                return Padding(
-                  padding: EdgeInsets.only(right: max(0, MediaQuery.paddingOf(context).right - 20)),
-                  child: CachedBuilder(
-                    key: ValueKey(item.id),
-                    cacheKey: (item.id, index),
-                    builder: (context) {
-                      return AutoScrollTag(
-                        key: ValueKey(index),
-                        controller: controller,
-                        index: index,
-                        child: widget.tabContentType == TabContentType.tracks
-                            ? TrackListTile(
-                                key: ValueKey(item.id),
-                                item: item,
-                                index: index,
-                                // when the tabBar was filtered and we only have the tracks tab,
-                                // we can allow Dismiss gestures in the track list
-                                allowDismiss: widget.tabBarFiltered,
-                                genreFilter: widget.genreFilter,
-                                isOnGenreScreen: (widget.genreFilter != null) ? true : false,
-                                parentItem: widget.genreFilter,
-                                forceAlbumArtists: (widget.sortAndFilterConfiguration.sortBy == SortBy.albumArtist),
-                                adaptiveAdditionalInfoSortBy: widget.sortAndFilterConfiguration.sortBy,
-                                // since we can't re-create the current random sorting, we simply pass the pre-sorted tracks along
-                                // only done in offline mode since online mode doesn't support playing the tab contents in order anyway
-                                fetchChildren: () async {
-                                  if (FinampSettingsHelper.finampSettings.startInstantMixForIndividualTracks) {
-                                    final audioServiceHelper = GetIt.instance<AudioServiceHelper>();
-                                    await audioServiceHelper.startInstantMixForItem(item);
-                                    return null;
-                                  }
-                                  return ref.read(pageControl.notifier).loadSlice(index);
-                                },
-                              )
-                            : ItemWrapper(
-                                key: ValueKey(item.id),
-                                item: item,
-                                genreFilter: widget.genreFilter,
-                                adaptiveAdditionalInfoSortBy: widget.sortAndFilterConfiguration.sortBy,
-                                showFavoriteIconOnlyWhenFilterDisabled: true,
-                              ),
-                      );
-                    },
-                  ),
-                );
+        ? SafeArea(
+            child: PagedListView<int, BaseItemDto>.separated(
+              state: ref.watch(pageControl),
+              fetchNextPage: () {
+                ref.read(pageControl.notifier).newPage();
               },
-              firstPageProgressIndicatorBuilder: (_) => const FirstPageProgressIndicator(),
-              newPageProgressIndicatorBuilder: (_) => const NewPageProgressIndicator(),
-              noItemsFoundIndicatorBuilder: (_) => emptyListIndicator,
-              invisibleItemsThreshold: 70,
+              scrollController: controller,
+              physics: _DeferredLoadingAlwaysScrollableScrollPhysics(tabState: this),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              builderDelegate: PagedChildBuilderDelegate<BaseItemDto>(
+                itemBuilder: (context, item, index) {
+                  // Use right padding inherited from fast scroller minus
+                  // built-in icon padding
+                  return Padding(
+                    padding: EdgeInsets.only(right: max(0, MediaQuery.paddingOf(context).right - 20)),
+                    child: CachedBuilder(
+                      key: ValueKey(item.id),
+                      cacheKey: (item.id, index),
+                      builder: (context) {
+                        return AutoScrollTag(
+                          key: ValueKey(index),
+                          controller: controller,
+                          index: index,
+                          child: widget.tabContentType == TabContentType.tracks
+                              ? TrackListTile(
+                                  key: ValueKey(item.id),
+                                  item: item,
+                                  index: index,
+                                  // when the tabBar was filtered and we only have the tracks tab,
+                                  // we can allow Dismiss gestures in the track list
+                                  allowDismiss: widget.tabBarFiltered,
+                                  genreFilter: widget.genreFilter,
+                                  isOnGenreScreen: (widget.genreFilter != null) ? true : false,
+                                  parentItem: widget.genreFilter,
+                                  forceAlbumArtists: (widget.sortAndFilterConfiguration.sortBy == SortBy.albumArtist),
+                                  adaptiveAdditionalInfoSortBy: widget.sortAndFilterConfiguration.sortBy,
+                                  // since we can't re-create the current random sorting, we simply pass the pre-sorted tracks along
+                                  // only done in offline mode since online mode doesn't support playing the tab contents in order anyway
+                                  fetchChildren: () async {
+                                    if (FinampSettingsHelper.finampSettings.startInstantMixForIndividualTracks) {
+                                      final audioServiceHelper = GetIt.instance<AudioServiceHelper>();
+                                      await audioServiceHelper.startInstantMixForItem(item);
+                                      return null;
+                                    }
+                                    return ref.read(pageControl.notifier).loadSlice(index);
+                                  },
+                                )
+                              : ItemWrapper(
+                                  key: ValueKey(item.id),
+                                  item: item,
+                                  genreFilter: widget.genreFilter,
+                                  adaptiveAdditionalInfoSortBy: widget.sortAndFilterConfiguration.sortBy,
+                                  showFavoriteIconOnlyWhenFilterDisabled: true,
+                                ),
+                        );
+                      },
+                    ),
+                  );
+                },
+                firstPageProgressIndicatorBuilder: (_) => const FirstPageProgressIndicator(),
+                newPageProgressIndicatorBuilder: (_) => const NewPageProgressIndicator(),
+                noItemsFoundIndicatorBuilder: (_) => emptyListIndicator,
+                //noMoreItemsIndicatorBuilder: (_) => SizedBox(height: MediaQuery.paddingOf(context).bottom),
+                invisibleItemsThreshold: 70,
+              ),
+              separatorBuilder: (context, index) => const SizedBox.shrink(),
             ),
-            separatorBuilder: (context, index) => const SizedBox.shrink(),
           )
         : PagedGridView(
-            padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 20.0),
             state: ref.watch(pageControl),
             fetchNextPage: () {
               ref.read(pageControl.notifier).newPage();
             },
+            padding: EdgeInsets.only(
+              top: itemPadding,
+              bottom: itemPadding,
+              left: MediaQuery.paddingOf(context).left + itemPadding,
+              // Grid is automatically adding one itemPadding to the right of all elements
+              right: MediaQuery.paddingOf(context).right,
+            ),
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            showNewPageProgressIndicatorAsGridChild: false,
+            showNewPageErrorIndicatorAsGridChild: false,
+            showNoMoreItemsIndicatorAsGridChild: false,
             scrollController: controller,
             physics: _DeferredLoadingAlwaysScrollableScrollPhysics(tabState: this),
             builderDelegate: PagedChildBuilderDelegate<BaseItemDto>(
@@ -349,36 +362,10 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
               firstPageProgressIndicatorBuilder: (_) => const FirstPageProgressIndicator(),
               newPageProgressIndicatorBuilder: (_) => const NewPageProgressIndicator(),
               noItemsFoundIndicatorBuilder: (_) => emptyListIndicator,
+              noMoreItemsIndicatorBuilder: (_) => SizedBox(height: MediaQuery.paddingOf(context).bottom),
               invisibleItemsThreshold: 70,
             ),
-            //FIXME re-implement fixed size grid tiles
-            // gridDelegate: FinampSettingsHelper.finampSettings.useFixedSizeGridTiles
-            //     ? SliverGridDelegateWithFixedSizeTiles(
-            //         gridTileSize: FinampSettingsHelper.finampSettings.fixedGridTileSize.toDouble(),
-            //       )
-            //     : SliverGridDelegateWithFixedCrossAxisCount(
-            //         crossAxisCount: MediaQuery.orientationOf(context) == Orientation.landscape
-            //             ? FinampSettingsHelper.finampSettings.contentGridViewCrossAxisCountLandscape
-            //             : FinampSettingsHelper.finampSettings.contentGridViewCrossAxisCountPortrait,
-            //       ),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: calculateItemCollectionCardWidth(
-                context,
-                widget.tabContentType.itemType ?? BaseItemDtoType.album,
-              ),
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              childAspectRatio:
-                  (calculateItemCollectionCardWidth(context, widget.tabContentType.itemType ?? BaseItemDtoType.album) /
-                          calculateItemCollectionCardHeight(
-                            context: context,
-                            sectionInfo: null,
-                            itemType: widget.tabContentType.itemType ?? BaseItemDtoType.album,
-                          ) *
-                          10.0)
-                      .floorToDouble() /
-                  10.0,
-            ),
+            gridDelegate: MusicScreenGridLayout(ref: ref, contentType: widget.tabContentType),
           );
 
     var showFastScroller = ref.watch(finampSettingsProvider.showFastScroller);
@@ -404,31 +391,46 @@ class MusicRefreshCallback {
   void Function()? callback;
 }
 
-class SliverGridDelegateWithFixedSizeTiles extends SliverGridDelegate {
-  SliverGridDelegateWithFixedSizeTiles({required this.gridTileSize});
+class MusicScreenGridLayout extends SliverGridDelegate {
+  MusicScreenGridLayout({required WidgetRef ref, required TabContentType contentType}) {
+    final widthData = calculateItemCollectionCardWidth(ref);
+    itemWidth = widthData.$1;
+    itemPadding = widthData.$2;
+    itemHeight = calculateItemCollectionCardHeight(
+      ref: ref,
+      sectionInfo: null,
+      itemType: contentType.itemType ?? BaseItemDtoType.album,
+    );
+  }
 
-  final double gridTileSize;
+  late final double itemWidth;
+  late final double itemHeight;
+  late final double itemPadding;
 
   @override
   SliverGridLayout getLayout(SliverConstraints constraints) {
-    int crossAxisCount = (constraints.crossAxisExtent / gridTileSize).floor();
+    int crossAxisCount = ((constraints.crossAxisExtent + itemPadding) / (itemWidth + itemPadding)).round();
     // Ensure a minimum count of 1, can be zero and result in an infinite extent
     // below when the window size is 0.
     crossAxisCount = max(1, crossAxisCount);
-    final double crossAxisSpacing = (constraints.crossAxisExtent / crossAxisCount);
+    final double crossAxisSpacing = constraints.crossAxisExtent / crossAxisCount;
+    // Adjust height for smaller than max album images
+    final mainAxisSpacing = itemHeight - itemWidth + crossAxisSpacing;
     return SliverGridRegularTileLayout(
       crossAxisCount: crossAxisCount,
-      mainAxisStride: gridTileSize * 1.2,
+      mainAxisStride: mainAxisSpacing,
       crossAxisStride: crossAxisSpacing,
-      childMainAxisExtent: gridTileSize * 1.2,
-      childCrossAxisExtent: gridTileSize,
+      childMainAxisExtent: mainAxisSpacing - itemPadding,
+      childCrossAxisExtent: crossAxisSpacing - itemPadding,
       reverseCrossAxis: axisDirectionIsReversed(constraints.crossAxisDirection),
     );
   }
 
   @override
-  bool shouldRelayout(SliverGridDelegateWithFixedSizeTiles oldDelegate) {
-    return oldDelegate.gridTileSize != gridTileSize;
+  bool shouldRelayout(MusicScreenGridLayout oldDelegate) {
+    return oldDelegate.itemWidth != itemWidth ||
+        oldDelegate.itemHeight != itemHeight ||
+        oldDelegate.itemPadding != itemPadding;
   }
 }
 

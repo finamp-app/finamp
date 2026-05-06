@@ -1,8 +1,8 @@
+import 'dart:io';
+
 import 'package:finamp/components/LayoutSettingsScreen/automatic_accent_color_selector.dart';
 import 'package:finamp/components/LayoutSettingsScreen/use_monochrome_icon.dart';
-import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
 import 'package:finamp/l10n/app_localizations.dart';
-import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/screens/album_settings_screen.dart';
 import 'package:finamp/screens/artist_settings_screen.dart';
 import 'package:finamp/screens/customization_settings_screen.dart';
@@ -16,10 +16,10 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import '../components/LayoutSettingsScreen/accent_color_selector.dart';
 import '../components/LayoutSettingsScreen/content_view_type_dropdown_list_tile.dart';
 import '../components/LayoutSettingsScreen/show_artist_chip_image_toggle.dart';
-import '../components/finamp_app_bar_back_button.dart';
 import '../components/LayoutSettingsScreen/show_text_on_grid_view_selector.dart';
 import '../components/LayoutSettingsScreen/theme_selector.dart';
 import '../components/LayoutSettingsScreen/use_cover_as_background_toggle.dart';
+import '../components/finamp_app_bar_back_button.dart';
 import '../services/finamp_settings_helper.dart';
 import 'tabs_settings_screen.dart';
 
@@ -136,11 +136,37 @@ class GridImageSizeSelector extends ConsumerStatefulWidget {
 }
 
 class _GridImageSizeSelectorState extends ConsumerState<GridImageSizeSelector> {
-  var currentSize = FinampSettingsHelper.finampSettings.gridImageSize;
+  // We'll just assume the setting can only be changed by this widget
+  double? colCount;
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(finampSettingsProvider.gridImageSize);
+    final predictedGridWidth =
+        MediaQuery.widthOf(context) -
+        MediaQuery.paddingOf(context).left -
+        MediaQuery.paddingOf(context).right -
+        10 -
+        (ref.watch(finampSettingsProvider.showFastScroller) ? 22 : 0);
+
+    final maxAvailable = Platform.isAndroid || Platform.isIOS ? (predictedGridWidth / 50).ceil() : 25;
+
+    colCount ??= predictedGridWidth / FinampSettingsHelper.finampSettings.gridImageSize;
+    colCount = colCount!.clamp(1, maxAvailable.toDouble());
+
+    String numLabel;
+    if (colCount!.round() * 20 == (colCount! * 20).round()) {
+      numLabel = "${colCount!.round()}";
+    } else {
+      numLabel = "~${colCount!.round()}";
+    }
+    final sizeLabel = switch (predictedGridWidth / colCount!) {
+      < 80 => "Very Small",
+      < 125 => "Small",
+      < 190 => "Medium",
+      < 300 => "Large",
+      _ => "Very Large",
+    };
+
     return Column(
       children: [
         ListTile(title: Text("Grid Tile Size*"), subtitle: Text("Select the size of items in the grid*")),
@@ -149,23 +175,24 @@ class _GridImageSizeSelectorState extends ConsumerState<GridImageSizeSelector> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Slider(
-              min: 0,
-              max: GridImageSizePresets.values.length - 1,
-              value: GridImageSizePresets.values.indexOf(currentSize).toDouble(),
-              divisions: GridImageSizePresets.values.length - 1,
-              label: "${currentSize.name} (? columns)",
+              min: 1,
+              max: maxAvailable.toDouble(),
+              value: colCount!,
+              label: numLabel,
+              divisions: Platform.isAndroid || Platform.isIOS ? maxAvailable - 1 : null,
               onChanged: (value) {
                 setState(() {
-                  currentSize = GridImageSizePresets.values[value.toInt()];
+                  colCount = value;
                 });
               },
               onChangeEnd: (value) {
-                FinampSetters.setGridImageSize(GridImageSizePresets.values[value.toInt()]);
+                final pixels = predictedGridWidth / value;
+                FinampSetters.setGridImageSize(pixels.toInt());
               },
               autofocus: false,
               focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
             ),
-            Text("${currentSize.name} (? columns)", style: Theme.of(context).textTheme.titleLarge),
+            Text("$sizeLabel (currently $numLabel columns)*", style: Theme.of(context).textTheme.titleLarge),
           ],
         ),
       ],

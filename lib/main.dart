@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:app_links/app_links.dart';
@@ -8,7 +9,6 @@ import 'package:background_downloader/background_downloader.dart';
 import 'package:collection/collection.dart';
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
-import 'package:finamp/components/Shortcuts/global_shortcut_manager.dart';
 import 'package:finamp/gen/assets.gen.dart';
 import 'package:finamp/hive_registrar.g.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -74,6 +74,7 @@ import 'components/Buttons/simple_button.dart';
 import 'components/LogsScreen/copy_logs_button.dart';
 import 'components/LogsScreen/share_logs_button.dart';
 import 'components/PlayerScreen/player_split_screen_scaffold.dart';
+import 'components/Shortcuts/global_shortcut_manager.dart';
 import 'components/global_snackbar.dart';
 import 'models/finamp_models.dart';
 import 'models/migration_adapters.dart';
@@ -122,6 +123,7 @@ void main() async {
     _mainLog.info("Setup hive and isar");
     _migrateDownloadLocations();
     _migrateSortOptions();
+    _migrateGridSize();
     _migrateHomescreen();
     await _migrateThemeModeLocale();
     _mainLog.info("Completed applicable migrations");
@@ -481,6 +483,7 @@ void _migrateHomescreen() {
 }
 
 /// Migrates the old SortBy/SortOrder to a map indexed by tab content type
+// ignore: deprecated_member_use_from_same_package
 void _migrateSortOptions() {
   final finampSettings = FinampSettingsHelper.finampSettings;
 
@@ -488,7 +491,6 @@ void _migrateSortOptions() {
 
   if (finampSettings.tabSortBy.isEmpty) {
     for (var type in TabContentType.values) {
-      // ignore: deprecated_member_use_from_same_package
       finampSettings.tabSortBy[type] = finampSettings.sortBy;
     }
     changed = true;
@@ -496,7 +498,6 @@ void _migrateSortOptions() {
 
   if (finampSettings.tabSortOrder.isEmpty) {
     for (var type in TabContentType.values) {
-      // ignore: deprecated_member_use_from_same_package
       finampSettings.tabSortOrder[type] = finampSettings.sortOrder;
     }
     changed = true;
@@ -504,6 +505,78 @@ void _migrateSortOptions() {
 
   if (changed) {
     FinampSettingsHelper.overwriteFinampSettings(finampSettings);
+  }
+}
+
+/// Migrates old grid size options to FinampSettings.gridImageSize
+// ignore: deprecated_member_use_from_same_package
+void _migrateGridSize() {
+  final finampSettings = FinampSettingsHelper.finampSettings;
+  // Use this bool being null as a flag to skip migration
+  if (finampSettings.useFixedSizeGridTiles == null) return;
+  if (finampSettings.useFixedSizeGridTiles!) {
+    finampSettings.gridImageSize = finampSettings.fixedGridTileSize!;
+  } else {
+    finampSettings.gridImageSize = _calculateGridImageSize(finampSettings);
+  }
+  finampSettings.useFixedSizeGridTiles = null;
+  FinampSettingsHelper.overwriteFinampSettings(finampSettings);
+}
+
+/// Predicts the grid item size based off legacy settings and current device screen size
+int _calculateGridImageSize(FinampSettings settings) {
+  Size? screenSize;
+  if (Platform.isAndroid || Platform.isIOS) {
+    final view = PlatformDispatcher.instance.implicitView!;
+    final physicalSize = view.physicalSize;
+    // If we are in landscape, this padding might not necessarily match what it would be in portrait.  But whatever.
+    final padding = view.viewPadding;
+    screenSize = Size(
+      physicalSize.width - padding.left - padding.right,
+      physicalSize.height - padding.top - padding.bottom,
+    );
+    screenSize = screenSize / view.devicePixelRatio;
+  } else {
+    final fullScreenSize = settings.screenSize?.size;
+    // screenSize setting is external bounds of window.  We need the internal view size, but that isn't available yet,
+    // so we just subtract off the window decorations.  These values are for windows, but hopefully mac/linux are relatively similar.
+    screenSize = fullScreenSize == null ? null : Size(fullScreenSize.width - 16, fullScreenSize.height - 39);
+  }
+
+  if (screenSize == null || screenSize.width <= 0 || screenSize.height <= 0) {
+    // Screen size failed to load for some reason, just reset to default
+    return DefaultSettings.gridImageSize;
+  } else {
+    int targetCount;
+    double totalSize;
+    // Making the migration hinge on the devices current orientation seems questionable, so we attempt to guess the primary layout here.
+    // If this device would go into splitscreen in landscape, we will assume that is the primary orientation.
+    // Otherwise, we assume the primary orientation is portrait.
+
+    // Normalize to landscape for easier tablet calculations
+    screenSize = Size(max(screenSize.height, screenSize.width), min(screenSize.height, screenSize.width));
+    if (screenSize.width >= 800 && screenSize.height >= 500 && settings.allowSplitScreen) {
+      totalSize = screenSize.width - settings.splitScreenPlayerWidth - 10;
+      if (totalSize > screenSize.height) {
+        targetCount = settings.contentGridViewCrossAxisCountLandscape!;
+      } else {
+        targetCount = settings.contentGridViewCrossAxisCountPortrait!;
+      }
+    } else {
+      // This will always be the devices smallest side
+      totalSize = screenSize.height;
+      targetCount = settings.contentGridViewCrossAxisCountPortrait!;
+    }
+    if (targetCount < 1 || totalSize < 200) {
+      // Something fishy is going on in the sizing calculations.  Reset to default.
+      return DefaultSettings.gridImageSize;
+    }
+    if (settings.showFastScroller) {
+      totalSize -= 22;
+    }
+    // Account for xtra padding added to left of grid.  This could theoretically be smaller, but that shouldn't matter much.
+    totalSize -= 10;
+    return (totalSize / targetCount).round().clamp(50, 1000);
   }
 }
 

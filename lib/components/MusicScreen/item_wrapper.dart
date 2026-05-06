@@ -28,7 +28,6 @@ class ItemWrapper extends ConsumerStatefulWidget {
   const ItemWrapper({
     super.key,
     required this.item,
-    this.parentType,
     this.onTap,
     this.isGrid = false,
     this.genreFilter,
@@ -36,15 +35,12 @@ class ItemWrapper extends ConsumerStatefulWidget {
     this.adaptiveAdditionalInfoSortBy,
     this.showFavoriteIconOnlyWhenFilterDisabled = false,
     this.interactive = true,
+    this.forceText = false,
     this.source,
   });
 
   /// The item to show in the widget.
   final BaseItemDto item;
-
-  /// The parent type of the item. Used to change onTap functionality for stuff
-  /// like artists.
-  final TabContentType? parentType;
 
   /// A custom onTap can be provided to override the default value, which is to
   /// open the item's album/artist/genre/playlist screen.
@@ -53,6 +49,9 @@ class ItemWrapper extends ConsumerStatefulWidget {
   /// If specified, use cards instead of list tiles. Use this if you want to use
   /// this widget in a grid view.
   final bool isGrid;
+
+  /// Forces text to be shown in grid mode, even if showTextOnGridView is false
+  final bool forceText;
 
   /// If a genre filter is specified, it will propagate down to for example the ArtistScreen,
   /// showing only tracks and albums of that artist that match the genre filter
@@ -152,11 +151,10 @@ class _ItemCollectionWrapperState extends ConsumerState<ItemWrapper> {
       onLongPressStart: (details) => widget.interactive ? openItemMenu(context: context, item: widget.item) : null,
       onSecondaryTapDown: (details) => widget.interactive ? openItemMenu(context: context, item: widget.item) : null,
       child: widget.isGrid
-          ? ItemCard(item: mutableItem, onTap: onTap, parentType: widget.parentType)
+          ? ItemCard(item: mutableItem, onTap: onTap, forceText: widget.forceText)
           : ItemCollectionListTile(
               item: mutableItem,
               onTap: onTap,
-              parentType: widget.parentType,
               albumShowsYearAndDurationInstead: widget.albumShowsYearAndDurationInstead,
               adaptiveAdditionalInfoSortBy: widget.adaptiveAdditionalInfoSortBy,
               showFavoriteIconOnlyWhenFilterDisabled: widget.showFavoriteIconOnlyWhenFilterDisabled,

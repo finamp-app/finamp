@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart' show MusicRefreshCallback;
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -25,6 +23,7 @@ import '../first_page_progress_indicator.dart';
 import '../new_page_progress_indicator.dart';
 import '../now_playing_bar.dart';
 
+// TODO this is essentially used as a collection screen at the moment.  Rename?
 class ShowAllScreen extends ConsumerStatefulWidget {
   const ShowAllScreen({super.key, this.refresh});
 
@@ -179,33 +178,5 @@ class _ShowAllScreenState extends ConsumerState<ShowAllScreen> {
       body: RefreshIndicator(onRefresh: () async => _refresh(), child: content),
       bottomNavigationBar: const NowPlayingBar(),
     );
-  }
-}
-
-class SliverGridDelegateWithFixedSizeTiles extends SliverGridDelegate {
-  SliverGridDelegateWithFixedSizeTiles({required this.gridTileSize});
-
-  final double gridTileSize;
-
-  @override
-  SliverGridLayout getLayout(SliverConstraints constraints) {
-    int crossAxisCount = (constraints.crossAxisExtent / gridTileSize).floor();
-    // Ensure a minimum count of 1, can be zero and result in an infinite extent
-    // below when the window size is 0.
-    crossAxisCount = max(1, crossAxisCount);
-    final double crossAxisSpacing = (constraints.crossAxisExtent / crossAxisCount);
-    return SliverGridRegularTileLayout(
-      crossAxisCount: crossAxisCount,
-      mainAxisStride: gridTileSize,
-      crossAxisStride: crossAxisSpacing,
-      childMainAxisExtent: gridTileSize,
-      childCrossAxisExtent: gridTileSize,
-      reverseCrossAxis: axisDirectionIsReversed(constraints.crossAxisDirection),
-    );
-  }
-
-  @override
-  bool shouldRelayout(SliverGridDelegateWithFixedSizeTiles oldDelegate) {
-    return oldDelegate.gridTileSize != gridTileSize;
   }
 }

@@ -1,11 +1,5 @@
-import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
 
-import 'package:finamp/components/PlayerScreen/player_split_screen_scaffold.dart';
-import 'package:finamp/models/finamp_models.dart';
-import 'package:finamp/services/finamp_settings_helper.dart';
-import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,7 +37,7 @@ class AlbumImage extends ConsumerStatefulWidget {
 
   final ProviderListenable<FinampImage>? imageListenable;
 
-  final GridImageSizePresets? sizePreset;
+  final int? sizePreset;
 
   final BorderRadius? borderRadius;
 
@@ -71,18 +65,14 @@ class AlbumImage extends ConsumerStatefulWidget {
 
 class _AlbumImageState extends ConsumerState<AlbumImage> {
   final String zoomID = UuidV4().generate();
-  GridImageSizePresets? currentPresetSize;
   int? currentPhysicalWidth;
   int? currentPhysicalHeight;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final GridImageSizePresets newImageSizePreset =
-        widget.sizePreset ?? ref.watch(finampSettingsProvider.gridImageSize);
+  void didUpdateWidget(AlbumImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
     // reset cached image size
-    if (currentPresetSize != newImageSizePreset) {
-      currentPresetSize = newImageSizePreset;
+    if (widget.sizePreset != oldWidget.sizePreset) {
       currentPhysicalWidth = null;
       currentPhysicalHeight = null;
     }
@@ -131,28 +121,17 @@ class _AlbumImageState extends ConsumerState<AlbumImage> {
               // Logical pixels aren't the same as the physical pixels on the device, they're quite a bit bigger.
               // If we use logical pixels for the image request, we'll get a smaller image than we want.
               // Because of this, we convert the logical pixels to physical pixels by multiplying by the device's DPI.
-              if (currentPhysicalWidth == null || currentPhysicalHeight == null) {
-                final pixelRatio = MediaQuery.devicePixelRatioOf(context);
-                currentPhysicalWidth ??= (constraints.maxWidth * pixelRatio).toInt();
-                currentPhysicalHeight ??= (constraints.maxHeight * pixelRatio).toInt();
-                // If using grid music screen view without fixed size tiles, and if the view is resizable due
-                // to being on desktop and using split screen, then clamp album size to reduce server requests when resizing.
-                // only re-clamp if the image size has changed (state vars set to null), to avoid re-requesting images with slightly different resolutions
-                //TODO these conditions can probably be simplified to apply more universally
-                if ((isDesktop || usingPlayerSplitScreen) &&
-                    FinampSettingsHelper.finampSettings.contentViewType == ContentViewType.grid) {
-                  currentPhysicalWidth = exp((log(currentPhysicalWidth!) * 3).ceil() / 3).toInt();
-                  currentPhysicalHeight = exp((log(currentPhysicalHeight!) * 3).ceil() / 3).toInt();
-                }
+              final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+              int physicalWidth = currentPhysicalWidth ?? (constraints.maxWidth * pixelRatio).toInt();
+              int physicalHeight = currentPhysicalHeight ?? (constraints.maxHeight * pixelRatio).toInt();
+              if (widget.sizePreset != null) {
+                currentPhysicalHeight = physicalHeight;
+                currentPhysicalWidth = physicalWidth;
               }
               return _buildFromListenable(
                 true,
                 albumImageProvider(
-                  AlbumImageRequest(
-                    item: widget.item!,
-                    maxWidth: currentPhysicalWidth!,
-                    maxHeight: currentPhysicalHeight!,
-                  ),
+                  AlbumImageRequest(item: widget.item!, maxWidth: physicalWidth, maxHeight: physicalHeight),
                 ),
               );
             },

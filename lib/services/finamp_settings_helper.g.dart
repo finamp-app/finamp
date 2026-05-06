@@ -1242,7 +1242,7 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setGridImageSize(GridImageSizePresets newGridImageSize) {
+  static void setGridImageSize(int newGridImageSize) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.gridImageSize = newGridImageSize;
     Hive.box<FinampSettings>(
@@ -1681,10 +1681,9 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   get homeScreenConfiguration => finampSettingsProvider.select(
     (value) => value.requireValue.homeScreenConfiguration,
   );
-  ProviderListenable<GridImageSizePresets> get gridImageSize =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.gridImageSize,
-      );
+  ProviderListenable<int> get gridImageSize => finampSettingsProvider.select(
+    (value) => value.requireValue.gridImageSize,
+  );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

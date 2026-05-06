@@ -15,26 +15,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
-const double _itemCollectionCardCoverSize = 110;
-const double _itemCollectionCardCoverMaximumSize = 500;
-const double _itemCollectionCardSpacing = 6;
+const double _itemCollectionCardTextSpacing = 6;
 const double _queuesSectionWidth = 160;
 const double _queuesSectionHeight = 84;
 
 /// Card content for items. You probably shouldn't use this widget directly,
 /// use ItemWrapper instead.
 class ItemCard extends ConsumerWidget {
-  const ItemCard({super.key, required this.item, this.parentType, this.onTap});
+  const ItemCard({super.key, required this.item, this.onTap, required this.forceText});
 
   final BaseItemDto item;
-  final TabContentType? parentType;
   final void Function()? onTap;
+  final bool forceText;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final showText = forceText || ref.watch(finampSettingsProvider.showTextOnGridView);
     final hasImage = !(item.blurHash == null && item.imageId == null);
     return Container(
-      constraints: BoxConstraints(maxWidth: calculateItemCollectionCardWidth(context, BaseItemDtoType.fromItem(item))),
+      constraints: BoxConstraints(maxWidth: calculateItemCollectionCardWidth(ref).$1),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(borderRadius: AlbumImage.defaultBorderRadius),
       child: Column(
@@ -42,43 +41,40 @@ class ItemCard extends ConsumerWidget {
         children: [
           AspectRatio(
             aspectRatio: 1, // Square aspect ratio for album art
-            child: Card(
-              margin: EdgeInsets.zero,
-              child: ClipRRect(
-                borderRadius: AlbumImage.defaultBorderRadius,
-                child: Stack(
-                  children: [
-                    if (!hasImage && !ref.watch(finampSettingsProvider.showTextOnGridView))
-                      // handle tiles with no image when text is disabled by showing a fallback text instead of the image
-                      Container(
-                        padding: const EdgeInsets.all(4.0),
-                        color: Theme.brightnessOf(context) == Brightness.dark
-                            ? ColorScheme.of(context).primary.withOpacity(0.08)
-                            : Color.alphaBlend(
-                                ColorScheme.of(context).primary.withOpacity(0.1),
-                                Colors.white,
-                              ).withOpacity(1.0),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: _ItemCollectionCardText(item: item, parentType: parentType),
-                        ),
-                      )
-                    else
-                      AlbumImage(item: item),
-                    Positioned.fill(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(onTap: onTap),
+            child: ClipRRect(
+              borderRadius: AlbumImage.defaultBorderRadius,
+              child: Stack(
+                children: [
+                  if (!hasImage && !showText)
+                    // handle tiles with no image when text is disabled by showing a fallback text instead of the image
+                    Container(
+                      padding: const EdgeInsets.all(4.0),
+                      color: Theme.brightnessOf(context) == Brightness.dark
+                          ? ColorScheme.of(context).primary.withOpacity(0.08)
+                          : Color.alphaBlend(
+                              ColorScheme.of(context).primary.withOpacity(0.1),
+                              Colors.white,
+                            ).withOpacity(1.0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: _ItemCollectionCardText(item: item, onImage: true),
                       ),
+                    )
+                  else
+                    AlbumImage(item: item, sizePreset: ref.watch(finampSettingsProvider.gridImageSize)),
+                  Positioned.fill(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(onTap: onTap),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-          if (ref.watch(finampSettingsProvider.showTextOnGridView)) ...[
-            const SizedBox(height: _itemCollectionCardSpacing, width: 1),
-            _ItemCollectionCardText(item: item, parentType: parentType),
+          if (showText) ...[
+            const SizedBox(height: _itemCollectionCardTextSpacing, width: 1),
+            _ItemCollectionCardText(item: item, onImage: false),
           ],
         ],
       ),
@@ -87,40 +83,38 @@ class ItemCard extends ConsumerWidget {
 }
 
 class _ItemCollectionCardText extends ConsumerWidget {
-  const _ItemCollectionCardText({required this.item, required this.parentType});
+  const _ItemCollectionCardText({required this.item, required this.onImage});
 
   final BaseItemDto item;
-  final TabContentType? parentType;
+  final bool onImage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final subtitle = generateSubtitle(
       context: context,
       item: item,
-      parentType: parentType,
       artistType: ref.watch(finampSettingsProvider.defaultArtistType),
     );
-    final centerText = !ref.watch(finampSettingsProvider.showTextOnGridView);
 
     return SizedBox(
-      height: _calculateInherentTextHeight(
+      height: calculateTextHeight(
         style: TextTheme.of(context).bodySmall!,
         lines: calculateItemCollectionTextLines(BaseItemDtoType.fromItem(item)),
       ),
       child: Align(
-        alignment: centerText ? Alignment.center : Alignment.topLeft,
+        alignment: onImage ? Alignment.center : Alignment.topLeft,
         child: Wrap(
           // Runs must be horizontal to constrain child width.  Use large
           // spacing to force subtitle to wrap to next run
           spacing: 1000,
-          alignment: centerText ? WrapAlignment.center : WrapAlignment.start,
+          alignment: onImage ? WrapAlignment.center : WrapAlignment.start,
           children: [
             Text(
               item.name ?? "Unknown Name",
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
               style: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w600),
-              textAlign: centerText ? TextAlign.center : TextAlign.left,
+              textAlign: onImage ? TextAlign.center : TextAlign.left,
             ),
             if (subtitle != null)
               Text(
@@ -128,7 +122,7 @@ class _ItemCollectionCardText extends ConsumerWidget {
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: Theme.of(context).textTheme.bodySmall,
-                textAlign: centerText ? TextAlign.center : TextAlign.left,
+                textAlign: onImage ? TextAlign.center : TextAlign.left,
               ),
           ],
         ),
@@ -227,16 +221,10 @@ class HomeScreenQueueTile extends ConsumerWidget {
 }
 
 /// This might calculate the width base on the device width in the future, or something similar
-double calculateItemCollectionCardWidth(BuildContext context, BaseItemDtoType itemType) {
-  // return _itemCollectionCardCoverSize;
-  return switch (FinampSettingsHelper.finampSettings.gridImageSize) {
-    GridImageSizePresets.biggest => _itemCollectionCardCoverMaximumSize,
-    GridImageSizePresets.small => 50,
-    GridImageSizePresets.smallest => 30,
-    final size when true => _itemCollectionCardCoverMaximumSize / (GridImageSizePresets.values.indexOf(size) + 1),
-    // Dart doesn't recognize that the above case covers all possibilities, so we need a default
-    _ => _itemCollectionCardCoverSize,
-  };
+(double, double) calculateItemCollectionCardWidth(WidgetRef ref) {
+  final target = ref.watch(finampSettingsProvider.gridImageSize).toDouble();
+  final padding = ((target - 30) / 17.0).clamp(1.0, 10.0);
+  return (target - padding, padding);
 }
 
 int calculateItemCollectionTextLines(BaseItemDtoType itemType) {
@@ -253,7 +241,7 @@ int calculateItemCollectionTextLines(BaseItemDtoType itemType) {
 }
 
 double calculateItemCollectionCardHeight({
-  required BuildContext context,
+  required WidgetRef ref,
   required HomeScreenSectionConfiguration? sectionInfo,
   required BaseItemDtoType? itemType,
 }) {
@@ -265,23 +253,17 @@ double calculateItemCollectionCardHeight({
   return switch (sectionInfo?.type) {
     HomeScreenSectionType.queues => _queuesSectionHeight,
     _ =>
-      calculateItemCollectionCardWidth(context, actualItemType) +
-          (GetIt.instance<ProviderContainer>().read(finampSettingsProvider.showTextOnGridView)
-              ? _itemCollectionCardSpacing
-              : 0) +
-          calculateTextHeight(
-            style: TextTheme.of(context).bodySmall!,
-            lines: calculateItemCollectionTextLines(actualItemType),
-          ),
+      calculateItemCollectionCardWidth(ref).$1 +
+          (ref.watch(finampSettingsProvider.showTextOnGridView) || sectionInfo != null
+              ? _itemCollectionCardTextSpacing +
+                    calculateTextHeight(
+                      style: TextTheme.of(ref.context).bodySmall!,
+                      lines: calculateItemCollectionTextLines(actualItemType),
+                    )
+              : 0),
   };
 }
 
 double calculateTextHeight({required TextStyle style, required int lines}) {
-  return (GetIt.instance<ProviderContainer>().read(finampSettingsProvider.showTextOnGridView)
-      ? _calculateInherentTextHeight(style: style, lines: lines)
-      : 0);
-}
-
-double _calculateInherentTextHeight({required TextStyle style, required int lines}) {
   return (style.height ?? 1.0) * (style.fontSize ?? 16) * lines;
 }

@@ -117,6 +117,8 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         playbackSpeedVisibility: fields[57] == null
             ? PlaybackSpeedVisibility.automatic
             : fields[57] as PlaybackSpeedVisibility,
+        contentGridViewCrossAxisCountPortrait: (fields[11] as num?)?.toInt(),
+        contentGridViewCrossAxisCountLandscape: (fields[12] as num?)?.toInt(),
         showTextOnGridView: fields[13] == null ? true : fields[13] as bool,
         downloadLocationsMap: fields[15] == null
             ? {}
@@ -204,6 +206,8 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         itemSwipeActionRightToLeft: fields[91] == null
             ? ItemSwipeActions.addToNextUp
             : fields[91] as ItemSwipeActions,
+        useFixedSizeGridTiles: fields[59] as bool?,
+        fixedGridTileSize: (fields[60] as num?)?.toInt(),
         allowSplitScreen: fields[61] == null ? true : fields[61] as bool,
         splitScreenPlayerWidth: fields[62] == null
             ? 400.0
@@ -446,9 +450,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         homeScreenConfiguration: fields[146] == null
             ? const FinampHomeScreenConfiguration(actions: [], sections: [])
             : fields[146] as FinampHomeScreenConfiguration,
-        gridImageSize: fields[147] == null
-            ? GridImageSizePresets.cols5
-            : fields[147] as GridImageSizePresets,
+        gridImageSize: fields[147] == null ? 160 : (fields[147] as num).toInt(),
       )
       ..disableGesture = fields[19] == null ? false : fields[19] as bool
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool
@@ -467,7 +469,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(137)
+      ..writeByte(141)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -490,6 +492,10 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..write(obj.trackShuffleItemCount)
       ..writeByte(10)
       ..write(obj.contentViewType)
+      ..writeByte(11)
+      ..write(obj.contentGridViewCrossAxisCountPortrait)
+      ..writeByte(12)
+      ..write(obj.contentGridViewCrossAxisCountLandscape)
       ..writeByte(13)
       ..write(obj.showTextOnGridView)
       ..writeByte(15)
@@ -568,6 +574,10 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..write(obj.playbackSpeedVisibility)
       ..writeByte(58)
       ..write(obj.defaultDownloadLocation)
+      ..writeByte(59)
+      ..write(obj.useFixedSizeGridTiles)
+      ..writeByte(60)
+      ..write(obj.fixedGridTileSize)
       ..writeByte(61)
       ..write(obj.allowSplitScreen)
       ..writeByte(62)
