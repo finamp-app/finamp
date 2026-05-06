@@ -74,7 +74,7 @@ packages:
     source: hosted
     version: "1.4.0"
   archive:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: archive
       sha256: a96e8b390886ee8abb49b7bd3ac8df6f451c621619f52a26e815fdcf568959ff
@@ -542,10 +542,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: "57d9a1dd5063f85fa3107fb42d1faffda52fdc948cefd5fe5ea85267a5fc7343"
+      sha256: f13a03000d942e476bc1ff0a736d2e9de711d2f89a95cd4c1d88f861c3348387
       url: "https://pub.dev"
     source: hosted
-    version: "10.3.10"
+    version: "11.0.2"
   file_sizes:
     dependency: "direct main"
     description:

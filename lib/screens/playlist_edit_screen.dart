@@ -140,7 +140,7 @@ class _PlaylistEditScreenState extends ConsumerState<PlaylistEditScreen> {
   }
 
   Future<File?> filePicker() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.image);
+    final result = await FilePicker.pickFiles(type: FileType.image);
     if (result == null) return null;
     return File(result.files.single.path!);
   }
