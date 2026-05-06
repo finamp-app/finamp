@@ -1239,7 +1239,7 @@ class DownloadsSyncService {
       }
       _metadataCache[id] = itemFetch.future;
       item = await _jellyfinApiData
-          .getItemByIdBatched(id, "${_jellyfinApiData.defaultFields},sortName,MediaSources,MediaStreams")
+          .getItemByIdBatched(id, "${_jellyfinApiData.defaultFields},sortName,MediaSources")
           .then((value) => value == null ? null : DownloadStub.fromItem(item: value, type: type));
       _downloadsService.resetConnectionErrors();
       itemFetch.complete(item);
@@ -1270,7 +1270,7 @@ class DownloadsSyncService {
       case BaseItemDtoType.playlist || BaseItemDtoType.album:
         childType = DownloadItemType.track;
         childFilter = BaseItemDtoType.track;
-        fields = "${_jellyfinApiData.defaultFields},MediaSources,MediaStreams,SortName";
+        fields = "${_jellyfinApiData.defaultFields},MediaSources,SortName";
         sortOrder = "ParentIndexNumber,IndexNumber,SortName";
       case BaseItemDtoType.artist || BaseItemDtoType.genre || BaseItemDtoType.library:
         childType = DownloadItemType.collection;
@@ -1312,7 +1312,7 @@ class DownloadsSyncService {
               parentItem: item,
               includeItemTypes: BaseItemDtoType.track.jellyfinName,
               recursive: false,
-              fields: "${_jellyfinApiData.defaultFields},MediaSources,MediaStreams,SortName",
+              fields: "${_jellyfinApiData.defaultFields},MediaSources,SortName",
             ) ??
             [];
         childItems.addAll(trackChildItems);
@@ -1331,7 +1331,7 @@ class DownloadsSyncService {
               includeItemTypes: BaseItemDtoType.track.jellyfinName,
               filters: "Artist=${parent.name}",
               artistType: ArtistType.artist,
-              fields: "${_jellyfinApiData.defaultFields},MediaSources,MediaStreams,SortName",
+              fields: "${_jellyfinApiData.defaultFields},MediaSources,SortName",
             ) ??
             [];
         var artistTrackChildStubs = artistTrackChildItems.map(
@@ -1363,7 +1363,7 @@ class DownloadsSyncService {
   Future<List<DownloadStub>> _getFinampCollectionChildren(DownloadStub parent) async {
     assert(parent.type == DownloadItemType.finampCollection);
     FinampCollection collection = parent.finampCollection!;
-    final String fields = "${_jellyfinApiData.defaultFields},MediaSources,MediaStreams,SortName";
+    final String fields = "${_jellyfinApiData.defaultFields},MediaSources,SortName";
     try {
       List<BaseItemDto> outputItems;
       DownloadItemType? typeOverride;
@@ -1520,7 +1520,7 @@ class DownloadsSyncService {
       return true;
     }
     if (stub.type == DownloadItemType.track &&
-        (stub.baseItem?.mediaSources == null || stub.baseItem?.mediaStreams == null)) {
+        ((stub.baseItem?.mediaSources?.isEmpty ?? true) || (stub.baseItem?.mediaStreams?.isEmpty ?? true))) {
       return true;
     }
     return false;

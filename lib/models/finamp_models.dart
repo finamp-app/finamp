@@ -1566,7 +1566,6 @@ class DownloadItem extends DownloadStub {
         // Not all BaseItemDto are requested with mediaSources, mediaStreams or childCount.  Do not
         // overwrite with null if the new item does not have them.
         item.mediaSources ??= baseItem?.mediaSources;
-        item.mediaStreams ??= baseItem?.mediaStreams;
         item.sortName ??= baseItem?.sortName;
       }
       assert(
