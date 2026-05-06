@@ -1,9 +1,7 @@
 import 'package:finamp/components/Buttons/cta_huge.dart';
-import 'package:finamp/components/Buttons/cta_large.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class LoginSplashPage extends StatelessWidget {
@@ -35,7 +33,7 @@ class LoginSplashPage extends StatelessWidget {
                     text: "Finamp",
                     style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                       // color: Theme.of(context).colorScheme.secondary,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   TextSpan(

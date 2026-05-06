@@ -199,7 +199,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                               final appName = asyncSnapshot.data?.appName ?? AppLocalizations.of(context)!.finamp;
                               return Text(
                                 title ?? finampUserHelper.currentUser?.currentView?.name ?? appName,
-                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                                style: TextStyle(fontSize: 22),
                               );
                             },
                           ),

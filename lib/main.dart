@@ -957,7 +957,7 @@ class ErrorScreen extends StatelessWidget {
               Text.rich(
                 TextSpan(
                   text: AppLocalizations.of(context)!.startupErrorTitle,
-                  style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500),
                   children: [
                     TextSpan(
                       text: "\n\n${error.toString()}",
@@ -1007,7 +1007,7 @@ class ErrorScreen extends StatelessWidget {
                       ),
                     TextSpan(
                       text: "\n\n${AppLocalizations.of(context)!.startupErrorCallToAction}",
-                      style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500),
                     ),
                     TextSpan(
                       text: "\n\n${AppLocalizations.of(context)!.startupErrorWorkaround}",

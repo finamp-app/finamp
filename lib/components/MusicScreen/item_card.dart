@@ -113,7 +113,7 @@ class _ItemCollectionCardText extends ConsumerWidget {
               item.name ?? "Unknown Name",
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500),
               textAlign: onImage ? TextAlign.center : TextAlign.left,
             ),
             if (subtitle != null)
@@ -186,7 +186,7 @@ class HomeScreenQueueTile extends ConsumerWidget {
               children: [
                 Text(
                   source.name.getLocalized(context),
-                  style: TextTheme.of(context).bodySmall!.copyWith(fontSize: 12, fontWeight: FontWeight.w600),
+                  style: TextTheme.of(context).bodySmall!.copyWith(fontSize: 12, fontWeight: FontWeight.w500),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

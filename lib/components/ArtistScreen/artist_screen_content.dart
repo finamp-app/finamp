@@ -4,14 +4,14 @@ import 'package:finamp/components/AlbumScreen/download_button.dart';
 import 'package:finamp/components/ArtistScreen/artist_screen_content_flexible_space_bar.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/curated_item_filter_row.dart';
+import 'package:finamp/components/curated_item_sections.dart';
 import 'package:finamp/components/favorite_button.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/artist_content_provider.dart';
-import 'package:finamp/components/curated_item_sections.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -284,7 +284,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                   child: Center(
                     child: Text(
                       AppLocalizations.of(context)!.emptyFilteredListTitle,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
