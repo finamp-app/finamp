@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +25,33 @@ class HomeScreenQuickActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accentColor = disabled ? ColorScheme.of(context).primary.withOpacity(0.5) : ColorScheme.of(context).primary;
+
+    final buttonChildren = [
+      Icon(icon, size: 24, color: accentColor, weight: 1.0),
+      Text(
+        text,
+        style: TextStyle(
+          color:
+              (Theme.brightnessOf(context) == Brightness.light
+                      ? Color.alphaBlend(accentColor.withOpacity(0.33), Colors.black)
+                      : Colors.white)
+                  .withOpacity(disabled ? 0.5 : 1.0),
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+        ),
+        textAlign: vertical ? TextAlign.center : TextAlign.start,
+      ),
+    ];
+
+    final buttonContent = vertical
+        ? Column(mainAxisAlignment: MainAxisAlignment.center, spacing: isDesktop ? 4.0 : 6.0, children: buttonChildren)
+        : Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            alignment: WrapAlignment.center,
+            spacing: isDesktop ? 4.0 : 6.0,
+            children: buttonChildren,
+          );
+
     return Semantics(
       label: text,
       tooltip: label,
@@ -57,28 +82,7 @@ class HomeScreenQuickActionButton extends StatelessWidget {
                   : Color.alphaBlend(accentColor.withOpacity(0.2), Colors.white).withOpacity(disabled ? 0.5 : 1.0),
             ),
           ),
-          child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            direction: vertical ? Axis.vertical : Axis.horizontal,
-            alignment: WrapAlignment.center,
-            spacing: isDesktop ? 4.0 : 6.0,
-            children: [
-              Icon(icon, size: 24, color: accentColor, weight: 1.0),
-              Text(
-                text,
-                style: TextStyle(
-                  color:
-                      (Theme.brightnessOf(context) == Brightness.light
-                              ? Color.alphaBlend(accentColor.withOpacity(0.33), Colors.black)
-                              : Colors.white)
-                          .withOpacity(disabled ? 0.5 : 1.0),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: vertical ? TextAlign.center : TextAlign.start,
-              ),
-            ],
-          ),
+          child: buttonContent,
         ),
       ),
     );

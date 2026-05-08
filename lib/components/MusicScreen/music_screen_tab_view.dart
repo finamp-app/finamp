@@ -254,6 +254,8 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         ref.watch(finampSettingsProvider.contentViewType) == ContentViewType.list ||
             widget.tabContentType == TabContentType.tracks
         ? SafeArea(
+            top: false,
+            bottom: false,
             child: PagedListView<int, BaseItemDto>.separated(
               state: ref.watch(pageControl),
               fetchNextPage: () {
@@ -315,7 +317,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                 firstPageProgressIndicatorBuilder: (_) => const FirstPageProgressIndicator(),
                 newPageProgressIndicatorBuilder: (_) => const NewPageProgressIndicator(),
                 noItemsFoundIndicatorBuilder: (_) => emptyListIndicator,
-                //noMoreItemsIndicatorBuilder: (_) => SizedBox(height: MediaQuery.paddingOf(context).bottom),
+                noMoreItemsIndicatorBuilder: (_) => SizedBox(height: TrackListItemTile.defaultTileHeight / 2),
                 invisibleItemsThreshold: 70,
               ),
               separatorBuilder: (context, index) => const SizedBox.shrink(),
@@ -362,7 +364,9 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
               firstPageProgressIndicatorBuilder: (_) => const FirstPageProgressIndicator(),
               newPageProgressIndicatorBuilder: (_) => const NewPageProgressIndicator(),
               noItemsFoundIndicatorBuilder: (_) => emptyListIndicator,
-              noMoreItemsIndicatorBuilder: (_) => SizedBox(height: MediaQuery.paddingOf(context).bottom),
+              noMoreItemsIndicatorBuilder: (_) => SizedBox(
+                height: MediaQuery.paddingOf(context).bottom + ref.watch(finampSettingsProvider.gridImageSize) / 2,
+              ),
               invisibleItemsThreshold: 70,
             ),
             gridDelegate: MusicScreenGridLayout(ref: ref, contentType: widget.tabContentType),

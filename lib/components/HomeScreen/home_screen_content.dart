@@ -62,122 +62,128 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
   @override
   Widget build(BuildContext context) {
     widget.refresh?.callback = _refresh;
-    return SafeArea(
-      bottom: false,
-      child: RefreshIndicator(
-        onRefresh: () async => _refresh(),
-        child: CustomScrollView(
-          slivers: [
-            if (ref.watch(finampSettingsProvider.homeScreenConfiguration).actions.isNotEmpty)
-              SliverPadding(padding: const EdgeInsets.only(top: 16.0)),
-            SliverLayoutBuilder(
-              builder: (context, constraints) {
-                final double maxWidth = isDesktop ? 800.0 : 600.0;
-                // center action buttons
-                final horizontalPadding = max(0, (constraints.crossAxisExtent - maxWidth) / 2) + 8.0;
-                final configuredQuickActions = ref.watch(finampSettingsProvider.homeScreenConfiguration).actions;
-                return SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                  sliver: SliverToBoxAdapter(
-                    child: Wrap(
-                      spacing: isDesktop ? 4.0 : 0,
-                      runSpacing: 8,
-                      direction: Axis.horizontal,
-                      alignment: WrapAlignment.spaceBetween,
-                      runAlignment: WrapAlignment.center,
-                      children: configuredQuickActions.indexed.map((indexedAction) {
-                        final (index, action) = indexedAction;
-                        //!!! custom adaptive grid
-                        // calculate button width based on available space and number of actions per row
-                        final double quickActionsWidth = min(constraints.crossAxisExtent - horizontalPadding, maxWidth);
-                        double verticalButtonWidth = (quickActionsWidth / 3) - 2 * (5.0);
-                        double horizontalButtonWidth = (quickActionsWidth / 2) - 1 * (8.0);
-                        double singleButtonWidth = quickActionsWidth;
-                        double buttonWidth;
-                        // always fill each row completely
-                        if (configuredQuickActions.length == 1) {
-                          buttonWidth = singleButtonWidth;
-                        } else if (configuredQuickActions.length % 3 == 0) {
-                          buttonWidth = verticalButtonWidth;
-                        } else if (configuredQuickActions.length == 4) {
-                          buttonWidth = horizontalButtonWidth;
-                        } else if ((configuredQuickActions.length % 3 == 1 &&
-                                configuredQuickActions.length - index <= 4) ||
-                            (configuredQuickActions.length % 3 == 2 && configuredQuickActions.length - index < 3)) {
-                          buttonWidth = horizontalButtonWidth;
-                        } else {
-                          buttonWidth = verticalButtonWidth;
-                        }
-                        return HomeScreenQuickActionButton(
-                          width: buttonWidth,
-                          text: action.toLocalisedString(context),
-                          label: action.getDescription(context),
-                          icon: action.getIcon(),
-                          vertical: buttonWidth == verticalButtonWidth,
-                          onPressed: () async => QuickActionsService.handleAction(action, context),
-                        );
-                      }).toList(),
-                    ),
+    return RefreshIndicator(
+      onRefresh: () async => _refresh(),
+      child: CustomScrollView(
+        slivers: [
+          if (ref.watch(finampSettingsProvider.homeScreenConfiguration).actions.isNotEmpty)
+            SliverPadding(padding: const EdgeInsets.only(top: 16.0)),
+          SliverLayoutBuilder(
+            builder: (context, constraints) {
+              final double maxWidth = isDesktop ? 800.0 : 600.0;
+              final viewPadding = MediaQuery.paddingOf(context);
+              final usableWidth = constraints.crossAxisExtent - viewPadding.left - viewPadding.right;
+              // center action buttons
+              // Mandatory padding should be enough to clear scrollbar
+              final horizontalPadding = max(0, (usableWidth - maxWidth) / 2) + 14.0;
+              final configuredQuickActions = ref.watch(finampSettingsProvider.homeScreenConfiguration).actions;
+              return SliverPadding(
+                padding: EdgeInsets.only(
+                  left: horizontalPadding + viewPadding.left,
+                  right: horizontalPadding + viewPadding.right,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: Wrap(
+                    spacing: isDesktop ? 4.0 : 0,
+                    runSpacing: 8,
+                    direction: Axis.horizontal,
+                    alignment: WrapAlignment.spaceBetween,
+                    runAlignment: WrapAlignment.center,
+                    children: configuredQuickActions.indexed.map((indexedAction) {
+                      final (index, action) = indexedAction;
+                      //!!! custom adaptive grid
+                      // calculate button width based on available space and number of actions per row
+                      final double quickActionsWidth = min(
+                        usableWidth - horizontalPadding - horizontalPadding,
+                        maxWidth,
+                      );
+                      double verticalButtonWidth = (quickActionsWidth / 3) - 2 * (5.0);
+                      double horizontalButtonWidth = (quickActionsWidth / 2) - 1 * (8.0);
+                      double singleButtonWidth = quickActionsWidth;
+                      double buttonWidth;
+                      // always fill each row completely
+                      if (configuredQuickActions.length == 1) {
+                        buttonWidth = singleButtonWidth;
+                      } else if (configuredQuickActions.length % 3 == 0) {
+                        buttonWidth = verticalButtonWidth;
+                      } else if (configuredQuickActions.length == 4) {
+                        buttonWidth = horizontalButtonWidth;
+                      } else if ((configuredQuickActions.length % 3 == 1 &&
+                              configuredQuickActions.length - index <= 4) ||
+                          (configuredQuickActions.length % 3 == 2 && configuredQuickActions.length - index < 3)) {
+                        buttonWidth = horizontalButtonWidth;
+                      } else {
+                        buttonWidth = verticalButtonWidth;
+                      }
+                      return HomeScreenQuickActionButton(
+                        width: buttonWidth,
+                        text: action.toLocalisedString(context),
+                        label: action.getDescription(context),
+                        icon: action.getIcon(),
+                        vertical: buttonWidth == verticalButtonWidth,
+                        onPressed: () async => QuickActionsService.handleAction(action, context),
+                      );
+                    }).toList(),
                   ),
-                );
-              },
+                ),
+              );
+            },
+          ),
+          const SliverPadding(padding: EdgeInsets.only(top: 8)),
+          SliverMainAxisGroup(
+            slivers: ref
+                .watch(finampSettingsProvider.homeScreenConfiguration)
+                .sections
+                .map((sectionInfo) => HomeScreenSection(sectionInfo: sectionInfo))
+                .toList(),
+          ),
+          const SliverPadding(padding: EdgeInsets.only(top: 60)),
+          ...[
+            SliverToBoxAdapter(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 200),
+                  child: BalancedText(
+                    "Looking for something else?",
+                    textAlign: TextAlign.center,
+                    style: TextTheme.of(context).bodySmall,
+                  ),
+                ),
+              ),
             ),
-            const SliverPadding(padding: EdgeInsets.only(top: 8)),
-            SliverMainAxisGroup(
-              slivers: ref
-                  .watch(finampSettingsProvider.homeScreenConfiguration)
-                  .sections
-                  .map((sectionInfo) => HomeScreenSection(sectionInfo: sectionInfo))
-                  .toList(),
+            const SliverPadding(padding: EdgeInsets.only(top: 12)),
+            SliverToBoxAdapter(
+              child: Center(
+                child: CTASmall(
+                  text: "Customize home screen",
+                  icon: TablerIcons.settings,
+                  onPressed: () => Navigator.pushNamed(context, HomeScreenSettingsScreen.routeName),
+                ),
+              ),
             ),
-            const SliverPadding(padding: EdgeInsets.only(top: 60)),
-            ...[
-              SliverToBoxAdapter(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 200),
-                    child: BalancedText(
-                      "Looking for something else?",
-                      textAlign: TextAlign.center,
-                      style: TextTheme.of(context).bodySmall,
-                    ),
-                  ),
-                ),
-              ),
-              const SliverPadding(padding: EdgeInsets.only(top: 12)),
-              SliverToBoxAdapter(
-                child: Center(
-                  child: CTASmall(
-                    text: "Customize home screen",
-                    icon: TablerIcons.settings,
-                    onPressed: () => Navigator.pushNamed(context, HomeScreenSettingsScreen.routeName),
-                  ),
-                ),
-              ),
-            ],
-            const SliverPadding(padding: EdgeInsets.only(top: 60)),
-            ...[
-              // monochrome icon
-              SliverToBoxAdapter(
-                child: FinampIcon(56, 56, overrideColor: TextTheme.of(context).bodySmall?.color?.withOpacity(0.4)),
-              ),
-              const SliverPadding(padding: EdgeInsets.only(top: 16)),
-              SliverToBoxAdapter(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 200),
-                    child: BalancedText(
-                      "Built with ♥ by the Finamp contributors.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, color: TextTheme.of(context).bodySmall?.color?.withOpacity(0.6)),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-            SliverPadding(padding: const EdgeInsets.only(bottom: 120.0)),
           ],
-        ),
+          const SliverPadding(padding: EdgeInsets.only(top: 60)),
+          ...[
+            // monochrome icon
+            SliverToBoxAdapter(
+              child: FinampIcon(56, 56, overrideColor: TextTheme.of(context).bodySmall?.color?.withOpacity(0.4)),
+            ),
+            const SliverPadding(padding: EdgeInsets.only(top: 16)),
+            SliverToBoxAdapter(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 200),
+                  child: BalancedText(
+                    "Built with ♥ by the Finamp contributors.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: TextTheme.of(context).bodySmall?.color?.withOpacity(0.6)),
+                  ),
+                ),
+              ),
+            ),
+          ],
+          SliverSafeArea(top: false, sliver: SliverPadding(padding: const EdgeInsets.only(bottom: 50.0))),
+        ],
       ),
     );
   }
@@ -198,6 +204,7 @@ class HomeScreenSection extends ConsumerWidget {
         sectionInfo.type !=
         HomeScreenSectionType
             .collection; //TODO implement once collection downloads or generic item sections are supported
+    final viewPadding = MediaQuery.paddingOf(context);
     return SliverPadding(
       padding: const EdgeInsets.only(bottom: 8.0),
       sliver: FinampSectionHeader(
@@ -205,7 +212,7 @@ class HomeScreenSection extends ConsumerWidget {
         title: sectionInfo.itemId != null
             ? ref.watch(itemByIdProvider(sectionInfo.itemId!)).valueOrNull?.name ?? sectionInfo.getTitle(context)
             : sectionInfo.getTitle(context),
-        headerPadding: const EdgeInsets.only(left: 14.0, right: 8.0),
+        headerPadding: EdgeInsets.only(left: viewPadding.left + 14.0, right: viewPadding.right + 20.0),
         contentPadding: EdgeInsets.zero,
         actions: (isOffline && !isDownloaded)
             ? []

@@ -40,9 +40,11 @@ class _HomeScreenSettingsScreenState extends State<HomeScreenSettingsScreen> {
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetHomeScreenSettings),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: 200.0),
-        children: [const QuickActionsSelector(), const HomeScreenSectionsSelector()],
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: 150.0),
+          children: [const QuickActionsSelector(), const HomeScreenSectionsSelector()],
+        ),
       ),
     );
   }
@@ -68,13 +70,17 @@ class QuickActionsSelector extends ConsumerWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             buildDefaultDragHandles: false,
+            proxyDecorator: (child, _, _) => Material(type: MaterialType.transparency, child: child),
             itemBuilder: (context, index) {
               final action = quickActions[index];
               return Padding(
                 key: ValueKey("quick-action-$action-$index"),
                 padding: const EdgeInsets.only(bottom: 8.0, left: 12.0, right: 12.0),
                 child: ListTile(
-                  tileColor: ColorScheme.of(context).primary.withOpacity(0.05),
+                  tileColor: Color.alphaBlend(
+                    ColorScheme.of(context).primary.withOpacity(0.05),
+                    ColorScheme.of(context).surface,
+                  ),
                   title: Padding(
                     padding: const EdgeInsets.only(left: 4.0),
                     child: Text(action.toLocalisedString(context)),
@@ -252,6 +258,7 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
             buildDefaultDragHandles: false,
             itemCount: sections.length,
             onReorderStart: (_) => FeedbackHelper.feedback(FeedbackType.light),
+            proxyDecorator: (child, _, _) => Material(type: MaterialType.transparency, child: child),
             onReorder: (originalIndex, newIndex) {
               if (originalIndex < newIndex) newIndex -= 1;
               final section = sections[originalIndex];
@@ -269,7 +276,10 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
                 key: ValueKey("section-$section-$index"),
                 padding: const EdgeInsets.only(bottom: 8.0, left: 12.0, right: 12.0),
                 child: ListTile(
-                  tileColor: ColorScheme.of(context).primary.withOpacity(0.05),
+                  tileColor: Color.alphaBlend(
+                    ColorScheme.of(context).primary.withOpacity(0.05),
+                    ColorScheme.of(context).surface,
+                  ),
                   title: Padding(
                     padding: const EdgeInsets.only(left: 4.0),
                     child: section.itemId != null

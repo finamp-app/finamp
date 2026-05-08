@@ -180,6 +180,8 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                               return Text(
                                 title ?? finampUserHelper.currentUser?.currentView?.name ?? appName,
                                 style: TextStyle(fontSize: 22),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               );
                             },
                           ),

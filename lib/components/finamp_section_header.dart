@@ -70,8 +70,14 @@ class FinampSectionHeader extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(title, style: TextTheme.of(context).titleMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  Spacer(),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: TextTheme.of(context).titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                   ...actions,
                 ],
               ),

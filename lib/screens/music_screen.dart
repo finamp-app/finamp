@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:finamp/components/HomeScreen/finamp_music_screen_header.dart';
 import 'package:finamp/components/HomeScreen/home_screen_content.dart';
 import 'package:finamp/components/MusicScreen/artist_type_selection_row.dart';
@@ -91,9 +92,10 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
       length: tabs.length,
       vsync: this,
       initialIndex: tabs.toList().indexOf(
-        widget.initialTab ??
-            ModalRoute.of(context)!.settings.arguments as TabContentType? ??
-            FinampSettingsHelper.finampSettings.tabOrder.where((e) => tabs.contains(e)).first,
+        widget.tabTypeFilter ??
+            widget.initialTab ??
+            FinampSettingsHelper.finampSettings.tabOrder.firstWhereOrNull((e) => tabs.contains(e)) ??
+            TabContentType.home,
       ),
     );
 
@@ -289,22 +291,25 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                       refreshTab: refreshTab,
                     ),
                     Expanded(
-                      child: ValueListenableBuilder(
-                        valueListenable: sortAndFilterControllerMap[contentTabType]!,
-                        builder: (context, value, child) {
-                          return MusicScreenTabView(
-                            tabContentType: contentTabType,
-                            view: _finampUserHelper.currentUser?.currentView,
-                            refresh: refreshMap[tabType],
-                            tabBarFiltered: (widget.tabTypeFilter != null),
-                            sortAndFilterConfiguration: value.resolve(
-                              isOffline: ref.watch(finampSettingsProvider.isOffline),
-                              inPlaylist: false,
-                              searchQuery: searchQuery,
-                              genreFilter: genreFilter,
-                            ),
-                          );
-                        },
+                      // Prevent track highlight background from showing on header
+                      child: Material(
+                        child: ValueListenableBuilder(
+                          valueListenable: sortAndFilterControllerMap[contentTabType]!,
+                          builder: (context, value, child) {
+                            return MusicScreenTabView(
+                              tabContentType: contentTabType,
+                              view: _finampUserHelper.currentUser?.currentView,
+                              refresh: refreshMap[tabType],
+                              tabBarFiltered: (widget.tabTypeFilter != null),
+                              sortAndFilterConfiguration: value.resolve(
+                                isOffline: ref.watch(finampSettingsProvider.isOffline),
+                                inPlaylist: false,
+                                searchQuery: searchQuery,
+                                genreFilter: genreFilter,
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ],
