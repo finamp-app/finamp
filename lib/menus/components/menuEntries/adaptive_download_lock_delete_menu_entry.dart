@@ -19,6 +19,10 @@ class AdaptiveDownloadLockDeleteMenuEntry extends ConsumerWidget implements Hide
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (ref.watch(finampSettingsProvider.enableChildMode)) {
+      return const SizedBox.shrink();
+    }
+
     final downloadsService = GetIt.instance<DownloadsService>();
 
     final DownloadStub downloadStub = _getStub();
@@ -49,6 +53,9 @@ class AdaptiveDownloadLockDeleteMenuEntry extends ConsumerWidget implements Hide
 
   @override
   bool get isVisible {
+    if (FinampSettingsHelper.finampSettings.enableChildMode) {
+      return false;
+    }
     final DownloadItemStatus downloadStatus = GetIt.instance<DownloadsService>().getStatus(_getStub(), null);
 
     return downloadStatus.isRequired || !FinampSettingsHelper.finampSettings.isOffline;
