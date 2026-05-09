@@ -3308,5 +3308,42 @@
   "androidGainDisabled": "Switching to gain effect fallback due to initialization error.",
   "@androidGainDisabled": {
     "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+  },
+  "androidAutoSettings": "Android Auto",
+  "@androidAutoSettings": {
+    "description": "Title for the Android Auto settings screen."
+  },
+  "androidAutoBrowsingModeLabel": "Albums & Artists Browsing",
+  "@androidAutoBrowsingModeLabel": {
+    "description": "Label for the Android Auto browsing mode dropdown setting."
+  },
+  "androidAutoBrowsingModeSubtitle": "Choose how to browse Albums and Artists in Android Auto",
+  "@androidAutoBrowsingModeSubtitle": {
+    "description": "Subtitle/description for the Android Auto browsing mode dropdown setting."
+  },
+  "androidAutoBrowsingModeFlat": "Flat list (paginated)",
+  "@androidAutoBrowsingModeFlat": {
+    "description": "Option label for the flat/paginated browsing mode in Android Auto."
+  },
+  "androidAutoBrowsingModeLetterFirst": "Letter-first (A-Z)",
+  "@androidAutoBrowsingModeLetterFirst": {
+    "description": "Option label for the letter-first (A-Z index) browsing mode in Android Auto."
+  },
+  "androidAutoBrowseByLetter": "Browse by Letter",
+  "@androidAutoBrowseByLetter": {
+    "description": "Label for the 'Browse by Letter' navigation node in Android Auto."
+  },
+  "androidAutoNotAvailableOffline": "Not available offline",
+  "@androidAutoNotAvailableOffline": {
+    "description": "Placeholder shown in Android Auto when a feature is not available in offline mode."
+  },
+  "androidAutoMoreItems": "{remaining} more items",
+  "@androidAutoMoreItems": {
+    "description": "Label for the 'More...' pagination node in Android Auto browse lists.",
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
   }
 }

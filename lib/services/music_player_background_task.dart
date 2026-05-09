@@ -972,12 +972,15 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   /// Returns the top-level browsable categories for use in a media browser.
   List<MediaItem> _getRootMenu() {
     // Choose browsing mode hints based on user settings.
-    // - flat: Grid for browsable items (traditional flat list with "Browse by Letter" node)
-    // - letterFirst: List for browsable items (letter nodes render as a list)
+    // - flat: respect the app-wide list/grid setting for albums; category for artists
+    // - letterFirst: list for both (letter nodes render as a list)
     final isLetterFirst = FinampSettingsHelper.finampSettings.androidAutoBrowsingMode ==
         AndroidAutoBrowsingMode.letterFirst;
-    final albumsBrowsableHint = isLetterFirst ? 1 : 2; // 1=list, 2=grid
-    final artistsBrowsableHint = isLetterFirst ? 1 : 4; // 1=list, 4=category
+    final isGridView = FinampSettingsHelper.finampSettings.contentViewType == ContentViewType.grid;
+
+    // 1=list, 2=grid, 4=category
+    final albumsBrowsableHint = isLetterFirst ? 1 : (isGridView ? 2 : 1);
+    final artistsBrowsableHint = isLetterFirst ? 1 : 4; // artists always category in flat mode
 
     return [
       MediaItem(

@@ -1591,44 +1591,6 @@ class FinampStorableQueueInfoAdapter
           typeId == other.typeId;
 }
 
-class AndroidAutoBrowsingModeAdapter
-    extends TypeAdapter<AndroidAutoBrowsingMode> {
-  @override
-  final typeId = 79;
-
-  @override
-  AndroidAutoBrowsingMode read(BinaryReader reader) {
-    switch (reader.readByte()) {
-      case 0:
-        return AndroidAutoBrowsingMode.flat;
-      case 1:
-        return AndroidAutoBrowsingMode.letterFirst;
-      default:
-        return AndroidAutoBrowsingMode.flat;
-    }
-  }
-
-  @override
-  void write(BinaryWriter writer, AndroidAutoBrowsingMode obj) {
-    switch (obj) {
-      case AndroidAutoBrowsingMode.flat:
-        writer.writeByte(0);
-      case AndroidAutoBrowsingMode.letterFirst:
-        writer.writeByte(1);
-    }
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is AndroidAutoBrowsingModeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
 class TabContentTypeAdapter extends TypeAdapter<TabContentType> {
   @override
   final typeId = 36;
@@ -3252,6 +3214,44 @@ class PreviousTracksPersistenceModeAdapter
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is PreviousTracksPersistenceModeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class AndroidAutoBrowsingModeAdapter
+    extends TypeAdapter<AndroidAutoBrowsingMode> {
+  @override
+  final typeId = 79;
+
+  @override
+  AndroidAutoBrowsingMode read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return AndroidAutoBrowsingMode.flat;
+      case 1:
+        return AndroidAutoBrowsingMode.letterFirst;
+      default:
+        return AndroidAutoBrowsingMode.flat;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, AndroidAutoBrowsingMode obj) {
+    switch (obj) {
+      case AndroidAutoBrowsingMode.flat:
+        writer.writeByte(0);
+      case AndroidAutoBrowsingMode.letterFirst:
+        writer.writeByte(1);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AndroidAutoBrowsingModeAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
