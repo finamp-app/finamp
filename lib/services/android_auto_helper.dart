@@ -53,7 +53,16 @@ class AndroidAutoHelper {
     return await _jellyfinApiHelper.getItemById(parentId);
   }
 
-  /// Letters used for the "Browse by Letter" nodes. Empty string = '#' bucket.
+  /// Android Auto content style hint values.
+  /// See https://developer.android.com/training/cars/media#default-content-style
+  static const int _contentStyleList = 1;
+  static const int _contentStyleGrid = 2;
+  static const int _contentStyleCategory = 4;
+
+  /// Sentinel nameFilter value used to identify the "Browse by Letter" index node.
+  static const String _letterRootNameFilter = 'letter_root';
+
+  /// Letters used for the "Browse by Letter" nodes.
   static const List<String> _alphabet = [
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '#',
@@ -62,20 +71,19 @@ class AndroidAutoHelper {
   /// Returns the letter nodes A–Z plus a '#' bucket for the Browse-by-Letter view.
   List<MediaItem> _getLetterNodes(MediaItemId itemId) {
     return _alphabet.map((letter) {
-      final nameFilter = letter == '#' ? '#' : letter;
       return MediaItem(
         id: MediaItemId(
           contentType: itemId.contentType,
           parentType: MediaItemParentType.rootCollection,
-          nameFilter: nameFilter,
+          nameFilter: letter,
           pageStartIndex: 0,
         ).toString(),
         title: letter,
         playable: false,
         extras: const {
           // Items filtered by letter should render as a list (no grid).
-          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": 1,
-          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 1,
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": _contentStyleList,
+          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": _contentStyleList,
         },
       );
     }).toList();
@@ -114,15 +122,14 @@ class AndroidAutoHelper {
         : _finampUserHelper.currentUser?.currentView;
 
     // Jellyfin's NameStartsWith doesn't support '#'; for that bucket we fetch
-    // the full first page without a name filter and discard alphabetic starters.
-    // For '#' we fall back to client-side filtering of the first _pageSize items.
+    // a large page without a name filter and discard alphabetic starters client-side.
     if (nameFilter == '#') {
       final result = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
         parentItem: parentItem,
         sortBy: sortBy.jellyfinName(itemId.contentType),
         sortOrder: sortOrder.toString(),
         includeItemTypes: itemId.contentType.itemType.jellyfinName,
-        startIndex: 0,
+        startIndex: pageStart,
         limit: 500,
       );
       final all = (result.items ?? [])
@@ -131,7 +138,7 @@ class AndroidAutoHelper {
             return !RegExp(r'[A-Za-z]').hasMatch(fc);
           })
           .toList();
-      final page = all.skip(pageStart).take(_pageSize).toList();
+      final page = all.take(_pageSize).toList();
       return (page, all.length);
     }
 
@@ -158,7 +165,9 @@ class AndroidAutoHelper {
       return [
         MediaItem(
           id: 'recently_played_offline',
-          title: 'Not available offline',
+          title: AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)
+                  ?.androidAutoNotAvailableOffline ??
+              'Not available offline',
           playable: false,
         ),
       ];
@@ -175,7 +184,7 @@ class AndroidAutoHelper {
         sortBy: 'DatePlayed',
         sortOrder: 'Descending',
         filters: 'IsPlayed',
-        limit: 100,
+        limit: 300,
       );
 
       // Step 2: extract ordered, deduplicated album IDs from the track results.
@@ -760,7 +769,7 @@ class AndroidAutoHelper {
       final nameFilter = itemId.nameFilter;
 
       // --- Browse-by-Letter index: return A–Z + # nodes ---
-      if (nameFilter == '') {
+      if (nameFilter == _letterRootNameFilter) {
         return _getLetterNodes(itemId);
       }
 
@@ -770,11 +779,17 @@ class AndroidAutoHelper {
         final pageStart = itemId.pageStartIndex ?? 0;
 
         for (final item in items) {
+          // When browsing artists by letter, mark them as non-playable so
+          // Android Auto calls getChildren (showing their albums) rather than
+          // starting an instant mix.
+          final isPlayableOverride = itemId.contentType == TabContentType.artists
+              ? ({BaseItemDto? item, TabContentType? contentType}) => false
+              : _isPlayable;
           final mediaItem = await queueService.generateMediaItem(
             item,
             parentType: MediaItemParentType.collection,
             parentId: item.parentId,
-            isPlayable: _isPlayable,
+            isPlayable: isPlayableOverride,
           );
           mediaItems.add(mediaItem);
         }
@@ -789,7 +804,9 @@ class AndroidAutoHelper {
               nameFilter: nameFilter,
               pageStartIndex: nextStart,
             ).toString(),
-            title: "More... ($remaining remaining)",
+            title: AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)
+                    ?.androidAutoMoreItems(remaining) ??
+                "$remaining more items",
             playable: false,
           ));
         }
@@ -810,10 +827,11 @@ class AndroidAutoHelper {
         );
       }
 
-      // For Albums and Artists, check the browsing mode setting.
-      // If letterFirst, return immediately; otherwise fall through to flat list.
+      // Albums, Artists, and Tracks support letter browsing.
+      // If letterFirst, return the A–Z index immediately; otherwise fall through to flat list.
       final supportsLetterBrowse = itemId.contentType == TabContentType.albums ||
-          itemId.contentType == TabContentType.artists;
+          itemId.contentType == TabContentType.artists ||
+          itemId.contentType == TabContentType.tracks;
       final isLetterFirst = FinampSettingsHelper.finampSettings.androidAutoBrowsingMode ==
           AndroidAutoBrowsingMode.letterFirst;
       if (supportsLetterBrowse && isLetterFirst) {
@@ -827,9 +845,11 @@ class AndroidAutoHelper {
           id: MediaItemId(
             contentType: itemId.contentType,
             parentType: MediaItemParentType.rootCollection,
-            nameFilter: '',
+            nameFilter: _letterRootNameFilter,
           ).toString(),
-          title: 'Browse by Letter',
+          title: AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)
+                  ?.androidAutoBrowseByLetter ??
+              'Browse by Letter',
           playable: false,
         ));
       }
@@ -846,18 +866,24 @@ class AndroidAutoHelper {
         mediaItems.add(mediaItem);
       }
 
+      // Guard against Jellyfin returning a slightly inflated totalRecordCount
+      // (observed with playlists), which would produce a negative remaining count.
       if (pageStart + items.length < totalCount) {
         final nextStart = pageStart + _pageSize;
         final remaining = totalCount - nextStart;
-        mediaItems.add(MediaItem(
-          id: MediaItemId(
-            contentType: itemId.contentType,
-            parentType: MediaItemParentType.rootCollection,
-            pageStartIndex: nextStart,
-          ).toString(),
-          title: "More... ($remaining remaining)",
-          playable: false,
-        ));
+        if (remaining > 0) {
+          mediaItems.add(MediaItem(
+            id: MediaItemId(
+              contentType: itemId.contentType,
+              parentType: MediaItemParentType.rootCollection,
+              pageStartIndex: nextStart,
+            ).toString(),
+            title: AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)
+                    ?.androidAutoMoreItems(remaining) ??
+                "$remaining more items",
+            playable: false,
+          ));
+        }
       }
 
       return mediaItems;

@@ -254,14 +254,6 @@ class DefaultSettings {
   static const androidAutoBrowsingMode = AndroidAutoBrowsingMode.flat;
 }
 
-@HiveType(typeId: 79)
-enum AndroidAutoBrowsingMode {
-  @HiveField(0)
-  flat,
-  @HiveField(1)
-  letterFirst,
-}
-
 @HiveType(typeId: 28)
 class FinampSettings {
   FinampSettings({
@@ -4043,4 +4035,12 @@ enum PreviousTracksPersistenceMode {
   /// Override state to be expanded on open
   @HiveField(2)
   initiallyExpanded,
+}
+
+@HiveType(typeId: 79)
+enum AndroidAutoBrowsingMode {
+  @HiveField(0)
+  flat,
+  @HiveField(1)
+  letterFirst,
 }
