@@ -209,11 +209,9 @@ Future<void> showSortAndFilterMenu(
   return await showThemedBottomSheet<void>(
     context: context,
     routeName: SortAndFilterMenu.routeName,
-    minDraggableHeight: 0.85,
-    buildWrapper: (context, dragController, childBuilder) {
+    buildWrapper: (_, _, childBuilder) {
       return SortAndFilterMenu(
         childBuilder: childBuilder,
-        dragController: dragController,
         tabType: tabType,
         forPlaylistTracks: forPlaylistTracks,
         controller: controller,
@@ -232,14 +230,12 @@ class SortAndFilterMenu extends ConsumerStatefulWidget {
   const SortAndFilterMenu({
     super.key,
     required this.childBuilder,
-    required this.dragController,
     required this.tabType,
     required this.forPlaylistTracks,
     required this.controller,
   });
 
   final ScrollBuilder childBuilder;
-  final DraggableScrollableController dragController;
 
   final TabContentType tabType;
   final bool forPlaylistTracks;
@@ -250,18 +246,11 @@ class SortAndFilterMenu extends ConsumerStatefulWidget {
 }
 
 class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with TickerProviderStateMixin {
-  double initialSheetExtent = 0.0;
-  double inputStep = 0.9;
-  double oldExtent = 0.0;
-
   late SortAndFilterConfiguration currentConfig;
 
   @override
   void initState() {
     super.initState();
-
-    initialSheetExtent = 0.85;
-    oldExtent = initialSheetExtent;
 
     // TODO actually explain what the real current selection is and why we're not using it somewhere?
     currentConfig = widget.controller.configuration.resolve(
@@ -270,26 +259,11 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
     );
   }
 
-  void scrollToExtent(DraggableScrollableController scrollController, double? percentage) {
-    var currentSize = scrollController.size;
-    if ((percentage != null && currentSize < percentage) || scrollController.size == inputStep) {
-      if (MediaQuery.disableAnimationsOf(context)) {
-        scrollController.jumpTo(percentage ?? oldExtent);
-      } else {
-        scrollController.animateTo(
-          percentage ?? oldExtent,
-          duration: sortAndFilterMenuDefaultAnimationDuration,
-          curve: sortAndFilterMenuDefaultInCurve,
-        );
-      }
-    }
-    oldExtent = currentSize;
-  }
-
   @override
   Widget build(BuildContext context) {
     final menuEntries = _getMenuEntries(context);
-    final stackHeight = 40.0;
+    // Actual height was 490, bump to 520 for extra bottom padding and wiggle room on element sizes
+    final stackHeight = 520.0;
 
     return widget.childBuilder(stackHeight, menu(context, menuEntries));
   }
@@ -457,7 +431,6 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
           Navigator.of(context).pop();
         },
       ),
-      SizedBox(height: 200.0),
     ];
   }
 

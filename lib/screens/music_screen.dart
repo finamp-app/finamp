@@ -11,7 +11,6 @@ import 'package:finamp/components/now_playing_bar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/music_screen_drawer.dart';
 import 'package:finamp/models/finamp_models.dart';
-import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/audio_service_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -23,18 +22,12 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 
+import '../models/jellyfin_models.dart';
+
 final _musicScreenLogger = Logger("MusicScreen");
 
 class MusicScreen extends ConsumerStatefulWidget {
-  const MusicScreen({
-    super.key,
-    this.showHeader = true,
-    this.genreFilter,
-    this.tabTypeFilter,
-    this.homeScreenSectionConfiguration,
-    this.sortAndFilterConfigurationOverrideInit,
-    this.initialTab,
-  });
+  const MusicScreen({super.key, this.singleTabConfig, this.initialTab});
 
   /// The initial tab type to show. Can also be provided as an argument in a named route
   final TabContentType? initialTab;
@@ -42,11 +35,13 @@ class MusicScreen extends ConsumerStatefulWidget {
   static const routeName = "/music";
 
   // Optional parameters for genre and tab filtering
-  final bool showHeader;
-  final BaseItemDto? genreFilter;
-  final TabContentType? tabTypeFilter;
-  final HomeScreenSectionConfiguration? homeScreenSectionConfiguration;
-  final SortAndFilterConfiguration? sortAndFilterConfigurationOverrideInit;
+  final HomeScreenSectionConfiguration? singleTabConfig;
+
+  BaseItemDto? get genreFilter => singleTabConfig?.sortAndFilterConfiguration.filters
+      .firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter)
+      ?.extraBaseItem;
+
+  bool get showHeader => singleTabConfig == null;
 
   @override
   ConsumerState<MusicScreen> createState() => _MusicScreenState();
@@ -81,23 +76,25 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
 
   void _buildTabController() {
     _tabController?.removeListener(_tabIndexCallback);
+    _tabController?.dispose();
 
-    final tabs = widget.tabTypeFilter != null
-        ? [widget.tabTypeFilter!]
-        : ref
-              .watch(finampSettingsProvider.tabOrder)
-              .where((e) => ref.watch(finampSettingsProvider.select((value) => value.value?.showTabs[e])) ?? false);
+    if (widget.singleTabConfig != null) {
+      _tabController = TabController(length: 1, vsync: this, initialIndex: 0);
+    } else {
+      final tabs = ref
+          .watch(finampSettingsProvider.tabOrder)
+          .where((e) => ref.watch(finampSettingsProvider.select((value) => value.value?.showTabs[e])) ?? false);
 
-    _tabController = TabController(
-      length: tabs.length,
-      vsync: this,
-      initialIndex: tabs.toList().indexOf(
-        widget.tabTypeFilter ??
-            widget.initialTab ??
-            FinampSettingsHelper.finampSettings.tabOrder.firstWhereOrNull((e) => tabs.contains(e)) ??
-            TabContentType.home,
-      ),
-    );
+      _tabController = TabController(
+        length: tabs.length,
+        vsync: this,
+        initialIndex: tabs.toList().indexOf(
+          widget.initialTab ??
+              FinampSettingsHelper.finampSettings.tabOrder.firstWhereOrNull((e) => tabs.contains(e)) ??
+              TabContentType.home,
+        ),
+      );
+    }
 
     _tabController!.addListener(_tabIndexCallback);
   }
@@ -184,14 +181,16 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    // TODO maybe allow showing collection so we can remove other showAll screen.
+    assert(widget.singleTabConfig == null || widget.singleTabConfig!.type == HomeScreenSectionType.tabView);
     if (_tabController == null) {
       _buildTabController();
     }
     ref.watch(FinampUserHelper.finampCurrentUserProvider);
     // Get the filtered tab or the tabs from the user's tab order,
     // and filter them to only include enabled tabs
-    final sortedTabs = widget.tabTypeFilter != null
-        ? [widget.tabTypeFilter!]
+    final sortedTabs = widget.singleTabConfig != null
+        ? [widget.singleTabConfig!.contentType!]
         : ref
               .watch(finampSettingsProvider.tabOrder)
               .where((e) => ref.watch(finampSettingsProvider.showTabs(e)) ?? false);
@@ -222,7 +221,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
         extendBody: true,
         appBar: FinampMusicScreenHeader(
           backButtonInsteadOfTabs: !widget.showHeader,
-          title: widget.homeScreenSectionConfiguration?.getTitle(context) ?? widget.genreFilter?.name,
+          title: widget.singleTabConfig?.getTitle(context) ?? widget.genreFilter?.name,
           sortedTabs: sortedTabs.toList(),
           tabController: _tabController,
           onSearch: () => setState(() {
@@ -259,7 +258,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
               controller: _tabController,
               physics: ref.watch(finampSettingsProvider.disableGesture) || MediaQuery.disableAnimationsOf(context)
                   ? const NeverScrollableScrollPhysics()
-                  : widget.tabTypeFilter != null
+                  : widget.singleTabConfig != null
                   ? NeverScrollableScrollPhysics()
                   : AlwaysScrollableScrollPhysics(),
               dragStartBehavior: DragStartBehavior.down,
@@ -270,9 +269,9 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                 final contentTabType = tabType == TabContentType.genericArtists
                     ? ref.watch(finampSettingsProvider.defaultArtistType).tabType
                     : tabType;
-                sortAndFilterControllerMap[contentTabType] ??= widget.sortAndFilterConfigurationOverrideInit != null
+                sortAndFilterControllerMap[contentTabType] ??= widget.singleTabConfig != null
                     // TODO should overridden config respond to going offline?
-                    ? SortAndFilterController(configuration: widget.sortAndFilterConfigurationOverrideInit!)
+                    ? SortAndFilterController(configuration: widget.singleTabConfig!.sortAndFilterConfiguration)
                     : SortAndFilterController.trackSettings(tabType: contentTabType);
                 final genreFilter =
                     (widget.genreFilter != null &&
@@ -300,7 +299,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                               tabContentType: contentTabType,
                               view: _finampUserHelper.currentUser?.currentView,
                               refresh: refreshMap[tabType],
-                              tabBarFiltered: (widget.tabTypeFilter != null),
+                              allowTrackGestures: widget.singleTabConfig != null,
                               sortAndFilterConfiguration: value.resolve(
                                 isOffline: ref.watch(finampSettingsProvider.isOffline),
                                 inPlaylist: false,

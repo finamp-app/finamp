@@ -296,7 +296,11 @@ class HomeScreenSection extends ConsumerWidget {
                       // no need to optimize item fetching here, since the order doesn't matter and the provider doesn't support "skipping" tracks, so all [trackShuffleItemCount] items will be loaded anyway
                       final items = await ref.read(
                         loadHomeSectionItemsProvider(
-                          sectionInfo: sectionInfo,
+                          sectionInfo: sectionInfo.copyWith(
+                            sortAndFilterConfiguration: sectionInfo.sortAndFilterConfiguration.copyWith(
+                              sortBy: SortBy.random,
+                            ),
+                          ),
                           library: currentLibrary,
                           startIndex: 0,
                           limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
@@ -317,14 +321,7 @@ class HomeScreenSection extends ConsumerWidget {
                   onPressed: () {
                     if (sectionInfo.type == HomeScreenSectionType.tabView) {
                       Navigator.of(context).push(
-                        MaterialPageRoute<MusicScreen>(
-                          builder: (context) => MusicScreen(
-                            showHeader: false,
-                            tabTypeFilter: sectionInfo.contentType,
-                            homeScreenSectionConfiguration: sectionInfo,
-                            sortAndFilterConfigurationOverrideInit: sectionInfo.sortAndFilterConfiguration,
-                          ),
-                        ),
+                        MaterialPageRoute<MusicScreen>(builder: (context) => MusicScreen(singleTabConfig: sectionInfo)),
                       );
                     } else {
                       Navigator.pushNamed(context, ShowAllScreen.routeName, arguments: sectionInfo);
@@ -334,16 +331,9 @@ class HomeScreenSection extends ConsumerWidget {
               ],
         onTap: () {
           if (sectionInfo.type == HomeScreenSectionType.tabView) {
-            Navigator.of(context).push(
-              MaterialPageRoute<MusicScreen>(
-                builder: (context) => MusicScreen(
-                  showHeader: false,
-                  tabTypeFilter: sectionInfo.contentType,
-                  homeScreenSectionConfiguration: sectionInfo,
-                  sortAndFilterConfigurationOverrideInit: sectionInfo.sortAndFilterConfiguration,
-                ),
-              ),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute<MusicScreen>(builder: (context) => MusicScreen(singleTabConfig: sectionInfo)));
           } else {
             Navigator.pushNamed(context, ShowAllScreen.routeName, arguments: sectionInfo);
           }

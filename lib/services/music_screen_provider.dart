@@ -218,7 +218,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
                 ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
                 // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
                 ItemFilterType.startsWithCharacter =>
-                  null, //TODO properly handle the "NameStartsWith" filter in the API helper
+                  throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
                 ItemFilterType.genreFilter => null,
                 ItemFilterType.searchTerm => null,
                 ItemFilterType.isUnplayed => "IsUnplayed",
@@ -263,6 +263,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
             )
             .nonNulls
             .join(","),
+        includeItemTypes: sectionInfo.contentType?.itemType?.jellyfinName,
         startIndex: startIndex,
         limit: limit,
       );

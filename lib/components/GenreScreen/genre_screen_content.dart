@@ -21,6 +21,7 @@ import '../../models/jellyfin_models.dart';
 import '../../services/finamp_settings_helper.dart';
 import '../../services/jellyfin_api_helper.dart';
 import '../AlbumScreen/download_button.dart';
+import '../MusicScreen/sort_and_filter_row.dart';
 import '../padded_custom_scrollview.dart';
 
 class GenreScreenContent extends ConsumerStatefulWidget {
@@ -94,20 +95,21 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
     Navigator.of(context).push(
       MaterialPageRoute<MusicScreen>(
         builder: (context) => MusicScreen(
-          showHeader: false,
-          genreFilter: widget.parent,
-          tabTypeFilter: tabContentType,
-          sortAndFilterConfigurationOverrideInit: doOverride
-              ? SortAndFilterConfiguration(
-                  sortBy:
-                      sortByOverride ??
-                      (FinampSettingsHelper.finampSettings.tabSortBy[tabContentType] ?? SortBy.sortName),
-                  sortOrder:
-                      sortOrderOverride ??
-                      (FinampSettingsHelper.finampSettings.tabSortOrder[tabContentType] ?? SortOrder.ascending),
-                  filters: {if (isFavoriteOverride) ItemFilter(type: ItemFilterType.isFavorite)},
-                )
-              : null,
+          singleTabConfig: HomeScreenSectionConfiguration(
+            type: HomeScreenSectionType.tabView,
+            contentType: tabContentType,
+            customSectionTitle: widget.parent.name,
+            sortAndFilterConfiguration: ref
+                .read(sortAndFilterConfigFromSettingsProvider(tabContentType))
+                .copyWith(
+                  sortBy: sortByOverride,
+                  sortOrder: sortOrderOverride,
+                  additionalFilters: {
+                    if (isFavoriteOverride) ItemFilter(type: ItemFilterType.isFavorite),
+                    ItemFilter(type: ItemFilterType.genreFilter, extras: widget.parent),
+                  },
+                ),
+          ),
         ),
       ),
     );

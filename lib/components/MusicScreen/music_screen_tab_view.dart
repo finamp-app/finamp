@@ -34,7 +34,7 @@ class MusicScreenTabView extends ConsumerStatefulWidget {
     required this.tabContentType,
     required this.view,
     this.refresh,
-    this.tabBarFiltered = false,
+    this.allowTrackGestures = false,
     required this.sortAndFilterConfiguration,
   });
 
@@ -42,7 +42,7 @@ class MusicScreenTabView extends ConsumerStatefulWidget {
   final BaseItemDto? view;
   final MusicRefreshCallback? refresh;
 
-  final bool tabBarFiltered;
+  final bool allowTrackGestures;
   final SortAndFilterConfiguration sortAndFilterConfiguration;
 
   BaseItemDto? get genreFilter =>
@@ -285,7 +285,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                                   index: index,
                                   // when the tabBar was filtered and we only have the tracks tab,
                                   // we can allow Dismiss gestures in the track list
-                                  allowDismiss: widget.tabBarFiltered,
+                                  allowDismiss: widget.allowTrackGestures,
                                   genreFilter: widget.genreFilter,
                                   isOnGenreScreen: (widget.genreFilter != null) ? true : false,
                                   parentItem: widget.genreFilter,

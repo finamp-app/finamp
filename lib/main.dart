@@ -9,6 +9,7 @@ import 'package:background_downloader/background_downloader.dart';
 import 'package:collection/collection.dart';
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
+import 'package:finamp/components/HomeScreen/show_all_screen.dart';
 import 'package:finamp/gen/assets.gen.dart';
 import 'package:finamp/hive_registrar.g.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -843,6 +844,7 @@ class FinampApp extends ConsumerWidget {
         AccessibilitySettingsScreen.routeName: (context) => const AccessibilitySettingsScreen(),
         PlaylistEditScreen.routeName: (context) =>
             PlaylistEditScreen(playlist: ModalRoute.settingsOf(context)!.arguments as BaseItemDto),
+        ShowAllScreen.routeName: (context) => const ShowAllScreen(),
       },
       initialRoute: SplashScreen.routeName,
       navigatorObservers: [SplitScreenNavigatorObserver(), KeepScreenOnObserver()],

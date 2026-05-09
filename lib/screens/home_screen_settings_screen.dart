@@ -869,6 +869,17 @@ class SectionPreview extends ConsumerStatefulWidget {
 }
 
 class _SectionPreviewState extends ConsumerState<SectionPreview> {
+  bool _isValid(HomeScreenSectionConfiguration section) {
+    switch (section.type) {
+      case HomeScreenSectionType.tabView:
+        return section.contentType != null;
+      case HomeScreenSectionType.collection:
+        return section.itemId != null;
+      case HomeScreenSectionType.queues:
+        return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasTitle =
@@ -898,7 +909,9 @@ class _SectionPreviewState extends ConsumerState<SectionPreview> {
                 )
               : Theme.of(context).textTheme.bodyMedium,
         ),
-        HomeScreenSectionContent(sectionInfo: widget.sectionInfo),
+        _isValid(widget.sectionInfo)
+            ? HomeScreenSectionContent(sectionInfo: widget.sectionInfo)
+            : Center(child: Text("Current config is not valid.*")),
       ],
     );
   }

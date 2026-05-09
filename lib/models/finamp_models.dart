@@ -4712,11 +4712,16 @@ class SortAndFilterConfiguration {
 
   factory SortAndFilterConfiguration.fromJson(Map<String, dynamic> json) => _$SortAndFilterConfigurationFromJson(json);
 
-  SortAndFilterConfiguration copyWith({SortBy? sortBy, SortOrder? sortOrder, Set<ItemFilter>? filters}) {
+  SortAndFilterConfiguration copyWith({
+    SortBy? sortBy,
+    SortOrder? sortOrder,
+    Set<ItemFilter>? filters,
+    Set<ItemFilter>? additionalFilters,
+  }) {
     return SortAndFilterConfiguration(
       sortBy: sortBy ?? this.sortBy,
       sortOrder: sortOrder ?? this.sortOrder,
-      filters: filters ?? this.filters.toSet(),
+      filters: (filters ?? this.filters.toSet()).union(additionalFilters ?? {}),
     );
   }
 
