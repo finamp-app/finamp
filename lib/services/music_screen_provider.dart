@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:finamp/services/artist_content_provider.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -183,17 +185,14 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
 }) async {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
-  final Future<List<BaseItemDto>?> newItemsFuture;
-
   if (ref.watch(finampSettingsProvider.isOffline)) {
-    newItemsFuture = loadHomeSectionItemsOffline(
+    return loadHomeSectionItemsOffline(
       ref: ref,
       sectionInfo: sectionInfo,
       library: library,
       startIndex: startIndex,
       limit: limit,
     );
-    return newItemsFuture;
   }
 
   switch (sectionInfo.type) {
@@ -204,7 +203,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
       final searchFilter = sectionInfo.sortAndFilterConfiguration.filters.firstWhereOrNull(
         (x) => x.type == ItemFilterType.searchTerm,
       );
-      newItemsFuture = jellyfinApiHelper.getItems(
+      return jellyfinApiHelper.getItems(
         libraryFilter: library,
         parentItem: sectionInfo.contentType == TabContentType.playlists ? null : library!,
         includeItemTypes: [sectionInfo.contentType?.itemType?.jellyfinName].join(","),
@@ -240,39 +239,64 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
         },
         genreFilter: genreFilter?.extraBaseItem,
       );
-      break;
     case HomeScreenSectionType.collection:
+      // TODO should tabviews be collections with library parents?  Or does that just make our job harder?
       final baseItem = await GetIt.instance<ProviderContainer>().read(itemByIdProvider(sectionInfo.itemId!).future);
-      newItemsFuture = jellyfinApiHelper.getItems(
-        parentItem: baseItem,
-        recursive: false, //!!! prevent loading tracks and albums from inside the collection items
-        sortBy: sectionInfo.sortAndFilterConfiguration.sortBy.jellyfinName(null),
-        sortOrder: sectionInfo.sortAndFilterConfiguration.sortOrder.toString(),
-        filters: sectionInfo.sortAndFilterConfiguration.filters
-            .map(
-              (filter) => switch (filter.type) {
-                ItemFilterType.isFavorite => "IsFavorite",
-                ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
-                // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
-                ItemFilterType.startsWithCharacter =>
-                  throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
-                ItemFilterType.genreFilter => throw UnimplementedError(),
-                ItemFilterType.searchTerm => throw UnimplementedError(),
-                ItemFilterType.isUnplayed => "IsUnplayed",
-              },
-            )
-            .nonNulls
-            .join(","),
-        includeItemTypes: sectionInfo.contentType?.itemType?.jellyfinName,
-        startIndex: startIndex,
-        limit: limit,
-      );
-      break;
+      if (baseItem == null) {
+        return [];
+      }
+      switch (BaseItemDtoType.fromItem(baseItem)) {
+        case BaseItemDtoType.artist:
+          // TODO allow filters and whatnot to be applied?
+          return ref.watch(getArtistTracksProvider(artist: baseItem).future);
+        case BaseItemDtoType.genre:
+          return ref.watch(
+            loadHomeSectionItemsProvider(
+              sectionInfo: HomeScreenSectionConfiguration(
+                type: HomeScreenSectionType.tabView,
+                contentType: TabContentType.tracks,
+                sortAndFilterConfiguration: sectionInfo.sortAndFilterConfiguration.copyWith(
+                  additionalFilters: {ItemFilter(type: ItemFilterType.genreFilter, extras: baseItem)},
+                ),
+              ),
+              library: library,
+              startIndex: startIndex,
+              limit: limit,
+            ).future,
+          );
+        case BaseItemDtoType.album:
+        case BaseItemDtoType.playlist:
+        case BaseItemDtoType.collection:
+          return jellyfinApiHelper.getItems(
+            parentItem: baseItem,
+            recursive: false, //!!! prevent loading tracks and albums from inside the collection items
+            sortBy: sectionInfo.sortAndFilterConfiguration.sortBy.jellyfinName(sectionInfo.contentType),
+            sortOrder: sectionInfo.sortAndFilterConfiguration.sortOrder.toString(),
+            filters: sectionInfo.sortAndFilterConfiguration.filters
+                .map(
+                  (filter) => switch (filter.type) {
+                    ItemFilterType.isFavorite => "IsFavorite",
+                    ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
+                    // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
+                    ItemFilterType.startsWithCharacter =>
+                      throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
+                    ItemFilterType.genreFilter => throw UnimplementedError(),
+                    ItemFilterType.searchTerm => throw UnimplementedError(),
+                    ItemFilterType.isUnplayed => "IsUnplayed",
+                  },
+                )
+                .nonNulls
+                .join(","),
+            includeItemTypes: sectionInfo.contentType?.itemType?.jellyfinName,
+            startIndex: startIndex,
+            limit: limit,
+          );
+        case _:
+          throw UnimplementedError();
+      }
     case HomeScreenSectionType.queues:
       throw UnimplementedError("Queue sections should be handled directly");
   }
-
-  return await newItemsFuture;
 }
 
 Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
@@ -522,14 +546,14 @@ List<BaseItemDto> sortItems(List<BaseItemDto> itemsToSort, SortBy? sortBy, SortO
 // There are scenarios where cached provider-data might return a shuffled resultset, I guess,
 // so this function should definitely sort all artist tracks always the same
 List<BaseItemDto> sortArtistTracks(List<BaseItemDto> items) {
-  int _compareNullable<T extends Comparable>(T? a, T? b, {bool nullsFirst = false}) {
+  int compareNullable<T extends Comparable>(T? a, T? b, {bool nullsFirst = false}) {
     if (a == null && b == null) return 0;
     if (a == null) return nullsFirst ? -1 : 1;
     if (b == null) return nullsFirst ? 1 : -1;
     return a.compareTo(b);
   }
 
-  int _compareAlbum(String? a, String? b) {
+  int compareAlbum(String? a, String? b) {
     if (a == null && b == null) return 0;
     if (a == null) return 1;
     if (b == null) return -1;
@@ -554,19 +578,19 @@ List<BaseItemDto> sortArtistTracks(List<BaseItemDto> items) {
     // 1. PremiereDate
     final dateA = a.premiereDate == null ? null : DateTime.tryParse(a.premiereDate!.trim());
     final dateB = b.premiereDate == null ? null : DateTime.tryParse(b.premiereDate!.trim());
-    final dateCompare = _compareNullable<DateTime>(dateA, dateB, nullsFirst: true);
+    final dateCompare = compareNullable<DateTime>(dateA, dateB, nullsFirst: true);
     if (dateCompare != 0) return dateCompare;
     // 2. Album (numbers first)
-    final albumCompare = _compareAlbum(a.album, b.album);
+    final albumCompare = compareAlbum(a.album, b.album);
     if (albumCompare != 0) return albumCompare;
     // 3. ParentIndexNumber
-    final parentIndexCompare = _compareNullable<int>(a.parentIndexNumber, b.parentIndexNumber);
+    final parentIndexCompare = compareNullable<int>(a.parentIndexNumber, b.parentIndexNumber);
     if (parentIndexCompare != 0) return parentIndexCompare;
     // 4. IndexNumber
-    final indexCompare = _compareNullable<int>(a.indexNumber, b.indexNumber);
+    final indexCompare = compareNullable<int>(a.indexNumber, b.indexNumber);
     if (indexCompare != 0) return indexCompare;
     // 5. SortName
-    return _compareNullable<String>(a.sortName, b.sortName);
+    return compareNullable<String>(a.sortName, b.sortName);
   });
 
   return items;
@@ -581,4 +605,43 @@ List<BaseItemDto> filterItemsByGenreName(List<BaseItemDto> items, BaseItemDto ge
 
     return assignedGenres.any((genre) => genre.name == genreFilter.name);
   }).toList();
+}
+
+@riverpod
+Future<List<BaseItemDto>> globalSearch(Ref ref, String searchTerm, {bool includeTracks = false}) async {
+  final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+  final baseFuture = jellyfinApiHelper.getItems(
+    includeItemTypes: [
+      BaseItemDtoType.album.jellyfinName,
+      BaseItemDtoType.playlist.jellyfinName,
+      BaseItemDtoType.collection.jellyfinName,
+      if (includeTracks) BaseItemDtoType.track.jellyfinName,
+    ].join(","),
+    recursive: true,
+    searchTerm: searchTerm,
+    limit: 30,
+  );
+  // TODO handle album artists?
+  final artistFuture = jellyfinApiHelper.getItems(
+    includeItemTypes: [BaseItemDtoType.artist.jellyfinName].join(","),
+    recursive: false,
+    searchTerm: searchTerm,
+    limit: 10,
+  );
+  // TODO handle genres for all libraries?  Or just use current?  We could just warn on no/low results?
+  final genreFuture = jellyfinApiHelper.getItems(
+    parentItem: GetIt.instance<FinampUserHelper>().currentUser!.currentView!,
+    includeItemTypes: [BaseItemDtoType.genre.jellyfinName].join(","),
+    recursive: false,
+    searchTerm: searchTerm,
+    limit: 10,
+  );
+  final values = await Future.wait([baseFuture, artistFuture, genreFuture]);
+  final out = <BaseItemDto>[];
+  for (var val in values) {
+    if (val != null) {
+      out.addAll(val);
+    }
+  }
+  return out;
 }

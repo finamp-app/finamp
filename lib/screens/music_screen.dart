@@ -107,6 +107,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
   @override
   void dispose() {
     _tabController?.dispose();
+    textEditingController.dispose();
     for (var x in sortAndFilterControllerMap.values) {
       x.dispose();
     }
@@ -221,7 +222,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
         extendBody: true,
         appBar: FinampMusicScreenHeader(
           backButtonInsteadOfTabs: !widget.showHeader,
-          title: widget.singleTabConfig?.getTitle(context) ?? widget.genreFilter?.name,
+          title: widget.singleTabConfig?.getTitle(context),
           sortedTabs: sortedTabs.toList(),
           tabController: _tabController,
           onSearch: () => setState(() {
@@ -247,7 +248,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
         ),
         bottomNavigationBar: NowPlayingBar(),
         drawerEnableOpenDragGesture: widget.showHeader,
-        drawer: widget.genreFilter == null ? const MusicScreenDrawer() : null,
+        drawer: widget.showHeader ? const MusicScreenDrawer() : null,
         floatingActionButton: Padding(
           padding: EdgeInsets.only(right: ref.watch(finampSettingsProvider.showFastScroller) ? 24.0 : 8.0),
           child: getFloatingActionButton(sortedTabs.toList()),

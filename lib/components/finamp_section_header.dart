@@ -14,8 +14,10 @@ class FinampSectionHeader extends ConsumerWidget {
     this.headerPadding = const EdgeInsets.symmetric(horizontal: 16.0),
     this.contentPadding = EdgeInsets.zero,
     this.onTap,
+    this.onSecondaryTap,
     this.actions = const [],
     this.onDismiss,
+    this.sticky = true,
   });
 
   final Widget sectionContentSliver;
@@ -24,16 +26,19 @@ class FinampSectionHeader extends ConsumerWidget {
   final EdgeInsets headerPadding;
   final EdgeInsets contentPadding;
   final void Function()? onTap;
+  final void Function()? onSecondaryTap;
   final Future<bool?> Function(ItemSwipeActions)? onDismiss;
+  final bool sticky;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SliverStickyHeader(
+      sticky: sticky,
       header: Material(
         color: Theme.of(context).colorScheme.surface,
         child: InkWell(
-          onLongPress: onTap,
-          onSecondaryTap: onTap,
+          onLongPress: onSecondaryTap,
+          onSecondaryTap: onSecondaryTap,
           onTap: onTap,
           child: Padding(
             padding: headerPadding,

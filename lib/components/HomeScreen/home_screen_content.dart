@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:balanced_text/balanced_text.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
@@ -208,6 +209,7 @@ class HomeScreenSection extends ConsumerWidget {
     return SliverPadding(
       padding: const EdgeInsets.only(bottom: 8.0),
       sliver: FinampSectionHeader(
+        sticky: false,
         key: Key(sectionInfo.toString()),
         title: sectionInfo.itemId != null
             ? ref.watch(itemByIdProvider(sectionInfo.itemId!)).valueOrNull?.name ?? sectionInfo.getTitle(context)
@@ -338,6 +340,10 @@ class HomeScreenSection extends ConsumerWidget {
             Navigator.pushNamed(context, ShowAllScreen.routeName, arguments: sectionInfo);
           }
         },
+        onSecondaryTap: () => editHomeScreenSection(
+          context,
+          FinampSettingsHelper.finampSettings.homeScreenConfiguration.sections.indexOf(sectionInfo),
+        ),
         onDismiss: (followUpAction) async {
           final source = QueueItemSource.rawId(
             type: QueueItemSourceType.homeScreenSection,
@@ -433,33 +439,36 @@ class HomeScreenSectionContent extends ConsumerWidget {
               ? const Center(child: Text("Section contents not downloaded.*", maxLines: 1))
               : SizedBox(
                   height: calculateItemCollectionCardHeight(ref: ref, sectionInfo: sectionInfo, itemType: null),
-                  child: ListView.separated(
-                    addAutomaticKeepAlives: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: value.length + 1,
-                    itemBuilder: (context, rawIndex) {
-                      if (rawIndex == 0) {
-                        return SizedBox(width: 4.0); // initial padding, + separator
-                      }
-                      final index = rawIndex - 1;
-                      switch (sectionInfo.type) {
-                        case HomeScreenSectionType.queues:
-                          final queueInfo = value[index] as FinampStorableQueueInfo;
-                          return HomeScreenQueueTile(key: ValueKey(queueInfo.creation), info: queueInfo);
-                        case HomeScreenSectionType.tabView:
-                        case HomeScreenSectionType.collection:
-                          final item = value[index] as BaseItemDto;
-                          return ItemWrapper(
-                            key: ValueKey(item.id),
-                            item: item,
-                            isGrid: true,
-                            forceText: true,
-                            interactive: interactive,
-                            source: source,
-                          );
-                      }
-                    },
-                    separatorBuilder: (context, index) => const SizedBox(width: 8, height: 1),
+                  child: ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(dragDevices: PointerDeviceKind.values.toSet()),
+                    child: ListView.separated(
+                      addAutomaticKeepAlives: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: value.length + 1,
+                      itemBuilder: (context, rawIndex) {
+                        if (rawIndex == 0) {
+                          return SizedBox(width: 4.0); // initial padding, + separator
+                        }
+                        final index = rawIndex - 1;
+                        switch (sectionInfo.type) {
+                          case HomeScreenSectionType.queues:
+                            final queueInfo = value[index] as FinampStorableQueueInfo;
+                            return HomeScreenQueueTile(key: ValueKey(queueInfo.creation), info: queueInfo);
+                          case HomeScreenSectionType.tabView:
+                          case HomeScreenSectionType.collection:
+                            final item = value[index] as BaseItemDto;
+                            return ItemWrapper(
+                              key: ValueKey(item.id),
+                              item: item,
+                              isGrid: true,
+                              forceText: true,
+                              interactive: interactive,
+                              source: source,
+                            );
+                        }
+                      },
+                      separatorBuilder: (context, index) => const SizedBox(width: 8, height: 1),
+                    ),
                   ),
                 ),
         // _ => _buildHorizontalSkeletonLoader(),

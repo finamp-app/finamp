@@ -50,12 +50,13 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
   final finampUserHelper = GetIt.instance<FinampUserHelper>();
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
+  double get _upperToolbarHeight => kToolbarHeight - 12;
+
   @override
   Size get preferredSize => Size.fromHeight(
-    kToolbarHeight +
-        30 +
-        ((Platform.isLinux || Platform.isWindows || Platform.isMacOS) ? 12.0 : 0) -
-        (backButtonInsteadOfTabs ? 42 : 0),
+    _upperToolbarHeight +
+        ((Platform.isLinux || Platform.isWindows || Platform.isMacOS) ? 12.0 : 0) +
+        (backButtonInsteadOfTabs ? 0 : 42),
   ); // Standard height
 
   @override
@@ -88,47 +89,49 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.max,
               children: [
-                SimpleGestureDetector(
-                  onTap: () {
-                    // open drawer
-                    // Scaffold.of(context).openDrawer();
-                    showFinampMainMenu(context: context);
-                  },
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      FinampIcon(
-                        36,
-                        36,
-                        overrideColor: ref.watch(finampSettingsProvider.isOffline)
-                            ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
-                            : null,
-                      ),
-                      Positioned(bottom: -4, right: -2, child: Icon(statusIcon, size: 16)),
-                      Consumer(
-                        builder: (context, ref, _) {
-                          if (ref.watch(pollingDownloadsSyncingProvider)) {
-                            return Positioned(
-                              bottom: statusIcon != null ? -6 : 1,
-                              right: statusIcon != null ? -4 : 3,
-                              child: SizedBox.square(
-                                dimension: statusIcon != null ? 20.0 : 10.0,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 1,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onSurface),
+                if (backButtonInsteadOfTabs)
+                  SizedBox(width: _upperToolbarHeight + 6, height: _upperToolbarHeight, child: FinampAppBarBackButton())
+                else
+                  SimpleGestureDetector(
+                    onTap: () {
+                      // open drawer
+                      // Scaffold.of(context).openDrawer();
+                      showFinampMainMenu(context: context);
+                    },
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        FinampIcon(
+                          36,
+                          36,
+                          overrideColor: ref.watch(finampSettingsProvider.isOffline)
+                              ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
+                              : null,
+                        ),
+                        Positioned(bottom: -4, right: -2, child: Icon(statusIcon, size: 16)),
+                        Consumer(
+                          builder: (context, ref, _) {
+                            if (ref.watch(pollingDownloadsSyncingProvider)) {
+                              return Positioned(
+                                bottom: statusIcon != null ? -6 : 1,
+                                right: statusIcon != null ? -4 : 3,
+                                child: SizedBox.square(
+                                  dimension: statusIcon != null ? 20.0 : 10.0,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 1,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onSurface),
+                                  ),
                                 ),
-                              ),
-                            );
-                          } else {
-                            return SizedBox.shrink();
-                          }
-                        },
-                      ),
-                    ],
+                              );
+                            } else {
+                              return SizedBox.shrink();
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 const SizedBox(width: 8),
-                if (backButtonInsteadOfTabs) ...[FinampAppBarBackButton(), const SizedBox(width: 8)],
                 if (isSearching) ...[
                   Expanded(
                     child: TextField(

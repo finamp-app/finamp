@@ -215,6 +215,143 @@ class _LoadHomeSectionItemsProviderElement
   int get limit => (origin as LoadHomeSectionItemsProvider).limit;
 }
 
+String _$globalSearchHash() => r'057ef140bb3c4fe404840a933a9cce8281c51846';
+
+/// See also [globalSearch].
+@ProviderFor(globalSearch)
+const globalSearchProvider = GlobalSearchFamily();
+
+/// See also [globalSearch].
+class GlobalSearchFamily extends Family<AsyncValue<List<BaseItemDto>>> {
+  /// See also [globalSearch].
+  const GlobalSearchFamily();
+
+  /// See also [globalSearch].
+  GlobalSearchProvider call(String searchTerm, {bool includeTracks = false}) {
+    return GlobalSearchProvider(searchTerm, includeTracks: includeTracks);
+  }
+
+  @override
+  GlobalSearchProvider getProviderOverride(
+    covariant GlobalSearchProvider provider,
+  ) {
+    return call(provider.searchTerm, includeTracks: provider.includeTracks);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'globalSearchProvider';
+}
+
+/// See also [globalSearch].
+class GlobalSearchProvider
+    extends AutoDisposeFutureProvider<List<BaseItemDto>> {
+  /// See also [globalSearch].
+  GlobalSearchProvider(String searchTerm, {bool includeTracks = false})
+    : this._internal(
+        (ref) => globalSearch(
+          ref as GlobalSearchRef,
+          searchTerm,
+          includeTracks: includeTracks,
+        ),
+        from: globalSearchProvider,
+        name: r'globalSearchProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$globalSearchHash,
+        dependencies: GlobalSearchFamily._dependencies,
+        allTransitiveDependencies:
+            GlobalSearchFamily._allTransitiveDependencies,
+        searchTerm: searchTerm,
+        includeTracks: includeTracks,
+      );
+
+  GlobalSearchProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.searchTerm,
+    required this.includeTracks,
+  }) : super.internal();
+
+  final String searchTerm;
+  final bool includeTracks;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<BaseItemDto>> Function(GlobalSearchRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GlobalSearchProvider._internal(
+        (ref) => create(ref as GlobalSearchRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        searchTerm: searchTerm,
+        includeTracks: includeTracks,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<BaseItemDto>> createElement() {
+    return _GlobalSearchProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GlobalSearchProvider &&
+        other.searchTerm == searchTerm &&
+        other.includeTracks == includeTracks;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, searchTerm.hashCode);
+    hash = _SystemHash.combine(hash, includeTracks.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GlobalSearchRef on AutoDisposeFutureProviderRef<List<BaseItemDto>> {
+  /// The parameter `searchTerm` of this provider.
+  String get searchTerm;
+
+  /// The parameter `includeTracks` of this provider.
+  bool get includeTracks;
+}
+
+class _GlobalSearchProviderElement
+    extends AutoDisposeFutureProviderElement<List<BaseItemDto>>
+    with GlobalSearchRef {
+  _GlobalSearchProviderElement(super.provider);
+
+  @override
+  String get searchTerm => (origin as GlobalSearchProvider).searchTerm;
+  @override
+  bool get includeTracks => (origin as GlobalSearchProvider).includeTracks;
+}
+
 String _$musicScreenContentHash() =>
     r'7766c5c4e33b24f4eaf0842ed23b373294f94f75';
 
