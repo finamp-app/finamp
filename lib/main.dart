@@ -45,6 +45,7 @@ import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/ios_helpers.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
 import 'package:finamp/services/item_helper.dart';
+import 'package:finamp/services/home_screen_widget.dart';
 import 'package:finamp/services/keep_screen_on_helper.dart';
 import 'package:finamp/services/music_providers.dart';
 import 'package:finamp/services/network_manager.dart';
@@ -163,6 +164,8 @@ Future<void> main({bool integrationTesting = false, bool loginTesting = false}) 
     _mainLog.info("Setup KeepScreenOnHelper");
     await _setupDiscordRpc();
     _mainLog.info("Setup Discord RPC");
+    await _setupHomeScreenWidget();
+    _mainLog.info("Setup Home Screen Widget");
   } catch (error, trace) {
     if (!integrationTesting) {
       Logger("ErrorApp").severe(error, null, trace);
@@ -287,6 +290,10 @@ Future<void> _setupPlayOnService() async {
 
 Future<void> _setupDiscordRpc() async {
   DiscordRpc.initialize();
+}
+
+Future<void> _setupHomeScreenWidget() async {
+  HomeScreenWidget.initialize();
 }
 
 Future<void> _setupKeepScreenOnHelper() async {
