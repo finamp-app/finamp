@@ -148,6 +148,7 @@ dependencies:
   dynamic_color: ^1.8.1
   dbus: ^0.7.11
   bits: ^1.4.0
+  diacritic: ^0.1.6
 
 dev_dependencies:
   flutter_test:
