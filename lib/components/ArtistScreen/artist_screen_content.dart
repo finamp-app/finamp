@@ -36,7 +36,9 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
   JellyfinApiHelper jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final _downloadsService = GetIt.instance<DownloadsService>();
   final Set<CuratedItemSelectionType> _disabledTrackFilters = {};
-  SortAndFilterController controller = SortAndFilterController(configuration: SortAndFilterConfiguration.defaultSort);
+  SortAndFilterController controller = SortAndFilterController(
+    configuration: SortAndFilterConfiguration.defaultNonAlbumSort,
+  );
   CuratedItemSelectionType? clickedCuratedItemSelectionType;
 
   StreamSubscription<void>? _refreshStream;

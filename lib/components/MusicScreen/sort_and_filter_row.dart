@@ -97,7 +97,7 @@ final sortAndFilterConfigFromSettingsProvider = Provider.family((Ref ref, TabCon
   };
 
   return SortAndFilterConfiguration(
-    sortBy: sortBy ?? SortBy.defaultOrder,
+    sortBy: sortBy ?? SortBy.sortName,
     sortOrder: sortOrder ?? SortOrder.ascending,
     filters: filters,
   );

@@ -32,14 +32,12 @@ class MusicScreenTabView extends ConsumerStatefulWidget {
   const MusicScreenTabView({
     super.key,
     required this.tabContentType,
-    required this.view,
     this.refresh,
     this.allowTrackGestures = false,
     required this.sortAndFilterConfiguration,
   });
 
   final TabContentType tabContentType;
-  final BaseItemDto? view;
   final MusicRefreshCallback? refresh;
 
   final bool allowTrackGestures;
@@ -202,7 +200,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
   }
 
   MusicScreenContentProvider get pageControl => musicScreenContentProvider(
-    MusicScreenRequest(filter: widget.sortAndFilterConfiguration, library: widget.view, tabType: widget.tabContentType),
+    MusicScreenRequest(filter: widget.sortAndFilterConfiguration, tabType: widget.tabContentType),
   );
 
   @override

@@ -1,4 +1,3 @@
-import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -14,11 +13,11 @@ Future<BaseItemDto?> itemById(Ref ref, BaseItemId baseItemId) async {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final downloadsService = GetIt.instance<DownloadsService>();
 
-  late BaseItemDto? baseItem;
+  BaseItemDto? baseItem;
 
   if (ref.watch(finampSettingsProvider.isOffline)) {
-    //FIXME implement offline support by implementing and equivalent to getItemById in DownloadsService, which doesn't care about the download type
-    baseItem = null;
+    baseItem = (await downloadsService.getCollectionInfo(id: baseItemId))?.baseItem;
+    baseItem ??= (await downloadsService.getTrackInfo(id: baseItemId))?.baseItem;
   } else {
     baseItem = await jellyfinApiHelper.getItemById(baseItemId);
   }

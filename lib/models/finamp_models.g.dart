@@ -1592,8 +1592,8 @@ class HomeScreenSectionConfigurationAdapter
     };
     return HomeScreenSectionConfiguration(
       type: fields[0] as HomeScreenSectionType,
-      itemId: fields[1] as BaseItemId?,
-      contentType: fields[2] as TabContentType?,
+      itemId: fields[1] as BaseItemId,
+      contentType: fields[2] as TabContentType,
       sortAndFilterConfiguration: fields[3] as SortAndFilterConfiguration,
       customSectionTitle: fields[4] as String?,
       presetType: fields[5] as HomeScreenSectionPresetType?,
@@ -9526,14 +9526,8 @@ HomeScreenSectionConfiguration _$HomeScreenSectionConfigurationFromJson(
   Map<String, dynamic> json,
 ) => HomeScreenSectionConfiguration(
   type: $enumDecode(_$HomeScreenSectionTypeEnumMap, json['type']),
-  itemId: _$JsonConverterFromJson<String, BaseItemId>(
-    json['itemId'],
-    const BaseItemIdConverter().fromJson,
-  ),
-  contentType: $enumDecodeNullable(
-    _$TabContentTypeEnumMap,
-    json['contentType'],
-  ),
+  itemId: const BaseItemIdConverter().fromJson(json['itemId'] as String),
+  contentType: $enumDecode(_$TabContentTypeEnumMap, json['contentType']),
   sortAndFilterConfiguration: SortAndFilterConfiguration.fromJson(
     json['sortAndFilterConfiguration'] as Map<String, dynamic>,
   ),
@@ -9548,14 +9542,8 @@ Map<String, dynamic> _$HomeScreenSectionConfigurationToJson(
   HomeScreenSectionConfiguration instance,
 ) => <String, dynamic>{
   'type': _$HomeScreenSectionTypeEnumMap[instance.type]!,
-  if (_$JsonConverterToJson<String, BaseItemId>(
-        instance.itemId,
-        const BaseItemIdConverter().toJson,
-      )
-      case final value?)
-    'itemId': value,
-  if (_$TabContentTypeEnumMap[instance.contentType] case final value?)
-    'contentType': value,
+  'itemId': const BaseItemIdConverter().toJson(instance.itemId),
+  'contentType': _$TabContentTypeEnumMap[instance.contentType]!,
   'sortAndFilterConfiguration': instance.sortAndFilterConfiguration,
   if (instance.customSectionTitle case final value?)
     'customSectionTitle': value,

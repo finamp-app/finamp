@@ -18,9 +18,7 @@ class ViewListTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
 
-    var currentViewId = ref.watch(
-      FinampUserHelper.finampCurrentUserProvider.select((value) => value.valueOrNull?.currentViewId),
-    );
+    var currentViewId = ref.watch(FinampUserHelper.finampCurrentUserProvider.select((value) => value?.currentViewId));
 
     return Semantics.fromProperties(
       properties: SemanticsProperties(label: view.name, selected: currentViewId == view.id),

@@ -70,7 +70,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
 
     final statusIcon = ref.watch(finampSettingsProvider.isOffline)
         ? TablerIcons.cloud_off
-        : ref.watch(FinampUserHelper.finampCurrentUserProvider).valueOrNull?.isLocal ?? false
+        : ref.watch(FinampUserHelper.finampCurrentUserProvider)?.isLocal ?? false
         ? TablerIcons.wifi
         : null; // hide icon by default (remote connection)
 
@@ -275,13 +275,12 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                         ? Row(
                             spacing: 4.0,
                             children: [
-                              if (ref.watch(finampSettingsProvider.isOffline))
-                                SizedBox.shrink()
-                              else
-                                switch (ref.watch(currentUserInfoProvider)) {
-                                  AsyncData(:final value)
-                                      when value != null && value.jellyfinUser?.primaryImageTag != null =>
-                                    Padding(
+                              Consumer(
+                                builder: (context, ref, _) {
+                                  if (ref.watch(finampSettingsProvider.isOffline)) return SizedBox.shrink();
+                                  final userInfo = ref.watch(currentUserInfoProvider);
+                                  if (userInfo.value != null && userInfo.value!.jellyfinUser?.primaryImageTag != null) {
+                                    return Padding(
                                       padding: const EdgeInsets.all(1.5),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(9999),
@@ -289,23 +288,24 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                           GetIt.instance<JellyfinApiHelper>()
                                               .getUserImageUrl(
                                                 baseUrl: Uri.parse(finampUserHelper.currentUser!.baseURL),
-                                                user: value.jellyfinUser!,
+                                                user: userInfo.value!.jellyfinUser!,
                                               )
                                               .toString(),
                                           fit: BoxFit.fitHeight,
                                         ),
                                       ),
-                                    ),
-                                  AsyncData(:final value)
-                                      when value == null || value.jellyfinUser?.primaryImageTag == null =>
-                                    SizedBox.shrink(),
-                                  AsyncLoading() => SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: activeTabTextColor),
-                                  ),
-                                  _ => SizedBox.shrink(),
+                                    );
+                                  }
+                                  if (userInfo.isLoading) {
+                                    return SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: activeTabTextColor),
+                                    );
+                                  }
+                                  return SizedBox.shrink();
                                 },
+                              ),
                               Text(tabType.toLocalisedString(context), style: textStyle),
                             ],
                           )

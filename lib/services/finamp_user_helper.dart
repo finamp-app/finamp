@@ -18,6 +18,9 @@ class FinampUserHelper {
     _isar.finampUsers.watchObjectLazy(0).listen((event) {
       _currentUserCache = null;
       setAuthHeader();
+      if (GetIt.instance.isRegistered(type: ProviderContainer)) {
+        GetIt.instance<ProviderContainer>().invalidate(finampCurrentUserProvider);
+      }
     });
   }
 
@@ -44,9 +47,8 @@ class FinampUserHelper {
 
   late String authorizationHeader;
 
-  static final AutoDisposeStreamProvider<FinampUser?> finampCurrentUserProvider = StreamProvider.autoDispose((ref) {
-    final isar = GetIt.instance<Isar>();
-    return isar.finampUsers.watchObject(0, fireImmediately: true);
+  static final Provider<FinampUser?> finampCurrentUserProvider = Provider((ref) {
+    return GetIt.instance<FinampUserHelper>().currentUser;
   });
 
   Future<void> migrateFromHive() async {
@@ -134,7 +136,7 @@ final AutoDisposeFutureProviderFamily<UserInfo?, String> userInfoProvider = Futu
     .family<UserInfo?, String>((ref, userId) async {
       final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
-      final currentUserInfo = ref.watch(FinampUserHelper.finampCurrentUserProvider).value;
+      final currentUserInfo = ref.watch(FinampUserHelper.finampCurrentUserProvider);
       final bool isCurrentUser = currentUserInfo?.id == userId;
       UserInfo userInfo = UserInfo(jellyfinUser: null, finampUser: currentUserInfo);
       finampUserHelperLogger.fine("Fetching user info for '$userId'");
@@ -165,7 +167,7 @@ final AutoDisposeFutureProviderFamily<UserInfo?, String> userInfoProvider = Futu
 
 /// Provider for info about the currently connected server
 final currentUserInfoProvider = Provider<AsyncValue<UserInfo?>>((ref) {
-  final currentUserId = ref.watch(FinampUserHelper.finampCurrentUserProvider).value?.id;
+  final currentUserId = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.id;
   if (currentUserId != null) {
     return ref.watch(userInfoProvider(currentUserId));
   }

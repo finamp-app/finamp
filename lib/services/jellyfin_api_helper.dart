@@ -9,6 +9,7 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/services/http_aggregate_logging_interceptor.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_user_certificates_android/flutter_user_certificates_android.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/io_client.dart' as http;
@@ -631,6 +632,10 @@ class JellyfinApiHelper {
 
     return QueryResult_BaseItemDto.fromJson(response as Map<String, dynamic>).items!;
   }
+
+  static FutureProvider<List<BaseItemDto>> viewsProvider = FutureProvider(
+    (Ref ref) => GetIt.instance<JellyfinApiHelper>().getViews(),
+  );
 
   /// Gets the playback info for an item, such as format and bitrate. Usually, I'd require a BaseItemDto as an argument
   /// but since this will be run inside of [MusicPlayerBackgroundTask], I've just set the raw id as an argument.

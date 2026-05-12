@@ -56,7 +56,6 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
   TabController? _tabController;
 
   final _audioServiceHelper = GetIt.instance<AudioServiceHelper>();
-  final _finampUserHelper = GetIt.instance<FinampUserHelper>();
   final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
   void _stopSearching() {
@@ -194,7 +193,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     // Get the filtered tab or the tabs from the user's tab order,
     // and filter them to only include enabled tabs
     final sortedTabs = widget.singleTabConfig != null
-        ? [widget.singleTabConfig!.contentType!]
+        ? [widget.singleTabConfig!.contentType]
         : ref
               .watch(finampSettingsProvider.tabOrder)
               .where((e) => ref.watch(finampSettingsProvider.showTabs(e)) ?? false);
@@ -293,7 +292,6 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                           builder: (context, value, child) {
                             return MusicScreenTabView(
                               tabContentType: contentTabType,
-                              view: _finampUserHelper.currentUser?.currentView,
                               refresh: refreshMap[tabType],
                               allowTrackGestures: widget.singleTabConfig != null,
                               sortAndFilterConfiguration: value.resolve(

@@ -98,6 +98,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
           singleTabConfig: HomeScreenSectionConfiguration(
             type: HomeScreenSectionType.tabView,
             contentType: tabContentType,
+            itemId: currentLibraryPlaceholder,
             customSectionTitle: widget.parent.name,
             sortAndFilterConfiguration: ref
                 .read(sortAndFilterConfigFromSettingsProvider(tabContentType))

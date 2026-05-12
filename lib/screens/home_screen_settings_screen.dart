@@ -17,6 +17,7 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
+import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_screen_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -439,6 +440,8 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
                   final sections = List.of(FinampSettingsHelper.finampSettings.homeScreenConfiguration.sections);
                   final defaultSection = HomeScreenSectionConfiguration(
                     type: HomeScreenSectionType.tabView,
+                    itemId: currentLibraryPlaceholder,
+                    contentType: TabContentType.tracks,
                     sortAndFilterConfiguration: SortAndFilterConfiguration(
                       sortBy: SortBy.sortName,
                       sortOrder: SortOrder.ascending,
@@ -521,11 +524,22 @@ class HomeScreenSectionConfigurationMenu extends ConsumerStatefulWidget {
 // TODO we should probably build separate sub-widgets for tabview/collections?
 class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenSectionConfigurationMenu> {
   late HomeScreenSectionType selectedSectionType;
-  late String sectionTitle;
-  BaseItemDto? selectedCollection;
-  late TabContentType? selectedContentType;
 
-  late SortAndFilterController sortAndFilterController;
+  // TODO the tab types should probably just be separate widgets.
+
+  String tabTitle = "";
+  BaseItemId selectedLibrary = currentLibraryPlaceholder;
+  TabContentType tabContent = TabContentType.tracks;
+  SortAndFilterController tabSortController = SortAndFilterController(
+    configuration: SortAndFilterConfiguration.defaultNonAlbumSort,
+  );
+
+  String collectionTitle = "";
+  BaseItemDto? selectedCollection;
+  TabContentType? collectionContent;
+  SortAndFilterController collectionSortController = SortAndFilterController(
+    configuration: SortAndFilterConfiguration.defaultNonAlbumSort,
+  );
 
   final ValueNotifier<BaseItemDto?> searchListener = ValueNotifier(null);
 
@@ -533,42 +547,59 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
   void initState() {
     super.initState();
 
-    selectedSectionType = widget.initialState.type;
-    // use getTitleForPreset instead of getTitle to avoid default titles
-    // TODO revert this because you can only get a default title from badly configured default configs?
-    sectionTitle =
+    final initialTitle = tabTitle =
         widget.initialState.customSectionTitle ??
         (widget.initialState.presetType != null
-            ? HomeScreenSectionConfiguration.getTitleForPreset(
-                context: GlobalSnackbar.materialAppScaffoldKey.currentContext!,
-                presetType: widget.initialState.presetType!,
-              )
+            // Widget context is not available yet
+            ? widget.initialState.getTitle(GlobalSnackbar.materialAppScaffoldKey.currentContext!)
             : "");
+
+    selectedSectionType = widget.initialState.type;
+
+    switch (widget.initialState.type) {
+      case HomeScreenSectionType.tabView:
+        selectedLibrary = widget.initialState.itemId;
+        tabContent = widget.initialState.contentType;
+        tabSortController.value = widget.initialState.sortAndFilterConfiguration;
+        tabTitle = initialTitle;
+      case HomeScreenSectionType.collection:
+        collectionSortController.value = widget.initialState.sortAndFilterConfiguration;
+        collectionTitle = initialTitle;
+      case HomeScreenSectionType.queues:
+        break;
+    }
+
     searchListener.addListener(() {
       setState(() {
         selectedCollection = searchListener.value;
-        sectionTitle = searchListener.value?.name ?? "";
+        collectionTitle = searchListener.value?.name ?? "";
         if (searchListener.value != null) {
+          bool inPlaylist = false;
           switch (BaseItemDtoType.fromItem(searchListener.value!)) {
-            case BaseItemDtoType.album:
             case BaseItemDtoType.playlist:
-              selectedContentType = TabContentType.tracks;
-              if (searchListener.value!.id != widget.initialState.itemId) {
-                sortAndFilterController.value = ref.read(sortAndFilterConfigFromSettingsProvider(null));
-              }
+            case BaseItemDtoType.album:
+              collectionContent = TabContentType.tracks;
+              inPlaylist = true;
             case BaseItemDtoType.artist:
             case BaseItemDtoType.genre:
-              selectedContentType = TabContentType.tracks;
+              collectionContent = TabContentType.tracks;
             case BaseItemDtoType.collection:
-              selectedContentType = null;
+              collectionContent = TabContentType.home;
             case _:
               throw UnimplementedError();
           }
+          if (searchListener.value!.id == widget.initialState.itemId) {
+            collectionSortController.value = widget.initialState.sortAndFilterConfiguration;
+          } else {
+            collectionSortController.value = inPlaylist
+                ? SortAndFilterConfiguration.defaultAlbumSort
+                : SortAndFilterConfiguration.defaultNonAlbumSort;
+          }
+        } else {
+          collectionContent = null;
         }
       });
     });
-    selectedContentType = widget.initialState.contentType;
-    sortAndFilterController = SortAndFilterController(configuration: widget.initialState.sortAndFilterConfiguration);
   }
 
   @override
@@ -577,21 +608,44 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
     super.dispose();
   }
 
-  HomeScreenSectionConfiguration get currentSectionInfo => HomeScreenSectionConfiguration(
-    type: selectedSectionType,
-    customSectionTitle: sectionTitle == "" ? null : sectionTitle,
-    itemId: selectedSectionType == HomeScreenSectionType.collection ? selectedCollection?.id : null,
-    contentType: selectedSectionType != HomeScreenSectionType.queues ? selectedContentType : null,
-    sortAndFilterConfiguration: sortAndFilterController.configuration,
-  );
+  SortAndFilterController? get activeSortController => switch (selectedSectionType) {
+    HomeScreenSectionType.tabView => tabSortController,
+    HomeScreenSectionType.collection => collectionSortController,
+    HomeScreenSectionType.queues => null,
+  };
+
+  String get activeTitle => switch (selectedSectionType) {
+    HomeScreenSectionType.tabView => tabTitle,
+    HomeScreenSectionType.collection => collectionTitle,
+    HomeScreenSectionType.queues => "Queues*",
+  };
+
+  HomeScreenSectionConfiguration? get currentSectionInfo {
+    final id = selectedSectionType == HomeScreenSectionType.collection ? selectedCollection?.id : selectedLibrary;
+    final type = switch (selectedSectionType) {
+      HomeScreenSectionType.tabView => tabContent,
+      HomeScreenSectionType.collection => collectionContent,
+      HomeScreenSectionType.queues => TabContentType.home,
+    };
+    if (id == null || type == null) return null;
+
+    return HomeScreenSectionConfiguration(
+      type: selectedSectionType,
+      customSectionTitle: activeTitle == "" ? null : activeTitle,
+      itemId: id,
+      contentType: type,
+      sortAndFilterConfiguration: activeSortController?.value ?? SortAndFilterConfiguration.defaultNonAlbumSort,
+    );
+  }
 
   bool get savingEnabled {
     final section = currentSectionInfo;
+    if (section == null) return false;
     switch (section.type) {
       case HomeScreenSectionType.tabView:
-        return section.contentType != null && section.customSectionTitle != null;
+        return section.customSectionTitle != null;
       case HomeScreenSectionType.collection:
-        return section.itemId != null && section.customSectionTitle != null;
+        return section.customSectionTitle != null;
       case HomeScreenSectionType.queues:
         return true;
     }
@@ -602,9 +656,10 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
     // Normal track menu entries, excluding headers
     final menuEntries = [
       ValueListenableBuilder(
-        valueListenable: sortAndFilterController,
+        // We don't care what we listen to while on queue tab type, so just grab tabSort.
+        valueListenable: activeSortController ?? tabSortController,
         builder: (_, _, _) {
-          return SectionPreview(sectionInfo: currentSectionInfo, customTitle: sectionTitle);
+          return SectionPreview(sectionInfo: currentSectionInfo);
         },
       ),
       SizedBox(height: 16.0),
@@ -626,7 +681,6 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
               if (selectedActionType != null) {
                 setState(() {
                   selectedSectionType = selectedActionType;
-                  selectedContentType = null;
                 });
               }
             },
@@ -652,45 +706,15 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
                       ? widget.dragController.size
                       : HomeScreenSectionConfigurationMenu.initialSheetExtent) *
                   0.25,
-              initialItem: widget.initialState.itemId,
+              initialItem: widget.initialState.type == HomeScreenSectionType.collection
+                  ? widget.initialState.itemId
+                  : null,
               showTracks: false,
             ),
           ],
         ),
       ],
       if (selectedSectionType == HomeScreenSectionType.tabView) ...[
-        SizedBox(height: 20.0),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          spacing: 4.0,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 4.0),
-              child: Text("Section Title*", style: Theme.of(context).textTheme.bodyMedium),
-            ),
-            TextField(
-              controller: TextEditingController(text: sectionTitle)
-                ..selection = TextSelection.fromPosition(TextPosition(offset: sectionTitle.length)),
-              decoration: InputDecoration(
-                hintText: "e.g. Favorite tracks*",
-                filled: true,
-                fillColor: Color.alphaBlend(
-                  ColorScheme.of(context).onSurface.withOpacity(0.1),
-                  ColorScheme.of(context).surface,
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
-              ),
-              onChanged: (newValue) {
-                setState(() {
-                  sectionTitle = newValue;
-                });
-              },
-            ),
-          ],
-        ),
         SizedBox(height: 20.0),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -708,14 +732,82 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
                   )
                   .map((e) => DropdownMenuEntry<TabContentType>(value: e, label: e.toLocalisedString(context)))
                   .toList(),
-              selectedValue: selectedContentType ?? TabContentType.tracks,
+              selectedValue: tabContent,
               onSelected: (selectedTabType) {
                 if (selectedTabType != null) {
                   setState(() {
-                    selectedContentType = selectedTabType;
+                    tabContent = selectedTabType;
                   });
                 }
               },
+            ),
+          ],
+        ),
+        SizedBox(height: 20.0),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          spacing: 4.0,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0),
+              child: Text("Library*", style: Theme.of(context).textTheme.bodyMedium),
+            ),
+            Consumer(
+              builder: (_, ref, _) {
+                final views = ref.watch(JellyfinApiHelper.viewsProvider).value;
+                return FinampSettingsDropdown<BaseItemId?>(
+                  dropdownItems: [
+                    DropdownMenuEntry<BaseItemId?>(
+                      value: currentLibraryPlaceholder,
+                      label: "Current library*",
+                      leadingIcon: const Icon(TablerIcons.bolt),
+                    ),
+                    if (views != null) ...views.map((e) => DropdownMenuEntry<BaseItemId?>(value: e.id, label: e.name!)),
+                    if (views == null) DropdownMenuEntry<BaseItemId?>(value: null, label: "Loading*"),
+                  ],
+                  selectedValue: selectedLibrary,
+                  onSelected: (selectedLibraryId) {
+                    if (selectedLibraryId != null) {
+                      setState(() {
+                        selectedLibrary = selectedLibraryId;
+                      });
+                    }
+                  },
+                );
+              },
+            ),
+            SizedBox(height: 20.0),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              spacing: 4.0,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 4.0),
+                  child: Text("Section Title*", style: Theme.of(context).textTheme.bodyMedium),
+                ),
+                TextField(
+                  controller: TextEditingController(text: tabTitle)
+                    ..selection = TextSelection.fromPosition(TextPosition(offset: tabTitle.length)),
+                  decoration: InputDecoration(
+                    hintText: "e.g. Favorite tracks*",
+                    filled: true,
+                    fillColor: Color.alphaBlend(
+                      ColorScheme.of(context).onSurface.withOpacity(0.1),
+                      ColorScheme.of(context).surface,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onChanged: (newValue) {
+                    setState(() {
+                      tabTitle = newValue;
+                    });
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -731,20 +823,24 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
             padding: const EdgeInsets.only(left: 4.0),
             child: Text("Sort By*", style: Theme.of(context).textTheme.bodyMedium),
           ),
-          SortAndFilterRow(
-            tabType: selectedContentType ?? TabContentType.tracks,
-            controller: sortAndFilterController,
-            forPlaylistTracks:
-                selectedCollection != null &&
-                [
-                  BaseItemDtoType.album,
-                  BaseItemDtoType.playlist,
-                ].contains(BaseItemDtoType.fromItem(selectedCollection!)),
-          ),
+          if (selectedSectionType != HomeScreenSectionType.queues)
+            SortAndFilterRow(
+              tabType: selectedSectionType == HomeScreenSectionType.collection
+                  ? collectionContent ?? TabContentType.tracks
+                  : tabContent,
+              controller: activeSortController!,
+              forPlaylistTracks:
+                  selectedCollection != null &&
+                  selectedSectionType == HomeScreenSectionType.collection &&
+                  [
+                    BaseItemDtoType.album,
+                    BaseItemDtoType.playlist,
+                  ].contains(BaseItemDtoType.fromItem(selectedCollection!)),
+            ),
         ],
       ),
       SizedBox(height: 24.0),
-      if (sectionTitle == "" && selectedSectionType == HomeScreenSectionType.tabView)
+      if (tabTitle == "" && selectedSectionType == HomeScreenSectionType.tabView)
         Text(
           "Please give the custom section a title*",
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error),
@@ -758,9 +854,10 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
           Navigator.of(context).pop(currentSectionInfo);
         },
       ),
-      SizedBox(height: 200.0),
+      SizedBox(height: 20.0),
     ];
-    final stackHeight = 40.0;
+    // TODO calculate real size or otherwise fix.
+    final stackHeight = 200.0;
 
     return widget.childBuilder(stackHeight, [
       SliverStickyHeader(
@@ -887,29 +984,15 @@ Future<HomeScreenSectionPresetType?> showSectionPresetPickerMenu(
 }
 
 class SectionPreview extends ConsumerWidget {
-  const SectionPreview({super.key, required this.sectionInfo, this.customTitle});
+  const SectionPreview({super.key, required this.sectionInfo});
 
-  final HomeScreenSectionConfiguration sectionInfo;
-  final String? customTitle;
-
-  bool _isValid(HomeScreenSectionConfiguration section) {
-    switch (section.type) {
-      case HomeScreenSectionType.tabView:
-        return section.contentType != null;
-      case HomeScreenSectionType.collection:
-        return section.itemId != null;
-      case HomeScreenSectionType.queues:
-        return true;
-    }
-  }
+  final HomeScreenSectionConfiguration? sectionInfo;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hasTitle = ((customTitle ?? "") != "") || sectionInfo.presetType != null;
+    final hasTitle = (sectionInfo?.customSectionTitle ?? "") != "" || sectionInfo?.presetType != null;
 
-    final sectionTitle = ((customTitle ?? "") != "")
-        ? customTitle!
-        : (sectionInfo.presetType != null ? sectionInfo.getTitle(context) : "Preview*");
+    final sectionTitle = hasTitle ? sectionInfo!.getTitle(context) : "Preview*";
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -926,8 +1009,8 @@ class SectionPreview extends ConsumerWidget {
                 )
               : Theme.of(context).textTheme.bodyMedium,
         ),
-        _isValid(sectionInfo)
-            ? HomeScreenSectionContent(sectionInfo: sectionInfo)
+        sectionInfo != null
+            ? HomeScreenSectionContent(sectionInfo: sectionInfo!)
             : Center(child: Text("Current config is not valid.*")),
       ],
     );
@@ -935,13 +1018,7 @@ class SectionPreview extends ConsumerWidget {
 }
 
 class GlobalSearchBox extends ConsumerStatefulWidget {
-  const GlobalSearchBox(
-    this.notifier, {
-    super.key,
-    required this.height,
-    this.initialItem,
-    required bool this.showTracks,
-  });
+  const GlobalSearchBox(this.notifier, {super.key, required this.height, this.initialItem, required this.showTracks});
 
   final ValueNotifier<BaseItemDto?> notifier;
   final BaseItemId? initialItem;

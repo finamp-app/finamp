@@ -33,10 +33,14 @@ class BaseItemIdConverter extends JsonConverter<BaseItemId, String> {
 extension type BaseItemId._(String raw) {
   /// Construct a BaseItemDto id from a raw string.  Please be sure you have a valid ID before using, and
   /// if you might not, consider the invalid ID's scope and if you can use an alternative, such as null
-  BaseItemId(this.raw);
+  const BaseItemId(this.raw);
 
   String operator +(BaseItemId other) => raw + other.raw;
 }
+
+// These get saved into home screen configuration and cannot be modified.
+const BaseItemId allLibraryPlaceholder = BaseItemId("finamp-all-libraries-placeholder");
+const BaseItemId currentLibraryPlaceholder = BaseItemId("finamp-current-library-placeholder");
 
 /// An abstract class to implement converting runTimeTicks into a duration.
 /// Ideally, we'd hold runTimeTicks here, but that would break offline storage
@@ -1344,8 +1348,14 @@ class PlayableBaseItem implements PlayableItem {
     );
   }
 
-  factory PlayableBaseItem.defaultSort(BaseItemDto item) =>
-      PlayableBaseItem(item: item, sortConfig: SortAndFilterConfiguration.defaultSort);
+  factory PlayableBaseItem.defaultSort(BaseItemDto item) => PlayableBaseItem(
+    item: item,
+    sortConfig: switch (BaseItemDtoType.fromItem(item)) {
+      BaseItemDtoType.album => SortAndFilterConfiguration.defaultAlbumSort,
+      BaseItemDtoType.playlist => SortAndFilterConfiguration.defaultAlbumSort,
+      _ => SortAndFilterConfiguration.defaultNonAlbumSort,
+    },
+  );
 
   BaseItemDto item;
   SortAndFilterConfiguration sortConfig;

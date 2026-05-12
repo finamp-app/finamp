@@ -266,6 +266,7 @@ class DefaultSettings {
       HomeScreenSectionConfiguration(
         type: HomeScreenSectionType.tabView,
         contentType: TabContentType.tracks,
+        itemId: currentLibraryPlaceholder,
         sortAndFilterConfiguration: SortAndFilterConfiguration(
           sortBy: SortBy.datePlayed,
           sortOrder: SortOrder.descending,
@@ -275,6 +276,7 @@ class DefaultSettings {
       HomeScreenSectionConfiguration(
         type: HomeScreenSectionType.tabView,
         contentType: TabContentType.albums,
+        itemId: currentLibraryPlaceholder,
         sortAndFilterConfiguration: SortAndFilterConfiguration(
           sortBy: SortBy.dateCreated,
           sortOrder: SortOrder.descending,
@@ -284,6 +286,7 @@ class DefaultSettings {
       HomeScreenSectionConfiguration(
         type: HomeScreenSectionType.tabView,
         contentType: TabContentType.performingArtists,
+        itemId: currentLibraryPlaceholder,
         sortAndFilterConfiguration: SortAndFilterConfiguration(
           sortBy: SortBy.sortName,
           sortOrder: SortOrder.ascending,
@@ -4151,9 +4154,9 @@ class HomeScreenSectionConfiguration {
   @HiveField(0)
   final HomeScreenSectionType type;
   @HiveField(1)
-  final BaseItemId? itemId;
+  final BaseItemId itemId;
   @HiveField(2)
-  final TabContentType? contentType; //TODO make this a list?
+  final TabContentType contentType; //TODO make this a list?
   @HiveField(3)
   final SortAndFilterConfiguration sortAndFilterConfiguration;
   @HiveField(4)
@@ -4163,8 +4166,8 @@ class HomeScreenSectionConfiguration {
 
   const HomeScreenSectionConfiguration({
     required this.type,
-    this.itemId,
-    this.contentType,
+    required this.itemId,
+    required this.contentType,
     required this.sortAndFilterConfiguration,
     this.customSectionTitle,
     this.presetType,
@@ -4173,7 +4176,7 @@ class HomeScreenSectionConfiguration {
   factory HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType presetType) => switch (presetType) {
     HomeScreenSectionPresetType.favoriteTracks => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       contentType: TabContentType.tracks,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
@@ -4185,7 +4188,7 @@ class HomeScreenSectionConfiguration {
     ),
     HomeScreenSectionPresetType.favoriteAlbums => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       contentType: TabContentType.albums,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
@@ -4197,7 +4200,7 @@ class HomeScreenSectionConfiguration {
     ),
     HomeScreenSectionPresetType.favoriteArtists => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       contentType: TabContentType.performingArtists,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
@@ -4209,7 +4212,7 @@ class HomeScreenSectionConfiguration {
     ),
     HomeScreenSectionPresetType.favoritePlaylists => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       contentType: TabContentType.playlists,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
@@ -4221,7 +4224,7 @@ class HomeScreenSectionConfiguration {
     ),
     HomeScreenSectionPresetType.favoriteGenres => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       contentType: TabContentType.genres,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
@@ -4233,7 +4236,7 @@ class HomeScreenSectionConfiguration {
     ),
     HomeScreenSectionPresetType.recentlyAddedAlbums => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       contentType: TabContentType.albums,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.dateCreated,
@@ -4245,7 +4248,7 @@ class HomeScreenSectionConfiguration {
     ),
     HomeScreenSectionPresetType.recentlyAddedTracks => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       contentType: TabContentType.tracks,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.dateCreated,
@@ -4269,7 +4272,7 @@ class HomeScreenSectionConfiguration {
     // ),
     HomeScreenSectionPresetType.frequentlyPlayedAlbums => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       contentType: TabContentType.albums,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.playCount,
@@ -4281,7 +4284,7 @@ class HomeScreenSectionConfiguration {
     ),
     HomeScreenSectionPresetType.frequentlyPlayedTracks => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       contentType: TabContentType.tracks,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.playCount,
@@ -4293,7 +4296,7 @@ class HomeScreenSectionConfiguration {
     ),
     HomeScreenSectionPresetType.frequentlyPlayedArtists => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       contentType: TabContentType.performingArtists,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.playCount,
@@ -4305,18 +4308,19 @@ class HomeScreenSectionConfiguration {
     ),
     HomeScreenSectionPresetType.neverPlayedAlbums => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
         sortOrder: SortOrder.ascending,
         filters: {ItemFilter(type: ItemFilterType.isUnplayed)},
       ),
+      contentType: TabContentType.albums,
       customSectionTitle: null,
       presetType: presetType,
     ),
     HomeScreenSectionPresetType.forgottenFavoriteTracks => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
-      itemId: null,
+      itemId: currentLibraryPlaceholder,
       contentType: TabContentType.tracks,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.datePlayed,
@@ -4328,8 +4332,8 @@ class HomeScreenSectionConfiguration {
     ),
     HomeScreenSectionPresetType.recentQueues => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.queues,
-      itemId: null,
-      contentType: null,
+      itemId: allLibraryPlaceholder,
+      contentType: TabContentType.home,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.datePlayed,
         sortOrder: SortOrder.descending,
@@ -4431,7 +4435,7 @@ class HomeScreenSectionConfiguration {
   String _humanReadableLocalisedName(HomeScreenSectionConfiguration homeScreenSectionInfo, BuildContext context) {
     switch (homeScreenSectionInfo.type) {
       case HomeScreenSectionType.tabView:
-        return "${homeScreenSectionInfo.sortAndFilterConfiguration.filters.map((filter) => filter.extras != null ? "${filter.type.name} (${filter.extras})" : filter.type.name).join(", ")} ${homeScreenSectionInfo.contentType?.toLocalisedString(context) ?? "Tab View"} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortBy.toLocalisedString(context)} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortOrder == SortOrder.ascending ? "↑" : "↓"}*";
+        return "${homeScreenSectionInfo.sortAndFilterConfiguration.filters.map((filter) => filter.extras != null ? "${filter.type.name} (${filter.extras})" : filter.type.name).join(", ")} ${homeScreenSectionInfo.contentType.toLocalisedString(context) ?? "Tab View"} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortBy.toLocalisedString(context)} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortOrder == SortOrder.ascending ? "↑" : "↓"}*";
       case HomeScreenSectionType.collection:
         return "Collection*";
       case HomeScreenSectionType.queues:
@@ -4735,7 +4739,13 @@ class SortAndFilterConfiguration {
     );
   }
 
-  static const defaultSort = SortAndFilterConfiguration(
+  static const defaultNonAlbumSort = SortAndFilterConfiguration(
+    sortBy: SortBy.sortName,
+    sortOrder: SortOrder.ascending,
+    filters: {},
+  );
+
+  static const defaultAlbumSort = SortAndFilterConfiguration(
     sortBy: SortBy.defaultOrder,
     sortOrder: SortOrder.ascending,
     filters: {},

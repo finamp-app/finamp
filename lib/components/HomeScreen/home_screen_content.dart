@@ -19,7 +19,6 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/music_screen_provider.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/quick_actions_service.dart';
@@ -44,17 +43,9 @@ class HomeScreenContent extends ConsumerStatefulWidget {
 
 class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
   void _refresh() {
-    var currentLibrary = ref.watch(
-      FinampUserHelper.finampCurrentUserProvider.select((value) => value.valueOrNull?.currentView),
-    );
     for (var section in ref.watch(finampSettingsProvider.homeScreenConfiguration).sections) {
       ref.invalidate(
-        loadHomeSectionItemsProvider(
-          sectionInfo: section,
-          library: currentLibrary,
-          startIndex: 0,
-          limit: homeScreenSectionItemLimit,
-        ),
+        loadHomeSectionItemsProvider(sectionInfo: section, startIndex: 0, limit: homeScreenSectionItemLimit),
       );
     }
   }
@@ -197,9 +188,6 @@ class HomeScreenSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var currentLibrary = ref.watch(
-      FinampUserHelper.finampCurrentUserProvider.select((value) => value.valueOrNull?.currentView),
-    );
     bool isOffline = ref.watch(finampSettingsProvider.isOffline);
     bool isDownloaded =
         sectionInfo.type !=
@@ -239,7 +227,6 @@ class HomeScreenSection extends ConsumerWidget {
                       final initialItems = await ref.read(
                         loadHomeSectionItemsProvider(
                           sectionInfo: sectionInfo,
-                          library: currentLibrary,
                           startIndex: 0,
                           limit: homeScreenSectionItemLimit,
                         ).future,
@@ -254,7 +241,6 @@ class HomeScreenSection extends ConsumerWidget {
                       var items = (await ref.read(
                         loadHomeSectionItemsProvider(
                           sectionInfo: sectionInfo,
-                          library: currentLibrary,
                           // skipping existing items in randomized sections isn't needed since the order will be different
                           startIndex: isRandomizedSection ? 0 : homeScreenSectionItemLimit,
                           limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
@@ -300,7 +286,6 @@ class HomeScreenSection extends ConsumerWidget {
                               sortBy: SortBy.random,
                             ),
                           ),
-                          library: currentLibrary,
                           startIndex: 0,
                           limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
                         ).future,
@@ -354,7 +339,6 @@ class HomeScreenSection extends ConsumerWidget {
           final items = await ref.read(
             loadHomeSectionItemsProvider(
               sectionInfo: sectionInfo,
-              library: currentLibrary,
               startIndex: 0,
               limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
             ).future,
@@ -376,14 +360,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //!!! remove the preset type to allow matching the provider content based just on its media properties
-    var currentLibrary = ref.watch(
-      FinampUserHelper.finampCurrentUserProvider.select((value) => value.valueOrNull?.currentView),
-    );
     bool isOffline = ref.watch(finampSettingsProvider.isOffline);
-    bool isDownloaded =
-        sectionInfo.type !=
-        HomeScreenSectionType
-            .collection; //TODO implement once collection downloads or generic item sections are supported
     AsyncValue<List<dynamic>?> items;
     switch (sectionInfo.type) {
       case HomeScreenSectionType.queues:
@@ -409,12 +386,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
       case HomeScreenSectionType.collection:
         items = ref
             .watch(
-              loadHomeSectionItemsProvider(
-                sectionInfo: sectionInfo,
-                library: currentLibrary,
-                startIndex: 0,
-                limit: homeScreenSectionItemLimit,
-              ),
+              loadHomeSectionItemsProvider(sectionInfo: sectionInfo, startIndex: 0, limit: homeScreenSectionItemLimit),
             )
             .unwrapPrevious();
     }
@@ -430,48 +402,48 @@ class HomeScreenSectionContent extends ConsumerWidget {
     return switch (items) {
       AsyncData(:final value) => switch (value) {
         null => _buildHorizontalSkeletonLoader(ref),
-        [] => const Center(child: Text("No items available.*", maxLines: 1)),
-        _ =>
-          (isOffline && !isDownloaded)
+        [] =>
+          isOffline
               ? const Center(child: Text("Section contents not downloaded.*", maxLines: 1))
-              : SizedBox(
-                  height: calculateItemCollectionCardHeight(ref: ref, sectionInfo: sectionInfo, itemType: null),
-                  child: ScrollConfiguration(
-                    behavior: ScrollConfiguration.of(context).copyWith(dragDevices: PointerDeviceKind.values.toSet()),
-                    child: ListView.separated(
-                      addAutomaticKeepAlives: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: value.length + 1,
-                      itemBuilder: (context, rawIndex) {
-                        if (rawIndex == 0) {
-                          return SizedBox(width: 4.0); // initial padding, + separator
-                        }
-                        final index = rawIndex - 1;
-                        switch (sectionInfo.type) {
-                          case HomeScreenSectionType.queues:
-                            final queueInfo = value[index] as FinampStorableQueueInfo;
-                            return HomeScreenQueueTile(key: ValueKey(queueInfo.creation), info: queueInfo);
-                          case HomeScreenSectionType.tabView:
-                          case HomeScreenSectionType.collection:
-                            final item = value[index] as BaseItemDto;
-                            return ItemWrapper(
-                              key: ValueKey(item.id),
-                              item: item,
-                              isGrid: true,
-                              forceText: true,
-                              interactive: interactive,
-                              source: source,
-                            );
-                        }
-                      },
-                      separatorBuilder: (context, index) => const SizedBox(width: 8, height: 1),
-                    ),
-                  ),
-                ),
+              : const Center(child: Text("No items available.*", maxLines: 1)),
+        _ => SizedBox(
+          height: calculateItemCollectionCardHeight(ref: ref, sectionInfo: sectionInfo, itemType: null),
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(dragDevices: PointerDeviceKind.values.toSet()),
+            child: ListView.separated(
+              addAutomaticKeepAlives: true,
+              scrollDirection: Axis.horizontal,
+              itemCount: value.length + 1,
+              itemBuilder: (context, rawIndex) {
+                if (rawIndex == 0) {
+                  return SizedBox(width: 4.0); // initial padding, + separator
+                }
+                final index = rawIndex - 1;
+                switch (sectionInfo.type) {
+                  case HomeScreenSectionType.queues:
+                    final queueInfo = value[index] as FinampStorableQueueInfo;
+                    return HomeScreenQueueTile(key: ValueKey(queueInfo.creation), info: queueInfo);
+                  case HomeScreenSectionType.tabView:
+                  case HomeScreenSectionType.collection:
+                    final item = value[index] as BaseItemDto;
+                    return ItemWrapper(
+                      key: ValueKey(item.id),
+                      item: item,
+                      isGrid: true,
+                      forceText: true,
+                      interactive: interactive,
+                      source: source,
+                    );
+                }
+              },
+              separatorBuilder: (context, index) => const SizedBox(width: 8, height: 1),
+            ),
+          ),
+        ),
         // _ => _buildHorizontalSkeletonLoader(),
       },
       AsyncError(:final error) => () {
-        _homeScreenLogger.severe("Error loading items: $error");
+        _homeScreenLogger.severe("Error loading items: $error", error);
         return Center(child: Text("Failed to load items.", maxLines: 1));
       }(),
       _ => _buildHorizontalSkeletonLoader(ref),

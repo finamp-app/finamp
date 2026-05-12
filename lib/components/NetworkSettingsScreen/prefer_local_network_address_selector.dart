@@ -62,7 +62,7 @@ class LocalNetworkAddressSelectorState extends ConsumerState<LocalNetworkAddress
 
   @override
   Widget build(BuildContext context) {
-    FinampUser? user = ref.watch(FinampUserHelper.finampCurrentUserProvider).valueOrNull;
+    FinampUser? user = ref.watch(FinampUserHelper.finampCurrentUserProvider);
     bool featureEnabled = user?.preferLocalNetwork ?? DefaultSettings.preferLocalNetwork;
 
     return ListTile(

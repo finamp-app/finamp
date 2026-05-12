@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart' show MusicRefreshCallback;
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -69,10 +68,7 @@ class _ShowAllScreenState extends ConsumerState<ShowAllScreen> {
       _sectionInfoCache ?? ModalRoute.of(context)!.settings.arguments as HomeScreenSectionConfiguration;
 
   MusicScreenContentProvider get pageControl {
-    var currentLibrary = ref.watch(
-      FinampUserHelper.finampCurrentUserProvider.select((value) => value.valueOrNull?.currentView),
-    );
-    return musicScreenContentProvider(MusicScreenRequest.home(config: sectionInfo, library: currentLibrary));
+    return musicScreenContentProvider(MusicScreenRequest.home(config: sectionInfo));
   }
 
   @override

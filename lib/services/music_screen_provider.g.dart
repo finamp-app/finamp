@@ -12,7 +12,7 @@ part of 'music_screen_provider.dart';
 // **************************************************************************
 
 String _$loadHomeSectionItemsHash() =>
-    r'8d2f2ccf262a2d3992d878ee753eced25cf071b8';
+    r'98d63da2949586391d4258610cbc74a0394dd75f';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -48,13 +48,11 @@ class LoadHomeSectionItemsFamily
   /// See also [loadHomeSectionItems].
   LoadHomeSectionItemsProvider call({
     required HomeScreenSectionConfiguration sectionInfo,
-    required BaseItemDto? library,
     required int startIndex,
     required int limit,
   }) {
     return LoadHomeSectionItemsProvider(
       sectionInfo: sectionInfo,
-      library: library,
       startIndex: startIndex,
       limit: limit,
     );
@@ -66,7 +64,6 @@ class LoadHomeSectionItemsFamily
   ) {
     return call(
       sectionInfo: provider.sectionInfo,
-      library: provider.library,
       startIndex: provider.startIndex,
       limit: provider.limit,
     );
@@ -92,14 +89,12 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
   /// See also [loadHomeSectionItems].
   LoadHomeSectionItemsProvider({
     required HomeScreenSectionConfiguration sectionInfo,
-    required BaseItemDto? library,
     required int startIndex,
     required int limit,
   }) : this._internal(
          (ref) => loadHomeSectionItems(
            ref as LoadHomeSectionItemsRef,
            sectionInfo: sectionInfo,
-           library: library,
            startIndex: startIndex,
            limit: limit,
          ),
@@ -112,7 +107,6 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
          allTransitiveDependencies:
              LoadHomeSectionItemsFamily._allTransitiveDependencies,
          sectionInfo: sectionInfo,
-         library: library,
          startIndex: startIndex,
          limit: limit,
        );
@@ -125,13 +119,11 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.sectionInfo,
-    required this.library,
     required this.startIndex,
     required this.limit,
   }) : super.internal();
 
   final HomeScreenSectionConfiguration sectionInfo;
-  final BaseItemDto? library;
   final int startIndex;
   final int limit;
 
@@ -150,7 +142,6 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         sectionInfo: sectionInfo,
-        library: library,
         startIndex: startIndex,
         limit: limit,
       ),
@@ -166,7 +157,6 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
   bool operator ==(Object other) {
     return other is LoadHomeSectionItemsProvider &&
         other.sectionInfo == sectionInfo &&
-        other.library == library &&
         other.startIndex == startIndex &&
         other.limit == limit;
   }
@@ -175,7 +165,6 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, sectionInfo.hashCode);
-    hash = _SystemHash.combine(hash, library.hashCode);
     hash = _SystemHash.combine(hash, startIndex.hashCode);
     hash = _SystemHash.combine(hash, limit.hashCode);
 
@@ -188,9 +177,6 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
 mixin LoadHomeSectionItemsRef on FutureProviderRef<List<BaseItemDto>?> {
   /// The parameter `sectionInfo` of this provider.
   HomeScreenSectionConfiguration get sectionInfo;
-
-  /// The parameter `library` of this provider.
-  BaseItemDto? get library;
 
   /// The parameter `startIndex` of this provider.
   int get startIndex;
@@ -207,8 +193,6 @@ class _LoadHomeSectionItemsProviderElement
   @override
   HomeScreenSectionConfiguration get sectionInfo =>
       (origin as LoadHomeSectionItemsProvider).sectionInfo;
-  @override
-  BaseItemDto? get library => (origin as LoadHomeSectionItemsProvider).library;
   @override
   int get startIndex => (origin as LoadHomeSectionItemsProvider).startIndex;
   @override
@@ -353,7 +337,7 @@ class _GlobalSearchProviderElement
 }
 
 String _$musicScreenContentHash() =>
-    r'7766c5c4e33b24f4eaf0842ed23b373294f94f75';
+    r'50a35f666a76d306e1b1182b6e14eca72d943ae1';
 
 abstract class _$MusicScreenContent
     extends BuildlessAutoDisposeNotifier<PagingState<int, BaseItemDto>> {
