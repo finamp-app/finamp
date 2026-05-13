@@ -202,7 +202,7 @@ class AudioServiceHelper {
       parentItem: _finampUserHelper.currentUser?.currentView,
       includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
       limit: 1,
-      sortBy: SortBy.random.jellyfinName(TabContentType.tracks),
+      sortBy: SortBy.random.jellyfinName(ContentType.tracks),
     );
     if (randomTracks != null && randomTracks.isNotEmpty) {
       await GetIt.instance<QueueService>().startPlayback(
@@ -250,7 +250,7 @@ class AudioServiceHelper {
           await _jellyfinApiHelper.getItems(
             parentItem: randomFavorite,
             includeItemTypes: [BaseItemDtoType.track].map((e) => e.jellyfinName).join(","),
-            sortBy: SortBy.defaultOrder.jellyfinName(TabContentType.tracks),
+            sortBy: SortBy.defaultOrder.jellyfinName(ContentType.tracks),
             sortOrder: SortOrder.ascending.name,
           ) ??
           [];

@@ -37,13 +37,12 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
   final _downloadsService = GetIt.instance<DownloadsService>();
   final Set<CuratedItemSelectionType> _disabledTrackFilters = {};
   SortAndFilterController controller = SortAndFilterController(
-    configuration: SortAndFilterConfiguration.defaultNonAlbumSort,
+    startingConfig: SortAndFilterConfiguration.defaultSort,
+    contentType: ContentType.mixed,
   );
   CuratedItemSelectionType? clickedCuratedItemSelectionType;
 
   StreamSubscription<void>? _refreshStream;
-
-  bool get disableDownloads => controller.value.filters.isNotEmpty;
 
   @override
   void initState() {
@@ -51,16 +50,12 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
       _refresh();
     });
     controller.updateGenreFilter(widget.genreFilter);
-    controller.addListener(_listen);
     super.initState();
   }
-
-  void _listen() => setState(() {});
 
   @override
   void dispose() {
     _refreshStream?.cancel();
-    controller.dispose();
     super.dispose();
   }
 
@@ -80,6 +75,8 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
     final artistItemSectionsOrder = ref.watch(finampSettingsProvider.artistItemSectionsOrder);
     final artistCuratedItemSectionFilterOrder = ref.watch(finampSettingsProvider.artistItemSectionFilterChipOrder);
     final bool autoSwitchItemCurationTypeEnabled = ref.watch(finampSettingsProvider.autoSwitchItemCurationType);
+    final sortConfig = ref.watch(resolveSortProvider(controller));
+    final disableDownloads = sortConfig.filters.isNotEmpty;
 
     List<BaseItemDto> allChildren = [];
 
@@ -93,7 +90,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
               getArtistTracksSectionProvider(
                 artist: widget.parent,
                 libraryFilter: widget.library,
-                genreFilter: controller.value.genreFilter?.id,
+                genreFilter: sortConfig.genreFilter?.id,
               ),
             )
             .valueOrNull ??
@@ -103,7 +100,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
           getArtistAlbumsProvider(
             artist: widget.parent,
             libraryFilter: widget.library,
-            genreFilter: controller.value.genreFilter?.id,
+            genreFilter: sortConfig.genreFilter?.id,
           ),
         )
         .valueOrNull;
@@ -112,7 +109,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
           getPerformingArtistAlbumsProvider(
             artist: widget.parent,
             libraryFilter: widget.library,
-            genreFilter: controller.value.genreFilter?.id,
+            genreFilter: sortConfig.genreFilter?.id,
           ),
         )
         .valueOrNull;
@@ -121,7 +118,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
           getPerformingArtistTracksProvider(
             artist: widget.parent,
             libraryFilter: widget.library,
-            genreFilter: controller.value.genreFilter?.id,
+            genreFilter: sortConfig.genreFilter?.id,
           ),
         )
         .valueOrNull;
@@ -129,7 +126,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
       getArtistTracksProvider(
         artist: widget.parent,
         libraryFilter: widget.library,
-        genreFilter: controller.value.genreFilter?.id,
+        genreFilter: sortConfig.genreFilter?.id,
       ).future,
     );
 
@@ -154,7 +151,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         context: context,
         typeSelected: clickedCuratedItemSelectionType,
         messageFor: BaseItemDtoType.artist,
-        hasGenreFilter: (controller.value.genreFilter != null),
+        hasGenreFilter: (sortConfig.genreFilter != null),
       );
       // When we've sent the message, we should reset the clicked value
       // so that we don't send it again on next state refresh
@@ -182,11 +179,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
             // FlexibleSpaceBar. We add the toolbar height ([kToolbarHeight]) since the widget
             // should appear below the appbar.
             expandedHeight:
-                kToolbarHeight +
-                125 +
-                24 +
-                100 +
-                (controller.value.filters.isNotEmpty ? SortAndFilterRow.height + 10 : 0),
+                kToolbarHeight + 125 + 24 + 100 + (sortConfig.filters.isNotEmpty ? SortAndFilterRow.height + 10 : 0),
             leading: FinampAppBarBackButton(),
             centerTitle: false,
             pinned: true,
@@ -234,7 +227,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                         childrenForQueue: topTracks,
                         tracksText: type.toLocalisedSectionTitle(context, artistCuratedItemSelectionType),
                         isOnArtistScreen: true,
-                        genreFilter: controller.value.genreFilter,
+                        genreFilter: sortConfig.genreFilter,
                         includeFilterRow: true,
                         customFilterOrder: artistCuratedItemSectionFilterOrder,
                         selectedFilter: artistCuratedItemSelectionType,

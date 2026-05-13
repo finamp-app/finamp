@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:collection/collection.dart';
 import 'package:finamp/components/HomeScreen/finamp_music_screen_header.dart';
 import 'package:finamp/components/HomeScreen/home_screen_content.dart';
 import 'package:finamp/components/MusicScreen/artist_type_selection_row.dart';
@@ -31,14 +30,12 @@ class MusicScreen extends ConsumerStatefulWidget {
   const MusicScreen({super.key, this.singleTabConfig, this.initialTab});
 
   /// The initial tab type to show. Can also be provided as an argument in a named route
-  final TabContentType? initialTab;
+  final ContentType? initialTab;
 
   static const routeName = "/music";
 
   // Optional parameters for genre and tab filtering
   final HomeScreenSectionConfiguration? singleTabConfig;
-
-  BaseItemDto? get genreFilter => singleTabConfig?.sortAndFilterConfiguration.genreFilter;
 
   bool get showHeader => singleTabConfig == null;
 
@@ -50,8 +47,8 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
   bool isSearching = false;
   TextEditingController textEditingController = TextEditingController();
   String? searchQuery;
-  final Map<TabContentType, MusicRefreshCallback> refreshMap = {};
-  final Map<TabContentType, SortAndFilterController> sortAndFilterControllerMap = {};
+  final Map<ContentType, MusicRefreshCallback> refreshMap = {};
+  final Map<ContentType, SortAndFilterController> sortAndFilterControllerMap = {};
 
   TabController? _tabController;
 
@@ -81,16 +78,13 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     } else {
       final tabs = ref
           .watch(finampSettingsProvider.tabOrder)
+          .where((x) => x.isTab)
           .where((e) => ref.watch(finampSettingsProvider.select((value) => value.value?.showTabs[e])) ?? false);
 
       _tabController = TabController(
         length: tabs.length,
         vsync: this,
-        initialIndex: tabs.toList().indexOf(
-          widget.initialTab ??
-              FinampSettingsHelper.finampSettings.tabOrder.firstWhereOrNull((e) => tabs.contains(e)) ??
-              TabContentType.home,
-        ),
+        initialIndex: widget.initialTab == null ? 0 : tabs.toList().indexOf(widget.initialTab!),
       );
     }
 
@@ -106,28 +100,24 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
   void dispose() {
     _tabController?.dispose();
     textEditingController.dispose();
-    for (var x in sortAndFilterControllerMap.values) {
-      x.dispose();
-    }
     super.dispose();
   }
 
-  FloatingActionButton? getFloatingActionButton(List<TabContentType> sortedTabs) {
+  FloatingActionButton? getFloatingActionButton(List<ContentType> sortedTabs) {
     final currentTab = sortedTabs.elementAt(_tabController!.index);
     // Show the floating action button only on the albums, artists, generes and tracks tab.
-    if (_tabController!.index == sortedTabs.indexOf(TabContentType.tracks)) {
+    if (_tabController!.index == sortedTabs.indexOf(ContentType.tracks)) {
       return FloatingActionButton(
         tooltip: AppLocalizations.of(context)!.shuffleAll,
         onPressed: () async {
           try {
+            final config = sortAndFilterControllerMap[currentTab]!.resolveConfig();
             BaseItemDto? genreFilter;
-            if (widget.genreFilter != null) {
-              genreFilter = await ref.read(itemByIdProvider(widget.genreFilter!.id).future);
+            if (config.genreFilter != null) {
+              genreFilter = await ref.read(itemByIdProvider(config.genreFilter!.id).future);
             }
             await _audioServiceHelper.shuffleAll(
-              onlyShowFavorites: sortAndFilterControllerMap[currentTab]!.configuration.filters.any(
-                (filter) => filter.type == ItemFilterType.isFavorite,
-              ),
+              onlyShowFavorites: config.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
               genreFilter: genreFilter,
             );
           } catch (e) {
@@ -136,14 +126,14 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
         },
         child: const Icon(TablerIcons.arrows_shuffle),
       );
-    } else if ([TabContentType.genericArtists, TabContentType.albums, TabContentType.genres].contains(currentTab)) {
+    } else if ([ContentType.genericArtists, ContentType.albums, ContentType.genres].contains(currentTab)) {
       return FloatingActionButton(
         tooltip: AppLocalizations.of(context)!.startMix,
         onPressed: () async {
           try {
             switch (currentTab) {
               // TODO should this distinguish between artist types somehow?
-              case TabContentType.genericArtists:
+              case ContentType.genericArtists:
                 if (_jellyfinApiHelper.selectedMixArtists.isEmpty) {
                   GlobalSnackbar.message((scaffold) => AppLocalizations.of(context)!.startMixNoTracksArtist);
                 } else {
@@ -151,14 +141,14 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                   _jellyfinApiHelper.clearArtistMixBuilderList();
                 }
                 break;
-              case TabContentType.albums:
+              case ContentType.albums:
                 if (_jellyfinApiHelper.selectedMixAlbums.isEmpty) {
                   GlobalSnackbar.message((scaffold) => AppLocalizations.of(context)!.startMixNoTracksAlbum);
                 } else {
                   await _audioServiceHelper.startInstantMixForAlbums(_jellyfinApiHelper.selectedMixAlbums);
                 }
                 break;
-              case TabContentType.genres:
+              case ContentType.genres:
                 if (_jellyfinApiHelper.selectedMixGenres.isEmpty) {
                   GlobalSnackbar.message((scaffold) => AppLocalizations.of(context)!.startMixNoTracksGenre);
                 } else {
@@ -178,7 +168,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     }
   }
 
-  void refreshTab(TabContentType tabType) {
+  void refreshTab(ContentType tabType) {
     refreshMap[tabType]?.call();
   }
 
@@ -206,7 +196,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     }
 
     if (sortedTabs.isEmpty) {
-      FinampSetters.setShowTabs(TabContentType.home, true);
+      FinampSetters.setShowTabs(ContentType.home, true);
       // This widget should rebuild with an enabled tab on the next frame, just return empty for now.
       return SizedBox.shrink();
     }
@@ -231,10 +221,10 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
             isSearching = true;
             if (_tabController != null &&
                 !_tabController!.indexIsChanging &&
-                sortedTabs.elementAt(_tabController!.index) == TabContentType.home) {
+                sortedTabs.elementAt(_tabController!.index) == ContentType.home) {
               // we can't search on the home tab yet
               _tabController!.index = sortedTabs.toList().indexWhere(
-                (TabContentType tabType) => tabType != TabContentType.home,
+                (ContentType tabType) => tabType != ContentType.home,
               );
             }
           }),
@@ -266,16 +256,18 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                   : AlwaysScrollableScrollPhysics(),
               dragStartBehavior: DragStartBehavior.down,
               children: sortedTabs.map((tabType) {
-                if (tabType == TabContentType.home) {
+                if (tabType == ContentType.home) {
                   return HomeScreenContent(refresh: refreshMap[tabType]);
                 }
-                final contentTabType = tabType == TabContentType.genericArtists
+                final contentTabType = tabType == ContentType.genericArtists
                     ? ref.watch(finampSettingsProvider.defaultArtistType).tabType
                     : tabType;
                 sortAndFilterControllerMap[contentTabType] ??= widget.singleTabConfig != null
-                    // TODO should overridden config respond to going offline?
-                    ? SortAndFilterController(configuration: widget.singleTabConfig!.sortAndFilterConfiguration)
-                    : SortAndFilterController.trackSettings(tabType: contentTabType);
+                    ? SortAndFilterController(
+                        startingConfig: widget.singleTabConfig!.sortAndFilterConfiguration,
+                        contentType: contentTabType,
+                      )
+                    : SortAndFilterController.trackSettings(contentTabType);
                 return Column(
                   children: [
                     SortAndFilterRow(tabType: contentTabType, controller: sortAndFilterControllerMap[contentTabType]!),
@@ -287,20 +279,13 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                     Expanded(
                       // Prevent track highlight background from showing on header
                       child: Material(
-                        child: ValueListenableBuilder(
-                          valueListenable: sortAndFilterControllerMap[contentTabType]!,
-                          builder: (context, value, child) {
-                            return MusicScreenTabView(
-                              tabContentType: contentTabType,
-                              refresh: refreshMap[tabType],
-                              allowTrackGestures: widget.singleTabConfig != null,
-                              sortAndFilterConfiguration: value.resolve(
-                                isOffline: ref.watch(finampSettingsProvider.isOffline),
-                                inPlaylist: false,
-                                searchQuery: searchQuery,
-                              ),
-                            );
-                          },
+                        child: MusicScreenTabView(
+                          tabContentType: contentTabType,
+                          refresh: refreshMap[tabType],
+                          allowTrackGestures: widget.singleTabConfig != null,
+                          sortAndFilterConfiguration: ref
+                              .watch(resolveSortProvider(sortAndFilterControllerMap[contentTabType]!))
+                              .copyWith(searchQuery: searchQuery),
                         ),
                       ),
                     ),

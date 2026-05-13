@@ -41,51 +41,40 @@ class AlbumScreenContent extends ConsumerStatefulWidget {
 }
 
 class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
-  late SortAndFilterController sortAndFilterController;
+  SortAndFilterController sortAndFilterController = SortAndFilterController.trackSettings(ContentType.inPlaylist);
 
-  bool get disableDownloads => sortAndFilterController.value.filters.isNotEmpty;
+  //bool get disableDownloads => sortAndFilterController.value.filters.isNotEmpty;
 
   StreamSubscription<void>? _listener;
 
   @override
   void initState() {
     if (widget.genreFilter != null) {
-      sortAndFilterController = SortAndFilterController(
-        configuration: ref
-            .read(sortAndFilterConfigFromSettingsProvider(null))
-            .copyWith(genreFilter: widget.genreFilter),
-      );
-    } else {
-      sortAndFilterController = SortAndFilterController.trackSettings(tabType: null);
+      sortAndFilterController.updateGenreFilter(widget.genreFilter);
     }
     _listener = musicScreenRefreshStream.stream.listen((_) {
       setState(() {});
     });
-    sortAndFilterController.addListener(() => setState(() {}));
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
-    sortAndFilterController.dispose();
     _listener?.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
     final downloadStub = DownloadStub.fromItem(type: DownloadItemType.collection, item: widget.parent);
-    final bool isOffline = ref.watch(finampSettingsProvider.isOffline);
-    SortBy playlistSortBySetting = ref.watch(finampSettingsProvider.playlistTracksSortBy);
-    final playlistSortBy =
-        (isOffline && (playlistSortBySetting == SortBy.datePlayed || playlistSortBySetting == SortBy.playCount))
-        ? SortBy.defaultOrder
-        : playlistSortBySetting;
 
     final parentIsPlaylist = BaseItemDtoType.fromItem(widget.parent) == BaseItemDtoType.playlist;
 
+    final sortSetting = ref.watch(resolveSortProvider(sortAndFilterController));
+    final disableDownloads = sortSetting.filters.isNotEmpty && parentIsPlaylist;
+
     final tracksAsync = parentIsPlaylist
-        ? ref.watch(getSortedPlaylistTracksProvider(widget.parent, sortAndFilterController.value))
+        ? ref.watch(getSortedPlaylistTracksProvider(widget.parent, sortSetting))
         : ref.watch(getAlbumOrPlaylistTracksProvider(widget.parent));
     final (allTracks, playableTracks) = tracksAsync.valueOrNull ?? (null, null);
     final isLoading = allTracks == null;
@@ -212,8 +201,8 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
                 childrenForQueue: queueChildren,
                 parent: widget.parent,
                 onRemoveFromList: onDelete,
-                adaptiveAdditionalInfoSortBy: (parentIsPlaylist) ? playlistSortBy : null,
-                forceAlbumArtists: (parentIsPlaylist && playlistSortBy == SortBy.albumArtist),
+                adaptiveAdditionalInfoSortBy: (parentIsPlaylist) ? sortSetting.sortBy : null,
+                forceAlbumArtists: (parentIsPlaylist && sortSetting.sortBy == SortBy.albumArtist),
               ),
             ),
             SliverToBoxAdapter(child: SizedBox(height: 16.0)),
@@ -224,8 +213,8 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
             childrenForQueue: queueChildren,
             parent: widget.parent,
             onRemoveFromList: onDelete,
-            adaptiveAdditionalInfoSortBy: (parentIsPlaylist) ? playlistSortBy : null,
-            forceAlbumArtists: (parentIsPlaylist && playlistSortBy == SortBy.albumArtist),
+            adaptiveAdditionalInfoSortBy: (parentIsPlaylist) ? sortSetting.sortBy : null,
+            forceAlbumArtists: (parentIsPlaylist && sortSetting.sortBy == SortBy.albumArtist),
           )
         else
           SliverFillRemaining(child: Center(child: CircularProgressIndicator.adaptive())),

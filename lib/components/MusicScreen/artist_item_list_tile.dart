@@ -1,6 +1,6 @@
 import 'package:finamp/components/favorite_button.dart';
-import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../models/finamp_models.dart';
@@ -16,7 +16,7 @@ class ArtistItemListTile extends StatelessWidget {
   const ArtistItemListTile({super.key, required this.item, this.parentType, this.onTap});
 
   final BaseItemDto item;
-  final TabContentType? parentType;
+  final ContentType? parentType;
   final void Function()? onTap;
 
   @override

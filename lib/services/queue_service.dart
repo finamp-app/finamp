@@ -1382,12 +1382,12 @@ class QueueService {
     double? contextNormalizationGain,
     MediaItemParentType? parentType,
     jellyfin_models.BaseItemId? parentId,
-    bool Function({jellyfin_models.BaseItemDto? item, TabContentType? contentType})? isPlayable,
+    bool Function({jellyfin_models.BaseItemDto? item, ContentType? contentType})? isPlayable,
   }) async {
     const uuid = Uuid();
 
     MediaItemId? itemId;
-    final tabContentType = TabContentType.fromItemType(item.type ?? "Audio");
+    final tabContentType = ContentType.fromItemType(item.type ?? "Audio");
     bool isAndroidAutoOrMediaBrowserRequest = false;
 
     if (parentType != null) {

@@ -3317,10 +3317,10 @@ enum SortBy {
   String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
 
   /// Name used by Jellyfin in API requests.
-  String jellyfinName(TabContentType? contentType) {
+  String jellyfinName(ContentType? contentType) {
     return switch (contentType) {
-      TabContentType.albums => _jellyfinNameMusicAlbums(this),
-      TabContentType.tracks => _jellyfinNameTracks(this),
+      ContentType.albums => _jellyfinNameMusicAlbums(this),
+      ContentType.tracks => _jellyfinNameTracks(this),
       _ => _jellyfinName(this),
     };
   }

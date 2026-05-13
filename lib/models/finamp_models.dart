@@ -8,6 +8,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:bits/bits.dart';
 import 'package:collection/collection.dart';
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -131,13 +132,27 @@ class DefaultSettings {
   static const bufferDurationSeconds = 600;
   static const bufferSizeMegabytes = 50;
   static const tabOrder = [
-    TabContentType.home,
-    TabContentType.albums,
-    TabContentType.genericArtists,
-    TabContentType.playlists,
-    TabContentType.tracks,
-    TabContentType.genres,
+    ContentType.home,
+    ContentType.albums,
+    ContentType.genericArtists,
+    // Hidden by default
+    ContentType.albumArtists,
+    // Hidden by default
+    ContentType.performingArtists,
+    ContentType.playlists,
+    ContentType.tracks,
+    ContentType.genres,
   ];
+  static const showTabs = {
+    ContentType.home: true,
+    ContentType.albums: true,
+    ContentType.genericArtists: true,
+    ContentType.albumArtists: false,
+    ContentType.performingArtists: false,
+    ContentType.playlists: true,
+    ContentType.tracks: true,
+    ContentType.genres: true,
+  };
   static const itemSwipeActionLeftToRight = ItemSwipeActions.nothing;
   static const itemSwipeActionRightToLeft = ItemSwipeActions.addToNextUp;
   static const loopMode = FinampLoopMode.none;
@@ -225,18 +240,16 @@ class DefaultSettings {
   static const artistItemSectionFilterChipOrder = CuratedItemSelectionType.values;
   static const artistItemSectionsOrder = ArtistItemSections.values;
   static const autoSwitchItemCurationType = true;
-  static const playlistTracksSortBy = SortBy.defaultOrder;
-  static const playlistTracksSortOrder = SortOrder.ascending;
   static const genreFilterPlaylists = false;
   static const clearQueueOnStopEvent = false;
   static const useHighContrastColors = false;
   static const tileAdditionalInfoType = {
-    TabContentType.tracks: TileAdditionalInfoType.adaptive,
-    TabContentType.albums: TileAdditionalInfoType.adaptive,
-    TabContentType.performingArtists: TileAdditionalInfoType.adaptive,
-    TabContentType.albumArtists: TileAdditionalInfoType.adaptive,
-    TabContentType.playlists: TileAdditionalInfoType.adaptive,
-    TabContentType.genres: TileAdditionalInfoType.adaptive,
+    ContentType.tracks: TileAdditionalInfoType.adaptive,
+    ContentType.albums: TileAdditionalInfoType.adaptive,
+    ContentType.performingArtists: TileAdditionalInfoType.adaptive,
+    ContentType.albumArtists: TileAdditionalInfoType.adaptive,
+    ContentType.playlists: TileAdditionalInfoType.adaptive,
+    ContentType.genres: TileAdditionalInfoType.adaptive,
   };
   static const rpcEnabled = false;
   static const rpcIcon = DiscordRpcIcon.transparent;
@@ -265,7 +278,7 @@ class DefaultSettings {
       HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.forgottenFavoriteTracks),
       HomeScreenSectionConfiguration(
         type: HomeScreenSectionType.tabView,
-        contentType: TabContentType.tracks,
+        contentType: ContentType.tracks,
         itemId: currentLibraryPlaceholder,
         sortAndFilterConfiguration: SortAndFilterConfiguration(
           sortBy: SortBy.datePlayed,
@@ -275,7 +288,7 @@ class DefaultSettings {
       ),
       HomeScreenSectionConfiguration(
         type: HomeScreenSectionType.tabView,
-        contentType: TabContentType.albums,
+        contentType: ContentType.albums,
         itemId: currentLibraryPlaceholder,
         sortAndFilterConfiguration: SortAndFilterConfiguration(
           sortBy: SortBy.dateCreated,
@@ -285,7 +298,7 @@ class DefaultSettings {
       ),
       HomeScreenSectionConfiguration(
         type: HomeScreenSectionType.tabView,
-        contentType: TabContentType.performingArtists,
+        contentType: ContentType.performingArtists,
         itemId: currentLibraryPlaceholder,
         sortAndFilterConfiguration: SortAndFilterConfiguration(
           sortBy: SortBy.sortName,
@@ -309,7 +322,7 @@ class FinampSettings {
     // downloadLocations.
     required this.downloadLocations,
     this.androidStopForegroundOnPause = DefaultSettings.androidStopForegroundOnPause,
-    required this.showTabs,
+    this.showTabs = DefaultSettings.showTabs,
     this.onlyShowFavorites = DefaultSettings.onlyShowFavorites,
     this.sortBy = SortBy.sortName,
     this.sortOrder = SortOrder.ascending,
@@ -411,8 +424,8 @@ class FinampSettings {
     this.artistItemSectionFilterChipOrder = DefaultSettings.artistItemSectionFilterChipOrder,
     this.artistItemSectionsOrder = DefaultSettings.artistItemSectionsOrder,
     this.autoSwitchItemCurationType = DefaultSettings.autoSwitchItemCurationType,
-    this.playlistTracksSortBy = DefaultSettings.playlistTracksSortBy,
-    this.playlistTracksSortOrder = DefaultSettings.playlistTracksSortOrder,
+    this.playlistTracksSortBy = null,
+    this.playlistTracksSortOrder = null,
     this.genreFilterPlaylists = DefaultSettings.genreFilterPlaylists,
     this.clearQueueOnStopEvent = DefaultSettings.clearQueueOnStopEvent,
     this.useHighContrastColors = DefaultSettings.useHighContrastColors,
@@ -459,7 +472,7 @@ class FinampSettings {
 
   @HiveField(5)
   @SettingsHelperMap("tabContentType", "value")
-  Map<TabContentType, bool> showTabs;
+  Map<ContentType, bool> showTabs;
 
   /// Used to remember if the user has set their music screen to favorites
   /// mode.
@@ -515,16 +528,16 @@ class FinampSettings {
   @HiveField(19, defaultValue: DefaultSettings.disableGesture)
   bool disableGesture = DefaultSettings.disableGesture;
 
-  @HiveField(20, defaultValue: <TabContentType, SortBy>{})
+  @HiveField(20, defaultValue: <ContentType, SortBy>{})
   @SettingsHelperMap("tabContentType", "sortBy")
-  Map<TabContentType, SortBy> tabSortBy;
+  Map<ContentType, SortBy> tabSortBy;
 
-  @HiveField(21, defaultValue: <TabContentType, SortOrder>{})
+  @HiveField(21, defaultValue: <ContentType, SortOrder>{})
   @SettingsHelperMap("tabContentType", "sortOrder")
-  Map<TabContentType, SortOrder> tabSortOrder;
+  Map<ContentType, SortOrder> tabSortOrder;
 
   @HiveField(22, defaultValue: DefaultSettings.tabOrder)
-  List<TabContentType> tabOrder;
+  List<ContentType> tabOrder;
 
   @HiveField(25, defaultValue: DefaultSettings.showFastScroller)
   bool showFastScroller = DefaultSettings.showFastScroller;
@@ -795,11 +808,13 @@ class FinampSettings {
   @HiveField(112, defaultValue: DefaultSettings.autoSwitchItemCurationType)
   bool autoSwitchItemCurationType;
 
-  @HiveField(113, defaultValue: DefaultSettings.playlistTracksSortBy)
-  SortBy playlistTracksSortBy;
+  @HiveField(113)
+  @Deprecated("Prefer tabSortBy[ContentType.inPlaylist] instead")
+  SortBy? playlistTracksSortBy;
 
-  @HiveField(114, defaultValue: DefaultSettings.playlistTracksSortOrder)
-  SortOrder playlistTracksSortOrder;
+  @HiveField(114)
+  @Deprecated("Prefer tabSortOrder[ContentType.inPlaylist] instead")
+  SortOrder? playlistTracksSortOrder;
 
   @HiveField(115, defaultValue: DefaultSettings.genreFilterPlaylists)
   bool genreFilterPlaylists;
@@ -826,7 +841,7 @@ class FinampSettings {
 
   @HiveField(122, defaultValue: DefaultSettings.tileAdditionalInfoType)
   @SettingsHelperMap("tabContentType", "tileAdditionalInfoType")
-  Map<TabContentType, TileAdditionalInfoType> tileAdditionalInfoType;
+  Map<ContentType, TileAdditionalInfoType> tileAdditionalInfoType;
 
   @HiveField(123, defaultValue: DefaultSettings.rpcEnabled)
   bool rpcEnabled;
@@ -916,8 +931,6 @@ class FinampSettings {
     );
     return FinampSettings(
       downloadLocations: [],
-      // Create a map of TabContentType from TabContentType's values.
-      showTabs: Map.fromEntries(DefaultSettings.tabOrder.map((e) => MapEntry(e, true))),
       downloadLocationsMap: {downloadLocation.id: downloadLocation},
       tabSortBy: {},
       tabSortOrder: {},
@@ -938,11 +951,11 @@ class FinampSettings {
 
   set bufferDuration(Duration duration) => bufferDurationSeconds = duration.inSeconds;
 
-  SortBy getTabSortBy(TabContentType tabType) {
+  SortBy getTabSortBy(ContentType tabType) {
     return tabSortBy[tabType] ?? SortBy.sortName;
   }
 
-  SortOrder getSortOrder(TabContentType tabType) {
+  SortOrder getSortOrder(ContentType tabType) {
     return tabSortOrder[tabType] ?? SortOrder.ascending;
   }
 }
@@ -1080,7 +1093,7 @@ class NewDownloadLocation {
 
 /// Supported tab types in MusicScreenTabView.
 @HiveType(typeId: 36)
-enum TabContentType {
+enum ContentType {
   @HiveField(0)
   albums(BaseItemDtoType.album),
   @HiveField(1)
@@ -1096,14 +1109,18 @@ enum TabContentType {
   @HiveField(6)
   performingArtists(BaseItemDtoType.artist),
   @HiveField(7)
-  albumArtists(BaseItemDtoType.artist);
+  albumArtists(BaseItemDtoType.artist),
+  @HiveField(8)
+  inPlaylist(BaseItemDtoType.track),
+  @HiveField(9)
+  mixed(null);
 
-  const TabContentType(this.itemType);
+  const ContentType(this.itemType);
 
   final BaseItemDtoType? itemType;
 
-  /// Human-readable version of the [TabContentType]. For example, toString() on
-  /// [TabContentType.tracks], toString() would return "TabContentType.tracks".
+  /// Human-readable version of the [ContentType]. For example, toString() on
+  /// [ContentType.tracks], toString() would return "TabContentType.tracks".
   /// With this function, the same input would return "Tracks".
   @override
   @Deprecated("Use toLocalisedString when possible")
@@ -1111,68 +1128,89 @@ enum TabContentType {
 
   String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
 
-  String _humanReadableName(TabContentType tabContentType) {
+  String _humanReadableName(ContentType tabContentType) {
     switch (tabContentType) {
-      case TabContentType.tracks:
+      case ContentType.tracks:
         return "Tracks";
-      case TabContentType.albums:
+      case ContentType.albums:
         return "Albums";
-      case TabContentType.genericArtists:
+      case ContentType.genericArtists:
         return "Artists";
-      case TabContentType.genres:
+      case ContentType.genres:
         return "Genres";
-      case TabContentType.playlists:
+      case ContentType.playlists:
         return "Playlists";
-      case TabContentType.home:
+      case ContentType.home:
         return "Home";
-      case TabContentType.performingArtists:
+      case ContentType.performingArtists:
         return "Performing Artists";
-      case TabContentType.albumArtists:
+      case ContentType.albumArtists:
         return "Album Artists";
+      case ContentType.inPlaylist:
+        return "In Playlist";
+      case ContentType.mixed:
+        return "In Collection";
     }
   }
 
-  String _humanReadableLocalisedName(TabContentType tabContentType, BuildContext context) {
+  String _humanReadableLocalisedName(ContentType tabContentType, BuildContext context) {
     switch (tabContentType) {
-      case TabContentType.tracks:
+      case ContentType.tracks:
         return AppLocalizations.of(context)!.tracks;
-      case TabContentType.albums:
+      case ContentType.albums:
         return AppLocalizations.of(context)!.albums;
-      case TabContentType.genericArtists:
+      case ContentType.genericArtists:
         return AppLocalizations.of(context)!.artists;
-      case TabContentType.genres:
+      case ContentType.genres:
         return AppLocalizations.of(context)!.genres;
-      case TabContentType.playlists:
+      case ContentType.playlists:
         return AppLocalizations.of(context)!.playlists;
-      case TabContentType.home:
+      case ContentType.home:
         return AppLocalizations.of(context)!.home;
-      case TabContentType.performingArtists:
+      case ContentType.performingArtists:
         return AppLocalizations.of(context)!.performingArtists;
-      case TabContentType.albumArtists:
+      case ContentType.albumArtists:
         return AppLocalizations.of(context)!.albumArtists;
+      case ContentType.inPlaylist:
+        return "In playlist*";
+      case ContentType.mixed:
+        return "In collection*";
     }
   }
 
-  static TabContentType fromItemType(String? itemType) {
+  static ContentType fromItemType(String? itemType) {
     switch (itemType) {
       case "Audio":
-        return TabContentType.tracks;
+        return ContentType.tracks;
       case "MusicAlbum":
-        return TabContentType.albums;
+        return ContentType.albums;
       case "MusicArtist":
-        return TabContentType.genericArtists;
+        return ContentType.genericArtists;
       case "MusicGenre":
-        return TabContentType.genres;
+        return ContentType.genres;
       case "Playlist":
-        return TabContentType.playlists;
+        return ContentType.playlists;
       default:
         throw const FormatException("Unsupported itemType");
     }
   }
 
   bool get isArtist => switch (this) {
-    TabContentType.genericArtists || TabContentType.performingArtists || TabContentType.albumArtists => true,
+    ContentType.genericArtists || ContentType.performingArtists || ContentType.albumArtists => true,
     _ => false,
+  };
+
+  bool get isTab => switch (this) {
+    ContentType.albums => true,
+    ContentType.genericArtists => true,
+    ContentType.playlists => true,
+    ContentType.genres => true,
+    ContentType.tracks => true,
+    ContentType.home => true,
+    ContentType.performingArtists => true,
+    ContentType.albumArtists => true,
+    ContentType.inPlaylist => false,
+    ContentType.mixed => false,
   };
 }
 
@@ -1184,7 +1222,7 @@ enum ContentViewType {
   grid;
 
   /// Human-readable version of this enum. I've written longer descriptions on
-  /// enums like [TabContentType], and I can't be bothered to copy and paste it
+  /// enums like [ContentType], and I can't be bothered to copy and paste it
   /// again.
   @override
   @Deprecated("Use toLocalisedString when possible")
@@ -2656,7 +2694,7 @@ enum PlaybackSpeedVisibility {
   hidden;
 
   /// Human-readable version of this enum. I've written longer descriptions on
-  /// enums like [TabContentType], and I can't be bothered to copy and paste it
+  /// enums like [ContentType], and I can't be bothered to copy and paste it
   /// again.
   @override
   @Deprecated("Use toLocalisedString when possible")
@@ -2758,7 +2796,7 @@ class MediaItemId {
   MediaItemId({required this.contentType, required this.parentType, this.itemId, this.parentId});
 
   @HiveField(0)
-  TabContentType contentType;
+  ContentType contentType;
 
   @HiveField(1)
   MediaItemParentType parentType;
@@ -2869,7 +2907,7 @@ enum KeepScreenOnOption {
   whileLyrics;
 
   /// Human-readable version of this enum. I've written longer descriptions on
-  /// enums like [TabContentType], and I can't be bothered to copy and paste it
+  /// enums like [ContentType], and I can't be bothered to copy and paste it
   /// again.
   @override
   @Deprecated("Use toLocalisedString when possible")
@@ -3058,7 +3096,7 @@ enum ReleaseDateFormat {
   monthDayYear;
 
   /// Human-readable version of this enum. I've written longer descriptions on
-  /// enums like [TabContentType], and I can't be bothered to copy and paste it
+  /// enums like [ContentType], and I can't be bothered to copy and paste it
   /// again.
   @override
   @Deprecated("Use toLocalisedString when possible")
@@ -3177,9 +3215,9 @@ enum ArtistType {
   @HiveField(1)
   artist;
 
-  TabContentType get tabType => switch (this) {
-    ArtistType.albumArtist => TabContentType.albumArtists,
-    ArtistType.artist => TabContentType.performingArtists,
+  ContentType get tabType => switch (this) {
+    ArtistType.albumArtist => ContentType.albumArtists,
+    ArtistType.artist => ContentType.performingArtists,
   };
 }
 
@@ -4169,7 +4207,7 @@ class HomeScreenSectionConfiguration {
   @HiveField(1)
   final BaseItemId itemId;
   @HiveField(2)
-  final TabContentType contentType; //TODO make this a list?
+  final ContentType contentType; //TODO make this a list?
   @HiveField(3)
   final SortAndFilterConfiguration sortAndFilterConfiguration;
   @HiveField(4)
@@ -4190,7 +4228,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.favoriteTracks => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: currentLibraryPlaceholder,
-      contentType: TabContentType.tracks,
+      contentType: ContentType.tracks,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
         sortOrder: SortOrder.ascending,
@@ -4202,7 +4240,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.favoriteAlbums => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: currentLibraryPlaceholder,
-      contentType: TabContentType.albums,
+      contentType: ContentType.albums,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
         sortOrder: SortOrder.ascending,
@@ -4214,7 +4252,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.favoriteArtists => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: currentLibraryPlaceholder,
-      contentType: TabContentType.performingArtists,
+      contentType: ContentType.performingArtists,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
         sortOrder: SortOrder.ascending,
@@ -4226,7 +4264,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.favoritePlaylists => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: currentLibraryPlaceholder,
-      contentType: TabContentType.playlists,
+      contentType: ContentType.playlists,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
         sortOrder: SortOrder.ascending,
@@ -4238,7 +4276,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.favoriteGenres => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: currentLibraryPlaceholder,
-      contentType: TabContentType.genres,
+      contentType: ContentType.genres,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.random,
         sortOrder: SortOrder.ascending,
@@ -4250,7 +4288,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.recentlyAddedAlbums => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: currentLibraryPlaceholder,
-      contentType: TabContentType.albums,
+      contentType: ContentType.albums,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.dateCreated,
         sortOrder: SortOrder.descending,
@@ -4262,7 +4300,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.recentlyAddedTracks => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: currentLibraryPlaceholder,
-      contentType: TabContentType.tracks,
+      contentType: ContentType.tracks,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.dateCreated,
         sortOrder: SortOrder.descending,
@@ -4286,7 +4324,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.frequentlyPlayedAlbums => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: currentLibraryPlaceholder,
-      contentType: TabContentType.albums,
+      contentType: ContentType.albums,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.playCount,
         sortOrder: SortOrder.descending,
@@ -4298,7 +4336,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.frequentlyPlayedTracks => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: currentLibraryPlaceholder,
-      contentType: TabContentType.tracks,
+      contentType: ContentType.tracks,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.playCount,
         sortOrder: SortOrder.descending,
@@ -4310,7 +4348,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.frequentlyPlayedArtists => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: currentLibraryPlaceholder,
-      contentType: TabContentType.performingArtists,
+      contentType: ContentType.performingArtists,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.playCount,
         sortOrder: SortOrder.descending,
@@ -4327,14 +4365,14 @@ class HomeScreenSectionConfiguration {
         sortOrder: SortOrder.ascending,
         filters: {ItemFilter(type: ItemFilterType.isUnplayed)},
       ),
-      contentType: TabContentType.albums,
+      contentType: ContentType.albums,
       customSectionTitle: null,
       presetType: presetType,
     ),
     HomeScreenSectionPresetType.forgottenFavoriteTracks => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.tabView,
       itemId: currentLibraryPlaceholder,
-      contentType: TabContentType.tracks,
+      contentType: ContentType.tracks,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.datePlayed,
         sortOrder: SortOrder.ascending,
@@ -4346,7 +4384,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.recentQueues => HomeScreenSectionConfiguration(
       type: HomeScreenSectionType.queues,
       itemId: allLibraryPlaceholder,
-      contentType: TabContentType.home,
+      contentType: ContentType.home,
       sortAndFilterConfiguration: SortAndFilterConfiguration(
         sortBy: SortBy.datePlayed,
         sortOrder: SortOrder.descending,
@@ -4421,7 +4459,7 @@ class HomeScreenSectionConfiguration {
   HomeScreenSectionConfiguration copyWith({
     HomeScreenSectionType? type,
     BaseItemId? itemId,
-    TabContentType? contentType,
+    ContentType? contentType,
     SortAndFilterConfiguration? sortAndFilterConfiguration,
     String? customSectionTitle,
     HomeScreenSectionPresetType? presetType,
@@ -4733,6 +4771,8 @@ class SortAndFilterConfiguration {
     Set<ItemFilter>? filters,
     BaseItemDto? genreFilter,
     bool? favoriteFilter,
+    bool? onlyShowFullyDownloadedFilter,
+    String? searchQuery,
   }) {
     final processedFilters = filters ?? this.filters.toSet();
     if (genreFilter != null) {
@@ -4745,6 +4785,16 @@ class SortAndFilterConfiguration {
         processedFilters.add(ItemFilter(type: ItemFilterType.isFavorite));
       }
     }
+    if (onlyShowFullyDownloadedFilter != null) {
+      processedFilters.removeWhere((x) => x.type == ItemFilterType.isFullyDownloaded);
+      if (onlyShowFullyDownloadedFilter) {
+        processedFilters.add(ItemFilter(type: ItemFilterType.isFullyDownloaded));
+      }
+    }
+    if (searchQuery != null) {
+      processedFilters.removeWhere((x) => x.type == ItemFilterType.searchTerm);
+      processedFilters.add(ItemFilter(type: ItemFilterType.searchTerm, extras: searchQuery));
+    }
     return SortAndFilterConfiguration(
       sortBy: sortBy ?? this.sortBy,
       sortOrder: sortOrder ?? this.sortOrder,
@@ -4752,19 +4802,19 @@ class SortAndFilterConfiguration {
     );
   }
 
-  static const defaultNonAlbumSort = SortAndFilterConfiguration(
+  static const defaultSort = SortAndFilterConfiguration(
     sortBy: SortBy.sortName,
     sortOrder: SortOrder.ascending,
     filters: {},
   );
 
-  static const defaultAlbumSort = SortAndFilterConfiguration(
+  static const defaultInAlbumSort = SortAndFilterConfiguration(
     sortBy: SortBy.defaultOrder,
     sortOrder: SortOrder.ascending,
     filters: {},
   );
 
-  SortAndFilterConfiguration resolve({required bool isOffline, required bool inPlaylist, String? searchQuery}) {
+  /*SortAndFilterConfiguration resolve({required bool isOffline, String? searchQuery}) {
     final newFilters = filters.union({
       if (searchQuery != null) ItemFilter(type: ItemFilterType.searchTerm, extras: searchQuery),
     });
@@ -4772,10 +4822,10 @@ class SortAndFilterConfiguration {
     // PlayCount and Last Played are not representative in Offline Mode
     // so we disable it and overwrite it with the Sort Name if it was selected
     if (isOffline && (sortBy == SortBy.playCount || sortBy == SortBy.datePlayed)) {
-      newSortBy = inPlaylist ? SortBy.defaultOrder : SortBy.sortName;
+      newSortBy = cont ? SortBy.defaultOrder : SortBy.sortName;
     }
     return copyWith(sortBy: newSortBy, filters: newFilters);
-  }
+  }*/
 
   Map<String, dynamic> toJson() => _$SortAndFilterConfigurationToJson(this);
 
@@ -4870,21 +4920,22 @@ class AlbumDisc implements PlayableItem {
 
 class PlayableBaseItem implements PlayableItem {
   PlayableBaseItem({required this.item, required this.sortConfig}) {
-    assert(
-      sortConfig.resolve(
-            isOffline: FinampSettingsHelper.finampSettings.isOffline,
-            inPlaylist: [BaseItemDtoType.album, BaseItemDtoType.playlist].contains(BaseItemDtoType.fromItem(item)),
-          ) ==
-          sortConfig,
-    );
+    assert(() {
+      ContentType type = [BaseItemDtoType.album, BaseItemDtoType.playlist].contains(BaseItemDtoType.fromItem(item))
+          ? ContentType.inPlaylist
+          : ContentType.tracks;
+      final controller = SortAndFilterController(startingConfig: sortConfig, contentType: type);
+      final resolvedConfig = GetIt.instance<ProviderContainer>().read(resolveSortProvider(controller));
+      return sortConfig == resolvedConfig;
+    }());
   }
 
   factory PlayableBaseItem.defaultSort(BaseItemDto item) => PlayableBaseItem(
     item: item,
     sortConfig: switch (BaseItemDtoType.fromItem(item)) {
-      BaseItemDtoType.album => SortAndFilterConfiguration.defaultAlbumSort,
-      BaseItemDtoType.playlist => SortAndFilterConfiguration.defaultAlbumSort,
-      _ => SortAndFilterConfiguration.defaultNonAlbumSort,
+      BaseItemDtoType.album => SortAndFilterConfiguration.defaultInAlbumSort,
+      BaseItemDtoType.playlist => SortAndFilterConfiguration.defaultInAlbumSort,
+      _ => SortAndFilterConfiguration.defaultSort,
     },
   );
 

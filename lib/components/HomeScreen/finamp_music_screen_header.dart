@@ -22,7 +22,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
 class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWidget {
-  final List<TabContentType> sortedTabs;
+  final List<ContentType> sortedTabs;
   final TabController? tabController;
   final VoidCallback? onSearch;
   final VoidCallback? onStopSearch;
@@ -266,12 +266,12 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                         ),
                       ),
                     ),*/
-                    padding: tabType == TabContentType.home
+                    padding: tabType == ContentType.home
                         ? EdgeInsets.only(left: 4, right: 8, top: 3, bottom: 3)
                         : EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     constraints: const BoxConstraints(minWidth: 50),
                     alignment: Alignment.center,
-                    child: tabType == TabContentType.home
+                    child: tabType == ContentType.home
                         ? Row(
                             spacing: 4.0,
                             children: [

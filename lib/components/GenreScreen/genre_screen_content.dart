@@ -55,11 +55,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
     super.dispose();
   }
 
-  void openSeeAll(
-    TabContentType tabContentType, {
-    bool doOverride = true,
-    CuratedItemSelectionType? itemSelectionType,
-  }) {
+  void openSeeAll(ContentType tabContentType, {bool doOverride = true, CuratedItemSelectionType? itemSelectionType}) {
     bool isFavoriteOverride = false;
     SortBy? sortByOverride;
     SortOrder? sortOrderOverride;
@@ -100,14 +96,12 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
             contentType: tabContentType,
             itemId: currentLibraryPlaceholder,
             customSectionTitle: widget.parent.name,
-            sortAndFilterConfiguration: ref
-                .read(sortAndFilterConfigFromSettingsProvider(tabContentType))
-                .copyWith(
-                  sortBy: sortByOverride,
-                  sortOrder: sortOrderOverride,
-                  favoriteFilter: isFavoriteOverride ? true : null,
-                  genreFilter: widget.parent,
-                ),
+            sortAndFilterConfiguration: SortAndFilterController.trackSettings(tabContentType).resolveConfig().copyWith(
+              sortBy: sortByOverride,
+              sortOrder: sortOrderOverride,
+              favoriteFilter: isFavoriteOverride ? true : null,
+              genreFilter: widget.parent,
+            ),
           ),
         ),
       ),
@@ -245,7 +239,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                       count: albumCount,
                       label: AppLocalizations.of(context)!.albums,
                       onTap: () {
-                        openSeeAll(TabContentType.albums, doOverride: false);
+                        openSeeAll(ContentType.albums, doOverride: false);
                       },
                       textColor: countsTextColor,
                       subtitleColor: countsSubtitleColor,
@@ -261,7 +255,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                       count: trackCount,
                       label: AppLocalizations.of(context)!.tracks,
                       onTap: () {
-                        openSeeAll(TabContentType.tracks, doOverride: false);
+                        openSeeAll(ContentType.tracks, doOverride: false);
                       },
                       textColor: countsTextColor,
                       subtitleColor: countsSubtitleColor,
@@ -313,7 +307,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                         : loc.tracks,
                     isOnGenreScreen: true,
                     seeAllCallbackFunction: () =>
-                        openSeeAll(TabContentType.tracks, itemSelectionType: genreCuratedItemSelectionTypeTracks),
+                        openSeeAll(ContentType.tracks, itemSelectionType: genreCuratedItemSelectionTypeTracks),
                     includeFilterRow: true,
                     customFilterOrder: genreCuratedItemSectionFilterOrder,
                     selectedFilter: genreCuratedItemSelectionTypeTracks,
@@ -337,7 +331,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                         : loc.albums,
                     items: albums,
                     seeAllCallbackFunction: () =>
-                        openSeeAll(TabContentType.albums, itemSelectionType: genreCuratedItemSelectionTypeAlbums),
+                        openSeeAll(ContentType.albums, itemSelectionType: genreCuratedItemSelectionTypeAlbums),
                     includeFilterRowFor: BaseItemDtoType.album,
                     customFilterOrder: genreCuratedItemSectionFilterOrder,
                     selectedFilter: genreCuratedItemSelectionTypeAlbums,
@@ -359,7 +353,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                     items: artists,
                     // TODO should there be an album artist option?
                     seeAllCallbackFunction: () => openSeeAll(
-                      TabContentType.performingArtists,
+                      ContentType.performingArtists,
                       itemSelectionType: genreCuratedItemSelectionTypeArtists,
                     ),
                     genreFilter: widget.parent,
@@ -389,7 +383,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                       fontWeight: FontWeight.w500,
                       icon: Icons.chevron_right,
                       iconPosition: IconPosition.end,
-                      onPressed: () => openSeeAll(TabContentType.playlists, doOverride: false),
+                      onPressed: () => openSeeAll(ContentType.playlists, doOverride: false),
                     ),
                   ],
                 ),

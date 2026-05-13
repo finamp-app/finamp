@@ -43,7 +43,7 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
       break;
     case QueueItemSourceType.allTracks:
     case QueueItemSourceType.favorites:
-      Navigator.of(context).pushNamed(MusicScreen.routeName, arguments: TabContentType.tracks);
+      Navigator.of(context).pushNamed(MusicScreen.routeName, arguments: ContentType.tracks);
       break;
     case QueueItemSourceType.track:
     case QueueItemSourceType.trackMix:

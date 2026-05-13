@@ -23,7 +23,7 @@ const homeScreenSectionItemLimit = 20;
 const slicePretracks = 20;
 
 final class MusicScreenRequest {
-  MusicScreenRequest({required SortAndFilterConfiguration filter, required TabContentType tabType})
+  MusicScreenRequest({required SortAndFilterConfiguration filter, required ContentType tabType})
     : config = HomeScreenSectionConfiguration(
         type: HomeScreenSectionType.tabView,
         contentType: tabType,
@@ -207,7 +207,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
       );
       return jellyfinApiHelper.getItems(
         libraryFilter: library,
-        parentItem: sectionInfo.contentType == TabContentType.playlists ? null : library,
+        parentItem: sectionInfo.contentType == ContentType.playlists ? null : library,
         includeItemTypes: [sectionInfo.contentType.itemType?.jellyfinName].join(","),
         sortBy: sectionInfo.sortAndFilterConfiguration.sortBy.jellyfinName(sectionInfo.contentType),
         sortOrder: sectionInfo.sortAndFilterConfiguration.sortOrder.toString(),
@@ -235,8 +235,8 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
         //     ? true
         //    : null,
         artistType: switch (sectionInfo.contentType) {
-          TabContentType.albumArtists => ArtistType.albumArtist,
-          TabContentType.performingArtists => ArtistType.artist,
+          ContentType.albumArtists => ArtistType.albumArtist,
+          ContentType.performingArtists => ArtistType.artist,
           _ => null,
         },
         genreFilter: genreFilter?.extraBaseItem.id,
@@ -265,7 +265,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
             loadHomeSectionItemsProvider(
               sectionInfo: HomeScreenSectionConfiguration(
                 type: HomeScreenSectionType.tabView,
-                contentType: TabContentType.tracks,
+                contentType: ContentType.tracks,
                 sortAndFilterConfiguration: sectionInfo.sortAndFilterConfiguration.copyWith(genreFilter: baseItem),
                 itemId: sectionInfo.itemId,
               ),
@@ -388,7 +388,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
     //   break;
     case HomeScreenSectionType.tabView:
       //FIXME this seems to also return metadata-only albums which don't have any downloaded children
-      if (sectionInfo.contentType == TabContentType.tracks) {
+      if (sectionInfo.contentType == ContentType.tracks) {
         // tracks are not stored as collections, so we need to get them differently
         offlineItems = await downloadsService.getAllTracks(
           nameFilter: searchFilter?.extraString.trim(),
@@ -408,7 +408,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
           // TODO use the filter config for this instead of global(several places)?
           fullyDownloaded: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
           viewFilter: libraryId,
-          childViewFilter: [TabContentType.albums, TabContentType.playlists].contains(sectionInfo.contentType)
+          childViewFilter: [ContentType.albums, ContentType.playlists].contains(sectionInfo.contentType)
               ? null
               : libraryId,
           nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
@@ -416,11 +416,11 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
             (filter) => filter.type == ItemFilterType.isFavorite,
           ),
           infoForType: switch (sectionInfo.contentType) {
-            TabContentType.albumArtists => BaseItemDtoType.album,
-            TabContentType.performingArtists => BaseItemDtoType.track,
+            ContentType.albumArtists => BaseItemDtoType.album,
+            ContentType.performingArtists => BaseItemDtoType.track,
             _ => null,
           },
-          genreFilter: sectionInfo.contentType == TabContentType.playlists ? null : genreFilter?.extraBaseItem.id,
+          genreFilter: sectionInfo.contentType == ContentType.playlists ? null : genreFilter?.extraBaseItem.id,
         );
       }
       break;
@@ -447,7 +447,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
             loadHomeSectionItemsProvider(
               sectionInfo: HomeScreenSectionConfiguration(
                 type: HomeScreenSectionType.tabView,
-                contentType: TabContentType.tracks,
+                contentType: ContentType.tracks,
                 sortAndFilterConfiguration: sectionInfo.sortAndFilterConfiguration.copyWith(genreFilter: baseItem),
                 itemId: sectionInfo.itemId,
               ),
@@ -505,7 +505,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
   // "cross-library-genreIds", so we won't get any results. Therefore,
   // we have to load all playlists and manually filter by genreName.
 
-  if (items.isNotEmpty && genreFilter != null && sectionInfo.contentType == TabContentType.playlists) {
+  if (items.isNotEmpty && genreFilter != null && sectionInfo.contentType == ContentType.playlists) {
     items = filterItemsByGenreName(items, genreFilter.extraBaseItem);
   }
 

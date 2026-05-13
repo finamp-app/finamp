@@ -34,6 +34,8 @@ class AlbumScreenContentFlexibleSpaceBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final sortConfig = ref.watch(resolveSortProvider(controller));
+
     return FlexibleSpaceBar(
       background: SafeArea(
         bottom: false,
@@ -59,19 +61,14 @@ class AlbumScreenContentFlexibleSpaceBar extends ConsumerWidget {
                   ],
                 ),
                 SizedBox(height: 10),
-                ValueListenableBuilder(
-                  valueListenable: controller,
-                  builder: (_, value, _) {
-                    return PlaybackActionRow(
-                      compactLayout: true,
-                      item: PlayableBaseItem(item: parentItem, sortConfig: value),
-                      popContext: false,
-                    );
-                  },
+                PlaybackActionRow(
+                  compactLayout: true,
+                  item: PlayableBaseItem(item: parentItem, sortConfig: sortConfig),
+                  popContext: false,
                 ),
                 if (BaseItemDtoType.fromItem(parentItem) == BaseItemDtoType.playlist) ...[
                   SizedBox(height: 10),
-                  SortAndFilterRow(tabType: TabContentType.tracks, forPlaylistTracks: true, controller: controller),
+                  SortAndFilterRow(tabType: ContentType.inPlaylist, controller: controller),
                 ],
               ],
             ),

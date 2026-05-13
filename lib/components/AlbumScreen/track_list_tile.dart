@@ -666,8 +666,7 @@ class TrackListItemTile extends ConsumerWidget {
     final highlightTrack = isCurrentTrack && highlightCurrentTrack;
     final isOnDesktop = Platform.isMacOS || Platform.isWindows || Platform.isLinux;
     final tileAdditionalInfoType =
-        ref.watch(finampSettingsProvider.tileAdditionalInfoType(TabContentType.tracks)) ??
-        TileAdditionalInfoType.adaptive;
+        ref.watch(finampSettingsProvider.tileAdditionalInfoType(ContentType.tracks)) ?? TileAdditionalInfoType.adaptive;
 
     bool showPlayCount = tileAdditionalInfoType == TileAdditionalInfoType.playCount;
     bool showReleaseDate = tileAdditionalInfoType == TileAdditionalInfoType.dateReleased;

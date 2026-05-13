@@ -47,8 +47,8 @@ class _CustomizationSettingsScreenState extends State<CustomizationSettingsScree
           const OneLineMarqueeTextSwitch(),
           const ReleaseDateFormatDropdownListTile(),
           const TileAdditionalInfoTypeTitleListTile(),
-          ...TabContentType.values
-              .whereNot((x) => x == TabContentType.genericArtists)
+          ...ContentType.values
+              .whereNot((x) => x == ContentType.genericArtists)
               .map((type) => TileAdditionalInfoTypeDropdownListTile(tabContentType: type)),
         ],
       ),

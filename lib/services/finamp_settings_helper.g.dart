@@ -52,7 +52,7 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setShowTabs(TabContentType tabContentType, bool value) {
+  static void setShowTabs(ContentType tabContentType, bool value) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     try {
       finampSettingsTemp.showTabs[tabContentType] = value;
@@ -122,7 +122,7 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setTabSortBy(TabContentType tabContentType, SortBy sortBy) {
+  static void setTabSortBy(ContentType tabContentType, SortBy sortBy) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     try {
       finampSettingsTemp.tabSortBy[tabContentType] = sortBy;
@@ -136,10 +136,7 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setTabSortOrder(
-    TabContentType tabContentType,
-    SortOrder sortOrder,
-  ) {
+  static void setTabSortOrder(ContentType tabContentType, SortOrder sortOrder) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     try {
       finampSettingsTemp.tabSortOrder[tabContentType] = sortOrder;
@@ -155,7 +152,7 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setTabOrder(List<TabContentType> newTabOrder) {
+  static void setTabOrder(List<ContentType> newTabOrder) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.tabOrder = newTabOrder;
     Hive.box<FinampSettings>(
@@ -928,22 +925,6 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setPlaylistTracksSortBy(SortBy newPlaylistTracksSortBy) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.playlistTracksSortBy = newPlaylistTracksSortBy;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setPlaylistTracksSortOrder(SortOrder newPlaylistTracksSortOrder) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.playlistTracksSortOrder = newPlaylistTracksSortOrder;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
   static void setGenreFilterPlaylists(bool newGenreFilterPlaylists) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.genreFilterPlaylists = newGenreFilterPlaylists;
@@ -1004,7 +985,7 @@ extension FinampSetters on FinampSettingsHelper {
   }
 
   static void setTileAdditionalInfoType(
-    TabContentType tabContentType,
+    ContentType tabContentType,
     TileAdditionalInfoType tileAdditionalInfoType,
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
@@ -1273,7 +1254,7 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.androidStopForegroundOnPause,
       );
-  ProviderListenable<bool?> showTabs(TabContentType tabContentType) =>
+  ProviderListenable<bool?> showTabs(ContentType tabContentType) =>
       finampSettingsProvider.select(
         (value) => value.requireValue.showTabs[tabContentType],
       );
@@ -1294,15 +1275,15 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ProviderListenable<bool> get disableGesture => finampSettingsProvider.select(
     (value) => value.requireValue.disableGesture,
   );
-  ProviderListenable<SortBy?> tabSortBy(TabContentType tabContentType) =>
+  ProviderListenable<SortBy?> tabSortBy(ContentType tabContentType) =>
       finampSettingsProvider.select(
         (value) => value.requireValue.tabSortBy[tabContentType],
       );
-  ProviderListenable<SortOrder?> tabSortOrder(TabContentType tabContentType) =>
+  ProviderListenable<SortOrder?> tabSortOrder(ContentType tabContentType) =>
       finampSettingsProvider.select(
         (value) => value.requireValue.tabSortOrder[tabContentType],
       );
-  ProviderListenable<List<TabContentType>> get tabOrder =>
+  ProviderListenable<List<ContentType>> get tabOrder =>
       finampSettingsProvider.select((value) => value.requireValue.tabOrder);
   ProviderListenable<bool> get showFastScroller => finampSettingsProvider
       .select((value) => value.requireValue.showFastScroller);
@@ -1584,12 +1565,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.autoSwitchItemCurationType,
       );
-  ProviderListenable<SortBy> get playlistTracksSortBy => finampSettingsProvider
-      .select((value) => value.requireValue.playlistTracksSortBy);
-  ProviderListenable<SortOrder> get playlistTracksSortOrder =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.playlistTracksSortOrder,
-      );
   ProviderListenable<bool> get genreFilterPlaylists => finampSettingsProvider
       .select((value) => value.requireValue.genreFilterPlaylists);
   ProviderListenable<SleepTimer?> get sleepTimer =>
@@ -1610,7 +1585,7 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
         (value) => value.requireValue.hasCompletedDownloadsFileOwnerMigration,
       );
   ProviderListenable<TileAdditionalInfoType?> tileAdditionalInfoType(
-    TabContentType tabContentType,
+    ContentType tabContentType,
   ) => finampSettingsProvider.select(
     (value) => value.requireValue.tileAdditionalInfoType[tabContentType],
   );

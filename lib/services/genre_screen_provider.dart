@@ -113,10 +113,10 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOnline({
 }) async {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final sortBy = genreCuratedItemSelectionType.getSortBy();
-  TabContentType tabType = switch (baseItemType) {
-    BaseItemDtoType.album => TabContentType.albums,
-    BaseItemDtoType.artist => TabContentType.performingArtists,
-    _ => TabContentType.tracks,
+  ContentType tabType = switch (baseItemType) {
+    BaseItemDtoType.album => ContentType.albums,
+    BaseItemDtoType.artist => ContentType.performingArtists,
+    _ => ContentType.tracks,
   };
   int itemCount;
 

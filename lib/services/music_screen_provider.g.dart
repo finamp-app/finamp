@@ -12,7 +12,7 @@ part of 'music_screen_provider.dart';
 // **************************************************************************
 
 String _$loadHomeSectionItemsHash() =>
-    r'98d63da2949586391d4258610cbc74a0394dd75f';
+    r'7ced0081ad3af099e90b6f7907b783854c2180d7';
 
 /// Copied from Dart SDK
 class _SystemHash {

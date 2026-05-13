@@ -208,7 +208,7 @@ class HomeScreenSection extends ConsumerWidget {
             : [
                 // if (sectionInfo.presetType == HomeScreenSectionPresetType.//TODO)
                 //TODO download button
-                if (sectionInfo.contentType == TabContentType.tracks)
+                if (sectionInfo.contentType == ContentType.tracks)
                 //TODO use similar logic to [loadChildTracksFromShuffledGenreAlbums] for loading tracks from other tab types
                 //TODO for collections, try to recursively load tracks directly, Jellyfin can do that
                 ...[
@@ -315,7 +315,7 @@ class HomeScreenSection extends ConsumerWidget {
           }
         },
         onSecondaryTap: () => showModalHomeSectionMenu(context: context, section: sectionInfo),
-        onDismiss: sectionInfo.contentType != TabContentType.tracks
+        onDismiss: sectionInfo.contentType != ContentType.tracks
             ? null
             : (followUpAction) async {
                 final source = QueueItemSource.rawId(

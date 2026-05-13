@@ -165,7 +165,7 @@ class _GetAlbumOrPlaylistTracksProviderElement
 }
 
 String _$getDefaultSortedPlaylistTracksHash() =>
-    r'c07d4412063f151bb0b20a8e9e8f053577ac3437';
+    r'38b604cd5f85a459804c174426a400065db8ce9e';
 
 /// See also [getDefaultSortedPlaylistTracks].
 @ProviderFor(getDefaultSortedPlaylistTracks)

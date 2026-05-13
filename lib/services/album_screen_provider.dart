@@ -40,9 +40,11 @@ Future<(List<BaseItemDto>, List<BaseItemDto>)> getAlbumOrPlaylistTracks(Ref ref,
   return (allTracks, playableTracks);
 }
 
+SortAndFilterController _defaultPlaylistSort = SortAndFilterController.trackSettings(ContentType.inPlaylist);
+
 @riverpod
 Future<(List<BaseItemDto>, List<BaseItemDto>)> getDefaultSortedPlaylistTracks(Ref ref, BaseItemDto parent) {
-  final sortConfig = ref.watch(sortAndFilterConfigFromSettingsProvider(null));
+  final sortConfig = ref.watch(resolveSortProvider(_defaultPlaylistSort));
   return ref.watch(getSortedPlaylistTracksProvider(parent, sortConfig).future);
 }
 

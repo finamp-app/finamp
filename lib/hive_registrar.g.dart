@@ -19,6 +19,7 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(ClientCapabilitiesAdapter());
     registerAdapter(CodecProfileAdapter());
     registerAdapter(ContainerProfileAdapter());
+    registerAdapter(ContentTypeAdapter());
     registerAdapter(ContentViewTypeAdapter());
     registerAdapter(CuratedItemSelectionTypeAdapter());
     registerAdapter(DeviceIdentificationAdapter());
@@ -104,7 +105,6 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(SortByAdapter());
     registerAdapter(SortOrderAdapter());
     registerAdapter(SubtitleProfileAdapter());
-    registerAdapter(TabContentTypeAdapter());
     registerAdapter(TileAdditionalInfoTypeAdapter());
     registerAdapter(TranscodeDownloadsSettingAdapter());
     registerAdapter(TranscodingProfileAdapter());
@@ -130,6 +130,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(ClientCapabilitiesAdapter());
     registerAdapter(CodecProfileAdapter());
     registerAdapter(ContainerProfileAdapter());
+    registerAdapter(ContentTypeAdapter());
     registerAdapter(ContentViewTypeAdapter());
     registerAdapter(CuratedItemSelectionTypeAdapter());
     registerAdapter(DeviceIdentificationAdapter());
@@ -215,7 +216,6 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(SortByAdapter());
     registerAdapter(SortOrderAdapter());
     registerAdapter(SubtitleProfileAdapter());
-    registerAdapter(TabContentTypeAdapter());
     registerAdapter(TileAdditionalInfoTypeAdapter());
     registerAdapter(TranscodeDownloadsSettingAdapter());
     registerAdapter(TranscodingProfileAdapter());

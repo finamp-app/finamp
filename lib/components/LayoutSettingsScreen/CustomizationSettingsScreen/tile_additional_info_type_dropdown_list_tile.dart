@@ -18,7 +18,7 @@ class TileAdditionalInfoTypeTitleListTile extends ConsumerWidget {
 }
 
 class TileAdditionalInfoTypeDropdownListTile extends ConsumerWidget {
-  final TabContentType tabContentType;
+  final ContentType tabContentType;
 
   const TileAdditionalInfoTypeDropdownListTile({required this.tabContentType, super.key});
 
@@ -31,14 +31,14 @@ class TileAdditionalInfoTypeDropdownListTile extends ConsumerWidget {
     final dropdownItems = [
       TileAdditionalInfoType.adaptive,
       TileAdditionalInfoType.dateAdded,
-      if ([TabContentType.tracks, TabContentType.albums].contains(tabContentType)) TileAdditionalInfoType.dateReleased,
-      if ([TabContentType.tracks].contains(tabContentType)) TileAdditionalInfoType.playCount,
-      if ([TabContentType.tracks].contains(tabContentType)) TileAdditionalInfoType.dateLastPlayed,
+      if ([ContentType.tracks, ContentType.albums].contains(tabContentType)) TileAdditionalInfoType.dateReleased,
+      if ([ContentType.tracks].contains(tabContentType)) TileAdditionalInfoType.playCount,
+      if ([ContentType.tracks].contains(tabContentType)) TileAdditionalInfoType.dateLastPlayed,
       if ([
-        TabContentType.albums,
-        TabContentType.albumArtists,
-        TabContentType.performingArtists,
-        TabContentType.playlists,
+        ContentType.albums,
+        ContentType.albumArtists,
+        ContentType.performingArtists,
+        ContentType.playlists,
       ].contains(tabContentType))
         TileAdditionalInfoType.duration,
       TileAdditionalInfoType.none,

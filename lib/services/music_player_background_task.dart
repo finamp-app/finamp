@@ -920,39 +920,36 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   List<MediaItem> _getRootMenu() {
     return [
       MediaItem(
-        id: MediaItemId(contentType: TabContentType.albums, parentType: MediaItemParentType.rootCollection).toString(),
+        id: MediaItemId(contentType: ContentType.albums, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.albums ?? TabContentType.albums.toString(),
+        title: _appLocalizations?.albums ?? ContentType.albums.toString(),
         playable: false,
       ),
       MediaItem(
         id: MediaItemId(
-          contentType: TabContentType.performingArtists,
+          contentType: ContentType.performingArtists,
           parentType: MediaItemParentType.rootCollection,
         ).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.artists ?? TabContentType.performingArtists.toString(),
+        title: _appLocalizations?.artists ?? ContentType.performingArtists.toString(),
         playable: false,
       ),
       MediaItem(
-        id: MediaItemId(
-          contentType: TabContentType.playlists,
-          parentType: MediaItemParentType.rootCollection,
-        ).toString(),
+        id: MediaItemId(contentType: ContentType.playlists, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.playlists ?? TabContentType.playlists.toString(),
+        title: _appLocalizations?.playlists ?? ContentType.playlists.toString(),
         playable: false,
       ),
       MediaItem(
-        id: MediaItemId(contentType: TabContentType.genres, parentType: MediaItemParentType.rootCollection).toString(),
+        id: MediaItemId(contentType: ContentType.genres, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.genres ?? TabContentType.genres.toString(),
+        title: _appLocalizations?.genres ?? ContentType.genres.toString(),
         playable: false,
       ),
       MediaItem(
-        id: MediaItemId(contentType: TabContentType.tracks, parentType: MediaItemParentType.rootCollection).toString(),
+        id: MediaItemId(contentType: ContentType.tracks, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.tracks ?? TabContentType.tracks.toString(),
+        title: _appLocalizations?.tracks ?? ContentType.tracks.toString(),
         playable: false,
       ),
     ];
@@ -977,7 +974,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       // return await _androidAutoHelper.getRecentItems();
       // return playlists for now
       return await _androidAutoHelper.getMediaItems(
-        MediaItemId(contentType: TabContentType.playlists, parentType: MediaItemParentType.rootCollection),
+        MediaItemId(contentType: ContentType.playlists, parentType: MediaItemParentType.rootCollection),
       );
     } else {
       try {

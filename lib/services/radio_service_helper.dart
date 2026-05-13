@@ -522,7 +522,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
                     parentItem: currentQueue.sourceLibrary,
                     recursive: true,
                     includeItemTypes: [BaseItemDtoType.album.name].join(","),
-                    sortBy: SortBy.random.jellyfinName(TabContentType.albums),
+                    sortBy: SortBy.random.jellyfinName(ContentType.albums),
                   )) ??
                   [];
             }

@@ -37,7 +37,7 @@ class MusicScreenTabView extends ConsumerStatefulWidget {
     required this.sortAndFilterConfiguration,
   });
 
-  final TabContentType tabContentType;
+  final ContentType tabContentType;
   final MusicRefreshCallback? refresh;
 
   final bool allowTrackGestures;
@@ -221,7 +221,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
-          if (widget.genreFilter != null && widget.tabContentType != TabContentType.genres)
+          if (widget.genreFilter != null && widget.tabContentType != ContentType.genres)
             Text(
               AppLocalizations.of(context)!.genreNoItems(widget.tabContentType.name),
               style: TextStyle(fontSize: 16),
@@ -249,7 +249,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     final itemPadding = calculateItemCollectionCardWidth(ref).$2;
     var tabContent =
         ref.watch(finampSettingsProvider.contentViewType) == ContentViewType.list ||
-            widget.tabContentType == TabContentType.tracks
+            widget.tabContentType == ContentType.tracks
         ? SafeArea(
             top: false,
             bottom: false,
@@ -275,7 +275,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                           key: ValueKey(index),
                           controller: controller,
                           index: index,
-                          child: widget.tabContentType == TabContentType.tracks
+                          child: widget.tabContentType == ContentType.tracks
                               ? TrackListTile(
                                   key: ValueKey(item.id),
                                   item: item,
@@ -394,7 +394,7 @@ class MusicRefreshCallback {
 }
 
 class MusicScreenGridLayout extends SliverGridDelegate {
-  MusicScreenGridLayout({required WidgetRef ref, required TabContentType contentType}) {
+  MusicScreenGridLayout({required WidgetRef ref, required ContentType contentType}) {
     final widthData = calculateItemCollectionCardWidth(ref);
     itemWidth = widthData.$1;
     itemPadding = widthData.$2;

@@ -34,7 +34,7 @@ class ItemCollectionListTile extends ConsumerWidget {
   });
 
   final BaseItemDto item;
-  final TabContentType? parentType;
+  final ContentType? parentType;
   final void Function()? onTap;
   final bool albumShowsYearAndDurationInstead;
   final SortBy? adaptiveAdditionalInfoSortBy;
@@ -101,9 +101,9 @@ class ItemCollectionListTile extends ConsumerWidget {
       );
     }
 
-    TabContentType? associatedTabContentType;
+    ContentType? associatedTabContentType;
     try {
-      associatedTabContentType = TabContentType.fromItemType(itemType.jellyfinName ?? "Collection");
+      associatedTabContentType = ContentType.fromItemType(itemType.jellyfinName ?? "Collection");
     } on FormatException {
       associatedTabContentType = null;
     }
@@ -111,8 +111,7 @@ class ItemCollectionListTile extends ConsumerWidget {
     final tileAdditionalInfoSetting = associatedTabContentType != null
         ? ref.watch(finampSettingsProvider.tileAdditionalInfoType(associatedTabContentType))
         : null;
-    final tileAdditionalInfoType =
-        (associatedTabContentType == TabContentType.albums && albumShowsYearAndDurationInstead)
+    final tileAdditionalInfoType = (associatedTabContentType == ContentType.albums && albumShowsYearAndDurationInstead)
         ? TileAdditionalInfoType.none
         : (tileAdditionalInfoSetting ?? TileAdditionalInfoType.adaptive);
 

@@ -93,7 +93,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         androidStopForegroundOnPause: fields[4] == null
             ? true
             : fields[4] as bool,
-        showTabs: (fields[5] as Map).cast<TabContentType, bool>(),
+        showTabs: fields[5] == null
+            ? DefaultSettings.showTabs
+            : (fields[5] as Map).cast<ContentType, bool>(),
         onlyShowFavorites: fields[6] == null ? false : fields[6] as bool,
         sortBy: fields[7] == null ? SortBy.sortName : fields[7] as SortBy,
         sortOrder: fields[8] == null
@@ -141,10 +143,10 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             : (fields[79] as num).toInt(),
         tabSortBy: fields[20] == null
             ? {}
-            : (fields[20] as Map).cast<TabContentType, SortBy>(),
+            : (fields[20] as Map).cast<ContentType, SortBy>(),
         tabSortOrder: fields[21] == null
             ? {}
-            : (fields[21] as Map).cast<TabContentType, SortOrder>(),
+            : (fields[21] as Map).cast<ContentType, SortOrder>(),
         loopMode: fields[27] == null
             ? FinampLoopMode.none
             : fields[27] as FinampLoopMode,
@@ -159,14 +161,16 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             : fields[119] as bool,
         tabOrder: fields[22] == null
             ? [
-                TabContentType.home,
-                TabContentType.albums,
-                TabContentType.genericArtists,
-                TabContentType.playlists,
-                TabContentType.tracks,
-                TabContentType.genres,
+                ContentType.home,
+                ContentType.albums,
+                ContentType.genericArtists,
+                ContentType.albumArtists,
+                ContentType.performingArtists,
+                ContentType.playlists,
+                ContentType.tracks,
+                ContentType.genres,
               ]
-            : (fields[22] as List).cast<TabContentType>(),
+            : (fields[22] as List).cast<ContentType>(),
         autoloadLastQueueOnStartup: fields[28] == null
             ? true
             : fields[28] as bool,
@@ -369,11 +373,11 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? true
             : fields[112] as bool,
         playlistTracksSortBy: fields[113] == null
-            ? SortBy.defaultOrder
-            : fields[113] as SortBy,
+            ? null
+            : fields[113] as SortBy?,
         playlistTracksSortOrder: fields[114] == null
-            ? SortOrder.ascending
-            : fields[114] as SortOrder,
+            ? null
+            : fields[114] as SortOrder?,
         genreFilterPlaylists: fields[115] == null ? false : fields[115] as bool,
         clearQueueOnStopEvent: fields[117] == null
             ? false
@@ -386,16 +390,14 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             : fields[121] as bool,
         tileAdditionalInfoType: fields[122] == null
             ? {
-                TabContentType.tracks: TileAdditionalInfoType.adaptive,
-                TabContentType.albums: TileAdditionalInfoType.adaptive,
-                TabContentType.performingArtists:
-                    TileAdditionalInfoType.adaptive,
-                TabContentType.albumArtists: TileAdditionalInfoType.adaptive,
-                TabContentType.playlists: TileAdditionalInfoType.adaptive,
-                TabContentType.genres: TileAdditionalInfoType.adaptive,
+                ContentType.tracks: TileAdditionalInfoType.adaptive,
+                ContentType.albums: TileAdditionalInfoType.adaptive,
+                ContentType.performingArtists: TileAdditionalInfoType.adaptive,
+                ContentType.albumArtists: TileAdditionalInfoType.adaptive,
+                ContentType.playlists: TileAdditionalInfoType.adaptive,
+                ContentType.genres: TileAdditionalInfoType.adaptive,
               }
-            : (fields[122] as Map)
-                  .cast<TabContentType, TileAdditionalInfoType>(),
+            : (fields[122] as Map).cast<ContentType, TileAdditionalInfoType>(),
         rpcEnabled: fields[123] == null ? false : fields[123] as bool,
         rpcIcon: fields[124] == null
             ? DiscordRpcIcon.transparent
@@ -1296,7 +1298,7 @@ class MediaItemIdAdapter extends TypeAdapter<MediaItemId> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return MediaItemId(
-      contentType: fields[0] as TabContentType,
+      contentType: fields[0] as ContentType,
       parentType: fields[1] as MediaItemParentType,
       itemId: fields[2] as BaseItemId?,
       parentId: fields[3] as BaseItemId?,
@@ -1593,7 +1595,7 @@ class HomeScreenSectionConfigurationAdapter
     return HomeScreenSectionConfiguration(
       type: fields[0] as HomeScreenSectionType,
       itemId: fields[1] as BaseItemId,
-      contentType: fields[2] as TabContentType,
+      contentType: fields[2] as ContentType,
       sortAndFilterConfiguration: fields[3] as SortAndFilterConfiguration,
       customSectionTitle: fields[4] as String?,
       presetType: fields[5] as HomeScreenSectionPresetType?,
@@ -1780,53 +1782,61 @@ class QuickActionConfigAdapter extends TypeAdapter<QuickActionConfig> {
           typeId == other.typeId;
 }
 
-class TabContentTypeAdapter extends TypeAdapter<TabContentType> {
+class ContentTypeAdapter extends TypeAdapter<ContentType> {
   @override
   final typeId = 36;
 
   @override
-  TabContentType read(BinaryReader reader) {
+  ContentType read(BinaryReader reader) {
     switch (reader.readByte()) {
       case 0:
-        return TabContentType.albums;
+        return ContentType.albums;
       case 1:
-        return TabContentType.genericArtists;
+        return ContentType.genericArtists;
       case 2:
-        return TabContentType.playlists;
+        return ContentType.playlists;
       case 3:
-        return TabContentType.genres;
+        return ContentType.genres;
       case 4:
-        return TabContentType.tracks;
+        return ContentType.tracks;
       case 5:
-        return TabContentType.home;
+        return ContentType.home;
       case 6:
-        return TabContentType.performingArtists;
+        return ContentType.performingArtists;
       case 7:
-        return TabContentType.albumArtists;
+        return ContentType.albumArtists;
+      case 8:
+        return ContentType.inPlaylist;
+      case 9:
+        return ContentType.mixed;
       default:
-        return TabContentType.albums;
+        return ContentType.albums;
     }
   }
 
   @override
-  void write(BinaryWriter writer, TabContentType obj) {
+  void write(BinaryWriter writer, ContentType obj) {
     switch (obj) {
-      case TabContentType.albums:
+      case ContentType.albums:
         writer.writeByte(0);
-      case TabContentType.genericArtists:
+      case ContentType.genericArtists:
         writer.writeByte(1);
-      case TabContentType.playlists:
+      case ContentType.playlists:
         writer.writeByte(2);
-      case TabContentType.genres:
+      case ContentType.genres:
         writer.writeByte(3);
-      case TabContentType.tracks:
+      case ContentType.tracks:
         writer.writeByte(4);
-      case TabContentType.home:
+      case ContentType.home:
         writer.writeByte(5);
-      case TabContentType.performingArtists:
+      case ContentType.performingArtists:
         writer.writeByte(6);
-      case TabContentType.albumArtists:
+      case ContentType.albumArtists:
         writer.writeByte(7);
+      case ContentType.inPlaylist:
+        writer.writeByte(8);
+      case ContentType.mixed:
+        writer.writeByte(9);
     }
   }
 
@@ -1836,7 +1846,7 @@ class TabContentTypeAdapter extends TypeAdapter<TabContentType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TabContentTypeAdapter &&
+      other is ContentTypeAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
@@ -9404,7 +9414,7 @@ const _$FinampCollectionTypeEnumMap = {
 };
 
 MediaItemId _$MediaItemIdFromJson(Map<String, dynamic> json) => MediaItemId(
-  contentType: $enumDecode(_$TabContentTypeEnumMap, json['contentType']),
+  contentType: $enumDecode(_$ContentTypeEnumMap, json['contentType']),
   parentType: $enumDecode(_$MediaItemParentTypeEnumMap, json['parentType']),
   itemId: _$JsonConverterFromJson<String, BaseItemId>(
     json['itemId'],
@@ -9418,7 +9428,7 @@ MediaItemId _$MediaItemIdFromJson(Map<String, dynamic> json) => MediaItemId(
 
 Map<String, dynamic> _$MediaItemIdToJson(MediaItemId instance) =>
     <String, dynamic>{
-      'contentType': _$TabContentTypeEnumMap[instance.contentType]!,
+      'contentType': _$ContentTypeEnumMap[instance.contentType]!,
       'parentType': _$MediaItemParentTypeEnumMap[instance.parentType]!,
       'itemId': _$JsonConverterToJson<String, BaseItemId>(
         instance.itemId,
@@ -9430,15 +9440,17 @@ Map<String, dynamic> _$MediaItemIdToJson(MediaItemId instance) =>
       ),
     };
 
-const _$TabContentTypeEnumMap = {
-  TabContentType.albums: 'albums',
-  TabContentType.genericArtists: 'genericArtists',
-  TabContentType.playlists: 'playlists',
-  TabContentType.genres: 'genres',
-  TabContentType.tracks: 'tracks',
-  TabContentType.home: 'home',
-  TabContentType.performingArtists: 'performingArtists',
-  TabContentType.albumArtists: 'albumArtists',
+const _$ContentTypeEnumMap = {
+  ContentType.albums: 'albums',
+  ContentType.genericArtists: 'genericArtists',
+  ContentType.playlists: 'playlists',
+  ContentType.genres: 'genres',
+  ContentType.tracks: 'tracks',
+  ContentType.home: 'home',
+  ContentType.performingArtists: 'performingArtists',
+  ContentType.albumArtists: 'albumArtists',
+  ContentType.inPlaylist: 'inPlaylist',
+  ContentType.mixed: 'mixed',
 };
 
 const _$MediaItemParentTypeEnumMap = {
@@ -9527,7 +9539,7 @@ HomeScreenSectionConfiguration _$HomeScreenSectionConfigurationFromJson(
 ) => HomeScreenSectionConfiguration(
   type: $enumDecode(_$HomeScreenSectionTypeEnumMap, json['type']),
   itemId: const BaseItemIdConverter().fromJson(json['itemId'] as String),
-  contentType: $enumDecode(_$TabContentTypeEnumMap, json['contentType']),
+  contentType: $enumDecode(_$ContentTypeEnumMap, json['contentType']),
   sortAndFilterConfiguration: SortAndFilterConfiguration.fromJson(
     json['sortAndFilterConfiguration'] as Map<String, dynamic>,
   ),
@@ -9543,7 +9555,7 @@ Map<String, dynamic> _$HomeScreenSectionConfigurationToJson(
 ) => <String, dynamic>{
   'type': _$HomeScreenSectionTypeEnumMap[instance.type]!,
   'itemId': const BaseItemIdConverter().toJson(instance.itemId),
-  'contentType': _$TabContentTypeEnumMap[instance.contentType]!,
+  'contentType': _$ContentTypeEnumMap[instance.contentType]!,
   'sortAndFilterConfiguration': instance.sortAndFilterConfiguration,
   if (instance.customSectionTitle case final value?)
     'customSectionTitle': value,

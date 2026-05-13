@@ -441,7 +441,7 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
                   final defaultSection = HomeScreenSectionConfiguration(
                     type: HomeScreenSectionType.tabView,
                     itemId: currentLibraryPlaceholder,
-                    contentType: TabContentType.tracks,
+                    contentType: ContentType.tracks,
                     sortAndFilterConfiguration: SortAndFilterConfiguration(
                       sortBy: SortBy.sortName,
                       sortOrder: SortOrder.ascending,
@@ -529,16 +529,20 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
 
   String tabTitle = "";
   BaseItemId selectedLibrary = currentLibraryPlaceholder;
-  TabContentType tabContent = TabContentType.tracks;
-  SortAndFilterController tabSortController = SortAndFilterController(
-    configuration: SortAndFilterConfiguration.defaultNonAlbumSort,
+  ContentType tabContent = ContentType.tracks;
+  StaticSortAndFilterController tabSortController = StaticSortAndFilterController(
+    startingConfig: SortAndFilterConfiguration.defaultSort,
+    contentType: ContentType.tracks,
+    skipResolving: true,
   );
 
   String collectionTitle = "";
   BaseItemDto? selectedCollection;
-  TabContentType? collectionContent;
-  SortAndFilterController collectionSortController = SortAndFilterController(
-    configuration: SortAndFilterConfiguration.defaultNonAlbumSort,
+  ContentType? collectionContent;
+  StaticSortAndFilterController collectionSortController = StaticSortAndFilterController(
+    startingConfig: SortAndFilterConfiguration.defaultSort,
+    contentType: ContentType.tracks,
+    skipResolving: true,
   );
 
   final ValueNotifier<BaseItemDto?> searchListener = ValueNotifier(null);
@@ -560,10 +564,10 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
       case HomeScreenSectionType.tabView:
         selectedLibrary = widget.initialState.itemId;
         tabContent = widget.initialState.contentType;
-        tabSortController.value = widget.initialState.sortAndFilterConfiguration;
+        tabSortController.updateConfiguration(widget.initialState.sortAndFilterConfiguration);
         tabTitle = initialTitle;
       case HomeScreenSectionType.collection:
-        collectionSortController.value = widget.initialState.sortAndFilterConfiguration;
+        collectionSortController.updateConfiguration(widget.initialState.sortAndFilterConfiguration);
         collectionTitle = initialTitle;
       case HomeScreenSectionType.queues:
         break;
@@ -574,30 +578,31 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
         selectedCollection = searchListener.value;
         collectionTitle = searchListener.value?.name ?? "";
         if (searchListener.value != null) {
-          bool inPlaylist = false;
           switch (BaseItemDtoType.fromItem(searchListener.value!)) {
             case BaseItemDtoType.playlist:
             case BaseItemDtoType.album:
-              collectionContent = TabContentType.tracks;
-              inPlaylist = true;
+              collectionContent = ContentType.inPlaylist;
             case BaseItemDtoType.artist:
             case BaseItemDtoType.genre:
-              collectionContent = TabContentType.tracks;
+              collectionContent = ContentType.tracks;
             case BaseItemDtoType.collection:
-              collectionContent = TabContentType.home;
+              collectionContent = ContentType.mixed;
             case _:
               throw UnimplementedError();
           }
           if (searchListener.value!.id == widget.initialState.itemId) {
-            collectionSortController.value = widget.initialState.sortAndFilterConfiguration;
+            collectionSortController.updateConfiguration(widget.initialState.sortAndFilterConfiguration);
           } else {
-            collectionSortController.value = inPlaylist
-                ? SortAndFilterConfiguration.defaultAlbumSort
-                : SortAndFilterConfiguration.defaultNonAlbumSort;
+            collectionSortController.updateConfiguration(
+              collectionContent == ContentType.inPlaylist
+                  ? SortAndFilterConfiguration.defaultInAlbumSort
+                  : SortAndFilterConfiguration.defaultSort,
+            );
           }
         } else {
           collectionContent = null;
         }
+        collectionSortController.updateContentType(collectionContent ?? ContentType.tracks);
       });
     });
   }
@@ -625,16 +630,23 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
     final type = switch (selectedSectionType) {
       HomeScreenSectionType.tabView => tabContent,
       HomeScreenSectionType.collection => collectionContent,
-      HomeScreenSectionType.queues => TabContentType.home,
+      HomeScreenSectionType.queues => ContentType.home,
     };
     if (id == null || type == null) return null;
+
+    SortAndFilterConfiguration currentConfig;
+    if (activeSortController == null) {
+      currentConfig = SortAndFilterConfiguration.defaultSort;
+    } else {
+      currentConfig = ref.watch(resolveSortProvider(activeSortController!));
+    }
 
     return HomeScreenSectionConfiguration(
       type: selectedSectionType,
       customSectionTitle: activeTitle == "" ? null : activeTitle,
       itemId: id,
       contentType: type,
-      sortAndFilterConfiguration: activeSortController?.value ?? SortAndFilterConfiguration.defaultNonAlbumSort,
+      sortAndFilterConfiguration: currentConfig,
     );
   }
 
@@ -655,13 +667,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
   Widget build(BuildContext context) {
     // Normal track menu entries, excluding headers
     final menuEntries = [
-      ValueListenableBuilder(
-        // We don't care what we listen to while on queue tab type, so just grab tabSort.
-        valueListenable: activeSortController ?? tabSortController,
-        builder: (_, _, _) {
-          return SectionPreview(sectionInfo: currentSectionInfo);
-        },
-      ),
+      SectionPreview(sectionInfo: currentSectionInfo),
       SizedBox(height: 16.0),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -725,18 +731,19 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
               padding: const EdgeInsets.only(left: 4.0),
               child: Text("Tab Type*", style: Theme.of(context).textTheme.bodyMedium),
             ),
-            FinampSettingsDropdown<TabContentType>(
-              dropdownItems: TabContentType.values
+            FinampSettingsDropdown<ContentType>(
+              dropdownItems: ContentType.values
                   .whereNot(
-                    (contentType) => contentType == TabContentType.home || contentType == TabContentType.genericArtists,
+                    (contentType) => contentType == ContentType.home || contentType == ContentType.genericArtists,
                   )
-                  .map((e) => DropdownMenuEntry<TabContentType>(value: e, label: e.toLocalisedString(context)))
+                  .map((e) => DropdownMenuEntry<ContentType>(value: e, label: e.toLocalisedString(context)))
                   .toList(),
               selectedValue: tabContent,
               onSelected: (selectedTabType) {
                 if (selectedTabType != null) {
                   setState(() {
                     tabContent = selectedTabType;
+                    tabSortController.updateContentType(selectedTabType);
                   });
                 }
               },
@@ -826,16 +833,9 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
           if (selectedSectionType != HomeScreenSectionType.queues)
             SortAndFilterRow(
               tabType: selectedSectionType == HomeScreenSectionType.collection
-                  ? collectionContent ?? TabContentType.tracks
+                  ? collectionContent ?? ContentType.tracks
                   : tabContent,
               controller: activeSortController!,
-              forPlaylistTracks:
-                  selectedCollection != null &&
-                  selectedSectionType == HomeScreenSectionType.collection &&
-                  [
-                    BaseItemDtoType.album,
-                    BaseItemDtoType.playlist,
-                  ].contains(BaseItemDtoType.fromItem(selectedCollection!)),
             ),
         ],
       ),

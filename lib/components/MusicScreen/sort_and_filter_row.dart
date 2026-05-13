@@ -15,251 +15,271 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
-class SortAndFilterController extends ValueNotifier<SortAndFilterConfiguration> {
-  SortAndFilterController({required SortAndFilterConfiguration configuration})
-    : _settingsListener = null,
-      super(configuration);
+abstract class SortAndFilterController {
+  SortAndFilterController._({required ContentType contentType, required SortAndFilterConfiguration startingConfig})
+    : _notifier = ValueNotifier<_SortControllerState>(_SortControllerState(startingConfig, contentType));
 
-  // tabType null indicates this is a playlist, not a music screen tab
-  // dispose() must be called if this constructor is used.
-  SortAndFilterController.trackSettings({required TabContentType? tabType})
-    : super(GetIt.instance<ProviderContainer>().read(sortAndFilterConfigFromSettingsProvider(tabType))) {
-    _tabType = tabType;
-    _settingsListener = GetIt.instance<ProviderContainer>().listen(
-      sortAndFilterConfigFromSettingsProvider(tabType),
-      (_, newValue) => updateConfiguration(newValue),
-    );
-    addListener(_updateSettings);
+  ContentType get _type => _notifier.value.type;
+  SortAndFilterConfiguration get _config => _notifier.value.config;
+
+  // We avoid directly exposing this notifier so we can always interject on offline/online resolve
+  final ValueNotifier<_SortControllerState> _notifier;
+
+  // updateGenreFilter is allowed on all sort controllers, even tracking ones, because the value is not propagated back to settings.
+  void updateGenreFilter(BaseItemDto? genre) {
+    final processedFilters = _config.filters.toSet();
+    processedFilters.removeWhere((x) => x.type == ItemFilterType.genreFilter);
+    if (genre != null) {
+      processedFilters.add(ItemFilter(type: ItemFilterType.genreFilter, extras: genre));
+    }
+    _updateConfiguration(_config.copyWith(filters: processedFilters));
   }
 
-  late final ProviderSubscription<SortAndFilterConfiguration>? _settingsListener;
-  late final TabContentType? _tabType;
+  // Updating the whole configuration can only be done by the tracing controller via the filter menu, so that changes
+  // are explicit and user initiated.  Static controllers expose this publicly for other widgets to use.
+  void _updateConfiguration(SortAndFilterConfiguration newConfig) =>
+      _notifier.value = _SortControllerState(newConfig, _type);
 
-  SortAndFilterConfiguration get configuration => value;
+  SortAndFilterConfiguration _getValue(Ref ref);
 
-  void _updateSettings() {
-    if (_settingsListener != null) {
-      if (_tabType == null) {
-        if (value.sortBy != FinampSettingsHelper.finampSettings.playlistTracksSortBy) {
-          FinampSetters.setPlaylistTracksSortBy(value.sortBy);
-        }
-        if (value.sortOrder != FinampSettingsHelper.finampSettings.playlistTracksSortOrder) {
-          FinampSetters.setPlaylistTracksSortOrder(value.sortOrder);
-        }
+  SortAndFilterConfiguration _resolveInternal(Ref ref, SortAndFilterConfiguration config) {
+    // PlayCount and Last Played are not representative in Offline Mode
+    // so we disable it and overwrite it with the Sort Name if it was selected
+    if (ref.watch(finampSettingsProvider.isOffline) &&
+        (config.sortBy == SortBy.playCount || config.sortBy == SortBy.datePlayed)) {
+      if (_type == ContentType.inPlaylist) {
+        return config.copyWith(sortBy: SortBy.defaultOrder);
       } else {
-        if (value.sortBy != FinampSettingsHelper.finampSettings.tabSortBy[_tabType]) {
-          FinampSetters.setTabSortBy(_tabType, value.sortBy);
-        }
-        if (value.sortOrder != FinampSettingsHelper.finampSettings.tabSortOrder[_tabType]) {
-          FinampSetters.setTabSortOrder(_tabType, value.sortOrder);
-        }
+        return config.copyWith(sortBy: SortBy.sortName);
       }
-
-      if (value.filters.contains(ItemFilter(type: ItemFilterType.isFavorite)) !=
-          FinampSettingsHelper.finampSettings.onlyShowFavorites) {
-        FinampSetters.setOnlyShowFavorites(value.filters.contains(ItemFilter(type: ItemFilterType.isFavorite)));
-      }
-
-      if (value.filters.contains(ItemFilter(type: ItemFilterType.isFullyDownloaded)) !=
-          FinampSettingsHelper.finampSettings.onlyShowFullyDownloaded) {
-        FinampSetters.setOnlyShowFullyDownloaded(
-          value.filters.contains(ItemFilter(type: ItemFilterType.isFullyDownloaded)),
-        );
-      }
+    } else {
+      return config;
     }
   }
 
-  void updateGenreFilter(BaseItemDto? genre) => value = value.copyWith(genreFilter: genre);
+  SortAndFilterConfiguration resolveConfig() => GetIt.instance<ProviderContainer>().read(resolveSortProvider(this));
 
-  @override
-  void dispose() {
-    _settingsListener?.close();
-    super.dispose();
-  }
+  factory SortAndFilterController.trackSettings(ContentType contentType) =>
+      TrackingSortAndFilterController(contentType: contentType);
 
-  void updateConfiguration(SortAndFilterConfiguration newConfig) {
-    value = newConfig;
-  }
-
-  // TODO should reactive resolving be built into this controller somehow?  Or is letting consumers handle reactivity fine?
+  factory SortAndFilterController({
+    required ContentType contentType,
+    required SortAndFilterConfiguration startingConfig,
+    bool skipResolving,
+  }) = StaticSortAndFilterController;
 }
 
-final sortAndFilterConfigFromSettingsProvider = Provider.family((Ref ref, TabContentType? tabType) {
-  var sortBy = tabType == null
-      ? ref.watch(finampSettingsProvider.playlistTracksSortBy)
-      : ref.watch(finampSettingsProvider.tabSortBy(tabType));
-  var sortOrder = tabType == null
-      ? ref.watch(finampSettingsProvider.playlistTracksSortOrder)
-      : ref.watch(finampSettingsProvider.tabSortOrder(tabType));
-  final filters = {
-    if (ref.watch(finampSettingsProvider.onlyShowFavorites)) ItemFilter(type: ItemFilterType.isFavorite),
-    if (ref.watch(finampSettingsProvider.onlyShowFullyDownloaded)) ItemFilter(type: ItemFilterType.isFullyDownloaded),
-  };
+class _SortControllerState {
+  const _SortControllerState(this.config, this.type);
+  final SortAndFilterConfiguration config;
+  final ContentType type;
+}
 
-  return SortAndFilterConfiguration(
-    sortBy: sortBy ?? SortBy.sortName,
-    sortOrder: sortOrder ?? SortOrder.ascending,
-    filters: filters,
-  );
+class StaticSortAndFilterController extends SortAndFilterController {
+  StaticSortAndFilterController({required super.contentType, required super.startingConfig, this.skipResolving = false})
+    : super._();
+
+  /// Skips all checks and returns the raw config when resolving.
+  /// Useful if current constraints should be ignored, such as in settings.
+  final bool skipResolving;
+
+  void updateContentType(ContentType newType) => _notifier.value = _SortControllerState(_config, newType);
+
+  void updateConfiguration(SortAndFilterConfiguration newConfig) => _updateConfiguration(newConfig);
+
+  @override
+  SortAndFilterConfiguration _getValue(Ref ref) {
+    _notifier.addListener(ref.invalidateSelf);
+    ref.onDispose(() => _notifier.removeListener(ref.invalidateSelf));
+    if (skipResolving) {
+      return _config;
+    } else {
+      return _resolveInternal(ref, _config);
+    }
+  }
+}
+
+class TrackingSortAndFilterController extends SortAndFilterController {
+  TrackingSortAndFilterController({required super.contentType})
+    : super._(
+        startingConfig: contentType == ContentType.inPlaylist
+            ? SortAndFilterConfiguration.defaultInAlbumSort
+            : SortAndFilterConfiguration.defaultSort,
+      );
+
+  @override
+  void _updateConfiguration(SortAndFilterConfiguration newConfig) {
+    super._updateConfiguration(newConfig);
+    if (newConfig.sortBy != FinampSettingsHelper.finampSettings.tabSortBy[_type]) {
+      FinampSetters.setTabSortBy(_type, newConfig.sortBy);
+    }
+    if (newConfig.sortOrder != FinampSettingsHelper.finampSettings.tabSortOrder[_type]) {
+      FinampSetters.setTabSortOrder(_type, newConfig.sortOrder);
+    }
+
+    if (newConfig.filters.contains(ItemFilter(type: ItemFilterType.isFavorite)) !=
+        FinampSettingsHelper.finampSettings.onlyShowFavorites) {
+      FinampSetters.setOnlyShowFavorites(newConfig.filters.contains(ItemFilter(type: ItemFilterType.isFavorite)));
+    }
+
+    if (newConfig.filters.contains(ItemFilter(type: ItemFilterType.isFullyDownloaded)) !=
+        FinampSettingsHelper.finampSettings.onlyShowFullyDownloaded) {
+      FinampSetters.setOnlyShowFullyDownloaded(
+        newConfig.filters.contains(ItemFilter(type: ItemFilterType.isFullyDownloaded)),
+      );
+    }
+  }
+
+  @override
+  SortAndFilterConfiguration _getValue(Ref ref) {
+    _notifier.addListener(ref.invalidateSelf);
+    ref.onDispose(() => _notifier.removeListener(ref.invalidateSelf));
+    return _resolveInternal(
+      ref,
+      _config.copyWith(
+        sortBy: ref.watch(finampSettingsProvider.tabSortBy(_type)),
+        sortOrder: ref.watch(finampSettingsProvider.tabSortOrder(_type)),
+        favoriteFilter: ref.watch(finampSettingsProvider.onlyShowFavorites),
+        onlyShowFullyDownloadedFilter: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
+      ),
+    );
+  }
+}
+
+final resolveSortProvider = Provider.family((Ref ref, SortAndFilterController controller) {
+  return controller._getValue(ref);
 });
 
 class SortAndFilterRow extends ConsumerWidget {
-  final TabContentType tabType;
+  final ContentType tabType;
   final SortAndFilterController controller;
-
-  final bool forPlaylistTracks;
 
   final bool removeOnly;
 
   static double get height => (Platform.isIOS || Platform.isAndroid) ? 30 : 26;
 
-  const SortAndFilterRow({super.key, required this.tabType, required this.controller, this.forPlaylistTracks = false})
-    : removeOnly = false;
+  const SortAndFilterRow({super.key, required this.tabType, required this.controller}) : removeOnly = false;
 
   const SortAndFilterRow.removeOnly({super.key, required this.controller})
-    : tabType = TabContentType.tracks,
-      forPlaylistTracks = false,
+    : tabType = ContentType.tracks,
       removeOnly = true;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (tabType != TabContentType.home) {
-      Future<void> showMenu() => showSortAndFilterMenu(
-        context,
-        tabType: tabType,
-        forPlaylistTracks: forPlaylistTracks,
-        controller: controller,
-        removeOnly: removeOnly,
-      );
-      return SafeArea(
-        top: false,
-        bottom: false,
-        child: GestureDetector(
-          onTap: showMenu,
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: ValueListenableBuilder(
-                    valueListenable: controller,
-                    builder: (context, value, child) {
-                      final activeFilters = value.filters;
-                      final int activeFilterCount = activeFilters.length;
-                      String statusText = activeFilterCount == 0
-                          ? "No Filter Active*"
-                          : "$activeFilterCount ${activeFilterCount == 1 ? "Filter" : "Filters"} Active*";
-                      return LayoutBuilder(
-                        builder: (context, constraints) {
-                          final filerButtonWidth = 52.0;
-                          final minimumMaxChipWidth = 125.0;
-                          final chipSpacing = 2.0;
-                          final maxChips =
-                              ((constraints.maxWidth - filerButtonWidth) / (minimumMaxChipWidth + chipSpacing)).floor();
-                          final showChips = maxChips >= activeFilterCount && activeFilterCount > 0;
-                          return Row(
-                            spacing: chipSpacing,
-                            children: [
-                              SimpleButton(
-                                icon: TablerIcons.filter,
-                                showText: !showChips,
-                                text: statusText,
-                                fontWeight: activeFilterCount > 0 ? FontWeight.w600 : FontWeight.normal,
-                                iconColor: activeFilterCount > 0
-                                    ? ColorScheme.of(context).primary
-                                    : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
-                                textColor: activeFilterCount > 0
-                                    ? ColorScheme.of(context).primary
-                                    : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
-                                onPressed: showMenu,
+    final currentConfig = ref.watch(resolveSortProvider(controller));
+    final activeFilters = currentConfig.filters;
+    final int activeFilterCount = activeFilters.length;
+    String statusText = activeFilterCount == 0
+        ? "No Filter Active*"
+        : "$activeFilterCount ${activeFilterCount == 1 ? "Filter" : "Filters"} Active*";
+
+    Future<void> showMenu() =>
+        showSortAndFilterMenu(context, tabType: tabType, controller: controller, removeOnly: removeOnly);
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: GestureDetector(
+        onTap: showMenu,
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final filerButtonWidth = 52.0;
+                    final minimumMaxChipWidth = 125.0;
+                    final chipSpacing = 2.0;
+                    final maxChips = ((constraints.maxWidth - filerButtonWidth) / (minimumMaxChipWidth + chipSpacing))
+                        .floor();
+                    final showChips = maxChips >= activeFilterCount && activeFilterCount > 0;
+                    return Row(
+                      spacing: chipSpacing,
+                      children: [
+                        SimpleButton(
+                          icon: TablerIcons.filter,
+                          showText: !showChips,
+                          text: statusText,
+                          fontWeight: activeFilterCount > 0 ? FontWeight.w600 : FontWeight.normal,
+                          iconColor: activeFilterCount > 0
+                              ? ColorScheme.of(context).primary
+                              : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
+                          textColor: activeFilterCount > 0
+                              ? ColorScheme.of(context).primary
+                              : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
+                          onPressed: showMenu,
+                        ),
+                        if (showChips)
+                          ...activeFilters.map(
+                            (filter) => ConstrainedBox(
+                              constraints: BoxConstraints(
+                                // Cap chip width to prevent unusually long ones from causing overflow.
+                                // If showChips, this is guaranteed to be at least minimumMaxChipWidth
+                                maxWidth: (constraints.maxWidth - filerButtonWidth) / activeFilterCount,
                               ),
-                              if (showChips)
-                                ...activeFilters.map(
-                                  (filter) => ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      // Cap chip width to prevent unusually long ones from causing overflow.
-                                      // If showChips, this is guaranteed to be at least minimumMaxChipWidth
-                                      maxWidth: (constraints.maxWidth - filerButtonWidth) / activeFilterCount,
-                                    ),
-                                    child: SimpleButton(
-                                      text: filter.getName(context),
-                                      icon: TablerIcons.x,
-                                      iconColor: TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
-                                      backgroundColor: ColorScheme.of(context).primary.withOpacity(0.1),
-                                      onPressed: () => controller.updateConfiguration(
-                                        controller.value.copyWith(
-                                          filters: controller.value.filters
-                                              .whereNot((x) => x.type == filter.type)
-                                              .toSet(),
-                                        ),
-                                      ),
-                                      onPressedSecondary: showMenu,
-                                    ),
+                              child: SimpleButton(
+                                text: filter.getName(context),
+                                icon: TablerIcons.x,
+                                iconColor: TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
+                                backgroundColor: ColorScheme.of(context).primary.withOpacity(0.1),
+                                onPressed: () => controller._updateConfiguration(
+                                  currentConfig.copyWith(
+                                    filters: currentConfig.filters.whereNot((x) => x.type == filter.type).toSet(),
                                   ),
                                 ),
-                              Spacer(),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-                if (!removeOnly)
-                  ValueListenableBuilder(
-                    valueListenable: controller,
-                    builder: (context, value, child) {
-                      final config = value.resolve(
-                        isOffline: ref.watch(finampSettingsProvider.isOffline),
-                        inPlaylist: forPlaylistTracks,
-                      );
-                      return SimpleButton(
-                        // TODO the way that values ascend as you go down the page but we show an up arrow is confusing.
-                        // Is there a way to resolve this in a more intuitive manner?  What do other programs do?
-                        icon: config.sortOrder == SortOrder.ascending
-                            ? TablerIcons.sort_ascending
-                            : TablerIcons.sort_descending,
-                        text: config.sortBy.toLocalisedString(context),
-                        onPressed: () => controller.updateConfiguration(
-                          controller.value.copyWith(
-                            sortOrder: config.sortOrder == SortOrder.ascending
-                                ? SortOrder.descending
-                                : SortOrder.ascending,
+                                onPressedSecondary: showMenu,
+                              ),
+                            ),
                           ),
-                        ),
-                        onPressedSecondary: showMenu,
-                      );
-                    },
+                        Spacer(),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              if (!removeOnly)
+                SimpleButton(
+                  // TODO the way that values ascend as you go down the page but we show an up arrow is confusing.
+                  // Is there a way to resolve this in a more intuitive manner?  What do other programs do?
+                  icon: currentConfig.sortOrder == SortOrder.ascending
+                      ? TablerIcons.sort_ascending
+                      : TablerIcons.sort_descending,
+                  text: currentConfig.sortBy.toLocalisedString(context),
+                  onPressed: () => controller._updateConfiguration(
+                    currentConfig.copyWith(
+                      sortOrder: currentConfig.sortOrder == SortOrder.ascending
+                          ? SortOrder.descending
+                          : SortOrder.ascending,
+                    ),
                   ),
-                // FilterMenuButton(
-                //   tabType: tabType,
-                //   filterOverride: filterOverride,
-                //   updateFilterOverride: (newFilters) => updateFilterOverride?.call(newFilters),
-                // ),
-                // SortMenuButton(
-                //   tabType: tabType,
-                //   sortByOverride: sortByOverride,
-                //   onSortByOverrideChanged: (newSortBy) => updateSortByOverride?.call(newSortBy),
-                //   sortOrderOverride: sortOrderOverride,
-                //   updateSortOrderOverride: (newSortOrder) => updateSortOrderOverride?.call(newSortOrder),
-                //   forPlaylistTracks: forPlaylistTracks,
-                // ),
-              ],
-            ),
+                  onPressedSecondary: showMenu,
+                ),
+              // FilterMenuButton(
+              //   tabType: tabType,
+              //   filterOverride: filterOverride,
+              //   updateFilterOverride: (newFilters) => updateFilterOverride?.call(newFilters),
+              // ),
+              // SortMenuButton(
+              //   tabType: tabType,
+              //   sortByOverride: sortByOverride,
+              //   onSortByOverrideChanged: (newSortBy) => updateSortByOverride?.call(newSortBy),
+              //   sortOrderOverride: sortOrderOverride,
+              //   updateSortOrderOverride: (newSortOrder) => updateSortOrderOverride?.call(newSortOrder),
+              //   forPlaylistTracks: forPlaylistTracks,
+              // ),
+            ],
           ),
         ),
-      );
-    }
-    return SizedBox.shrink();
+      ),
+    );
   }
 }
 
 Future<void> showSortAndFilterMenu(
   BuildContext context, {
-  required TabContentType tabType,
-  required bool forPlaylistTracks,
+  required ContentType tabType,
   required SortAndFilterController controller,
   bool removeOnly = false,
 }) async {
@@ -270,7 +290,6 @@ Future<void> showSortAndFilterMenu(
       return SortAndFilterMenu(
         childBuilder: childBuilder,
         tabType: tabType,
-        forPlaylistTracks: forPlaylistTracks,
         controller: controller,
         removeOnly: removeOnly,
       );
@@ -289,15 +308,13 @@ class SortAndFilterMenu extends ConsumerStatefulWidget {
     super.key,
     required this.childBuilder,
     required this.tabType,
-    required this.forPlaylistTracks,
     required this.controller,
     required this.removeOnly,
   });
 
   final ScrollBuilder childBuilder;
 
-  final TabContentType tabType;
-  final bool forPlaylistTracks;
+  final ContentType tabType;
   final SortAndFilterController controller;
   final bool removeOnly;
 
@@ -305,7 +322,7 @@ class SortAndFilterMenu extends ConsumerStatefulWidget {
   ConsumerState<SortAndFilterMenu> createState() => _SortAndFilterMenuState();
 }
 
-class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with TickerProviderStateMixin {
+class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
   late SortAndFilterConfiguration currentConfig;
 
   static const toggalableFilterTypes = [
@@ -321,10 +338,8 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
     super.initState();
 
     // TODO actually explain what the real current selection is and why we're not using it somewhere?
-    currentConfig = widget.controller.configuration.resolve(
-      isOffline: FinampSettingsHelper.finampSettings.isOffline,
-      inPlaylist: widget.forPlaylistTracks,
-    );
+    // TODO should this be dynamic?
+    currentConfig = ref.read(resolveSortProvider(widget.controller));
   }
 
   @override
@@ -350,7 +365,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
           text: "Apply*",
           icon: TablerIcons.check,
           onPressed: () {
-            widget.controller.updateConfiguration(currentConfig);
+            widget.controller._updateConfiguration(currentConfig);
             Navigator.of(context).pop();
           },
         ),
@@ -360,7 +375,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
     }
 
     // Actual height was 490, bump to 520 for extra bottom padding and wiggle room on element sizes
-    final stackHeight = 520.0;
+    final stackHeight = 520.0 + 56.0 * excessFilters.length;
 
     return widget.childBuilder(stackHeight, menu(context, menuEntries));
   }
@@ -369,7 +384,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
   List<Widget> _getMenuEntries(BuildContext context) {
     final rawSortOptions = SortBy.defaultsFor(
       type: widget.tabType.itemType,
-      includeDefaultOrder: widget.forPlaylistTracks,
+      includeDefaultOrder: widget.tabType == ContentType.inPlaylist,
     );
     final sortOptions = ref.watch(finampSettingsProvider.isOffline)
         ? [
@@ -462,7 +477,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> with Tick
         text: "Apply*",
         icon: TablerIcons.check,
         onPressed: () {
-          widget.controller.updateConfiguration(currentConfig);
+          widget.controller._updateConfiguration(currentConfig);
           Navigator.of(context).pop();
         },
       ),

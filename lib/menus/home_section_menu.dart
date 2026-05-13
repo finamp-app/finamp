@@ -27,7 +27,7 @@ Future<void> showModalHomeSectionMenu({
         : null,
   );
 
-  final showPlayback = section.contentType == TabContentType.tracks;
+  final showPlayback = section.contentType == ContentType.tracks;
 
   // Normal menu entries, excluding headers
   List<HideableMenuEntry> getMenuEntries(BuildContext context) {
