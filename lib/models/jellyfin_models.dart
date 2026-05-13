@@ -16,8 +16,6 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import '../services/finamp_settings_helper.dart';
-
 part 'jellyfin_models.g.dart';
 
 class BaseItemIdConverter extends JsonConverter<BaseItemId, String> {
@@ -1321,46 +1319,6 @@ class SubtitleProfile {
   Map<String, dynamic> toJson() => _$SubtitleProfileToJson(this);
 }
 
-// Here because sealed class works inside one file only
-sealed class PlayableItem {}
-
-class AlbumDisc implements PlayableItem {
-  AlbumDisc({required this.parent, required this.tracks}) {
-    assert(
-      tracks.every((e) {
-        return e.parentIndexNumber == tracks.first.parentIndexNumber;
-      }),
-    );
-  }
-
-  List<BaseItemDto> tracks;
-  BaseItemDto parent;
-}
-
-class PlayableBaseItem implements PlayableItem {
-  PlayableBaseItem({required this.item, required this.sortConfig}) {
-    assert(
-      sortConfig.resolve(
-            isOffline: FinampSettingsHelper.finampSettings.isOffline,
-            inPlaylist: [BaseItemDtoType.album, BaseItemDtoType.playlist].contains(BaseItemDtoType.fromItem(item)),
-          ) ==
-          sortConfig,
-    );
-  }
-
-  factory PlayableBaseItem.defaultSort(BaseItemDto item) => PlayableBaseItem(
-    item: item,
-    sortConfig: switch (BaseItemDtoType.fromItem(item)) {
-      BaseItemDtoType.album => SortAndFilterConfiguration.defaultAlbumSort,
-      BaseItemDtoType.playlist => SortAndFilterConfiguration.defaultAlbumSort,
-      _ => SortAndFilterConfiguration.defaultNonAlbumSort,
-    },
-  );
-
-  BaseItemDto item;
-  SortAndFilterConfiguration sortConfig;
-}
-
 @JsonSerializable(
   fieldRename: FieldRename.pascal,
   explicitToJson: true,
@@ -2200,6 +2158,8 @@ class BaseItemDto with RunTimeTickDuration {
         return item.parent;
       case PlayableBaseItem():
         return item.item;
+      case HomeScreenPlayable():
+        throw UnimplementedError();
     }
   }
 

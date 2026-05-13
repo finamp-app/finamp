@@ -212,62 +212,55 @@ class HomeScreenSection extends ConsumerWidget {
                 //TODO use similar logic to [loadChildTracksFromShuffledGenreAlbums] for loading tracks from other tab types
                 //TODO for collections, try to recursively load tracks directly, Jellyfin can do that
                 ...[
-                  IconButtonWithSemantics(
-                    onPressed: () async {
-                      final queueService = GetIt.instance<QueueService>();
-                      final source = QueueItemSource.rawId(
-                        type: QueueItemSourceType.homeScreenSection,
-                        name: QueueItemSourceName(
-                          type: QueueItemSourceNameType.homeScreenSection,
-                          localizationParameter: sectionInfo.presetType?.name,
-                          pretranslatedName: sectionInfo.getTitle(context),
-                        ),
-                        id: sectionInfo.toLocalisedString(context),
-                      );
-                      // only add loaded items at first, to ensure order (for random sections) is the same, and to improve responsiveness
-                      final initialItems = await ref.read(
-                        loadHomeSectionItemsProvider(
-                          sectionInfo: sectionInfo,
-                          startIndex: 0,
-                          limit: homeScreenSectionItemLimit,
-                        ).future,
-                      );
-                      await queueService.startPlayback(
-                        items: initialItems ?? [],
-                        source: source,
-                        order: FinampPlaybackOrder.linear,
-                      );
-                      // append additional items in the background
-                      final isRandomizedSection = sectionInfo.sortAndFilterConfiguration.sortBy == SortBy.random;
-                      var items = (await ref.read(
-                        loadHomeSectionItemsProvider(
-                          sectionInfo: sectionInfo,
-                          // skipping existing items in randomized sections isn't needed since the order will be different
-                          startIndex: isRandomizedSection ? 0 : homeScreenSectionItemLimit,
-                          limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
-                        ).future,
-                      ));
-                      if (isRandomizedSection) {
-                        // filter duplicates for randomized sections
-                        for (var existingTrack in initialItems ?? []) {
-                          items?.removeWhere((item) => item.id == existingTrack.id);
-                        }
-                      }
-                      await queueService.addToQueue(
-                        // ensure we only add exactly [trackShuffleItemCount] items in total, since we fetched more tracks initially
-                        items:
-                            items
-                                ?.take(
-                                  FinampSettingsHelper.finampSettings.trackShuffleItemCount -
-                                      (initialItems?.length ?? 0),
-                                )
-                                .toList() ??
-                            [],
-                      );
-                    },
-                    label: AppLocalizations.of(context)!.playButtonLabel,
-                    icon: TablerIcons.player_play,
-                  ),
+                  if (sectionInfo.sortAndFilterConfiguration.sortBy != SortBy.random)
+                    IconButtonWithSemantics(
+                      onPressed: () async {
+                        final queueService = GetIt.instance<QueueService>();
+                        final source = QueueItemSource.rawId(
+                          type: QueueItemSourceType.homeScreenSection,
+                          name: QueueItemSourceName(
+                            type: QueueItemSourceNameType.homeScreenSection,
+                            localizationParameter: sectionInfo.presetType?.name,
+                            pretranslatedName: sectionInfo.getTitle(context),
+                          ),
+                          id: sectionInfo.toLocalisedString(context),
+                        );
+                        // only add loaded items at first, to ensure order (for random sections) is the same, and to improve responsiveness
+                        final initialItems = await ref.read(
+                          loadHomeSectionItemsProvider(
+                            sectionInfo: sectionInfo,
+                            startIndex: 0,
+                            limit: homeScreenSectionItemLimit,
+                          ).future,
+                        );
+                        await queueService.startPlayback(
+                          items: initialItems ?? [],
+                          source: source,
+                          order: FinampPlaybackOrder.linear,
+                        );
+                        var items = (await ref.read(
+                          loadHomeSectionItemsProvider(
+                            sectionInfo: sectionInfo,
+                            // skipping existing items in randomized sections isn't needed since the order will be different
+                            startIndex: homeScreenSectionItemLimit,
+                            limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+                          ).future,
+                        ));
+                        await queueService.addToQueue(
+                          // ensure we only add exactly [trackShuffleItemCount] items in total, since we fetched more tracks initially
+                          items:
+                              items
+                                  ?.take(
+                                    FinampSettingsHelper.finampSettings.trackShuffleItemCount -
+                                        (initialItems?.length ?? 0),
+                                  )
+                                  .toList() ??
+                              [],
+                        );
+                      },
+                      label: AppLocalizations.of(context)!.playButtonLabel,
+                      icon: TablerIcons.player_play,
+                    ),
                   IconButtonWithSemantics(
                     onPressed: () async {
                       final source = QueueItemSource.rawId(
@@ -280,13 +273,11 @@ class HomeScreenSection extends ConsumerWidget {
                         id: sectionInfo.toLocalisedString(context),
                       );
                       // no need to optimize item fetching here, since the order doesn't matter and the provider doesn't support "skipping" tracks, so all [trackShuffleItemCount] items will be loaded anyway
+                      // TODO do the append + filter here if randomized section?
+
                       final items = await ref.read(
                         loadHomeSectionItemsProvider(
-                          sectionInfo: sectionInfo.copyWith(
-                            sortAndFilterConfiguration: sectionInfo.sortAndFilterConfiguration.copyWith(
-                              sortBy: SortBy.random,
-                            ),
-                          ),
+                          sectionInfo: sectionInfo,
                           startIndex: 0,
                           limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
                         ).future,
@@ -324,25 +315,31 @@ class HomeScreenSection extends ConsumerWidget {
           }
         },
         onSecondaryTap: () => showModalHomeSectionMenu(context: context, section: sectionInfo),
-        onDismiss: (followUpAction) async {
-          final source = QueueItemSource.rawId(
-            type: QueueItemSourceType.homeScreenSection,
-            name: QueueItemSourceName(
-              type: QueueItemSourceNameType.homeScreenSection,
-              localizationParameter: sectionInfo.presetType?.name,
-              pretranslatedName: sectionInfo.getTitle(context),
-            ),
-            id: sectionInfo.toLocalisedString(context),
-          );
-          final items = await ref.read(
-            loadHomeSectionItemsProvider(
-              sectionInfo: sectionInfo,
-              startIndex: 0,
-              limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
-            ).future,
-          );
-          return await onConfirmPlayableDismiss(followUpAction: followUpAction, source: source, tracks: items ?? []);
-        },
+        onDismiss: sectionInfo.contentType != TabContentType.tracks
+            ? null
+            : (followUpAction) async {
+                final source = QueueItemSource.rawId(
+                  type: QueueItemSourceType.homeScreenSection,
+                  name: QueueItemSourceName(
+                    type: QueueItemSourceNameType.homeScreenSection,
+                    localizationParameter: sectionInfo.presetType?.name,
+                    pretranslatedName: sectionInfo.getTitle(context),
+                  ),
+                  id: sectionInfo.toLocalisedString(context),
+                );
+                final items = await ref.read(
+                  loadHomeSectionItemsProvider(
+                    sectionInfo: sectionInfo,
+                    startIndex: 0,
+                    limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+                  ).future,
+                );
+                return await onConfirmPlayableDismiss(
+                  followUpAction: followUpAction,
+                  source: source,
+                  tracks: items ?? [],
+                );
+              },
         sectionContentSliver: SliverToBoxAdapter(child: HomeScreenSectionContent(sectionInfo: sectionInfo)),
       ),
     );

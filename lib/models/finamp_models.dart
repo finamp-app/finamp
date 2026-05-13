@@ -1886,6 +1886,8 @@ enum BaseItemDtoType {
         return BaseItemDtoType.fromItem(item.parent);
       case PlayableBaseItem():
         return BaseItemDtoType.fromItem(item.item);
+      case HomeScreenPlayable():
+        return BaseItemDtoType.unknown;
     }
   }
 }
@@ -2050,6 +2052,17 @@ class QueueItemSource {
         return QueueItemSource.fromBaseItem(playableItem.parent, type: type, nameType: nameType);
       case PlayableBaseItem():
         return QueueItemSource.fromBaseItem(playableItem.item, type: type, nameType: nameType);
+      case HomeScreenPlayable():
+        final context = GlobalSnackbar.materialAppScaffoldKey.currentContext!;
+        return QueueItemSource.rawId(
+          type: QueueItemSourceType.homeScreenSection,
+          name: QueueItemSourceName(
+            type: QueueItemSourceNameType.homeScreenSection,
+            localizationParameter: playableItem.config.presetType?.name,
+            pretranslatedName: playableItem.config.getTitle(context),
+          ),
+          id: playableItem.config.toLocalisedString(context),
+        );
     }
   }
 
@@ -4837,4 +4850,52 @@ class QuickActionConfig {
   String toString() {
     return jsonEncode(toJson());
   }
+}
+
+// Here because sealed class works inside one file only
+sealed class PlayableItem {}
+
+class AlbumDisc implements PlayableItem {
+  AlbumDisc({required this.parent, required this.tracks}) {
+    assert(
+      tracks.every((e) {
+        return e.parentIndexNumber == tracks.first.parentIndexNumber;
+      }),
+    );
+  }
+
+  List<BaseItemDto> tracks;
+  BaseItemDto parent;
+}
+
+class PlayableBaseItem implements PlayableItem {
+  PlayableBaseItem({required this.item, required this.sortConfig}) {
+    assert(
+      sortConfig.resolve(
+            isOffline: FinampSettingsHelper.finampSettings.isOffline,
+            inPlaylist: [BaseItemDtoType.album, BaseItemDtoType.playlist].contains(BaseItemDtoType.fromItem(item)),
+          ) ==
+          sortConfig,
+    );
+  }
+
+  factory PlayableBaseItem.defaultSort(BaseItemDto item) => PlayableBaseItem(
+    item: item,
+    sortConfig: switch (BaseItemDtoType.fromItem(item)) {
+      BaseItemDtoType.album => SortAndFilterConfiguration.defaultAlbumSort,
+      BaseItemDtoType.playlist => SortAndFilterConfiguration.defaultAlbumSort,
+      _ => SortAndFilterConfiguration.defaultNonAlbumSort,
+    },
+  );
+
+  BaseItemDto item;
+  SortAndFilterConfiguration sortConfig;
+}
+
+class HomeScreenPlayable implements PlayableItem {
+  HomeScreenPlayable({required this.config, this.item});
+
+  final HomeScreenSectionConfiguration config;
+
+  final BaseItemDto? item;
 }

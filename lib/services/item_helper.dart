@@ -25,6 +25,16 @@ Future<List<BaseItemDto>> loadChildTracks({required PlayableItem item, bool shuf
         return loadChildTracksFromShuffledGenreAlbums(baseItem: item.item);
       }
       return loadChildTracksFromBaseItem(item: item);
+    case HomeScreenPlayable():
+      return GetIt.instance<ProviderContainer>()
+          .read(
+            loadHomeSectionItemsProvider(
+              sectionInfo: item.config,
+              startIndex: 0,
+              limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+            ).future,
+          )
+          .then((x) => x ?? <BaseItemDto>[]);
   }
 }
 

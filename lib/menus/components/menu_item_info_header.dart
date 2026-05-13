@@ -17,6 +17,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
+import '../../components/finamp_icon.dart';
+import '../../services/finamp_settings_helper.dart';
+
 const double infoHeaderFullExtent = 162.0;
 const double infoHeaderFullInternalHeight = 140.0;
 const double infoHeaderCondensedInternalHeight = 80.0;
@@ -36,6 +39,7 @@ Widget _getMenuHeaderForItemType({
       BaseItemDtoType.artist => ArtistInfo(item: baseItem, condensed: condensed, features: features),
       _ => TrackInfo(item: baseItem, condensed: condensed, features: features),
     },
+    HomeScreenPlayable() => HomeSectionInfo(config: item.config, item: item.item),
   };
 }
 
@@ -180,6 +184,8 @@ class AlbumInfo extends ConsumerWidget {
       case PlayableBaseItem():
         baseItem = item.item;
         title = baseItem.name ?? AppLocalizations.of(context)!.unknownName;
+      case HomeScreenPlayable():
+        throw UnimplementedError();
     }
 
     return ItemInfo(
@@ -346,7 +352,7 @@ class GenreInfo extends ConsumerWidget {
   }
 }
 
-class ItemInfo extends ConsumerStatefulWidget {
+class ItemInfo extends StatelessWidget {
   const ItemInfo({
     super.key,
     required this.item,
@@ -365,29 +371,24 @@ class ItemInfo extends ConsumerStatefulWidget {
   final List<MenuItemInfoHeaderFeatures> features;
 
   @override
-  ConsumerState createState() => _ItemInfoState();
-}
-
-class _ItemInfoState extends ConsumerState<ItemInfo> {
-  @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
       child: Center(
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: widget.condensed ? 28.0 : 12.0),
-          height: widget.condensed ? infoHeaderCondensedInternalHeight : infoHeaderFullInternalHeight,
+          margin: EdgeInsets.symmetric(horizontal: condensed ? 28.0 : 12.0),
+          height: condensed ? infoHeaderCondensedInternalHeight : infoHeaderFullInternalHeight,
           clipBehavior: Clip.antiAlias,
           decoration: ShapeDecoration(
             color: Theme.brightnessOf(context) == Brightness.dark
                 ? Colors.black.withOpacity(0.25)
                 : Colors.white.withOpacity(0.15),
-            shape: widget.shape,
+            shape: shape,
           ),
           child: Stack(
             children: [
-              if (BaseItemDtoType.fromItem(widget.item) != BaseItemDtoType.track &&
-                  widget.features.contains(MenuItemInfoHeaderFeatures.openItem))
+              if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.track &&
+                  features.contains(MenuItemInfoHeaderFeatures.openItem))
                 Positioned(
                   top: 0,
                   right: 0,
@@ -396,26 +397,26 @@ class _ItemInfoState extends ConsumerState<ItemInfo> {
                     padding: const EdgeInsets.all(0.0),
                     visualDensity: VisualDensity(horizontal: -2.0, vertical: -3.0),
                     onPressed: () {
-                      if (BaseItemDtoType.fromItem(widget.item) == BaseItemDtoType.track) {
+                      if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.track) {
                         return;
                       }
-                      Navigator.pushNamed(context, switch (BaseItemDtoType.fromItem(widget.item)) {
+                      Navigator.pushNamed(context, switch (BaseItemDtoType.fromItem(item)) {
                         BaseItemDtoType.album => AlbumScreen.routeName,
                         BaseItemDtoType.playlist => AlbumScreen.routeName,
                         BaseItemDtoType.genre => GenreScreen.routeName,
                         BaseItemDtoType.artist => ArtistScreen.routeName,
                         _ => AlbumScreen.routeName,
-                      }, arguments: widget.item);
+                      }, arguments: item);
                     },
                     color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
                   ),
                 ),
-              if (widget.features.contains(MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite))
+              if (features.contains(MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite))
                 Positioned(
                   bottom: 0,
                   right: 0,
                   child: AddToPlaylistButton(
-                    item: widget.item,
+                    item: item,
                     size: 20,
                     visualDensity: VisualDensity(horizontal: -4.0, vertical: -3.0),
                   ),
@@ -423,7 +424,7 @@ class _ItemInfoState extends ConsumerState<ItemInfo> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AspectRatio(aspectRatio: 1.0, child: widget.featureImage),
+                  AspectRatio(aspectRatio: 1.0, child: featureImage),
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.only(left: 8.0, right: 26.0),
@@ -431,11 +432,100 @@ class _ItemInfoState extends ConsumerState<ItemInfo> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
-                        children: widget.infoRows,
+                        children: infoRows,
                       ),
                     ),
                   ),
                 ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HomeSectionInfo extends ConsumerWidget {
+  const HomeSectionInfo({super.key, required this.config, this.item});
+
+  final HomeScreenSectionConfiguration config;
+  final BaseItemDto? item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Widget image;
+    if (item != null && config.type == HomeScreenSectionType.collection) {
+      image = AlbumImage(item: item, borderRadius: BorderRadius.zero, tapToZoom: true);
+    } else {
+      image = Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: ColorScheme.of(context).primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: FinampIcon(
+          70,
+          70,
+          overrideColor: ref.watch(finampSettingsProvider.isOffline)
+              ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
+              : null,
+        ),
+      );
+    }
+
+    return Container(
+      color: Colors.transparent,
+      child: Center(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 12.0),
+          height: infoHeaderFullInternalHeight,
+          clipBehavior: Clip.antiAlias,
+          decoration: ShapeDecoration(
+            color: Theme.brightnessOf(context) == Brightness.dark
+                ? Colors.black.withOpacity(0.25)
+                : Colors.white.withOpacity(0.15),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AspectRatio(aspectRatio: 1.0, child: image),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 26.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        config.getTitle(context),
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 18,
+                          height: 1.2,
+                          color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                        maxLines: 2,
+                      ),
+                      IconAndText(
+                        iconData: config.sortAndFilterConfiguration.sortOrder == SortOrder.ascending
+                            ? TablerIcons.sort_ascending
+                            : TablerIcons.sort_descending,
+                        textSpan: TextSpan(text: config.sortAndFilterConfiguration.sortBy.toLocalisedString(context)),
+                      ),
+                      ...config.sortAndFilterConfiguration.filters.map(
+                        (filter) => IconAndText(
+                          iconData: TablerIcons.filter,
+                          textSpan: TextSpan(text: filter.getName(context)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

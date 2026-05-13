@@ -29,6 +29,7 @@ Future<void> showModalAlbumMenu({
   final BaseItemDto baseItem = switch (item) {
     AlbumDisc() => item.parent,
     PlayableBaseItem() => item.item,
+    HomeScreenPlayable() => throw UnimplementedError(),
   };
 
   // Normal menu entries, excluding headers

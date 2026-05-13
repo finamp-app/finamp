@@ -231,6 +231,7 @@ Future<bool> onConfirmPlayableDismiss({
   final sourceItemType = switch (sourceItem) {
     AlbumDisc() => "disc",
     PlayableBaseItem() => BaseItemDtoType.fromItem(sourceItem.item).name,
+    HomeScreenPlayable() => sourceItem.config.getTitle(context),
     null => source!.type.name,
   };
 

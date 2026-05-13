@@ -5,6 +5,7 @@ import 'package:finamp/menus/components/playbackActions/playback_action_row.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../models/finamp_models.dart';
 import '../../models/jellyfin_models.dart';
 import '../album_image.dart';
 import 'artist_item_info.dart';
