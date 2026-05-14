@@ -67,7 +67,7 @@
     "errorScreenError": "Er is een fout opgetreden bij het opvragen van de lijst met foutmeldingen! Waarschijnlijk kun je het beste proberen een issue aan te maken op GitHub, en de app data te verwijderen",
     "areYouSure": "Bent u zeker?",
     "audioService": "Audiodienst",
-    "bitrateSubtitle": "Het gebruik van een hogere bitrate geeft betere audiokwaliteit, maar gebruikt meer netwerkbandbreedte. Wordt niet toegepast op lossless codecs zoals FLAC.",
+    "bitrateSubtitle": "Het gebruik van een hogere bitrate geeft betere audiokwaliteit, maar gebruikt meer netwerkbandbreedte. Wordt niet toegepast op lossless codecs zoals FLAC",
     "cancelSleepTimer": "Annuleer sleep timer?",
     "communityRating": "Gemeenschapsbeoordeling",
     "downloadCount": "{count,plural, =1{{count} download} other{{count} downloads}}",
@@ -170,7 +170,7 @@
     "failedToGetTrackFromDownloadId": "Het nummer kon niet gevonden worden met deze download ID",
     "error": "Fout",
     "playButtonLabel": "Afspelen",
-    "shuffleButtonLabel": "Shuffle",
+    "shuffleButtonLabel": "Schudden",
     "updateButtonLabel": "Update",
     "playlistUpdated": "De naam van de playlist is aangepast.",
     "downloadsDeleted": "Downloads verwijderd.",
@@ -293,7 +293,7 @@
     "@serverUrlInfoButtonTooltip": {
         "description": "Tooltip for the button that shows the extra info dialog for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
-    "startMixNoTracksGenre": "Druk lang op een genre om deze toe te voegen of te verwijderen van de mix-bouwer alvorens een mix te starten",
+    "startMixNoTracksGenre": "houd een genre ingedrukt om deze toe te voegen of te verwijderen van de mix-bouwer voordat je een mix start",
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
@@ -939,15 +939,15 @@
     "@connectionInterrupted": {
         "description": "Message shown when the connection is interrupted during a download."
     },
-    "activeDownloadSize": "Downloaden...",
+    "activeDownloadSize": "Downloaden…",
     "@activeDownloadSize": {
         "description": "Message shown for download size while item is still being downloaded"
     },
-    "missingDownloadSize": "Verwijderen...",
+    "missingDownloadSize": "Verwijderen…",
     "@missingDownloadSize": {
         "description": "Message shown for download size while item is being deleted but is not fully removed"
     },
-    "syncingDownloadSize": "Synchroniseren...",
+    "syncingDownloadSize": "Synchroniseren…",
     "@syncingDownloadSize": {
         "description": "Message shown for download size while item is still syncing."
     },
@@ -1318,7 +1318,7 @@
     "@startupErrorCallToAction": {
         "description": "The subtitle / call to action for what to do after encountering a startup error"
     },
-    "autoOfflineSettingDescription": "Automatisch Offline Modus aanzetten\nUit: Zal niet automatisch Offline Modus aanzetten. Kan batterij besparen.\nLokaal Netwerk: Zet Offline Modus aan als er geen wifi-verbinding is.\nOffline: Zet Offline Modus aan als er helemaal geen internetverbinding is.\nJe kan altijd handmatig Offline Modus aanzetten. Dit stopt het automatiseren totdat je Offline Modus weer uit zet",
+    "autoOfflineSettingDescription": "{disabledModeName}\nZal niet automatisch Offline Modus aanzetten. Kan batterij besparen.\n\n{localNetworkModeName}\nZet Offline Modus aan als er geen WiFi- of ethernetverbinding is.\n\n{disconnectedModeName}\nZet Offline Modus aan als er helemaal geen internetverbinding is.\n\n{unreachableModeName}\nJe kan altijd handmatig Offline Modus aanzetten. Dit stopt het automatiseren totdat je Offline Modus weer uit zet.",
     "@autoOfflineSettingDescription": {
         "description": "Setting description. Make sure the Mode names match the translations."
     },
@@ -1783,7 +1783,7 @@
     "@shuffleSomeAlbumsNext": {
         "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
     },
-    "volumeNormalizationIOSBaseGainEditorDescription": "Op dit moment werkt Volume-normalisatie op iOS door het afspeelvolume te veranderen om veranderingen in Gain te emuleren. Omdat we het volume niet boven 100% kunnen zetten moeten we het standaardvolume lager instellen om het volume van stillere nummers hoger te krijgen. \n\nDe waarde is in decibel (dB). -10dB is ~30% volume, -4.5 dB is ~60% volume en -2 dB is ~80% volume.\n\nPositieve waarden betekenen dat geen volume vermindering is aangezet tot de waarde overschrijding (i.e. -6.4 dB gain (and more positive) for a +6.4 dB offset), but prevents quieter tracks from being boosted.\n\n\nYou should set this to the inverse of the highest (most positive) gain in your library, i.e., set it to +3 dB if the highest gain in your library is -3 dB (and all other tracks have gains like -5 dB, -8 dB, -10 dB, etc.).",
+    "volumeNormalizationIOSBaseGainEditorDescription": "Op dit moment werkt audionormalisatie op platformen anders dan Android door het afspeelvolume te veranderen om veranderingen in Gain na te bootsen. Omdat we het volume niet boven 100% kunnen zetten moeten we het standaardvolume lager instellen om het volume van stillere nummers hoger te krijgen.\n\nDe waarde is in decibel (dB). -10dB is ~30% volume, -4.5 dB is ~60% volume en -2 dB is ~80% volume.\nPositieve waarden betekenen dat geen volume vermindering is aangezet tot de waarde overschrijding (bijvoorbeeld -6.4 dB gain (en hoger) voor een verschil van +6.4 dB), maar voorkomt zachte nummers van harder worden.\n\nDit moet je instellen als het omgekeerde van het hoogste gain in je bibliotheek. Stel dat de hoogste gain in je bibliotheek -3dB is (en alle andere nummer gains hebben zoals bijvoorbeeld, -5 dB, -8 dB, -10 dB, etc.) dan stel je de Basis-Gain in op +3dB.",
     "@volumeNormalizationIOSBaseGainEditorDescription": {
         "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
@@ -1801,7 +1801,7 @@
         }
     },
     "showArtistsTracksSectionSubtitle": "Of een sectie met tot 5 nummers weergegeven moet worden. Wanneer ingschakeld, kan je kiezen tussen Meest Gespeeld, Favoriet, Willekeurig, Nieuwste Releases, Recent Toegevoegde Nummers en Laatst Gespeelde Nummers.",
-    "amoledTheme": "Wisselt het donkere kleurschema tussen donkergrijs en diep zwart.",
+    "amoledTheme": "Wisselt het donkere kleurschema tussen donkergrijs en diep zwart",
     "@amoledTheme": {
         "description": "Toggles the dark color scheme between dark gray and pure black."
     },
@@ -1814,5 +1814,14 @@
                 "type": "int"
             }
         }
+    },
+    "cacheLibraryImagesName": "Cache afbeeldingen voor '{libraryName}'",
+    "@cacheLibraryImagesName": {
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        },
+        "description": "Localized names of special downloadable collection representing cached images for a certain library."
     }
 }
