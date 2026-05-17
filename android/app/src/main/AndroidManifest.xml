@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.WAKE_LOCK"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
@@ -71,6 +72,16 @@
       <intent-filter>
         <action android:name="android.media.browse.MediaBrowserService" />
       </intent-filter>
+    </service>
+
+    <!-- PebbleKit2 listener service -->
+    <service
+        android:name="com.unicornsonlsd.finamp.PebbleListenerService"
+        android:exported="true"
+        tools:ignore="ExportedService">
+        <intent-filter>
+            <action android:name="io.rebble.pebblekit2.RECEIVE_DATA_FROM_WATCH" />
+        </intent-filter>
     </service>
 
     <receiver android:name="com.ryanheise.audioservice.MediaButtonReceiver" android:exported="true">

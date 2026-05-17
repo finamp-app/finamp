@@ -105,4 +105,6 @@ dependencies {
     implementation 'androidx.mediarouter:mediarouter:1.7.0'
     implementation "androidx.core:core-splashscreen:1.0.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
+    implementation("io.rebble.pebblekit2:client:0.1.0")
+    implementation("io.rebble.pebblekit2:client-ui:0.1.0")
 }
