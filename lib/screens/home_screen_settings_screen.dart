@@ -101,13 +101,13 @@ class QuickActionsSelector extends ConsumerWidget {
                         maintainState: true,
                         visible: action.action.editable,
                         child: SimpleButton.small(
-                          text: "Edit Action*",
+                          text: context.l10n.editAction,
                           icon: TablerIcons.edit,
                           onPressed: () => editQuickAction(context, index),
                         ),
                       ),
                       SimpleButton.small(
-                        text: "Remove Action*",
+                        text: context.l10n.removeAction,
                         icon: TablerIcons.trash,
                         onPressed: () {
                           final newHomeScreenConfig = FinampSettingsHelper.finampSettings.homeScreenConfiguration
@@ -140,7 +140,7 @@ class QuickActionsSelector extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(top: 4.0, left: 16.0, right: 16.0),
             child: CTAMedium(
-              text: "Add New Action*",
+              text: context.l10n.addNewAction,
               icon: TablerIcons.plus,
               onPressed: () async {
                 final selectedAction = await showQuickActionPresetPickerMenu(context, null);
@@ -307,7 +307,7 @@ class QuickActionConfigMenuState extends ConsumerState<QuickActionConfigMenu> {
         valueListenable: notifier,
         builder: (context, value, _) {
           return CTAMedium(
-            text: "Save*",
+            text: context.l10n.save,
             icon: TablerIcons.device_floppy,
             disabled: value == null,
             onPressed: () {
@@ -384,12 +384,12 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       SimpleButton.small(
-                        text: "Edit Section*",
+                        text: context.l10n.editSection,
                         icon: TablerIcons.edit,
                         onPressed: () => editHomeScreenSection(context, index),
                       ),
                       SimpleButton.small(
-                        text: "Remove Section*",
+                        text: context.l10n.removeSection,
                         icon: TablerIcons.trash,
                         onPressed: () {
                           FeedbackHelper.feedback(FeedbackType.warning);
@@ -407,7 +407,7 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(top: 4.0, left: 16.0, right: 16.0),
             child: CTAMedium(
-              text: "Add New Section*",
+              text: context.l10n.addNewSection,
               icon: TablerIcons.plus,
               onPressed: () async {
                 //TODO dismissing the bottom sheet will be handles like selecting custom section
@@ -604,7 +604,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
   String get activeTitle => switch (selectedSectionType) {
     HomeScreenSectionType.tabView => tabTitle,
     HomeScreenSectionType.collection => collectionTitle,
-    HomeScreenSectionType.queues => "Queues*",
+    HomeScreenSectionType.queues => context.l10n.queues,
   };
 
   HomeScreenSectionConfiguration? get currentSectionInfo {
@@ -830,7 +830,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
         ),
       SizedBox(height: 8.0),
       CTAMedium(
-        text: "Save*",
+        text: context.l10n.save,
         icon: TablerIcons.device_floppy,
         disabled: !savingEnabled,
         onPressed: () {
@@ -975,7 +975,7 @@ class SectionPreview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasTitle = (sectionInfo?.customSectionTitle ?? "") != "" || sectionInfo?.presetType != null;
 
-    final sectionTitle = hasTitle ? sectionInfo!.getTitle(context) : "Preview*";
+    final sectionTitle = hasTitle ? sectionInfo!.getTitle(context) : context.l10n.preview;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1095,7 +1095,7 @@ class _GlobalSearchBoxState extends ConsumerState<GlobalSearchBox> {
     }
 
     final dropdownEntries = items.value!.map((collection) {
-      final label = collection.name ?? "Unnamed Collection*";
+      final label = collection.name ?? context.l10n.unnamedCollection;
       return DropdownMenuEntry<BaseItemDto>(
         value: collection,
         label: label,

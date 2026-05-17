@@ -6,6 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 
+import '../components/global_snackbar.dart';
+import '../extensions/localizations.dart';
+
 final serverInfoProviderLogger = Logger("ServerInfoProvider");
 
 enum ServerFeature { lyrics }
@@ -28,7 +31,10 @@ class ServerInfo {
     this.availablePlugins = const {},
   });
 
-  String get version => publicServerInfo.version ?? "Unknown Version*";
+  String get version =>
+      publicServerInfo.version ??
+      GlobalSnackbar.materialAppScaffoldKey.currentContext?.l10n.unknownVersion ??
+      "Unknown";
 
   @override
   String toString() {

@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/extensions/list.dart';
+import 'package:finamp/extensions/localizations.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/services/album_screen_provider.dart';
 import 'package:finamp/services/artist_content_provider.dart';
@@ -802,7 +803,7 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
             type: QueueItemSourceType.unknown,
             name: QueueItemSourceName(
               type: QueueItemSourceNameType.preTranslated,
-              pretranslatedName: "Error loading home section*",
+              pretranslatedName: context.l10n.errorLoadingHomeSection,
             ),
             id: section.itemId as BaseItemId,
           ),

@@ -172,9 +172,7 @@ class SortAndFilterRow extends ConsumerWidget {
     final currentConfig = ref.watch(resolveSortProvider(controller));
     final activeFilters = currentConfig.filters;
     final int activeFilterCount = activeFilters.length;
-    String statusText = activeFilterCount == 0
-        ? "No Filter Active*"
-        : "$activeFilterCount ${activeFilterCount == 1 ? "Filter" : "Filters"} Active*";
+    String statusText = context.l10n.activeFilterCount(activeFilterCount);
 
     Future<void> showMenu() =>
         showSortAndFilterMenu(context, tabType: tabType, controller: controller, removeOnly: removeOnly);
@@ -365,7 +363,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
         ),
         SizedBox(height: 32.0),
         CTAMedium(
-          text: "Apply*",
+          text: context.l10n.apply,
           icon: TablerIcons.check,
           onPressed: () {
             widget.controller._updateConfiguration(currentConfig);
@@ -477,7 +475,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
       ),
       SizedBox(height: 32.0),
       CTAMedium(
-        text: "Apply*",
+        text: context.l10n.apply,
         icon: TablerIcons.check,
         onPressed: () {
           widget.controller._updateConfiguration(currentConfig);
@@ -489,7 +487,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
 
   Widget _makeFilterTile(WidgetRef ref, ItemFilterType option) {
     return ToggleableListTile(
-      title: option.name,
+      title: ItemFilter(type: option).getName(context),
       leading: Padding(
         padding: const EdgeInsets.only(left: 16.0),
         child: Icon(switch (option) {
@@ -548,7 +546,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
 
   Widget _makeExcessFilterTile(WidgetRef ref, ItemFilter filter) {
     return ToggleableListTile(
-      title: filter.type.name,
+      title: filter.getName(context),
       leading: Padding(
         padding: const EdgeInsets.only(left: 16.0),
         child: Icon(switch (filter.type) {

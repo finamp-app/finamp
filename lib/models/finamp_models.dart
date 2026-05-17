@@ -26,6 +26,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../builders/annotations.dart';
+import '../extensions/localizations.dart';
 import '../services/finamp_settings_helper.dart';
 import 'jellyfin_models.dart';
 import 'migration_adapters.dart';
@@ -1172,9 +1173,9 @@ enum ContentType {
       case ContentType.albumArtists:
         return AppLocalizations.of(context)!.albumArtists;
       case ContentType.inPlaylist:
-        return "In playlist*";
+        return AppLocalizations.of(context)!.inPlaylist;
       case ContentType.mixed:
-        return "In collection*";
+        return AppLocalizations.of(context)!.inCollection;
     }
   }
 
@@ -1920,7 +1921,8 @@ enum BaseItemDtoType {
   // TODO stopgap solution until snackbars fate is decided
   static BaseItemDtoType? fromPlayableItem(FinampPlayable item) {
     switch (item) {
-      case FinampPlayableItem(): return BaseItemDtoType.fromItem(item.item);
+      case FinampPlayableItem():
+        return BaseItemDtoType.fromItem(item.item);
       case _:
         return null;
     }
@@ -4187,11 +4189,11 @@ enum HomeScreenSectionType {
   String _humanReadableLocalisedName(HomeScreenSectionType homeScreenSectionType, BuildContext context) {
     switch (homeScreenSectionType) {
       case HomeScreenSectionType.tabView:
-        return "Tab View*";
+        return context.l10n.tabView;
       case HomeScreenSectionType.collection:
-        return "Collection*";
+        return context.l10n.collection;
       case HomeScreenSectionType.queues:
-        return "Queues*";
+        return context.l10n.queues;
     }
   }
 }
@@ -4400,21 +4402,21 @@ class HomeScreenSectionConfiguration {
         HomeScreenSectionPresetType.favoriteTracks => AppLocalizations.of(
           context,
         )!.homeScreenSectionPresetFavoriteTracksTitle,
-        HomeScreenSectionPresetType.favoriteAlbums => "Favorite Albums*",
-        HomeScreenSectionPresetType.favoriteArtists => "Favorite Artists*",
-        HomeScreenSectionPresetType.favoritePlaylists => "Favorite Playlists*",
-        HomeScreenSectionPresetType.favoriteGenres => "Favorite Genres*",
-        HomeScreenSectionPresetType.recentlyAddedAlbums => "Newly Added Albums*",
-        HomeScreenSectionPresetType.recentlyAddedTracks => "Newly Added Tracks*",
+        HomeScreenSectionPresetType.favoriteAlbums => AppLocalizations.of(context)!.favoriteAlbums,
+        HomeScreenSectionPresetType.favoriteArtists => AppLocalizations.of(context)!.favoriteArtists,
+        HomeScreenSectionPresetType.favoritePlaylists => AppLocalizations.of(context)!.favoritePlaylists,
+        HomeScreenSectionPresetType.favoriteGenres => AppLocalizations.of(context)!.favoriteGenres,
+        HomeScreenSectionPresetType.recentlyAddedAlbums => AppLocalizations.of(context)!.newlyAddedAlbums,
+        HomeScreenSectionPresetType.recentlyAddedTracks => AppLocalizations.of(context)!.newlyAddedTracks,
         // HomeScreenSectionPresetType.recentlyPlayedPlaylists => "Recent Playlists*",
-        HomeScreenSectionPresetType.frequentlyPlayedAlbums => "Often Played Albums*",
-        HomeScreenSectionPresetType.frequentlyPlayedTracks => "Often Played Tracks*",
-        HomeScreenSectionPresetType.frequentlyPlayedArtists => "Often Played Artists*",
-        HomeScreenSectionPresetType.neverPlayedAlbums => "Unplayed Albums*",
+        HomeScreenSectionPresetType.frequentlyPlayedAlbums => AppLocalizations.of(context)!.frequentlyPlayedAlbums,
+        HomeScreenSectionPresetType.frequentlyPlayedTracks => AppLocalizations.of(context)!.frequentlyPlayedTracks,
+        HomeScreenSectionPresetType.frequentlyPlayedArtists => AppLocalizations.of(context)!.frequentlyPlayedArtists,
+        HomeScreenSectionPresetType.neverPlayedAlbums => AppLocalizations.of(context)!.unplayedAlbums,
         HomeScreenSectionPresetType.forgottenFavoriteTracks => AppLocalizations.of(
           context,
         )!.homeScreenSectionPresetForgottenFavoriteTracksTitle,
-        HomeScreenSectionPresetType.recentQueues => "Recent Queues*",
+        HomeScreenSectionPresetType.recentQueues => AppLocalizations.of(context)!.recentQueues,
       };
 
   String getDescription(BuildContext context) => presetType != null
@@ -4427,27 +4429,28 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.favoriteTracks => AppLocalizations.of(
       context,
     )!.homeScreenSectionPresetFavoriteTracksDescription,
-    HomeScreenSectionPresetType.favoriteAlbums => "Liked Albums in random order*",
-    HomeScreenSectionPresetType.favoriteArtists => "Liked Artists in random order*",
-    HomeScreenSectionPresetType.favoritePlaylists => "Liked Playlists in random order*",
-    HomeScreenSectionPresetType.favoriteGenres => "Liked Genres in random order*",
-    HomeScreenSectionPresetType.recentlyAddedAlbums =>
-      "Albums which were recently added to your library, starting with newest*",
-    HomeScreenSectionPresetType.recentlyAddedTracks =>
-      "Tracks which were recently added to your library, starting with newest*",
+    HomeScreenSectionPresetType.favoriteAlbums => AppLocalizations.of(context)!.favoriteAlbumsDescription,
+    HomeScreenSectionPresetType.favoriteArtists => AppLocalizations.of(context)!.favoriteArtistsDescription,
+    HomeScreenSectionPresetType.favoritePlaylists => AppLocalizations.of(context)!.favoritePlaylistsDescription,
+    HomeScreenSectionPresetType.favoriteGenres => AppLocalizations.of(context)!.favoriteGenresDescription,
+    HomeScreenSectionPresetType.recentlyAddedAlbums => AppLocalizations.of(context)!.recentlyAddedAlbumsDescription,
+    HomeScreenSectionPresetType.recentlyAddedTracks => AppLocalizations.of(context)!.recentlyAddedTracksDescription,
     // HomeScreenSectionPresetType.recentlyPlayedPlaylists =>
     //   "Playlists you listened to recently, starting with last played*",
-    HomeScreenSectionPresetType.frequentlyPlayedAlbums =>
-      "Albums you have listened to a lot, starting with most frequent*",
-    HomeScreenSectionPresetType.frequentlyPlayedTracks =>
-      "Tracks you have listened to a lot, starting with most frequent*",
-    HomeScreenSectionPresetType.frequentlyPlayedArtists =>
-      "Artists you have listened to a lot, starting with most frequent*",
-    HomeScreenSectionPresetType.neverPlayedAlbums => "Albums you haven't yet listened to, in random order*",
+    HomeScreenSectionPresetType.frequentlyPlayedAlbums => AppLocalizations.of(
+      context,
+    )!.frequentlyPlayedAlbumsDescription,
+    HomeScreenSectionPresetType.frequentlyPlayedTracks => AppLocalizations.of(
+      context,
+    )!.frequentlyPlayedTracksDescription,
+    HomeScreenSectionPresetType.frequentlyPlayedArtists => AppLocalizations.of(
+      context,
+    )!.frequentlyPlayedArtistsDescription,
+    HomeScreenSectionPresetType.neverPlayedAlbums => AppLocalizations.of(context)!.neverPlayedAlbumsDescription,
     HomeScreenSectionPresetType.forgottenFavoriteTracks => AppLocalizations.of(
       context,
     )!.homeScreenSectionPresetForgottenFavoriteTracksDescription,
-    HomeScreenSectionPresetType.recentQueues => "Queues you have created recently, starting with newest*",
+    HomeScreenSectionPresetType.recentQueues => AppLocalizations.of(context)!.recentQueuesDescription,
   };
 
   factory HomeScreenSectionConfiguration.fromJson(Map<String, dynamic> json) =>
@@ -4481,13 +4484,14 @@ class HomeScreenSectionConfiguration {
   String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
 
   String _humanReadableLocalisedName(HomeScreenSectionConfiguration homeScreenSectionInfo, BuildContext context) {
+    final sort = homeScreenSectionInfo.sortAndFilterConfiguration;
     switch (homeScreenSectionInfo.type) {
       case HomeScreenSectionType.tabView:
-        return "${homeScreenSectionInfo.sortAndFilterConfiguration.filters.map((filter) => filter.extras != null ? "${filter.type.name} (${filter.extras})" : filter.type.name).join(", ")} ${homeScreenSectionInfo.contentType.toLocalisedString(context)} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortBy.toLocalisedString(context)} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortOrder == SortOrder.ascending ? "↑" : "↓"}*";
+        return "${sort.filters.map((filter) => filter.getName(context)).join(", ")} ${homeScreenSectionInfo.contentType.toLocalisedString(context)} ${sort.sortBy.toLocalisedString(context)} ${sort.sortOrder == SortOrder.ascending ? "↑" : "↓"}";
       case HomeScreenSectionType.collection:
-        return "Collection*";
+        return context.l10n.collection;
       case HomeScreenSectionType.queues:
-        return "Queues ${homeScreenSectionInfo.sortAndFilterConfiguration.filters.map((filter) => filter.extras != null ? "${filter.type.name} (${filter.extras})" : filter.type.name).join(", ")} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortBy.toLocalisedString(context)} ${homeScreenSectionInfo.sortAndFilterConfiguration.sortOrder == SortOrder.ascending ? "↑" : "↓"}*";
+        return "${context.l10n.queues} ${sort.filters.map((filter) => filter.getName(context)).join(", ")} ${sort.sortBy.toLocalisedString(context)} ${sort.sortOrder == SortOrder.ascending ? "↑" : "↓"}";
     }
   }
 
@@ -4607,25 +4611,25 @@ enum FinampQuickActions {
   String _humanReadableLocalisedDescription(FinampQuickActions quickAction, BuildContext context) {
     switch (quickAction) {
       case FinampQuickActions.shuffleTracks:
-        return "Shuffles random tracks from your library*";
+        return AppLocalizations.of(context)!.shuffleTracksActionDescription;
       case FinampQuickActions.browseRecentQueues:
-        return "Choose from your recently played queues*";
+        return AppLocalizations.of(context)!.browseRecentQueuesActionDescription;
       case FinampQuickActions.browsePlaybackHistory:
-        return "Browse your playback history*";
+        return AppLocalizations.of(context)!.browsePlaybackHistoryActionDescription;
       case FinampQuickActions.playRandomAlbum:
-        return "Starts playback from a random album*";
+        return AppLocalizations.of(context)!.playRandomAlbumActionDescription;
       case FinampQuickActions.playRandomTrack:
-        return "Starts continuous radio from a random track*";
+        return AppLocalizations.of(context)!.playRandomTrackActionDescription;
       case FinampQuickActions.playRandomFavoriteItem:
-        return "Starts playback from a random favorite item*";
+        return AppLocalizations.of(context)!.playRandomFavoriteItemActionDescription;
       case FinampQuickActions.playPreviousQueue:
-        return "Restores and plays your most recent archived queue*";
+        return AppLocalizations.of(context)!.playPreviousQueueActionDescription;
       case FinampQuickActions.configureOutput:
-        return "Opens output device configuration*";
+        return AppLocalizations.of(context)!.configureOutputActionDescription;
       case FinampQuickActions.playSpecificItem:
-        return "Plays a specific configured item*";
+        return AppLocalizations.of(context)!.playSpecificItemActionDescription;
       case FinampQuickActions.surpriseMe:
-        return "Starts 'Continuous' radio from a random track*";
+        return AppLocalizations.of(context)!.surpriseMeActionDescription;
     }
   }
 
@@ -4723,15 +4727,17 @@ class ItemFilter {
   String getName(BuildContext context) {
     switch (type) {
       case ItemFilterType.isFavorite:
+        return context.l10n.isFavoriteFilter;
       case ItemFilterType.isFullyDownloaded:
+        return context.l10n.isFullyDownloadedFilter;
       case ItemFilterType.isUnplayed:
-        return type.name;
+        return context.l10n.isUnplayedFilter;
       case ItemFilterType.genreFilter:
-        return "Genre:* ${extraBaseItem.name}";
+        return context.l10n.genreFilter(extraBaseItem.name ?? "");
       case ItemFilterType.startsWithCharacter:
-        return "Starting with:* $extraString";
+        return context.l10n.startsWithFilter(extraString.toUpperCase());
       case ItemFilterType.searchTerm:
-        return "Search:* $extraString";
+        return context.l10n.searchTermFilter(extraString);
     }
   }
 
@@ -4870,25 +4876,25 @@ class QuickActionConfig {
   String _humanReadableLocalisedName(FinampQuickActions quickAction, BuildContext context) {
     switch (quickAction) {
       case FinampQuickActions.shuffleTracks:
-        return "Shuffle Tracks*";
+        return AppLocalizations.of(context)!.shuffleTracksAction;
       case FinampQuickActions.browseRecentQueues:
-        return "Recent Queues*";
+        return AppLocalizations.of(context)!.recentQueues;
       case FinampQuickActions.browsePlaybackHistory:
-        return "Playback History*";
+        return AppLocalizations.of(context)!.playbackHistory;
       case FinampQuickActions.playRandomAlbum:
-        return "Random Album*";
+        return AppLocalizations.of(context)!.randomAlbumAction;
       case FinampQuickActions.playRandomTrack:
-        return "Random Track*";
+        return AppLocalizations.of(context)!.randomTrackAction;
       case FinampQuickActions.playRandomFavoriteItem:
-        return "Random Favorite*";
+        return AppLocalizations.of(context)!.randomFavoriteAction;
       case FinampQuickActions.playPreviousQueue:
-        return "Previous Queue*";
+        return AppLocalizations.of(context)!.previousQueueAction;
       case FinampQuickActions.configureOutput:
-        return "Configure Output*";
+        return AppLocalizations.of(context)!.configureOutputAction;
       case FinampQuickActions.playSpecificItem:
-        return "Play ${itemName ?? "<Item>"}*";
+        return AppLocalizations.of(context)!.playSpecificItemAction(itemName ?? "finamp_placeholder");
       case FinampQuickActions.surpriseMe:
-        return "Surprise Me*";
+        return AppLocalizations.of(context)!.surpriseMeAction;
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/extensions/localizations.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/radio_service_helper.dart';
 import 'package:get_it/get_it.dart';
@@ -214,7 +215,7 @@ class AudioServiceHelper {
       FinampSetters.setRadioMode(RadioMode.continuous);
       toggleRadio(true);
     } else {
-      GlobalSnackbar.message((context) => "No tracks found to start Surprise Me Mix.*");
+      GlobalSnackbar.message((context) => context.l10n.noTracksFound);
     }
   }
 
@@ -239,7 +240,7 @@ class AudioServiceHelper {
     ))?.firstOrNull;
 
     if (randomFavorite == null) {
-      GlobalSnackbar.message((context) => "Nothing found to play.*");
+      GlobalSnackbar.message((context) => context.l10n.nothingFoundToPlay);
       return;
     }
 

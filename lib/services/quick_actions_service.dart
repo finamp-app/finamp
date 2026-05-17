@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/extensions/localizations.dart';
 import 'package:finamp/menus/output_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/screens/playback_history_screen.dart';
@@ -58,7 +59,7 @@ class QuickActionsService {
           // use the full queue restore screen.
           final previousQueue = queueList.firstWhereOrNull((x) => x.source != currentQueueSource && x.trackCount > 0);
           if (previousQueue == null) {
-            GlobalSnackbar.message((context) => "No previous queue found to play.*");
+            GlobalSnackbar.message((context) => context.l10n.noPreviousQueueFoundToPlay);
             return;
           }
           queueService.archiveSavedQueue();

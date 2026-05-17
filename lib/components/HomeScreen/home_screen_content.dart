@@ -83,6 +83,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
                     direction: Axis.horizontal,
                     alignment: WrapAlignment.spaceBetween,
                     runAlignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.start,
                     children: configuredQuickActions.indexed.map((indexedAction) {
                       final (index, action) = indexedAction;
                       //!!! custom adaptive grid

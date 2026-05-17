@@ -4,6 +4,7 @@ import 'package:finamp/services/datetime_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../extensions/localizations.dart';
 import '../../models/music_models.dart';
 import '../../services/playback_history_service.dart';
 import '../padded_custom_scrollview.dart';
@@ -43,7 +44,7 @@ class PlaybackHistoryList extends StatelessWidget {
                         type: QueueItemSourceType.unknown,
                         name: QueueItemSourceName(
                           type: QueueItemSourceNameType.preTranslated,
-                          pretranslatedName: "Playback History*",
+                          pretranslatedName: context.l10n.playbackHistory,
                         ),
                         id: "playback-history",
                       ),
