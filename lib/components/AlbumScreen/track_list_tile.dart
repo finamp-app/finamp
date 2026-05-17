@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:finamp/components/AddToPlaylistScreen/add_to_playlist_button.dart';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/components/global_snackbar.dart';
@@ -755,9 +756,11 @@ class TrackListItemTile extends ConsumerWidget {
     final String artistsString;
     if (forceAlbumArtists || (baseItem.artists?.isEmpty ?? true)) {
       artistsString =
-          baseItem.albumArtists?.map((e) => e.name).joinNonNull(", ") ?? AppLocalizations.of(context)!.unknownArtist;
+          baseItem.albumArtists?.sortedBy((e) => e.name ?? '').map((e) => e.name).joinNonNull(", ") ??
+          AppLocalizations.of(context)!.unknownArtist;
     } else {
-      artistsString = baseItem.artists?.joinNonNull(", ") ?? AppLocalizations.of(context)!.unknownArtist;
+      artistsString =
+          baseItem.artists?.sortedBy((e) => e).joinNonNull(", ") ?? AppLocalizations.of(context)!.unknownArtist;
     }
     final downloadedIndicator = DownloadedIndicator(
       item: DownloadStub.fromItem(item: baseItem, type: DownloadItemType.track),
