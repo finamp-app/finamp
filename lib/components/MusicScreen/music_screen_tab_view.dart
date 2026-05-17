@@ -326,7 +326,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
       }
       letterToSearch = null;
     } else {
-      // More pages available — request the next page and scroll to the bottom
+      // More pages available - request the next page and scroll to the bottom
       // to trigger loading. Retry will happen via letterToSearch being set.
       timer = Timer(const Duration(seconds: 8), () {
         // If page loading takes too long, cancel search and allow image loading.
