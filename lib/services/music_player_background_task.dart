@@ -32,6 +32,8 @@ import 'metadata_provider.dart';
 
 enum FadeDirection { fadeIn, fadeOut, none }
 
+enum CrossfadeState { idle, active }
+
 class FadeState {
   // current fade volume
   late final double fadeVolume;
@@ -79,6 +81,8 @@ class PlayerVolumeController {
   double _replayGainVolume = 1.0;
   double _fadeVolume = 1.0;
   bool isDucked = false;
+
+  double get replayGainVolume => _replayGainVolume;
 
   Future<void> setInternalVolume(double volume) {
     if (volume == _internalVolume) return Future.value();
@@ -168,6 +172,16 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
   final _audioFadeStepDuration = Duration(milliseconds: 50);
   late final BehaviorSubject<FadeState> fadeState;
+
+  // Crossfade infrastructure
+  AudioPlayer? _crossfadePlayer;
+  PlayerVolumeController? _crossfadeVolume;
+  final BehaviorSubject<CrossfadeState> _crossfadeState = BehaviorSubject.seeded(CrossfadeState.idle);
+  bool _crossfadeTriggered = false;
+  final _crossfadeLogger = Logger("Crossfade");
+
+  Stream<CrossfadeState> get crossfadeStateStream => _crossfadeState.stream;
+  CrossfadeState get crossfadeState => _crossfadeState.value;
 
   final outputSwitcherChannel = MethodChannel('com.unicornsonlsd.finamp/output_switcher');
 
@@ -519,6 +533,15 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
               )) {
         sleepTimer?.onTrackCompleted();
       }
+
+      // Crossfade trigger: check if we should start crossfading to next track
+      _checkCrossfadeTrigger(position);
+    });
+
+    // When the primary player's current index changes (e.g. auto-advance after track ends),
+    // reset the crossfade trigger flag so the next track can crossfade too
+    _player.currentIndexStream.listen((index) {
+      _crossfadeTriggered = false;
     });
 
     // Special processing for state transitions.
@@ -604,7 +627,10 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   }
 
   /// Fully dispose the player instance.  Should only be called during app shutdown.
-  Future<void> dispose() => _player.dispose();
+  Future<void> dispose() async {
+    await _disposeCrossfadePlayer();
+    return _player.dispose();
+  }
 
   @override
   Future<void> play({bool disableFade = false}) async {
@@ -614,10 +640,16 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     if (_shouldIgnorePlayPauseAfterRecentSkip) {
       return;
     }
+    // If crossfade is active, also resume the secondary (outgoing tail) player
+    if (_crossfadeState.value == CrossfadeState.active && _crossfadePlayer != null) {
+      await _crossfadePlayer!.play();
+    }
     if (!disableFade && FinampSettingsHelper.finampSettings.audioFadeInDuration > Duration.zero) {
       return fadeInAndPlay();
     } else {
-      await _volume.setFadeVolume(1.0);
+      if (_crossfadeState.value == CrossfadeState.idle) {
+        await _volume.setFadeVolume(1.0);
+      }
       return _player.play();
     }
   }
@@ -644,6 +676,10 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     );
     if (_shouldIgnorePlayPauseAfterRecentSkip) {
       return;
+    }
+    // If crossfade is active, pause the secondary player too
+    if (_crossfadeState.value != CrossfadeState.idle) {
+      await _crossfadePlayer?.pause();
     }
     if (!disableFade && FinampSettingsHelper.finampSettings.audioFadeOutDuration > Duration.zero) {
       return fadeOutAndPause();
@@ -743,6 +779,202 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     }
   }
 
+  // ─── Crossfade Engine ───────────────────────────────────────────────────────
+  //
+  // Architecture: When crossfade triggers, the SECONDARY player takes over the
+  // outgoing track's audio tail (fading out), while the PRIMARY player advances
+  // to the next track (fading in). This keeps all UI/state/queue/media-notification
+  // correctly pointed at the primary player at all times.
+
+  /// Checks if crossfade should be triggered based on current playback position.
+  void _checkCrossfadeTrigger(Duration position) {
+    final crossfadeDuration = FinampSettingsHelper.finampSettings.crossfadeDuration;
+    if (crossfadeDuration == Duration.zero) return;
+    if (_crossfadeTriggered) return;
+    if (_crossfadeState.value != CrossfadeState.idle) return;
+    if (!_player.playing) return;
+
+    final trackDuration = mediaItem.value?.duration ?? Duration.zero;
+    if (trackDuration == Duration.zero) return;
+
+    // Don't crossfade if track is shorter than crossfade duration + 2s buffer
+    if (trackDuration < crossfadeDuration + Duration(seconds: 2)) return;
+
+    // Don't crossfade in repeat-one mode
+    if (_player.loopMode == LoopMode.one) return;
+
+    // Don't crossfade if this is the last track and not looping
+    if (!_player.hasNext && _player.loopMode != LoopMode.all) return;
+
+    // Don't crossfade if sleep timer is about to stop on this track
+    if (sleepTimer?.remainingTracks == 1) return;
+
+    final remainingMs = (trackDuration - position).inMilliseconds / _player.speed;
+    if (remainingMs <= crossfadeDuration.inMilliseconds) {
+      _crossfadeTriggered = true;
+      _startCrossfade(crossfadeDuration);
+    }
+  }
+
+  /// Initializes the secondary crossfade player if needed.
+  Future<void> _ensureCrossfadePlayer() async {
+    if (_crossfadePlayer != null) return;
+
+    _crossfadePlayer = AudioPlayer(
+      maxSkipsOnError: 0,
+      handleInterruptions: false,
+    );
+    _crossfadeVolume = PlayerVolumeController(_crossfadePlayer!);
+    await _crossfadeVolume!.setFadeVolume(1.0);
+
+    _crossfadeLogger.info("Secondary crossfade player initialized");
+  }
+
+  /// Starts a crossfade transition to the next track.
+  ///
+  /// Flow:
+  /// 1. Load outgoing track tail onto secondary (preloaded, not yet playing)
+  /// 2. Re-sync secondary to primary's current position (eliminates preload drift)
+  /// 3. Start secondary + mute primary simultaneously (seamless handoff)
+  /// 4. Advance primary to next track (it's muted, so inaudible)
+  /// 5. Fade: secondary 1→0 (outgoing), primary 0→1 (incoming) using wall-clock time
+  /// 6. When done: stop secondary
+  Future<void> _startCrossfade(Duration crossfadeDuration) async {
+    try {
+      _crossfadeLogger.info("Starting crossfade (duration: ${crossfadeDuration.inSeconds}s)");
+
+      // Get current track info BEFORE advancing
+      final queueService = GetIt.instance<QueueService>();
+      final currentItem = queueService.getCurrentTrack();
+      if (currentItem == null) {
+        _crossfadeLogger.warning("No current track for crossfade tail");
+        return;
+      }
+
+      final currentPosition = _player.position;
+      final currentSpeed = _player.speed;
+
+      // Calculate the explicit next index (same logic as skipByOffset(1))
+      final int nextIndex;
+      if (_player.shuffleModeEnabled && shuffleIndices.isNotEmpty) {
+        final currentShufflePos = shuffleIndices.indexOf(_player.currentIndex ?? 0);
+        final nextShufflePos = (currentShufflePos + 1) % shuffleIndices.length;
+        nextIndex = shuffleIndices[nextShufflePos];
+      } else {
+        nextIndex = ((_player.currentIndex ?? 0) + 1) % _player.audioSources.length;
+      }
+
+      // Step 1: Preload secondary player with outgoing track tail (don't play yet)
+      await _ensureCrossfadePlayer();
+      final audioSource = await _queueItemToAudioSource(currentItem);
+      await _crossfadePlayer!.setAudioSource(audioSource, initialPosition: currentPosition);
+
+      // Apply volume normalization to secondary player.
+      // On Android, the primary uses AndroidLoudnessEnhancer (hardware gain in dB),
+      // so _volume.replayGainVolume stays 1.0. The secondary has no such effect,
+      // so we must apply the same gain correction via software volume instead.
+      if (FinampSettingsHelper.finampSettings.volumeNormalizationActive) {
+        final gainDb = getGainForCurrentPlayback(currentItem.item, null);
+        final linearGain = gainDb != null ? pow(10.0, gainDb / 20.0) as double : 1.0;
+        _crossfadeLogger.fine("Applying normalization to secondary: ${gainDb}dB → linear $linearGain");
+        await _crossfadeVolume!.setReplayGainVolume(linearGain);
+      }
+
+      await _crossfadeVolume!.setFadeVolume(1.0);
+      await _crossfadePlayer!.setSpeed(currentSpeed);
+
+      _crossfadeState.add(CrossfadeState.active);
+
+      // Step 2: Re-sync secondary to primary's CURRENT position right before
+      // handoff. The preload steps above took time, so the original
+      // currentPosition is now stale (primary kept playing). This seek is
+      // nearly instant since the audio is already buffered nearby.
+      final handoffPosition = _player.position;
+      await _crossfadePlayer!.seek(handoffPosition);
+
+      // Step 3: Start secondary and mute primary as close together as possible
+      // (brief double-audio of same track at same position is imperceptible)
+      unawaited(_crossfadePlayer!.play()); // fire-and-forget for minimal latency
+      await _volume.setFadeVolume(0.0);
+
+      // Step 4: Advance primary to next track (it's muted, so inaudible)
+      await _player.seek(Duration.zero, index: nextIndex);
+
+      _crossfadeLogger.fine("Crossfade handoff complete: secondary has outgoing tail, primary on next track (index $nextIndex)");
+
+      // Run the parallel volume ramps
+      await _runCrossfadeVolumes(crossfadeDuration);
+    } catch (e) {
+      _crossfadeLogger.severe("Failed to start crossfade: $e");
+      await _cancelCrossfade();
+    }
+  }
+
+  /// Runs the parallel volume ramps for crossfade.
+  /// Secondary (outgoing track) fades 1→0, Primary (incoming track) fades 0→1.
+  /// Uses wall-clock elapsed time as the source of truth to avoid drift.
+  Future<void> _runCrossfadeVolumes(Duration crossfadeDuration) async {
+    final totalMs = crossfadeDuration.inMilliseconds;
+    if (totalMs <= 0) {
+      await _volume.setFadeVolume(1.0);
+      await _crossfadeVolume?.setFadeVolume(0.0);
+      _finishCrossfade();
+      return;
+    }
+
+    final stopwatch = Stopwatch()..start();
+
+    while (stopwatch.elapsedMilliseconds < totalMs) {
+      if (_crossfadeState.value != CrossfadeState.active) return;
+
+      final progress = (stopwatch.elapsedMilliseconds / totalMs).clamp(0.0, 1.0);
+      // Fire-and-forget to avoid accumulating latency from awaiting each step
+      unawaited(_volume.setFadeVolume(progress));
+      unawaited(_crossfadeVolume?.setFadeVolume(1.0 - progress) ?? Future.value());
+
+      await Future<void>.delayed(_audioFadeStepDuration);
+    }
+
+    if (_crossfadeState.value != CrossfadeState.active) return;
+
+    // Ensure final volumes are exact and clean up
+    await _volume.setFadeVolume(1.0);
+    await _crossfadeVolume?.setFadeVolume(0.0);
+    _finishCrossfade();
+  }
+
+  /// Cleans up after a successful crossfade ramp completion.
+  void _finishCrossfade() {
+    _crossfadeLogger.fine("Crossfade complete, stopping secondary tail player");
+    _crossfadeState.add(CrossfadeState.idle);
+    _crossfadePlayer?.stop();
+  }
+
+  /// Cancels an in-progress crossfade (e.g. on manual skip, seek, or stop).
+  Future<void> _cancelCrossfade() async {
+    if (_crossfadeState.value == CrossfadeState.idle) return;
+
+    _crossfadeLogger.info("Cancelling crossfade");
+
+    _crossfadeState.add(CrossfadeState.idle);
+
+    // Stop secondary player (outgoing tail)
+    try {
+      await _crossfadePlayer?.stop();
+      await _crossfadeVolume?.setFadeVolume(0.0);
+    } catch (_) {}
+
+    // Restore primary volume (it's already on the correct track)
+    await _volume.setFadeVolume(1.0);
+  }
+
+  /// Disposes the secondary crossfade player.
+  Future<void> _disposeCrossfadePlayer() async {
+    await _crossfadePlayer?.dispose();
+    _crossfadePlayer = null;
+    _crossfadeVolume = null;
+  }
+
   Future<void> togglePlayback() {
     if (_player.playing && fadeState.value.fadeDirection != FadeDirection.fadeOut) {
       return pause();
@@ -755,6 +987,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   Future<void> stop() async {
     try {
       _audioServiceBackgroundTaskLogger.info("Audio service received stop command");
+      await _cancelCrossfade();
 
       if (FinampSettingsHelper.finampSettings.clearQueueOnStopEvent) {
         await GetIt.instance<QueueService>().stopAndClearQueue();
@@ -771,7 +1004,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   Future<void> stopPlayback() async {
     try {
       clearSleepTimer();
-
+      await _cancelCrossfade();
       await _player.stop();
     } catch (e) {
       _audioServiceBackgroundTaskLogger.severe(e);
@@ -812,6 +1045,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       "skipToPrevious() start: forceSkip=$forceSkip, playing=${_player.playing}, fadeDirection=${fadeState.value.fadeDirection}, hasPrevious=${_player.hasPrevious}, loopMode=${_player.loopMode}, currentIndex=${_player.currentIndex}, position=${_player.position}",
     );
     _lastSkipCommandAt = DateTime.now();
+    await _cancelCrossfade();
     bool doSkip = true;
 
     try {
@@ -848,6 +1082,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       "skipToNext() start: playing=${_player.playing}, fadeDirection=${fadeState.value.fadeDirection}, hasNext=${_player.hasNext}, loopMode=${_player.loopMode}, currentIndex=${_player.currentIndex}, position=${_player.position}",
     );
     _lastSkipCommandAt = DateTime.now();
+    await _cancelCrossfade();
     try {
       if (_player.loopMode == LoopMode.one || !_player.hasNext) {
         // if the user manually skips to the next track, they probably want to actually skip to the next track
@@ -906,6 +1141,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   @override
   Future<void> seek(Duration position) async {
     try {
+      await _cancelCrossfade();
       await _player.seek(position);
     } catch (e) {
       _audioServiceBackgroundTaskLogger.severe(e);
