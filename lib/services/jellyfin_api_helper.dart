@@ -183,6 +183,7 @@ class JellyfinApiHelper {
     bool? isFavorite,
     int? startIndex,
     int? limit,
+    String? nameStartsWith,
   }) async {
     final response = await _fetchGetItemsResponse(
       parentItem: parentItem,
@@ -201,6 +202,7 @@ class JellyfinApiHelper {
       isFavorite: isFavorite,
       startIndex: startIndex,
       limit: limit,
+      nameStartsWith: nameStartsWith,
     );
     return response;
   }
@@ -222,6 +224,7 @@ class JellyfinApiHelper {
     bool? isFavorite,
     int? startIndex,
     int? limit,
+    String? nameStartsWith,
   }) async {
     final currentUserId = _finampUserHelper.currentUser!.id;
     assert(_verifyCallable());
@@ -276,6 +279,7 @@ class JellyfinApiHelper {
             userId: currentUserId,
             fields: fields,
             isFavorite: isFavorite,
+            nameStartsWith: nameStartsWith,
           );
         } else {
           //artistType == ArtistType.artist
@@ -291,6 +295,7 @@ class JellyfinApiHelper {
             limit: limit,
             fields: fields,
             isFavorite: isFavorite,
+            nameStartsWith: nameStartsWith,
           );
         }
       } else if (parentItem?.type == "MusicArtist") {
@@ -386,6 +391,7 @@ class JellyfinApiHelper {
           ids: itemIds?.join(","),
           fields: fields,
           isFavorite: isFavorite,
+          nameStartsWith: nameStartsWith,
         );
       }
       return QueryResult_BaseItemDto.fromJson(response as Map<String, dynamic>);

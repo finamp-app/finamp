@@ -80,6 +80,7 @@ import 'screens/active_downloads_screen.dart';
 import 'screens/add_download_location_screen.dart';
 import 'screens/album_screen.dart';
 import 'screens/artist_screen.dart';
+import 'screens/android_auto_settings_screen.dart';
 import 'screens/audio_service_settings_screen.dart';
 import 'screens/customization_settings_screen.dart';
 import 'screens/downloads_location_screen.dart';
@@ -675,6 +676,7 @@ class FinampApp extends ConsumerWidget {
         AddDownloadLocationScreen.routeName: (context) => const AddDownloadLocationScreen(),
         PlaybackReportingSettingsScreen.routeName: (context) => const PlaybackReportingSettingsScreen(),
         AudioServiceSettingsScreen.routeName: (context) => const AudioServiceSettingsScreen(),
+        AndroidAutoSettingsScreen.routeName: (context) => const AndroidAutoSettingsScreen(),
         VolumeNormalizationSettingsScreen.routeName: (context) => const VolumeNormalizationSettingsScreen(),
         InteractionSettingsScreen.routeName: (context) => const InteractionSettingsScreen(),
         TabsSettingsScreen.routeName: (context) => const TabsSettingsScreen(),

@@ -971,17 +971,44 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
   /// Returns the top-level browsable categories for use in a media browser.
   List<MediaItem> _getRootMenu() {
+    // Choose browsing mode hints based on user settings.
+    // - flat: respect the app-wide list/grid setting for albums; category for artists
+    // - letterFirst: list for both (letter nodes render as a list)
+    final isLetterFirst = FinampSettingsHelper.finampSettings.androidAutoBrowsingMode ==
+        AndroidAutoBrowsingMode.letterFirst;
+    final isGridView = FinampSettingsHelper.finampSettings.contentViewType == ContentViewType.grid;
+
+    // 1=list, 2=grid, 4=category
+    final albumsBrowsableHint = isLetterFirst ? 1 : (isGridView ? 2 : 1);
+    final artistsBrowsableHint = isLetterFirst ? 1 : 4; // artists always category in flat mode
+
     return [
       MediaItem(
         id: MediaItemId(contentType: TabContentType.albums, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
         title: _appLocalizations?.albums ?? TabContentType.albums.toString(),
         playable: false,
+        extras: {
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": albumsBrowsableHint,
+          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
+        },
       ),
       MediaItem(
         id: MediaItemId(contentType: TabContentType.artists, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
         title: _appLocalizations?.artists ?? TabContentType.artists.toString(),
+        playable: false,
+        extras: {
+          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": artistsBrowsableHint,
+          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
+        },
+      ),
+      MediaItem(
+        id: MediaItemId(
+          contentType: TabContentType.albums,
+          parentType: MediaItemParentType.recentlyPlayed,
+        ).toString(),
+        title: _appLocalizations?.recentlyPlayedAlbums ?? 'Recently Played Albums',
         playable: false,
       ),
       MediaItem(
