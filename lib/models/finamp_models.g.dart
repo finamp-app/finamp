@@ -5554,6 +5554,8 @@ const _DownloadItemtypeEnumValueMap = {
   'image': 2,
   'anchor': 3,
   'finampCollection': 4,
+  'animatedCover': 5,
+  'verticalBackgroundVideo': 6,
 };
 const _DownloadItemtypeValueEnumMap = {
   0: DownloadItemType.collection,
@@ -5561,6 +5563,8 @@ const _DownloadItemtypeValueEnumMap = {
   2: DownloadItemType.image,
   3: DownloadItemType.anchor,
   4: DownloadItemType.finampCollection,
+  5: DownloadItemType.animatedCover,
+  6: DownloadItemType.verticalBackgroundVideo,
 };
 
 Id _downloadItemGetId(DownloadItem object) {
@@ -8888,6 +8892,8 @@ const _$DownloadItemTypeEnumMap = {
   DownloadItemType.image: 'image',
   DownloadItemType.anchor: 'anchor',
   DownloadItemType.finampCollection: 'finampCollection',
+  DownloadItemType.animatedCover: 'animatedCover',
+  DownloadItemType.verticalBackgroundVideo: 'verticalBackgroundVideo',
 };
 
 const _$BaseItemDtoTypeEnumMap = {

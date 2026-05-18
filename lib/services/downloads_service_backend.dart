@@ -22,6 +22,7 @@ import '../screens/downloads_screen.dart';
 import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
 import 'jellyfin_api_helper.dart';
+import 'animated_music_service.dart';
 
 part 'downloads_service_backend.g.dart';
 
@@ -347,6 +348,10 @@ class IsarTaskQueue implements TaskQueue {
                         format: null,
                       )
                       .toString(),
+                  DownloadItemType.animatedCover =>
+                GetIt.instance<AnimatedMusicService>().buildAnimatedCoverUrlForTrack(task.baseItem!.id).toString(),
+              DownloadItemType.verticalBackgroundVideo =>
+                GetIt.instance<AnimatedMusicService>().buildVerticalBackgroundUrlForTrack(task.baseItem!.id).toString(),
                 _ => throw StateError("Invalid enqueue ${task.name} which is a ${task.type}"),
               };
               _enqueueLog.fine("Submitting download ${task.name} to background_downloader.");
@@ -862,6 +867,8 @@ class DownloadsSyncService {
       case DownloadItemType.track:
         break;
       case DownloadItemType.image:
+      case DownloadItemType.animatedCover:
+      case DownloadItemType.verticalBackgroundVideo:
       case DownloadItemType.anchor:
         viewId = null;
         asRequired = true;
@@ -1005,6 +1012,22 @@ class DownloadsSyncService {
         if ((item.blurHash ?? item.imageId) != null) {
           requiredChildren.add(DownloadStub.fromItem(type: DownloadItemType.image, item: item));
         }
+
+        // Check if animated cover and vertical background video exist by making requests to the plugin endpoints
+        final animatedMusicService = GetIt.instance<AnimatedMusicService>();
+
+        // Check for animated cover
+        final hasAnimatedCover = await animatedMusicService.hasAnimatedCover(item.id);
+        if (hasAnimatedCover) {
+          requiredChildren.add(DownloadStub.fromItem(type: DownloadItemType.animatedCover, item: item));
+        }
+
+        // Check for vertical background video
+        final hasVerticalBackground = await animatedMusicService.hasVerticalBackgroundVideo(item.id);
+        if (hasVerticalBackground) {
+          requiredChildren.add(DownloadStub.fromItem(type: DownloadItemType.verticalBackgroundVideo, item: item));
+        }
+
         if (viewId == null && item.albumId != null) {
           isarParent ??= _isar.downloadItems.getSync(parent.isarId);
           if (isarParent?.viewId == null) {
@@ -1030,6 +1053,8 @@ class DownloadsSyncService {
           }
         }
       case DownloadItemType.image:
+      case DownloadItemType.animatedCover:
+      case DownloadItemType.verticalBackgroundVideo:
         break;
       case DownloadItemType.anchor:
         var children = _isar.downloadItems.filter().requiredBy((q) => q.isarIdEqualTo(parent.isarId)).findAllSync();
@@ -1551,6 +1576,10 @@ class DownloadsSyncService {
         return _downloadTrack(item);
       case DownloadItemType.image:
         return _downloadImage(item);
+      case DownloadItemType.animatedCover:
+        return _downloadAnimatedCover(item);
+      case DownloadItemType.verticalBackgroundVideo:
+        return _downloadVerticalBackgroundVideo(item);
       case _:
         throw StateError("???");
     }
@@ -1699,6 +1728,92 @@ class DownloadsSyncService {
       canonItem.fileTranscodingProfile = canonItem.syncTranscodingProfile;
       if (canonItem.state != DownloadItemState.notDownloaded) {
         _syncLogger.severe("Image ${canonItem.name} changed state to ${canonItem.state} while initiating download.");
+      } else {
+        _downloadsService.updateItemState(canonItem, DownloadItemState.enqueued, alwaysPut: true);
+      }
+    });
+  }
+
+  /// Prepares for downloading of an animated cover by filling in the path information
+  /// and marking item as enqueued in isar.
+  Future<void> _downloadAnimatedCover(DownloadItem downloadItem) async {
+    assert(downloadItem.type == DownloadItemType.animatedCover && downloadItem.syncDownloadLocation != null);
+    var item = downloadItem.baseItem!;
+    var downloadLocation = downloadItem.syncDownloadLocation!;
+
+    String subDirectory;
+    if (downloadLocation.useHumanReadableNames) {
+      subDirectory = path_helper.join("Finamp", _filesystemSafe(item.albumArtist));
+    } else {
+      subDirectory = "animated_covers";
+    }
+
+    if (downloadLocation.baseDirectory.baseDirectory == BaseDirectory.root) {
+      subDirectory = path_helper.join(downloadLocation.currentPath, subDirectory);
+    }
+
+    // Always use a new, unique filename when creating animated cover downloads
+    final fileName = "${const Uuid().v4()}.animated_cover";
+
+    _isar.writeTxnSync(() {
+      DownloadItem? canonItem = _isar.downloadItems.getSync(downloadItem.isarId);
+      if (canonItem == null) {
+        _syncLogger.severe("Download metadata ${downloadItem.id} missing after download starts");
+        throw StateError("Could not save download task id");
+      }
+      if (canonItem.state != DownloadItemState.notDownloaded) {
+        _syncLogger.severe("Download state incorrect while enqueueing ${canonItem.name}");
+        return;
+      }
+      canonItem.path = path_helper.join(subDirectory, fileName);
+      canonItem.fileTranscodingProfile = canonItem.syncTranscodingProfile;
+      if (canonItem.state != DownloadItemState.notDownloaded) {
+        _syncLogger.severe(
+          "Animated cover ${canonItem.name} changed state to ${canonItem.state} while initiating download.",
+        );
+      } else {
+        _downloadsService.updateItemState(canonItem, DownloadItemState.enqueued, alwaysPut: true);
+      }
+    });
+  }
+
+  /// Prepares for downloading of a vertical background video by filling in the path information
+  /// and marking item as enqueued in isar.
+  Future<void> _downloadVerticalBackgroundVideo(DownloadItem downloadItem) async {
+    assert(downloadItem.type == DownloadItemType.verticalBackgroundVideo && downloadItem.syncDownloadLocation != null);
+    var item = downloadItem.baseItem!;
+    var downloadLocation = downloadItem.syncDownloadLocation!;
+
+    String subDirectory;
+    if (downloadLocation.useHumanReadableNames) {
+      subDirectory = path_helper.join("Finamp", _filesystemSafe(item.albumArtist));
+    } else {
+      subDirectory = "vertical_background_videos";
+    }
+
+    if (downloadLocation.baseDirectory.baseDirectory == BaseDirectory.root) {
+      subDirectory = path_helper.join(downloadLocation.currentPath, subDirectory);
+    }
+
+    // Always use a new, unique filename when creating vertical video downloads
+    final fileName = "${const Uuid().v4()}.vertical_background_video";
+
+    _isar.writeTxnSync(() {
+      DownloadItem? canonItem = _isar.downloadItems.getSync(downloadItem.isarId);
+      if (canonItem == null) {
+        _syncLogger.severe("Download metadata ${downloadItem.id} missing after download starts");
+        throw StateError("Could not save download task id");
+      }
+      if (canonItem.state != DownloadItemState.notDownloaded) {
+        _syncLogger.severe("Download state incorrect while enqueueing ${canonItem.name}");
+        return;
+      }
+      canonItem.path = path_helper.join(subDirectory, fileName);
+      canonItem.fileTranscodingProfile = canonItem.syncTranscodingProfile;
+      if (canonItem.state != DownloadItemState.notDownloaded) {
+        _syncLogger.severe(
+          "Vertical background video ${canonItem.name} changed state to ${canonItem.state} while initiating download.",
+        );
       } else {
         _downloadsService.updateItemState(canonItem, DownloadItemState.enqueued, alwaysPut: true);
       }

@@ -219,24 +219,52 @@ class DownloadsService {
                     extension = ".gif";
                   case "image/webp":
                     extension = ".webp";
+                  case "video/mp4":
+                    extension = ".mp4";
+                  case "video/webm":
+                    extension = ".webm";
+                  case "video/avi":
+                    extension = ".avi";
+                  case "video/mov":
+                    extension = ".mov";
                 }
                 Future.sync(() async {
                   assert(
                     listener.file?.path == await event.task.filePath() ||
                         (extension != null &&
-                            listener.file?.path.replaceFirst(RegExp(r'\.image$'), extension) ==
-                                await event.task.filePath()),
+                            (listener.file?.path.replaceFirst(RegExp(r'\.image$'), extension) ==
+                                    await event.task.filePath() ||
+                                listener.file?.path.replaceFirst(RegExp(r'\.animated_cover$'), extension) ==
+                                    await event.task.filePath() ||
+                                listener.file?.path.replaceFirst(RegExp(r'\.vertical_background_video$'), extension) ==
+                                    await event.task.filePath())),
                     "${listener.name} ${listener.path} ${listener.fileDownloadLocation?.baseDirectory} ${listener.file?.path} ${await event.task.filePath()} $extension",
                   );
                 });
-                if (extension != null && listener.file!.path.endsWith(".image")) {
-                  // Do not wait for file move to complete to prevent slowing isar write
-                  unawaited(
-                    File(listener.file!.path)
-                        .rename(listener.file!.path.replaceFirst(RegExp(r'\.image$'), extension))
-                        .then((_) => null, onError: (e) => GlobalSnackbar.error(e)),
-                  );
-                  listener.path = listener.path!.replaceFirst(RegExp(r'\.image$'), extension);
+                if (extension != null) {
+                  if (listener.file!.path.endsWith(".image")) {
+                    // Do not wait for file move to complete to prevent slowing isar write
+                    unawaited(
+                      File(listener.file!.path)
+                          .rename(listener.file!.path.replaceFirst(RegExp(r'\.image$'), extension))
+                          .then((_) => null, onError: (e) => GlobalSnackbar.error(e)),
+                    );
+                    listener.path = listener.path!.replaceFirst(RegExp(r'\.image$'), extension);
+                  } else if (listener.file!.path.endsWith(".animated_cover")) {
+                    unawaited(
+                      File(listener.file!.path)
+                          .rename(listener.file!.path.replaceFirst(RegExp(r'\.animated_cover$'), extension))
+                          .then((_) => null, onError: (e) => GlobalSnackbar.error(e)),
+                    );
+                    listener.path = listener.path!.replaceFirst(RegExp(r'\.animated_cover$'), extension);
+                  } else if (listener.file!.path.endsWith(".vertical_background_video")) {
+                    unawaited(
+                      File(listener.file!.path)
+                          .rename(listener.file!.path.replaceFirst(RegExp(r'\.vertical_background_video$'), extension))
+                          .then((_) => null, onError: (e) => GlobalSnackbar.error(e)),
+                    );
+                    listener.path = listener.path!.replaceFirst(RegExp(r'\.vertical_background_video$'), extension);
+                  }
                 }
               }
 
@@ -402,23 +430,17 @@ class DownloadsService {
   /// Update download counts with current values.  Repeatedly called
   /// while on downloads screen to update overview.
   void updateDownloadCounts() {
-    _isar.txnSync(() {
-      downloadCounts["track"] = _isar.downloadItems
-          .where()
-          .typeEqualTo(DownloadItemType.track)
-          .filter()
-          .not()
-          .stateEqualTo(DownloadItemState.notDownloaded)
-          .countSync();
-      downloadCounts["image"] = _isar.downloadItems.where().typeEqualTo(DownloadItemType.image).countSync();
-      downloadCounts["sync"] = _isar.isarTaskDatas
-          .where()
-          .typeEqualTo(IsarTaskDataType.syncNode)
-          .or()
-          .typeEqualTo(IsarTaskDataType.deleteNode)
-          .countSync();
-      _downloadCountsStreamController.add(downloadCounts);
-    });
+    downloadCounts["track"] = _isar.downloadItems.where().typeEqualTo(DownloadItemType.track).countSync();
+    downloadCounts["image"] = _isar.downloadItems.where().typeEqualTo(DownloadItemType.image).countSync();
+    downloadCounts["animatedCover"] = _isar.downloadItems
+        .where()
+        .typeEqualTo(DownloadItemType.animatedCover)
+        .countSync();
+    downloadCounts["verticalVideo"] = _isar.downloadItems
+        .where()
+        .typeEqualTo(DownloadItemType.verticalBackgroundVideo)
+        .countSync();
+    _downloadCountsStreamController.add(downloadCounts);
   }
 
   // TODO use download groups to send notification when item fully downloaded?
@@ -1619,7 +1641,14 @@ class DownloadsService {
         .filter()
         .optional(
           state != DownloadItemState.syncFailed,
-          (q) => q.typeEqualTo(DownloadItemType.track).or().typeEqualTo(DownloadItemType.image),
+          (q) => q
+              .typeEqualTo(DownloadItemType.track)
+              .or()
+              .typeEqualTo(DownloadItemType.image)
+              .or()
+              .typeEqualTo(DownloadItemType.animatedCover)
+              .or()
+              .typeEqualTo(DownloadItemType.verticalBackgroundVideo),
         )
         // Watching queries is expensive and seems to have a memory link.  Avoid using if possible.
         .watch(fireImmediately: true);
@@ -1739,6 +1768,48 @@ class DownloadsService {
       return outdated ? DownloadItemStatus.requiredOutdated : DownloadItemStatus.required;
     } else {
       return outdated ? DownloadItemStatus.incidentalOutdated : DownloadItemStatus.incidental;
+    }
+  }
+
+  /// Get an animated cover's DownloadItem by BaseItemDto or id.  This method performs file
+  /// verification and should only be used when the downloaded file is actually
+  /// needed, such as when building video providers.  Exactly one of the two arguments
+  /// should be provided.
+  DownloadItem? getAnimatedCoverDownload({BaseItemDto? item, String? trackId}) {
+    assert((item == null) != (trackId == null));
+    String? id = trackId ?? item!.id.raw;
+    return _getDownloadByID(id, DownloadItemType.animatedCover);
+  }
+
+  /// Get a vertical background video's DownloadItem by BaseItemDto or id.  This method performs file
+  /// verification and should only be used when the downloaded file is actually
+  /// needed, such as when building video providers.  Exactly one of the two arguments
+  /// should be provided.
+  DownloadItem? getVerticalBackgroundVideoDownload({BaseItemDto? item, String? trackId}) {
+    assert((item == null) != (trackId == null));
+    String? id = trackId ?? item!.id.raw;
+    return _getDownloadByID(id, DownloadItemType.verticalBackgroundVideo);
+  }
+
+  // Update download status counting
+  void _updateDownloadCountsFromStatus() {
+    for (var state in DownloadItemState.values) {
+      downloadStatuses[state] = _isar.downloadItems
+          .where()
+          .optional(
+            state != DownloadItemState.syncFailed,
+            (q) => q
+                .typeEqualTo(DownloadItemType.track)
+                .or()
+                .typeEqualTo(DownloadItemType.image)
+                .or()
+                .typeEqualTo(DownloadItemType.animatedCover)
+                .or()
+                .typeEqualTo(DownloadItemType.verticalBackgroundVideo),
+          )
+          .filter()
+          .stateEqualTo(state)
+          .countSync();
     }
   }
 }

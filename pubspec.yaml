@@ -44,6 +44,10 @@ dependencies:
 
   media_kit_libs_linux: ^1.2.1
 
+  media_kit: ^1.2.0 # Primary package.
+  media_kit_video: ^1.3.0 # For video rendering.
+  media_kit_libs_video: ^1.0.6 # Native video dependencies.
+
   # Transcoding does not work on windows with current media-kit release.  This fork uses the most recent
   # build of MPV from https://github.com/zhongfly/mpv-winbuild, which works correctly while transcoding.
   media_kit_libs_windows_audio: #^1.0.9
