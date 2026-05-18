@@ -26,6 +26,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  tray_manager: ^0.5.1
+
   background_downloader: ^9.2.3
   json_annotation: ^4.8.1
   chopper: ^8.0.0
@@ -205,6 +207,7 @@ flutter:
     - images/finamp_cropped.png # preview image for Discord RPC Fallback Icon Setting
     - assets/icon/icon_white_noborder.png # preview image for Discord RPC Fallback Icon Setting
     - images/jellyfin-icon-transparent.png # preview image for Discord RPC Fallback Icon Setting
+    - images/finamp_windows.ico
   #   - images/a_dot_ham.jpeg
 
   generate: true

@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:app_links/app_links.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:background_downloader/background_downloader.dart';
+import 'package:chopper/chopper.dart';
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/Shortcuts/global_shortcut_manager.dart';
@@ -47,6 +48,7 @@ import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:finamp/services/ui_overlay_setter_observer.dart';
 import 'package:finamp/services/widget_bindings_observer_provider.dart';
+import 'package:finamp/utils/tray_helper.dart' as tray_helper;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -65,6 +67,7 @@ import 'package:isar/isar.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path_helper;
 import 'package:path_provider/path_provider.dart';
+import 'package:tray_manager/tray_manager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -134,6 +137,8 @@ void main() async {
     _mainLog.info("Setup providers");
     await _setupOSIntegration();
     _mainLog.info("Setup os integrations");
+    await _setupTray();
+    _mainLog.info("Setup Tray");
     await _setupPlayOnService();
     _mainLog.info("Setup PlayOnService");
     await _setupPlaybackServices();
@@ -255,6 +260,26 @@ Future<void> _setupPlayOnService() async {
   final playOnService = PlayOnService();
   GetIt.instance.registerSingleton(playOnService);
   GetIt.instance<FinampUserHelper>().runUserHook(playOnService.initialize);
+}
+
+Future<void> _setupTray() async {
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    String trayIcon = Assets.images.finampCroppedPng.path;
+    String winTrayIcon = Assets.images.finampWindows;
+
+    await trayManager.setIcon(Platform.isWindows ? winTrayIcon : trayIcon);
+
+    Menu trayMenu = Menu(
+      items: [
+        await windowManager.isVisible()
+            ? MenuItem(key: 'hide_window', label: 'Hide')
+            : MenuItem(key: 'show_window', label: 'Show'),
+        MenuItem(key: 'exit_app', label: 'Quit'),
+      ],
+    );
+
+    await trayManager.setContextMenu(trayMenu);
+  }
 }
 
 Future<void> _setupDiscordRpc() async {
@@ -469,7 +494,7 @@ void _migrateSortOptions() {
 
   if (finampSettings.tabSortOrder.isEmpty) {
     for (var type in TabContentType.values) {
-      // ignore: deprecated_member_use_from_same_package
+      // ignore: deprecated_member_useWindowListener_from_same_package
       finampSettings.tabSortOrder[type] = finampSettings.sortOrder;
     }
     changed = true;
@@ -543,7 +568,7 @@ class Finamp extends StatefulWidget {
   State<Finamp> createState() => _FinampState();
 }
 
-class _FinampState extends State<Finamp> with WindowListener {
+class _FinampState extends State<Finamp> with WindowListener, TrayListener {
   static final Logger windowManagerLogger = Logger("WindowManager");
   static final Logger linkHandlingLogger = Logger("LinkHandling");
 
@@ -567,9 +592,11 @@ class _FinampState extends State<Finamp> with WindowListener {
       });
     });
 
-    // If the app is running on desktop, we add a listener to the window manager
+    // If the app is running on desktop,
+    // we add a listener to the window- and tray manager
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       WindowManager.instance.addListener(this);
+      trayManager.addListener(this);
       // windowManager.setPreventClose(true); //!!! destroying the window manager instance doesn't seem to work on Windows release builds, the app just freezes instead
     }
   }
@@ -627,6 +654,34 @@ class _FinampState extends State<Finamp> with WindowListener {
       await GetIt.instance<MusicPlayerBackgroundTask>().dispose();
       windowManagerLogger.info("Player disposed.");
     }
+  }
+
+  @override
+  Future<void> onTrayMenuItemClick(MenuItem menuItem) async {
+    if (menuItem.key == 'show_window') {
+      await tray_helper.showFromTray();
+    } else if (menuItem.key == 'hide_window') {
+      await tray_helper.hideToTray();
+    } else if (menuItem.key == 'exit_app') {
+      trayManager.removeListener(this);
+      await trayManager.destroy();
+      exit(0);
+    }
+
+    await setTrayItems();
+  }
+
+  Future<void> setTrayItems() async {
+    Menu trayMenu = Menu(
+      items: [
+        await windowManager.isVisible()
+            ? MenuItem(key: 'hide_window', label: 'Hide')
+            : MenuItem(key: 'show_window', label: 'Show'),
+        MenuItem(key: 'exit_app', label: 'Quit'),
+      ],
+    );
+
+    await trayManager.setContextMenu(trayMenu);
   }
 }
 
