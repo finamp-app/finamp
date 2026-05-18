@@ -3308,5 +3308,13 @@
   "androidGainDisabled": "Switching to gain effect fallback due to initialization error.",
   "@androidGainDisabled": {
     "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+  },
+  "disableOverscrollTitle": "Disable overscroll effect",
+  "@disableOverscrollTitle": {
+    "description": "Title for the accessibility setting that disables the overscroll stretch/glow effect on scrollable lists."
+  },
+  "disableOverscrollSubtitle": "Removes the bouncing or glowing effect when scrolling past the end of a list. Useful for users sensitive to motion.",
+  "@disableOverscrollSubtitle": {
+    "description": "Subtitle for the disable overscroll toggle, explaining the motion-related rationale."
   }
 }
