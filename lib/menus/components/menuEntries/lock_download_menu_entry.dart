@@ -29,7 +29,10 @@ class LockDownloadMenuEntry extends ConsumerWidget implements HideableMenuEntry 
     }
 
     return Visibility(
-      visible: !ref.watch(finampSettingsProvider.isOffline) && (downloadStatus?.isIncidental ?? false),
+      visible:
+          !ref.watch(finampSettingsProvider.isOffline) &&
+          (downloadStatus?.isIncidental ?? false) &&
+          !ref.watch(finampSettingsProvider.enableChildMode),
       child: Tooltip(
         message: parentTooltip ?? "Widget shouldn't be visible",
         child: MenuEntry(
@@ -49,5 +52,6 @@ class LockDownloadMenuEntry extends ConsumerWidget implements HideableMenuEntry 
   @override
   bool get isVisible =>
       GetIt.instance<DownloadsService>().getStatus(downloadStub, null).isIncidental &&
-      !FinampSettingsHelper.finampSettings.isOffline;
+      !FinampSettingsHelper.finampSettings.isOffline &&
+      !FinampSettingsHelper.finampSettings.enableChildMode;
 }

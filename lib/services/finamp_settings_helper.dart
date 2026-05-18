@@ -231,6 +231,7 @@ class FinampSettingsHelper {
     FinampSetters.setPreferNextUpPrepending(DefaultSettings.preferNextUpPrepending);
     FinampSetters.setRememberLastUsedPlaybackActionRowPage(DefaultSettings.rememberLastUsedPlaybackActionRowPage);
     FinampSetters.setPreviousTracksPersistenceMode(DefaultSettings.previousTracksPersistenceMode);
+    finampSettingsTemp.enableChildMode = DefaultSettings.enableChildMode;
 
     Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", finampSettingsTemp);
   }

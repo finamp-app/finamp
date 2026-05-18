@@ -7,20 +7,23 @@ import 'package:finamp/components/MusicScreen/offline_mode_status_label.dart';
 import 'package:finamp/screens/playback_history_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
 import 'package:finamp/screens/settings_screen.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
-class MusicScreenDrawer extends StatelessWidget {
+class MusicScreenDrawer extends ConsumerWidget {
   const MusicScreenDrawer({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
     final colorScheme = ColorScheme.of(context);
+    final enableChildMode = ref.watch(finampSettingsProvider.enableChildMode);
     return Drawer(
       surfaceTintColor: colorScheme.surfaceTint,
       backgroundColor: colorScheme.surface,
@@ -50,11 +53,12 @@ class MusicScreenDrawer extends StatelessWidget {
                 const OfflineModeSwitchListTile(),
                 const OfflineModeStatusLabel(),
                 Divider(),
-                ListTile(
-                  leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.file_download)),
-                  title: Text(AppLocalizations.of(context)!.downloads),
-                  onTap: () => Navigator.of(context).pushNamed(DownloadsScreen.routeName),
-                ),
+                if (!enableChildMode)
+                  ListTile(
+                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.file_download)),
+                    title: Text(AppLocalizations.of(context)!.downloads),
+                    onTap: () => Navigator.of(context).pushNamed(DownloadsScreen.routeName),
+                  ),
                 ListTile(
                   leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(TablerIcons.clock)),
                   title: Text(AppLocalizations.of(context)!.playbackHistory),

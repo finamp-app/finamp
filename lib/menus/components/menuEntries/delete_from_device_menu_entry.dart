@@ -3,6 +3,7 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/menuEntries/menu_entry.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/downloads_service.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -19,7 +20,7 @@ class DeleteFromDeviceMenuEntry extends ConsumerWidget implements HideableMenuEn
     final DownloadItemStatus downloadStatus = ref.watch(downloadsService.statusProvider((downloadStub, null)));
 
     return Visibility(
-      visible: downloadStatus.isRequired,
+      visible: downloadStatus.isRequired && !ref.watch(finampSettingsProvider.enableChildMode),
       child: MenuEntry(
         icon: Icons.delete_outlined,
         title: AppLocalizations.of(context)!.deleteFromTargetConfirmButton("device"),
@@ -31,5 +32,7 @@ class DeleteFromDeviceMenuEntry extends ConsumerWidget implements HideableMenuEn
   }
 
   @override
-  bool get isVisible => GetIt.instance<DownloadsService>().getStatus(downloadStub, null).isRequired;
+  bool get isVisible =>
+      GetIt.instance<DownloadsService>().getStatus(downloadStub, null).isRequired &&
+      !FinampSettingsHelper.finampSettings.enableChildMode;
 }

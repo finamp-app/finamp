@@ -41,6 +41,7 @@ class _InteractionSettingsScreenState extends State<InteractionSettingsScreen> {
           FastScrollSelector(),
           AutoExpandPlayerScreenSelector(),
           ShowDeleteFromServerOptionToggle(),
+          EnableChildModeToggle(),
           KeepScreenOnDropdownListTile(),
           KeepScreenOnWhilePluggedInSelector(),
           PreferAddingToFavoritesOverPlaylistsToggle(),
@@ -133,6 +134,20 @@ class RememberLastUsedPlaybackActionRowPageToggle extends ConsumerWidget {
       subtitle: Text(AppLocalizations.of(context)!.rememberLastUsedPlaybackActionRowPageSubtitle),
       value: ref.watch(finampSettingsProvider.rememberLastUsedPlaybackActionRowPage),
       onChanged: (value) => FinampSetters.setRememberLastUsedPlaybackActionRowPage(value),
+    );
+  }
+}
+
+class EnableChildModeToggle extends ConsumerWidget {
+  const EnableChildModeToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SwitchListTile.adaptive(
+      title: Text(AppLocalizations.of(context)!.enableChildModeTitle),
+      subtitle: Text(AppLocalizations.of(context)!.enableChildModeSubtitle),
+      value: ref.watch(finampSettingsProvider.enableChildMode),
+      onChanged: FinampSetters.setEnableChildMode,
     );
   }
 }

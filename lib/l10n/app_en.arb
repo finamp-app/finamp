@@ -3308,5 +3308,13 @@
   "androidGainDisabled": "Switching to gain effect fallback due to initialization error.",
   "@androidGainDisabled": {
     "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+  },
+  "enableChildModeTitle": "Enable child mode",
+  "@enableChildModeTitle": {
+    "description": "Title for the child mode toggle, which hides destructive actions like the download and delete buttons throughout the app."
+  },
+  "enableChildModeSubtitle": "Hides the download and delete buttons throughout the app to prevent accidental changes.",
+  "@enableChildModeSubtitle": {
+    "description": "Subtitle for the child mode toggle, explaining that it hides the download and delete buttons."
   }
 }

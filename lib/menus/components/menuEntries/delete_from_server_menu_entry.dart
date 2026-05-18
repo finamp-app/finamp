@@ -20,7 +20,7 @@ class DeleteFromServerMenuEntry extends ConsumerWidget implements HideableMenuEn
     final canDelete = ref.watch(canDeleteFromServerProvider(baseItem));
 
     return Visibility(
-      visible: canDelete,
+      visible: canDelete && !ref.watch(finampSettingsProvider.enableChildMode),
       child: MenuEntry(
         icon: TablerIcons.trash_x,
         title: AppLocalizations.of(context)!.deleteFromTargetConfirmButton("server"),
@@ -41,6 +41,9 @@ class DeleteFromServerMenuEntry extends ConsumerWidget implements HideableMenuEn
   @override
   bool get isVisible {
     if (FinampSettingsHelper.finampSettings.isOffline) {
+      return false;
+    }
+    if (FinampSettingsHelper.finampSettings.enableChildMode) {
       return false;
     }
     var itemType = BaseItemDtoType.fromItem(baseItem);

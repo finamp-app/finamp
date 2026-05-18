@@ -39,6 +39,10 @@ class DownloadButton extends ConsumerWidget {
     final downloadsService = GetIt.instance<DownloadsService>();
     DownloadItemStatus? status = ref.watch(downloadsService.statusProvider((item, childrenLength)));
     var isOffline = ref.watch(finampSettingsProvider.isOffline);
+    final enableChildMode = ref.watch(finampSettingsProvider.enableChildMode);
+    if (enableChildMode) {
+      return const SizedBox.shrink();
+    }
     bool canDeleteFromServer = false;
     if (item.type.requiresItem) {
       canDeleteFromServer = ref.watch(canDeleteFromServerProvider(item.baseItem!));
