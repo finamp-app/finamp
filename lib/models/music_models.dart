@@ -18,10 +18,10 @@ part 'music_interfaces.dart';
 //
 //
 
-class Track extends FinampPlayableItem {
+class Track extends FinampPlayableDto {
   Track(super.item, {required super.source}) {
     if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.track) {
-      throw UnimplementedError();
+      throw UnsupportedError("Wrong BaseItemDto type: ${item.type}");
     }
   }
 
@@ -34,10 +34,10 @@ class Track extends FinampPlayableItem {
   int get hashHelper => Object.hash(Track, hashHelperChain);
 }
 
-class Album extends FinampPlayableItem implements FinampUnpagedPlayable<Track> {
+class Album extends FinampPlayableDto implements FinampUnpagedPlayable<Track> {
   Album(super.item, {required super.source}) {
     if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.album) {
-      throw UnimplementedError();
+      throw UnsupportedError("Wrong BaseItemDto type: ${item.type}");
     }
   }
 
@@ -53,7 +53,7 @@ class Album extends FinampPlayableItem implements FinampUnpagedPlayable<Track> {
 class Playlist extends _SortableItem<Track> {
   Playlist(super.item, {required super.source, required super.sortConfig}) {
     if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.playlist) {
-      throw UnimplementedError();
+      throw UnsupportedError("Wrong BaseItemDto type: ${item.type}");
     }
   }
 
@@ -75,7 +75,7 @@ class Playlist extends _SortableItem<Track> {
 
 // TODO add shuffle grouping control?
 
-class MusicScreenPlayable<ChildType extends FinampPlayableItem> extends _SortablePagedPlayable<ChildType> {
+class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _SortablePagedPlayable<ChildType> {
   final ContentType tab;
   final LibraryOrItemId library;
 
@@ -138,7 +138,7 @@ class MusicScreenPlayable<ChildType extends FinampPlayableItem> extends _Sortabl
     }
   }
 
-  FinampPlayableItem buildChild(BaseItemDto item) {
+  FinampPlayableDto buildChild(BaseItemDto item) {
     switch (tab) {
       case ContentType.tracks:
         return Track(item, source: source);
@@ -158,13 +158,6 @@ class MusicScreenPlayable<ChildType extends FinampPlayableItem> extends _Sortabl
         throw UnsupportedError("Invalid content type $tab for music screen tab.");
     }
   }
-
-  HomeScreenSectionConfiguration get section => HomeScreenSectionConfiguration(
-    type: HomeScreenSectionType.tabView,
-    itemId: library,
-    contentType: tab,
-    sortAndFilterConfiguration: sortConfig,
-  );
 
   int get normalChildSize => switch (tab) {
     ContentType.albums => 10,
@@ -195,7 +188,7 @@ class MusicScreenPlayable<ChildType extends FinampPlayableItem> extends _Sortabl
 }
 
 // TODO do we need this to have an item?  Or can it be a generic prebaked section?
-class AlbumDisc extends FinampPlayableItem implements FinampUnpagedPlayable<Track> {
+class AlbumDisc extends FinampPlayableDto implements FinampUnpagedPlayable<Track> {
   AlbumDisc(super.item, {required this.tracks})
     : assert(
         tracks.every((e) {
@@ -289,7 +282,7 @@ class PlayableQueue extends FinampPlayable {
   String get id => "latest-queues";
 }
 
-class InstantMix extends FinampPlayableItem {
+class InstantMix extends FinampPlayableDto {
   InstantMix(super.item)
     : super(
         source: QueueItemSource(
@@ -316,4 +309,28 @@ class InstantMix extends FinampPlayableItem {
 
   @override
   int get hashHelper => Object.hash(InstantMix, hashHelperChain);
+}
+
+class JellyfinCollection extends _SortableItem<FinampPlayableDto> {
+  JellyfinCollection(super.item, {required super.source, required super.sortConfig}) {
+    if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.collection) {
+      throw UnsupportedError("Wrong BaseItemDto type: ${item.type}");
+    }
+  }
+
+  factory JellyfinCollection.fromItem(BaseItemDto item, {SortAndFilterConfiguration? sortConfig}) => JellyfinCollection(
+    item,
+    source: QueueItemSource.fromBaseItem(item),
+    sortConfig: sortConfig ?? SortAndFilterConfiguration.defaultSort,
+  );
+
+  @override
+  bool equalsHelper(Object other) => other is JellyfinCollection;
+
+  @override
+  int get hashHelper => (JellyfinCollection as Object).hashCode;
+
+  @override
+  JellyfinCollection copyWith(SortAndFilterConfiguration newSort) =>
+      JellyfinCollection(item, source: source, sortConfig: newSort);
 }

@@ -32,9 +32,11 @@ class AddToPlaylistMenuEntry extends ConsumerWidget implements HideableMenuEntry
             context: context,
             items: switch (item) {
               AlbumDisc() => item.tracks,
-              // TODO is this a bad idea?  Could we get other strange item types like AlbumDisc that need handling?
-              FinampPlayableItem() => [item.item],
-              _ => throw UnsupportedError("Cannot add $item to playlist - invalid type"),
+              PrecalculatedPlayable() => item.tracks,
+              FinampPlayableDto() => [item.item],
+              PlayableQueue() || MusicScreenPlayable<FinampPlayableDto>() => throw UnsupportedError(
+                "Cannot add $item to playlist - invalid type",
+              ),
             },
             parentPlaylist: inPlaylist ? queueItem!.source.item : null,
           );

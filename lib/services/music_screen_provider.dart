@@ -1,17 +1,11 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/extensions/list.dart';
-import 'package:finamp/extensions/localizations.dart';
 import 'package:finamp/models/music_models.dart';
-import 'package:finamp/services/album_screen_provider.dart';
-import 'package:finamp/services/artist_content_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive_ce/hive.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -20,8 +14,8 @@ import '../models/jellyfin_models.dart';
 import 'downloads_service.dart';
 import 'finamp_settings_helper.dart';
 import 'item_by_id_provider.dart';
-import 'item_helper.dart';
 import 'jellyfin_api_helper.dart';
+import 'music_providers.dart';
 
 part 'music_screen_provider.g.dart';
 
@@ -38,7 +32,7 @@ class PagedContent extends _$PagedContent {
     switch (request) {
       case FinampUnpagedDisplayable():
         return _buildUnpaged(request);
-      case MusicScreenPlayable<FinampPlayableItem>():
+      case MusicScreenPlayable<FinampPlayableDto>():
         return _buildPaged(request);
     }
   }
@@ -84,7 +78,7 @@ class PagedContent extends _$PagedContent {
     );
   }
 
-  PagingState<int, FinampDisplayableOrPlayable> _buildPaged(MusicScreenPlayable<FinampPlayableItem> request) {
+  PagingState<int, FinampDisplayableOrPlayable> _buildPaged(MusicScreenPlayable<FinampPlayableDto> request) {
     final List<List<FinampDisplayableOrPlayable>> pages = [];
     final List<int> keys = [];
     final List<LoadHomeSectionItemsProvider> providers = [];
@@ -94,11 +88,7 @@ class PagedContent extends _$PagedContent {
 
     int offset = 0;
     for (int i = 0; i < _pageSizes.length; i++) {
-      final provider = loadHomeSectionItemsProvider(
-        sectionInfo: request.section,
-        startIndex: offset,
-        limit: _pageSizes[i],
-      );
+      final provider = loadHomeSectionItemsProvider(request: request, startIndex: offset, limit: _pageSizes[i]);
       providers.add(provider);
 
       final page = ref.watch(provider).unwrapPrevious();
@@ -215,164 +205,84 @@ class PagedContent extends _$PagedContent {
   }
 }
 
-// TODO this should take a MusicScreenPlayable.  Maybe return them too?  Also, why is this keepAlive?
+// TODO Why is this keepAlive?
 @Riverpod(keepAlive: true)
 Future<List<BaseItemDto>?> loadHomeSectionItems(
   Ref ref, {
-  required HomeScreenSectionConfiguration sectionInfo,
+  required MusicScreenPlayable request,
   required int startIndex,
   required int limit,
 }) async {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
   if (ref.watch(finampSettingsProvider.isOffline)) {
-    return loadHomeSectionItemsOffline(ref: ref, sectionInfo: sectionInfo, startIndex: startIndex, limit: limit);
+    return loadHomeSectionItemsOffline(ref: ref, request: request, startIndex: startIndex, limit: limit);
   }
 
-  switch (sectionInfo.type) {
-    case HomeScreenSectionType.tabView:
-      BaseItemId libraryId;
-      if (sectionInfo.itemId == allLibraryPlaceholder) {
-        throw UnimplementedError();
-      } else if (sectionInfo.itemId == currentLibraryPlaceholder) {
-        final nullableLibraryId = ref.watch<BaseItemId?>(
-          FinampUserHelper.finampCurrentUserProvider.select((value) => value?.currentView?.id),
-        );
-        if (nullableLibraryId == null) {
-          return [];
-        } else {
-          libraryId = nullableLibraryId;
-        }
-      } else {
-        libraryId = sectionInfo.itemId as BaseItemId;
-      }
-
-      // TODO refactor so we only need to provide the id?
-      final library = await ref.watch(itemByIdProvider(libraryId).future);
-      if (library == null) {
-        return [];
-      }
-      final genreFilter = sectionInfo.sortAndFilterConfiguration.filters.firstWhereOrNull(
-        (x) => x.type == ItemFilterType.genreFilter,
-      );
-      final searchFilter = sectionInfo.sortAndFilterConfiguration.filters.firstWhereOrNull(
-        (x) => x.type == ItemFilterType.searchTerm,
-      );
-      return jellyfinApiHelper.getItems(
-        libraryFilter: library,
-        parentItem: sectionInfo.contentType == ContentType.playlists ? null : library,
-        includeItemTypes: [sectionInfo.contentType.itemType?.jellyfinName].join(","),
-        sortBy: sectionInfo.sortAndFilterConfiguration.sortBy.jellyfinName(sectionInfo.contentType),
-        sortOrder: sectionInfo.sortAndFilterConfiguration.sortOrder.toString(),
-        searchTerm: searchFilter?.extraString.trim(),
-        filters: sectionInfo.sortAndFilterConfiguration.filters
-            .map(
-              (filter) => switch (filter.type) {
-                ItemFilterType.isFavorite => "IsFavorite",
-                ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
-                // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
-                ItemFilterType.startsWithCharacter =>
-                  throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
-                ItemFilterType.genreFilter => null,
-                ItemFilterType.searchTerm => null,
-                ItemFilterType.isUnplayed => "IsUnplayed",
-              },
-            )
-            .nonNulls
-            .join(","),
-        startIndex: sectionInfo.sortAndFilterConfiguration.sortBy == SortBy.random ? 0 : startIndex,
-        limit: limit,
-        //isFavorite:
-        //(widget.tabContentType.itemType == BaseItemDtoType.genre &&
-        //    sortAndFilterConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite))
-        //     ? true
-        //    : null,
-        artistType: switch (sectionInfo.contentType) {
-          ContentType.albumArtists => ArtistType.albumArtist,
-          ContentType.performingArtists => ArtistType.artist,
-          _ => null,
-        },
-        genreFilter: genreFilter?.extraBaseItem.id,
-      );
-    case HomeScreenSectionType.collection:
-      // TODO should tabviews be collections with library parents?  Or does that just make our job harder?
-      // TODO we need to actually respect limit/offset for playback and display to work
-      final baseItem = await ref.watch(itemByIdProvider(sectionInfo.itemId! as BaseItemId).future);
-      if (baseItem == null) {
-        return [];
-      }
-      switch (BaseItemDtoType.fromItem(baseItem)) {
-        case BaseItemDtoType.artist:
-          // This collection type currently does not support offsets.
-          if (startIndex > 0) {
-            return [];
-          }
-          // TODO allow filters and whatnot to be applied?
-          return ref.watch(getArtistTracksProvider(artist: baseItem).future);
-        case BaseItemDtoType.genre:
-          // This collection type currently does not support offsets.
-          if (startIndex > 0) {
-            return [];
-          }
-          return ref.watch(
-            loadHomeSectionItemsProvider(
-              sectionInfo: HomeScreenSectionConfiguration(
-                type: HomeScreenSectionType.tabView,
-                contentType: ContentType.tracks,
-                sortAndFilterConfiguration: sectionInfo.sortAndFilterConfiguration.copyWith(genreFilter: baseItem),
-                itemId: sectionInfo.itemId,
-              ),
-              startIndex: startIndex,
-              limit: limit,
-            ).future,
-          );
-        case BaseItemDtoType.album:
-        case BaseItemDtoType.playlist:
-          // This collection type currently does not support offsets.
-          if (startIndex > 0) {
-            return [];
-          }
-          // Only show playable tracks in home screen sections
-          return ref
-              .watch(getSortedPlaylistTracksProvider(baseItem, sectionInfo.sortAndFilterConfiguration).future)
-              .then((x) => x.$2);
-        // TODO make real collection provider when removing collection section type code in refactor.
-        case BaseItemDtoType.collection:
-          return jellyfinApiHelper.getItems(
-            parentItem: baseItem,
-            recursive: false, //!!! prevent loading tracks and albums from inside the collection items
-            sortBy: sectionInfo.sortAndFilterConfiguration.sortBy.jellyfinName(sectionInfo.contentType),
-            sortOrder: sectionInfo.sortAndFilterConfiguration.sortOrder.toString(),
-            filters: sectionInfo.sortAndFilterConfiguration.filters
-                .map(
-                  (filter) => switch (filter.type) {
-                    ItemFilterType.isFavorite => "IsFavorite",
-                    ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
-                    // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
-                    ItemFilterType.startsWithCharacter =>
-                      throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
-                    ItemFilterType.genreFilter => throw UnimplementedError(),
-                    ItemFilterType.searchTerm => throw UnimplementedError(),
-                    ItemFilterType.isUnplayed => "IsUnplayed",
-                  },
-                )
-                .nonNulls
-                .join(","),
-            includeItemTypes: sectionInfo.contentType.itemType?.jellyfinName,
-            startIndex: startIndex,
-            limit: limit,
-          );
-        case _:
-          throw UnimplementedError();
-      }
-    case HomeScreenSectionType.queues:
-      throw UnimplementedError("Queue sections should be handled directly");
+  BaseItemId libraryId;
+  if (request.library == allLibraryPlaceholder) {
+    throw UnimplementedError();
+  } else if (request.library == currentLibraryPlaceholder) {
+    final nullableLibraryId = ref.watch<BaseItemId?>(
+      FinampUserHelper.finampCurrentUserProvider.select((value) => value?.currentView?.id),
+    );
+    if (nullableLibraryId == null) {
+      return [];
+    } else {
+      libraryId = nullableLibraryId;
+    }
+  } else {
+    libraryId = request.library as BaseItemId;
   }
+
+  // TODO refactor so we only need to provide the id?
+  final library = await ref.watch(itemByIdProvider(libraryId).future);
+  if (library == null) {
+    return [];
+  }
+  final genreFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter);
+  final searchFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.searchTerm);
+  return jellyfinApiHelper.getItems(
+    libraryFilter: library,
+    parentItem: request.tab == ContentType.playlists ? null : library,
+    includeItemTypes: [request.tab.itemType?.jellyfinName].join(","),
+    sortBy: request.sortConfig.sortBy.jellyfinName(request.tab),
+    sortOrder: request.sortConfig.sortOrder.toString(),
+    searchTerm: searchFilter?.extraString.trim(),
+    filters: request.sortConfig.filters
+        .map(
+          (filter) => switch (filter.type) {
+            ItemFilterType.isFavorite => "IsFavorite",
+            ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
+            // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
+            ItemFilterType.startsWithCharacter =>
+              throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
+            ItemFilterType.genreFilter => null,
+            ItemFilterType.searchTerm => null,
+            ItemFilterType.isUnplayed => "IsUnplayed",
+          },
+        )
+        .nonNulls
+        .join(","),
+    startIndex: request.sortConfig.sortBy == SortBy.random ? 0 : startIndex,
+    limit: limit,
+    //isFavorite:
+    //(widget.tabContentType.itemType == BaseItemDtoType.genre &&
+    //    sortAndFilterConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite))
+    //     ? true
+    //    : null,
+    artistType: switch (request.tab) {
+      ContentType.albumArtists => ArtistType.albumArtist,
+      ContentType.performingArtists => ArtistType.artist,
+      _ => null,
+    },
+    genreFilter: genreFilter?.extraBaseItem.id,
+  );
 }
 
 Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
   required Ref ref,
-  required HomeScreenSectionConfiguration sectionInfo,
+  required MusicScreenPlayable request,
   int startIndex = 0,
   int limit = 10,
 }) async {
@@ -381,17 +291,13 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
   List<DownloadStub> offlineItems;
   List<BaseItemDto> items;
 
-  final searchFilter = sectionInfo.sortAndFilterConfiguration.filters.firstWhereOrNull(
-    (x) => x.type == ItemFilterType.searchTerm,
-  );
-  final genreFilter = sectionInfo.sortAndFilterConfiguration.filters.firstWhereOrNull(
-    (x) => x.type == ItemFilterType.genreFilter,
-  );
+  final searchFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.searchTerm);
+  final genreFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter);
 
   BaseItemId? libraryId;
-  if (sectionInfo.itemId == allLibraryPlaceholder) {
+  if (request.library == allLibraryPlaceholder) {
     libraryId = null;
-  } else if (sectionInfo.itemId == currentLibraryPlaceholder) {
+  } else if (request.library == currentLibraryPlaceholder) {
     libraryId = ref.watch<BaseItemId?>(
       FinampUserHelper.finampCurrentUserProvider.select((value) => value?.currentView?.id),
     );
@@ -399,161 +305,47 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
       return [];
     }
   } else {
-    libraryId = sectionInfo.itemId as BaseItemId;
+    libraryId = request.library as BaseItemId;
   }
 
-  switch (sectionInfo.type) {
-    // case HomeScreenSectionType.listenAgain:
-    //   //FIXME this seems to also return metadata-only albums which don't have any downloaded children
-    //   offlineItems = await downloadsService.getAllCollections(
-    //     includeItemTypes: [BaseItemDtoType.album, BaseItemDtoType.playlist], //FIXME support allowing multiple types
-    //     fullyDownloaded: settings.onlyShowFullyDownloaded,
-    //     viewFilter: finampUserHelper.currentUser?.currentViewId,
-    //     childViewFilter: null,
-    //     nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
-    //     onlyFavorites: settings.onlyShowFavorites && settings.trackOfflineFavorites,
-    //   );
-
-    //   items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
-    //   items = sortItems(items, SortBy.datePlayed, SortOrder.descending);
-    //   break;
-
-    // case HomeScreenSectionType.newlyAdded:
-    //   offlineItems = await downloadsService.getAllCollections(
-    //     includeItemTypes: [BaseItemDtoType.album, BaseItemDtoType.playlist], //FIXME support allowing multiple types
-    //     fullyDownloaded: settings.onlyShowFullyDownloaded,
-    //     viewFilter: finampUserHelper.currentUser?.currentViewId,
-    //     childViewFilter: null,
-    //     nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
-    //     onlyFavorites: settings.onlyShowFavorites && settings.trackOfflineFavorites,
-    //   );
-    //   items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
-    //   items = sortItems(items, SortBy.dateCreated, SortOrder.descending);
-    //   break;
-    // case HomeScreenSectionType.favoriteArtists:
-    //   offlineItems = await downloadsService.getAllCollections(
-    //     includeItemTypes: [BaseItemDtoType.artist],
-    //     fullyDownloaded: settings.onlyShowFullyDownloaded,
-    //     viewFilter: finampUserHelper.currentUser?.currentViewId,
-    //     childViewFilter: null,
-    //     nullableViewFilters: false,
-    //     onlyFavorites: settings.onlyShowFavorites && settings.trackOfflineFavorites,
-    //   );
-    //   items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
-    //   items = sortItems(items, SortBy.datePlayed, SortOrder.descending);
-    //   break;
-    case HomeScreenSectionType.tabView:
-      //FIXME this seems to also return metadata-only albums which don't have any downloaded children
-      if (sectionInfo.contentType == ContentType.tracks) {
-        // tracks are not stored as collections, so we need to get them differently
-        offlineItems = await downloadsService.getAllTracks(
-          nameFilter: searchFilter?.extraString.trim(),
-          viewFilter: libraryId,
-          nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
-          onlyFavorites: sectionInfo.sortAndFilterConfiguration.filters.any(
-            (filter) => filter.type == ItemFilterType.isFavorite,
-          ),
-          genreFilter: genreFilter?.extraBaseItem.id,
-        );
-      } else {
-        offlineItems = await downloadsService.getAllCollections(
-          nameFilter: searchFilter?.extraString.trim(),
-          includeItemTypes: [
-            sectionInfo.contentType.itemType ?? BaseItemDtoType.album,
-          ], //FIXME support allowing multiple types
-          // TODO use the filter config for this instead of global(several places)?
-          fullyDownloaded: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
-          viewFilter: libraryId,
-          childViewFilter: [ContentType.albums, ContentType.playlists].contains(sectionInfo.contentType)
-              ? null
-              : libraryId,
-          nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
-          onlyFavorites: sectionInfo.sortAndFilterConfiguration.filters.any(
-            (filter) => filter.type == ItemFilterType.isFavorite,
-          ),
-          infoForType: switch (sectionInfo.contentType) {
-            ContentType.albumArtists => BaseItemDtoType.album,
-            ContentType.performingArtists => BaseItemDtoType.track,
-            _ => null,
-          },
-          genreFilter: sectionInfo.contentType == ContentType.playlists ? null : genreFilter?.extraBaseItem.id,
-        );
-      }
-      break;
-    case HomeScreenSectionType.collection:
-      // TODO rearrange stuff.  This is all copied from online version except collection handling.
-      final baseItem = ref.watch(itemByIdProvider(libraryId!)).valueOrNull;
-      if (baseItem == null) {
-        return [];
-      }
-      switch (BaseItemDtoType.fromItem(baseItem)) {
-        case BaseItemDtoType.artist:
-          // This collection type currently does not support offsets.
-          if (startIndex > 0) {
-            return [];
-          }
-          // TODO allow filters and whatnot to be applied?
-          return ref.watch(getArtistTracksProvider(artist: baseItem).future);
-        case BaseItemDtoType.genre:
-          // This collection type currently does not support offsets.
-          if (startIndex > 0) {
-            return [];
-          }
-          return ref.watch(
-            loadHomeSectionItemsProvider(
-              sectionInfo: HomeScreenSectionConfiguration(
-                type: HomeScreenSectionType.tabView,
-                contentType: ContentType.tracks,
-                sortAndFilterConfiguration: sectionInfo.sortAndFilterConfiguration.copyWith(genreFilter: baseItem),
-                itemId: sectionInfo.itemId,
-              ),
-              startIndex: startIndex,
-              limit: limit,
-            ).future,
-          );
-        case BaseItemDtoType.album:
-        case BaseItemDtoType.playlist:
-          // This collection type currently does not support offsets.
-          if (startIndex > 0) {
-            return [];
-          }
-          // Only show playable tracks in home screen sections
-          return ref
-              .watch(getSortedPlaylistTracksProvider(baseItem, sectionInfo.sortAndFilterConfiguration).future)
-              .then((x) => x.$2);
-        case BaseItemDtoType.collection:
-          // TODO I don't think the downloads system can actually handle collections?
-          offlineItems = await downloadsService.getAllCollections(
-            relatedTo: baseItem,
-            fullyDownloaded: sectionInfo.sortAndFilterConfiguration.filters.any(
-              (filter) => filter.type == ItemFilterType.isFullyDownloaded,
-            ),
-            //TODO collections are cross-library - should we really filter by library here?
-            viewFilter: libraryId,
-            childViewFilter: null,
-            nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
-            onlyFavorites:
-                sectionInfo.sortAndFilterConfiguration.filters.any(
-                  (filter) => filter.type == ItemFilterType.isFavorite,
-                ) &&
-                ref.watch(finampSettingsProvider.trackOfflineFavorites),
-          );
-        case _:
-          throw UnimplementedError();
-      }
-    case HomeScreenSectionType.queues:
-      throw UnimplementedError("Queue sections should be handled directly");
+  //FIXME this seems to also return metadata-only albums which don't have any downloaded children
+  if (request.tab == ContentType.tracks) {
+    // tracks are not stored as collections, so we need to get them differently
+    offlineItems = await downloadsService.getAllTracks(
+      nameFilter: searchFilter?.extraString.trim(),
+      viewFilter: libraryId,
+      nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
+      onlyFavorites: request.sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
+      genreFilter: genreFilter?.extraBaseItem.id,
+    );
+  } else {
+    offlineItems = await downloadsService.getAllCollections(
+      nameFilter: searchFilter?.extraString.trim(),
+      includeItemTypes: [request.tab.itemType ?? BaseItemDtoType.album], //FIXME support allowing multiple types
+      // TODO use the filter config for this instead of global(several places)?
+      fullyDownloaded: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
+      viewFilter: libraryId,
+      childViewFilter: [ContentType.albums, ContentType.playlists].contains(request.tab) ? null : libraryId,
+      nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
+      onlyFavorites: request.sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
+      infoForType: switch (request.tab) {
+        ContentType.albumArtists => BaseItemDtoType.album,
+        ContentType.performingArtists => BaseItemDtoType.track,
+        _ => null,
+      },
+      genreFilter: request.tab == ContentType.playlists ? null : genreFilter?.extraBaseItem.id,
+    );
   }
 
   items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
 
-  var sortBy = sectionInfo.sortAndFilterConfiguration.sortBy;
+  var sortBy = request.sortConfig.sortBy;
   // PlayCount and Last Played are not representative in Offline Mode
   // so we disable it and overwrite it with the Sort Name if it was selected
   if (sortBy == SortBy.playCount || sortBy == SortBy.datePlayed) {
     sortBy = SortBy.sortName;
   }
-  items = sortItems(items, sortBy, sectionInfo.sortAndFilterConfiguration.sortOrder);
+  items = sortItems(items, sortBy, request.sortConfig.sortOrder);
 
   // Playlists use different genreIds due to their cross-library functionality.
   // In Online Mode, the api still returns correct data, but in Offline Mode,
@@ -561,7 +353,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
   // "cross-library-genreIds", so we won't get any results. Therefore,
   // we have to load all playlists and manually filter by genreName.
 
-  if (items.isNotEmpty && genreFilter != null && sectionInfo.contentType == ContentType.playlists) {
+  if (items.isNotEmpty && genreFilter != null && request.tab == ContentType.playlists) {
     items = filterItemsByGenreName(items, genreFilter.extraBaseItem);
   }
 
@@ -736,260 +528,48 @@ List<BaseItemDto> filterItemsByGenreName(List<BaseItemDto> items, BaseItemDto ge
 }
 
 @riverpod
-Future<List<BaseItemDto>> globalSearch(Ref ref, String searchTerm, {required bool includeTracks}) async {
-  final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
-  final baseFuture = jellyfinApiHelper.getItems(
-    includeItemTypes: [
-      BaseItemDtoType.album.jellyfinName,
-      BaseItemDtoType.playlist.jellyfinName,
-      BaseItemDtoType.collection.jellyfinName,
-      if (includeTracks) BaseItemDtoType.track.jellyfinName,
-    ].join(","),
-    recursive: true,
-    searchTerm: searchTerm,
-    limit: 30,
-  );
-  // TODO handle album artists?
-  final artistFuture = jellyfinApiHelper.getItems(
-    includeItemTypes: [BaseItemDtoType.artist.jellyfinName].join(","),
-    recursive: false,
-    searchTerm: searchTerm,
-    limit: 10,
-  );
-  // TODO handle genres for all libraries?  Or just use current?  We could just warn on no/low results?
-  final genreFuture = jellyfinApiHelper.getItems(
-    parentItem: GetIt.instance<FinampUserHelper>().currentUser!.currentView!,
-    includeItemTypes: [BaseItemDtoType.genre.jellyfinName].join(","),
-    recursive: false,
-    searchTerm: searchTerm,
-    limit: 10,
-  );
-  final values = await Future.wait([baseFuture, artistFuture, genreFuture]);
-  final out = <BaseItemDto>[];
-  for (var val in values) {
-    if (val != null) {
-      out.addAll(val);
-    }
-  }
-  return out;
-}
-
-@Riverpod(keepAlive: true)
-Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSectionConfiguration section) async {
-  final context = GlobalSnackbar.materialAppScaffoldKey.currentContext!;
-  switch (section.type) {
-    case HomeScreenSectionType.tabView:
-      final source = QueueItemSource.rawId(
-        type: QueueItemSourceType.homeScreenSection,
-        name: QueueItemSourceName(
-          type: QueueItemSourceNameType.homeScreenSection,
-          localizationParameter: section.presetType?.name,
-          pretranslatedName: section.getTitle(context),
-        ),
-        id: section.toLocalisedString(context),
-      );
-      return MusicScreenPlayable(
-        tab: section.contentType,
-        library: section.itemId,
-        source: source,
-        sortConfig: section.sortAndFilterConfiguration,
-      );
-    case HomeScreenSectionType.collection:
-      final item = await ref.watch(itemByIdProvider(section.itemId as BaseItemId).future);
-      // TODO better source
-      if (item == null) {
-        return PrecalculatedPlayable(
-          source: QueueItemSource(
-            type: QueueItemSourceType.unknown,
-            name: QueueItemSourceName(
-              type: QueueItemSourceNameType.preTranslated,
-              pretranslatedName: context.l10n.errorLoadingHomeSection,
-            ),
-            id: section.itemId as BaseItemId,
-          ),
-          tracks: [],
-        );
-      }
-      // source for collections has item added, otherwise all 3 sources are identical
-      final source = QueueItemSource.rawId(
-        type: QueueItemSourceType.homeScreenSection,
-        name: QueueItemSourceName(
-          type: QueueItemSourceNameType.homeScreenSection,
-          localizationParameter: section.presetType?.name,
-          pretranslatedName: section.getTitle(context),
-        ),
-        item: item,
-        id: section.toLocalisedString(context),
-      );
-      switch (BaseItemDtoType.fromItem(item)) {
-        case BaseItemDtoType.album:
-          return Album(item, source: source);
-        case BaseItemDtoType.playlist:
-          return Playlist(item, source: source, sortConfig: section.sortAndFilterConfiguration);
-        case BaseItemDtoType.noItem:
-        case BaseItemDtoType.artist:
-        case BaseItemDtoType.genre:
-        case BaseItemDtoType.track:
-        case BaseItemDtoType.library:
-        case BaseItemDtoType.folder:
-        case BaseItemDtoType.musicVideo:
-        case BaseItemDtoType.audioBook:
-        case BaseItemDtoType.tvEpisode:
-        case BaseItemDtoType.video:
-        case BaseItemDtoType.movie:
-        case BaseItemDtoType.trailer:
-        case BaseItemDtoType.collection:
-        case BaseItemDtoType.unknown:
-          throw UnimplementedError();
-      }
-    case HomeScreenSectionType.queues:
-      final source = QueueItemSource.rawId(
-        type: QueueItemSourceType.homeScreenSection,
-        name: QueueItemSourceName(
-          type: QueueItemSourceNameType.homeScreenSection,
-          localizationParameter: section.presetType?.name,
-          pretranslatedName: section.getTitle(context),
-        ),
-        id: section.toLocalisedString(context),
-      );
-      return LatestQueues(sortConfig: section.sortAndFilterConfiguration, source: source);
-  }
-}
-
-@riverpod
-Future<PlayableSlice> getPlayerSlice(
-  Ref ref, {
-  required FinampPlayable item,
-  required int startingOffset,
-  int? limit,
-}) async {
-  switch (item) {
-    case FinampUnpagedPlayable<Track>():
-      final items = (await ref.watch(getChildTracksProvider(item: item).future)).map((x) => x.item).toList();
-      return PlayableSlice(
-        items: items,
-        startingIndex: startingOffset,
-        source: item.source,
-        shuffleState: SliceShuffleState.linear,
-      );
-    case Track():
-      return PlayableSlice(
-        items: [item.item],
-        startingIndex: 0,
-        source: item.source,
-        shuffleState: SliceShuffleState.linear,
-      );
-    case InstantMix():
-      throw UnsupportedError("Music screen should not be including instant mix.");
-    case MusicScreenPlayable<FinampPlayableItem>():
-      bool hardLimit = true;
-      if (limit == null) {
-        limit = ref.watch(finampSettingsProvider.trackShuffleItemCount);
-        hardLimit = false;
-      }
-      int preTracks = 0;
-      // If we are working directly with tracks, add some extra to flesh out the previous tracks section
-      // TODO merge all this into _getPagedchildTracks so we can get pretracks in other scenarios?
-      if (item is MusicScreenPlayable<Track>) {
-        preTracks = min(min(20, (limit! / 10.0).ceil()), startingOffset);
-      }
-
-      final items = await _getPagedChildTracks(
-        ref,
-        item: item,
-        startingChild: startingOffset - preTracks,
-        trackLimit: limit! + preTracks,
-        hardLimit: hardLimit,
-      );
-
-      return PlayableSlice(
-        items: items,
-        startingIndex: preTracks,
-        source: item.source,
-        shuffleState: SliceShuffleState.linear,
-      );
-    case PlayableQueue():
-      // TODO: add special queue slice
-      throw UnimplementedError();
-  }
-}
-
-Future<List<BaseItemDto>> _getPagedChildTracks(
-  Ref ref, {
-  required MusicScreenPlayable<FinampPlayableItem> item,
-  required int startingChild,
-  required int trackLimit,
-  required bool hardLimit,
-}) async {
-  // Drop normal child size by half to reduce the odds of undershooting.  Clamps to a minimum expected child size of one.
-  int childLimit = (trackLimit / min(1.0, item.normalChildSize / 2.0)).ceil();
-  final pager = ref.read(pagedContentProvider(item).notifier);
-  final children = await pager.loadSlice(startingChild, childLimit);
-  final output = <BaseItemDto>[];
-  for (final rawChild in children) {
-    // We require a MusicScreenPlayable<FinampPlayableItem> as input, so all children are guaranteed to be FinampPlayableItems.
-    final child = rawChild as FinampPlayableItem;
-    switch (child) {
-      case FinampUnpagedDisplayable<Track> unpagged:
-        final tracks = await getChildTracks(ref, item: unpagged);
-        output.addAll(tracks.map((x) => x.item));
-      case Track track:
-        output.add(track.item);
-      case InstantMix():
-        throw UnsupportedError("Music screen should not be including instant mix.");
-    }
-    if (output.length > trackLimit) {
-      break;
-    }
-  }
-  return output.slice(0, hardLimit ? min(trackLimit, output.length) : null);
-}
-
-@riverpod
-Future<List<Track>> getChildTracks(Ref ref, {required FinampUnpagedDisplayable<Track> item}) async {
-  switch (item) {
-    case Album():
-      final items = await ref.watch(getAlbumOrPlaylistTracksProvider(item.item).future);
-      // TODO handle playable vs non-playable tracks better.  Maybe track + playableTrack types?
-      return items.$2.map((baseItem) => Track(baseItem, source: item.source)).toList();
-    case AlbumDisc():
-      return item.tracks.map((baseItem) => Track(baseItem, source: item.source)).toList();
-    case PrecalculatedPlayable():
-      return item.tracks.map((baseItem) => Track(baseItem, source: item.source)).toList();
-    case Playlist():
-      final items = await ref.watch(getSortedPlaylistTracksProvider(item.item, item.sortConfig).future);
-      return items.$2.map((baseItem) => Track(baseItem, source: item.source)).toList();
-    case GenericPlayableItem():
-      final items = await loadChildTracksFromBaseItem(item: item.item, sortConfig: item.sortConfig);
-      return items.map((baseItem) => Track(baseItem, source: item.source)).toList();
-  }
-}
-
-@riverpod
-Future<List<FinampDisplayableOrPlayable>> getChildren(
-  Ref ref, {
-  required FinampUnpagedDisplayable<FinampDisplayableOrPlayable> item,
-}) async {
-  switch (item) {
-    case FinampUnpagedDisplayable<Track>():
-      // TODO figure out how to get refreshing working for non MusicScreenPlayables
-      // Maybe we could have a refresh provider that takes a DisplayableOrPlayable and gets watched by everyone?
-      return await ref.watch(getChildTracksProvider(item: item).future);
-    case LatestQueues():
-      final queuesBox = Hive.box<FinampStorableQueueInfo>("Queues");
-      var queueMap = queuesBox.toMap();
-      queueMap.remove("latest");
-      var queueList = queueMap.values.toList();
-      queueList.sort((x, y) {
-        return switch (item.sortConfig.sortBy) {
-          SortBy.dateCreated || SortBy.datePlayed => x.creation.compareTo(y.creation),
-          // SortBy.runtime => x.runtime.compareTo(y.runtime), //TODO add support for sorting by runtime
-          _ => 0,
-        };
-      });
-      if (item.sortConfig.sortOrder == SortOrder.descending) {
-        queueList = queueList.reversed.toList();
-      }
-      return queueList.map((x) => PlayableQueue(queue: x, source: item.source)).toList();
+Future<List<BaseItemDto>?> getJellyfinCollection(
+  Ref ref,
+  BaseItemDto collection,
+  SortAndFilterConfiguration sortConfig,
+) async {
+  if (ref.watch(finampSettingsProvider.isOffline)) {
+    // TODO I don't think the downloads system can actually handle collections?
+    final stubs = await GetIt.instance<DownloadsService>().getAllCollections(
+      relatedTo: collection,
+      fullyDownloaded: sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFullyDownloaded),
+      //TODO collections are cross-library - should we really filter by library here?
+      //viewFilter: libraryId,
+      childViewFilter: null,
+      nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
+      onlyFavorites:
+          sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite) &&
+          ref.watch(finampSettingsProvider.trackOfflineFavorites),
+    );
+    return stubs.map((x) => x.baseItem).nonNulls.toList();
+  } else {
+    return GetIt.instance<JellyfinApiHelper>().getItems(
+      parentItem: collection,
+      recursive: false, //!!! prevent loading tracks and albums from inside the collection items
+      sortBy: sortConfig.sortBy.jellyfinName(null),
+      sortOrder: sortConfig.sortOrder.toString(),
+      filters: sortConfig.filters
+          .map(
+            (filter) => switch (filter.type) {
+              ItemFilterType.isFavorite => "IsFavorite",
+              ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
+              // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
+              ItemFilterType.startsWithCharacter =>
+                throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
+              ItemFilterType.genreFilter => throw UnimplementedError(),
+              ItemFilterType.searchTerm => throw UnimplementedError(),
+              ItemFilterType.isUnplayed => "IsUnplayed",
+            },
+          )
+          .nonNulls
+          .join(","),
+      // TODO allow filtering collection child types?
+      //includeItemTypes: sectionInfo.contentType.itemType?.jellyfinName,
+    );
   }
 }

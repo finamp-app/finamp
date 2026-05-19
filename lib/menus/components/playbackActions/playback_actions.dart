@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../services/music_screen_provider.dart';
+import '../../../services/music_providers.dart';
 
 Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
   required BuildContext context,
@@ -23,7 +23,7 @@ Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
   bool preferPrependingToNextUp = false,
   FinampQueueItem? queueItem,
 }) {
-  final BaseItemDtoType? itemType = item is FinampPlayableItem ? BaseItemDtoType.fromItem(item.item) : null;
+  final BaseItemDtoType? itemType = item is FinampPlayableDto ? BaseItemDtoType.fromItem(item.item) : null;
 
   if (itemType == BaseItemDtoType.track) {
     return {
@@ -627,7 +627,7 @@ class ShuffleAlbumsNextPlaybackAction extends ConsumerWidget {
     final queueService = GetIt.instance<QueueService>();
     // This should be either an artist or genre, so it should always have an item.
     // TODO remove these casts - artist+genre union type?  Or is that to awkward?
-    final baseItem = (item as FinampPlayableItem).item;
+    final baseItem = (item as FinampPlayableDto).item;
     final sortable = (item as FinampSortable).sortConfig;
 
     return PlaybackAction(
@@ -679,7 +679,7 @@ class ShuffleAlbumsToNextUpPlaybackAction extends ConsumerWidget {
     final queueService = GetIt.instance<QueueService>();
     // This should be either an artist or genre, so it should always have an item.
     // TODO remove these casts - artist+genre union type?  Or is that to awkward?
-    final baseItem = (item as FinampPlayableItem).item;
+    final baseItem = (item as FinampPlayableDto).item;
     final sortable = (item as FinampSortable).sortConfig;
 
     return PlaybackAction(
@@ -734,7 +734,7 @@ class ShuffleAlbumsToQueuePlaybackAction extends ConsumerWidget {
     final queueService = GetIt.instance<QueueService>();
     // This should be either an artist or genre, so it should always have an item.
     // TODO remove these casts - artist+genre union type?  Or is that to awkward?
-    final baseItem = (item as FinampPlayableItem).item;
+    final baseItem = (item as FinampPlayableDto).item;
     final sortable = (item as FinampSortable).sortConfig;
 
     return PlaybackAction(

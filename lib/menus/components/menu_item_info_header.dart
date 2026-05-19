@@ -32,7 +32,7 @@ Widget _getMenuHeaderForItemType({
 }) {
   return switch (item) {
     AlbumDisc() => AlbumInfo(item: item, condensed: condensed, features: features),
-    FinampPlayableItem(item: final baseItem) => switch (BaseItemDtoType.fromItem(baseItem)) {
+    FinampPlayableDto(item: final baseItem) => switch (BaseItemDtoType.fromItem(baseItem)) {
       BaseItemDtoType.track => TrackInfo(item: baseItem, condensed: condensed, features: features),
       BaseItemDtoType.album => AlbumInfo(item: item, condensed: condensed, features: features),
       BaseItemDtoType.playlist => PlaylistInfo(item: baseItem, condensed: condensed, features: features),

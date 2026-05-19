@@ -1921,7 +1921,7 @@ enum BaseItemDtoType {
   // TODO stopgap solution until snackbars fate is decided
   static BaseItemDtoType? fromPlayableItem(FinampPlayable item) {
     switch (item) {
-      case FinampPlayableItem():
+      case FinampPlayableDto():
         return BaseItemDtoType.fromItem(item.item);
       case _:
         return null;

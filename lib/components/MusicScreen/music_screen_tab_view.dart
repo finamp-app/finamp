@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/MusicScreen/item_card.dart';
+import 'package:finamp/components/QueueRestoreScreen/queue_restore_tile.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
@@ -40,8 +41,8 @@ class MusicScreenTabView extends ConsumerStatefulWidget {
 
   SortAndFilterConfiguration get sortConfig => displayable is FinampSortable
       ? (displayable as FinampSortable).sortConfig
-      : displayable is FinampPlayableItem
-      ? SortAndFilterConfiguration.defaultForItem((displayable as FinampPlayableItem).item)
+      : displayable is FinampPlayableDto
+      ? SortAndFilterConfiguration.defaultForItem((displayable as FinampPlayableDto).item)
       : SortAndFilterConfiguration.defaultSort;
 
   ContentType? get contentType => switch (displayable) {
@@ -118,7 +119,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     for (var i = 0; i < itemList.length; i++) {
       String sortName;
       switch (itemList[i]) {
-        case FinampPlayableItem(item: var baseItem):
+        case FinampPlayableDto(item: var baseItem):
           switch (tabSortBy) {
             case SortBy.albumArtist:
               sortName = baseItem.albumArtist ?? "";
@@ -305,15 +306,15 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                                   ? (widget.displayable as FinampPlayable)
                                   : item,
                             ),
-                            FinampPlayableItem() => ItemWrapper(
+                            FinampPlayableDto() => ItemWrapper(
                               key: ValueKey(item.item.id),
                               item: item.item,
                               genreFilter: widget.sortConfig.genreFilter,
                               adaptiveAdditionalInfoSortBy: widget.sortConfig.sortBy,
                               showFavoriteIconOnlyWhenFilterDisabled: true,
                             ),
-                            PlayableQueue() => throw UnimplementedError(),
-                            LatestQueues() || PrecalculatedPlayable() || MusicScreenPlayable<FinampPlayableItem>() =>
+                            PlayableQueue() => QueueRestoreTile(info: item.queue),
+                            LatestQueues() || PrecalculatedPlayable() || MusicScreenPlayable<FinampPlayableDto>() =>
                               throw UnsupportedError("Unsupported type $item"),
                           },
                         );
@@ -352,7 +353,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
             builderDelegate: PagedChildBuilderDelegate<FinampDisplayableOrPlayable>(
               itemBuilder: (context, item, index) {
                 // We only allow grid mode for FinampDisplayable<FinampPlayableItem>
-                final baseItem = (item as FinampPlayableItem).item;
+                final baseItem = (item as FinampPlayableDto).item;
                 return CachedBuilder(
                   key: ValueKey(baseItem.id),
                   cacheKey: (baseItem.id, index),

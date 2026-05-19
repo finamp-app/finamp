@@ -39,8 +39,8 @@ sealed class FinampPagedPlayable<ChildType extends FinampPlayable> extends Finam
   const FinampPagedPlayable({required super.source});
 }
 
-sealed class FinampPlayableItem extends FinampPlayable {
-  const FinampPlayableItem(this.item, {required super.source});
+sealed class FinampPlayableDto extends FinampPlayable {
+  const FinampPlayableDto(this.item, {required super.source});
 
   final BaseItemDto item;
 
@@ -49,7 +49,7 @@ sealed class FinampPlayableItem extends FinampPlayable {
 
   @override
   bool equalsHelperChain(Object other) {
-    return other is FinampPlayableItem && item == other.item && super.equalsHelperChain(other);
+    return other is FinampPlayableDto && item == other.item && super.equalsHelperChain(other);
   }
 
   @override
@@ -130,7 +130,7 @@ enum SliceShuffleState { preShuffled, playerShuffled, linear }
 //
 
 // As of right now, we do not apply paging for any item types, only the music screens.
-sealed class _SortableItem<ChildType extends FinampPlayableItem> extends FinampPlayableItem
+sealed class _SortableItem<ChildType extends FinampPlayableDto> extends FinampPlayableDto
     implements FinampSortable<ChildType>, FinampUnpagedDisplayable<ChildType>, FinampUnpagedPlayable<ChildType> {
   _SortableItem(super.item, {required super.source, required this.sortConfig})
     : assert(() {

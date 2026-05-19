@@ -21,7 +21,7 @@ import 'package:get_it/get_it.dart';
 import '../../models/music_models.dart';
 import '../../services/downloads_service.dart';
 import '../../services/finamp_settings_helper.dart';
-import '../../services/music_screen_provider.dart';
+import '../../services/music_providers.dart';
 import '../../services/queue_service.dart';
 import '../../services/theme_provider.dart';
 import '../album_image.dart';
@@ -210,7 +210,7 @@ Future<bool> onConfirmPlayableDismiss({
 
   final sourceItemType = switch (sourceItem) {
     AlbumDisc() => "disc",
-    FinampPlayableItem() => BaseItemDtoType.fromItem(sourceItem.item).name,
+    FinampPlayableDto() => BaseItemDtoType.fromItem(sourceItem.item).name,
     _ => sourceItem.source.name.getLocalized(context),
   };
 

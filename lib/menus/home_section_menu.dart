@@ -7,10 +7,11 @@ import 'package:finamp/menus/components/menu_item_info_header.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/music_models.dart';
-import 'package:finamp/services/music_screen_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+
+import '../services/music_providers.dart';
 
 const Duration albumMenuDefaultAnimationDuration = Duration(milliseconds: 750);
 const Curve albumMenuDefaultInCurve = Curves.easeOutCubic;

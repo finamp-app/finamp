@@ -32,6 +32,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:logging/logging.dart';
 
 import '../../extensions/localizations.dart';
+import '../../services/music_providers.dart';
 
 final _homeScreenLogger = Logger("HomeScreen");
 
@@ -45,11 +46,10 @@ class HomeScreenContent extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
-  void _refresh() {
+  void _refresh() async {
     for (var section in ref.watch(finampSettingsProvider.homeScreenConfiguration).sections) {
-      ref.invalidate(
-        loadHomeSectionItemsProvider(sectionInfo: section, startIndex: 0, limit: homeScreenSectionItemLimit),
-      );
+      final displayable = await ref.watch(resolveSectionProvider(section).future);
+      ref.read(pagedContentProvider(displayable).notifier).refresh();
     }
   }
 
@@ -286,7 +286,7 @@ class HomeScreenSection extends ConsumerWidget {
                       await queueService.startPlayback(
                         items: (await ref.read(getPlayerSliceProvider(item: playable, startingOffset: 0).future)).items,
                         source: playable.source,
-                        order: FinampPlaybackOrder.linear,
+                        order: FinampPlaybackOrder.shuffled,
                       );
                     },
                     label: AppLocalizations.of(context)!.shuffleButtonLabel,
@@ -311,17 +311,12 @@ class HomeScreenSection extends ConsumerWidget {
         onDismiss: sectionInfo.contentType != ContentType.tracks
             ? null
             : (followUpAction) async {
-                final items = await ref.read(
-                  loadHomeSectionItemsProvider(
-                    sectionInfo: sectionInfo,
-                    startIndex: 0,
-                    limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
-                  ).future,
-                );
+                final playable = sectionDisplayable as FinampPlayable;
+                final items = (await ref.read(getPlayerSliceProvider(item: playable, startingOffset: 0).future)).items;
                 return await onConfirmPlayableDismiss(
                   followUpAction: followUpAction,
-                  tracks: items ?? [],
-                  sourceItem: (await ref.read(resolveSectionProvider(sectionInfo).future)) as FinampPlayable,
+                  tracks: items,
+                  sourceItem: playable,
                 );
               },
         sectionContentSliver: SliverToBoxAdapter(child: HomeScreenSectionContent(sectionInfo: sectionInfo)),
@@ -384,7 +379,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
               }
               final index = rawIndex - 1;
               switch (items[index]) {
-                case FinampPlayableItem item:
+                case FinampPlayableDto item:
                   return ItemWrapper(
                     key: ValueKey(item.item.id),
                     item: item.item,
@@ -397,7 +392,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
                   return HomeScreenQueueTile(key: ValueKey(queue.queue.creation), info: queue.queue);
                 case LatestQueues():
                 case PrecalculatedPlayable():
-                case MusicScreenPlayable<FinampPlayableItem>():
+                case MusicScreenPlayable<FinampPlayableDto>():
                   throw UnsupportedError("Unexpected item ${items[index]} in home screen section");
               }
             },
