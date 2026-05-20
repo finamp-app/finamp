@@ -22,15 +22,17 @@ void errorSnackbar(dynamic error, BuildContext context) => GlobalSnackbar.error(
 
 class GlobalSnackbar {
   /// Prefer using state and localization getters.  Avoid directly accessing context.
-  static final GlobalKey<ScaffoldMessengerState> materialAppScaffoldKey = LabeledGlobalKey("MaterialApp Scaffold");
+  @Deprecated("Prefer using state and localization getters.  Avoid directly accessing context.")
+  static final GlobalKey<ScaffoldMessengerState> rawMaterialAppScaffoldKey = LabeledGlobalKey("MaterialApp Scaffold");
 
   /// Prefer using state and localization getters.  Avoid directly accessing context.
-  static final GlobalKey<NavigatorState> materialAppNavigatorKey = LabeledGlobalKey("MaterialApp Navigator");
+  /// @Deprecated("Prefer using state and localization getters.  Avoid directly accessing context.")
+  static final GlobalKey<NavigatorState> rawMaterialAppNavigatorKey = LabeledGlobalKey("MaterialApp Navigator");
 
-  static ScaffoldMessengerState? get scaffoldState => materialAppScaffoldKey.currentState;
-  static NavigatorState? get navigatorState => materialAppNavigatorKey.currentState;
+  static ScaffoldMessengerState? get scaffoldState => rawMaterialAppScaffoldKey.currentState;
+  static NavigatorState? get navigatorState => rawMaterialAppNavigatorKey.currentState;
   static AppLocalizations? get localizations {
-    final context = materialAppNavigatorKey.currentContext;
+    final context = rawMaterialAppNavigatorKey.currentContext;
     if (context != null && context.mounted) {
       return AppLocalizations.of(context);
     }
@@ -52,7 +54,7 @@ class GlobalSnackbar {
   static void _enqueue(_QueueFunction func) {
     // We want to specifically use the navigator context here because it is the innermost object of the MaterialApp and
     // has all global context present.  The scaffold context is missing most global state.
-    final enqueueContext = materialAppNavigatorKey.currentContext;
+    final enqueueContext = rawMaterialAppNavigatorKey.currentContext;
     if (scaffoldState != null && (enqueueContext?.mounted ?? false)) {
       // Schedule snackbar creation for as soon as possible outside of build()
       SchedulerBinding.instance.scheduleTask(() {
@@ -66,7 +68,7 @@ class GlobalSnackbar {
     } else {
       _queue.add(func);
       _timer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
-        final timerContext = materialAppNavigatorKey.currentContext;
+        final timerContext = rawMaterialAppNavigatorKey.currentContext;
         if (scaffoldState != null && (timerContext?.mounted ?? false)) {
           timer.cancel();
           _timer = null;

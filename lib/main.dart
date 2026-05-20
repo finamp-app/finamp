@@ -191,6 +191,7 @@ Future<void> main({bool integrationTesting = false, bool loginTesting = false}) 
 
   _mainLog.info("Launching main app");
 
+  // Integration testing will launch the widgets itself, so just return
   if (!integrationTesting) {
     runApp(const Finamp());
   }
@@ -766,8 +767,8 @@ class FinampApp extends ConsumerWidget {
       localeListResolutionCallback: (locales, supportedLocales) =>
           basicLocaleListResolution(locales, [const Locale("en")].followedBy(supportedLocales)),
       locale: locale,
-      scaffoldMessengerKey: GlobalSnackbar.materialAppScaffoldKey,
-      navigatorKey: GlobalSnackbar.materialAppNavigatorKey,
+      scaffoldMessengerKey: GlobalSnackbar.rawMaterialAppScaffoldKey,
+      navigatorKey: GlobalSnackbar.rawMaterialAppNavigatorKey,
     );
   }
 }
@@ -792,8 +793,8 @@ class FinampErrorApp extends StatelessWidget {
       darkTheme: ThemeData(brightness: Brightness.dark, colorScheme: darkColorScheme),
       supportedLocales: AppLocalizations.supportedLocales,
       home: ErrorScreen(error: error, trace: trace),
-      scaffoldMessengerKey: GlobalSnackbar.materialAppScaffoldKey,
-      navigatorKey: GlobalSnackbar.materialAppNavigatorKey,
+      scaffoldMessengerKey: GlobalSnackbar.rawMaterialAppScaffoldKey,
+      navigatorKey: GlobalSnackbar.rawMaterialAppNavigatorKey,
     );
   }
 }
@@ -960,6 +961,8 @@ class FinampProviderObserver extends ProviderObserver {
   }
 }
 
+/// This is used by the login testing flag to redirect file accesses to the testing folder.
+/// Download base directories are not redirected, so loginTesting flag should be avoided on mobile.
 class TestingPathProvider extends PathProviderPlatform {
   static Future<Directory> baseDirectory() async {
     // If we're on desktop, use the integration_test directory in the checkout tree

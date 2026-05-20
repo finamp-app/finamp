@@ -1022,8 +1022,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "feat/null-test"
-      resolved-ref: e72e688952191ecea53e8cc8c8769796189b8b9f
+      ref: "feat/queue-shuffle"
+      resolved-ref: e8a7ac35558774f5d4b9a22044345872298fcb79
       url: "https://github.com/Komodo5197/just_audio_media_kit.git"
     source: git
     version: "2.1.0"

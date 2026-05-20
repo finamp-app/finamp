@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dbus/dbus.dart';
 import 'package:finamp/components/AlbumScreen/album_screen_content.dart';
 import 'package:finamp/components/Buttons/cta_large.dart';
+import 'package:finamp/components/LoginScreen/login_server_selection_page.dart';
 import 'package:finamp/components/MusicScreen/item_collection_wrapper.dart';
 import 'package:finamp/main.dart' as app;
 import 'package:finamp/menus/components/playbackActions/playback_actions.dart';
@@ -87,10 +88,6 @@ void main() async {
 
       // Verify FinampApp loaded.
       expect(find.byType(LoginScreen), findsOneWidget);
-
-      container = GetIt.instance<ProviderContainer>();
-      GetIt.instance.unregister<ProviderContainer>();
-      GetIt.instance.registerSingleton(ProviderContainer(parent: container));
     });
     testWidgets('Log in to demo server', (tester) async {
       GetIt.instance.unregister<ProviderContainer>();
@@ -105,7 +102,9 @@ void main() async {
       final urlEntry = find.byType(TextFormField);
       await tester.enterText(urlEntry, "https://demo.jellyfin.org/stable");
 
-      final serverButton = find.text("Stable Demo");
+      final serverButton = find.byWidgetPredicate(
+        (x) => x is JellyfinServerSelectionWidget && (x.baseUrl?.contains("demo.jellyfin.org") ?? false),
+      );
       await tester.waitFor(serverButton);
       await tester.tap(serverButton);
       await tester.pump(Duration(seconds: 1));
@@ -123,8 +122,7 @@ void main() async {
       await tester.waitFor(musicScreen);
       await tester.pump(Duration(seconds: 1));
 
-      // Verify Music screen loaded
-      // TODO any other verifications beyond reaching this point?
+      // Verify login is complete and Music screen loaded
       expect(find.byType(MusicScreen), findsOneWidget);
     });
     testWidgets('Start playing a track', (tester) async {
