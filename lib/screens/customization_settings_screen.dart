@@ -42,6 +42,7 @@ class _CustomizationSettingsScreenState extends State<CustomizationSettingsScree
           if (!Platform.isIOS) const ShowFavoriteButtonOnMediaNotificationToggle(),
           const ShowSeekControlsOnMediaNotificationToggle(),
           const OneLineMarqueeTextSwitch(),
+          const ExpandTrackTitlesToggle(),
           const ReleaseDateFormatDropdownListTile(),
           const TileAdditionalInfoTypeTitleListTile(),
           ...TabContentType.values.map((type) => TileAdditionalInfoTypeDropdownListTile(tabContentType: type)),
@@ -61,6 +62,20 @@ class OneLineMarqueeTextSwitch extends ConsumerWidget {
       subtitle: Text(AppLocalizations.of(context)!.oneLineMarqueeTextButtonSubtitle),
       value: ref.watch(finampSettingsProvider.oneLineMarqueeTextButton),
       onChanged: FinampSetters.setOneLineMarqueeTextButton,
+    );
+  }
+}
+
+class ExpandTrackTitlesToggle extends ConsumerWidget {
+  const ExpandTrackTitlesToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SwitchListTile.adaptive(
+      title: Text(AppLocalizations.of(context)!.expandTrackTitlesTitle),
+      subtitle: Text(AppLocalizations.of(context)!.expandTrackTitlesSubtitle),
+      value: ref.watch(finampSettingsProvider.expandTrackTitles),
+      onChanged: FinampSetters.setExpandTrackTitles,
     );
   }
 }
