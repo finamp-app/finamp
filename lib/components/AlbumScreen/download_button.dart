@@ -24,6 +24,7 @@ class DownloadButton extends ConsumerWidget {
     this.isLibrary = false,
     this.downloadDisabled = false,
     this.customTooltip,
+    this.allowServerDelete = true,
   });
 
   final DownloadStub item;
@@ -32,6 +33,7 @@ class DownloadButton extends ConsumerWidget {
   final bool isLibrary;
   final bool downloadDisabled;
   final String? customTooltip;
+  final bool allowServerDelete;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,6 +45,7 @@ class DownloadButton extends ConsumerWidget {
     if (item.type.requiresItem) {
       canDeleteFromServer = ref.watch(canDeleteFromServerProvider(item.baseItem!));
     }
+    canDeleteFromServer = canDeleteFromServer && allowServerDelete;
     String? parentTooltip;
     if (status == null) {
       return const SizedBox.shrink();

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:balanced_text/balanced_text.dart';
+import 'package:finamp/components/AlbumScreen/download_button.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
 import 'package:finamp/components/Buttons/cta_small.dart';
 import 'package:finamp/components/HomeScreen/home_screen_quick_action_button.dart';
@@ -9,7 +10,6 @@ import 'package:finamp/components/HomeScreen/show_all_button.dart';
 import 'package:finamp/components/MusicScreen/item_card.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
-import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/components/finamp_section_header.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/icon_button_with_semantics.dart';
@@ -133,7 +133,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
                 .map((sectionInfo) => HomeScreenSection(sectionInfo: sectionInfo))
                 .toList(),
           ),
-          const SliverPadding(padding: EdgeInsets.only(top: 60)),
+          const SliverPadding(padding: EdgeInsets.only(top: 30)),
           ...[
             SliverToBoxAdapter(
               child: Center(
@@ -151,14 +151,14 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
             SliverToBoxAdapter(
               child: Center(
                 child: CTASmall(
-                  text: "Customize home screen",
+                  text: context.l10n.customizeHomeScreen,
                   icon: TablerIcons.settings,
                   onPressed: () => Navigator.pushNamed(context, HomeScreenSettingsScreen.routeName),
                 ),
               ),
             ),
           ],
-          const SliverPadding(padding: EdgeInsets.only(top: 60)),
+          /*const SliverPadding(padding: EdgeInsets.only(top: 60)),
           ...[
             // monochrome icon
             SliverToBoxAdapter(
@@ -177,8 +177,8 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
                 ),
               ),
             ),
-          ],
-          SliverSafeArea(top: false, sliver: SliverPadding(padding: const EdgeInsets.only(bottom: 50.0))),
+          ],*/
+          SliverSafeArea(top: false, sliver: SliverPadding(padding: const EdgeInsets.only(bottom: 40.0))),
         ],
       ),
     );
@@ -192,13 +192,8 @@ class HomeScreenSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool isOffline = ref.watch(finampSettingsProvider.isOffline);
     final sectionDisplayable = ref.watch(resolveSectionProvider(sectionInfo)).value;
 
-    bool isDownloaded =
-        sectionInfo.type !=
-        HomeScreenSectionType
-            .collection; //TODO implement once collection downloads or generic item sections are supported
     final viewPadding = MediaQuery.paddingOf(context);
     return SliverPadding(
       padding: const EdgeInsets.only(bottom: 8.0),
@@ -208,30 +203,21 @@ class HomeScreenSection extends ConsumerWidget {
         title: sectionInfo.getTitle(context),
         headerPadding: EdgeInsets.only(left: viewPadding.left + 14.0, right: viewPadding.right + 20.0),
         contentPadding: EdgeInsets.zero,
-        actions: (isOffline && !isDownloaded)
-            ? []
-            : [
-                // if (sectionInfo.presetType == HomeScreenSectionPresetType.//TODO)
-                //TODO download button
-                //TODO use similar logic to [loadChildTracksFromShuffledGenreAlbums] for loading tracks from other tab types
-                //TODO for collections, try to recursively load tracks directly, Jellyfin can do that
-                if (sectionDisplayable is FinampPlayable) ...[
-                  if (sectionInfo.sortAndFilterConfiguration.sortBy != SortBy.random)
-                    IconButtonWithSemantics(
-                      onPressed: () async {
-                        final queueService = GetIt.instance<QueueService>();
-                        final playable = sectionDisplayable as FinampPlayable;
-                        // TODO cut over home section to paging provider - need to slice?
-                        // TODO restore gradual queue buildup?
-                        await queueService.startPlayback(
-                          items: (await ref.read(
-                            getPlayerSliceProvider(item: playable, startingOffset: 0).future,
-                          )).items,
-                          source: playable.source,
-                          order: FinampPlaybackOrder.linear,
-                        );
+        actions: [
+          if (sectionDisplayable is FinampPlayable) ...[
+            if (sectionInfo.sortAndFilterConfiguration.sortBy != SortBy.random)
+              IconButtonWithSemantics(
+                onPressed: () async {
+                  final queueService = GetIt.instance<QueueService>();
+                  final playable = sectionDisplayable as FinampPlayable;
+                  // TODO restore gradual queue buildup?
+                  await queueService.startPlayback(
+                    items: (await ref.read(getPlayerSliceProvider(item: playable, startingOffset: 0).future)).items,
+                    source: playable.source,
+                    order: FinampPlaybackOrder.linear,
+                  );
 
-                        /*
+                  /*
                         final source = QueueItemSource.rawId(
                           type: QueueItemSourceType.homeScreenSection,
                           name: QueueItemSourceName(
@@ -273,35 +259,47 @@ class HomeScreenSection extends ConsumerWidget {
                                   .toList() ??
                               [],
                         );*/
-                      },
-                      label: AppLocalizations.of(context)!.playButtonLabel,
-                      icon: TablerIcons.player_play,
-                    ),
-                  IconButtonWithSemantics(
-                    onPressed: () async {
-                      final queueService = GetIt.instance<QueueService>();
-                      final playable = sectionDisplayable as FinampPlayable;
-                      // TODO better shuffling?  need to think about shuffle all versus shuffle first
-                      // TODO restore gradual queue buildup?
-                      await queueService.startPlayback(
-                        items: (await ref.read(getPlayerSliceProvider(item: playable, startingOffset: 0).future)).items,
-                        source: playable.source,
-                        order: FinampPlaybackOrder.shuffled,
-                      );
-                    },
-                    label: AppLocalizations.of(context)!.shuffleButtonLabel,
-                    icon: TablerIcons.arrows_shuffle,
-                  ),
-                ],
-                ShowAllButton(
-                  label: context.l10n.showAll,
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<MusicScreen>(builder: (context) => MusicScreen(singleTabConfig: sectionInfo)),
-                    );
-                  },
-                ),
-              ],
+                },
+                label: AppLocalizations.of(context)!.playButtonLabel,
+                icon: TablerIcons.player_play,
+              ),
+            IconButtonWithSemantics(
+              onPressed: () async {
+                final queueService = GetIt.instance<QueueService>();
+                final playable = sectionDisplayable as FinampPlayable;
+                // TODO better shuffling?  need to think about shuffle all versus shuffle first
+                // TODO restore gradual queue buildup?
+                await queueService.startPlayback(
+                  items: (await ref.read(getPlayerSliceProvider(item: playable, startingOffset: 0).future)).items,
+                  source: playable.source,
+                  order: FinampPlaybackOrder.shuffled,
+                );
+              },
+              label: AppLocalizations.of(context)!.shuffleButtonLabel,
+              icon: TablerIcons.arrows_shuffle,
+            ),
+          ],
+          // TODO implement collection downloads
+          if (sectionDisplayable is FinampPlayableDto &&
+              BaseItemDtoType.fromItem((sectionDisplayable as FinampPlayableDto).item) != BaseItemDtoType.collection)
+            DownloadButton(
+              item: DownloadStub.fromItem(
+                type: BaseItemDtoType.fromItem((sectionDisplayable as FinampPlayableDto).item) == BaseItemDtoType.track
+                    ? DownloadItemType.track
+                    : DownloadItemType.collection,
+                item: (sectionDisplayable as FinampPlayableDto).item,
+              ),
+              allowServerDelete: false,
+            ),
+          ShowAllButton(
+            label: context.l10n.showAll,
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute<MusicScreen>(builder: (context) => MusicScreen(singleTabConfig: sectionInfo)));
+            },
+          ),
+        ],
         onTap: () {
           Navigator.of(
             context,

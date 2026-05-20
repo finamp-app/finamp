@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -12,6 +14,11 @@ part 'item_by_id_provider.g.dart';
 Future<BaseItemDto?> itemById(Ref ref, BaseItemId baseItemId) async {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final downloadsService = GetIt.instance<DownloadsService>();
+
+  // Prevent re-fetching item for at least 15 minutes, even if we aren't being watched
+  final keepAlive = ref.keepAlive();
+  final timer = Timer(const Duration(minutes: 15), keepAlive.close);
+  ref.onDispose(timer.cancel);
 
   BaseItemDto? baseItem;
 

@@ -57,10 +57,10 @@ class Playlist extends _SortableItem<Track> {
     }
   }
 
-  factory Playlist.fromItem(BaseItemDto item, {SortAndFilterConfiguration? sortConfig}) => Playlist(
+  factory Playlist.fromItem(BaseItemDto item, {ResolvedSortConfig? sortConfig}) => Playlist(
     item,
     source: QueueItemSource.fromBaseItem(item),
-    sortConfig: sortConfig ?? SortAndFilterConfiguration.defaultInAlbumSort,
+    sortConfig: sortConfig ?? ResolvedSortConfig.defaultInAlbumSort,
   );
 
   @override
@@ -70,7 +70,7 @@ class Playlist extends _SortableItem<Track> {
   int get hashHelper => (Playlist as Object).hashCode;
 
   @override
-  Playlist copyWith(SortAndFilterConfiguration newSort) => Playlist(item, source: source, sortConfig: newSort);
+  Playlist copyWith(ResolvedSortConfig newSort) => Playlist(item, source: source, sortConfig: newSort);
 }
 
 // TODO add shuffle grouping control?
@@ -108,7 +108,7 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
     required ContentType tab,
     required LibraryOrItemId library,
     required QueueItemSource source,
-    required SortAndFilterConfiguration sortConfig,
+    required ResolvedSortConfig sortConfig,
   }) {
     switch (tab) {
       case ContentType.albums:
@@ -166,10 +166,10 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
     ContentType.tracks => 1,
     ContentType.performingArtists => 30,
     ContentType.albumArtists => 3,
-    ContentType.home => throw UnimplementedError(),
-    ContentType.genericArtists => throw UnimplementedError(),
-    ContentType.inPlaylist => throw UnimplementedError(),
-    ContentType.mixed => throw UnimplementedError(),
+    ContentType.home ||
+    ContentType.genericArtists ||
+    ContentType.inPlaylist ||
+    ContentType.mixed => throw UnsupportedError("Invalid music screen content type $tab"),
   };
 
   @override
@@ -183,7 +183,7 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
   String get id => "finamp-music-screen-$hashCode";
 
   @override
-  MusicScreenPlayable<ChildType> copyWith(SortAndFilterConfiguration newSort) =>
+  MusicScreenPlayable<ChildType> copyWith(ResolvedSortConfig newSort) =>
       MusicScreenPlayable._(tab: tab, library: library, source: source, sortConfig: newSort);
 }
 
@@ -227,14 +227,11 @@ class PrecalculatedPlayable extends FinampUnpagedPlayable<Track> {
 
 // TODO get rid of this once we have all the real types.
 class GenericPlayableItem extends _SortableItem<Track> {
-  GenericPlayableItem(super.item, {SortAndFilterConfiguration? sortConfig})
-    : super(
-        source: QueueItemSource.fromBaseItem(item),
-        sortConfig: sortConfig ?? SortAndFilterConfiguration.defaultSort,
-      );
+  GenericPlayableItem(super.item, {ResolvedSortConfig? sortConfig})
+    : super(source: QueueItemSource.fromBaseItem(item), sortConfig: sortConfig ?? ResolvedSortConfig.defaultSort);
 
   factory GenericPlayableItem.defaultSort(BaseItemDto item) =>
-      GenericPlayableItem(item, sortConfig: SortAndFilterConfiguration.defaultInAlbumSort);
+      GenericPlayableItem(item, sortConfig: ResolvedSortConfig.defaultInAlbumSort);
 
   @override
   bool equalsHelper(Object other) => other is Playlist;
@@ -243,7 +240,7 @@ class GenericPlayableItem extends _SortableItem<Track> {
   int get hashHelper => (Playlist as Object).hashCode;
 
   @override
-  GenericPlayableItem copyWith(SortAndFilterConfiguration newSort) => GenericPlayableItem(item, sortConfig: newSort);
+  GenericPlayableItem copyWith(ResolvedSortConfig newSort) => GenericPlayableItem(item, sortConfig: newSort);
 }
 
 class LatestQueues extends FinampSortable<PlayableQueue> implements FinampUnpagedDisplayable<PlayableQueue> {
@@ -261,7 +258,7 @@ class LatestQueues extends FinampSortable<PlayableQueue> implements FinampUnpage
   String get id => "latest-queues";
 
   @override
-  LatestQueues copyWith(SortAndFilterConfiguration newSort) => LatestQueues(sortConfig: newSort, source: source);
+  LatestQueues copyWith(ResolvedSortConfig newSort) => LatestQueues(sortConfig: newSort, source: source);
 }
 
 class PlayableQueue extends FinampPlayable {
@@ -318,10 +315,10 @@ class JellyfinCollection extends _SortableItem<FinampPlayableDto> {
     }
   }
 
-  factory JellyfinCollection.fromItem(BaseItemDto item, {SortAndFilterConfiguration? sortConfig}) => JellyfinCollection(
+  factory JellyfinCollection.fromItem(BaseItemDto item, {ResolvedSortConfig? sortConfig}) => JellyfinCollection(
     item,
     source: QueueItemSource.fromBaseItem(item),
-    sortConfig: sortConfig ?? SortAndFilterConfiguration.defaultSort,
+    sortConfig: sortConfig ?? ResolvedSortConfig.defaultSort,
   );
 
   @override
@@ -331,6 +328,6 @@ class JellyfinCollection extends _SortableItem<FinampPlayableDto> {
   int get hashHelper => (JellyfinCollection as Object).hashCode;
 
   @override
-  JellyfinCollection copyWith(SortAndFilterConfiguration newSort) =>
+  JellyfinCollection copyWith(ResolvedSortConfig newSort) =>
       JellyfinCollection(item, source: source, sortConfig: newSort);
 }

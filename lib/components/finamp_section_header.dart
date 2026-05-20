@@ -1,5 +1,4 @@
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
-import 'package:finamp/menus/components/icon_button_with_semantics.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +20,7 @@ class FinampSectionHeader extends ConsumerWidget {
   });
 
   final Widget sectionContentSliver;
-  final List<IconButtonWithSemantics> actions;
+  final List<Widget> actions;
   final String title;
   final EdgeInsets headerPadding;
   final EdgeInsets contentPadding;

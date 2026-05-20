@@ -71,10 +71,11 @@ Future<void> showFinampMainMenu({required BuildContext context}) async {
                     else
                       Text.rich(
                         TextSpan(
-                          text: 'Connected to* ',
+                          text: context.l10n.connectedTo,
                           children: [
                             TextSpan(
-                              text: '${ref.watch(currentServerInfoProvider).value?.publicServerInfo.serverName}',
+                              text:
+                                  " ${ref.watch(currentServerInfoProvider).value?.publicServerInfo.serverName ?? context.l10n.unknown}",
                               style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
                           ],
@@ -208,10 +209,10 @@ class MusicScreenDrawer extends ConsumerWidget {
                               final PublicSystemInfoResult serverInfo = snapshot.data!;
                               return Text.rich(
                                 TextSpan(
-                                  text: 'Connected to* ',
+                                  text: context.l10n.connectedTo,
                                   children: [
                                     TextSpan(
-                                      text: '${serverInfo.serverName}',
+                                      text: " ${serverInfo.serverName ?? context.l10n.unknown}",
                                       style: const TextStyle(fontWeight: FontWeight.w600),
                                     ),
                                   ],

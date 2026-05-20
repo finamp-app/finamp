@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/extensions/color_extensions.dart';
@@ -8,12 +9,14 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/icon_button_with_semantics.dart';
 import 'package:finamp/menus/music_screen_drawer.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/settings_screen.dart';
 import 'package:finamp/screens/tabs_settings_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/music_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -22,6 +25,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
 import '../../extensions/localizations.dart';
+import '../../menus/home_section_menu.dart';
 
 class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWidget {
   final List<ContentType> sortedTabs;
@@ -30,10 +34,9 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
   final VoidCallback? onStopSearch;
   final TextEditingController textEditingController;
   final bool isSearching;
-  final bool backButtonInsteadOfTabs;
-  final String? title;
   final void Function(String)? onUpdateSearchQuery;
   final void Function() refreshTab;
+  final HomeScreenSectionConfiguration? singleTabConfig;
 
   FinampMusicScreenHeader({
     super.key,
@@ -42,17 +45,18 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
     required this.textEditingController,
     required this.isSearching,
     required this.refreshTab,
-    this.backButtonInsteadOfTabs = false,
-    this.title,
     this.onSearch,
     this.onStopSearch,
     this.onUpdateSearchQuery,
+    this.singleTabConfig,
   });
 
   final finampUserHelper = GetIt.instance<FinampUserHelper>();
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
   double get _upperToolbarHeight => kToolbarHeight - 12;
+
+  bool get backButtonInsteadOfTabs => singleTabConfig != null;
 
   @override
   Size get preferredSize => Size.fromHeight(
@@ -75,6 +79,25 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
         : ref.watch(FinampUserHelper.finampCurrentUserProvider)?.isLocal ?? false
         ? TablerIcons.wifi
         : null; // hide icon by default (remote connection)
+
+    void openMenu() async {
+      final config = singleTabConfig;
+      if (config != null) {
+        FinampDisplayable playable = await GetIt.instance<ProviderContainer>().read(
+          resolveSectionProvider(config).future,
+        );
+        if (!context.mounted) return;
+        switch (playable) {
+          case FinampPlayableDto itemPlayable:
+            openItemMenu(context: context, item: itemPlayable.item);
+          case _:
+            await showModalHomeSectionMenu(context: context, section: config);
+        }
+      } else {
+        Scaffold.of(context).openDrawer();
+        //await showFinampMainMenu(context: context);
+      }
+    }
 
     return Column(
       spacing: 8.0,
@@ -173,17 +196,15 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            if (title == null) {
-                              showFinampMainMenu(context: context);
-                            }
-                          },
+                          onTap: openMenu,
                           child: FutureBuilder(
                             future: PackageInfo.fromPlatform(),
                             builder: (context, asyncSnapshot) {
                               final appName = asyncSnapshot.data?.appName ?? AppLocalizations.of(context)!.finamp;
                               return Text(
-                                title ?? finampUserHelper.currentUser?.currentView?.name ?? appName,
+                                singleTabConfig?.getTitle(context) ??
+                                    finampUserHelper.currentUser?.currentView?.name ??
+                                    appName,
                                 style: TextStyle(fontSize: 22),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -218,13 +239,12 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                   label: context.l10n.globalMenu,
                   icon: TablerIcons.dots,
                   iconSize: 28.0,
-                  onPressed: () {
-                    // Scaffold.of(context).openDrawer();
-                    showFinampMainMenu(context: context);
-                  },
-                  onLongPress: () {
-                    Navigator.pushNamed(context, SettingsScreen.routeName);
-                  },
+                  onPressed: openMenu,
+                  onLongPress: singleTabConfig != null
+                      ? null
+                      : () {
+                          Navigator.pushNamed(context, SettingsScreen.routeName);
+                        },
                 ),
               ],
             ),

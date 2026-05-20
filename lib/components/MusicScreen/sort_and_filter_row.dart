@@ -42,24 +42,24 @@ abstract class SortAndFilterController {
   void _updateConfiguration(SortAndFilterConfiguration newConfig) =>
       _notifier.value = _SortControllerState(newConfig, _type);
 
-  SortAndFilterConfiguration _getValue(Ref ref);
+  ResolvedSortConfig _getValue(Ref ref);
 
-  static SortAndFilterConfiguration resolveOffline(Ref ref, ContentType type, SortAndFilterConfiguration config) {
+  static ResolvedSortConfig resolveOffline(Ref ref, ContentType type, SortAndFilterConfiguration config) {
     // PlayCount and Last Played are not representative in Offline Mode
     // so we disable it and overwrite it with the Sort Name if it was selected
     if (ref.watch(finampSettingsProvider.isOffline) &&
         (config.sortBy == SortBy.playCount || config.sortBy == SortBy.datePlayed)) {
       if (type == ContentType.inPlaylist) {
-        return config.copyWith(sortBy: SortBy.defaultOrder);
+        return ResolvedSortConfig._(config.copyWith(sortBy: SortBy.defaultOrder));
       } else {
-        return config.copyWith(sortBy: SortBy.sortName);
+        return ResolvedSortConfig._(config.copyWith(sortBy: SortBy.sortName));
       }
     } else {
-      return config;
+      return ResolvedSortConfig._(config);
     }
   }
 
-  SortAndFilterConfiguration resolveConfig() => GetIt.instance<ProviderContainer>().read(resolveSortProvider(this));
+  ResolvedSortConfig resolveConfig() => GetIt.instance<ProviderContainer>().read(resolveSortProvider(this));
 
   factory SortAndFilterController.trackSettings(ContentType contentType) =>
       TrackingSortAndFilterController(contentType: contentType);
@@ -69,6 +69,22 @@ abstract class SortAndFilterController {
     required SortAndFilterConfiguration startingConfig,
     bool skipResolving,
   }) = StaticSortAndFilterController;
+}
+
+extension type const ResolvedSortConfig._(SortAndFilterConfiguration config) implements SortAndFilterConfiguration {
+  ResolvedSortConfig copyWithSearch(String? searchQuery) {
+    return ResolvedSortConfig._(config.copyWith(searchQuery: searchQuery));
+  }
+
+  ResolvedSortConfig.skipResolving(this.config);
+
+  static const defaultSort = ResolvedSortConfig._(
+    SortAndFilterConfiguration(sortBy: SortBy.sortName, sortOrder: SortOrder.ascending, filters: {}),
+  );
+
+  static const defaultInAlbumSort = ResolvedSortConfig._(
+    SortAndFilterConfiguration(sortBy: SortBy.defaultOrder, sortOrder: SortOrder.ascending, filters: {}),
+  );
 }
 
 class _SortControllerState {
@@ -90,11 +106,11 @@ class StaticSortAndFilterController extends SortAndFilterController {
   void updateConfiguration(SortAndFilterConfiguration newConfig) => _updateConfiguration(newConfig);
 
   @override
-  SortAndFilterConfiguration _getValue(Ref ref) {
+  ResolvedSortConfig _getValue(Ref ref) {
     _notifier.addListener(ref.invalidateSelf);
     ref.onDispose(() => _notifier.removeListener(ref.invalidateSelf));
     if (skipResolving) {
-      return _config;
+      return ResolvedSortConfig._(_config);
     } else {
       return SortAndFilterController.resolveOffline(ref, _type, _config);
     }
@@ -105,8 +121,8 @@ class TrackingSortAndFilterController extends SortAndFilterController {
   TrackingSortAndFilterController({required super.contentType})
     : super._(
         startingConfig: contentType == ContentType.inPlaylist
-            ? SortAndFilterConfiguration.defaultInAlbumSort
-            : SortAndFilterConfiguration.defaultSort,
+            ? ResolvedSortConfig.defaultInAlbumSort
+            : ResolvedSortConfig.defaultSort,
       );
 
   @override
@@ -133,7 +149,7 @@ class TrackingSortAndFilterController extends SortAndFilterController {
   }
 
   @override
-  SortAndFilterConfiguration _getValue(Ref ref) {
+  ResolvedSortConfig _getValue(Ref ref) {
     _notifier.addListener(ref.invalidateSelf);
     ref.onDispose(() => _notifier.removeListener(ref.invalidateSelf));
     return SortAndFilterController.resolveOffline(
@@ -509,10 +525,10 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
         ItemFilterType.isFullyDownloaded => currentConfig.filters.contains(
           ItemFilter(type: ItemFilterType.isFullyDownloaded),
         ),
-        ItemFilterType.startsWithCharacter => throw UnimplementedError(),
-        ItemFilterType.genreFilter => throw UnimplementedError(),
-        ItemFilterType.searchTerm => throw UnimplementedError(),
         ItemFilterType.isUnplayed => currentConfig.filters.contains(ItemFilter(type: ItemFilterType.isUnplayed)),
+        ItemFilterType.startsWithCharacter ||
+        ItemFilterType.genreFilter ||
+        ItemFilterType.searchTerm => throw UnsupportedError("Filter type $option should not be toggleable"),
       },
       onToggle: (currentState) async {
         final newFilters = Set<ItemFilter>.from(currentConfig.filters);
@@ -522,19 +538,14 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
           switch (option) {
             case ItemFilterType.isFavorite:
               newFilters.add(ItemFilter(type: ItemFilterType.isFavorite));
-              break;
             case ItemFilterType.isFullyDownloaded:
               newFilters.add(ItemFilter(type: ItemFilterType.isFullyDownloaded));
-              break;
-            case ItemFilterType.startsWithCharacter:
-              throw UnimplementedError();
-            case ItemFilterType.genreFilter:
-              throw UnimplementedError();
-            case ItemFilterType.searchTerm:
-              throw UnimplementedError();
             case ItemFilterType.isUnplayed:
               newFilters.add(ItemFilter(type: ItemFilterType.isUnplayed));
-              break;
+            case ItemFilterType.startsWithCharacter:
+            case ItemFilterType.genreFilter:
+            case ItemFilterType.searchTerm:
+              throw UnsupportedError("Filter type $option should not be toggleable");
           }
         }
         setState(() {

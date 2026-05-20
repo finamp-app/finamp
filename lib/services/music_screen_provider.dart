@@ -128,10 +128,7 @@ class PagedContent extends _$PagedContent {
   }
 
   void newPage({int pageSize = musicScreenPageSize}) {
-    // The pagination tends to generate multiple requests at once, so block all but the initial one.  The exception is
-    // while loading the first, undersized page, we allow a second request through immediately to potentially finish
-    // loading a proper page's worth faster.
-    if (!state.isLoading || _pageSizes.length < 2) {
+    if (!state.isLoading) {
       _pageSizes.add(pageSize);
       ref.invalidateSelf();
     }
@@ -153,6 +150,7 @@ class PagedContent extends _$PagedContent {
     // Delay invalidation of page providers until after we stop depending on them
     // to avoid immediate rebuild of all.
     final oldProviders = _dependencies;
+    _dependencies = [];
     listenSelf((_, _) {
       for (var provider in oldProviders) {
         ref.invalidate(provider);
@@ -452,7 +450,7 @@ List<BaseItemDto> sortItems(List<BaseItemDto> itemsToSort, SortBy? sortBy, SortO
         case SortBy.defaultOrder:
           return 0;
         case SortBy.random:
-          throw UnimplementedError(
+          throw UnsupportedError(
             "SortBy.random is handled outside this switch as per-comparison logic does not produce a good shuffle",
           );
       }

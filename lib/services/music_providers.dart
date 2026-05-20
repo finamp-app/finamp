@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/extensions/list.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -73,13 +74,17 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
           localizationParameter: section.presetType?.name,
           pretranslatedName: section.getTitle(context),
         ),
-        id: section.toLocalisedString(context),
+        id: section.id,
       );
       return MusicScreenPlayable(
         tab: section.contentType,
         library: section.itemId,
         source: source,
-        sortConfig: section.sortAndFilterConfiguration,
+        sortConfig: SortAndFilterController.resolveOffline(
+          ref,
+          section.contentType,
+          section.sortAndFilterConfiguration,
+        ),
       );
     case HomeScreenSectionType.collection:
       final item = await ref.watch(itemByIdProvider(section.itemId as BaseItemId).future);
@@ -107,28 +112,22 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
           pretranslatedName: section.getTitle(context),
         ),
         item: item,
-        id: section.toLocalisedString(context),
+        id: section.id,
       );
-      switch (BaseItemDtoType.fromItem(item)) {
-        case BaseItemDtoType.album:
-          return Album(item, source: source);
-        case BaseItemDtoType.playlist:
-          return Playlist(item, source: source, sortConfig: section.sortAndFilterConfiguration);
-        case BaseItemDtoType.noItem:
-        case BaseItemDtoType.artist:
-        case BaseItemDtoType.genre:
-        case BaseItemDtoType.track:
-        case BaseItemDtoType.library:
-        case BaseItemDtoType.folder:
-        case BaseItemDtoType.musicVideo:
-        case BaseItemDtoType.audioBook:
-        case BaseItemDtoType.tvEpisode:
-        case BaseItemDtoType.video:
-        case BaseItemDtoType.movie:
-        case BaseItemDtoType.trailer:
-        case BaseItemDtoType.collection:
-        case BaseItemDtoType.unknown:
-          throw UnimplementedError();
+      final resolvedSort = SortAndFilterController.resolveOffline(
+        ref,
+        section.contentType,
+        section.sortAndFilterConfiguration,
+      );
+      print("Resolved sort for ${section.customSectionTitle} is $resolvedSort");
+
+      final playable = FinampPlayableDto.fromItem(item, source: source, sortOverride: resolvedSort);
+      switch (playable) {
+        case FinampDisplayable<FinampPlayable> displayable:
+          return displayable;
+        case Track():
+        case InstantMix():
+          throw UnsupportedError("Invalid home section collection $playable");
       }
     case HomeScreenSectionType.queues:
       final source = QueueItemSource.rawId(
@@ -138,9 +137,12 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
           localizationParameter: section.presetType?.name,
           pretranslatedName: section.getTitle(context),
         ),
-        id: section.toLocalisedString(context),
+        id: section.id,
       );
-      return LatestQueues(sortConfig: section.sortAndFilterConfiguration, source: source);
+      return LatestQueues(
+        sortConfig: ResolvedSortConfig.skipResolving(section.sortAndFilterConfiguration),
+        source: source,
+      );
   }
 }
 
@@ -203,6 +205,7 @@ Future<PlayableSlice> getPlayerSlice(
       final children = await ref.watch(getChildItemsProvider(item: item).future);
       final output = <BaseItemDto>[];
       // TODO should we be adding any/all of the pretracks?
+      // TODO load tracks directly?  I think that might cause a sort mismatch, though.
       for (final child in children.safeSliceByLength(startingOffset)) {
         output.addAll(await _flattenToTracks(ref, item: child));
         if (limit != null && output.length > limit) {
@@ -293,27 +296,7 @@ Future<List<FinampPlayableDto>> getChildItems(
       return await ref.watch(getChildTracksProvider(item: item).future);
     case JellyfinCollection():
       final children = await ref.watch(getJellyfinCollectionProvider(item.item, item.sortConfig).future) ?? [];
-      return children
-          .map<FinampPlayableDto>(
-            (child) => switch (BaseItemDtoType.fromItem(child)) {
-              BaseItemDtoType.album => Album(child, source: item.source),
-              BaseItemDtoType.playlist => Playlist(
-                child,
-                source: item.source,
-                sortConfig: SortAndFilterConfiguration.defaultInAlbumSort,
-              ),
-              BaseItemDtoType.artist => GenericPlayableItem.defaultSort(child),
-              BaseItemDtoType.genre => GenericPlayableItem.defaultSort(child),
-              BaseItemDtoType.track => Track(child, source: item.source),
-              BaseItemDtoType.collection => JellyfinCollection(
-                child,
-                source: item.source,
-                sortConfig: SortAndFilterConfiguration.defaultSort,
-              ),
-              _ => throw UnsupportedError("Unexpected BaseItemDto type: ${child.type}"),
-            },
-          )
-          .toList();
+      return children.map<FinampPlayableDto>((child) => FinampPlayableDto.fromItem(child)).toList();
   }
 }
 

@@ -199,13 +199,13 @@ class CachedImage extends ImageProvider<CachedImage> {
   double get scale => switch (_base) {
     NetworkImage() => _base.scale,
     FileImage() => _base.scale,
-    _ => throw UnimplementedError(),
+    _ => throw UnsupportedError("Unsupported base image provider $_base"),
   };
 
   String get location => switch (_base) {
     NetworkImage() => _base.url,
     FileImage() => _base.file.path,
-    _ => throw UnimplementedError(),
+    _ => throw UnsupportedError("Unsupported base image provider $_base"),
   };
 
   @override

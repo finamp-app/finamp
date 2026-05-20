@@ -47,6 +47,27 @@ sealed class FinampPlayableDto extends FinampPlayable {
   @override
   String get id => item.id.raw;
 
+  factory FinampPlayableDto.fromItem(BaseItemDto item, {QueueItemSource? source, ResolvedSortConfig? sortOverride}) {
+    source ??= QueueItemSource.fromBaseItem(item);
+    return switch (BaseItemDtoType.fromItem(item)) {
+      BaseItemDtoType.album => Album(item, source: source),
+      BaseItemDtoType.playlist => Playlist(
+        item,
+        source: source,
+        sortConfig: sortOverride ?? SortAndFilterConfiguration.defaultInAlbumSort,
+      ),
+      BaseItemDtoType.artist => GenericPlayableItem.defaultSort(item),
+      BaseItemDtoType.genre => GenericPlayableItem.defaultSort(item),
+      BaseItemDtoType.track => Track(item, source: source),
+      BaseItemDtoType.collection => JellyfinCollection(
+        item,
+        source: source,
+        sortConfig: sortOverride ?? SortAndFilterConfiguration.defaultSort,
+      ),
+      _ => throw UnsupportedError("Unexpected BaseItemDto type: ${item.type}"),
+    };
+  }
+
   @override
   bool equalsHelperChain(Object other) {
     return other is FinampPlayableDto && item == other.item && super.equalsHelperChain(other);
@@ -59,10 +80,10 @@ sealed class FinampPlayableDto extends FinampPlayable {
 sealed class FinampSortable<ChildType extends FinampDisplayableOrPlayable> extends FinampDisplayable<ChildType> {
   const FinampSortable({required this.sortConfig, required super.source});
 
-  final SortAndFilterConfiguration sortConfig;
+  final ResolvedSortConfig sortConfig;
 
   // TODO consider some sort of isValid method to make sure the incoming config makes sense?
-  FinampSortable copyWith(SortAndFilterConfiguration newSort);
+  FinampSortable copyWith(ResolvedSortConfig newSort);
 }
 
 //
@@ -143,7 +164,7 @@ sealed class _SortableItem<ChildType extends FinampPlayableDto> extends FinampPl
       }());
 
   @override
-  final SortAndFilterConfiguration sortConfig;
+  final ResolvedSortConfig sortConfig;
 
   @override
   bool equalsHelperChain(Object other) {
@@ -159,7 +180,7 @@ sealed class _SortablePagedPlayable<ChildType extends FinampPlayable> extends Fi
   _SortablePagedPlayable({required super.source, required this.sortConfig});
 
   @override
-  final SortAndFilterConfiguration sortConfig;
+  final ResolvedSortConfig sortConfig;
 
   @override
   bool equalsHelperChain(Object other) {

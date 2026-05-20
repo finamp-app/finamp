@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/HomeScreen/home_screen_content.dart';
+import 'package:finamp/components/MusicScreen/item_card.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
@@ -302,7 +303,7 @@ class QuickActionConfigMenuState extends ConsumerState<QuickActionConfigMenu> {
         }),
       ),
       GlobalSearchBox(notifier, height: height, initialItem: widget.initialValue?.itemId, showTracks: true),
-      SizedBox(height: 8.0),
+      SizedBox(height: 20.0),
       ValueListenableBuilder(
         valueListenable: notifier,
         builder: (context, value, _) {
@@ -813,6 +814,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
             padding: const EdgeInsets.only(left: 4.0),
             child: Text(context.l10n.sortBy, style: Theme.of(context).textTheme.bodyMedium),
           ),
+          // TODO hide this for albums - or allow sort for them?
           if (selectedSectionType != HomeScreenSectionType.queues)
             SortAndFilterRow(
               tabType: selectedSectionType == HomeScreenSectionType.collection
@@ -992,9 +994,16 @@ class SectionPreview extends ConsumerWidget {
                 )
               : Theme.of(context).textTheme.bodyMedium,
         ),
-        sectionInfo != null
-            ? HomeScreenSectionContent(sectionInfo: sectionInfo!)
-            : SizedBox(height: 120, child: Center(child: Text(context.l10n.sectionConfigInvalid))),
+        SizedBox(
+          height: calculateItemCollectionCardHeight(
+            ref: ref,
+            sectionInfo: sectionInfo,
+            itemType: sectionInfo == null ? BaseItemDtoType.track : null,
+          ),
+          child: sectionInfo != null
+              ? HomeScreenSectionContent(sectionInfo: sectionInfo!)
+              : Center(child: Text(context.l10n.sectionConfigInvalid)),
+        ),
       ],
     );
   }
@@ -1041,6 +1050,8 @@ class _GlobalSearchBoxState extends ConsumerState<GlobalSearchBox> {
       return Text(context.l10n.searchNotAvailibleWhileOffline);
     }
 
+    final dropdown = _getDropdown();
+
     return Column(
       children: [
         TextField(
@@ -1051,47 +1062,68 @@ class _GlobalSearchBoxState extends ConsumerState<GlobalSearchBox> {
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.search,
           /*onChanged: (value) {
-        if (debounce?.isActive ?? false) debounce!.cancel();
-        debounce = Timer(const Duration(milliseconds: 400), () {
-          onUpdateSearchQuery?.call(value);
-        });
-      },*/
+            if (debounce?.isActive ?? false) debounce!.cancel();
+            debounce = Timer(const Duration(milliseconds: 400), () {
+              onUpdateSearchQuery?.call(value);
+            });
+          },*/
+          decoration: InputDecoration(
+            hintText: MaterialLocalizations.of(context).searchFieldLabel,
+            filled: true,
+            fillColor: Color.alphaBlend(
+              ColorScheme.of(context).onSurface.withOpacity(0.1),
+              ColorScheme.of(context).surface,
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            floatingLabelBehavior: FloatingLabelBehavior.never,
+            border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
+          ),
           onSubmitted: (value) => setState(() {
             searchTerm = value;
             widget.notifier.value = null;
           }),
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: MaterialLocalizations.of(context).searchFieldLabel,
-            contentPadding: EdgeInsets.only(left: 4.0, top: 8.0, bottom: 8.0),
-            isDense: true,
-          ),
         ),
-        _getDropdown(),
+        if (dropdown != null) Padding(padding: EdgeInsets.only(top: 12), child: dropdown),
         ValueListenableBuilder(
           valueListenable: widget.notifier,
           builder: (_, value, _) {
             if (value == null) return SizedBox.shrink();
-            return ItemWrapper(item: value);
+            return Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: ItemWrapper(item: value),
+            );
           },
         ),
       ],
     );
   }
 
-  Widget _getDropdown() {
+  Widget? _getDropdown() {
     if (searchTerm == "") {
-      return SizedBox.shrink();
+      return null;
     }
 
     final items = ref.watch(globalSearchProvider(searchTerm, includeTracks: widget.showTracks));
 
     if (items.isLoading) {
-      return Text(context.l10n.loading);
+      return _placeholderText(
+        context,
+        Row(
+          spacing: 15.0,
+          children: [
+            SizedBox(
+              width: kMinInteractiveDimension * 0.65,
+              height: kMinInteractiveDimension * 0.65,
+              child: CircularProgressIndicator(strokeWidth: 1, color: DefaultTextStyle.of(context).style.color),
+            ),
+            Text(context.l10n.loading),
+          ],
+        ),
+      );
     }
 
     if (items.value == null || items.value!.isEmpty) {
-      return Text(context.l10n.noSearchResults);
+      return _placeholderText(context, Text(context.l10n.noSearchResults));
     }
 
     final dropdownEntries = items.value!.map((collection) {
@@ -1114,49 +1146,62 @@ class _GlobalSearchBoxState extends ConsumerState<GlobalSearchBox> {
       );
     }).toList();
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return DropdownMenu<BaseItemDto>(
-          width: constraints.maxWidth,
-          menuHeight: widget.height,
-          dropdownMenuEntries: dropdownEntries,
-          hintText: context.l10n.collectionDropdownHint,
-          //errorText: collections.isEmpty ? "You don't have any Jellyfin collections yet*" : null,
-          //initialSelection: selectedCollectionId,
-          enableFilter: true,
-          enableSearch: true,
-          requestFocusOnTap: true,
-          onSelected: (selectedCollection) {
-            widget.notifier.value = selectedCollection;
-          },
-          textStyle: Theme.of(context).textTheme.bodyMedium,
-          trailingIcon: const Icon(TablerIcons.chevron_down),
-          selectedTrailingIcon: const Icon(TablerIcons.chevron_up),
-          menuStyle: MenuStyle(
-            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-            ),
-            backgroundColor: WidgetStateProperty.all<Color>(
-              Color.alphaBlend(ColorScheme.of(context).onSurface.withOpacity(0.2), ColorScheme.of(context).surface),
-            ),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
-            filled: true,
-            fillColor: Color.alphaBlend(
-              ColorScheme.of(context).primary.withOpacity(0.075),
-              ColorScheme.of(context).onSurface.withOpacity(0.1),
-            ),
-            visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
-            errorBorder: InputBorder.none,
-            disabledBorder: InputBorder.none,
-            isDense: true,
-            contentPadding: EdgeInsets.only(left: 8.0),
-          ),
-        );
+    return DropdownMenu<BaseItemDto>(
+      menuHeight: widget.height,
+      dropdownMenuEntries: dropdownEntries,
+      hintText: context.l10n.collectionDropdownHint,
+      //errorText: collections.isEmpty ? "You don't have any Jellyfin collections yet*" : null,
+      //initialSelection: selectedCollectionId,
+      enableFilter: true,
+      enableSearch: true,
+      requestFocusOnTap: true,
+      onSelected: (selectedCollection) {
+        widget.notifier.value = selectedCollection;
       },
+      textStyle: Theme.of(context).textTheme.bodyMedium,
+      trailingIcon: const Icon(TablerIcons.chevron_down),
+      selectedTrailingIcon: const Icon(TablerIcons.chevron_up),
+      expandedInsets: const EdgeInsets.all(0.0),
+      menuStyle: MenuStyle(
+        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        ),
+        backgroundColor: WidgetStateProperty.all<Color>(
+          Color.alphaBlend(ColorScheme.of(context).onSurface.withOpacity(0.2), ColorScheme.of(context).surface),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
+        filled: true,
+        fillColor: Color.alphaBlend(
+          ColorScheme.of(context).primary.withOpacity(0.075),
+          ColorScheme.of(context).onSurface.withOpacity(0.1),
+        ),
+        visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
+        errorBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+        isDense: true,
+        contentPadding: EdgeInsets.only(left: 8.0),
+      ),
+    );
+  }
+
+  Widget _placeholderText(BuildContext context, Widget child) {
+    return Container(
+      width: double.infinity,
+      alignment: AlignmentDirectional.centerStart,
+      height: kMinInteractiveDimension,
+      padding: EdgeInsets.only(left: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: Color.alphaBlend(
+          ColorScheme.of(context).primary.withOpacity(0.075),
+          ColorScheme.of(context).onSurface.withOpacity(0.1),
+        ),
+      ),
+      child: child,
     );
   }
 }

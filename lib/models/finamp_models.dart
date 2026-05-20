@@ -26,6 +26,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../builders/annotations.dart';
+import '../components/MusicScreen/sort_and_filter_row.dart';
 import '../extensions/localizations.dart';
 import '../services/finamp_settings_helper.dart';
 import 'jellyfin_models.dart';
@@ -4510,6 +4511,8 @@ class HomeScreenSectionConfiguration {
   @override
   @ignore
   int get hashCode => Object.hash(type, itemId, contentType, sortAndFilterConfiguration);
+
+  String get id => "home-section-$hashCode";
 }
 
 @HiveType(typeId: 115)
@@ -4805,19 +4808,11 @@ class SortAndFilterConfiguration {
     );
   }
 
-  static const defaultSort = SortAndFilterConfiguration(
-    sortBy: SortBy.sortName,
-    sortOrder: SortOrder.ascending,
-    filters: {},
-  );
+  static const defaultSort = ResolvedSortConfig.defaultSort;
 
-  static const defaultInAlbumSort = SortAndFilterConfiguration(
-    sortBy: SortBy.defaultOrder,
-    sortOrder: SortOrder.ascending,
-    filters: {},
-  );
+  static const defaultInAlbumSort = ResolvedSortConfig.defaultInAlbumSort;
 
-  static SortAndFilterConfiguration defaultForItem(BaseItemDto item) {
+  static ResolvedSortConfig defaultForItem(BaseItemDto item) {
     if ([BaseItemDtoType.album, BaseItemDtoType.playlist].contains(BaseItemDtoType.fromItem(item))) {
       return defaultInAlbumSort;
     } else {

@@ -225,8 +225,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
       child: Scaffold(
         extendBody: true,
         appBar: FinampMusicScreenHeader(
-          backButtonInsteadOfTabs: !widget.showHeader,
-          title: widget.singleTabConfig?.getTitle(context),
+          singleTabConfig: widget.singleTabConfig,
           sortedTabs: sortedTabs.toList(),
           tabController: _tabController,
           onSearch: () => setState(() {
@@ -284,7 +283,6 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                 FinampDisplayable? displayable;
                 if (widget.singleTabConfig != null) {
                   displayable = ref.watch(resolveSectionProvider(widget.singleTabConfig!)).value;
-                  // TODO we need to inject the sortConfig into the non-musicScreenPlayable
                   // TODO precache resolved sections?  Or remove baked in item somehow?  Or save items into home screen settings?
                   if (displayable == null) {
                     return SizedBox.shrink();
@@ -293,7 +291,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                     displayable = displayable.copyWith(
                       ref
                           .watch(resolveSortProvider(sortAndFilterControllerMap[contentTabType]!))
-                          .copyWith(searchQuery: searchQuery),
+                          .copyWithSearch(searchQuery),
                     );
                   }
                 } else {
@@ -304,7 +302,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                     source: musicScreenSource,
                     sortConfig: ref
                         .watch(resolveSortProvider(sortAndFilterControllerMap[contentTabType]!))
-                        .copyWith(searchQuery: searchQuery),
+                        .copyWithSearch(searchQuery),
                   );
                 }
 

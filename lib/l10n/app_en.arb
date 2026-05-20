@@ -3292,7 +3292,7 @@
   "@currentLibrary": {
     "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
   },
-  "loading": "Loading!",
+  "loading": "Loading...",
   "@loading": {
     "description": "Message when items or libraries are loading in home screen section editor"
   },
@@ -3622,5 +3622,13 @@
         "type": "String"
       }
     }
+  },
+  "customizeHomeScreen": "Customize home screen",
+  "@customizeHomeScreen": {
+    "description": "Label for home screen customize button"
+  },
+  "connectedTo": "Connected to",
+  "@connectedTo": {
+    "description": "Server info in music screen menu"
   }
 }

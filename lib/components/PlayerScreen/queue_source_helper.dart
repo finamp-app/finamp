@@ -85,7 +85,7 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
       break;
     case QueueItemSourceType.homeScreenSection:
       final sectionInfo = FinampSettingsHelper.finampSettings.homeScreenConfiguration.sections.singleWhere(
-        (section) => section.toLocalisedString(context) == source.id,
+        (section) => section.id == source.id,
       );
       Navigator.of(
         context,
