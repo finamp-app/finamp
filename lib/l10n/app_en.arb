@@ -3308,5 +3308,13 @@
   "androidGainDisabled": "Switching to gain effect fallback due to initialization error.",
   "@androidGainDisabled": {
     "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+  },
+  "expandTrackTitlesTitle": "Expand long track titles",
+  "@expandTrackTitlesTitle": {
+    "description": "Title for the customization setting that lets long track titles wrap onto multiple lines instead of being truncated after two lines."
+  },
+  "expandTrackTitlesSubtitle": "Lets long track titles wrap onto as many lines as needed instead of being cut off. Useful for classical music and long titles.",
+  "@expandTrackTitlesSubtitle": {
+    "description": "Subtitle for the expand track titles toggle, explaining the wrapping behavior and use case."
   }
 }

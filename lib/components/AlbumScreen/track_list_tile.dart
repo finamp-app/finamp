@@ -811,31 +811,37 @@ class TrackListItemTile extends ConsumerWidget {
           AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverCornerRadius)),
       ],
     );
+    final expandTrackTitles = ref.watch(finampSettingsProvider.expandTrackTitles);
+    final titleTextWidget = Text(
+      baseItem.name ?? AppLocalizations.of(context)!.unknownName,
+      style: TextStyle(
+        color: Theme.of(context).textTheme.bodyLarge!.color,
+        fontSize: 15.5,
+        fontWeight: FontWeight.w500,
+        height: 1.1,
+      ),
+      overflow: expandTrackTitles ? TextOverflow.visible : TextOverflow.ellipsis,
+      softWrap: true,
+      maxLines: expandTrackTitles ? null : 2,
+    );
     final tileTitle = ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: defaultTileHeight),
+      constraints: expandTrackTitles ? const BoxConstraints() : const BoxConstraints(maxHeight: defaultTileHeight),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: expandTrackTitles ? MainAxisAlignment.start : MainAxisAlignment.spaceEvenly,
+        mainAxisSize: expandTrackTitles ? MainAxisSize.min : MainAxisSize.max,
         children: [
-          Flexible(
-            fit: FlexFit.loose,
-            flex: 3,
-            child: Text(
-              baseItem.name ?? AppLocalizations.of(context)!.unknownName,
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodyLarge!.color,
-                fontSize: 15.5,
-                fontWeight: FontWeight.w500,
-                height: 1.1,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+          if (expandTrackTitles)
+            Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: titleTextWidget)
+          else
+            Flexible(
+              fit: FlexFit.loose,
+              flex: 3,
+              child: titleTextWidget,
             ),
-          ),
           Flexible(
             fit: FlexFit.loose,
-            flex: 2,
+            flex: expandTrackTitles ? 0 : 2,
             child: Text.rich(
               overflow: TextOverflow.clip,
               softWrap: false,
