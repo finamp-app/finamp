@@ -20,6 +20,7 @@ import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/music_screen_provider.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/quick_actions_service.dart';
@@ -281,13 +282,29 @@ class HomeScreenSection extends ConsumerWidget {
           ],
           // TODO implement collection downloads
           if (sectionDisplayable is FinampPlayableDto &&
-              BaseItemDtoType.fromItem((sectionDisplayable as FinampPlayableDto).item) != BaseItemDtoType.collection)
+              ![
+                BaseItemDtoType.collection,
+                BaseItemDtoType.artist,
+              ].contains(BaseItemDtoType.fromItem((sectionDisplayable as FinampPlayableDto).item)))
             DownloadButton(
               item: DownloadStub.fromItem(
                 type: BaseItemDtoType.fromItem((sectionDisplayable as FinampPlayableDto).item) == BaseItemDtoType.track
                     ? DownloadItemType.track
                     : DownloadItemType.collection,
                 item: (sectionDisplayable as FinampPlayableDto).item,
+              ),
+              allowServerDelete: false,
+            ),
+          if (sectionDisplayable is FinampPlayableDto &&
+              BaseItemDtoType.fromItem((sectionDisplayable as FinampPlayableDto).item) == BaseItemDtoType.artist)
+            DownloadButton(
+              item: DownloadStub.fromFinampCollection(
+                FinampCollection(
+                  type: FinampCollectionType.collectionWithLibraryFilter,
+                  // TODO allow LibraryIds?
+                  library: ref.watch(FinampUserHelper.finampCurrentUserProvider)!.currentView,
+                  item: (sectionDisplayable as FinampPlayableDto).item,
+                ),
               ),
               allowServerDelete: false,
             ),
@@ -317,7 +334,31 @@ class HomeScreenSection extends ConsumerWidget {
                   sourceItem: playable,
                 );
               },
-        sectionContentSliver: SliverToBoxAdapter(child: HomeScreenSectionContent(sectionInfo: sectionInfo)),
+        sectionContentSliver: SliverToBoxAdapter(
+          /* child: ShaderMask(
+            shaderCallback: (bounds) {
+              final leftFade = 9.0 / bounds.width;
+              final rightFade = 20.0 / bounds.width;
+              final leftOffset = 5.0 / bounds.width;
+              final rightOffset = 20.0 / bounds.width;
+              return LinearGradient(
+                colors: [
+                  Color.fromARGB(0, 255, 255, 255),
+                  Color.fromARGB(0, 255, 255, 255),
+                  Color.fromARGB(255, 255, 255, 255),
+                  Color.fromARGB(255, 255, 255, 255),
+                  Color.fromARGB(0, 255, 255, 255),
+                  Color.fromARGB(0, 255, 255, 255),
+                ],
+                stops: [0.0, leftOffset, leftOffset + leftFade, 1.0 - rightOffset - rightFade, 1.0 - rightOffset, 1.0],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ).createShader(bounds);
+            },
+            child: HomeScreenSectionContent(sectionInfo: sectionInfo),
+          ) */
+          child: HomeScreenSectionContent(sectionInfo: sectionInfo),
+        ),
       ),
     );
   }
@@ -370,10 +411,17 @@ class HomeScreenSectionContent extends ConsumerWidget {
           child: ListView.separated(
             addAutomaticKeepAlives: true,
             scrollDirection: Axis.horizontal,
-            itemCount: items.length + 1,
+            itemCount: items.length + 2,
             itemBuilder: (context, rawIndex) {
               if (rawIndex == 0) {
                 return SizedBox(width: 4.0); // initial padding, + separator
+              } else if (rawIndex == items.length + 1) {
+                // Add extra right padding if we have hit the end of list and there are no more items available
+                if (items.length < homeScreenSectionItemLimit) {
+                  return SizedBox(width: 40);
+                } else {
+                  return SizedBox(width: 0);
+                }
               }
               final index = rawIndex - 1;
               switch (items[index]) {

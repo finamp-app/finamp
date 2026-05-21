@@ -575,6 +575,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
           }
           if (searchListener.value!.id == widget.initialState.itemId) {
             collectionSortController.updateConfiguration(widget.initialState.sortAndFilterConfiguration);
+            collectionContent = widget.initialState.contentType;
           } else {
             collectionSortController.updateConfiguration(
               collectionContent == ContentType.inPlaylist
@@ -703,6 +704,64 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
             ),
           ],
         ),
+        if (selectedCollection != null &&
+            [
+              BaseItemDtoType.artist,
+              BaseItemDtoType.genre,
+              BaseItemDtoType.collection,
+            ].contains(BaseItemDtoType.fromItem(selectedCollection!))) ...[
+          SizedBox(height: 20.0),
+          Padding(
+            padding: const EdgeInsets.only(left: 4.0, bottom: 4.0),
+            child: Text(context.l10n.itemTypeFilterHeader, style: Theme.of(context).textTheme.bodyMedium),
+          ),
+          Builder(
+            builder: (context) {
+              final type = BaseItemDtoType.fromItem(selectedCollection!);
+              final allowedSelections = switch (type) {
+                BaseItemDtoType.artist => [ContentType.tracks, ContentType.performingArtists, ContentType.albumArtists],
+                BaseItemDtoType.genre => [
+                  ContentType.tracks,
+                  ContentType.genericArtists,
+                  ContentType.playlists,
+                  ContentType.albums,
+                ],
+                BaseItemDtoType.collection => [
+                  ContentType.tracks,
+                  ContentType.genericArtists,
+                  ContentType.playlists,
+                  ContentType.albums,
+                  ContentType.genres,
+                  ContentType.mixed,
+                ],
+                _ => throw "???",
+              };
+              return FinampSettingsDropdown<ContentType?>(
+                dropdownItems: allowedSelections
+                    .map(
+                      (e) => DropdownMenuEntry<ContentType?>(
+                        value: e,
+                        label: switch (e) {
+                          ContentType.performingArtists => context.l10n.performingArtistFilter,
+                          ContentType.albumArtists => context.l10n.albumArtistFilter,
+                          ContentType.mixed => context.l10n.allTypes,
+                          _ => e.toLocalisedString(context),
+                        },
+                      ),
+                    )
+                    .toList(),
+                selectedValue: collectionContent,
+                onSelected: (selectedContentType) {
+                  if (selectedContentType != null) {
+                    setState(() {
+                      collectionContent = selectedContentType;
+                    });
+                  }
+                },
+              );
+            },
+          ),
+        ],
       ],
       if (selectedSectionType == HomeScreenSectionType.tabView) ...[
         SizedBox(height: 20.0),

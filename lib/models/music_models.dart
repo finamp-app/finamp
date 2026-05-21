@@ -27,11 +27,11 @@ class Track extends FinampPlayableDto {
 
   @override
   bool equalsHelper(Object other) {
-    return other is Track && equalsHelperChain(other);
+    return other is Track;
   }
 
   @override
-  int get hashHelper => Object.hash(Track, hashHelperChain);
+  int get hashHelper => (Track as Object).hashCode;
 }
 
 class Album extends FinampPlayableDto implements FinampUnpagedPlayable<Track> {
@@ -91,9 +91,10 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
       case ContentType.playlists:
         assert(ChildType == Playlist);
       case ContentType.genres:
+        assert(ChildType == Genre);
       case ContentType.performingArtists:
       case ContentType.albumArtists:
-        assert(ChildType == GenericPlayableItem);
+        assert(ChildType == Artist);
       case ContentType.tracks:
         assert(ChildType == Track);
       case ContentType.home:
@@ -119,13 +120,10 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
             as MusicScreenPlayable<ChildType>;
       case ContentType.performingArtists:
       case ContentType.albumArtists:
+        return MusicScreenPlayable<Artist>._(tab: tab, library: library, source: source, sortConfig: sortConfig)
+            as MusicScreenPlayable<ChildType>;
       case ContentType.genres:
-        return MusicScreenPlayable<GenericPlayableItem>._(
-              tab: tab,
-              library: library,
-              source: source,
-              sortConfig: sortConfig,
-            )
+        return MusicScreenPlayable<Genre>._(tab: tab, library: library, source: source, sortConfig: sortConfig)
             as MusicScreenPlayable<ChildType>;
       case ContentType.tracks:
         return MusicScreenPlayable<Track>._(tab: tab, library: library, source: source, sortConfig: sortConfig)
@@ -145,12 +143,28 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
       case ContentType.albums:
         return Album(item, source: source);
       case ContentType.playlists:
-        return Playlist(item, source: source, sortConfig: sortConfig);
+        return Playlist(item, source: source, sortConfig: SortAndFilterConfiguration.defaultInAlbumSort);
       case ContentType.genres:
+        return Genre(
+          item,
+          source: source,
+          sortConfig: SortAndFilterConfiguration.defaultSort,
+          type: GenreChildType.tracks,
+        );
       case ContentType.performingArtists:
+        return Artist(
+          item,
+          source: source,
+          sortConfig: SortAndFilterConfiguration.defaultSort,
+          type: ArtistChildType.appearsOnAlbums,
+        );
       case ContentType.albumArtists:
-        // TODO return real item types
-        return GenericPlayableItem(item, sortConfig: sortConfig);
+        return Artist(
+          item,
+          source: source,
+          sortConfig: SortAndFilterConfiguration.defaultSort,
+          type: ArtistChildType.albumsFromArtist,
+        );
       case ContentType.home:
       case ContentType.genericArtists:
       case ContentType.inPlaylist:
@@ -173,11 +187,10 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
   };
 
   @override
-  bool equalsHelper(Object other) =>
-      other is MusicScreenPlayable && tab == other.tab && library == other.library && equalsHelperChain(other);
+  bool equalsHelper(Object other) => other is MusicScreenPlayable && tab == other.tab && library == other.library;
 
   @override
-  int get hashHelper => Object.hash(tab, library, hashHelperChain);
+  int get hashHelper => Object.hash(tab, library);
 
   @override
   String get id => "finamp-music-screen-$hashCode";
@@ -226,7 +239,7 @@ class PrecalculatedPlayable extends FinampUnpagedPlayable<Track> {
 }
 
 // TODO get rid of this once we have all the real types.
-class GenericPlayableItem extends _SortableItem<Track> {
+/*class GenericPlayableItem extends _SortableItem<Track> {
   GenericPlayableItem(super.item, {ResolvedSortConfig? sortConfig})
     : super(source: QueueItemSource.fromBaseItem(item), sortConfig: sortConfig ?? ResolvedSortConfig.defaultSort);
 
@@ -234,25 +247,25 @@ class GenericPlayableItem extends _SortableItem<Track> {
       GenericPlayableItem(item, sortConfig: ResolvedSortConfig.defaultInAlbumSort);
 
   @override
-  bool equalsHelper(Object other) => other is Playlist;
+  bool equalsHelper(Object other) => other is GenericPlayableItem;
 
   @override
-  int get hashHelper => (Playlist as Object).hashCode;
+  int get hashHelper => (GenericPlayableItem as Object).hashCode;
 
   @override
   GenericPlayableItem copyWith(ResolvedSortConfig newSort) => GenericPlayableItem(item, sortConfig: newSort);
-}
+}*/
 
 class LatestQueues extends FinampSortable<PlayableQueue> implements FinampUnpagedDisplayable<PlayableQueue> {
   LatestQueues({required super.sortConfig, required super.source});
 
   @override
   bool equalsHelper(Object other) {
-    return other is LatestQueues && equalsHelperChain(other);
+    return other is LatestQueues;
   }
 
   @override
-  int get hashHelper => Object.hash(LatestQueues, hashHelperChain);
+  int get hashHelper => (LatestQueues as Object).hashCode;
 
   @override
   String get id => "latest-queues";
@@ -269,11 +282,11 @@ class PlayableQueue extends FinampPlayable {
   @override
   bool equalsHelper(Object other) {
     // Only identical() queues are equal.  That's probably fine?
-    return other is PlayableQueue && other.queue == queue && equalsHelperChain(other);
+    return other is PlayableQueue && other.queue == queue;
   }
 
   @override
-  int get hashHelper => Object.hash(PlayableQueue, queue, hashHelperChain);
+  int get hashHelper => Object.hash(PlayableQueue, queue);
 
   @override
   String get id => "latest-queues";
@@ -301,11 +314,11 @@ class InstantMix extends FinampPlayableDto {
 
   @override
   bool equalsHelper(Object other) {
-    return other is InstantMix && equalsHelperChain(other);
+    return other is InstantMix;
   }
 
   @override
-  int get hashHelper => Object.hash(InstantMix, hashHelperChain);
+  int get hashHelper => (InstantMix as Object).hashCode;
 }
 
 class JellyfinCollection extends _SortableItem<FinampPlayableDto> {
@@ -331,3 +344,91 @@ class JellyfinCollection extends _SortableItem<FinampPlayableDto> {
   JellyfinCollection copyWith(ResolvedSortConfig newSort) =>
       JellyfinCollection(item, source: source, sortConfig: newSort);
 }
+
+class Artist<ChildType extends FinampPlayableDto> extends _SortableItem<ChildType> {
+  Artist._(super.item, {required super.source, required super.sortConfig, required this.type}) {
+    if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.artist) {
+      throw UnsupportedError("Wrong BaseItemDto type: ${item.type}");
+    }
+  }
+
+  final ArtistChildType type;
+
+  factory Artist(
+    BaseItemDto item, {
+    required QueueItemSource source,
+    required ResolvedSortConfig sortConfig,
+    required ArtistChildType type,
+  }) {
+    switch (type) {
+      case ArtistChildType.albumsFromArtist || ArtistChildType.appearsOnAlbums:
+        return Artist<Album>._(item, source: source, sortConfig: sortConfig, type: type) as Artist<ChildType>;
+      case ArtistChildType.tracks:
+        return Artist<Track>._(item, source: source, sortConfig: sortConfig, type: type) as Artist<ChildType>;
+    }
+  }
+
+  factory Artist.fromItem(BaseItemDto item, {ResolvedSortConfig? sortConfig, ArtistChildType? type}) => Artist(
+    item,
+    source: QueueItemSource.fromBaseItem(item),
+    sortConfig: sortConfig ?? ResolvedSortConfig.defaultSort,
+    type: type ?? ArtistChildType.tracks,
+  );
+
+  @override
+  bool equalsHelper(Object other) => other is Artist && type == other.type;
+
+  @override
+  int get hashHelper => Object.hash(Artist, type);
+
+  @override
+  Artist copyWith(ResolvedSortConfig newSort) => Artist(item, source: source, sortConfig: newSort, type: type);
+}
+
+enum ArtistChildType { tracks, albumsFromArtist, appearsOnAlbums }
+
+class Genre<ChildType extends FinampPlayableDto> extends _SortableItem<ChildType> {
+  Genre._(super.item, {required super.source, required super.sortConfig, required this.type}) {
+    if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.genre) {
+      throw UnsupportedError("Wrong BaseItemDto type: ${item.type}");
+    }
+  }
+
+  final GenreChildType type;
+
+  factory Genre(
+    BaseItemDto item, {
+    required QueueItemSource source,
+    required ResolvedSortConfig sortConfig,
+    required GenreChildType type,
+  }) {
+    switch (type) {
+      case GenreChildType.tracks:
+        return Genre<Track>._(item, source: source, sortConfig: sortConfig, type: type) as Genre<ChildType>;
+      case GenreChildType.artists:
+        return Genre<Artist>._(item, source: source, sortConfig: sortConfig, type: type) as Genre<ChildType>;
+      case GenreChildType.albums:
+        return Genre<Album>._(item, source: source, sortConfig: sortConfig, type: type) as Genre<ChildType>;
+      case GenreChildType.playlists:
+        return Genre<Playlist>._(item, source: source, sortConfig: sortConfig, type: type) as Genre<ChildType>;
+    }
+  }
+
+  factory Genre.fromItem(BaseItemDto item, {ResolvedSortConfig? sortConfig, GenreChildType? type}) => Genre(
+    item,
+    source: QueueItemSource.fromBaseItem(item),
+    sortConfig: sortConfig ?? ResolvedSortConfig.defaultSort,
+    type: type ?? GenreChildType.tracks,
+  );
+
+  @override
+  bool equalsHelper(Object other) => other is Genre && type == other.type;
+
+  @override
+  int get hashHelper => Object.hash(Genre, type);
+
+  @override
+  Genre copyWith(ResolvedSortConfig newSort) => Genre(item, source: source, sortConfig: newSort, type: type);
+}
+
+enum GenreChildType { tracks, albums, artists, playlists }

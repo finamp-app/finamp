@@ -300,7 +300,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                               Consumer(
                                 builder: (context, ref, _) {
                                   if (ref.watch(finampSettingsProvider.isOffline)) return SizedBox.shrink();
-                                  final userInfo = ref.watch(currentUserInfoProvider);
+                                  final userInfo = ref.watch(UserInfoProviders.currentUserInfoProvider);
                                   if (userInfo.value != null && userInfo.value!.jellyfinUser?.primaryImageTag != null) {
                                     return Padding(
                                       padding: const EdgeInsets.all(1.5),

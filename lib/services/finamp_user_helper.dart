@@ -132,44 +132,46 @@ class UserInfo {
   }
 }
 
-final AutoDisposeFutureProviderFamily<UserInfo?, String> userInfoProvider = FutureProvider.autoDispose
-    .family<UserInfo?, String>((ref, userId) async {
-      final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+class UserInfoProviders {
+  static final AutoDisposeFutureProviderFamily<UserInfo?, String> userInfoProvider = FutureProvider.autoDispose
+      .family<UserInfo?, String>((ref, userId) async {
+        final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
-      final currentUserInfo = ref.watch(FinampUserHelper.finampCurrentUserProvider);
-      final bool isCurrentUser = currentUserInfo?.id == userId;
-      UserInfo userInfo = UserInfo(jellyfinUser: null, finampUser: currentUserInfo);
-      finampUserHelperLogger.fine("Fetching user info for '$userId'");
+        final currentUserInfo = ref.watch(FinampUserHelper.finampCurrentUserProvider);
+        final bool isCurrentUser = currentUserInfo?.id == userId;
+        UserInfo userInfo = UserInfo(jellyfinUser: null, finampUser: currentUserInfo);
+        finampUserHelperLogger.fine("Fetching user info for '$userId'");
 
-      //!!! return last-known value if offline, instead of making a network request
-      if (ref.watch(finampSettingsProvider.isOffline)) {
-        return ref.state.value;
-      }
-
-      UserDto jellyfinUser;
-      try {
-        final user = await jellyfinApiHelper.getUserById(userId);
-        if (user == null) {
-          throw Exception("Received null user info");
+        //!!! return last-known value if offline, instead of making a network request
+        if (ref.watch(finampSettingsProvider.isOffline)) {
+          return ref.state.value;
         }
-        jellyfinUser = user;
-      } catch (e) {
-        finampUserHelperLogger.severe("Failed to fetch user '$userId':", e);
-        return null;
-      }
 
-      userInfo = UserInfo(jellyfinUser: jellyfinUser, finampUser: isCurrentUser ? currentUserInfo : null);
+        UserDto jellyfinUser;
+        try {
+          final user = await jellyfinApiHelper.getUserById(userId);
+          if (user == null) {
+            throw Exception("Received null user info");
+          }
+          jellyfinUser = user;
+        } catch (e) {
+          finampUserHelperLogger.severe("Failed to fetch user '$userId':", e);
+          return null;
+        }
 
-      finampUserHelperLogger.fine("Fetched user info for '$userId': $userInfo");
+        userInfo = UserInfo(jellyfinUser: jellyfinUser, finampUser: isCurrentUser ? currentUserInfo : null);
 
-      return userInfo;
-    });
+        finampUserHelperLogger.fine("Fetched user info for '$userId': $userInfo");
 
-/// Provider for info about the currently connected server
-final currentUserInfoProvider = Provider<AsyncValue<UserInfo?>>((ref) {
-  final currentUserId = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.id;
-  if (currentUserId != null) {
-    return ref.watch(userInfoProvider(currentUserId));
-  }
-  return const AsyncValue.data(null);
-});
+        return userInfo;
+      });
+
+  /// Provider for info about the currently connected server
+  static final currentUserInfoProvider = Provider<AsyncValue<UserInfo?>>((ref) {
+    final currentUserId = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.id;
+    if (currentUserId != null) {
+      return ref.watch(userInfoProvider(currentUserId));
+    }
+    return const AsyncValue.data(null);
+  });
+}

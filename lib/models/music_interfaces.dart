@@ -56,8 +56,18 @@ sealed class FinampPlayableDto extends FinampPlayable {
         source: source,
         sortConfig: sortOverride ?? SortAndFilterConfiguration.defaultInAlbumSort,
       ),
-      BaseItemDtoType.artist => GenericPlayableItem.defaultSort(item),
-      BaseItemDtoType.genre => GenericPlayableItem.defaultSort(item),
+      BaseItemDtoType.artist => Artist(
+        item,
+        source: source,
+        sortConfig: SortAndFilterConfiguration.defaultSort,
+        type: ArtistChildType.tracks,
+      ),
+      BaseItemDtoType.genre => Genre(
+        item,
+        source: source,
+        sortConfig: SortAndFilterConfiguration.defaultSort,
+        type: GenreChildType.tracks,
+      ),
       BaseItemDtoType.track => Track(item, source: source),
       BaseItemDtoType.collection => JellyfinCollection(
         item,
@@ -196,7 +206,10 @@ sealed class _SortablePagedPlayable<ChildType extends FinampPlayable> extends Fi
 /// to make sure that all variables in the superclasses are included.
 mixin _NeedsEquals {
   @override
-  bool operator ==(Object other) => equalsHelper(other) && equalsHelperChain(other);
+  bool operator ==(Object other) {
+    assert(_validateEquals());
+    return equalsHelper(other) && equalsHelperChain(other);
+  }
 
   @override
   int get hashCode => Object.hash(hashHelper, hashHelperChain);
@@ -209,4 +222,28 @@ mixin _NeedsEquals {
 
   @mustCallSuper
   int get hashHelperChain => 0;
+
+  // Bad equals methods that return false when they shouldn't can lead to the providers loading indefinitely without errors
+  // This method double checks the subclasses equals method to help prevent that.
+  bool _validateEquals() {
+    final item = this as FinampDisplayableOrPlayable;
+    FinampDisplayableOrPlayable copy;
+    switch (item) {
+      case FinampSortable sortable:
+        copy = sortable.copyWith(sortable.sortConfig);
+      case PlayableQueue queue:
+        copy = PlayableQueue(queue: queue.queue, source: queue.source);
+      case Album album:
+        copy = Album(album.item, source: album.source);
+      case AlbumDisc disc:
+        copy = AlbumDisc(disc.item, tracks: disc.tracks);
+      case PrecalculatedPlayable precalc:
+        copy = PrecalculatedPlayable(source: precalc.source, tracks: precalc.tracks);
+      case Track track:
+        copy = Track(track.item, source: track.source);
+      case InstantMix mix:
+        copy = InstantMix(mix.item);
+    }
+    return equalsHelper(copy) && equalsHelperChain(copy) && hashCode == copy.hashCode && !identical(item, copy);
+  }
 }

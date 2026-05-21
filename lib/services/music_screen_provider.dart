@@ -69,7 +69,7 @@ class PagedContent extends _$PagedContent {
 
     _dependencies = [provider];
 
-    return PagingState(
+    return PagingState<int, FinampDisplayableOrPlayable>(
       pages: output == null ? null : [output],
       keys: output == null ? null : [0],
       isLoading: isLoading,
@@ -118,7 +118,7 @@ class PagedContent extends _$PagedContent {
 
     _dependencies = providers;
 
-    return PagingState(
+    return PagingState<int, FinampDisplayableOrPlayable>(
       pages: pages.isEmpty ? null : pages,
       keys: keys.isEmpty ? null : keys,
       isLoading: isLoading,

@@ -4771,6 +4771,8 @@ class SortAndFilterConfiguration {
 
   BaseItemDto? get genreFilter => filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter)?.extraBaseItem;
 
+  bool get favoritesFilter => filters.firstWhereOrNull((x) => x.type == ItemFilterType.isFavorite) !=null;
+
   SortAndFilterConfiguration copyWith({
     SortBy? sortBy,
     SortOrder? sortOrder,

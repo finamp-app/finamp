@@ -39,7 +39,7 @@ Future<void> showPlaylistActionsMenu({
       var themeColor = Theme.of(context).colorScheme.primary;
 
       final menuEntries = [
-        if (items.length == 1) MenuItemInfoHeader.condensed(item: GenericPlayableItem.defaultSort(items.first)),
+        if (items.length == 1) MenuItemInfoHeader.condensed(item: FinampPlayableDto.fromItem(items.first)),
         if (items.length == 1) const SizedBox(height: 16),
         if (items.length == 1)
           Consumer(

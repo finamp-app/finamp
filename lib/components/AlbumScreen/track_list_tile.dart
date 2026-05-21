@@ -160,7 +160,7 @@ class TrackListTile extends ConsumerWidget {
         return await onConfirmPlayableDismiss(
           followUpAction: followUpAction,
           // This is only used as source, so sort doesn't matter.
-          sourceItem: GenericPlayableItem.defaultSort(parentItem ?? item),
+          sourceItem: Genre.fromItem(parentItem ?? item),
           tracks: [item],
         );
       },

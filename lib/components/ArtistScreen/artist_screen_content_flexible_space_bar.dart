@@ -76,7 +76,7 @@ class ArtistScreenContentFlexibleSpaceBar extends ConsumerWidget {
                   children: [
                     PlaybackActionRow(
                       compactLayout: true,
-                      item: GenericPlayableItem(parentItem, sortConfig: sortConfig),
+                      item: Artist.fromItem(parentItem, sortConfig: sortConfig),
                       popContext: false,
                     ),
                     if (sortConfig.filters.isNotEmpty) ...[

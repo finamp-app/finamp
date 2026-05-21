@@ -3630,5 +3630,9 @@
   "connectedTo": "Connected to",
   "@connectedTo": {
     "description": "Server info in music screen menu"
-  }
+  },
+  "performingArtistFilter": "Albums (Appears on)",
+  "albumArtistFilter": "Albums (Album Artist of)",
+  "allTypes": "All Types",
+  "itemTypeFilterHeader": "Child Type"
 }

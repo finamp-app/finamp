@@ -27,7 +27,7 @@ Future<void> showModalArtistMenu({
   required BaseItemDto baseItem,
   FinampStorableQueueInfo? queueInfo,
 }) async {
-  final playableItem = GenericPlayableItem.defaultSort(baseItem);
+  final playableItem = Artist.fromItem(baseItem);
   // Normal menu entries, excluding headers
   List<HideableMenuEntry> getMenuEntries(BuildContext context) {
     return [

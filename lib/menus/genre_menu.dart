@@ -27,7 +27,7 @@ Future<void> showModalGenreMenu({
   required BaseItemDto baseItem,
   FinampStorableQueueInfo? queueInfo,
 }) async {
-  final playableItem = GenericPlayableItem.defaultSort(baseItem);
+  final playableItem = Genre.fromItem(baseItem);
   // Normal menu entries, excluding headers
   List<HideableMenuEntry> getMenuEntries(BuildContext context) {
     return [

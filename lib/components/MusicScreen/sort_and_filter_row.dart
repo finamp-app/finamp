@@ -76,6 +76,10 @@ extension type const ResolvedSortConfig._(SortAndFilterConfiguration config) imp
     return ResolvedSortConfig._(config.copyWith(searchQuery: searchQuery));
   }
 
+  ResolvedSortConfig copyWithGenre(BaseItemDto genre) {
+    return ResolvedSortConfig._(config.copyWith(genreFilter: genre));
+  }
+
   ResolvedSortConfig.skipResolving(this.config);
 
   static const defaultSort = ResolvedSortConfig._(

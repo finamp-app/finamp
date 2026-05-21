@@ -14,10 +14,10 @@ import '../models/finamp_models.dart';
 import '../models/jellyfin_models.dart';
 import '../models/music_models.dart';
 import 'album_screen_provider.dart';
+import 'artist_content_provider.dart';
 import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
 import 'item_by_id_provider.dart';
-import 'item_helper.dart';
 import 'jellyfin_api_helper.dart';
 import 'music_screen_provider.dart';
 
@@ -119,8 +119,34 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
         section.contentType,
         section.sortAndFilterConfiguration,
       );
-      print("Resolved sort for ${section.customSectionTitle} is $resolvedSort");
 
+      // TODO this is a pretty horrible abuse of the contentType field.  Refactor storage method?
+      if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.artist) {
+        return Artist(
+          item,
+          source: source,
+          sortConfig: resolvedSort,
+          type: switch (section.contentType) {
+            ContentType.tracks => ArtistChildType.tracks,
+            ContentType.performingArtists => ArtistChildType.appearsOnAlbums,
+            ContentType.albumArtists => ArtistChildType.albumsFromArtist,
+            _ => throw UnsupportedError("Bad section content type ${section.contentType}"),
+          },
+        );
+      } else if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.genre) {
+        return Genre(
+          item,
+          source: source,
+          sortConfig: resolvedSort,
+          type: switch (section.contentType) {
+            ContentType.tracks => GenreChildType.tracks,
+            ContentType.genericArtists => GenreChildType.artists,
+            ContentType.playlists => GenreChildType.playlists,
+            ContentType.albums => GenreChildType.albums,
+            _ => throw UnsupportedError("Bad section content type ${section.contentType}"),
+          },
+        );
+      }
       final playable = FinampPlayableDto.fromItem(item, source: source, sortOverride: resolvedSort);
       switch (playable) {
         case FinampDisplayable<FinampPlayable> displayable:
@@ -201,8 +227,8 @@ Future<PlayableSlice> getPlayerSlice(
     case PlayableQueue():
       // TODO: add special queue slice
       throw UnimplementedError();
-    case JellyfinCollection():
-      final children = await ref.watch(getChildItemsProvider(item: item).future);
+    case FinampUnpagedDisplayable<FinampPlayableDto> displayable:
+      final children = await ref.watch(getChildItemsProvider(item: displayable).future);
       final output = <BaseItemDto>[];
       // TODO should we be adding any/all of the pretracks?
       // TODO load tracks directly?  I think that might cause a sort mismatch, though.
@@ -254,8 +280,9 @@ Future<List<BaseItemDto>> _flattenToTracks(Ref ref, {required FinampPlayableDto 
       return [track.item];
     case InstantMix():
       throw UnsupportedError("Music screen should not be including instant mix.");
-    case JellyfinCollection():
-      final children = await ref.watch(getChildItemsProvider(item: item).future);
+    case FinampUnpagedDisplayable<FinampPlayableDto> displayable:
+      // TODO should artists/genres be doing direct requests?  How could we handle sorting?
+      final children = await ref.watch(getChildItemsProvider(item: displayable).future);
       final output = <BaseItemDto>[];
       for (final child in children) {
         output.addAll(await _flattenToTracks(ref, item: child));
@@ -280,9 +307,32 @@ Future<List<Track>> getChildTracks(Ref ref, {required FinampUnpagedDisplayable<T
     case Playlist():
       final items = await ref.watch(getSortedPlaylistTracksProvider(item.item, item.sortConfig).future);
       return items.$2.map((baseItem) => Track(baseItem, source: item.source)).toList();
-    case GenericPlayableItem():
+    /*case GenericPlayableItem():
       final items = await loadChildTracksFromBaseItem(item: item.item, sortConfig: item.sortConfig);
-      return items.map((baseItem) => Track(baseItem, source: item.source)).toList();
+      return items.map((baseItem) => Track(baseItem, source: item.source)).toList();*/
+    case Artist<Track>():
+      assert(item.type == ArtistChildType.tracks);
+      final children = await ref.watch(
+        getArtistTracksProvider(
+          artist: item.item,
+          libraryFilter: ref.watch(FinampUserHelper.finampCurrentUserProvider)?.currentView,
+          genreFilter: item.sortConfig.genreFilter?.id,
+          onlyFavorites: item.sortConfig.favoritesFilter,
+        ).future,
+      );
+      return children.map<Track>((child) => Track(child, source: item.source)).toList();
+    case Genre<Track>():
+      assert(item.type == GenreChildType.tracks);
+      final sort = item.sortConfig.copyWithGenre(item.item);
+      final playable = MusicScreenPlayable(
+        tab: ContentType.tracks,
+        library: currentLibraryPlaceholder,
+        source: item.source,
+        sortConfig: sort,
+      );
+      // TODO something smarter?  But if the genre has more than 999 tracks, we probably shouldn't be loading them anyway.
+      // should we make genres paged?
+      return (await ref.read(pagedContentProvider(playable).notifier).loadSlice(0, 9999)).cast<Track>();
   }
 }
 
@@ -297,6 +347,51 @@ Future<List<FinampPlayableDto>> getChildItems(
     case JellyfinCollection():
       final children = await ref.watch(getJellyfinCollectionProvider(item.item, item.sortConfig).future) ?? [];
       return children.map<FinampPlayableDto>((child) => FinampPlayableDto.fromItem(child)).toList();
+    case Artist<FinampPlayableDto>():
+      switch (item.type) {
+        case ArtistChildType.tracks:
+          throw UnsupportedError("This is expected to be a FinampUnpagedDisplayable<Track>()");
+        case ArtistChildType.albumsFromArtist:
+          final children = await ref.watch(
+            getArtistAlbumsProvider(
+              artist: item.item,
+              libraryFilter: ref.watch(FinampUserHelper.finampCurrentUserProvider)?.currentView,
+              genreFilter: item.sortConfig.genreFilter?.id,
+              sortBy: item.sortConfig.sortBy,
+              sortOrder: item.sortConfig.sortOrder,
+            ).future,
+          );
+          return children.map<FinampPlayableDto>((child) => Album(child, source: item.source)).toList();
+        case ArtistChildType.appearsOnAlbums:
+          final children = await ref.watch(
+            getPerformingArtistAlbumsProvider(
+              artist: item.item,
+              libraryFilter: ref.watch(FinampUserHelper.finampCurrentUserProvider)?.currentView,
+              genreFilter: item.sortConfig.genreFilter?.id,
+              sortBy: item.sortConfig.sortBy,
+              sortOrder: item.sortConfig.sortOrder,
+            ).future,
+          );
+          return children.map<FinampPlayableDto>((child) => Album(child, source: item.source)).toList();
+      }
+    case Genre<FinampPlayableDto>():
+      assert(item.type != GenreChildType.tracks);
+      final sort = item.sortConfig.copyWithGenre(item.item);
+      final playable = MusicScreenPlayable(
+        tab: switch (item.type) {
+          GenreChildType.tracks => throw UnsupportedError(
+            "This request should have been a FinampUnpagedDisplayable<Track>",
+          ),
+          GenreChildType.albums => ContentType.albums,
+          // TODO could we supply genericArtists here?  I don't believe that type can resolve, currently.
+          GenreChildType.artists => ContentType.performingArtists,
+          GenreChildType.playlists => ContentType.playlists,
+        },
+        library: currentLibraryPlaceholder,
+        source: item.source,
+        sortConfig: sort,
+      );
+      return (await ref.read(pagedContentProvider(playable).notifier).loadSlice(0, 9999)).cast<FinampPlayableDto>();
   }
 }
 
@@ -310,6 +405,8 @@ Future<List<FinampDisplayableOrPlayable>> getChildren(
       // TODO figure out how to get refreshing working for non MusicScreenPlayables
       // Maybe we could have a refresh provider that takes a DisplayableOrPlayable and gets watched by everyone?
       return await ref.watch(getChildTracksProvider(item: item).future);
+    case FinampUnpagedDisplayable<FinampPlayableDto>():
+      return await ref.watch(getChildItemsProvider(item: item).future);
     case LatestQueues():
       final queuesBox = Hive.box<FinampStorableQueueInfo>("Queues");
       var queueMap = queuesBox.toMap();
@@ -326,7 +423,5 @@ Future<List<FinampDisplayableOrPlayable>> getChildren(
         queueList = queueList.reversed.toList();
       }
       return queueList.map((x) => PlayableQueue(queue: x, source: item.source)).toList();
-    case JellyfinCollection():
-      return await ref.watch(getChildItemsProvider(item: item).future);
   }
 }

@@ -250,7 +250,13 @@ double calculateItemCollectionCardHeight({
     (sectionInfo == null && itemType != null) || (sectionInfo != null && itemType == null),
     "Exactly one of sectionInfo or itemType must be provided",
   );
-  final actualItemType = itemType ?? sectionInfo?.contentType.itemType ?? BaseItemDtoType.album;
+  ContentType? sectionItemType = sectionInfo?.contentType;
+  if (sectionInfo?.type == HomeScreenSectionType.collection &&
+      [ContentType.performingArtists, ContentType.albumArtists].contains(sectionInfo?.contentType)) {
+    // TODO this is due to us overloading the unused album/performing artist types as a child type selector.  Todo fix?
+    sectionItemType = ContentType.albums;
+  }
+  final actualItemType = itemType ?? sectionItemType?.itemType ?? BaseItemDtoType.album;
   return switch (sectionInfo?.type) {
     HomeScreenSectionType.queues => queuesHomeSectionHeight,
     _ =>
