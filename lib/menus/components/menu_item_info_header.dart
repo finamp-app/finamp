@@ -29,6 +29,7 @@ Widget _getMenuHeaderForItemType({
   required FinampDisplayableOrPlayable item,
   required bool condensed,
   required List<MenuItemInfoHeaderFeatures> features,
+  required BuildContext context,
 }) {
   return switch (item) {
     AlbumDisc() => AlbumInfo(item: item, condensed: condensed, features: features),
@@ -46,6 +47,7 @@ Widget _getMenuHeaderForItemType({
         itemId: library,
         contentType: content,
         sortAndFilterConfiguration: config,
+        customSectionTitle: item.source.name.getLocalized(context),
       ),
     ),
     LatestQueues() => HomeSectionInfo(
@@ -54,6 +56,7 @@ Widget _getMenuHeaderForItemType({
         itemId: currentLibraryPlaceholder,
         contentType: ContentType.home,
         sortAndFilterConfiguration: SortAndFilterConfiguration.defaultSort,
+        customSectionTitle: item.source.name.getLocalized(context),
       ),
     ),
     _ => throw UnsupportedError("Cannot show menu header for $item"),
@@ -80,7 +83,7 @@ class MenuItemInfoSliverHeader extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return _getMenuHeaderForItemType(item: item, condensed: condensed, features: features);
+    return _getMenuHeaderForItemType(item: item, condensed: condensed, features: features, context: context);
   }
 
   @override
@@ -115,7 +118,7 @@ class MenuItemInfoHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return _getMenuHeaderForItemType(item: item, condensed: condensed, features: features);
+    return _getMenuHeaderForItemType(item: item, condensed: condensed, features: features, context: context);
   }
 }
 

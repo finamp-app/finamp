@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:collection/collection.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/HomeScreen/home_screen_content.dart';
@@ -776,9 +775,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
             ),
             FinampSettingsDropdown<ContentType>(
               dropdownItems: ContentType.values
-                  .whereNot(
-                    (contentType) => contentType == ContentType.home || contentType == ContentType.genericArtists,
-                  )
+                  .where((contentType) => contentType.directlyDisplayable)
                   .map((e) => DropdownMenuEntry<ContentType>(value: e, label: e.toLocalisedString(context)))
                   .toList(),
               selectedValue: tabContent,
@@ -787,6 +784,12 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
                   setState(() {
                     tabContent = selectedTabType;
                     tabSortController.updateContentType(selectedTabType);
+                    if (selectedTabType == ContentType.playlists) {
+                      selectedLibrary = allLibraryPlaceholder;
+                    }
+                    if (selectedTabType == ContentType.genres && selectedLibrary == allLibraryPlaceholder) {
+                      selectedLibrary = currentLibraryPlaceholder;
+                    }
                   });
                 }
               },
@@ -794,6 +797,88 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
           ],
         ),
         SizedBox(height: 20.0),
+        if (tabContent != ContentType.playlists)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            spacing: 4.0,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 4.0),
+                child: Text(context.l10n.library, style: Theme.of(context).textTheme.bodyMedium),
+              ),
+              Consumer(
+                builder: (_, ref, _) {
+                  final views = ref.watch(JellyfinApiHelper.viewsProvider).value;
+                  return FinampSettingsDropdown<LibraryOrItemId?>(
+                    dropdownItems: [
+                      DropdownMenuEntry<LibraryOrItemId?>(
+                        value: currentLibraryPlaceholder,
+                        label: context.l10n.currentLibrary,
+                        leadingIcon: const Icon(TablerIcons.bolt),
+                      ),
+                      if (tabContent != ContentType.genres)
+                        DropdownMenuEntry<LibraryOrItemId?>(
+                          value: allLibraryPlaceholder,
+                          label: context.l10n.allLibraries,
+                          leadingIcon: const Icon(TablerIcons.bolt),
+                        ),
+                      if (views != null)
+                        ...views.map((e) => DropdownMenuEntry<BaseItemId?>(value: e.id, label: e.name!)),
+                      if (views == null) DropdownMenuEntry<BaseItemId?>(value: null, label: context.l10n.loading),
+                    ],
+                    selectedValue: selectedLibrary,
+                    onSelected: (selectedLibraryId) {
+                      if (selectedLibraryId != null) {
+                        setState(() {
+                          selectedLibrary = selectedLibraryId;
+                        });
+                      }
+                    },
+                  );
+                },
+              ),
+              SizedBox(height: 20.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                spacing: 4.0,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4.0),
+                    child: Text(context.l10n.sectionTitle, style: Theme.of(context).textTheme.bodyMedium),
+                  ),
+                  TextField(
+                    controller: TextEditingController(text: tabTitle)
+                      ..selection = TextSelection.fromPosition(TextPosition(offset: tabTitle.length)),
+                    decoration: InputDecoration(
+                      hintText: context.l10n.egFavoriteTracks,
+                      filled: true,
+                      fillColor: Color.alphaBlend(
+                        ColorScheme.of(context).onSurface.withOpacity(0.1),
+                        ColorScheme.of(context).surface,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
+                    ),
+                    onChanged: (newValue) {
+                      setState(() {
+                        tabTitle = newValue;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+      ],
+      if (selectedSectionType == HomeScreenSectionType.tabView ||
+          (selectedSectionType == HomeScreenSectionType.collection &&
+              selectedCollection != null &&
+              BaseItemDtoType.fromItem(selectedCollection!) != BaseItemDtoType.album)) ...[
+        SizedBox(height: 20.0),
+        // sort and filter configuration
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -801,88 +886,17 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 4.0),
-              child: Text(context.l10n.library, style: Theme.of(context).textTheme.bodyMedium),
+              child: Text(context.l10n.sortBy, style: Theme.of(context).textTheme.bodyMedium),
             ),
-            Consumer(
-              builder: (_, ref, _) {
-                final views = ref.watch(JellyfinApiHelper.viewsProvider).value;
-                return FinampSettingsDropdown<LibraryOrItemId?>(
-                  dropdownItems: [
-                    DropdownMenuEntry<LibraryOrItemId?>(
-                      value: currentLibraryPlaceholder,
-                      label: context.l10n.currentLibrary,
-                      leadingIcon: const Icon(TablerIcons.bolt),
-                    ),
-                    if (views != null) ...views.map((e) => DropdownMenuEntry<BaseItemId?>(value: e.id, label: e.name!)),
-                    if (views == null) DropdownMenuEntry<BaseItemId?>(value: null, label: context.l10n.loading),
-                  ],
-                  selectedValue: selectedLibrary,
-                  onSelected: (selectedLibraryId) {
-                    if (selectedLibraryId != null) {
-                      setState(() {
-                        selectedLibrary = selectedLibraryId;
-                      });
-                    }
-                  },
-                );
-              },
-            ),
-            SizedBox(height: 20.0),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              spacing: 4.0,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 4.0),
-                  child: Text(context.l10n.sectionTitle, style: Theme.of(context).textTheme.bodyMedium),
-                ),
-                TextField(
-                  controller: TextEditingController(text: tabTitle)
-                    ..selection = TextSelection.fromPosition(TextPosition(offset: tabTitle.length)),
-                  decoration: InputDecoration(
-                    hintText: context.l10n.egFavoriteTracks,
-                    filled: true,
-                    fillColor: Color.alphaBlend(
-                      ColorScheme.of(context).onSurface.withOpacity(0.1),
-                      ColorScheme.of(context).surface,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onChanged: (newValue) {
-                    setState(() {
-                      tabTitle = newValue;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
-      SizedBox(height: 20.0),
-      // sort and filter configuration
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        spacing: 4.0,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 4.0),
-            child: Text(context.l10n.sortBy, style: Theme.of(context).textTheme.bodyMedium),
-          ),
-          // TODO hide this for albums - or allow sort for them?
-          if (selectedSectionType != HomeScreenSectionType.queues)
             SortAndFilterRow(
               tabType: selectedSectionType == HomeScreenSectionType.collection
                   ? collectionContent ?? ContentType.tracks
                   : tabContent,
               controller: activeSortController!,
             ),
-        ],
-      ),
+          ],
+        ),
+      ],
       SizedBox(height: 24.0),
       if (tabTitle == "" && selectedSectionType == HomeScreenSectionType.tabView)
         Text(

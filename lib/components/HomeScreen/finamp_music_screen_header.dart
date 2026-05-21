@@ -10,6 +10,7 @@ import 'package:finamp/menus/components/icon_button_with_semantics.dart';
 import 'package:finamp/menus/music_screen_drawer.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/music_models.dart';
+import 'package:finamp/screens/downloads_screen.dart';
 import 'package:finamp/screens/settings_screen.dart';
 import 'package:finamp/screens/tabs_settings_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
@@ -22,7 +23,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
 import '../../extensions/localizations.dart';
 import '../../menus/home_section_menu.dart';
@@ -117,12 +117,26 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                 if (backButtonInsteadOfTabs)
                   SizedBox(width: _upperToolbarHeight + 6, height: _upperToolbarHeight, child: FinampAppBarBackButton())
                 else
-                  SimpleGestureDetector(
+                  GestureDetector(
                     onTap: () {
                       // open drawer
                       // Scaffold.of(context).openDrawer();
                       showFinampMainMenu(context: context);
                     },
+                    onSecondaryTap: ref.watch(pollingDownloadsSyncingProvider)
+                        ? () {
+                            if (ref.read(pollingDownloadsSyncingProvider)) {
+                              Navigator.of(context).pushNamed(DownloadsScreen.routeName);
+                            }
+                          }
+                        : null,
+                    onDoubleTap: ref.watch(pollingDownloadsSyncingProvider)
+                        ? () {
+                            if (ref.read(pollingDownloadsSyncingProvider)) {
+                              Navigator.of(context).pushNamed(DownloadsScreen.routeName);
+                            }
+                          }
+                        : null,
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
@@ -134,25 +148,18 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                               : null,
                         ),
                         Positioned(bottom: -4, right: -2, child: Icon(statusIcon, size: 16)),
-                        Consumer(
-                          builder: (context, ref, _) {
-                            if (ref.watch(pollingDownloadsSyncingProvider)) {
-                              return Positioned(
-                                bottom: statusIcon != null ? -6 : 1,
-                                right: statusIcon != null ? -4 : 3,
-                                child: SizedBox.square(
-                                  dimension: statusIcon != null ? 20.0 : 10.0,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 1,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onSurface),
-                                  ),
-                                ),
-                              );
-                            } else {
-                              return SizedBox.shrink();
-                            }
-                          },
-                        ),
+                        if (ref.watch(pollingDownloadsSyncingProvider))
+                          Positioned(
+                            bottom: statusIcon != null ? -6 : 1,
+                            right: statusIcon != null ? -4 : 3,
+                            child: SizedBox.square(
+                              dimension: statusIcon != null ? 20.0 : 10.0,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 1,
+                                valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onSurface),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),

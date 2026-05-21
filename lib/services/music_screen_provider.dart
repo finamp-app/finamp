@@ -138,10 +138,12 @@ class PagedContent extends _$PagedContent {
     // The pagination tends to generate multiple requests at once, so block all but the initial one.  The exception is
     // while loading the first, undersized page, we allow a second request through immediately to potentially finish
     // loading a proper page's worth faster.
-    if (_pageSizes.isEmpty) {
-      _pageSizes.add(homeScreenSectionItemLimit);
-      ref.invalidateSelf();
-    }
+    Future<void>.microtask(() {
+      if (_pageSizes.isEmpty) {
+        _pageSizes.add(homeScreenSectionItemLimit);
+        ref.invalidateSelf();
+      }
+    });
   }
 
   void refresh() {
@@ -217,9 +219,9 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
     return loadHomeSectionItemsOffline(ref: ref, request: request, startIndex: startIndex, limit: limit);
   }
 
-  BaseItemId libraryId;
+  final BaseItemId? libraryId;
   if (request.library == allLibraryPlaceholder) {
-    throw UnimplementedError();
+    libraryId = null;
   } else if (request.library == currentLibraryPlaceholder) {
     final nullableLibraryId = ref.watch<BaseItemId?>(
       FinampUserHelper.finampCurrentUserProvider.select((value) => value?.currentView?.id),
@@ -234,10 +236,14 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
   }
 
   // TODO refactor so we only need to provide the id?
-  final library = await ref.watch(itemByIdProvider(libraryId).future);
-  if (library == null) {
-    return [];
+  BaseItemDto? library;
+  if (libraryId != null) {
+    library = await ref.watch(itemByIdProvider(libraryId).future);
+    if (library == null) {
+      return [];
+    }
   }
+
   final genreFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter);
   final searchFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.searchTerm);
   return jellyfinApiHelper.getItems(

@@ -1214,6 +1214,19 @@ enum ContentType {
     ContentType.inPlaylist => false,
     ContentType.mixed => false,
   };
+
+  bool get directlyDisplayable => switch (this) {
+    ContentType.albums => true,
+    ContentType.genericArtists => false,
+    ContentType.playlists => true,
+    ContentType.genres => true,
+    ContentType.tracks => true,
+    ContentType.home => false,
+    ContentType.performingArtists => true,
+    ContentType.albumArtists => true,
+    ContentType.inPlaylist => false,
+    ContentType.mixed => false,
+  };
 }
 
 @HiveType(typeId: 39)
@@ -4771,7 +4784,7 @@ class SortAndFilterConfiguration {
 
   BaseItemDto? get genreFilter => filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter)?.extraBaseItem;
 
-  bool get favoritesFilter => filters.firstWhereOrNull((x) => x.type == ItemFilterType.isFavorite) !=null;
+  bool get favoritesFilter => filters.firstWhereOrNull((x) => x.type == ItemFilterType.isFavorite) != null;
 
   SortAndFilterConfiguration copyWith({
     SortBy? sortBy,

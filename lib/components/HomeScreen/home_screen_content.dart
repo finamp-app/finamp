@@ -386,6 +386,11 @@ class HomeScreenSectionContent extends ConsumerWidget {
           : Center(child: Text(context.l10n.failedToLoadSectionMissingItem, maxLines: 1));
     }
     final displayable = asyncDisplayable.value!;
+    if (displayable is FinampSortable &&
+        (displayable as FinampSortable).sortConfig != sectionInfo.sortAndFilterConfiguration) {
+      assert(isOffline);
+      return Center(child: Text(context.l10n.notAvailableInOfflineMode, maxLines: 1));
+    }
 
     final pageState = ref.watch(pagedContentProvider(displayable));
     final items = pageState.items;

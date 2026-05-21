@@ -64,9 +64,9 @@ Future<List<BaseItemDto>> globalSearch(Ref ref, String searchTerm, {required boo
 
 @Riverpod(keepAlive: true)
 Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSectionConfiguration section) async {
-  final context = GlobalSnackbar.materialAppScaffoldKey.currentContext!;
   switch (section.type) {
     case HomeScreenSectionType.tabView:
+      final context = GlobalSnackbar.materialAppScaffoldKey.currentContext!;
       final source = QueueItemSource.rawId(
         type: QueueItemSourceType.homeScreenSection,
         name: QueueItemSourceName(
@@ -88,6 +88,7 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
       );
     case HomeScreenSectionType.collection:
       final item = await ref.watch(itemByIdProvider(section.itemId as BaseItemId).future);
+      final context = GlobalSnackbar.materialAppScaffoldKey.currentContext!;
       // TODO better source
       if (item == null) {
         // TODO should we be throwing?  Or returning null?
@@ -156,6 +157,7 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
           throw UnsupportedError("Invalid home section collection $playable");
       }
     case HomeScreenSectionType.queues:
+      final context = GlobalSnackbar.materialAppScaffoldKey.currentContext!;
       final source = QueueItemSource.rawId(
         type: QueueItemSourceType.homeScreenSection,
         name: QueueItemSourceName(

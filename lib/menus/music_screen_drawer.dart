@@ -34,7 +34,7 @@ Future<void> showFinampMainMenu({required BuildContext context}) async {
   await showThemedBottomSheet<void>(
     context: context,
     routeName: finampMainMenuRouteName,
-    minDraggableHeight: 0.4,
+    minDraggableHeight: 0.8,
     buildSlivers: (context) {
       var menu = [
         Consumer(
@@ -142,7 +142,7 @@ Future<void> showFinampMainMenu({required BuildContext context}) async {
           ),
         ),
       ];
-      var stackHeight = MediaQuery.heightOf(context) * 0.8;
+      var stackHeight = 0.0;
       return (stackHeight, menu);
     },
   );

@@ -169,7 +169,7 @@ class _GlobalSearchProviderElement
   bool get includeTracks => (origin as GlobalSearchProvider).includeTracks;
 }
 
-String _$resolveSectionHash() => r'7af728123ebf9f436f55dba00396d1ede4da2fdb';
+String _$resolveSectionHash() => r'0d53f2153492c65e089276c00f9ea23ffbf74774';
 
 /// See also [resolveSection].
 @ProviderFor(resolveSection)
@@ -296,7 +296,7 @@ class _ResolveSectionProviderElement
       (origin as ResolveSectionProvider).section;
 }
 
-String _$getPlayerSliceHash() => r'2579e824f210235bddaf66da494b2d8f752fc2b8';
+String _$getPlayerSliceHash() => r'8ab3b7f5b94db3c75262fc3f435a7e240be74b8c';
 
 /// See also [getPlayerSlice].
 @ProviderFor(getPlayerSlice)
@@ -459,7 +459,7 @@ class _GetPlayerSliceProviderElement
   int? get limit => (origin as GetPlayerSliceProvider).limit;
 }
 
-String _$getChildTracksHash() => r'e08a547da56b302f527e86e0cf1cd3b3a312930f';
+String _$getChildTracksHash() => r'99328a91f6c54885f6d40ddb50dbfec8093d5546';
 
 /// See also [getChildTracks].
 @ProviderFor(getChildTracks)
@@ -580,7 +580,7 @@ class _GetChildTracksProviderElement
       (origin as GetChildTracksProvider).item;
 }
 
-String _$getChildItemsHash() => r'c1caae82c3c3dc920f714eee760dbc345ab14b76';
+String _$getChildItemsHash() => r'468c1c7c9eaaed90544cccfebf12421a2d0c4ad7';
 
 /// See also [getChildItems].
 @ProviderFor(getChildItems)
@@ -707,7 +707,7 @@ class _GetChildItemsProviderElement
       (origin as GetChildItemsProvider).item;
 }
 
-String _$getChildrenHash() => r'9489f11ca6638c296408bc63fd61c3cdfd26c789';
+String _$getChildrenHash() => r'd2ea3dcb7eda184998a67d1f5ba49780a08c72b1';
 
 /// See also [getChildren].
 @ProviderFor(getChildren)

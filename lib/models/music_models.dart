@@ -80,11 +80,6 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
   final LibraryOrItemId library;
 
   MusicScreenPlayable._({required this.tab, required this.library, required super.source, required super.sortConfig}) {
-    assert(() {
-      final controller = SortAndFilterController(startingConfig: sortConfig, contentType: tab);
-      final resolvedConfig = GetIt.instance<ProviderContainer>().read(resolveSortProvider(controller));
-      return sortConfig == resolvedConfig;
-    }());
     switch (tab) {
       case ContentType.albums:
         assert(ChildType == Album);
@@ -111,6 +106,11 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
     required QueueItemSource source,
     required ResolvedSortConfig sortConfig,
   }) {
+    assert(() {
+      final controller = SortAndFilterController(startingConfig: sortConfig, contentType: tab);
+      final resolvedConfig = GetIt.instance<ProviderContainer>().read(resolveSortProvider(controller));
+      return sortConfig == resolvedConfig;
+    }());
     switch (tab) {
       case ContentType.albums:
         return MusicScreenPlayable<Album>._(tab: tab, library: library, source: source, sortConfig: sortConfig)
