@@ -125,7 +125,7 @@ jobs:
           script: |
             adb logcat -c
             adb logcat &
-            flutter test integration_test/test_cases.dart -d emulator
+            timeout 13m flutter test integration_test/test_cases.dart -d emulator
 
     - name: Run Integration tests on api 25
       if: *integration_if
@@ -144,7 +144,7 @@ jobs:
           script: |
             adb logcat -c
             adb logcat &
-            flutter test integration_test/test_cases.dart -d emulator
+            timeout 13m flutter test integration_test/test_cases.dart -d emulator
 
   build-ios:
     name: Build for iOS
@@ -310,9 +310,15 @@ jobs:
 
     - name: Run Integration Tests
       if: *integration_if
-      uses: smithki/xvfb-action@v1.1.2
-      with:
-        run: flutter test integration_test/test_cases.dart -d linux
+      run: |
+        set +e
+        xvfb-run flutter test integration_test/test_cases.dart -d linux
+        exitcode=$?
+        if [[ $exitcode == 79 ]]; then
+          echo "Potential native crash - attempting to display"
+          timeout 2m xvfb-run flutter run -d linux
+        fi
+        exit $exitcode
 
     - name: Upload release archive
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
@@ -390,7 +396,16 @@ jobs:
 
     - name: Run Integration Tests
       if: *integration_if
-      run: flutter test integration_test/test_cases.dart -d windows
+      shell: bash
+      run: |
+        set +e
+        flutter test integration_test/test_cases.dart -d windows
+        exitcode=$?
+        if [[ $exitcode == 79 ]]; then
+          echo "Potential native crash - attempting to display"
+          timeout 2m flutter run -d windows
+        fi
+        exit $exitcode
 
     - name: Prepare release archive
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')

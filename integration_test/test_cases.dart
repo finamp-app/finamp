@@ -26,6 +26,7 @@ void main() async {
   /// All tests should create and attach to descendants of this to avoid errors.
   ProviderContainer? container;
   List<FlutterErrorDetails>? mainErrors = [];
+  bool mainCompleted = false;
 
   setUpAll(() async {
     // Disable audio output on windows and linux due to missing driver in CI
@@ -33,29 +34,37 @@ void main() async {
       JustAudioMediaKit.nullBackend = true;
     }
 
-    await runZonedGuarded(
-      () async {
-        // Login testing flag redirects file accesses to testing folder and clears it on startup.
-        // Download base directories are not redirected, so loginTesting flag should be avoided on mobile.
-        // Note that this means mobile integration test runs will require manual file clearing outside of CI
-        await app.main(integrationTesting: true, loginTesting: !(Platform.isAndroid || Platform.isIOS));
-      },
-      (e, stack) {
-        // Linux throws DBusServiceUnknownException due to dbus service org.freedesktop.UPower
-        // missing in CI.  Ignore.
-        if (e is DBusServiceUnknownException) return;
+    // If main throws an error, the future runZoneGuarded returns will never complete, so do not await it.
+    //Instead, we will simply check that main has completed with no errors after a 30 second timeout.  This also
+    // allows some errors thrown by the background services to be caught before the following tests start.
+    unawaited(
+      runZonedGuarded(
+        () async {
+          // Login testing flag redirects file accesses to testing folder and clears it on startup.
+          // Download base directories are not redirected, so loginTesting flag should be avoided on mobile.
+          // Note that this means mobile integration test runs will require manual file clearing outside of CI
+          await app.main(integrationTesting: true, loginTesting: !(Platform.isAndroid || Platform.isIOS));
+          mainCompleted = true;
+        },
+        (e, stack) {
+          // Linux throws DBusServiceUnknownException due to dbus service org.freedesktop.UPower
+          // missing in CI.  Ignore.
+          if (e is DBusServiceUnknownException) return;
 
-        if (mainErrors != null) {
-          mainErrors!.add(FlutterErrorDetails(exception: e, stack: stack));
-        } else {
-          debugPrint("Received background error after completion of main()");
-          debugPrint("Error: $e");
-          debugPrintStack(stackTrace: stack);
-          // If main has already completed, the app's core functionality is working, so we allow the tests to complete
-          // without rethrowing the error.
-        }
-      },
+          if (mainErrors != null) {
+            mainErrors!.add(FlutterErrorDetails(exception: e, stack: stack));
+          } else {
+            debugPrint("Received background error after completion of main()");
+            debugPrint("Error: $e");
+            debugPrintStack(stackTrace: stack);
+            // If main has already completed, the app's core functionality is working, so we allow the tests to complete
+            // without rethrowing the error.
+          }
+        },
+      ),
     );
+
+    await Future<void>.delayed(Duration(seconds: 30));
   });
 
   // These integration tests all rely on the previous one working.  Not good practice, but whatever.
@@ -71,6 +80,8 @@ void main() async {
       }
 
       expect(mainErrors!.length, equals(0));
+      expect(mainCompleted, equals(true));
+
       mainErrors = null;
 
       // The testing harness tries to clear out all the async code between tests, and runs all the cases in individual
