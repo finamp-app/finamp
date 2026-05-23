@@ -3323,7 +3323,7 @@ enum SortBy {
   @Deprecated("Use toLocalisedString when possible")
   String toString() => _humanReadableName(this);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
+  String toLocalisedString(AppLocalizations l10n) => _humanReadableLocalisedName(this, l10n);
 
   /// Name used by Jellyfin in API requests.
   String jellyfinName(ContentType? contentType) {
@@ -3355,24 +3355,24 @@ enum SortBy {
     };
   }
 
-  String _humanReadableLocalisedName(SortBy sortBy, BuildContext context) {
+  String _humanReadableLocalisedName(SortBy sortBy, AppLocalizations l10n) {
     return switch (sortBy) {
-      SortBy.album => AppLocalizations.of(context)!.album,
-      SortBy.albumArtist => AppLocalizations.of(context)!.albumArtist,
-      SortBy.artist => AppLocalizations.of(context)!.performingArtist,
-      SortBy.budget => AppLocalizations.of(context)!.budget,
-      SortBy.communityRating => AppLocalizations.of(context)!.communityRating,
-      SortBy.criticRating => AppLocalizations.of(context)!.criticRating,
-      SortBy.dateCreated => AppLocalizations.of(context)!.dateAdded,
-      SortBy.datePlayed => AppLocalizations.of(context)!.datePlayed,
-      SortBy.playCount => AppLocalizations.of(context)!.playCount,
-      SortBy.premiereDate => AppLocalizations.of(context)!.premiereDate,
-      SortBy.productionYear => AppLocalizations.of(context)!.productionYear,
-      SortBy.sortName => AppLocalizations.of(context)!.name,
-      SortBy.random => AppLocalizations.of(context)!.random,
-      SortBy.revenue => AppLocalizations.of(context)!.revenue,
-      SortBy.runtime => AppLocalizations.of(context)!.duration,
-      SortBy.defaultOrder => AppLocalizations.of(context)!.defaultOrder,
+      SortBy.album => l10n.album,
+      SortBy.albumArtist => l10n.albumArtist,
+      SortBy.artist => l10n.performingArtist,
+      SortBy.budget => l10n.budget,
+      SortBy.communityRating => l10n.communityRating,
+      SortBy.criticRating => l10n.criticRating,
+      SortBy.dateCreated => l10n.dateAdded,
+      SortBy.datePlayed => l10n.datePlayed,
+      SortBy.playCount => l10n.playCount,
+      SortBy.premiereDate => l10n.premiereDate,
+      SortBy.productionYear => l10n.productionYear,
+      SortBy.sortName => l10n.name,
+      SortBy.random => l10n.random,
+      SortBy.revenue => l10n.revenue,
+      SortBy.runtime => l10n.duration,
+      SortBy.defaultOrder => l10n.defaultOrder,
     };
   }
 

@@ -209,7 +209,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                             builder: (context, asyncSnapshot) {
                               final appName = asyncSnapshot.data?.appName ?? AppLocalizations.of(context)!.finamp;
                               return Text(
-                                singleTabConfig?.getTitle(context) ??
+                                singleTabConfig?.getTitle(context.l10n) ??
                                     finampUserHelper.currentUser?.currentView?.name ??
                                     appName,
                                 style: TextStyle(fontSize: 22),
@@ -335,10 +335,10 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                   return SizedBox.shrink();
                                 },
                               ),
-                              Text(tabType.toLocalisedString(context), style: textStyle),
+                              Text(tabType.toLocalisedString(context.l10n), style: textStyle),
                             ],
                           )
-                        : Text(tabType.toLocalisedString(context), style: textStyle),
+                        : Text(tabType.toLocalisedString(context.l10n), style: textStyle),
                   ),
                 ),
               );

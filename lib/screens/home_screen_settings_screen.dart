@@ -370,7 +370,10 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
                     ColorScheme.of(context).primary.withOpacity(0.05),
                     ColorScheme.of(context).surface,
                   ),
-                  title: Padding(padding: const EdgeInsets.only(left: 4.0), child: Text(section.getTitle(context))),
+                  title: Padding(
+                    padding: const EdgeInsets.only(left: 4.0),
+                    child: Text(section.getTitle(context.l10n)),
+                  ),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                   visualDensity: VisualDensity(horizontal: -4, vertical: -4),
                   contentPadding: EdgeInsets.only(left: 6.0),
@@ -537,7 +540,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
         widget.initialState.customSectionTitle ??
         (widget.initialState.presetType != null
             // Widget context is not available yet
-            ? widget.initialState.getTitle(GlobalSnackbar.materialAppScaffoldKey.currentContext!)
+            ? widget.initialState.getTitle(GlobalSnackbar.requireL10n)
             : "");
 
     selectedSectionType = widget.initialState.type;
@@ -744,7 +747,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
                           ContentType.performingArtists => context.l10n.performingArtistFilter,
                           ContentType.albumArtists => context.l10n.albumArtistFilter,
                           ContentType.mixed => context.l10n.allTypes,
-                          _ => e.toLocalisedString(context),
+                          _ => e.toLocalisedString(context.l10n),
                         },
                       ),
                     )
@@ -776,7 +779,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
             FinampSettingsDropdown<ContentType>(
               dropdownItems: ContentType.values
                   .where((contentType) => contentType.directlyDisplayable)
-                  .map((e) => DropdownMenuEntry<ContentType>(value: e, label: e.toLocalisedString(context)))
+                  .map((e) => DropdownMenuEntry<ContentType>(value: e, label: e.toLocalisedString(context.l10n)))
                   .toList(),
               selectedValue: tabContent,
               onSelected: (selectedTabType) {
@@ -951,9 +954,9 @@ Future<HomeScreenSectionPresetType?> showSectionPresetPickerMenu(
           builder: (context, ref, child) {
             final currentSections = ref.watch(finampSettingsProvider.homeScreenConfiguration).sections;
             return ChoiceMenuOption(
-              title: HomeScreenSectionConfiguration.getTitleForPreset(context: context, presetType: presetType),
+              title: HomeScreenSectionConfiguration.getTitleForPreset(l10n: context.l10n, presetType: presetType),
               description: HomeScreenSectionConfiguration.getDescriptionForPreset(
-                context: context,
+                l10n: context.l10n,
                 presetType: presetType,
               ),
               badges: [
@@ -1050,7 +1053,7 @@ class SectionPreview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasTitle = (sectionInfo?.customSectionTitle ?? "") != "" || sectionInfo?.presetType != null;
 
-    final sectionTitle = hasTitle ? sectionInfo!.getTitle(context) : context.l10n.preview;
+    final sectionTitle = hasTitle ? sectionInfo!.getTitle(context.l10n) : context.l10n.preview;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

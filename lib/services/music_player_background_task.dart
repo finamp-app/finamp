@@ -1238,9 +1238,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           MediaControl.custom(
             name: CustomPlaybackActions.toggleFavorite.name,
             androidIcon: isFavorite ? "drawable/baseline_heart_filled_24" : "drawable/baseline_heart_24",
-            label: isFavorite
-                ? GlobalSnackbar.localizations?.removeFavorite ?? "Remove Favorite"
-                : GlobalSnackbar.localizations?.addFavorite ?? "Add Favorite",
+            label: isFavorite ? GlobalSnackbar.requireL10n.removeFavorite : GlobalSnackbar.requireL10n.addFavorite,
           ),
         if (FinampSettingsHelper.finampSettings.showShuffleButtonOnMediaNotification)
           //TODO eventually we probably want separate settings for this, and not store them as individual booleans in Hive
@@ -1249,8 +1247,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
                   name: CustomPlaybackActions.radio.name,
                   androidIcon: radioActive ? "drawable/tabler_icons_radio_24" : "drawable/tabler_icons_radio_off_24",
                   label: radioActive
-                      ? GlobalSnackbar.localizations?.radioModeActiveTitle ?? "Radio active"
-                      : GlobalSnackbar.localizations?.radioModeInactiveTitle ?? "Radio paused",
+                      ? GlobalSnackbar.requireL10n.radioModeActiveTitle
+                      : GlobalSnackbar.requireL10n.radioModeInactiveTitle,
                 )
               : MediaControl.custom(
                   name: CustomPlaybackActions.shuffle.name,
@@ -1258,8 +1256,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
                       ? "drawable/baseline_shuffle_on_24"
                       : "drawable/baseline_shuffle_24",
                   label: _player.shuffleModeEnabled
-                      ? GlobalSnackbar.localizations?.playbackOrderShuffledButtonLabel ?? "Shuffle enabled"
-                      : GlobalSnackbar.localizations?.playbackOrderLinearButtonLabel ?? "Shuffle disabled",
+                      ? GlobalSnackbar.requireL10n.playbackOrderShuffledButtonLabel
+                      : GlobalSnackbar.requireL10n.playbackOrderLinearButtonLabel,
                 ),
         if (FinampSettingsHelper.finampSettings.showStopButtonOnMediaNotification)
           MediaControl.stop.copyWith(androidIcon: "drawable/baseline_stop_24"),

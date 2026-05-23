@@ -5,7 +5,7 @@ import 'package:dbus/dbus.dart';
 import 'package:finamp/components/AlbumScreen/album_screen_content.dart';
 import 'package:finamp/components/Buttons/cta_large.dart';
 import 'package:finamp/components/LoginScreen/login_server_selection_page.dart';
-import 'package:finamp/components/MusicScreen/item_collection_wrapper.dart';
+import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/main.dart' as app;
 import 'package:finamp/menus/components/playbackActions/playback_actions.dart';
 import 'package:finamp/screens/login_screen.dart';
@@ -148,7 +148,7 @@ void main() async {
       await tester.pump();
       FinampSetters.setAllowSplitScreen(false);
 
-      final album = find.byType(ItemCollectionWrapper);
+      final album = find.byType(ItemWrapper);
       await tester.waitFor(album);
       await tester.tap(album.first);
 

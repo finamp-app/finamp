@@ -15,6 +15,8 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:http/http.dart' hide Response;
 import 'package:logging/logging.dart';
 
+import '../l10n/app_localizations_en.dart';
+
 typedef _QueueFunction = void Function(BuildContext);
 
 @Deprecated("Use GlobalSnackbar.error(dynamic error) instead")
@@ -38,6 +40,10 @@ class GlobalSnackbar {
     }
     return null;
   }
+
+  static final _englishL10n = AppLocalizationsEn();
+
+  static AppLocalizations get requireL10n => l10n ?? _englishL10n;
 
   static final _logger = Logger("GlobalSnackbar");
 
@@ -205,10 +211,10 @@ class GlobalSnackbar {
       SnackBar(
         content: GestureDetector(
           onLongPress: () {
-          if (context.mounted) {
-            showSnackbarOptionsMenu(context);
-          }
-        },
+            if (context.mounted) {
+              showSnackbarOptionsMenu(context);
+            }
+          },
           onSecondaryTap: () {
             if (context.mounted) {
               showSnackbarOptionsMenu(context);

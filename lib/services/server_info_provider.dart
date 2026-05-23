@@ -7,7 +7,6 @@ import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 
 import '../components/global_snackbar.dart';
-import '../extensions/localizations.dart';
 
 final serverInfoProviderLogger = Logger("ServerInfoProvider");
 
@@ -31,10 +30,7 @@ class ServerInfo {
     this.availablePlugins = const {},
   });
 
-  String get version =>
-      publicServerInfo.version ??
-      GlobalSnackbar.materialAppScaffoldKey.currentContext?.l10n.unknownVersion ??
-      "Unknown";
+  String get version => publicServerInfo.version ?? GlobalSnackbar.requireL10n.unknownVersion;
 
   @override
   String toString() {

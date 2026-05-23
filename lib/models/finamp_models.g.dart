@@ -429,6 +429,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         themeMode: fields[133] == null
             ? ThemeMode.system
             : fields[133] as ThemeMode,
+        amoledTheme: fields[148] == null ? false : fields[148] as bool,
         locale: fields[134] == null
             ? DefaultSettings.locale
             : fields[134] as Locale?,
@@ -453,6 +454,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? const FinampHomeScreenConfiguration(actions: [], sections: [])
             : fields[146] as FinampHomeScreenConfiguration,
         gridImageSize: fields[147] == null ? 160 : (fields[147] as num).toInt(),
+        useAndroidGainEffect: fields[149] == null ? true : fields[149] as bool,
       )
       ..disableGesture = fields[19] == null ? false : fields[19] as bool
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool
@@ -471,7 +473,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(141)
+      ..writeByte(143)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -753,7 +755,11 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(146)
       ..write(obj.homeScreenConfiguration)
       ..writeByte(147)
-      ..write(obj.gridImageSize);
+      ..write(obj.gridImageSize)
+      ..writeByte(148)
+      ..write(obj.amoledTheme)
+      ..writeByte(149)
+      ..write(obj.useAndroidGainEffect);
   }
 
   @override

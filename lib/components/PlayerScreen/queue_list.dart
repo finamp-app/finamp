@@ -42,6 +42,8 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../extensions/localizations.dart';
+
 class QueueListStreamState {
   QueueListStreamState(this.mediaState, this.queueInfo);
 
@@ -234,7 +236,7 @@ class _QueueListState extends ConsumerState<QueueList> {
                 ),
                 Flexible(
                   child: Text(
-                    _source?.name.getLocalized(context) ?? AppLocalizations.of(context)!.unknownName,
+                    _source?.name.getLocalized(context.l10n) ?? AppLocalizations.of(context)!.unknownName,
                     style: const TextStyle(fontWeight: FontWeight.w500),
                     overflow: TextOverflow.ellipsis,
                   ),

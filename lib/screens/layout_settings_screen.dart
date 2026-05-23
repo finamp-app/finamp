@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../components/LayoutSettingsScreen/accent_color_selector.dart';
+import '../components/LayoutSettingsScreen/amoled_theme.dart';
 import '../components/LayoutSettingsScreen/content_view_type_dropdown_list_tile.dart';
 import '../components/LayoutSettingsScreen/show_artist_chip_image_toggle.dart';
 import '../components/LayoutSettingsScreen/show_text_on_grid_view_selector.dart';
@@ -22,7 +23,6 @@ import '../components/LayoutSettingsScreen/theme_selector.dart';
 import '../components/LayoutSettingsScreen/use_cover_as_background_toggle.dart';
 import '../components/finamp_app_bar_back_button.dart';
 import '../extensions/localizations.dart';
-import '../components/LayoutSettingsScreen/amoled_theme.dart';
 import '../services/finamp_settings_helper.dart';
 import 'tabs_settings_screen.dart';
 

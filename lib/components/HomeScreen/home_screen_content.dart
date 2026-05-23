@@ -201,7 +201,7 @@ class HomeScreenSection extends ConsumerWidget {
       sliver: FinampSectionHeader(
         sticky: false,
         key: Key(sectionInfo.toString()),
-        title: sectionInfo.getTitle(context),
+        title: sectionInfo.getTitle(context.l10n),
         headerPadding: EdgeInsets.only(left: viewPadding.left + 14.0, right: viewPadding.right + 20.0),
         contentPadding: EdgeInsets.zero,
         actions: [

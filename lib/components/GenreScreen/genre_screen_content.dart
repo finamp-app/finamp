@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../extensions/localizations.dart';
 import '../../models/finamp_models.dart';
 import '../../models/jellyfin_models.dart';
 import '../../services/finamp_settings_helper.dart';
@@ -270,7 +271,10 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                     padding: const EdgeInsets.only(left: 4),
                     child: buildCountColumn(
                       count: artistCount,
-                      label: ref.watch(finampSettingsProvider.defaultArtistType).tabType.toLocalisedString(context),
+                      label: ref
+                          .watch(finampSettingsProvider.defaultArtistType)
+                          .tabType
+                          .toLocalisedString(context.l10n),
                       onTap: () {
                         openSeeAll(ref.watch(finampSettingsProvider.defaultArtistType).tabType, doOverride: false);
                       },

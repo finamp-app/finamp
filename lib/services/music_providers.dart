@@ -9,7 +9,6 @@ import 'package:hive_ce/hive.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../components/global_snackbar.dart';
-import '../extensions/localizations.dart';
 import '../models/finamp_models.dart';
 import '../models/jellyfin_models.dart';
 import '../models/music_models.dart';
@@ -66,13 +65,12 @@ Future<List<BaseItemDto>> globalSearch(Ref ref, String searchTerm, {required boo
 Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSectionConfiguration section) async {
   switch (section.type) {
     case HomeScreenSectionType.tabView:
-      final context = GlobalSnackbar.materialAppScaffoldKey.currentContext!;
       final source = QueueItemSource.rawId(
         type: QueueItemSourceType.homeScreenSection,
         name: QueueItemSourceName(
           type: QueueItemSourceNameType.homeScreenSection,
           localizationParameter: section.presetType?.name,
-          pretranslatedName: section.getTitle(context),
+          pretranslatedName: section.getTitle(GlobalSnackbar.requireL10n),
         ),
         id: section.id,
       );
@@ -88,7 +86,6 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
       );
     case HomeScreenSectionType.collection:
       final item = await ref.watch(itemByIdProvider(section.itemId as BaseItemId).future);
-      final context = GlobalSnackbar.materialAppScaffoldKey.currentContext!;
       // TODO better source
       if (item == null) {
         // TODO should we be throwing?  Or returning null?
@@ -97,7 +94,7 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
             type: QueueItemSourceType.unknown,
             name: QueueItemSourceName(
               type: QueueItemSourceNameType.preTranslated,
-              pretranslatedName: context.l10n.errorLoadingHomeSection,
+              pretranslatedName: GlobalSnackbar.requireL10n.errorLoadingHomeSection,
             ),
             id: section.itemId as BaseItemId,
           ),
@@ -110,7 +107,7 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
         name: QueueItemSourceName(
           type: QueueItemSourceNameType.homeScreenSection,
           localizationParameter: section.presetType?.name,
-          pretranslatedName: section.getTitle(context),
+          pretranslatedName: section.getTitle(GlobalSnackbar.requireL10n),
         ),
         item: item,
         id: section.id,
@@ -157,13 +154,12 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
           throw UnsupportedError("Invalid home section collection $playable");
       }
     case HomeScreenSectionType.queues:
-      final context = GlobalSnackbar.materialAppScaffoldKey.currentContext!;
       final source = QueueItemSource.rawId(
         type: QueueItemSourceType.homeScreenSection,
         name: QueueItemSourceName(
           type: QueueItemSourceNameType.homeScreenSection,
           localizationParameter: section.presetType?.name,
-          pretranslatedName: section.getTitle(context),
+          pretranslatedName: section.getTitle(GlobalSnackbar.requireL10n),
         ),
         id: section.id,
       );

@@ -1138,7 +1138,7 @@ enum ContentType {
   @Deprecated("Use toLocalisedString when possible")
   String toString() => _humanReadableName(this);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
+  String toLocalisedString(AppLocalizations l10n) => _humanReadableLocalisedName(this, l10n);
 
   String _humanReadableName(ContentType tabContentType) {
     switch (tabContentType) {
@@ -1165,28 +1165,28 @@ enum ContentType {
     }
   }
 
-  String _humanReadableLocalisedName(ContentType tabContentType, BuildContext context) {
+  String _humanReadableLocalisedName(ContentType tabContentType, AppLocalizations l10n) {
     switch (tabContentType) {
       case ContentType.tracks:
-        return AppLocalizations.of(context)!.tracks;
+        return l10n.tracks;
       case ContentType.albums:
-        return AppLocalizations.of(context)!.albums;
+        return l10n.albums;
       case ContentType.genericArtists:
-        return AppLocalizations.of(context)!.artists;
+        return l10n.artists;
       case ContentType.genres:
-        return AppLocalizations.of(context)!.genres;
+        return l10n.genres;
       case ContentType.playlists:
-        return AppLocalizations.of(context)!.playlists;
+        return l10n.playlists;
       case ContentType.home:
-        return AppLocalizations.of(context)!.home;
+        return l10n.home;
       case ContentType.performingArtists:
-        return AppLocalizations.of(context)!.performingArtists;
+        return l10n.performingArtists;
       case ContentType.albumArtists:
-        return AppLocalizations.of(context)!.albumArtists;
+        return l10n.albumArtists;
       case ContentType.inPlaylist:
-        return AppLocalizations.of(context)!.inPlaylist;
+        return l10n.inPlaylist;
       case ContentType.mixed:
-        return AppLocalizations.of(context)!.inCollection;
+        return l10n.inCollection;
     }
   }
 
@@ -1466,19 +1466,14 @@ class DownloadStub {
 
   factory DownloadStub.fromFinampCollection(FinampCollection collection) {
     String id = collection.id;
-    // Fetch localized name from default global context.
-    String? name;
-    var loc = GlobalSnackbar.localizations;
-    if (loc != null) {
-      name = collection.getName2(loc);
-    }
 
     return DownloadStub._build(
       id: id,
       isarId: getHash(id, DownloadItemType.finampCollection),
       jsonItem: jsonEncode(collection.toJson()),
       type: DownloadItemType.finampCollection,
-      name: name ?? "[$id]",
+      // Fetch localized name from default global context.
+      name: collection.getName(GlobalSnackbar.requireL10n),
       baseItemType: BaseItemDtoType.noItem,
     );
   }
@@ -2152,7 +2147,7 @@ class QueueItemSource {
           ? QueueItemSourceName(type: nameType, localizationParameter: baseItem.name ?? "")
           : QueueItemSourceName(
               type: QueueItemSourceNameType.preTranslated,
-              pretranslatedName: baseItem.name ?? GlobalSnackbar.localizations?.placeholderSource ?? "Somewhere",
+              pretranslatedName: baseItem.name ?? GlobalSnackbar.requireL10n.placeholderSource,
             ),
       id: baseItem.id,
       item: baseItem,
@@ -2255,9 +2250,7 @@ class QueueItemSourceName {
   @HiveField(2)
   final String? localizationParameter;
 
-  String getLocalized(BuildContext context) => getLocalized2(AppLocalizations.of(context)!);
-
-  String getLocalized2(AppLocalizations localizations) {
+  String getLocalized(AppLocalizations localizations) {
     switch (type) {
       case QueueItemSourceNameType.preTranslated:
         return pretranslatedName ?? "";
@@ -2288,7 +2281,7 @@ class QueueItemSourceName {
       case QueueItemSourceNameType.homeScreenSection:
         return localizationParameter != null
             ? HomeScreenSectionConfiguration.getTitleForPreset(
-                context: context,
+                l10n: localizations,
                 presetType: HomeScreenSectionPresetType.values.byName(localizationParameter!),
               )
             : pretranslatedName ?? "";
@@ -2787,9 +2780,7 @@ class FinampCollection {
     FinampCollectionType.collectionWithLibraryFilter => "Collection with Library Filter:${library!.id}:${item!.id}",
   };
 
-  String getName(BuildContext context) => getName2(AppLocalizations.of(context)!);
-
-  String getName2(AppLocalizations localizations) => switch (type) {
+  String getName(AppLocalizations localizations) => switch (type) {
     FinampCollectionType.favorites => localizations.finampCollectionNames("favorites"),
     FinampCollectionType.allPlaylists => localizations.finampCollectionNames("allPlaylists"),
     FinampCollectionType.latest5Albums => localizations.finampCollectionNames("fiveLatestAlbums"),
@@ -4427,63 +4418,49 @@ class HomeScreenSectionConfiguration {
     ),
   };
 
-  String getTitle(BuildContext context) =>
+  String getTitle(AppLocalizations l10n) =>
       customSectionTitle ??
-      (presetType != null ? getTitleForPreset(context: context, presetType: presetType!) : toLocalisedString(context));
-  static String getTitleForPreset({required BuildContext context, required HomeScreenSectionPresetType presetType}) =>
+      (presetType != null ? getTitleForPreset(l10n: l10n, presetType: presetType!) : toLocalisedString(l10n));
+  static String getTitleForPreset({required AppLocalizations l10n, required HomeScreenSectionPresetType presetType}) =>
       switch (presetType) {
-        HomeScreenSectionPresetType.favoriteTracks => AppLocalizations.of(
-          context,
-        )!.homeScreenSectionPresetFavoriteTracksTitle,
-        HomeScreenSectionPresetType.favoriteAlbums => AppLocalizations.of(context)!.favoriteAlbums,
-        HomeScreenSectionPresetType.favoriteArtists => AppLocalizations.of(context)!.favoriteArtists,
-        HomeScreenSectionPresetType.favoritePlaylists => AppLocalizations.of(context)!.favoritePlaylists,
-        HomeScreenSectionPresetType.favoriteGenres => AppLocalizations.of(context)!.favoriteGenres,
-        HomeScreenSectionPresetType.recentlyAddedAlbums => AppLocalizations.of(context)!.newlyAddedAlbums,
-        HomeScreenSectionPresetType.recentlyAddedTracks => AppLocalizations.of(context)!.newlyAddedTracks,
+        HomeScreenSectionPresetType.favoriteTracks => l10n.homeScreenSectionPresetFavoriteTracksTitle,
+        HomeScreenSectionPresetType.favoriteAlbums => l10n.favoriteAlbums,
+        HomeScreenSectionPresetType.favoriteArtists => l10n.favoriteArtists,
+        HomeScreenSectionPresetType.favoritePlaylists => l10n.favoritePlaylists,
+        HomeScreenSectionPresetType.favoriteGenres => l10n.favoriteGenres,
+        HomeScreenSectionPresetType.recentlyAddedAlbums => l10n.newlyAddedAlbums,
+        HomeScreenSectionPresetType.recentlyAddedTracks => l10n.newlyAddedTracks,
         // HomeScreenSectionPresetType.recentlyPlayedPlaylists => "Recent Playlists*",
-        HomeScreenSectionPresetType.frequentlyPlayedAlbums => AppLocalizations.of(context)!.frequentlyPlayedAlbums,
-        HomeScreenSectionPresetType.frequentlyPlayedTracks => AppLocalizations.of(context)!.frequentlyPlayedTracks,
-        HomeScreenSectionPresetType.frequentlyPlayedArtists => AppLocalizations.of(context)!.frequentlyPlayedArtists,
-        HomeScreenSectionPresetType.neverPlayedAlbums => AppLocalizations.of(context)!.unplayedAlbums,
-        HomeScreenSectionPresetType.forgottenFavoriteTracks => AppLocalizations.of(
-          context,
-        )!.homeScreenSectionPresetForgottenFavoriteTracksTitle,
-        HomeScreenSectionPresetType.recentQueues => AppLocalizations.of(context)!.recentQueues,
+        HomeScreenSectionPresetType.frequentlyPlayedAlbums => l10n.frequentlyPlayedAlbums,
+        HomeScreenSectionPresetType.frequentlyPlayedTracks => l10n.frequentlyPlayedTracks,
+        HomeScreenSectionPresetType.frequentlyPlayedArtists => l10n.frequentlyPlayedArtists,
+        HomeScreenSectionPresetType.neverPlayedAlbums => l10n.unplayedAlbums,
+        HomeScreenSectionPresetType.forgottenFavoriteTracks => l10n.homeScreenSectionPresetForgottenFavoriteTracksTitle,
+        HomeScreenSectionPresetType.recentQueues => l10n.recentQueues,
       };
 
-  String getDescription(BuildContext context) => presetType != null
-      ? getDescriptionForPreset(context: context, presetType: presetType!)
-      : toLocalisedString(context);
+  String getDescription(AppLocalizations l10n) =>
+      presetType != null ? getDescriptionForPreset(l10n: l10n, presetType: presetType!) : toLocalisedString(l10n);
   static String getDescriptionForPreset({
-    required BuildContext context,
+    required AppLocalizations l10n,
     required HomeScreenSectionPresetType presetType,
   }) => switch (presetType) {
-    HomeScreenSectionPresetType.favoriteTracks => AppLocalizations.of(
-      context,
-    )!.homeScreenSectionPresetFavoriteTracksDescription,
-    HomeScreenSectionPresetType.favoriteAlbums => AppLocalizations.of(context)!.favoriteAlbumsDescription,
-    HomeScreenSectionPresetType.favoriteArtists => AppLocalizations.of(context)!.favoriteArtistsDescription,
-    HomeScreenSectionPresetType.favoritePlaylists => AppLocalizations.of(context)!.favoritePlaylistsDescription,
-    HomeScreenSectionPresetType.favoriteGenres => AppLocalizations.of(context)!.favoriteGenresDescription,
-    HomeScreenSectionPresetType.recentlyAddedAlbums => AppLocalizations.of(context)!.recentlyAddedAlbumsDescription,
-    HomeScreenSectionPresetType.recentlyAddedTracks => AppLocalizations.of(context)!.recentlyAddedTracksDescription,
+    HomeScreenSectionPresetType.favoriteTracks => l10n.homeScreenSectionPresetFavoriteTracksDescription,
+    HomeScreenSectionPresetType.favoriteAlbums => l10n.favoriteAlbumsDescription,
+    HomeScreenSectionPresetType.favoriteArtists => l10n.favoriteArtistsDescription,
+    HomeScreenSectionPresetType.favoritePlaylists => l10n.favoritePlaylistsDescription,
+    HomeScreenSectionPresetType.favoriteGenres => l10n.favoriteGenresDescription,
+    HomeScreenSectionPresetType.recentlyAddedAlbums => l10n.recentlyAddedAlbumsDescription,
+    HomeScreenSectionPresetType.recentlyAddedTracks => l10n.recentlyAddedTracksDescription,
     // HomeScreenSectionPresetType.recentlyPlayedPlaylists =>
     //   "Playlists you listened to recently, starting with last played*",
-    HomeScreenSectionPresetType.frequentlyPlayedAlbums => AppLocalizations.of(
-      context,
-    )!.frequentlyPlayedAlbumsDescription,
-    HomeScreenSectionPresetType.frequentlyPlayedTracks => AppLocalizations.of(
-      context,
-    )!.frequentlyPlayedTracksDescription,
-    HomeScreenSectionPresetType.frequentlyPlayedArtists => AppLocalizations.of(
-      context,
-    )!.frequentlyPlayedArtistsDescription,
-    HomeScreenSectionPresetType.neverPlayedAlbums => AppLocalizations.of(context)!.neverPlayedAlbumsDescription,
-    HomeScreenSectionPresetType.forgottenFavoriteTracks => AppLocalizations.of(
-      context,
-    )!.homeScreenSectionPresetForgottenFavoriteTracksDescription,
-    HomeScreenSectionPresetType.recentQueues => AppLocalizations.of(context)!.recentQueuesDescription,
+    HomeScreenSectionPresetType.frequentlyPlayedAlbums => l10n.frequentlyPlayedAlbumsDescription,
+    HomeScreenSectionPresetType.frequentlyPlayedTracks => l10n.frequentlyPlayedTracksDescription,
+    HomeScreenSectionPresetType.frequentlyPlayedArtists => l10n.frequentlyPlayedArtistsDescription,
+    HomeScreenSectionPresetType.neverPlayedAlbums => l10n.neverPlayedAlbumsDescription,
+    HomeScreenSectionPresetType.forgottenFavoriteTracks =>
+      l10n.homeScreenSectionPresetForgottenFavoriteTracksDescription,
+    HomeScreenSectionPresetType.recentQueues => l10n.recentQueuesDescription,
   };
 
   factory HomeScreenSectionConfiguration.fromJson(Map<String, dynamic> json) =>
@@ -4514,17 +4491,17 @@ class HomeScreenSectionConfiguration {
     return jsonEncode(toJson());
   }
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
+  String toLocalisedString(AppLocalizations l10n) => _humanReadableLocalisedName(this, l10n);
 
-  String _humanReadableLocalisedName(HomeScreenSectionConfiguration homeScreenSectionInfo, BuildContext context) {
+  String _humanReadableLocalisedName(HomeScreenSectionConfiguration homeScreenSectionInfo, AppLocalizations l10n) {
     final sort = homeScreenSectionInfo.sortAndFilterConfiguration;
     switch (homeScreenSectionInfo.type) {
       case HomeScreenSectionType.tabView:
-        return "${sort.filters.map((filter) => filter.getName(context)).join(", ")} ${homeScreenSectionInfo.contentType.toLocalisedString(context)} ${sort.sortBy.toLocalisedString(context)} ${sort.sortOrder == SortOrder.ascending ? "↑" : "↓"}";
+        return "${sort.filters.map((filter) => filter.getName(l10n)).join(", ")} ${homeScreenSectionInfo.contentType.toLocalisedString(l10n)} ${sort.sortBy.toLocalisedString(l10n)} ${sort.sortOrder == SortOrder.ascending ? "↑" : "↓"}";
       case HomeScreenSectionType.collection:
-        return context.l10n.collection;
+        return l10n.collection;
       case HomeScreenSectionType.queues:
-        return "${context.l10n.queues} ${sort.filters.map((filter) => filter.getName(context)).join(", ")} ${sort.sortBy.toLocalisedString(context)} ${sort.sortOrder == SortOrder.ascending ? "↑" : "↓"}";
+        return "${l10n.queues} ${sort.filters.map((filter) => filter.getName(l10n)).join(", ")} ${sort.sortBy.toLocalisedString(l10n)} ${sort.sortOrder == SortOrder.ascending ? "↑" : "↓"}";
     }
   }
 
@@ -4759,20 +4736,20 @@ class ItemFilter {
     return jsonEncode(toJson());
   }
 
-  String getName(BuildContext context) {
+  String getName(AppLocalizations l10n) {
     switch (type) {
       case ItemFilterType.isFavorite:
-        return context.l10n.isFavoriteFilter;
+        return l10n.isFavoriteFilter;
       case ItemFilterType.isFullyDownloaded:
-        return context.l10n.isFullyDownloadedFilter;
+        return l10n.isFullyDownloadedFilter;
       case ItemFilterType.isUnplayed:
-        return context.l10n.isUnplayedFilter;
+        return l10n.isUnplayedFilter;
       case ItemFilterType.genreFilter:
-        return context.l10n.genreFilter(extraBaseItem.name ?? "");
+        return l10n.genreFilter(extraBaseItem.name ?? "");
       case ItemFilterType.startsWithCharacter:
-        return context.l10n.startsWithFilter(extraString.toUpperCase());
+        return l10n.startsWithFilter(extraString.toUpperCase());
       case ItemFilterType.searchTerm:
-        return context.l10n.searchTermFilter(extraString);
+        return l10n.searchTermFilter(extraString);
     }
   }
 

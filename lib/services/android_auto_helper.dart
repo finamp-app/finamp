@@ -1,7 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:collection/collection.dart';
 import 'package:finamp/components/global_snackbar.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/downloads_service.dart';
@@ -221,23 +220,23 @@ class AndroidAutoHelper {
         switch (item.type) {
           case "Audio":
             mediaItem.extras?["android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT"] =
-                GlobalSnackbar.localizations?.tracks ?? "Tracks";
+                GlobalSnackbar.requireL10n.tracks;
             break;
           case "MusicAlbum":
             mediaItem.extras?["android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT"] =
-                GlobalSnackbar.localizations?.albums ?? "Albums";
+                GlobalSnackbar.requireL10n.albums;
             break;
           case "MusicArtist":
             mediaItem.extras?["android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT"] =
-                GlobalSnackbar.localizations?.artists ?? "Artists";
+                GlobalSnackbar.requireL10n.artists;
             break;
           case "MusicGenre":
             mediaItem.extras?["android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT"] =
-                GlobalSnackbar.localizations?.genres ?? "Genres";
+                GlobalSnackbar.requireL10n.genres;
             break;
           case "Playlist":
             mediaItem.extras?["android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT"] =
-                GlobalSnackbar.localizations?.playlists ?? "Playlists";
+                GlobalSnackbar.requireL10n.playlists;
             break;
           default:
             break;
@@ -529,7 +528,7 @@ class AndroidAutoHelper {
       mediaItems.add(
         MediaItem(
           id: QueueItemSourceNameType.shuffleAll.name,
-          title: GlobalSnackbar.localizations?.shuffleAll ?? "Shuffle All Tracks",
+          title: GlobalSnackbar.requireL10n.shuffleAll,
           playable: true,
         ),
       );

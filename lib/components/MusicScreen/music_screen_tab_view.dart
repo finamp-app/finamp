@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-
 import 'package:diacritic/diacritic.dart';
-
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/MusicScreen/item_card.dart';
 import 'package:finamp/components/QueueRestoreScreen/queue_restore_tile.dart';
@@ -19,6 +17,7 @@ import 'package:get_it/get_it.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../extensions/localizations.dart';
 import '../../models/finamp_models.dart';
 import '../../models/jellyfin_models.dart';
 import '../../services/downloads_service.dart';
@@ -122,46 +121,48 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         case FinampPlayableDto(item: var baseItem):
           switch (tabSortBy) {
             case SortBy.albumArtist:
-              sortName = baseItem.albumArtist ?? "";
+              sortName =
+                  baseItem.albumArtists?.sortedBy((e) => e.name ?? '').map((e) => e.name ?? '').join(", ") ??
+                  baseItem.albumArtist ??
+                  "";
               break;
             default:
               sortName = baseItem.nameForSorting ?? "";
               break;
           }
         case FinampPlayable playable:
-          sortName = playable.source.name.getLocalized(context);
+          sortName = playable.source.name.getLocalized(context.l10n);
         case LatestQueues queue:
           // TODO: Handle this case.
           throw UnsupportedError("This shouldn't happen.");
       }
+      sortName = removeDiacritics(sortName).toLowerCase();
       if (sortName.isEmpty) continue; // assume empty names are at the start
-      int itemCodePoint = sortName.toLowerCase().codeUnitAt(0);
-      if (itemCodePoint <= maxCodePoint) {
-        final comparisonResult = itemCodePoint - codePointToScrollTo;
-        if (comparisonResult == 0) {
-          timer?.cancel();
-          await controller.scrollToIndex(
-            i,
-            duration: _getAnimationDurationForOffsetToIndex(i),
-            preferPosition: AutoScrollPosition.begin,
-          );
+      int itemCodePoint = sortName.codeUnitAt(0);
+      final comparisonResult = itemCodePoint - codePointToScrollTo;
+      if (comparisonResult == 0) {
+        timer?.cancel();
+        await controller.scrollToIndex(
+          i,
+          duration: _getAnimationDurationForOffsetToIndex(i),
+          preferPosition: AutoScrollPosition.begin,
+        );
 
-          letterToSearch = null;
-          return;
-        } else if (reversed ? comparisonResult < 0 : comparisonResult > 0) {
-          // If the letter is before the current item, there was no previous match (letter doesn't seem to exist in library)
-          // scroll to the previous item instead
-          timer?.cancel();
-          await controller.scrollToIndex(
-            (i - 1).clamp(0, itemList.length - 1),
-            // duration: scrollDuration,
-            duration: _getAnimationDurationForOffsetToIndex(i),
-            preferPosition: AutoScrollPosition.middle,
-          );
+        letterToSearch = null;
+        return;
+      } else if (reversed ? comparisonResult < 0 : comparisonResult > 0) {
+        // If the letter is before the current item, there was no previous match (letter doesn't seem to exist in library)
+        // scroll to the previous item instead
+        timer?.cancel();
+        await controller.scrollToIndex(
+          (i - 1).clamp(0, itemList.length - 1),
+          // duration: scrollDuration,
+          duration: _getAnimationDurationForOffsetToIndex(i),
+          preferPosition: AutoScrollPosition.middle,
+        );
 
-          letterToSearch = null;
-          return;
-        }
+        letterToSearch = null;
+        return;
       }
     }
 
@@ -170,7 +171,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
       letterToSearch = null;
     } else {
       timer = Timer(const Duration(seconds: 8), () {
-        // If page loading takes >5 seconds, cancel search and allow image loading.
+        // If page loading takes too long, cancel search and allow image loading.
         letterToSearch = null;
       });
 

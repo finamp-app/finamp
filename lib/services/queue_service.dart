@@ -625,7 +625,7 @@ class QueueService {
       skipRadioCacheInvalidation: skipRadioCacheInvalidation,
     );
     _queueServiceLogger.info(
-      "Started playing '${GlobalSnackbar.localizations != null ? source.name.getLocalized2(GlobalSnackbar.localizations!) : source.name.type}' (${source.type}) in order $order from index $startingIndex",
+      "Started playing '${source.name.getLocalized(GlobalSnackbar.requireL10n)}' (${source.type}) in order $order from index $startingIndex",
     );
     _queueServiceLogger.info("Items for queue: [${items.map((e) => e.name).join(", ")}]");
   }

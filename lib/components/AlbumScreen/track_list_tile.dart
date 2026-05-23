@@ -207,12 +207,11 @@ Future<bool> onConfirmPlayableDismiss({
   required List<BaseItemDto> tracks,
 }) async {
   final queueService = GetIt.instance<QueueService>();
-  final context = GlobalSnackbar.materialAppScaffoldKey.currentContext!;
 
   final sourceItemType = switch (sourceItem) {
     AlbumDisc() => "disc",
     FinampPlayableDto() => BaseItemDtoType.fromItem(sourceItem.item).name,
-    _ => sourceItem.source.name.getLocalized(context),
+    _ => sourceItem.source.name.getLocalized(GlobalSnackbar.requireL10n),
   };
 
   switch (followUpAction) {

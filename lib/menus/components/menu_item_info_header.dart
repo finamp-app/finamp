@@ -19,6 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../../components/finamp_icon.dart';
+import '../../extensions/localizations.dart';
 import '../../services/finamp_settings_helper.dart';
 
 const double infoHeaderFullExtent = 162.0;
@@ -47,7 +48,7 @@ Widget _getMenuHeaderForItemType({
         itemId: library,
         contentType: content,
         sortAndFilterConfiguration: config,
-        customSectionTitle: item.source.name.getLocalized(context),
+        customSectionTitle: item.source.name.getLocalized(context.l10n),
       ),
     ),
     LatestQueues() => HomeSectionInfo(
@@ -56,7 +57,7 @@ Widget _getMenuHeaderForItemType({
         itemId: currentLibraryPlaceholder,
         contentType: ContentType.home,
         sortAndFilterConfiguration: SortAndFilterConfiguration.defaultSort,
-        customSectionTitle: item.source.name.getLocalized(context),
+        customSectionTitle: item.source.name.getLocalized(context.l10n),
       ),
     ),
     _ => throw UnsupportedError("Cannot show menu header for $item"),
@@ -516,7 +517,7 @@ class HomeSectionInfo extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        config.getTitle(context),
+                        config.getTitle(context.l10n),
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontSize: 18,
@@ -531,12 +532,14 @@ class HomeSectionInfo extends ConsumerWidget {
                         iconData: config.sortAndFilterConfiguration.sortOrder == SortOrder.ascending
                             ? TablerIcons.sort_ascending
                             : TablerIcons.sort_descending,
-                        textSpan: TextSpan(text: config.sortAndFilterConfiguration.sortBy.toLocalisedString(context)),
+                        textSpan: TextSpan(
+                          text: config.sortAndFilterConfiguration.sortBy.toLocalisedString(context.l10n),
+                        ),
                       ),
                       ...config.sortAndFilterConfiguration.filters.map(
                         (filter) => IconAndText(
                           iconData: TablerIcons.filter,
-                          textSpan: TextSpan(text: filter.getName(context)),
+                          textSpan: TextSpan(text: filter.getName(context.l10n)),
                         ),
                       ),
                     ],

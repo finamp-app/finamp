@@ -241,7 +241,7 @@ class SortAndFilterRow extends ConsumerWidget {
                                 maxWidth: (constraints.maxWidth - filerButtonWidth) / activeFilterCount,
                               ),
                               child: SimpleButton(
-                                text: filter.getName(context),
+                                text: filter.getName(context.l10n),
                                 icon: TablerIcons.x,
                                 iconColor: TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
                                 backgroundColor: ColorScheme.of(context).primary.withOpacity(0.1),
@@ -267,7 +267,7 @@ class SortAndFilterRow extends ConsumerWidget {
                   icon: currentConfig.sortOrder == SortOrder.ascending
                       ? TablerIcons.sort_ascending
                       : TablerIcons.sort_descending,
-                  text: currentConfig.sortBy.toLocalisedString(context),
+                  text: currentConfig.sortBy.toLocalisedString(context.l10n),
                   onPressed: () => controller._updateConfiguration(
                     currentConfig.copyWith(
                       sortOrder: currentConfig.sortOrder == SortOrder.ascending
@@ -428,7 +428,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
                 .map(
                   (e) => DropdownMenuEntry<SortBy>(
                     value: e,
-                    label: e.toLocalisedString(context),
+                    label: e.toLocalisedString(context.l10n),
                     leadingIcon: Icon(e.getIcon()),
                   ),
                 )
@@ -507,7 +507,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
 
   Widget _makeFilterTile(WidgetRef ref, ItemFilterType option) {
     return ToggleableListTile(
-      title: ItemFilter(type: option).getName(context),
+      title: ItemFilter(type: option).getName(context.l10n),
       leading: Padding(
         padding: const EdgeInsets.only(left: 16.0),
         child: Icon(switch (option) {
@@ -561,7 +561,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
 
   Widget _makeExcessFilterTile(WidgetRef ref, ItemFilter filter) {
     return ToggleableListTile(
-      title: filter.getName(context),
+      title: filter.getName(context.l10n),
       leading: Padding(
         padding: const EdgeInsets.only(left: 16.0),
         child: Icon(switch (filter.type) {

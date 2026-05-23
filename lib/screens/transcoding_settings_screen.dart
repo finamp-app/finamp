@@ -5,7 +5,6 @@ import 'package:finamp/components/TranscodingSettingsScreen/bitrate_selector.dar
 import 'package:finamp/components/TranscodingSettingsScreen/transcode_switch.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';

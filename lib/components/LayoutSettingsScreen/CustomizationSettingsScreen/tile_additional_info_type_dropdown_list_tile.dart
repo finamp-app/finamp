@@ -5,6 +5,8 @@ import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../extensions/localizations.dart';
+
 class TileAdditionalInfoTypeTitleListTile extends ConsumerWidget {
   const TileAdditionalInfoTypeTitleListTile({super.key});
 
@@ -45,7 +47,7 @@ class TileAdditionalInfoTypeDropdownListTile extends ConsumerWidget {
     ];
 
     return ListTile(
-      title: Text(tabContentType.toLocalisedString(context)),
+      title: Text(tabContentType.toLocalisedString(context.l10n)),
       subtitle: FinampSettingsDropdown<TileAdditionalInfoType>(
         dropdownItems: dropdownItems
             .map((e) => DropdownMenuEntry<TileAdditionalInfoType>(value: e, label: e.toLocalisedString(context)))

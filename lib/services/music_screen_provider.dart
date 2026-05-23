@@ -393,7 +393,7 @@ List<BaseItemDto> sortItems(List<BaseItemDto> itemsToSort, SortBy? sortBy, SortO
           if (a.artists == null || b.artists == null) {
             return 0;
           } else {
-            return a.artists!.join(', ').compareTo(b.artists!.join(', '));
+            return a.artists!.sortedBy((e) => e).join(", ").compareTo(b.artists!.sortedBy((e) => e).join(", "));
           }
         case SortBy.communityRating:
           if (a.communityRating == null || b.communityRating == null) {

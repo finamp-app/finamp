@@ -186,7 +186,7 @@ class HomeScreenQueueTile extends ConsumerWidget {
               spacing: 0.0,
               children: [
                 Text(
-                  source.name.getLocalized(context),
+                  source.name.getLocalized(context.l10n),
                   style: TextTheme.of(context).bodySmall!.copyWith(fontSize: 12, fontWeight: FontWeight.w500),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
