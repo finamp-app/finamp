@@ -573,7 +573,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
             case BaseItemDtoType.collection:
               collectionContent = ContentType.mixed;
             case _:
-              throw UnimplementedError();
+              throw UnsupportedError("Global search should not have returned an item of this type");
           }
           if (searchListener.value!.id == widget.initialState.itemId) {
             collectionSortController.updateConfiguration(widget.initialState.sortAndFilterConfiguration);

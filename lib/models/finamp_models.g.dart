@@ -372,12 +372,6 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         autoSwitchItemCurationType: fields[112] == null
             ? true
             : fields[112] as bool,
-        playlistTracksSortBy: fields[113] == null
-            ? null
-            : fields[113] as SortBy?,
-        playlistTracksSortOrder: fields[114] == null
-            ? null
-            : fields[114] as SortOrder?,
         genreFilterPlaylists: fields[115] == null ? false : fields[115] as bool,
         clearQueueOnStopEvent: fields[117] == null
             ? false
@@ -405,7 +399,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         preferAddingToFavoritesOverPlaylists: fields[126] == null
             ? false
             : fields[126] as bool,
-        previousTracksExpaned: fields[127] == null
+        previousTracksExpanded: fields[127] == null
             ? false
             : fields[127] as bool,
         autoplayRestoredQueue: fields[128] == null
@@ -460,6 +454,8 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool
       ..defaultDownloadLocation = fields[58] as String?
       ..lastUsedDownloadLocationId = fields[85] as String?
+      ..playlistTracksSortBy = fields[113] as SortBy?
+      ..playlistTracksSortOrder = fields[114] as SortOrder?
       ..sleepTimer = fields[116] as SleepTimer?
       ..autoExpandPlayerScreen = fields[125] == null
           ? false
@@ -715,7 +711,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(126)
       ..write(obj.preferAddingToFavoritesOverPlaylists)
       ..writeByte(127)
-      ..write(obj.previousTracksExpaned)
+      ..write(obj.previousTracksExpanded)
       ..writeByte(128)
       ..write(obj.autoplayRestoredQueue)
       ..writeByte(129)
@@ -3514,6 +3510,8 @@ class HomeScreenSectionPresetTypeAdapter
         return HomeScreenSectionPresetType.forgottenFavoriteTracks;
       case 12:
         return HomeScreenSectionPresetType.recentQueues;
+      case 13:
+        return HomeScreenSectionPresetType.recentlyPlayedTracks;
       default:
         return HomeScreenSectionPresetType.favoriteTracks;
     }
@@ -3548,6 +3546,8 @@ class HomeScreenSectionPresetTypeAdapter
         writer.writeByte(11);
       case HomeScreenSectionPresetType.recentQueues:
         writer.writeByte(12);
+      case HomeScreenSectionPresetType.recentlyPlayedTracks:
+        writer.writeByte(13);
     }
   }
 
@@ -9592,6 +9592,7 @@ const _$HomeScreenSectionPresetTypeEnumMap = {
   HomeScreenSectionPresetType.forgottenFavoriteTracks:
       'forgottenFavoriteTracks',
   HomeScreenSectionPresetType.recentQueues: 'recentQueues',
+  HomeScreenSectionPresetType.recentlyPlayedTracks: 'recentlyPlayedTracks',
 };
 
 FinampHomeScreenConfiguration _$FinampHomeScreenConfigurationFromJson(

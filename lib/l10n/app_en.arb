@@ -3655,5 +3655,23 @@
   "losslessNoBitrate": "Not applicable to FLAC transcodes",
   "@losslessNoBitrate": {
     "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+  },
+  "recentlyPlayedTracksDescription": "Tracks you listened to recently, starting with last played",
+  "@recentlyPlayedTracksDescription": {
+    "description": "Description for a home screen section preset"
+  },
+  "homeFavoritesDownloadWarning": "Are you sure you want to download favorites?  This will download favorites of all types, not just {sectionType}.",
+  "@homeFavoritesDownloadWarning": {
+    "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because home sections show a specific item type, like Albums, but the download covers all.",
+    "placeholders": {
+      "sectionType": {
+        "type": "String",
+        "example": "Albums"
+      }
+    }
+  },
+  "homeRecentAlbumsDownloadWarning": "This will download the 5 latest albums on the server.  This will be updated and the excess downloads removed as new albums are added to the server in the future.",
+  "@homeRecentAlbumsDownloadWarning": {
+    "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because the behavior of the 5 latest albums download is not a 100% match to the home sections."
   }
 }

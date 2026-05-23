@@ -129,7 +129,7 @@ class _FinampSettingsGenerator extends Generator {
 
     return '''
     // coverage:ignore-file
-    // ignore_for_file: type=lint
+    // ignore_for_file: type=lint, unused_element
 
     /// Generated setters for all finampSettings.  Must be directly accessed until
     /// static extension methods are added to dart

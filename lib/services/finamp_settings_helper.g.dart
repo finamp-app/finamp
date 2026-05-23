@@ -12,7 +12,7 @@ part of 'finamp_settings_helper.dart';
 // **************************************************************************
 
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, unused_element
 
 /// Generated setters for all finampSettings.  Must be directly accessed until
 /// static extension methods are added to dart
@@ -1059,9 +1059,9 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setPreviousTracksExpaned(bool newPreviousTracksExpaned) {
+  static void setPreviousTracksExpanded(bool newPreviousTracksExpanded) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.previousTracksExpaned = newPreviousTracksExpaned;
+    finampSettingsTemp.previousTracksExpanded = newPreviousTracksExpanded;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -1634,8 +1634,8 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.preferAddingToFavoritesOverPlaylists,
       );
-  ProviderListenable<bool> get previousTracksExpaned => finampSettingsProvider
-      .select((value) => value.requireValue.previousTracksExpaned);
+  ProviderListenable<bool> get previousTracksExpanded => finampSettingsProvider
+      .select((value) => value.requireValue.previousTracksExpanded);
   ProviderListenable<bool> get autoplayRestoredQueue => finampSettingsProvider
       .select((value) => value.requireValue.autoplayRestoredQueue);
   ProviderListenable<bool> get preferNextUpPrepending => finampSettingsProvider

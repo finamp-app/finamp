@@ -121,10 +121,10 @@ class _QueueListState extends ConsumerState<QueueList> {
       case PreviousTracksPersistenceMode.persistent:
         break;
       case PreviousTracksPersistenceMode.initiallyCollapsed:
-        FinampSetters.setPreviousTracksExpaned(false);
+        FinampSetters.setPreviousTracksExpanded(false);
         break;
       case PreviousTracksPersistenceMode.initiallyExpanded:
-        FinampSetters.setPreviousTracksExpaned(true);
+        FinampSetters.setPreviousTracksExpanded(true);
         break;
     }
   }
@@ -132,7 +132,7 @@ class _QueueListState extends ConsumerState<QueueList> {
   void _updateJumpToTop() {
     if (widget.jumpToCurrentKey.currentContext == null) return;
     final screenHeight = MediaQuery.heightOf(widget.jumpToCurrentKey.currentContext!);
-    final currentTrackOffset = FinampSettingsHelper.finampSettings.previousTracksExpaned
+    final currentTrackOffset = FinampSettingsHelper.finampSettings.previousTracksExpanded
         ? (_previousTrackCount * QueueListTile.height)
         : 0;
     double offset = widget.scrollController.offset - currentTrackOffset;
@@ -154,7 +154,7 @@ class _QueueListState extends ConsumerState<QueueList> {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (context.mounted &&
             widget.scrollController.hasClients &&
-            FinampSettingsHelper.finampSettings.previousTracksExpaned) {
+            FinampSettingsHelper.finampSettings.previousTracksExpanded) {
           final changeHeight = _queueService.getQueue().previousTracks.length * QueueListTile.height;
           var target = widget.scrollController.position.pixels + changeHeight - 50;
           target = target.clamp(
@@ -171,7 +171,7 @@ class _QueueListState extends ConsumerState<QueueList> {
       // nested consumer to contain rebuilds
       Consumer(
         builder: (context, ref, child) {
-          if (ref.watch(finampSettingsProvider.previousTracksExpaned)) {
+          if (ref.watch(finampSettingsProvider.previousTracksExpanded)) {
             return PreviousTracksList(previousTracksHeaderKey: widget.previousTracksHeaderKey);
           } else {
             return const SliverToBoxAdapter();
@@ -183,8 +183,8 @@ class _QueueListState extends ConsumerState<QueueList> {
         delegate: PreviousTracksSectionHeader(
           previousTracksHeaderKey: widget.previousTracksHeaderKey,
           onTap: () {
-            final expanded = !FinampSettingsHelper.finampSettings.previousTracksExpaned;
-            FinampSetters.setPreviousTracksExpaned(expanded);
+            final expanded = !FinampSettingsHelper.finampSettings.previousTracksExpanded;
+            FinampSetters.setPreviousTracksExpanded(expanded);
 
             if (!widget.scrollController.hasClients) return;
             final changeHeight = _queueService.getQueue().previousTracks.length * QueueListTile.height;
@@ -1286,7 +1286,7 @@ class PreviousTracksSectionHeader extends SliverPersistentHeaderDelegate {
             const SizedBox(width: 4.0),
             Consumer(
               builder: (context, ref, child) {
-                final isExpanded = ref.watch(finampSettingsProvider.previousTracksExpaned);
+                final isExpanded = ref.watch(finampSettingsProvider.previousTracksExpanded);
                 return Icon(
                   isExpanded ? TablerIcons.chevron_up : TablerIcons.chevron_down,
                   size: 28.0,

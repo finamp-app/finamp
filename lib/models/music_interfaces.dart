@@ -247,3 +247,7 @@ mixin _NeedsEquals {
     return equalsHelper(copy) && equalsHelperChain(copy) && hashCode == copy.hashCode && !identical(item, copy);
   }
 }
+
+extension MaybeGetItem on FinampDisplayableOrPlayable {
+  BaseItemDto? get maybeItem => this is FinampPlayableDto ? (this as FinampPlayableDto).item : null;
+}

@@ -3,6 +3,7 @@ import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/components/confirmation_prompt_dialog.dart';
 import 'package:finamp/components/delete_prompts.dart';
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/extensions/localizations.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
@@ -25,6 +26,8 @@ class DownloadButton extends ConsumerWidget {
     this.downloadDisabled = false,
     this.customTooltip,
     this.allowServerDelete = true,
+    this.warningMessage,
+    this.downloadOnly = false,
   });
 
   final DownloadStub item;
@@ -33,7 +36,9 @@ class DownloadButton extends ConsumerWidget {
   final bool isLibrary;
   final bool downloadDisabled;
   final String? customTooltip;
+  final String? warningMessage;
   final bool allowServerDelete;
+  final bool downloadOnly;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -76,11 +81,12 @@ class DownloadButton extends ConsumerWidget {
             sendDisabledDownloadMessageToSnackbar(customTooltip);
             return;
           }
-          if (isLibrary) {
-            await showDialog(
+          final warning = warningMessage ?? (isLibrary ? context.l10n.downloadLibraryPrompt(item.name) : null);
+          if (warning != null) {
+            await showDialog<void>(
               context: context,
               builder: (context) => ConfirmationPromptDialog(
-                promptText: AppLocalizations.of(context)!.downloadLibraryPrompt(item.name),
+                promptText: warning,
                 confirmButtonText: AppLocalizations.of(context)!.addButtonLabel,
                 onConfirmed: () => DownloadDialog.show(context, item, viewId),
               ),
@@ -190,6 +196,14 @@ class DownloadButton extends ConsumerWidget {
         ];
       },
     );
+
+    if (downloadOnly) {
+      if (!status.isRequired && !isOffline) {
+        return downloadButton;
+      } else {
+        return const SizedBox.shrink();
+      }
+    }
 
     if (isOffline) {
       if (status.isRequired) {

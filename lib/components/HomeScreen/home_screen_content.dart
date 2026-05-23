@@ -20,7 +20,6 @@ import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/music_screen_provider.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/quick_actions_service.dart';
@@ -280,33 +279,13 @@ class HomeScreenSection extends ConsumerWidget {
               icon: TablerIcons.arrows_shuffle,
             ),
           ],
-          // TODO implement collection downloads
-          if (sectionDisplayable is FinampPlayableDto &&
-              ![
-                BaseItemDtoType.collection,
-                BaseItemDtoType.artist,
-              ].contains(BaseItemDtoType.fromItem((sectionDisplayable as FinampPlayableDto).item)))
+          // bind function result to downloadInfo and proceed if not null
+          if (getHomeDownloadInfo(ref, context.l10n, sectionInfo, sectionDisplayable?.maybeItem) case var downloadInfo?)
             DownloadButton(
-              item: DownloadStub.fromItem(
-                type: BaseItemDtoType.fromItem((sectionDisplayable as FinampPlayableDto).item) == BaseItemDtoType.track
-                    ? DownloadItemType.track
-                    : DownloadItemType.collection,
-                item: (sectionDisplayable as FinampPlayableDto).item,
-              ),
+              item: downloadInfo.stub,
               allowServerDelete: false,
-            ),
-          if (sectionDisplayable is FinampPlayableDto &&
-              BaseItemDtoType.fromItem((sectionDisplayable as FinampPlayableDto).item) == BaseItemDtoType.artist)
-            DownloadButton(
-              item: DownloadStub.fromFinampCollection(
-                FinampCollection(
-                  type: FinampCollectionType.collectionWithLibraryFilter,
-                  // TODO allow LibraryIds?
-                  library: ref.watch(FinampUserHelper.finampCurrentUserProvider)!.currentView,
-                  item: (sectionDisplayable as FinampPlayableDto).item,
-                ),
-              ),
-              allowServerDelete: false,
+              warningMessage: downloadInfo.warning,
+              downloadOnly: true,
             ),
           ShowAllButton(
             label: context.l10n.showAll,

@@ -33,17 +33,22 @@ class GlobalSnackbar {
 
   static ScaffoldMessengerState? get scaffoldState => rawMaterialAppScaffoldKey.currentState;
   static NavigatorState? get navigatorState => rawMaterialAppNavigatorKey.currentState;
-  static AppLocalizations? get l10n {
+  static AppLocalizations? get _contextL10n {
     final context = rawMaterialAppNavigatorKey.currentContext;
     if (context != null && context.mounted) {
-      return AppLocalizations.of(context);
+      final localization = AppLocalizations.of(context);
+      if (localization != null) {
+        _localizationsCache = localization;
+      }
+      return localization;
     }
     return null;
   }
 
   static final _englishL10n = AppLocalizationsEn();
+  static AppLocalizations? _localizationsCache;
 
-  static AppLocalizations get requireL10n => l10n ?? _englishL10n;
+  static AppLocalizations get requireL10n => _contextL10n ?? _localizationsCache ?? _englishL10n;
 
   static final _logger = Logger("GlobalSnackbar");
 

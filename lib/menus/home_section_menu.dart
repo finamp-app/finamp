@@ -1,16 +1,22 @@
 import 'dart:async';
 
 import 'package:finamp/components/themed_bottom_sheet.dart';
+import 'package:finamp/extensions/localizations.dart';
+import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/components/menuEntries/download_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/edit_home_section_menu_entry.dart';
+import 'package:finamp/menus/components/menuEntries/lock_download_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/menu_entry.dart';
 import 'package:finamp/menus/components/menu_item_info_header.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/music_models.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
+import '../models/jellyfin_models.dart';
 import '../services/music_providers.dart';
 
 const Duration albumMenuDefaultAnimationDuration = Duration(milliseconds: 750);
@@ -28,7 +34,14 @@ Future<void> showModalHomeSectionMenu({
 
   // Normal menu entries, excluding headers
   List<HideableMenuEntry> getMenuEntries(BuildContext context) {
-    return [EditHomeSectionMenuEntry(section: section)];
+    final downloadInfo = getHomeDownloadInfo(null, context.l10n, section, item.maybeItem);
+    return [
+      EditHomeSectionMenuEntry(section: section),
+      if (downloadInfo != null)
+        DownloadMenuEntry(downloadStub: downloadInfo.stub, warningMessage: downloadInfo.warning),
+      if (downloadInfo != null)
+        LockDownloadMenuEntry(downloadStub: downloadInfo.stub, warningMessage: downloadInfo.warning),
+    ];
   }
 
   (double, List<Widget>) getMenuProperties(BuildContext context) {
@@ -63,4 +76,70 @@ Future<void> showModalHomeSectionMenu({
     routeName: albumMenuRouteName,
     buildSlivers: (context) => getMenuProperties(context),
   );
+}
+
+class HomeDownloadInfo {
+  HomeDownloadInfo({required this.stub, required this.warning});
+  DownloadStub stub;
+  String? warning;
+}
+
+HomeDownloadInfo? getHomeDownloadInfo(
+  WidgetRef? ref,
+  AppLocalizations l10n,
+  HomeScreenSectionConfiguration section,
+  BaseItemDto? item,
+) {
+  switch (section.type) {
+    case HomeScreenSectionType.tabView:
+      return switch (section.presetType) {
+        HomeScreenSectionPresetType.favoriteTracks ||
+        HomeScreenSectionPresetType.favoriteAlbums ||
+        HomeScreenSectionPresetType.favoriteArtists ||
+        HomeScreenSectionPresetType.favoritePlaylists ||
+        HomeScreenSectionPresetType.favoriteGenres => HomeDownloadInfo(
+          stub: DownloadStub.fromFinampCollection(FinampCollection(type: FinampCollectionType.favorites)),
+          warning: l10n.homeFavoritesDownloadWarning(section.contentType.toLocalisedString(l10n)),
+        ),
+        HomeScreenSectionPresetType.recentlyAddedAlbums ||
+        HomeScreenSectionPresetType.recentlyAddedTracks => HomeDownloadInfo(
+          stub: DownloadStub.fromFinampCollection(FinampCollection(type: FinampCollectionType.latest5Albums)),
+          warning: l10n.homeRecentAlbumsDownloadWarning,
+        ),
+        _ => null,
+      };
+    // TODO put all playlist download somewhere?
+    case HomeScreenSectionType.collection:
+      if (item == null) return null;
+      final type = BaseItemDtoType.fromItem(item);
+      if (type == BaseItemDtoType.collection) {
+        // TODO implement collection downloads
+        return null;
+      } else if (type == BaseItemDtoType.artist) {
+        return HomeDownloadInfo(
+          stub: DownloadStub.fromFinampCollection(
+            FinampCollection(
+              type: FinampCollectionType.collectionWithLibraryFilter,
+              // TODO allow LibraryIds?
+              library:
+                  (ref?.watch(FinampUserHelper.finampCurrentUserProvider) ??
+                          GetIt.instance<FinampUserHelper>().currentUser)!
+                      .currentView,
+              item: item,
+            ),
+          ),
+          warning: null,
+        );
+      } else {
+        return HomeDownloadInfo(
+          stub: DownloadStub.fromItem(
+            type: type == BaseItemDtoType.track ? DownloadItemType.track : DownloadItemType.collection,
+            item: item,
+          ),
+          warning: null,
+        );
+      }
+    case HomeScreenSectionType.queues:
+      return null;
+  }
 }

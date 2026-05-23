@@ -257,7 +257,7 @@ class DefaultSettings {
   static const rpcEnabled = false;
   static const rpcIcon = DiscordRpcIcon.transparent;
   static const preferAddingToFavoritesOverPlaylists = false;
-  static const previousTracksExpaned = false;
+  static const previousTracksExpanded = false;
   static const autoplayRestoredQueue = false;
   static const preferNextUpPrepending = true;
   static const rememberLastUsedPlaybackActionRowPage = true;
@@ -279,36 +279,9 @@ class DefaultSettings {
     sections: [
       HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoriteTracks),
       HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.forgottenFavoriteTracks),
-      HomeScreenSectionConfiguration(
-        type: HomeScreenSectionType.tabView,
-        contentType: ContentType.tracks,
-        itemId: currentLibraryPlaceholder,
-        sortAndFilterConfiguration: SortAndFilterConfiguration(
-          sortBy: SortBy.datePlayed,
-          sortOrder: SortOrder.descending,
-          filters: {},
-        ),
-      ),
-      HomeScreenSectionConfiguration(
-        type: HomeScreenSectionType.tabView,
-        contentType: ContentType.albums,
-        itemId: currentLibraryPlaceholder,
-        sortAndFilterConfiguration: SortAndFilterConfiguration(
-          sortBy: SortBy.dateCreated,
-          sortOrder: SortOrder.descending,
-          filters: {},
-        ),
-      ),
-      HomeScreenSectionConfiguration(
-        type: HomeScreenSectionType.tabView,
-        contentType: ContentType.performingArtists,
-        itemId: currentLibraryPlaceholder,
-        sortAndFilterConfiguration: SortAndFilterConfiguration(
-          sortBy: SortBy.sortName,
-          sortOrder: SortOrder.ascending,
-          filters: {ItemFilter(type: ItemFilterType.isFavorite)},
-        ),
-      ),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.recentlyPlayedTracks),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.recentlyAddedAlbums),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoriteArtists),
     ],
   );
   static const gridImageSize = 160;
@@ -428,8 +401,6 @@ class FinampSettings {
     this.artistItemSectionFilterChipOrder = DefaultSettings.artistItemSectionFilterChipOrder,
     this.artistItemSectionsOrder = DefaultSettings.artistItemSectionsOrder,
     this.autoSwitchItemCurationType = DefaultSettings.autoSwitchItemCurationType,
-    this.playlistTracksSortBy = null,
-    this.playlistTracksSortOrder = null,
     this.genreFilterPlaylists = DefaultSettings.genreFilterPlaylists,
     this.clearQueueOnStopEvent = DefaultSettings.clearQueueOnStopEvent,
     this.useHighContrastColors = DefaultSettings.useHighContrastColors,
@@ -439,7 +410,7 @@ class FinampSettings {
     this.rpcEnabled = DefaultSettings.rpcEnabled,
     this.rpcIcon = DefaultSettings.rpcIcon,
     this.preferAddingToFavoritesOverPlaylists = DefaultSettings.preferAddingToFavoritesOverPlaylists,
-    this.previousTracksExpaned = DefaultSettings.previousTracksExpaned,
+    this.previousTracksExpanded = DefaultSettings.previousTracksExpanded,
     this.autoplayRestoredQueue = DefaultSettings.autoplayRestoredQueue,
     this.preferNextUpPrepending = DefaultSettings.preferNextUpPrepending,
     this.rememberLastUsedPlaybackActionRowPage = DefaultSettings.rememberLastUsedPlaybackActionRowPage,
@@ -861,8 +832,8 @@ class FinampSettings {
   @HiveField(126, defaultValue: DefaultSettings.preferAddingToFavoritesOverPlaylists)
   bool preferAddingToFavoritesOverPlaylists;
 
-  @HiveField(127, defaultValue: DefaultSettings.previousTracksExpaned)
-  bool previousTracksExpaned = DefaultSettings.previousTracksExpaned;
+  @HiveField(127, defaultValue: DefaultSettings.previousTracksExpanded)
+  bool previousTracksExpanded = DefaultSettings.previousTracksExpanded;
 
   @HiveField(128, defaultValue: DefaultSettings.autoplayRestoredQueue)
   bool autoplayRestoredQueue = DefaultSettings.autoplayRestoredQueue;
@@ -4416,6 +4387,18 @@ class HomeScreenSectionConfiguration {
       customSectionTitle: null,
       presetType: presetType,
     ),
+    HomeScreenSectionPresetType.recentlyPlayedTracks => HomeScreenSectionConfiguration(
+      type: HomeScreenSectionType.tabView,
+      contentType: ContentType.tracks,
+      itemId: currentLibraryPlaceholder,
+      sortAndFilterConfiguration: SortAndFilterConfiguration(
+        sortBy: SortBy.datePlayed,
+        sortOrder: SortOrder.descending,
+        filters: {},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
   };
 
   String getTitle(AppLocalizations l10n) =>
@@ -4437,6 +4420,7 @@ class HomeScreenSectionConfiguration {
         HomeScreenSectionPresetType.neverPlayedAlbums => l10n.unplayedAlbums,
         HomeScreenSectionPresetType.forgottenFavoriteTracks => l10n.homeScreenSectionPresetForgottenFavoriteTracksTitle,
         HomeScreenSectionPresetType.recentQueues => l10n.recentQueues,
+        HomeScreenSectionPresetType.recentlyPlayedTracks => l10n.recentlyPlayedTracks,
       };
 
   String getDescription(AppLocalizations l10n) =>
@@ -4461,6 +4445,7 @@ class HomeScreenSectionConfiguration {
     HomeScreenSectionPresetType.forgottenFavoriteTracks =>
       l10n.homeScreenSectionPresetForgottenFavoriteTracksDescription,
     HomeScreenSectionPresetType.recentQueues => l10n.recentQueuesDescription,
+    HomeScreenSectionPresetType.recentlyPlayedTracks => l10n.recentlyPlayedTracksDescription,
   };
 
   factory HomeScreenSectionConfiguration.fromJson(Map<String, dynamic> json) =>
@@ -4552,6 +4537,8 @@ enum HomeScreenSectionPresetType {
   forgottenFavoriteTracks,
   @HiveField(12)
   recentQueues,
+  @HiveField(13)
+  recentlyPlayedTracks,
   //TODO once we can track playlists plays, add this back in
   // @HiveField(7)
   // recentlyPlayedPlaylists,

@@ -581,8 +581,9 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
         if (currentState) {
           newFilters.removeWhere((x) => x.type == filter.type);
         } else {
-          // The excess tile should be immediatly removed once toggled off
-          throw UnimplementedError();
+          throw UnsupportedError(
+            "This tile is expected to be immediately removed once toggled off, so this shouldn't happen.",
+          );
         }
         setState(() {
           currentConfig = currentConfig.copyWith(filters: newFilters);
