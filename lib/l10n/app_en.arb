@@ -2618,6 +2618,27 @@
   "@audioFadeInDurationSettingSubtitle": {
     "description": "Subtitle for the audio fade-in duration setting. Set to 0 to disable fade-in."
   },
+  "crossfadeDurationSettingTitle": "Crossfade",
+  "@crossfadeDurationSettingTitle": {
+    "description": "Title for the crossfade duration setting."
+  },
+  "crossfadeDurationSettingSubtitle": "Overlap audio between tracks during automatic transitions. Set to 0 to disable.",
+  "@crossfadeDurationSettingSubtitle": {
+    "description": "Subtitle for the crossfade duration setting."
+  },
+  "crossfadeDurationSettingValue": "{seconds}s",
+  "@crossfadeDurationSettingValue": {
+    "description": "Label showing the current crossfade duration value in seconds.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "crossfadeDurationSettingOff": "Off",
+  "@crossfadeDurationSettingOff": {
+    "description": "Label shown when crossfade is disabled (0 seconds)."
+  },
   "outputMenuButtonTitle": "Output",
   "@outputMenuButtonTitle": {
     "description": "Button title for opening the output menu/panel"
