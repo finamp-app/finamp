@@ -48,6 +48,83 @@ class AndroidAutoHelper {
     return await _jellyfinApiHelper.getItemById(parentId);
   }
 
+  /// Returns up to 20 recently played albums (online only).
+  /// In offline mode returns a single non-playable placeholder.
+  ///
+  /// Jellyfin only tracks DatePlayed on individual tracks, not on album items.
+  /// So we query recently played tracks, deduplicate by albumId, then fetch
+  /// those albums by ID to get full artwork + metadata.
+  Future<List<MediaItem>> _getRecentlyPlayedItems(MediaItemId itemId) async {
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      return [
+        MediaItem(
+          id: 'recently_played_offline',
+          title: 'Not available offline',
+          playable: false,
+        ),
+      ];
+    }
+
+    final queueService = GetIt.instance<QueueService>();
+    final parentItem = _finampUserHelper.currentUser?.currentView;
+
+    try {
+      // Step 1: fetch recently played tracks — tracks reliably have DatePlayed set.
+      final tracksResult = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
+        parentItem: parentItem,
+        includeItemTypes: BaseItemDtoType.track.jellyfinName,
+        sortBy: 'DatePlayed',
+        sortOrder: 'Descending',
+        filters: 'IsPlayed',
+        limit: 100,
+      );
+
+      // Step 2: extract ordered, deduplicated album IDs from the track results.
+      final seenIds = <String>{};
+      final orderedIds = <BaseItemId>[];
+
+      for (final track in tracksResult.items ?? <BaseItemDto>[]) {
+        final albumId = track.albumId;
+        if (albumId != null && seenIds.add(albumId.raw)) {
+          orderedIds.add(albumId);
+          if (orderedIds.length >= 20) break;
+        }
+      }
+
+      if (orderedIds.isEmpty) return [];
+
+      // Step 3: fetch the actual album items by ID to get full metadata + artwork.
+      final itemsResult = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
+        itemIds: orderedIds,
+        includeItemTypes: BaseItemDtoType.album.jellyfinName,
+      );
+
+      // Re-sort to match the original play order (getItems by ID returns in arbitrary order).
+      final itemsById = <String, BaseItemDto>{
+        for (final item in itemsResult.items ?? <BaseItemDto>[]) item.id.raw: item,
+      };
+      final sortedItems = orderedIds
+          .map((id) => itemsById[id.raw])
+          .whereType<BaseItemDto>()
+          .toList();
+
+      final List<MediaItem> mediaItems = [];
+      for (final item in sortedItems) {
+        final mediaItem = await queueService.generateMediaItem(
+          item,
+          parentType: MediaItemParentType.collection,
+          parentId: item.parentId,
+          isPlayable: _isPlayable,
+        );
+        mediaItems.add(mediaItem);
+      }
+      return mediaItems;
+    } catch (err, trace) {
+      _androidAutoHelperLogger.severe("Error loading recently played items", err, trace);
+      return [];
+    }
+  }
+
   Future<List<BaseItemDto>> getBaseItems(MediaItemId itemId) async {
     // limit amount so it doesn't crash / take forever on large libraries
     const onlineModeLimit = 250;
@@ -90,11 +167,7 @@ class AndroidAutoHelper {
         )).toList().map((e) => e.baseItem).whereNotNull().toList();
         artistAlbums.sort((a, b) => (a.premiereDate ?? "").compareTo(b.premiereDate ?? ""));
 
-        final List<BaseItemDto> allTracks = [];
-        for (var album in artistAlbums) {
-          allTracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
-        }
-        return allTracks;
+        return artistAlbums;
       } else {
         var downloadedParent = await _downloadsService.getCollectionInfo(id: itemId.itemId);
         if (downloadedParent != null && downloadedParent.baseItem != null) {
@@ -437,7 +510,7 @@ class AndroidAutoHelper {
         );
       } else if (itemType == TabContentType.artists.itemType) {
         if (FinampSettingsHelper.finampSettings.isOffline) {
-          final parentBaseItems = await getBaseItems(
+          final artistAlbums = await getBaseItems(
             MediaItemId(
               contentType: TabContentType.artists,
               parentType: MediaItemParentType.collection,
@@ -446,8 +519,13 @@ class AndroidAutoHelper {
             ),
           );
 
+          final List<BaseItemDto> allTracks = [];
+          for (final album in artistAlbums) {
+            allTracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
+          }
+
           await queueService.startPlayback(
-            items: parentBaseItems,
+            items: allTracks,
             source: QueueItemSource(
               type: QueueItemSourceType.artist,
               name: QueueItemSourceName(
@@ -512,6 +590,10 @@ class AndroidAutoHelper {
   }
 
   Future<List<MediaItem>> getMediaItems(MediaItemId itemId) async {
+    if (itemId.parentType == MediaItemParentType.recentlyPlayed) {
+      return _getRecentlyPlayedItems(itemId);
+    }
+
     final queueService = GetIt.instance<QueueService>();
     final items = await getBaseItems(itemId);
     final List<MediaItem> mediaItems = [];
@@ -524,6 +606,21 @@ class AndroidAutoHelper {
           playable: true,
         ),
       );
+    }
+
+    if (itemId.contentType == TabContentType.artists &&
+        itemId.parentType == MediaItemParentType.collection &&
+        itemId.itemId != null) {
+      final instantMixId = MediaItemId(
+        contentType: TabContentType.artists,
+        parentType: MediaItemParentType.instantMix,
+        itemId: itemId.itemId,
+      );
+      mediaItems.add(MediaItem(
+        id: instantMixId.toString(),
+        title: AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)?.instantMix ?? "Instant Mix",
+        playable: true,
+      ));
     }
 
     for (final item in items) {
@@ -544,15 +641,37 @@ class AndroidAutoHelper {
     // queue service should be initialized by time we get here
     final queueService = GetIt.instance<QueueService>();
 
-    // shouldn't happen, but just in case
-    if (!_isPlayable(contentType: itemId.contentType)) {
-      _androidAutoHelperLogger.warning(
-        "Tried to play from media id with non-playable item type ${itemId.parentType.name}",
-      );
-      return;
-    }
-
     if (itemId.parentType == MediaItemParentType.instantMix) {
+      if (itemId.contentType == TabContentType.artists) {
+        final parentItem = await getParentFromId(itemId.itemId!);
+        if (FinampSettingsHelper.finampSettings.isOffline) {
+          final artistAlbums = await getBaseItems(MediaItemId(
+            contentType: TabContentType.artists,
+            parentType: MediaItemParentType.collection,
+            itemId: itemId.itemId,
+          ));
+          final List<BaseItemDto> allTracks = [];
+          for (final album in artistAlbums) {
+            allTracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
+          }
+          return await queueService.startPlayback(
+            items: allTracks,
+            source: QueueItemSource(
+              type: QueueItemSourceType.artist,
+              name: QueueItemSourceName(type: QueueItemSourceNameType.preTranslated, pretranslatedName: parentItem?.name),
+              id: itemId.itemId!,
+              item: parentItem,
+            ),
+            order: FinampPlaybackOrder.linear,
+          );
+        } else {
+          if (parentItem == null) {
+            _androidAutoHelperLogger.warning("Could not resolve artist item for instant mix: ${itemId.itemId}");
+            return;
+          }
+          return await audioServiceHelper.startInstantMixForArtists([parentItem]);
+        }
+      }
       if (FinampSettingsHelper.finampSettings.isOffline) {
         List<DownloadStub> offlineItems;
         // If we're on the tracks tab, just get all of the downloaded items
@@ -587,6 +706,14 @@ class AndroidAutoHelper {
       }
     }
 
+    // shouldn't happen, but just in case
+    if (!_isPlayable(contentType: itemId.contentType)) {
+      _androidAutoHelperLogger.warning(
+        "Tried to play from media id with non-playable item type ${itemId.parentType.name}",
+      );
+      return;
+    }
+
     if (itemId.parentType != MediaItemParentType.collection || itemId.itemId == null) {
       _androidAutoHelperLogger.warning(
         "Tried to play from media id with invalid parent type '${itemId.parentType.name}' or null id",
@@ -595,26 +722,6 @@ class AndroidAutoHelper {
     }
     // get all tracks of current parent
     final parentItem = await getParentFromId(itemId.itemId!);
-
-    // start instant mix for artists
-    if (itemId.contentType == TabContentType.artists) {
-      if (FinampSettingsHelper.finampSettings.isOffline || parentItem == null) {
-        final parentBaseItems = await getBaseItems(itemId);
-
-        return await queueService.startPlayback(
-          items: parentBaseItems,
-          source: QueueItemSource(
-            type: QueueItemSourceType.artist,
-            name: QueueItemSourceName(type: QueueItemSourceNameType.preTranslated, pretranslatedName: parentItem?.name),
-            id: parentItem?.id ?? itemId.parentId!,
-            item: parentItem,
-          ),
-          order: FinampPlaybackOrder.linear,
-        );
-      } else {
-        return await audioServiceHelper.startInstantMixForArtists([parentItem]);
-      }
-    }
 
     final parentBaseItems = await getBaseItems(itemId);
 
@@ -1072,13 +1179,11 @@ class AndroidAutoHelper {
   }
 
   // albums, playlists, and tracks should play when clicked
-  // clicking artists starts an instant mix, so they are technically playable
-  // genres has subcategories, so it should be browsable but not playable
+  // artists and genres have subcategories, so they should be browsable but not playable
   bool _isPlayable({BaseItemDto? item, TabContentType? contentType}) {
     final tabContentType = TabContentType.fromItemType(item?.type ?? contentType?.itemType.jellyfinName ?? "Audio");
     return tabContentType == TabContentType.albums ||
         tabContentType == TabContentType.playlists ||
-        tabContentType == TabContentType.artists ||
         tabContentType == TabContentType.tracks;
   }
 }

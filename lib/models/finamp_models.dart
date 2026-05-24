@@ -2643,12 +2643,21 @@ enum MediaItemParentType {
   rootCollection,
   @HiveField(2)
   instantMix,
+  @HiveField(3)
+  recentlyPlayed,
 }
 
 @JsonSerializable(converters: [BaseItemIdConverter()])
 @HiveType(typeId: 69)
 class MediaItemId {
-  MediaItemId({required this.contentType, required this.parentType, this.itemId, this.parentId});
+  MediaItemId({
+    required this.contentType,
+    required this.parentType,
+    this.itemId,
+    this.parentId,
+    this.nameFilter,
+    this.pageStartIndex,
+  });
 
   @HiveField(0)
   TabContentType contentType;
@@ -2661,6 +2670,14 @@ class MediaItemId {
 
   @HiveField(3)
   BaseItemId? parentId;
+
+  /// Letter prefix for Android Auto letter-based browsing (e.g. "A", "B", "#").
+  @HiveField(4)
+  String? nameFilter;
+
+  /// Page offset for Android Auto letter-based browsing pagination.
+  @HiveField(5)
+  int? pageStartIndex;
 
   factory MediaItemId.fromJson(Map<String, dynamic> json) => _$MediaItemIdFromJson(json);
 
