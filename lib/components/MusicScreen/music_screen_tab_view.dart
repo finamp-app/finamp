@@ -39,6 +39,7 @@ class MusicScreenTabView extends ConsumerStatefulWidget {
     required this.view,
     this.refresh,
     this.genreFilter,
+    this.artistFilter,
     this.tabBarFiltered = false,
     this.sortByOverride,
     this.sortOrderOverride,
@@ -50,6 +51,7 @@ class MusicScreenTabView extends ConsumerStatefulWidget {
   final BaseItemDto? view;
   final MusicRefreshCallback? refresh;
   final BaseItemDto? genreFilter;
+  final BaseItemDto? artistFilter;
   final bool tabBarFiltered;
   final SortBy? sortByOverride;
   final SortOrder? sortOrderOverride;
@@ -110,7 +112,11 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
       final newItems = await _jellyfinApiHelper.getItems(
         // starting with Jellyfin 10.9, only automatically created playlists will have a specific library as parent. user-created playlists will not be returned anymore
         // this condition fixes this by not providing a parentId when fetching playlists
-        parentItem: widget.tabContentType.itemType == BaseItemDtoType.playlist ? null : widget.view,
+        parentItem: widget.artistFilter != null
+            ? widget.artistFilter!
+            : widget.tabContentType.itemType == BaseItemDtoType.playlist
+            ? null
+            : widget.view,
         includeItemTypes: widget.tabContentType.itemType.jellyfinName,
 
         // If we're on the tracks tab, sort by "Album,SortName". This is what the
@@ -122,7 +128,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         sortOrder: sortOrder,
         searchTerm: widget.searchTerm?.trim(),
         filters:
-            (widget.isFavoriteOverride == true || (widget.isFavoriteOverride == null && settings.onlyShowFavorites))
+            ((widget.isFavoriteOverride ?? false) || (widget.isFavoriteOverride == null && settings.onlyShowFavorites))
             ? "IsFavorite"
             : null,
         // "filters" are not implemented in the Jellyfin API Endpoint for Genres
@@ -130,7 +136,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         // to "false", because then it will actually exclude all favorites)
         isFavorite:
             (widget.tabContentType.itemType == BaseItemDtoType.genre &&
-                (widget.isFavoriteOverride == true ||
+                ((widget.isFavoriteOverride ?? false) ||
                     (widget.isFavoriteOverride == null && settings.onlyShowFavorites)))
             ? true
             : null,
@@ -181,7 +187,8 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         viewFilter: widget.view?.id,
         nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
         onlyFavorites:
-            (widget.isFavoriteOverride == true || (widget.isFavoriteOverride == null && settings.onlyShowFavorites)) &&
+            ((widget.isFavoriteOverride ?? false) ||
+                (widget.isFavoriteOverride == null && settings.onlyShowFavorites)) &&
             settings.trackOfflineFavorites,
         genreFilter: widget.genreFilter,
       );
@@ -285,7 +292,9 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     String getSortName(BaseItemDto item) {
       if (tabSortBy == SortBy.albumArtist) {
         final artists = item.albumArtists;
-        return removeDiacritics(artists?.sortedBy((e) => e.name ?? '').map((e) => e.name ?? '').join(", ") ?? item.albumArtist ?? "");
+        return removeDiacritics(
+          artists?.sortedBy((e) => e.name ?? '').map((e) => e.name ?? '').join(", ") ?? item.albumArtist ?? "",
+        );
       }
 
       return removeDiacritics(item.nameForSorting ?? "");

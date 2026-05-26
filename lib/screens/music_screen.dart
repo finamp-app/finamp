@@ -3,11 +3,13 @@ import 'dart:io';
 
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/services/item_helper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
+import 'package:finamp/services/queue_service.dart';
 import 'package:logging/logging.dart';
 
 import '../components/MusicScreen/artist_type_selection_row.dart';
@@ -29,6 +31,7 @@ class MusicScreen extends ConsumerStatefulWidget {
   const MusicScreen({
     super.key,
     this.genreFilter,
+    this.artistFilter,
     this.tabTypeFilter,
     this.sortByOverrideInit,
     this.sortOrderOverrideInit,
@@ -39,6 +42,7 @@ class MusicScreen extends ConsumerStatefulWidget {
 
   // Optional parameters for genre and tab filtering
   final BaseItemDto? genreFilter;
+  final BaseItemDto? artistFilter;
   final TabContentType? tabTypeFilter;
   final SortBy? sortByOverrideInit;
   final SortOrder? sortOrderOverrideInit;
@@ -62,6 +66,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
   final _audioServiceHelper = GetIt.instance<AudioServiceHelper>();
   final _finampUserHelper = GetIt.instance<FinampUserHelper>();
   final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+  final queueService = GetIt.instance<QueueService>();
 
   void _stopSearching() {
     setState(() {
@@ -112,12 +117,26 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
         tooltip: AppLocalizations.of(context)!.shuffleAll,
         onPressed: () async {
           try {
-            await _audioServiceHelper.shuffleAll(
-              onlyShowFavorites: isFavoriteOverride != null
-                  ? isFavoriteOverride!
-                  : ref.read(finampSettingsProvider.onlyShowFavorites),
-              genreFilter: widget.genreFilter,
-            );
+            if (widget.artistFilter != null) {
+              await queueService.startPlayback(
+                items: await loadChildTracksFromBaseItem(
+                  baseItem: widget.artistFilter!,
+                  genreFilter: widget.genreFilter,
+                  onlyFavorites: isFavoriteOverride != null
+                      ? isFavoriteOverride!
+                      : ref.read(finampSettingsProvider.onlyShowFavorites),
+                ),
+                source: QueueItemSource.fromPlayableItem(widget.artistFilter!),
+                order: FinampPlaybackOrder.shuffled,
+              );
+            } else {
+              await _audioServiceHelper.shuffleAll(
+                onlyShowFavorites: isFavoriteOverride != null
+                    ? isFavoriteOverride!
+                    : ref.read(finampSettingsProvider.onlyShowFavorites),
+                genreFilter: widget.genreFilter,
+              );
+            }
           } catch (e) {
             GlobalSnackbar.error(e);
           }
@@ -204,6 +223,16 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
 
     Timer? debounce;
 
+    final genreFilterName = widget.genreFilter?.name;
+    final artistFilterName = widget.artistFilter?.name;
+
+    final String filterTitleText;
+    if (artistFilterName != null && genreFilterName != null) {
+      filterTitleText = "$artistFilterName ($genreFilterName)";
+    } else {
+      filterTitleText = artistFilterName ?? genreFilterName ?? "";
+    }
+
     return PopScope(
       canPop: !isSearching,
       onPopInvokedWithResult: (popped, result) {
@@ -244,7 +273,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                       _finampUserHelper.currentUser?.currentView?.name ??
                       AppLocalizations.of(context)!.music,
                 ),
-          bottom: widget.genreFilter == null
+          bottom: widget.genreFilter == null && widget.artistFilter == null
               ? TabBar(
                   controller: _tabController,
                   tabs: sortedTabs
@@ -270,7 +299,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                     padding: EdgeInsets.only(left: 12, right: 12),
                     color: Theme.of(context).colorScheme.primary,
                     child: Text(
-                      widget.genreFilter?.name ?? "",
+                      filterTitleText,
                       style: Theme.of(
                         context,
                       ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
@@ -280,7 +309,9 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                 ),
           leading: isSearching
               ? BackButton(onPressed: () => _stopSearching())
-              : (widget.genreFilter != null ? BackButton(onPressed: () => Navigator.of(context).pop()) : null),
+              : (widget.genreFilter != null || widget.artistFilter != null
+                    ? BackButton(onPressed: () => Navigator.of(context).pop())
+                    : null),
           actions: isSearching
               ? [
                   GestureDetector(
@@ -359,8 +390,8 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                 ],
         ),
         bottomNavigationBar: const NowPlayingBar(),
-        drawerEnableOpenDragGesture: widget.genreFilter == null,
-        drawer: widget.genreFilter == null ? const MusicScreenDrawer() : null,
+        drawerEnableOpenDragGesture: widget.genreFilter == null && widget.artistFilter == null,
+        drawer: widget.genreFilter == null && widget.artistFilter == null ? const MusicScreenDrawer() : null,
         floatingActionButton: Padding(
           padding: EdgeInsets.only(right: ref.watch(finampSettingsProvider.showFastScroller) ? 24.0 : 8.0),
           child: getFloatingActionButton(sortedTabs.toList()),
@@ -382,6 +413,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                       tabType: tabType,
                       defaultArtistType: ref.watch(finampSettingsProvider.defaultArtistType),
                       refreshTab: refreshTab,
+                      artistFilter: widget.artistFilter,
                     ),
                     Expanded(
                       child: MusicScreenTabView(
@@ -396,6 +428,9 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                                     tabType.itemType == BaseItemDtoType.artist ||
                                     tabType.itemType == BaseItemDtoType.playlist))
                             ? widget.genreFilter
+                            : null,
+                        artistFilter: widget.artistFilter != null && tabType.itemType == BaseItemDtoType.track
+                            ? widget.artistFilter
                             : null,
                         tabBarFiltered: (widget.tabTypeFilter != null),
                         sortByOverride: sortByOverride,

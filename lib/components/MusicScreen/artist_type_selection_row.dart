@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/jellyfin_models.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/finamp_models.dart';
@@ -10,17 +11,21 @@ class ArtistTypeSelectionRow extends StatelessWidget {
   final TabContentType tabType;
   final ArtistType defaultArtistType;
   final void Function(TabContentType) refreshTab;
+  final BaseItemDto? artistFilter;
 
   const ArtistTypeSelectionRow({
     super.key,
     required this.tabType,
     required this.defaultArtistType,
     required this.refreshTab,
+    this.artistFilter,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (tabType == TabContentType.artists) {
+    final isArtistTrackList = tabType == TabContentType.tracks && artistFilter != null;
+
+    if (tabType == TabContentType.artists || isArtistTrackList) {
       double screenWidth = MediaQuery.widthOf(context);
       bool alignLeft = screenWidth > 600;
 
@@ -38,7 +43,9 @@ class ArtistTypeSelectionRow extends StatelessWidget {
               mainAxisAlignment: alignLeft ? MainAxisAlignment.start : MainAxisAlignment.center,
               children: [
                 FilterChip(
-                  label: Text(AppLocalizations.of(context)!.albumArtists),
+                  label: isArtistTrackList
+                      ? Text(AppLocalizations.of(context)!.albumArtist)
+                      : Text(AppLocalizations.of(context)!.albumArtists),
                   onSelected: (_) {
                     FinampSetters.setDefaultArtistType(ArtistType.albumArtist);
                     refreshTab(tabType);
@@ -56,7 +63,9 @@ class ArtistTypeSelectionRow extends StatelessWidget {
                 ),
                 SizedBox(width: 8),
                 FilterChip(
-                  label: Text(AppLocalizations.of(context)!.performingArtists),
+                  label: isArtistTrackList
+                      ? Text(AppLocalizations.of(context)!.performingArtist)
+                      : Text(AppLocalizations.of(context)!.performingArtists),
                   onSelected: (_) {
                     FinampSetters.setDefaultArtistType(ArtistType.artist);
                     refreshTab(tabType);

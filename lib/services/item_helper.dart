@@ -31,7 +31,11 @@ Future<List<BaseItemDto>> loadChildTracks({
   }
 }
 
-Future<List<BaseItemDto>> loadChildTracksFromBaseItem({required BaseItemDto baseItem, BaseItemDto? genreFilter}) async {
+Future<List<BaseItemDto>> loadChildTracksFromBaseItem({
+  required BaseItemDto baseItem,
+  BaseItemDto? genreFilter,
+  bool onlyFavorites = false,
+}) async {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final finampUserHelper = GetIt.instance<FinampUserHelper>();
   final settings = FinampSettingsHelper.finampSettings;
@@ -40,7 +44,7 @@ Future<List<BaseItemDto>> loadChildTracksFromBaseItem({required BaseItemDto base
   final Future<List<BaseItemDto>?> newItemsFuture;
 
   if (settings.isOffline) {
-    newItemsFuture = loadChildTracksOffline(baseItem: baseItem, genreFilter: genreFilter);
+    newItemsFuture = loadChildTracksOffline(baseItem: baseItem, genreFilter: genreFilter, onlyFavorites: onlyFavorites);
   } else {
     switch (BaseItemDtoType.fromItem(baseItem)) {
       case BaseItemDtoType.track:
@@ -61,6 +65,7 @@ Future<List<BaseItemDto>> loadChildTracksFromBaseItem({required BaseItemDto base
             artist: baseItem,
             libraryFilter: finampUserHelper.currentUser?.currentView,
             genreFilter: genreFilter,
+            onlyFavorites: onlyFavorites,
           ).future,
         );
         break;
@@ -70,6 +75,7 @@ Future<List<BaseItemDto>> loadChildTracksFromBaseItem({required BaseItemDto base
           includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
           limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
           genreFilter: baseItem,
+          isFavorite: onlyFavorites,
           sortBy: "Random", // important, as we load limited tracks and otherwise would always get the same
         );
         break;
@@ -80,6 +86,7 @@ Future<List<BaseItemDto>> loadChildTracksFromBaseItem({required BaseItemDto base
           sortBy: "ParentIndexNumber,IndexNumber,SortName",
           sortOrder: null,
           genreFilter: genreFilter,
+          isFavorite: onlyFavorites,
           // filters: settings.onlyShowFavorites ? "IsFavorite" : null,
         );
     }
@@ -117,6 +124,7 @@ Future<List<BaseItemDto>?> loadChildTracksOffline({
   required BaseItemDto baseItem,
   int? limit,
   BaseItemDto? genreFilter,
+  bool onlyFavorites = false,
 }) async {
   final downloadsService = GetIt.instance<DownloadsService>();
   final finampUserHelper = GetIt.instance<FinampUserHelper>();
@@ -133,6 +141,7 @@ Future<List<BaseItemDto>?> loadChildTracksOffline({
         viewFilter: finampUserHelper.currentUser?.currentView?.id,
         genreFilter: baseItem,
         nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
+        onlyFavorites: onlyFavorites,
       )).map((e) => e.baseItem!).toList();
       items.shuffle();
       if (items.length - 1 > settings.trackShuffleItemCount) {
@@ -149,6 +158,7 @@ Future<List<BaseItemDto>?> loadChildTracksOffline({
           artist: baseItem,
           libraryFilter: finampUserHelper.currentUser?.currentView,
           genreFilter: genreFilter,
+          onlyFavorites: onlyFavorites,
         ).future,
       );
       items = sortArtistTracks(items);
