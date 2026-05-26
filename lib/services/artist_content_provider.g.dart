@@ -836,7 +836,7 @@ class _GetPerformingArtistTracksProviderElement
       (origin as GetPerformingArtistTracksProvider).onlyFavorites;
 }
 
-String _$getArtistTracksHash() => r'37602da46f4199d563c28e82e4efc5b52aaa7865';
+String _$getArtistTracksHash() => r'025c3b6d84768b8df48f90446480c63e8faca879';
 
 /// See also [getArtistTracks].
 @ProviderFor(getArtistTracks)
@@ -853,12 +853,16 @@ class GetArtistTracksFamily extends Family<AsyncValue<List<BaseItemDto>>> {
     BaseItemDto? libraryFilter,
     BaseItemDto? genreFilter,
     bool onlyFavorites = false,
+    SortBy? sortBy,
+    SortOrder sortOrder = SortOrder.ascending,
   }) {
     return GetArtistTracksProvider(
       artist: artist,
       libraryFilter: libraryFilter,
       genreFilter: genreFilter,
       onlyFavorites: onlyFavorites,
+      sortBy: sortBy,
+      sortOrder: sortOrder,
     );
   }
 
@@ -871,6 +875,8 @@ class GetArtistTracksFamily extends Family<AsyncValue<List<BaseItemDto>>> {
       libraryFilter: provider.libraryFilter,
       genreFilter: provider.genreFilter,
       onlyFavorites: provider.onlyFavorites,
+      sortBy: provider.sortBy,
+      sortOrder: provider.sortOrder,
     );
   }
 
@@ -898,6 +904,8 @@ class GetArtistTracksProvider
     BaseItemDto? libraryFilter,
     BaseItemDto? genreFilter,
     bool onlyFavorites = false,
+    SortBy? sortBy,
+    SortOrder sortOrder = SortOrder.ascending,
   }) : this._internal(
          (ref) => getArtistTracks(
            ref as GetArtistTracksRef,
@@ -905,6 +913,8 @@ class GetArtistTracksProvider
            libraryFilter: libraryFilter,
            genreFilter: genreFilter,
            onlyFavorites: onlyFavorites,
+           sortBy: sortBy,
+           sortOrder: sortOrder,
          ),
          from: getArtistTracksProvider,
          name: r'getArtistTracksProvider',
@@ -918,6 +928,8 @@ class GetArtistTracksProvider
          libraryFilter: libraryFilter,
          genreFilter: genreFilter,
          onlyFavorites: onlyFavorites,
+         sortBy: sortBy,
+         sortOrder: sortOrder,
        );
 
   GetArtistTracksProvider._internal(
@@ -931,12 +943,16 @@ class GetArtistTracksProvider
     required this.libraryFilter,
     required this.genreFilter,
     required this.onlyFavorites,
+    required this.sortBy,
+    required this.sortOrder,
   }) : super.internal();
 
   final BaseItemDto artist;
   final BaseItemDto? libraryFilter;
   final BaseItemDto? genreFilter;
   final bool onlyFavorites;
+  final SortBy? sortBy;
+  final SortOrder sortOrder;
 
   @override
   Override overrideWith(
@@ -955,6 +971,8 @@ class GetArtistTracksProvider
         libraryFilter: libraryFilter,
         genreFilter: genreFilter,
         onlyFavorites: onlyFavorites,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
       ),
     );
   }
@@ -970,7 +988,9 @@ class GetArtistTracksProvider
         other.artist == artist &&
         other.libraryFilter == libraryFilter &&
         other.genreFilter == genreFilter &&
-        other.onlyFavorites == onlyFavorites;
+        other.onlyFavorites == onlyFavorites &&
+        other.sortBy == sortBy &&
+        other.sortOrder == sortOrder;
   }
 
   @override
@@ -980,6 +1000,8 @@ class GetArtistTracksProvider
     hash = _SystemHash.combine(hash, libraryFilter.hashCode);
     hash = _SystemHash.combine(hash, genreFilter.hashCode);
     hash = _SystemHash.combine(hash, onlyFavorites.hashCode);
+    hash = _SystemHash.combine(hash, sortBy.hashCode);
+    hash = _SystemHash.combine(hash, sortOrder.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -999,6 +1021,12 @@ mixin GetArtistTracksRef on AutoDisposeFutureProviderRef<List<BaseItemDto>> {
 
   /// The parameter `onlyFavorites` of this provider.
   bool get onlyFavorites;
+
+  /// The parameter `sortBy` of this provider.
+  SortBy? get sortBy;
+
+  /// The parameter `sortOrder` of this provider.
+  SortOrder get sortOrder;
 }
 
 class _GetArtistTracksProviderElement
@@ -1016,6 +1044,10 @@ class _GetArtistTracksProviderElement
       (origin as GetArtistTracksProvider).genreFilter;
   @override
   bool get onlyFavorites => (origin as GetArtistTracksProvider).onlyFavorites;
+  @override
+  SortBy? get sortBy => (origin as GetArtistTracksProvider).sortBy;
+  @override
+  SortOrder get sortOrder => (origin as GetArtistTracksProvider).sortOrder;
 }
 
 // ignore_for_file: type=lint

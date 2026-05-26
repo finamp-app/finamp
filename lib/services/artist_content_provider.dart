@@ -294,6 +294,8 @@ Future<List<BaseItemDto>> getArtistTracks(
   BaseItemDto? libraryFilter,
   BaseItemDto? genreFilter,
   bool onlyFavorites = false,
+  SortBy? sortBy,
+  SortOrder sortOrder = SortOrder.ascending,
 }) async {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final downloadsService = GetIt.instance<DownloadsService>();
@@ -360,6 +362,10 @@ Future<List<BaseItemDto>> getArtistTracks(
         .toList();
     // combine and return
     final combinedTracks = [...allAlbumArtistTracks, ...filteredPerformingTracks];
+
+    if (sortBy != null) {
+      return sortItems(combinedTracks, sortBy, sortOrder);
+    }
     return combinedTracks;
   }
 }
