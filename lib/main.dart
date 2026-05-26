@@ -538,14 +538,14 @@ void _migrateSortOptions() {
   var changed = false;
 
   if (finampSettings.tabSortBy.isEmpty) {
-    for (var type in ContentType.values) {
+    for (var type in ContentType.values.where((x) => x.isTab)) {
       finampSettings.tabSortBy[type] = finampSettings.sortBy;
     }
     changed = true;
   }
 
   if (finampSettings.tabSortOrder.isEmpty) {
-    for (var type in ContentType.values) {
+    for (var type in ContentType.values.where((x) => x.isTab)) {
       finampSettings.tabSortOrder[type] = finampSettings.sortOrder;
     }
     changed = true;
