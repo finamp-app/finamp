@@ -2993,5 +2993,9 @@
     "androidGainDisabled": "因初始化錯誤，已切換為增益效果備用模式。",
     "@androidGainDisabled": {
         "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+    },
+    "losslessNoBitrate": "不適用於FLAC轉碼",
+    "@losslessNoBitrate": {
+        "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
     }
 }
