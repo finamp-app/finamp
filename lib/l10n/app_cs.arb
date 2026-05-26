@@ -2990,5 +2990,9 @@
     "androidGainDisabled": "Přepínání na zálohu efektu zisku z důvodu chyby při inicializaci.",
     "@androidGainDisabled": {
         "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+    },
+    "losslessNoBitrate": "Není použitelné na překódování FLAC",
+    "@losslessNoBitrate": {
+        "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
     }
 }
