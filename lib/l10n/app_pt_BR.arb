@@ -134,7 +134,7 @@
             }
         }
     },
-    "downloadsQueued": "Transferência adicionada, transferindo os arquivos",
+    "downloadsQueued": "Transferindo arquivos...",
     "@downloadsQueued": {},
     "logsCopied": "Relatórios/logs copiados.",
     "@logsCopied": {},
@@ -957,7 +957,7 @@
     "@backToAccountSelection": {
         "description": "Label for the button that takes the user back to the account selection step during the login flow."
     },
-    "startMixNoTracksGenre": "Aperte e segure sobre um gênero para adicioná-lo ou removê-lo do criador de mix, antes de começar",
+    "startMixNoTracksGenre": "Aperte e segure sobre um gênero para adicioná-lo ou removê-lo do criador de mix antes de começar o mix",
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
@@ -1975,5 +1975,79 @@
         }
     },
     "none": "Nenhum",
-    "@none": {}
+    "@none": {},
+    "formattedRelativeTime": "Retorna uma string de tempo relativo com base em quanto tempo se passou desde que algo aconteceu. Usado para diversos valores de DateTime, como Data da Última Reprodução e Data de Adição.",
+    "@formattedRelativeTime": {
+        "description": "Returns a relative time string based on how long ago something happened. Used for various DateTime values such as Date Last Played and Date Added.",
+        "placeholders": {
+            "type": {
+                "type": "String",
+                "description": "The category of time passed: one of 'just_now', 'minutes', 'hours', 'yesterday', or 'days'."
+            },
+            "value": {
+                "type": "int",
+                "example": "5"
+            }
+        }
+    },
+    "playbackActionPageMoveWithinQueue": "Mover na Fila",
+    "@playbackActionPageMoveWithinQueue": {
+        "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
+    },
+    "playbackActionPageRegularTrackOptions": "Tocar",
+    "@playbackActionPageRegularTrackOptions": {
+        "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "playbackActionPageNewQueue": "Nova Fila",
+    "@playbackActionPageNewQueue": {
+        "description": "Label for the playback action page that contains all actions related to starting a new queue"
+    },
+    "playbackActionPageNext": "Tocar a Próxima",
+    "@playbackActionPageNext": {
+        "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
+    },
+    "playbackActionPageNextUp": "Adicionar a Seguir",
+    "@playbackActionPageNextUp": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
+    },
+    "playbackActionPageAppendToQueue": "Tocar Última",
+    "@playbackActionPageAppendToQueue": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks at the end of the queue"
+    },
+    "updatePlaylistButtonLabel": "Atualizar Playlist",
+    "@updatePlaylistButtonLabel": {
+        "description": "Label for the button that updates the playlist on the edit playlist screen"
+    },
+    "savingChanges": "Salvando mudanças…",
+    "@savingChanges": {
+        "description": "Text shown while the changes to a playlist are being saved"
+    },
+    "logoutButtonSubtitle": "Fazer login em outro servidor excluirá os downloads existentes.",
+    "@logoutButtonSubtitle": {},
+    "showArtistsTracksSection": "Mostrar Sessão de Músicas",
+    "@showArtistsTracksSection": {},
+    "useMonochromeIcon": "Usar Logo Monocromática",
+    "@useMonochromeIcon": {
+        "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
+    },
+    "useMonochromeIconSubtitle": "Isso só afeta o ícone dentro do aplicativo e não o ícone do Launcher",
+    "@useMonochromeIconSubtitle": {
+        "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
+    },
+    "defaultWord": "Padrão",
+    "@defaultWord": {},
+    "colorCode": "Código de Cor (Hex)",
+    "@colorCode": {
+        "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
+    },
+    "colorCodeHint": "Ex #FFFFFF ou #cafeee",
+    "@colorCodeHint": {
+        "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
+    },
+    "save": "Salvar",
+    "@save": {},
+    "invalidColorCode": "Código de Cor Inválido",
+    "@invalidColorCode": {
+        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
+    }
 }

@@ -5,6 +5,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/AddToPlaylistScreen/add_to_playlist_button.dart';
 import 'package:finamp/components/audio_fade_progress_visualizer_container.dart';
+import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/components/one_line_marquee_helper.dart';
 import 'package:finamp/components/print_duration.dart';
 import 'package:finamp/extensions/color_extensions.dart';
@@ -133,29 +134,31 @@ class NowPlayingBar extends StatelessWidget {
     );
   }
 
-  static Future openPlayerScreen(BuildContext context) => Navigator.of(context).push(
-    PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => const PlayerScreen(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        if (MediaQuery.disableAnimationsOf(context)) {
-          return child;
-        }
-        const begin = Offset(0.0, 1.0);
-        const end = Offset.zero;
+  static Future<void> openPlayerScreen() async {
+    await GlobalSnackbar.navigatorState?.push(
+      PageRouteBuilder<void>(
+        pageBuilder: (context, animation, secondaryAnimation) => const PlayerScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          if (MediaQuery.disableAnimationsOf(context)) {
+            return child;
+          }
+          const begin = Offset(0.0, 1.0);
+          const end = Offset.zero;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeInOutQuad));
-        var offsetAnimation = animation.drive(tween);
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeInOutQuad));
+          var offsetAnimation = animation.drive(tween);
 
-        if (animation.status == AnimationStatus.reverse) {
-          // dismiss animation
-          return FadeTransition(opacity: animation, child: child);
-        } else {
-          return SlideTransition(position: offsetAnimation, child: child);
-        }
-      },
-      settings: const RouteSettings(name: PlayerScreen.routeName),
-    ),
-  );
+          if (animation.status == AnimationStatus.reverse) {
+            // dismiss animation
+            return FadeTransition(opacity: animation, child: child);
+          } else {
+            return SlideTransition(position: offsetAnimation, child: child);
+          }
+        },
+        settings: const RouteSettings(name: PlayerScreen.routeName),
+      ),
+    );
+  }
 
   Widget buildNowPlayingBar(WidgetRef ref, FinampQueueItem currentTrack) {
     final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
@@ -182,7 +185,7 @@ class NowPlayingBar extends StatelessWidget {
         child: Semantics.fromProperties(
           properties: SemanticsProperties(label: AppLocalizations.of(context)!.nowPlayingBarTooltip, button: true),
           child: SimpleGestureDetector(
-            onTap: () async => await openPlayerScreen(context),
+            onTap: () async => await openPlayerScreen(),
             child: Dismissible(
               key: const Key("NowPlayingBarDismiss"),
               direction: ref.watch(finampSettingsProvider.disableGesture)
@@ -193,7 +196,7 @@ class NowPlayingBar extends StatelessWidget {
                   FeedbackHelper.feedback(FeedbackType.success);
                   await queueService.stopAndClearQueue();
                 } else {
-                  await openPlayerScreen(context);
+                  await openPlayerScreen();
                 }
                 return false;
               },

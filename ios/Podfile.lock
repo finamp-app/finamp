@@ -72,6 +72,8 @@ PODS:
   - Flutter (1.0.0)
   - flutter_discord_rpc (0.0.1):
     - Flutter
+  - flutter_native_splash (2.4.3):
+    - Flutter
   - flutter_to_airplay (0.0.1):
     - Flutter
     - Mux-Stats-AVPlayer
@@ -122,6 +124,7 @@ DEPENDENCIES:
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
   - flutter_discord_rpc (from `.symlinks/plugins/flutter_discord_rpc/ios`)
+  - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_to_airplay (from `.symlinks/plugins/flutter_to_airplay/ios`)
   - gaimon (from `.symlinks/plugins/gaimon/ios`)
   - isar_flutter_libs (from `.symlinks/plugins/isar_flutter_libs/ios`)
@@ -169,6 +172,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_discord_rpc:
     :path: ".symlinks/plugins/flutter_discord_rpc/ios"
+  flutter_native_splash:
+    :path: ".symlinks/plugins/flutter_native_splash/ios"
   flutter_to_airplay:
     :path: ".symlinks/plugins/flutter_to_airplay/ios"
   gaimon:
@@ -210,6 +215,7 @@ SPEC CHECKSUMS:
   file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_discord_rpc: e1c342f29ceb9dd76cdc01db59a70c93bb4d9ec5
+  flutter_native_splash: df59bb2e1421aa0282cb2e95618af4dcb0c56c29
   flutter_to_airplay: 3194fe6e4ca6ba1d9529c3c4194c32b9610d990f
   gaimon: 266fec2cd27726df54a6694c14fc9e3f2a415c33
   isar_flutter_libs: b69f437aeab9c521821c3f376198c4371fa21073

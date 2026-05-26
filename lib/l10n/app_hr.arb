@@ -21,7 +21,7 @@
     "@music": {},
     "name": "Ime",
     "@name": {},
-    "random": "Slučajno",
+    "random": "Nasumice",
     "@random": {},
     "revenue": "Prihod",
     "@revenue": {},
@@ -45,7 +45,7 @@
     "@unknownError": {},
     "pathReturnSlashErrorMessage": "Staze sa znakom „/” se ne mogu koristiti",
     "@pathReturnSlashErrorMessage": {},
-    "shuffleAllTrackCount": "Broj svih izmiješanih pjesama",
+    "shuffleAllTrackCount": "Broj svih promiješanih pjesama",
     "@shuffleAllTrackCount": {},
     "list": "Popis",
     "@list": {},
@@ -94,7 +94,7 @@
     "@removeFromMix": {},
     "bufferDuration": "Trajanje međuspremnika",
     "@bufferDuration": {},
-    "bufferDurationSubtitle": "Količina koju player treba spremiti u međuspremnik, u sekundama. Zahtijeva ponovno pokretanje.",
+    "bufferDurationSubtitle": "Trajanje koje se sprema u međuspremnik, u sekundama. Zahtijeva ponovno pokretanje.",
     "@bufferDurationSubtitle": {},
     "language": "Jezik",
     "@language": {},
@@ -128,19 +128,19 @@
     "@startMix": {},
     "playCount": "Broj reprodukcija",
     "@playCount": {},
-    "datePlayed": "Datum reprodukcije",
+    "datePlayed": "Datum zadnje reprodukcije",
     "@datePlayed": {},
     "startMixNoTracksAlbum": "Pritisni dugo na album za dodavanje ili uklanjanje albuma iz miksera prije pokretanja miksa",
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
-    "shuffleAll": "Izmiješaj sve",
+    "shuffleAll": "Promiješaj sve",
     "@shuffleAll": {},
     "album": "Album",
     "@album": {},
     "communityRating": "Ocjena zajednice",
     "@communityRating": {},
-    "clear": "Očisti",
+    "clear": "Izbriši",
     "@clear": {},
     "finamp": "Finamp",
     "@finamp": {},
@@ -162,7 +162,7 @@
     "@artist": {},
     "budget": "Budžet",
     "@budget": {},
-    "premiereDate": "Datum premijere",
+    "premiereDate": "Datum izdanja",
     "@premiereDate": {},
     "criticRating": "Ocjena kritičara",
     "@criticRating": {},
@@ -213,7 +213,7 @@
     },
     "playlistUpdated": "Ime playliste je ažurirano.",
     "@playlistUpdated": {},
-    "dlEnqueued": "{count} dodano u red",
+    "dlEnqueued": "{count} u redu čekanja",
     "@dlEnqueued": {
         "placeholders": {
             "count": {
@@ -231,7 +231,7 @@
     },
     "errorScreenError": "Dogodila se greška prilikom dohvaćanja popisa grešaka! Prijavi problem na GitHubu i izbriši podatke aplikacije",
     "@errorScreenError": {},
-    "shuffleButtonLabel": "Izmiješaj",
+    "shuffleButtonLabel": "Promiješaj",
     "@shuffleButtonLabel": {},
     "addDownloads": "Dodaj preuzimanja",
     "@addDownloads": {},
@@ -245,7 +245,7 @@
     },
     "required": "Obavezno",
     "@required": {},
-    "downloadsQueued": "Preuzimanje pripremljeno, datoteke se preuzimaju",
+    "downloadsQueued": "Datoteke se pruzimaju",
     "@downloadsQueued": {},
     "updateButtonLabel": "Ažuriraj",
     "@updateButtonLabel": {},
@@ -263,9 +263,9 @@
     "@stackTrace": {},
     "layoutAndTheme": "Izgled i tema",
     "@layoutAndTheme": {},
-    "customLocationsBuggy": "Prilagođene lokacije su izrazito pune grešaka zbog problema oko dozvola. Razmišljam o načinima da ovo ispravim, ali za sada ne bih preporučio korištenje.",
+    "customLocationsBuggy": "Prilagođene lokacije mogu biti izuzetno problematične i u većini slučajeva se ne preporučuju. Lokacije unutar mape „Glazba” sustava sprječavaju spremanje omota albuma zbog ograničenja operacijskog sustava.",
     "@customLocationsBuggy": {},
-    "shuffleAllTrackCountSubtitle": "Broj pjesama koje se učitavaju kada se koristi gumb „Izmiješaj sve pjesme”.",
+    "shuffleAllTrackCountSubtitle": "Broj pjesama koje se učitavaju kada se koristi gumb „Promiješaj sve pjesme”.",
     "@shuffleAllTrackCountSubtitle": {},
     "noArtist": "Nema izvođača",
     "@noArtist": {},
@@ -273,7 +273,7 @@
     "@downloadLocations": {},
     "audioService": "Usluga audioreprodukcije",
     "@audioService": {},
-    "areYouSure": "Jeste li sigurni?",
+    "areYouSure": "Sigurno?",
     "@areYouSure": {},
     "notAvailableInOfflineMode": "Nije dostupno u neumreženom modusu",
     "@notAvailableInOfflineMode": {},
@@ -295,11 +295,11 @@
     "@dark": {},
     "bitrate": "Brzina prijenosa",
     "@bitrate": {},
-    "bitrateSubtitle": "Veća brzina prijenosa daje veću kvalitetu zvuka, ali troši veću količinu prometa.",
+    "bitrateSubtitle": "Veća brzina prijenosa daje veću kvalitetu zvuka, ali troši veću količinu prometa",
     "@bitrateSubtitle": {},
     "selectDirectory": "Odaberi direktorij",
     "@selectDirectory": {},
-    "enableTranscoding": "Omogući transkodiranje",
+    "enableTranscoding": "Aktiviraj transkodiranje",
     "@enableTranscoding": {},
     "enableTranscodingSubtitle": "Transkodira stream glazbe na strani servera.",
     "@enableTranscodingSubtitle": {},
@@ -408,13 +408,13 @@
     "@insertedIntoQueue": {
         "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
     },
-    "playNext": "Pokreni sljedeću",
+    "playNext": "Reproduciraj kao sljedeću",
     "@playNext": {
         "description": "Popup menu item title for inserting an item into the play queue after the currently-playing item."
     },
     "refresh": "Osvježi",
     "@refresh": {},
-    "noMusicLibrariesBody": "Finamp nije mogao pronaći nijednu fonoteku. Provjeri sadrži li tvoj Jellyfin poslužitelj barem jednu biblioteku s vrstom sadržaja postavljenom na „Glazba”.",
+    "noMusicLibrariesBody": "Finamp nije mogao pronaći nijednu fonoteku. Provjeri sadrži li tvoj Jellyfin server barem jednu biblioteku s vrstom sadržaja postavljenom na „Glazba”.",
     "@noMusicLibrariesBody": {},
     "noMusicLibrariesTitle": "Nema fonoteka",
     "@noMusicLibrariesTitle": {
@@ -424,11 +424,11 @@
     "@syncDownloadedPlaylists": {},
     "showFastScroller": "Prikaži traku za brzo listanje",
     "@showFastScroller": {},
-    "swipeInsertQueueNextSubtitle": "Omogući umetanje pjesme kao sljedeću pjesmu u redu reprodukcije povlačenjem pjesme iz popisa pjesama umjesto dodavanja pjesme na kraj popisa.",
+    "swipeInsertQueueNextSubtitle": "Aktiviraj umetanje pjesme kao sljedeću stavku u red čekanja povlačenjem pjesme iz popisa pjesama umjesto dodavanja pjesme na kraj popisa.",
     "@swipeInsertQueueNextSubtitle": {},
     "interactions": "Interakcije",
     "@interactions": {},
-    "swipeInsertQueueNext": "Reproduciraj pjesmu kao sljedeću povlačenjem",
+    "swipeInsertQueueNext": "Reproduciraj povučenu pjesmu kao sljedeću",
     "@swipeInsertQueueNext": {},
     "about": "O aplikaciji Finamp",
     "@about": {},
@@ -507,15 +507,15 @@
     "@placeholderSource": {
         "description": "Placeholder text used when the source of the current track/queue is unknown"
     },
-    "shuffleAllQueueSource": "Izmiješaj sve",
+    "shuffleAllQueueSource": "Promiješaj sve",
     "@shuffleAllQueueSource": {
         "description": "Title for the queue source when the user is shuffling all tracks. Should be capitalized (if applicable) to be more recognizable throughout the UI"
     },
-    "queueRestoreButtonLabel": "Obnovi",
+    "queueRestoreButtonLabel": "Obnovi ovaj red čekanja",
     "@queueRestoreButtonLabel": {
         "description": "Button to restore archived now playing queue, overwriting current queue"
     },
-    "queueRestoreSubtitle2": "{count,plural,=1{1 pjesma} few{{count} pjesme} other{{count} pjesama}}, preostalo: {remaining}",
+    "queueRestoreSubtitle2": "{count,plural,=1{1 pjesma} few{{count} pjesme} other{{count} pjesama}}, nereproducirano: {remaining}",
     "@queueRestoreSubtitle2": {
         "description": "Description of length of a saved queue",
         "placeholders": {
@@ -567,7 +567,7 @@
     "@addToNextUp": {
         "description": "Used for adding a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
-    "shuffleToNextUp": "Izmiješaj sljedeće na redu",
+    "shuffleToNextUp": "Promiješaj „Sljedeće na redu”",
     "@shuffleToNextUp": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
     },
@@ -632,7 +632,7 @@
             }
         }
     },
-    "downloadTranscodeEnableTitle": "Omogući transkodirana preuzimanja",
+    "downloadTranscodeEnableTitle": "Aktiviraj transkodirana preuzimanja",
     "@downloadTranscodeEnableTitle": {
         "description": "Title for Enable Transcoded Downloads dropdown"
     },
@@ -652,7 +652,7 @@
     "@aboutThanks": {
         "description": "Thank you message shown in the about screen."
     },
-    "loginFlowWelcomeHeading": "Dobro došli u",
+    "loginFlowWelcomeHeading": "Dobro došli u {styledName}",
     "@loginFlowWelcomeHeading": {
         "description": "Greeting shown on the login screen. The full message will be 'Welcome to Finamp'."
     },
@@ -889,7 +889,7 @@
     "@lyricsAlignmentTitle": {
         "description": "Title for the setting that controls the alignment of lyrics in the lyrics view"
     },
-    "showLyricsScreenAlbumPreludeTitle": "Prikaži album prije teksta pjesme",
+    "showLyricsScreenAlbumPreludeTitle": "Prikaži omot album prije tekstova pjesmi",
     "@showLyricsScreenAlbumPreludeTitle": {
         "description": "Title for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
     },
@@ -1042,7 +1042,7 @@
     },
     "fixedGridSizeSwitchSubtitle": "Veličine rešetkastih polja neće reagirati na veličinu prozora/ekrana.",
     "@fixedGridSizeSwitchSubtitle": {},
-    "sleepTimerRemainingTime": "Gasi se za {time} min",
+    "sleepTimerRemainingTime": "Gasi se za {time,plural,=1{<1 minute} few{{time} minute} other{{time} minuta}}",
     "@sleepTimerRemainingTime": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
         "placeholders": {
@@ -1055,7 +1055,7 @@
     "@showStopButtonOnMediaNotificationTitle": {
         "description": "Title for the setting that controls if the media notification has a stop button in addition to the pause button."
     },
-    "showStopButtonOnMediaNotificationSubtitle": "Kontrolira ima li medijska obavijest gumb za prekidanje dodatno uz gumb za pauzu. To omogućuje prekidanje reprodukcije bez otvaranja aplikacije.",
+    "showStopButtonOnMediaNotificationSubtitle": "Kontrolira ima li medijska obavijest gumb za prekidanje. To omogućuje prekidanje reprodukcije bez otvaranja aplikacije.",
     "@showStopButtonOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a stop button in addition to the pause button."
     },
@@ -1192,7 +1192,7 @@
     "@addRemoveFromPlaylist": {
         "description": "Header for add to/remove from playlist popup menu"
     },
-    "addPlaylistSubheader": "Dodaj pjesmu u playlistu",
+    "addPlaylistSubheader": "Dodaj stavke u playlistu",
     "@addPlaylistSubheader": {
         "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
     },
@@ -1220,19 +1220,19 @@
     "@syncComplete": {
         "description": "Message displayed after download sync completes."
     },
-    "enableVibration": "Omogući vibraciju",
+    "enableVibration": "Aktiviraj vibraciju",
     "@enableVibration": {},
     "downloadBitrate": "Brzina preuzimanja",
     "@downloadBitrate": {
         "description": "Title for Download Bitrate settings slider"
     },
-    "loginFlowQuickConnectDisabled": "Brzo povezivanje je onemogućeno na ovom serveru.",
+    "loginFlowQuickConnectDisabled": "„Quick Connect” je deaktivirano na ovom serveru.",
     "@loginFlowQuickConnectDisabled": {
         "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
     },
     "hideQueueButton": "Sakrij gumb čekanja",
     "@hideQueueButton": {},
-    "loopModeNoneButtonLabel": "Bez petlje",
+    "loopModeNoneButtonLabel": "Bez ponavljanja",
     "@loopModeNoneButtonLabel": {
         "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop off mode"
     },
@@ -1256,19 +1256,19 @@
     "@playbackOrderShuffledButtonLabel": {
         "description": "Label for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in shuffle mode"
     },
-    "loginFlowQuickConnectPrompt": "Koristite kod za brzo povezivanje",
+    "loginFlowQuickConnectPrompt": "Koristi „Quick Connect” kod",
     "@loginFlowQuickConnectPrompt": {
         "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
-    "shuffleNext": "Izmiješaj sljedeće",
+    "shuffleNext": "Promiješaj sljedeće",
     "@shuffleNext": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
     "bufferSizeTitle": "Veličina međuspreminka",
     "@bufferSizeTitle": {},
-    "bufferSizeSubtitle": "Maksimalna veličina međuspremnika u MB. Zahtijeva ponovno pokretanje",
+    "bufferSizeSubtitle": "Veličina međuspremnika u MB. Zahtijeva ponovno pokretanje",
     "@bufferSizeSubtitle": {},
-    "playbackSpeedButtonLabel": "Reproduciraj na x{speed} brzini",
+    "playbackSpeedButtonLabel": "Reproduciraj {speed}-strukom brzinom",
     "@playbackSpeedButtonLabel": {
         "description": "Label for the button that toggles visibility. of the playback speed menu, {speed} is the current playback speed.",
         "placeholders": {
@@ -1277,8 +1277,1100 @@
             }
         }
     },
-    "shuffleAlbums": "Izmiješaj albume",
+    "shuffleAlbums": "Promiješaj albume izvođača",
     "@shuffleAlbums": {
         "description": "Label for action that shuffles all albums of an artist or genre"
+    },
+    "sleepTimerRemainingTracks": "Gasi se {time,plural,=1{nakon ove pjesme} few{za {time} pjesama} other{za {time} pjesama}}",
+    "@sleepTimerRemainingTracks": {
+        "description": "Button label for sleep timer. {time} is the amount of minutes left.",
+        "placeholders": {
+            "time": {
+                "type": "int"
+            }
+        }
+    },
+    "stopAndClearQueue": "Prekini reprodukciju i izbriši red čekanja",
+    "@stopAndClearQueue": {
+        "description": "Label for a button that stops playback and removes all tracks from the queue."
+    },
+    "createPlaylistFromCurrentQueue": "Spremi red čekanja u playlistu",
+    "@createPlaylistFromCurrentQueue": {
+        "description": "Label for a button that adds the current queue to an existing or new playlist."
+    },
+    "shuffleToQueue": "Promiješaj u red čekanja",
+    "@shuffleToQueue": {
+        "description": "Used for shuffling a list (album, playlist, etc.) to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "shuffleSomeToQueue": "Promiješaj neke u red čekanja",
+    "@shuffleSomeToQueue": {
+        "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "moveAddToQueue": "Premjesti na kraj",
+    "@moveAddToQueue": {
+        "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
+    },
+    "confirmShuffleToQueue": "Promiješano u red čekanja",
+    "@confirmShuffleToQueue": {
+        "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the regular queue"
+    },
+    "savedQueue": "Spremljeni red čekanja",
+    "@savedQueue": {
+        "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
+    },
+    "queuesScreen": "Obnovi redove trenutačne reprodukcije",
+    "@queuesScreen": {
+        "description": "Title for the screen where older now playing queues can be restored"
+    },
+    "queueLoadingMessage": "Obnavljanje reda čekanja …",
+    "@queueLoadingMessage": {
+        "description": "Message displayed on now-playing bar when a saved queue is loading."
+    },
+    "queueRetryMessage": "Obnavljanje reda čekanja nije uspjelo. Želiš li ponovo pokušati?",
+    "@queueRetryMessage": {
+        "description": "Message displayed on now-playing bar when all items in a saved queue fail to load."
+    },
+    "autoloadLastQueueOnStartup": "Automatski obnovi zadnji red čekanja",
+    "@autoloadLastQueueOnStartup": {
+        "description": "Setting to restore last queue on startup"
+    },
+    "autoloadLastQueueOnStartupSubtitle": "Prilikom pokretanja aplikacije pokušaj obnoviti zadnji reproducirani red.",
+    "@autoloadLastQueueOnStartupSubtitle": {
+        "description": "Description of the setting to restore last queue on startup"
+    },
+    "reportQueueToServer": "Trenutačni red čekanja prijaviti serveru?",
+    "@reportQueueToServer": {
+        "description": "Label for the setting that toggles reporting of the current queue to the Jellyfin server"
+    },
+    "shuffleAlbumsToQueue": "Promiješaj albume izvođača i dodaj ih na kraj popisa u redu čekanja",
+    "@shuffleAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of the regular queue"
+    },
+    "shuffleSomeAlbumsToQueue": "Promiješaj albume žanra i dodaj ih na kraj popisa u redu čekanja",
+    "@shuffleSomeAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
+    },
+    "queueRestoreError": "Upozorenje: {count,plural, =1{{count} pjesma se ne može} few{{count} pjesme se ne mogu} other{{count} pjesama se ne mogu}} obnoviti u red čekanja.",
+    "@queueRestoreError": {
+        "description": "Message that shows when some, but not all, tracks in the Now-Playing queue from the previous session cannot be restored due to server issues or being offline.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "activeDownloadsListHeader": "{typeName, select, downloading{Pokrenuto:} failed{Neuspjelo:} syncFailed{Više puta nesinkronizirano:} enqueued{Postavljeno u red čekanja:} other{}} {itemCount} {itemCount, plural, =1{preuzimanje} few{preuzimanja} other{preuzimanja}}",
+    "@activeDownloadsListHeader": {
+        "description": "Header text for lists of active downloads of a particular state.",
+        "placeholders": {
+            "typeName": {
+                "type": "String"
+            },
+            "itemCount": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackActionPageMoveWithinQueue": "Premjesti unutar reda čekanja",
+    "@playbackActionPageMoveWithinQueue": {
+        "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
+    },
+    "playbackActionPageNewQueue": "Novi red čekanja",
+    "@playbackActionPageNewQueue": {
+        "description": "Label for the playback action page that contains all actions related to starting a new queue"
+    },
+    "playbackActionPageAppendToQueue": "Reproduciraj zadnju",
+    "@playbackActionPageAppendToQueue": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks at the end of the queue"
+    },
+    "confirmAddToQueue": "{type, select, track{Dodana je pjesma} album{Dodan je album} artist{Dodan je izvođač} playlist{Dodana je playlista} genre{Dodan je žanr} disc{Dodan je disk} other{Dodana je stavka}} u red čekanja",
+    "@confirmAddToQueue": {
+        "description": "A confirmation message that is shown after successfully adding a track to the end of the regular queue",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "reportQueueToServerSubtitle": "Kada je uključeno, Finamp će poslati trenutni red čekanja na server. To može poboljšati daljinsko upravljanje i omogućiti obnavljanja reda čekanja na strani servera. Uvijek je uključeno ako je funkcija „Reproduciraj dalje” uključena.",
+    "@reportQueueToServerSubtitle": {
+        "description": "Description of the setting that toggles reporting of the current queue to the Jellyfin server"
+    },
+    "confirmAddToNextUp": "{type, select, track{Dodana je pjesma} album{Dodan je album} artist{Dodan je izvođač} playlist{Dodana je playlista} genre{Dodan je žanr} disc{Dodan je disk} other{Dodana je stavka}} u „Sljedeće”",
+    "@confirmAddToNextUp": {
+        "description": "A confirmation message that is shown after successfully adding a track to the end of the \"Next Up\" queue",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "recentlyAddedTracks": "Nedavno dodane pjesme",
+    "@recentlyAddedTracks": {
+        "description": "Label for the artist section that shows tracks that were recently added to the library, sorted by the date they were added."
+    },
+    "recentlyAddedAlbums": "Nedavno dodani albumi",
+    "@recentlyAddedAlbums": {
+        "description": "Label for the genre section that shows albums that were recently added to the library, sorted by the date they were added."
+    },
+    "recentlyAddedArtists": "Nedavno dodani izvođači",
+    "@recentlyAddedArtists": {
+        "description": "Label for the genre section that shows artists that were recently added to the library, sorted by the date they were added."
+    },
+    "recentlyAdded": "Nedavno dodano",
+    "@recentlyAdded": {},
+    "noDateAdded": "Bez datuma dodavanja",
+    "@noDateAdded": {
+        "description": "Placeholder text if an item has no dateAdded set."
+    },
+    "shuffleSome": "Promiješaj neke",
+    "@shuffleSome": {},
+    "shuffleCountButton": "Promiješaj ({count,plural,=1{{count} pjesmu} few{{count} pjesme} other{{count} pjesama}})",
+    "@shuffleCountButton": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "shuffleSomeNext": "Promiješaj neke sljedeće",
+    "@shuffleSomeNext": {
+        "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "shuffleSomeToNextUp": "Promiješaj neke „Sljedeće na redu”",
+    "@shuffleSomeToNextUp": {
+        "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
+    },
+    "confirmShuffleNext": "Nasumice će se reproducirati kao sljedeće",
+    "@confirmShuffleNext": {
+        "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the front of the \"Next Up\" queue"
+    },
+    "playbackOrderLinearButtonTooltip": "Reproducira se redom. Dodirni za nasumičnu reprodukciju.",
+    "@playbackOrderLinearButtonTooltip": {
+        "description": "Tooltip for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in linear/in-order mode"
+    },
+    "playbackOrderLinearButtonLabel": "Reproducira se redom",
+    "@playbackOrderLinearButtonLabel": {
+        "description": "Label for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in linear/in-order mode"
+    },
+    "playbackSpeedFeatureText": "{speed}-struka brzina",
+    "@playbackSpeedFeatureText": {
+        "description": "Label for the feature chip that is shown if the playback speed is different from x1, {speed} is the current playback speed.",
+        "placeholders": {
+            "speed": {
+                "type": "double"
+            }
+        }
+    },
+    "currentVolumeFeatureText": "Glasnoća od {volume} %",
+    "@currentVolumeFeatureText": {
+        "description": "Label for the feature chip that is shown if the volume is not 100%",
+        "placeholders": {
+            "volume": {
+                "type": "int",
+                "description": "The current volume level, in percent"
+            }
+        }
+    },
+    "loopModeOneButtonLabel": "Ponavljaj ovu pjesmu",
+    "@loopModeOneButtonLabel": {
+        "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop one mode"
+    },
+    "downloadLibraryPrompt": "Stvarno želiš preuzeti sav sadržaj biblioteke „{libraryName}”?",
+    "@downloadLibraryPrompt": {
+        "description": "Confirmation prompt before downloading entire library, which may be large.",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "filesystemFull": "Preostala preuzimanja se ne mogu dovršiti. Datotečni sustav je pun.",
+    "@filesystemFull": {
+        "description": "Message shown when a download cannot complete due to the filesystem being full."
+    },
+    "prioritizePlayerCover": "Daj prioritet omotu albuma",
+    "@prioritizePlayerCover": {},
+    "prioritizePlayerCoverSubtitle": "Daj prioritet prikazivanju većeg omota albuma na ekranu playera. Nekritične kontrole će se agresivnije skrivati na malim ekranima.",
+    "@prioritizePlayerCoverSubtitle": {},
+    "serverSharingMenuDetails": "Radi tako da osluškuje zahtjeve za otkrivanje servera koje šalju drugi klijenti na lokalnoj mreži, a zatim odgovara na te zahtjeve s konfiguriranom adresom tvog Jellyfin servera.\nAko imaš konfiguriranu lokalnu i javnu adresu, Finamp će klijentu koji šalje zahtjev pružiti obje adrese.",
+    "@serverSharingMenuDetails": {
+        "description": "Description text shown in the server sharing menu, below the description"
+    },
+    "autoExpandPlayerScreenSubtitle": "Ovo će otvoriti ekran trenutačne reprodukcije prilikom pokretanja reprodukcije novog reda čekanja",
+    "@autoExpandPlayerScreenSubtitle": {
+        "description": "Subtitle for the setting that controls if the player screen is opened directly after starting a new queue"
+    },
+    "playbackActionPageRegularTrackOptions": "Reproduciraj",
+    "@playbackActionPageRegularTrackOptions": {
+        "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "playbackActionPageNext": "Reproduciraj kao sljedeću",
+    "@playbackActionPageNext": {
+        "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
+    },
+    "playbackActionPageNextUp": "Dodaj sljedeću",
+    "@playbackActionPageNextUp": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
+    },
+    "updatePlaylistButtonLabel": "Aktualiziraj playlistu",
+    "@updatePlaylistButtonLabel": {
+        "description": "Label for the button that updates the playlist on the edit playlist screen"
+    },
+    "showArtistsTracksSectionSubtitle": "Da li prikazati odjeljak s do pet pjesama. Kada je uključeno, možeš birati između „Najčešće reproducirano”, „Favorit”, „Nasumice”, „Najnovija izdanja”, „Nedavno dodano” i „Nedavno reproducirane pjesme”.",
+    "@showArtistsTracksSectionSubtitle": {},
+    "confirmPlayNext": "Kao sljedeće će se reproducirati {type, select, track{pjesma} album{album} artist{izvođač} playlist{playlista} genre{žanr} other{stavka}}",
+    "@confirmPlayNext": {
+        "description": "A confirmation message that is shown after successfully adding a track to the front of the \"Next Up\" queue",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "playbackOrderShuffledButtonTooltip": "Nasumice reproduciranje pjesama. Dodirni za reprodukciju redom.",
+    "@playbackOrderShuffledButtonTooltip": {
+        "description": "Tooltip for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in shuffle mode"
+    },
+    "periodicPlaybackSessionUpdateFrequency": "Učestalost aktualiziranja sesije reprodukcije",
+    "@periodicPlaybackSessionUpdateFrequency": {
+        "description": "Label for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
+    },
+    "periodicPlaybackSessionUpdateFrequencySubtitle": "Koliko često slati trenutačni status reprodukcije serveru, u sekundama. To bi trebalo biti manje od 5 minuta (300 sekundi) kako bi se spriječio istek vremena sesije.",
+    "@periodicPlaybackSessionUpdateFrequencySubtitle": {
+        "description": "Description of the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
+    },
+    "oneLineMarqueeTextButtonSubtitle": "Automatsko pomicanje naslova pjesama koji su predugi za prikaz u dva retka",
+    "@oneLineMarqueeTextButtonSubtitle": {},
+    "finampCollectionNames": "{itemType, select, favorites{Favoriti} allPlaylists{Sve playliste} fiveLatestAlbums{5 najnovijih albuma} allPlaylistsMetadata{Metapodaci playliste} collectionWithLibraryFilter{Zbirka s filtrom biblioteke} other{{itemType}} }",
+    "@finampCollectionNames": {
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        },
+        "description": "Localized names of special downloadable collections like favorites."
+    },
+    "allowSplitScreenSubtitle": "Player će se prikazivati uz ostale prikaze na širim ekranima.",
+    "@allowSplitScreenSubtitle": {},
+    "hideQueueButtonSubtitle": "Sakrij gumb za red čekanja na ekranu playera. Povuci prema gore za pristup redu čekanja.",
+    "@hideQueueButtonSubtitle": {},
+    "hidePlayerBottomActions": "Sakrij donje radnje",
+    "@hidePlayerBottomActions": {},
+    "sleepTimerProjectedDuration": "Reprodukcija će pauzirati za ~{duration}",
+    "@sleepTimerProjectedDuration": {
+        "description": "Displays duration until playback is expected to be ended by the sleep timer (unless the queue is modified before). {duration} is a pre-formatted string.",
+        "placeholders": {
+            "duration": {
+                "type": "String",
+                "example": "36:23"
+            }
+        }
+    },
+    "allPlaylistsInfoSettingSubtitle": "Sinkroniziraj metapodatke za sve playliste za poboljšavanje iskustva s playlistama",
+    "@allPlaylistsInfoSettingSubtitle": {},
+    "downloadAllPlaylistsSettingWarning": "Napomena: Ovom će se radnjom preuzeti sve stavke u playlistama, bez obzira iz koje biblioteke potječu.",
+    "@downloadAllPlaylistsSettingWarning": {},
+    "allLibraries": "Sve biblioteke",
+    "@allLibraries": {
+        "description": "All Libraries"
+    },
+    "appearsOnAlbums": "Pojavljuje se na",
+    "@appearsOnAlbums": {},
+    "noGenres": "Nema žanrova",
+    "@noGenres": {
+        "description": "Gets shown when there are no genres available for an album or artist"
+    },
+    "favorite": "Favorit",
+    "@favorite": {},
+    "favorites": "Favoriti",
+    "@favorites": {},
+    "onlineMode": "Umreženi način rada",
+    "@onlineMode": {},
+    "albumArtists": "Izvođači albuma",
+    "@albumArtists": {},
+    "performingArtists": "Izvođači",
+    "@performingArtists": {},
+    "performingArtist": "Izvođač",
+    "@performingArtist": {},
+    "duration": "Trajanje",
+    "@duration": {},
+    "defaultOrder": "Standardni redoslijed",
+    "@defaultOrder": {
+        "description": "Default sorting order for playlists (server order)"
+    },
+    "adaptive": "Prilagodljivo",
+    "@adaptive": {},
+    "formattedRelativeTime": "{type, select, just_now{upravo sada} minutes{prije {value} min} hours{ prije {value} h} yesterday{jučer} days{{value, plural, =1{prije 1 dan} few{prije {value} dana} other{prije {value} dana}}} other{value}}",
+    "@formattedRelativeTime": {
+        "description": "Returns a relative time string based on how long ago something happened. Used for various DateTime values such as Date Last Played and Date Added.",
+        "placeholders": {
+            "type": {
+                "type": "String",
+                "description": "The category of time passed: one of 'just_now', 'minutes', 'hours', 'yesterday', or 'days'."
+            },
+            "value": {
+                "type": "int",
+                "example": "5"
+            }
+        }
+    },
+    "downloadedCountUnified": "{trackCount,plural,=1{{trackCount} pjesma} few{{trackCount} pjesme} other{{trackCount} pjesama}}, {imageCount,plural,=1{{imageCount} slika} few{{imageCount} slike} other{{imageCount} slika}}\n{syncCount,plural,=1{{syncCount} čvor se sinkronizira} few{{syncCount} čvora se sinkroniziraju} other{{syncCount} čvorova se sinkroniziraju}}{repairing, plural, =0{} few{} other{}}\nse trenutačno popravlja",
+    "@downloadedCountUnified": {
+        "description": "Display of downloaded track and image count on downloads screen.",
+        "placeholders": {
+            "trackCount": {
+                "type": "int"
+            },
+            "imageCount": {
+                "type": "int"
+            },
+            "syncCount": {
+                "type": "int"
+            },
+            "repairing": {
+                "type": "int"
+            }
+        }
+    },
+    "loginFlowQuickConnectInstructions": "Otvori aplikaciju ili Jellyfin web-stranicu, klikni na tvoju ikonu korisnika i odaberi „Quick Connect”.",
+    "@loginFlowQuickConnectInstructions": {
+        "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
+    },
+    "startupErrorTitle": "Greška tijekom pokretanja aplikacije!",
+    "@startupErrorTitle": {
+        "description": "The title for the error screen that shows when startup fails."
+    },
+    "startupErrorCallToAction": "Prijavi problem na „github.com/jmshrv/finamp“ sa zapisima (koristi donji gumb) i snimkom ekrana ove stranice, kako bismo ga mogli što prije popraviti.",
+    "@startupErrorCallToAction": {
+        "description": "The subtitle / call to action for what to do after encountering a startup error"
+    },
+    "startupErrorWorkaround": "Kao zaobilazno rješenje za grešku, mođež izbrisati podatke aplikacije i resetirati aplikaciju. Imaj na umu da će se u tom slučaju sve tvoje postavke i preuzimanja izbrisati.",
+    "@startupErrorWorkaround": {
+        "description": "The subtitle for how to manually recover from a startup error"
+    },
+    "specialDownloads": "Posebna preuzimanja",
+    "@specialDownloads": {
+        "description": "Title for the special downloads section on the downloads screen."
+    },
+    "libraryDownloads": "Preuzimanja biblioteka",
+    "@libraryDownloads": {
+        "description": "Title for the library downloads section on the downloads screen."
+    },
+    "editItemTitle": "Uredi {itemType, select, playlist{playlistu} other{}}",
+    "@editItemTitle": {
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "savingChanges": "Spremanje promjena …",
+    "@savingChanges": {
+        "description": "Text shown while the changes to a playlist are being saved"
+    },
+    "exportLogs": "Spremi log-zapise",
+    "@exportLogs": {},
+    "notAvailable": "Nije dostupno",
+    "@notAvailable": {},
+    "none": "Ništa",
+    "@none": {},
+    "showArtistsTracksSection": "Prikaži odjeljak pjesama",
+    "@showArtistsTracksSection": {},
+    "accentColor": "Boja isticanja",
+    "@accentColor": {
+        "description": "Title of the accent color setting"
+    },
+    "accentColorTitle": "Odaberite boju isticanja",
+    "@accentColorTitle": {
+        "description": "Title for the accent color picker sheet"
+    },
+    "systemAccentColorHasPriorityInfo": "Prilagođena boja isticanja je isključena jer se trenutačno koristi isticanja sustava",
+    "@systemAccentColorHasPriorityInfo": {
+        "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
+    },
+    "defaultWord": "Standardno",
+    "@defaultWord": {},
+    "useDefaultButton": "Resetiraj na standardnu boju isticanja",
+    "@useDefaultButton": {},
+    "colorCode": "Kod boja (heksadecimalni)",
+    "@colorCode": {
+        "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
+    },
+    "colorCodeHint": "npr. #FFFFFF ili #coffee",
+    "@colorCodeHint": {
+        "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
+    },
+    "save": "Spremi",
+    "@save": {},
+    "invalidColorCode": "Nevaljani kod boja",
+    "@invalidColorCode": {
+        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
+    },
+    "browsePlaylists": "Pregledaj playliste",
+    "@browsePlaylists": {
+        "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
+    },
+    "removeFavorite": "Ukloni favorit",
+    "@removeFavorite": {},
+    "addFavorite": "Dodaj favorit",
+    "@addFavorite": {},
+    "startRadio": "Pokreni radio",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
+    },
+    "bufferDisableSizeConstraintsTitle": "Nemoj ograničavati veličinu spremnika",
+    "@bufferDisableSizeConstraintsTitle": {},
+    "bufferDisableSizeConstraintsSubtitle": "Deaktivira ograničenja veličine međuspremnika („Veličina međuspremnika“). Međuspremnik će se uvijek učitati na konfigurirano trajanje („Trajanje međuspremnika“), čak i za vrlo velike datoteke. Može pruzročiti prekid rada aplikacije. Zahtijeva ponovno pokretanje.",
+    "@bufferDisableSizeConstraintsSubtitle": {},
+    "movePlayNext": "Reproduciraj kao sljedeću",
+    "@movePlayNext": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "radio": "Radio",
+    "@radio": {
+        "description": "Title for the queue source when the user is playing a track added via radio"
+    },
+    "radioForItem": "{radioSource} – Radio",
+    "@radioForItem": {
+        "description": "Suffix added to a queue source when playing a radio track. Example: \"Never Gonna Give You Up - Radio\"",
+        "placeholders": {
+            "radioSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "topAlbums": "Najslušaniji albumi",
+    "@topAlbums": {},
+    "topArtists": "Najslušaniji izvođači",
+    "@topArtists": {},
+    "latestTracks": "Najnovije pjesme",
+    "@latestTracks": {},
+    "latestAlbums": "Najnoviji albumi",
+    "@latestAlbums": {},
+    "latestArtists": "Najnoviji izvođači",
+    "@latestArtists": {},
+    "recentlyPlayedTracks": "Nedavno svirane pjesme",
+    "@recentlyPlayedTracks": {},
+    "recentlyPlayedAlbums": "Nedavno svirani albumi",
+    "@recentlyPlayedAlbums": {},
+    "recentlyPlayedArtists": "Nedavno svirani izvođači",
+    "@recentlyPlayedArtists": {},
+    "favoriteTracks": "Favoriti – pjesme",
+    "@favoriteTracks": {},
+    "favoriteAlbums": "Favoriti – albumi",
+    "@favoriteAlbums": {},
+    "favoriteArtists": "Favoriti – izvođači",
+    "@favoriteArtists": {},
+    "randomTracks": "Pjesme (nasumice odabrane)",
+    "@randomTracks": {},
+    "randomAlbums": "Albumi (nasumice odabrani)",
+    "@randomAlbums": {},
+    "randomArtists": "Izvođači (nasumice odabrani)",
+    "@randomArtists": {},
+    "mostPlayed": "Najslušanije",
+    "@mostPlayed": {},
+    "randomFavoritesFirst": "Nasumice (najprije favoriti)",
+    "@randomFavoritesFirst": {},
+    "recentlyPlayed": "Nedavno svirano",
+    "@recentlyPlayed": {},
+    "latestReleases": "Najnovija izdanja",
+    "@latestReleases": {},
+    "itemSectionsOrder": "Redoslijed odjeljaka stavki",
+    "@itemSectionsOrder": {
+        "description": "Label for the setting that controls the order of item sections on the screens."
+    },
+    "genreItemSectionFilterChipOrderTitle": "Redoslijed filtra odjeljaka stavki",
+    "@genreItemSectionFilterChipOrderTitle": {
+        "description": "Label for the setting that controls the order of item sections filter chips."
+    },
+    "genreFilterArtistScreens": "Filtriraj izvođače",
+    "@genreFilterArtistScreens": {
+        "description": "Label for the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
+    },
+    "genreFilterPlaylistScreens": "Filtriraj playliste",
+    "@genreFilterPlaylistScreens": {
+        "description": "Label for the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
+    },
+    "curatedItemsNotListenedYet": "Nisi slušao/la nijednu pjesmu{itemType, select, artistGenreFilter{ od ovog izvođača u ovom žanru} artist{ od ovog izvođača} genre{ u ovom žanru} other{}}.",
+    "@curatedItemsNotListenedYet": {
+        "description": "Tooltip for Most Played and Recently Played on Curated Items in Online Mode when not yet listened to any tracks.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "curatedItemsNoFavorites": "Nemaš favorita{itemType, select, artistGenreFilter{ za ovog izvođača u ovom žanru} artist{ za ovog izvođača} genre{ za ovaj žanr} other{}}.",
+    "@curatedItemsNoFavorites": {
+        "description": "Tooltip for Favorites on Curated Items in Online Mode when no favorites yet.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "genreNoItems": "Nemaš {itemType, select, playlists{nijednu playlistu} artists{nijednog izvođača} albums{nijedan album} tracks{nijednu pjesmu} other{nijednu stavku}} za ovaj žanr.",
+    "@genreNoItems": {
+        "description": "Message for empty See All lists for a genre.",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "shuffleSomeAlbums": "Promiješaj albume žanra",
+    "@shuffleSomeAlbums": {
+        "description": "Label for action that shuffles some albums of a genre"
+    },
+    "volumeNormalizationModeHybrid": "Dinamički",
+    "@volumeNormalizationModeHybrid": {
+        "description": "'Dynamic' option for the replay gain mode dropdown. In dynamic mode, the track gain is used for regular playback, but if an album is playing (either because it's the main playback queue source, or because it was added to the queue at some point), or successive tracks from a same album are in the queue, the album gain is used instead."
+    },
+    "volumeNormalizationModeAlbumBased": "Na temelju albuma",
+    "@volumeNormalizationModeAlbumBased": {
+        "description": "'Album-based' option for the replay gain mode dropdown. In album-based mode, the album gain is always used, regardless of whether an album is playing or not."
+    },
+    "volumeNormalizationIOSBaseGainEditorTitle": "Osnovno pojačanje",
+    "@volumeNormalizationIOSBaseGainEditorTitle": {
+        "description": "Title for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "swipeLeftToRightAction": "Povuci na desnu radnju",
+    "@swipeLeftToRightAction": {},
+    "swipeRightToLeftAction": "Povuci na lijevu radnju",
+    "@swipeRightToLeftAction": {},
+    "startInstantMixForIndividualTracksSwitchTitle": "Pokreni instant mikseve za pojedinačne pjesme",
+    "@startInstantMixForIndividualTracksSwitchTitle": {
+        "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
+    },
+    "genreFilterNotAvailableForAlbums": "Filtri žanrova nisu dostupni za albume.",
+    "@genreFilterNotAvailableForAlbums": {
+        "description": "Message shown when the user tries to apply a genre filter to an album."
+    },
+    "transcodingStreamingFormatTitle": "Odaberi format transkodiranja",
+    "@transcodingStreamingFormatTitle": {
+        "description": "Title for the dropdown that selects the format for transcoded streams"
+    },
+    "transcodingStreamingFormatSubtitle": "Odaberi format za prijenos transkodiranog zvuka. Pjesme koje se već nalaze u redu čekanja neće biti pogođene.",
+    "@transcodingStreamingFormatSubtitle": {},
+    "doTranscode": "Preuzmi kao {codec} @ {bitrate}{size, select, null{} other{ – ~{size}}}",
+    "@doTranscode": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "123kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "OPUS"
+            },
+            "size": {
+                "type": "String",
+                "example": "167 MB"
+            }
+        },
+        "description": "Dropdown option to download transcoded version of tracks"
+    },
+    "dontTranscode": "Preuzmi original{description, select, null{} other{ – {description}}}",
+    "@dontTranscode": {
+        "placeholders": {
+            "description": {
+                "type": "String",
+                "example": "456 MB FLAC"
+            }
+        },
+        "description": "Dropdown option to download original version of tracks"
+    },
+    "enableVibrationSubtitle": "Da li aktivirati vibraciju.",
+    "@enableVibrationSubtitle": {},
+    "lyricsScreenButtonTitle": "Tekstovi pjesama",
+    "@lyricsScreenButtonTitle": {
+        "description": "Label for the button for opening the lyrics screen"
+    },
+    "lyricsEmptyStateLoading": "Učitavanje teksta pjesama …",
+    "@lyricsEmptyStateLoading": {
+        "description": "Message shown while lyrics are being loaded"
+    },
+    "lyricsMissingLyricLinePlaceholder": "nedostaje redak teksta pjesme",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "genericToggleButtonTooltip": "Dodirni za prebacivanje.",
+    "@genericToggleButtonTooltip": {
+        "description": "Tooltip for toggle buttons that can be tapped to toggle their state"
+    },
+    "artwork": "Ilustracija",
+    "@artwork": {},
+    "artworkTooltip": "Ilustracija za {title}",
+    "@artworkTooltip": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "Abbey Road"
+            }
+        },
+        "description": "Tooltip for album artwork on track and album tiles as well as the album screen"
+    },
+    "additionalPeople": "Ljudi",
+    "@additionalPeople": {
+        "description": "Label for the feature chips showing additional people in the credits of a track or album"
+    },
+    "seeAll": "Pogledaj sve",
+    "@seeAll": {
+        "description": ""
+    },
+    "artistScreen": "Ekran izvođača",
+    "@artistScreen": {
+        "description": "Name for the view/screen that shows artists"
+    },
+    "applyFilterOnGenreChipTapPrompt": "Primijenjen je filtar žanra",
+    "@applyFilterOnGenreChipTapPrompt": {
+        "description": "A snackbar that is shown to the user if a genre filter was applied due to their selected settings"
+    },
+    "applyFilterOnGenreChipTapPromptButton": "Otvoreni žanr",
+    "@applyFilterOnGenreChipTapPromptButton": {
+        "description": "The button for the snackbar that is shown to the user if a genre filter was applied due to their selected settings"
+    },
+    "genreScreen": "Ekran žanrova",
+    "@genreScreen": {
+        "description": "Name for the view/screen that shows genres"
+    },
+    "emptyTopTracksList": "Još nisi slušao/la nijednu pjesmu ovog izvođača.",
+    "@emptyTopTracksList": {
+        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
+    },
+    "emptyAlbum": "Nema pjesama.",
+    "@emptyAlbum": {
+        "description": "Message shown as a placeholder when an album or playlist is empty."
+    },
+    "resetFiltersButton": "Resetiraj filtre",
+    "@resetFiltersButton": {
+        "description": "Button to reset filters on a list of items"
+    },
+    "deleteFromTargetConfirmButton": "Izbriši{target, select, device{ s uređaja} server{ sa servera} other{}}",
+    "@deleteFromTargetConfirmButton": {
+        "description": "(Important: Note the space in front of some cases) The button the user needs to press to execute the delete action. If no target is set, the text should just be a generic 'delete' text. This button is both visible before and after the delete confirm prompt."
+    },
+    "downloadSizeWarningCutoff": "Prag upozorenja za veličinu preuzimanja",
+    "@downloadSizeWarningCutoff": {
+        "description": "Title for the setting controlling when to warn about a large download"
+    },
+    "publiclyVisiblePlaylist": "Javno vidljivo:",
+    "@publiclyVisiblePlaylist": {
+        "description": "Toggle for playlist creation where true means the playlist is publicly visible, false means only the creator can see it."
+    },
+    "releaseDateFormatISO": "ISO 8601",
+    "@releaseDateFormatISO": {
+        "description": "Date format option for the release date of an album, showing the full ISO 8601 date"
+    },
+    "releaseDateFormatMonthYear": "Mjesec i godina",
+    "@releaseDateFormatMonthYear": {
+        "description": "Date format option for the release date of an album, showing the year and month. Example: March 2022"
+    },
+    "releaseDateFormatMonthDayYear": "Mjesec, dan, godina",
+    "@releaseDateFormatMonthDayYear": {
+        "description": "Date format option for the release date of an album, showing the year and month and day/date. Example: March 2, 2022"
+    },
+    "releaseDateFormatTitle": "Format datuma izdanja",
+    "@releaseDateFormatTitle": {
+        "description": "Title for the setting that controls the format release dates throughout the app."
+    },
+    "additionalBaseItemInfoTitle": "Dodatne informacije o stavci",
+    "@additionalBaseItemInfoTitle": {
+        "description": "Title for the setting that controls the displayed additional item info."
+    },
+    "noReleaseDate": "Nema datum izdavanja",
+    "@noReleaseDate": {
+        "description": "Placeholder text if an item has no release date set."
+    },
+    "noDateLastPlayed": "Još nije svirano",
+    "@noDateLastPlayed": {
+        "description": "Placeholder text if an item has no lastPlayedDate set."
+    },
+    "librarySelectError": "Greška pri učitavanju dostupnih biblioteka za korisnika",
+    "@librarySelectError": {
+        "description": "Error shown when the library select screen fails to load."
+    },
+    "autoOfflineOptionOff": "Deaktivirano",
+    "@autoOfflineOptionOff": {
+        "description": "This is shown when the autoOffline feature is turned off and has no effects"
+    },
+    "autoOfflineOptionNetwork": "Lokalna mreža",
+    "@autoOfflineOptionNetwork": {
+        "description": "This is shown when the autoOffline feature is set to \"local Network\", this means offline mode will be automatically enabled when no wifi or ethernet connection is active"
+    },
+    "autoOfflineOptionDisconnected": "Odspojen",
+    "@autoOfflineOptionDisconnected": {
+        "description": "This is shown when the autoOffline feature is set to Disconnected, this means offline mode will be automatically enabled when either wifi, ethernet or cellular is active"
+    },
+    "outputMenuButtonTitle": "Rezultat",
+    "@outputMenuButtonTitle": {
+        "description": "Button title for opening the output menu/panel"
+    },
+    "outputMenuOpenConnectionSettingsButtonTitle": "Poveži se na jedan uređaj",
+    "@outputMenuOpenConnectionSettingsButtonTitle": {
+        "description": "Button title for connecting to a device from the output menu"
+    },
+    "preferLocalNetworkTargetAddressLocalSettingTitle": "Adresa lokalne mreže",
+    "@preferLocalNetworkTargetAddressLocalSettingTitle": {},
+    "preferLocalNetworkEnableSwitchTitle": "Preferiraj lokalnu mrežu",
+    "@preferLocalNetworkEnableSwitchTitle": {},
+    "preferLocalNetworkPublicAddressSettingTitle": "Javna adresa",
+    "@preferLocalNetworkPublicAddressSettingTitle": {},
+    "networkSettingsTitle": "Mreža",
+    "@networkSettingsTitle": {
+        "description": "Title for the network settings screen"
+    },
+    "downloadPaused": "Preuzimanje je pauzirano jer uređaj nije povezan na WiFi",
+    "@downloadPaused": {
+        "description": "Gets shown in the snackbar if loosing wifi connection while downloads are running and the 'requireWifiForDownloads' is enabled"
+    },
+    "testConnectionButtonLabel": "Testiraj obje veze",
+    "@testConnectionButtonLabel": {
+        "description": "Button to test the public and local url inside the network settings tab"
+    },
+    "radioModeSettingsTitle": "Modus radija",
+    "@radioModeSettingsTitle": {
+        "description": "Title for the setting that controls the radio mode/algorithm."
+    },
+    "radioModeMenuTitle": "Odaberi modus radija",
+    "@radioModeMenuTitle": {
+        "description": "Title for menu that allows users to choose the radio mode."
+    },
+    "radioModeActiveTitle": "Radio je aktivan",
+    "@radioModeActiveTitle": {
+        "description": "Title displayed in the queue to show that radio mode is enabled and active."
+    },
+    "radioModeDisabledTitle": "Radio je deaktivan",
+    "@radioModeDisabledTitle": {
+        "description": "Title displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeInactiveTitle": "Radio je pauziran",
+    "@radioModeInactiveTitle": {
+        "description": "Title displayed in the queue to show that the radio is enabled but not active."
+    },
+    "radioModeEnableButtonTitle": "Aktiviraj radio",
+    "@radioModeEnableButtonTitle": {
+        "description": "Title for the option that enables radio mode."
+    },
+    "radioModeDisableButtonTitle": "Deaktiviraj radio",
+    "@radioModeDisableButtonTitle": {
+        "description": "Title for the option that disables radio mode."
+    },
+    "radioModeEnabledSubtitle": "Dodirni za konfiguriranje",
+    "@radioModeEnabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show when radio mode is enabled."
+    },
+    "radioModeDisabledSubtitle": "Dodirni za aktiviranje",
+    "@radioModeDisabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "Trenutačni modus nije dostupan offline.",
+    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
+    },
+    "radioModeUnavailableQueueEmptyDescription": "Nedostupan jer je red čekanja prazan",
+    "@radioModeUnavailableQueueEmptyDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioModeRandomUnavailableNotDownloadedDescription": "Nedostupno, jer izvor '{sourceName}' nije preuzet",
+    "@radioModeRandomUnavailableNotDownloadedDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericDescription": "Nedostupno, jer izvor nije preuzet",
+    "@radioModeRandomUnavailableNotDownloadedGenericDescription": {
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "menuButtonLabel": "Više radnji",
+    "@menuButtonLabel": {
+        "description": "Generic label for menu buttons shown throughout the app. Used for the album, artist, playlist, etc. menus"
+    },
+    "autoReloadPromptReloadButton": "Učitaj ponovo",
+    "@autoReloadPromptReloadButton": {
+        "description": "Button title for reloading the queue after network settings change"
+    },
+    "notImplementedYet": "Još nije implementirano.",
+    "@notImplementedYet": {
+        "description": "Message shown when a feature is not implemented yet"
+    },
+    "automaticOfflineModeOverrideActiveSubtitle": "Dodirni ovdje za nastavljanje",
+    "@automaticOfflineModeOverrideActiveSubtitle": {
+        "description": "Subtitle for the label shown below the offline mode toggle when automatic offline mode switching is paused"
+    },
+    "sleepTimerAfterCurrentTrack": "Nakon trenutačne pjesme",
+    "@sleepTimerAfterCurrentTrack": {
+        "description": "Option for the sleep timer that will stop playback after the current track finishes."
+    },
+    "sleepTimerStartTimer": "Pokreni timer",
+    "@sleepTimerStartTimer": {
+        "description": "Label for the button that starts the sleep timer"
+    },
+    "syncPlaybackSpeedAndPitchLabel": "Sinkronizacija brzine i visina tona",
+    "@syncPlaybackSpeedAndPitchLabel": {
+        "description": "Label for the checkbox that toggled is the pitch is adjusted along with the playback speed, or if the pitch is kept constant. Shown in the speed submenu on the track menu"
+    },
+    "serverSharingMenuConfirmationDialogConfirmationButtonLabel": "Potvrdi i uključi",
+    "@serverSharingMenuConfirmationDialogConfirmationButtonLabel": {
+        "description": "Positive action label for the dialog shown when enabling server sharing while offline mode is enabled"
+    },
+    "serverSharingMenuControlSubtitleSharingDisabled": "Dodirni za dijeljenje",
+    "@serverSharingMenuControlSubtitleSharingDisabled": {
+        "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned off"
+    },
+    "serverSharingMenuControlTitleSharingDisabled": "Ne dijeli",
+    "@serverSharingMenuControlTitleSharingDisabled": {
+        "description": "Title of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned off"
+    },
+    "serverSharingMenuControlSubtitleSharingEnabled": "Dodirani za zaustavljanje",
+    "@serverSharingMenuControlSubtitleSharingEnabled": {
+        "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned on"
+    },
+    "quickConnectAuthorizationMenuButtonTitle": "Autoriziraj „Quick Connect”",
+    "@quickConnectAuthorizationMenuButtonTitle": {
+        "description": "Title for the button in the drawer that opens the quick connect authorization menu"
+    },
+    "quickConnectAuthorizationMenuPrompt": "Unesi „Quick Connect” kod",
+    "@quickConnectAuthorizationMenuPrompt": {
+        "description": "Title for the button in server sharing menu that opens the quick connect authorization menu"
+    },
+    "quickConnectAuthorizationMenuTitle": "Autoriziraj „Quick Connect” zahtjev",
+    "@quickConnectAuthorizationMenuTitle": {
+        "description": "Title for the quick connect authorization menu that allows the user to authorize a quick connect request from another device"
+    },
+    "quickConnectAuthorizationMenuInputLabel": "„Quick Connect” kod",
+    "@quickConnectAuthorizationMenuInputLabel": {
+        "description": "Label for the quick connect code input, shown below the input field"
+    },
+    "quickConnectAuthorizationMenuStateSubtitleIdle": "Unesi ili zalijepi donji kod",
+    "@quickConnectAuthorizationMenuStateSubtitleIdle": {
+        "description": "Subtitle for the quick connect authorization menu state info (above the input field) while the code hasn't been submitted yet"
+    },
+    "quickConnectAuthorizationMenuStateTitleFailed": "„Quick Connect” kod nije valjan",
+    "@quickConnectAuthorizationMenuStateTitleFailed": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) when the authorization was unsuccessful"
+    },
+    "accessibility": "Pristupačnost",
+    "@accessibility": {
+        "description": "Title for the accessibility settings screen"
+    },
+    "autoExpandPlayerScreenTitle": "Otvori ekran playera pri pokretanju reprodukcije",
+    "@autoExpandPlayerScreenTitle": {
+        "description": "Title for the setting that controls if the player screen is opened directly after starting a new queue"
+    },
+    "discordRPCSettingTitle": "Discord RPC",
+    "@discordRPCSettingTitle": {
+        "description": "Title for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
+    },
+    "discordRPCIconDark": "Finamp – tamno",
+    "@discordRPCIconDark": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with the Dark-Theme Background"
+    },
+    "discordRPCIconBlack": "Finamp – crno",
+    "@discordRPCIconBlack": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a Black Background"
+    },
+    "discordRPCIconLight": "Finamp – bijelo",
+    "@discordRPCIconLight": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a White Background"
+    },
+    "discordRPCIconJFTransparent": "Jellyfin – transparentno",
+    "@discordRPCIconJFTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Jellyfin logo with a Transparent Background"
+    },
+    "discordRPCIconTransparent": "Finamp – transparentno",
+    "@discordRPCIconTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a Transparent Background"
+    },
+    "discordRPCIconWhiteTransparent": "Bijeli Finamp – transparentno",
+    "@discordRPCIconWhiteTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the full white Finamp logo with a Transparent Background"
+    },
+    "preferAddingToFavoritesOverPlaylistsTitle": "Dodaj u favorite kada dodirneš ikonu srca",
+    "@preferAddingToFavoritesOverPlaylistsTitle": {
+        "description": "Title for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "rememberLastUsedPlaybackActionRowPageTitle": "Zapamti zadnji modus reprodukcije",
+    "@rememberLastUsedPlaybackActionRowPageTitle": {
+        "description": "Title for the setting to remember the last used playback mode."
+    },
+    "discOfAlbum": "[Disk {number}] {albumName}",
+    "@discOfAlbum": {
+        "description": "Used when a single disc of album is opened, then album name is replaced with this string",
+        "placeholders": {
+            "number": {
+                "type": "int",
+                "example": "1"
+            },
+            "albumName": {
+                "type": "String"
+            }
+        }
+    },
+    "moreActionsOnAlbumDisc": "Više radnji na disku albuma",
+    "@moreActionsOnAlbumDisc": {
+        "description": "Label for the disc header menu button."
+    },
+    "dragToReorder": "Povuci za mijenjanje redoslijeda",
+    "@dragToReorder": {
+        "description": "Label shown on drag handles of track list  tiles in the queue list"
+    },
+    "addDownloadLocationsErrorButton": "Svejedno dodaj",
+    "@addDownloadLocationsErrorButton": {
+        "description": "Label shown on button for adding a download location we suspect to be buggy"
+    },
+    "openDownloads": "Otvori preuzimanja",
+    "@openDownloads": {
+        "description": "Label on a button to open the downloads screen after a sync fails."
+    },
+    "noPermissionToEditMetadata": "Za uređivanje metapodataka slike moraš biti administrator.",
+    "@noPermissionToEditMetadata": {
+        "description": "Error message shown when the user tries to edit metadata but doesn't have permission to do so, i.e. because they are not an admin"
+    },
+    "removedTracks": "Uklonjene pjesme",
+    "@removedTracks": {
+        "description": "Section header for the list of removed tracks on the playlist edit screen"
+    },
+    "restoreTrack": "Obnovi pjesmu",
+    "@restoreTrack": {
+        "description": "Button title for restoring a track that was marked to be removed"
+    },
+    "discardChangesTitle": "Odbaciti promjene?",
+    "@discardChangesTitle": {
+        "description": "Title for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "discardChangesDescription": "Imaš nespremljene promjene. Želiš li ih odbaciti i vratiti se?",
+    "@discardChangesDescription": {
+        "description": "Description for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "discardChangesConfirmButton": "Odbaci promjene",
+    "@discardChangesConfirmButton": {
+        "description": "Positive action button for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "snackbarOptionsMenuClearAllButton": "Izbriši sve poruke",
+    "@snackbarOptionsMenuClearAllButton": {
+        "description": "Button title for clearing all snackbar messages"
+    },
+    "duckOnAudioInterruptionTitle": "Smanji glasnoću pri prekidima",
+    "@duckOnAudioInterruptionTitle": {
+        "description": "Title for the setting that controls ducking."
+    },
+    "duckOnAudioInterruptionSubtitle": "Smanji glasnoću kada jedna druga aplikacija nakratko odsvira zvuk. Zahtijeva ponovno pokretanje.",
+    "@duckOnAudioInterruptionSubtitle": {
+        "description": "Subtitle for the setting that controls ducking."
+    },
+    "radioModeRandomUnavailableNotDownloadedSubtitle": "{modeName} nije dostupan jer izvor '{sourceName}' nije preuzet",
+    "@radioModeRandomUnavailableNotDownloadedSubtitle": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            },
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericSubtitle": "{modeName} nije dostupan jer izvor nije preuzet",
+    "@radioModeRandomUnavailableNotDownloadedGenericSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "radioModeDescription": "{mode, select, reshuffle{Neprekidno promiješaj red čekanja} random{Nasumice dodaj pjesme iz početnog odabira} similar{Dodaj na temelju izvornog reda čekanja} continuous{Dodaj na temelju trenutačne pjesme} albumMix{Dodaj slične albume} other{}}",
+    "@radioModeDescription": {
+        "placeholders": {
+            "mode": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Subtitle displayed in the queue to describe what the radio is doing if enabled"
+    },
+    "radioModeOptionConfirmation": "Prebačeno je na {option, select, reshuffle{modus neprekidnog miješanja} random{modus dodavanja nasumice} similar{modus sličnosti} continuous{kontinuirani modus} albumMix{modus dodavanja sličnih albuma} other{{option}}}",
+    "@radioModeOptionConfirmation": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Confirmation displayed when the radio mode is changed."
+    },
+    "radioModeOptionTitle": "Aktiviran je {option, select, reshuffle{modus neprekidnog miješanja} random{modus dodavanja nasumice} similar{modus sličnosti} continuous{kontinuirani modus} albumMix{modus dodavanja sličnih albuma} other{{option}}}",
+    "@radioModeOptionTitle": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Title displayed in the queue, showing which radio mode/algorithm is currently being used."
+    },
+    "radioModeOptionName": "{option, select, reshuffle{Neprekidno miješanje} random{Nasumice} similar{Slično} continuous{Kontinuirano} albumMix{Dodavanje sličnih albuma} other{{option}}}",
+    "@radioModeOptionName": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Radio mode names in radio mode/algorithm dropdown"
+    },
+    "shuffleAlbumsNext": "Promiješaj albume izvođača i dodaj ih na vrh popisa sljedećih na redu",
+    "@shuffleAlbumsNext": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the start of Next Up"
+    },
+    "shuffleSomeAlbumsToNextUp": "Promiješaj albume žanra i dodaj ih na kraj popisa sljedećih na redu",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
+    },
+    "shuffleSomeAlbumsNext": "Promiješaj albume žanra i dodaj ih na vrh popisa sljedećih na redu",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "shuffleAlbumsToNextUp": "Promiješaj albume izvođača i dodaj ih na kraj popisa sljedećih na redu",
+    "@shuffleAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of Next Up"
+    },
+    "couldNotLoad": "Nije bilo moguće učitati {source, select, album{album} playlist{playlistu} trackMix{miks pjesama} artistMix{miks izvođača} albumMix{miks albuma} genreMix{miks žanrova} favorites{favorite} allTracks{sve pjesme} filteredList{pjesme} genre{žanr} artist{izvođača} track{pjesmu} nextUpAlbum{album u popisu sljedećih} nextUpPlaylist{playlistu u popisu sljedećih} nextUpArtist{izvođača u popisu sljedećih} nextUpGenre{žanr u popisu sljedećih} other{}}",
+    "@couldNotLoad": {
+        "placeholders": {
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeUnavailableQueueEmptySubtitle": "Modus „{modeName}” je nedostupan jer je red čekanja prazan",
+    "@radioModeUnavailableQueueEmptySubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioNoTracksFound": "Nije moguće pokrenuti radio jer nisu pronađene odgovarajuće pjesme.",
+    "@radioNoTracksFound": {
+        "description": "Shown when the user tries to start radio mode but no suitable tracks were found to start the radio with."
+    },
+    "loopingUnavailableWhileRadioActiveWarning": "Mijenjanje modusa petlje nije dostupno dok je radio aktivan, jer će red čekanja beskonačno nastavljati.",
+    "@loopingUnavailableWhileRadioActiveWarning": {
+        "description": "Warning message when trying to change the loop mode while radio is active."
     }
 }

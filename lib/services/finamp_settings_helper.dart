@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:finamp/components/confirmation_prompt_dialog.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -123,6 +124,7 @@ class FinampSettingsHelper {
     FinampSettings finampSettingsTemp = finampSettings;
 
     FinampSetters.setThemeMode(DefaultSettings.themeMode);
+    FinampSetters.setAmoledTheme(DefaultSettings.amoledTheme);
     FinampSetters.setAccentColor(DefaultSettings.accentColor);
     FinampSetters.setSystemAccentColor(DefaultSettings.accentColor);
     FinampSetters.setUseSystemAccentColor(DefaultSettings.useSystemAccentColor);
@@ -229,6 +231,7 @@ class FinampSettingsHelper {
     FinampSetters.setPreferAddingToFavoritesOverPlaylists(DefaultSettings.preferAddingToFavoritesOverPlaylists);
     FinampSetters.setPreferNextUpPrepending(DefaultSettings.preferNextUpPrepending);
     FinampSetters.setRememberLastUsedPlaybackActionRowPage(DefaultSettings.rememberLastUsedPlaybackActionRowPage);
+    FinampSetters.setPreviousTracksPersistenceMode(DefaultSettings.previousTracksPersistenceMode);
 
     Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", finampSettingsTemp);
   }

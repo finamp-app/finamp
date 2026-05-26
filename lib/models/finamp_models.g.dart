@@ -430,6 +430,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         themeMode: fields[133] == null
             ? ThemeMode.system
             : fields[133] as ThemeMode,
+        amoledTheme: fields[146] == null ? false : fields[146] as bool,
         locale: fields[134] == null
             ? DefaultSettings.locale
             : fields[134] as Locale?,
@@ -447,6 +448,10 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         forceAudioOffloadingOnAndroid: fields[143] == null
             ? false
             : fields[143] as bool,
+        previousTracksPersistenceMode: fields[145] == null
+            ? PreviousTracksPersistenceMode.persistent
+            : fields[145] as PreviousTracksPersistenceMode,
+        useAndroidGainEffect: fields[147] == null ? true : fields[147] as bool,
       )
       ..disableGesture = fields[19] == null ? false : fields[19] as bool
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool
@@ -465,7 +470,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(138)
+      ..writeByte(141)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -741,7 +746,13 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(143)
       ..write(obj.forceAudioOffloadingOnAndroid)
       ..writeByte(144)
-      ..write(obj.multichannelHandlingSetting);
+      ..write(obj.multichannelHandlingSetting)
+      ..writeByte(145)
+      ..write(obj.previousTracksPersistenceMode)
+      ..writeByte(146)
+      ..write(obj.amoledTheme)
+      ..writeByte(147)
+      ..write(obj.useAndroidGainEffect);
   }
 
   @override
@@ -3146,6 +3157,48 @@ class MultichannelHandlingSettingAdapter
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is MultichannelHandlingSettingAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class PreviousTracksPersistenceModeAdapter
+    extends TypeAdapter<PreviousTracksPersistenceMode> {
+  @override
+  final typeId = 112;
+
+  @override
+  PreviousTracksPersistenceMode read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return PreviousTracksPersistenceMode.persistent;
+      case 1:
+        return PreviousTracksPersistenceMode.initiallyCollapsed;
+      case 2:
+        return PreviousTracksPersistenceMode.initiallyExpanded;
+      default:
+        return PreviousTracksPersistenceMode.persistent;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, PreviousTracksPersistenceMode obj) {
+    switch (obj) {
+      case PreviousTracksPersistenceMode.persistent:
+        writer.writeByte(0);
+      case PreviousTracksPersistenceMode.initiallyCollapsed:
+        writer.writeByte(1);
+      case PreviousTracksPersistenceMode.initiallyExpanded:
+        writer.writeByte(2);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PreviousTracksPersistenceModeAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -926,11 +926,11 @@
     "@addToNextUp": {
         "description": "Used for adding a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
-    "shuffleNext": "Τυχαία επόμενο",
+    "shuffleNext": "Ανακάτεμα επόμενου",
     "@shuffleNext": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "shuffleToNextUp": "Τυχαία στην ουρά Επόμενα",
+    "shuffleToNextUp": "Ανακάτεμα στην ουρά “Επόμενα”",
     "@shuffleToNextUp": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
     },
@@ -1836,6 +1836,166 @@
                 "type": "String",
                 "optional": true,
                 "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "playbackActionPageMoveWithinQueue": "Μετακίνηση Εντός Ουράς",
+    "@playbackActionPageMoveWithinQueue": {
+        "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
+    },
+    "playbackActionPageRegularTrackOptions": "Αναπαραγωγή",
+    "@playbackActionPageRegularTrackOptions": {
+        "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "playbackActionPageNextUp": "Προσθήκη ως επόμενο",
+    "@playbackActionPageNextUp": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
+    },
+    "systemAccentColorHasPriorityInfo": "Το προσαρμοσμένο χρώμα έμφασης είναι απενεργοποιημένο επειδή χρησιμοποιείται το χρώμα έμφασης του συστήματος",
+    "@systemAccentColorHasPriorityInfo": {
+        "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
+    },
+    "useMonochromeIcon": "Χρήση Μονόχρωμου Λογοτύπου",
+    "@useMonochromeIcon": {
+        "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
+    },
+    "useMonochromeIconSubtitle": "Αυτό επηρεάζει μόνο το εικονίδιο μέσα στην εφαρμογή, όχι το εικονίδιο του εκκινητή.",
+    "@useMonochromeIconSubtitle": {
+        "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
+    },
+    "shuffleSomeNext": "Ανακάτεμα μερικών ως επόμενο",
+    "@shuffleSomeNext": {
+        "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "shuffleSomeToNextUp": "Ανακάτεμα μερικών στα Επόμενα",
+    "@shuffleSomeToNextUp": {
+        "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
+    },
+    "movePlayNext": "Αναπαραγωγή αμέσως μετά",
+    "@movePlayNext": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "moveAddToNextUp": "Μετακίνηση στα Επόμενα",
+    "@moveAddToNextUp": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
+    },
+    "moveAddToQueue": "Μετακίνηση στο τέλος",
+    "@moveAddToQueue": {
+        "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
+    },
+    "shuffleSomeAlbums": "Ανακάτεμα μερικών Άλμπουμ",
+    "@shuffleSomeAlbums": {
+        "description": "Label for action that shuffles some albums of a genre"
+    },
+    "shuffleAlbumsNext": "Ανακάτεμα Άλμπουμ Μετά",
+    "@shuffleAlbumsNext": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the start of Next Up"
+    },
+    "shuffleSomeAlbumsNext": "Ανακάτεμα μερικών Άλμπουμ Μετά",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "shuffleAlbumsToNextUp": "Ανακάτεμα Άλμπουμ στα \"Επόμενα\"",
+    "@shuffleAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of Next Up"
+    },
+    "shuffleSomeAlbumsToNextUp": "Ανακάτεμα μερικών Άλπουμ στα \"Επόμενα\"",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
+    },
+    "shuffleAlbumsToQueue": "Ανακάτεμα Άλμπουμ στην Ουρά",
+    "@shuffleAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of an artist and adds them at the end of the regular queue"
+    },
+    "shuffleSomeAlbumsToQueue": "Ανακάτεμα μερικών Άλμπουμ στην Ουρά",
+    "@shuffleSomeAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
+    },
+    "couldNotLoad": "Δεν ήταν δυνατή η φόρτωση {source, select, album{άλμπουμ} playlist{λίστα αναπαραγωγής} trackMix{μίξη κομματιών} artistMix{μίξη καλλιτεχνών} albumMix{μίξη άλμπουμ} genreMix{μίξη ειδών} favorites{αγαπημένα} allTracks{όλα τα κομμάτια} filteredList{κομμάτια} genre{είδος} artist{καλλιτέχνης} track{κομμάτι} nextUpAlbum{άλμπουμ στα Επόμενα} nextUpPlaylist{λίστα αναπαραγωγής στα Επόμενα} nextUpArtist{καλλιτέχνης στα Επόμενα} nextUpGenre{είδος στα Επόμενα} other{}}",
+    "@couldNotLoad": {
+        "placeholders": {
+            "source": {
+                "type": "String"
+            }
+        }
+    },
+    "startInstantMixForIndividualTracksSwitchTitle": "Έναρξη άμεσων μίξεων για μεμονωμένα κομμάτια",
+    "@startInstantMixForIndividualTracksSwitchTitle": {
+        "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "Προς το παρόν, η Εξομάλυνση Έντασης σε πλατφόρμες εκτός Android απαιτεί την αλλαγή της έντασης αναπαραγωγής ώστε να προσομοιωθεί η μεταβολή του gain. Επειδή δεν μπορούμε να αυξήσουμε την ένταση πάνω από το 100%, πρέπει να μειώνουμε την ένταση από προεπιλογή, ώστε να μπορούμε να ενισχύουμε τα πιο ήσυχα κομμάτια.\n\nΗ τιμή δίνεται σε ντεσιμπέλ (dB), όπου τα -10 dB αντιστοιχούν περίπου σε 30% ένταση, τα -4,5 dB σε περίπου 60%, και τα -2 dB σε περίπου 80%.\nΟι θετικές τιμές σημαίνουν ότι δεν εφαρμόζεται μείωση έντασης μέχρι να φτάσει το όριο (π.χ. -6,4 dB gain και πιο θετικό για μετατόπιση +6,4 dB), αλλά αποτρέπουν την ενίσχυση πιο ήσυχων κομματιών.\n\nΘα πρέπει να το ρυθμίσετε στην αντίστροφη τιμή του μεγαλύτερου (πιο θετικού) gain στη βιβλιοθήκη σας.\nΔηλαδή, ορίστε το σε +3 dB αν το μεγαλύτερο gain στη βιβλιοθήκη σας είναι -3 dB (και όλα τα υπόλοιπα κομμάτια έχουν τιμές όπως -5 dB, -8 dB, -10 dB, κ.λπ.)",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "autoOfflineSettingDescription": "{disabledModeName}:\nΔεν ενεργοποιεί αυτόματα τη Λειτουργία εκτός σύνδεσης. Μπορεί να εξοικονομήσει μπαταρία.\n\n{localNetworkModeName}:\nΕνεργοποιεί τη Λειτουργία εκτός σύνδεσης όταν δεν υπάρχει σύνδεση σε Wi-Fi ή Ethernet.\n\n{disconnectedModeName}:\nΕνεργοποιεί τη Λειτουργία εκτός σύνδεσης όταν δεν υπάρχει καμία σύνδεση.\n\n{unreachableModeName}:\nΕνεργοποιεί τη Λειτουργία εκτός σύνδεσης όταν δεν είναι δυνατή η επικοινωνία με τον διακομιστή μετά από αλλαγή δικτύου.\n\nΜπορείτε πάντα να ενεργοποιείτε χειροκίνητα τη Λειτουργία εκτός σύνδεσης, κάτι που θα παγώσει τον αυτοματισμό μέχρι να τον ενεργοποιήσετε ξανά.",
+    "@autoOfflineSettingDescription": {
+        "description": "Setting description. Make sure the Mode names match the translations.",
+        "placeholders": {
+            "disabledModeName": {
+                "type": "String"
+            },
+            "localNetworkModeName": {
+                "type": "String"
+            },
+            "disconnectedModeName": {
+                "type": "String"
+            },
+            "unreachableModeName": {
+                "type": "String"
+            }
+        }
+    },
+    "additionalBaseItemInfoSubtitle": "Καθορίζει ποιες πρόσθετες πληροφορίες εμφανίζονται στις λίστες για κάθε τύπο στοιχείου. Όταν είναι ορισμένο σε «Προσαρμοστικό», επιλέγεται αυτόματα με βάση την ταξινόμηση ή το περιβάλλον.",
+    "@additionalBaseItemInfoSubtitle": {
+        "description": "Subtitle for the setting that controls the displayed additional item info."
+    },
+    "autoplayRestoredQueueSubtitle": "Οι λίστες που αποκαθίστανται αυτόματα κατά την εκκίνηση ή μέσω της οθόνης επαναφοράς λίστας θα ξεκινούν αυτόματα την αναπαραγωγή.  Οι λίστες που δεν αποκαθιστούν όλα τα κομμάτια δεν θα αναπαράγονται ποτέ αυτόματα, ανεξάρτητα από αυτήν την ρύθμιση.",
+    "@autoplayRestoredQueueSubtitle": {
+        "description": "Subtitle for the setting that controls if restored queues automatically play."
+    },
+    "missingBlurhashWarning": "Προειδοποίηση: Ο διακομιστής Jellyfin φαίνεται να είναι λανθασμένα ρυθμισμένος και δεν υπολογίζει τα blurhashes.  Αυτό εμποδίζει το Finamp να αποφύγει διπλές λήψεις εικόνων.  Παρακαλώ διορθώστε τον διακομιστή και εκτελέστε επιδιόρθωση λήψεων.",
+    "@missingBlurhashWarning": {
+        "description": "A warning message displayed on the downloads screen if the jellyfin server is missing blurhashes."
+    },
+    "genreNotFound": "Δεν βρέθηκε το είδος.{additionalInfo, select, offline{ Ίσως να μην έχει ληφθεί ή να ανήκει σε άλλη βιβλιοθήκη.} other{ Ίσως να ανήκει σε άλλη βιβλιοθήκη.}}",
+    "@genreNotFound": {
+        "placeholders": {
+            "additionalInfo": {
+                "type": "String"
+            }
+        },
+        "description": "Message shown when a genre filter or open-genre action fails because the genre item could not be found."
+    },
+    "clearQueueOnStopEventSubtitle": "Καθάρισε τη λίστα αναπαραγωγής και κλείσε τον player αν ληφθεί εντολή «διακοπή» από το λειτουργικό σύστημα. Οι ενέργειες διακοπής εντός της εφαρμογής θα κλείνουν πάντα τον player και θα καθαρίζουν τη λίστα.",
+    "@clearQueueOnStopEventSubtitle": {
+        "description": "Subtitle for the setting that controls if OS stop commands clear the queue."
+    },
+    "radioModeDescription": "{mode, select, reshuffle{Ανακατάταξη της λίστας συνεχώς} random{Προσθήκη κομματιών τυχαία από την αρχική επιλογή} similar{Προσθήκη με βάση την αρχική λίστα} continuous{Προσθήκη με βάση το τρέχον κομμάτι} albumMix{Προσθήκη παρόμοιων άλμπουμ} other{}}",
+    "@radioModeDescription": {
+        "placeholders": {
+            "mode": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Subtitle displayed in the queue to describe what the radio is doing if enabled"
+    },
+    "hidePlayerBottomActionsSubtitle": "Απόκρυψη των κουμπιών λίστας και στίχων στην οθόνη του player. Σαρώστε προς τα πάνω για να δείτε τη λίστα και σαρώστε αριστερά (κάτω από το εξώφυλλο άλμπουμ) για να δείτε τους στίχους, αν είναι διαθέσιμοι.",
+    "@hidePlayerBottomActionsSubtitle": {},
+    "syncFailedWarningLong": "Ορισμένες λήψεις δεν συγχρονίστηκαν με τον διακομιστή.  Το αντίστοιχο στοιχείο στον διακομιστή πιθανότατα διαγράφηκε.  Η αποτυχημένη λήψη θα πρέπει να διαγραφεί για να καθαρίσουν τα παλιά αρχεία.",
+    "@syncFailedWarningLong": {
+        "description": "Expanded warning message for when download sync fails due to items being deleted from the server."
+    },
+    "confirmAddCollectionItemToPlaylist": "Είστε σίγουροι ότι θέλετε να προσθέσετε όλα τα κομμάτια από το {itemType, select, album{άλμπουμ} playlist{λίστα αναπαραγωγής} artist{καλλιτέχνη} genre{είδος} other{στοιχείο}} '{itemName}' σε αυτή τη λίστα; Μπορούν να αφαιρεθούν μόνο μεμονωμένα.",
+    "@confirmAddCollectionItemToPlaylist": {
+        "description": "Warning dialog for adding an album, artist, etc. or multiple tracks to a playlist, clarifying that this cannot be undone without removing all tracks individually and manually.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            },
+            "itemName": {
+                "type": "String"
             }
         }
     }

@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
+
+import 'package:diacritic/diacritic.dart';
+
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -269,10 +273,6 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     letterToSearch = letter;
     var codePointToScrollTo = letter.toLowerCase().codeUnitAt(0);
 
-    // Max code point is lower case z to increase the chance of seeing a character
-    // past the target but below the ignore point
-    final maxCodePoint = 'z'.codeUnitAt(0);
-
     if (letter == '#') {
       codePointToScrollTo = 0;
     }
@@ -281,66 +281,69 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     var itemList = _pagingController.itemList!;
     SortBy? tabSortBy = FinampSettingsHelper.finampSettings.tabSortBy[widget.tabContentType];
     bool reversed = FinampSettingsHelper.finampSettings.tabSortOrder[widget.tabContentType] == SortOrder.descending;
-    for (var i = 0; i < itemList.length; i++) {
-      String sortName;
-      switch (tabSortBy) {
-        case SortBy.albumArtist:
-          sortName = itemList[i].albumArtist ?? "";
-          break;
-        default:
-          sortName = itemList[i].nameForSorting ?? "";
-          break;
-      }
-      if (sortName.isEmpty) continue; // assume empty names are at the start
-      int itemCodePoint = sortName.toLowerCase().codeUnitAt(0);
-      if (itemCodePoint <= maxCodePoint) {
-        final comparisonResult = itemCodePoint - codePointToScrollTo;
-        if (comparisonResult == 0) {
-          timer?.cancel();
-          await controller.scrollToIndex(
-            i,
-            duration: _getAnimationDurationForOffsetToIndex(i),
-            preferPosition: AutoScrollPosition.begin,
-          );
 
-          letterToSearch = null;
-          return;
-        } else if (reversed ? comparisonResult < 0 : comparisonResult > 0) {
-          // If the letter is before the current item, there was no previous match (letter doesn't seem to exist in library)
-          // scroll to the previous item instead
-          timer?.cancel();
-          await controller.scrollToIndex(
-            (i - 1).clamp(0, itemList.length - 1),
-            // duration: scrollDuration,
-            duration: _getAnimationDurationForOffsetToIndex(i),
-            preferPosition: AutoScrollPosition.middle,
-          );
-
-          letterToSearch = null;
-          return;
-        }
+    String getSortName(BaseItemDto item) {
+      if (tabSortBy == SortBy.albumArtist) {
+        final artists = item.albumArtists;
+        return removeDiacritics(artists?.sortedBy((e) => e.name ?? '').map((e) => e.name ?? '').join(", ") ?? item.albumArtist ?? "");
       }
+
+      return removeDiacritics(item.nameForSorting ?? "");
     }
 
+    var targetIndex = itemList.indexWhere((item) {
+      final sortName = getSortName(item).toLowerCase();
+      if (sortName.isEmpty) return false;
+      final itemCodePoint = sortName.codeUnitAt(0);
+      return reversed ? itemCodePoint <= codePointToScrollTo : itemCodePoint >= codePointToScrollTo;
+    });
+
+    if (targetIndex != -1) {
+      final originalIndex = itemList.indexOf(itemList[targetIndex]);
+
+      timer?.cancel();
+      await controller.scrollToIndex(
+        originalIndex,
+        duration: _getAnimationDurationForOffsetToIndex(originalIndex),
+        preferPosition: AutoScrollPosition.begin,
+      );
+
+      letterToSearch = null;
+      return;
+    }
+
+    // No match found in the currently loaded items.
+    // If all pages are loaded, fall back to the last element in the list.
     timer?.cancel();
     if (fullyLoadedRefresh == refreshCount) {
+      if (itemList.isNotEmpty) {
+        final lastIndex = itemList.indexOf(itemList.last);
+        await controller.scrollToIndex(
+          lastIndex,
+          duration: _getAnimationDurationForOffsetToIndex(lastIndex),
+          preferPosition: AutoScrollPosition.begin,
+        );
+      }
       letterToSearch = null;
     } else {
+      // More pages available - request the next page and scroll to the bottom
+      // to trigger loading. Retry will happen via letterToSearch being set.
       timer = Timer(const Duration(seconds: 8), () {
-        // If page loading takes >5 seconds, cancel search and allow image loading.
+        // If page loading takes too long, cancel search and allow image loading.
         letterToSearch = null;
       });
 
       _pagingController.notifyPageRequestListeners(_pagingController.nextPageKey!);
-    }
-    if (MediaQuery.disableAnimationsOf(context)) {
-      controller.jumpTo(controller.position.maxScrollExtent);
-    } else {
-      await controller.animateTo(
-        controller.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.ease,
-      );
+
+      if (MediaQuery.disableAnimationsOf(context)) {
+        controller.jumpTo(controller.position.maxScrollExtent);
+      } else {
+        await controller.animateTo(
+          controller.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.ease,
+        );
+      }
     }
   }
 
@@ -639,7 +642,7 @@ List<BaseItemDto> sortItems(List<BaseItemDto> itemsToSort, SortBy? sortBy, SortO
           if (a.artists == null || b.artists == null) {
             return 0;
           } else {
-            return a.artists!.join(', ').compareTo(b.artists!.join(', '));
+            return a.artists!.sortedBy((e) => e).join(", ").compareTo(b.artists!.sortedBy((e) => e).join(", "));
           }
         case SortBy.communityRating:
           if (a.communityRating == null || b.communityRating == null) {

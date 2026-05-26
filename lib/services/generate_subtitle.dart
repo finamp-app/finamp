@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ String? generateSubtitle({
       return item.albumArtists != null &&
               item.albumArtists!.isNotEmpty &&
               (item.albumArtists!.length > 1 || item.albumArtists?.first.name != item.albumArtist)
-          ? item.albumArtists?.map((e) => processArtist(e.name, context)).join(", ")
+          ? item.albumArtists!.sortedBy((e) => e.name ?? '').map((e) => processArtist(e.name, context)).join(", ")
           : processArtist(item.albumArtist, context);
     case BaseItemDtoType.playlist:
       return AppLocalizations.of(context)!.trackCount(item.childCount!);

@@ -111,10 +111,7 @@ Widget buildPlayerSplitScreenScaffold(BuildContext context, Widget? widget) {
                             pages: const [MaterialPage(child: PlayerScreen())],
                             onPopPage: (_, __) => false,
                             onGenerateRoute: (x) {
-                              GlobalSnackbar.materialAppNavigatorKey.currentState!.pushNamed(
-                                x.name!,
-                                arguments: x.arguments,
-                              );
+                              GlobalSnackbar.navigatorState!.pushNamed(x.name!, arguments: x.arguments);
                               return EmptyRoute();
                             },
                             observers: [KeepScreenOnObserver()],
@@ -159,7 +156,7 @@ class SplitScreenNavigatorObserver extends NavigatorObserver {
 
   static void queuePop() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      GlobalSnackbar.materialAppNavigatorKey.currentState?.popUntil(SplitScreenNavigatorObserver.shouldNotPop);
+      GlobalSnackbar.navigatorState?.popUntil(SplitScreenNavigatorObserver.shouldNotPop);
     });
   }
 

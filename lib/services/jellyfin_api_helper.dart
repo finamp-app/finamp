@@ -498,7 +498,9 @@ class JellyfinApiHelper {
   /// Can be used to check if the server is online / the URL is correct.
   /// Since we're potentially looking multiple servers, while the user is entering another base URL, we use a custom http client for this request.
   Future<PublicSystemInfoResult?> loadCustomServerPublicInfo(Uri customServerUrl) async {
-    final requestUrl = customServerUrl.replace(path: "/System/Info/Public");
+    final requestUrl = customServerUrl.replace(
+      pathSegments: customServerUrl.pathSegments.followedBy(["System", "Info", "Public"]),
+    );
     final httpClient = ChopperClient().httpClient; // http? where we're going, we don't need http
     final response = await httpClient.get(requestUrl);
     final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
@@ -1022,9 +1024,9 @@ class JellyfinApiHelper {
       Response<dynamic> response = await client.send<dynamic, dynamic>($request);
       if (response.statusCode != 200) return false;
       final body = response.bodyOrThrow as Map<String, dynamic>;
-      // If IsInNetwork doesn't exist -> catch
+      // If IsInNetwork doesn't exist -> return false
       // because then its not a jellyfin server
-      return body["IsInNetwork"] as bool;
+      return body.containsKey("IsInNetwork");
     } catch (e) {
       Logger("Ayoo").severe(e);
       return false;

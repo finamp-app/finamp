@@ -115,6 +115,17 @@ class _QueueListState extends ConsumerState<QueueList> {
     _contents = <Widget>[];
 
     widget.scrollController.addListener(_updateJumpToTop);
+
+    switch (FinampSettingsHelper.finampSettings.previousTracksPersistenceMode) {
+      case PreviousTracksPersistenceMode.persistent:
+        break;
+      case PreviousTracksPersistenceMode.initiallyCollapsed:
+        FinampSetters.setPreviousTracksExpaned(false);
+        break;
+      case PreviousTracksPersistenceMode.initiallyExpanded:
+        FinampSetters.setPreviousTracksExpaned(true);
+        break;
+    }
   }
 
   void _updateJumpToTop() {

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:collection/collection.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,19 +61,18 @@ final AutoDisposeFutureProviderFamily<MetadataProvider?, BaseItemDto> metadataPr
         if (downloadItem != null && downloadItem.state.isComplete) {
           metadataProviderLogger.fine("Got offline metadata for '${item.name}'");
           var profile = downloadItem.fileTranscodingProfile;
-          var audioStream = downloadItem.baseItem!.mediaSources?.first.mediaStreams.firstWhere(
-            (s) => s.type == "Audio",
-            orElse: () => downloadItem.baseItem!.mediaSources!.first.mediaStreams.first,
-          );
+          var audioStream =
+              downloadItem.baseItem!.mediaStreams?.firstWhereOrNull((s) => s.type == "Audio") ??
+              downloadItem.baseItem!.mediaStreams?.firstOrNull;
           // We could explicitly get a mediaSource of type Default, but just grabbing
           // the first seems to generally work?
           var codec = profile?.codec != FinampTranscodingCodec.original ? profile?.codec.name : audioStream?.codec;
           var container = profile?.codec != FinampTranscodingCodec.original
               ? profile?.codec.container
-              : downloadItem.baseItem!.mediaSources?.first.container;
+              : downloadItem.baseItem!.mediaSources?.firstOrNull?.container;
           var bitrate = profile?.codec != FinampTranscodingCodec.original
               ? profile?.stereoBitrate
-              : downloadItem.baseItem!.mediaSources?.first.bitrate;
+              : downloadItem.baseItem!.mediaSources?.firstOrNull?.bitrate;
 
           // We cannot create accurate MediaStreams for a transcoded item,so
           // just return the lyrics stream, as those are not affected and will not
@@ -89,7 +86,9 @@ final AutoDisposeFutureProviderFamily<MetadataProvider?, BaseItemDto> metadataPr
                         bitRate: bitrate,
                         sampleRate: null,
                         channels: null,
-                        bitDepth: audioStream?.bitDepth,
+                        // Lossy formats do not have a fixed bit depth
+                        //bitDepth: audioStream?.bitDepth,
+                        bitDepth: null,
                         isInterlaced: false,
                         isDefault: true,
                         isForced: false,

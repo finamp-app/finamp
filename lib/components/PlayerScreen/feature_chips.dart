@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
@@ -64,10 +62,10 @@ class FeatureState {
           type: "Audio",
           codec: settings.transcodingStreamingFormat.codec,
           bitRate: settings.transcodeBitrate,
-          sampleRate: null,
+          sampleRate: settings.transcodingStreamingFormat.sampleRate,
           channels: null,
-          bitDepth: metadata?.mediaSourceInfo.mediaStreams.first.bitDepth != null
-              ? min(metadata!.mediaSourceInfo.mediaStreams.first.bitDepth!, 16)
+          bitDepth: settings.transcodingStreamingFormat.lossless
+              ? metadata?.mediaSourceInfo.mediaStreams.firstOrNull?.bitDepth
               : null,
           isInterlaced: false,
           isDefault: true,
@@ -120,7 +118,7 @@ class FeatureState {
         features.add(
           FeatureProperties(
             type: feature,
-            text: AppLocalizations.of(context)!.playCountValue(currentTrack!.baseItem!.userData?.playCount ?? 0),
+            text: AppLocalizations.of(context)!.playCountValue(currentTrack!.baseItem.userData?.playCount ?? 0),
           ),
         );
       }

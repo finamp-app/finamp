@@ -402,7 +402,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
         // [seedItem] is only used for generating tracks if there's no queue yet
         referenceItem: continuousTracks.last,
         minNumTracks: 1,
-        additionalExistingTracks: cachedTracks,
+        additionalExistingTracks: cachedTracks + continuousTracks,
         maxAttempts: 10,
         randomnessExtraTracks: randomnessExtraTracks,
         // filter out recent tracks within 90 minutes

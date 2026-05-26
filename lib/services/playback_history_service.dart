@@ -34,7 +34,6 @@ class PlaybackHistoryService {
   PlaybackState? _previousPlaybackState;
   DateTime _lastPositionUpdate = DateTime.now();
 
-  bool _wasOfflineBefore = false;
   FinampQueueItem?
   _lastReportedTrackStarted; // used to check if playback has already reported as "started" at some point for the current track
   FinampQueueItem? _lastReportedTrackStopped; // used to prevent reporting a track as stopped multiple times
@@ -47,27 +46,11 @@ class PlaybackHistoryService {
   final int _maxQueueLengthToReport = 100;
 
   PlaybackHistoryService() {
-    _queueService.getCurrentTrackStream().listen((currentTrack) {
-      if (![
-        AudioProcessingState.idle,
-        AudioProcessingState.completed,
-      ].contains(_audioService.playbackState.valueOrNull?.processingState)) {
-        updateCurrentTrack(currentTrack);
-      } else if (_audioService.playbackState.valueOrNull?.processingState == AudioProcessingState.completed ||
-          currentTrack == null) {
-        _playbackHistoryServiceLogger.info("Handling playback stop event");
-        reportPlaybackStopped();
-        // stop periodic background updates if playback has ended
-        _periodicUpdateTimer?.cancel();
-      }
-    });
-
     FinampSettingsHelper.finampSettingsListener.addListener(() {
       final isOffline = FinampSettingsHelper.finampSettings.isOffline;
       if (!isOffline) {
         _updatePlaybackInfo();
       }
-      _wasOfflineBefore = FinampSettingsHelper.finampSettings.isOffline;
     });
 
     bool throttleRemoteSessionReporting = false;
@@ -77,92 +60,107 @@ class PlaybackHistoryService {
       final prevItem = _currentTrack?.item;
       final currentState = event;
       final currentIndex = currentState.queueIndex;
+      try {
+        if (event.processingState == AudioProcessingState.completed) {
+          _playbackHistoryServiceLogger.info("Handling playback stop event");
+          reportPlaybackStopped();
+          // stop periodic background updates if playback has ended
+          _periodicUpdateTimer?.cancel();
+          return;
+        }
 
-      final currentItem = _queueService.getCurrentTrack();
+        if (_playOnService.isControlled && !throttleRemoteSessionReporting) {
+          _playbackHistoryServiceLogger.fine("Handling playbackState event as controlled by a remote session");
+          throttleRemoteSessionReporting = true;
+          Future.delayed(Duration(seconds: 1), () {
+            throttleRemoteSessionReporting = false;
+          });
+          // If the session is being remote controlled, report playback agressively
+          _updatePlaybackInfo();
+          return;
+        }
 
-      if (_playOnService.isControlled && !throttleRemoteSessionReporting) {
-        _playbackHistoryServiceLogger.fine("Handling playbackState event as controlled by a remote session");
-        throttleRemoteSessionReporting = true;
-        Future.delayed(Duration(seconds: 1), () {
-          throttleRemoteSessionReporting = false;
-        });
-        // If the session is being remote controlled, report playback agressively
-        _updatePlaybackInfo();
-      } else {
-        if (currentIndex != null && currentItem != null) {
-          // differences in queue index or item id are considered track changes
-          if (currentItem.id != prevItem?.id) {
-            if (currentState.playing != prevState?.playing) {
-              // add to playback history if playback was stopped before
-              updateCurrentTrack(currentItem, forceNewTrack: true);
-            }
-            if (currentState.processingState != AudioProcessingState.completed &&
-                (currentState.queueIndex != prevState?.queueIndex || currentState.position != prevState?.position)) {
-              _playbackHistoryServiceLogger.fine(
-                "Handling track change event from ${prevItem?.item.title} to ${currentItem.item.title}",
-              );
+        FinampQueueItem currentItem;
+        if (currentIndex is! int ||
+            currentIndex < 0 ||
+            currentIndex >= _audioService.sequenceState.effectiveSequence.length) {
+          return;
+        }
+        if (_audioService.sequenceState.effectiveSequence[currentIndex].tag case FinampQueueItem item) {
+          currentItem = item;
+        } else {
+          return;
+        }
+        if (currentItem.id != prevItem?.id) {
+          updateCurrentTrack(
+            currentItem,
+            // add to playback history if playback was stopped before
+            forceNewTrack: currentState.playing != prevState?.playing,
+          );
+          if (currentState.queueIndex != prevState?.queueIndex || currentState.position != prevState?.position) {
+            _playbackHistoryServiceLogger.fine(
+              "Handling track change event from ${prevItem?.item.title} to ${currentItem.item.title}",
+            );
+            //TODO handle reporting track changes based on history changes, as that is more reliable
+            onTrackChanged(currentItem, currentState, prevItem, prevState);
+          }
+        }
+        // handle events that don't change the current track (e.g. loop, pause, seek, etc.)
+        // handle play/pause events
+        else if (currentState.playing != prevState?.playing) {
+          _playbackHistoryServiceLogger.fine("Handling play/pause event for ${currentItem.item.title}");
+          onPlaybackStateChanged(currentItem, currentState, prevState);
+        }
+        // handle seeking (changes updateTime (= last abnormal position change))
+        else if (currentState.playing &&
+            prevState != null &&
+            // comparing the updateTime timestamps directly is unreliable, as they might just have different microsecond values
+            // instead, compare the difference in milliseconds, with a small margin of error
+            (currentState.position.inMilliseconds - prevState.position.inMilliseconds).abs() > 1500) {
+          bool isSeekEvent = true;
+
+          // detect rewinding & looping a single track
+          if (
+          // same track
+          prevItem?.id == currentItem.id &&
+              // current position is close to the beginning of the track
+              currentState.position.inMilliseconds <= 1000 * 10) {
+            if (prevState.position.inMilliseconds >= (prevItem?.item.duration?.inMilliseconds ?? 0) - 1000 * 10) {
+              // looping a single track
+              // last position was close to the end of the track
+              updateCurrentTrack(currentItem, forceNewTrack: true); // add to playback history
               //TODO handle reporting track changes based on history changes, as that is more reliable
-              onTrackChanged(
-                currentItem,
-                currentState,
-                prevItem,
-                prevState,
-                currentIndex > (prevState?.queueIndex ?? 0),
-              );
+              onTrackChanged(currentItem, currentState, prevItem, prevState);
+              isSeekEvent = false; // don't report seek event
+            } else {
+              // rewinding
+              updateCurrentTrack(currentItem, forceNewTrack: true); // add to playback history
+              // don't return, report seek event
+              isSeekEvent = true;
             }
           }
-          // handle events that don't change the current track (e.g. loop, pause, seek, etc.)
-          // handle play/pause events
-          else if (currentState.playing != prevState?.playing) {
-            _playbackHistoryServiceLogger.fine("Handling play/pause event for ${currentItem.item.title}");
-            onPlaybackStateChanged(currentItem, currentState, prevState);
-          }
-          // handle seeking (changes updateTime (= last abnormal position change))
-          else if (currentState.playing &&
-              prevState != null &&
-              // comparing the updateTime timestamps directly is unreliable, as they might just have different microsecond values
-              // instead, compare the difference in milliseconds, with a small margin of error
-              (currentState.position.inMilliseconds - prevState.position.inMilliseconds).abs() > 1500) {
-            bool isSeekEvent = true;
 
-            // detect rewinding & looping a single track
-            if (
-            // same track
-            prevItem?.id == currentItem.id &&
-                // current position is close to the beginning of the track
-                currentState.position.inMilliseconds <= 1000 * 10) {
-              if ((prevState.position.inMilliseconds) >= ((prevItem?.item.duration?.inMilliseconds ?? 0) - 1000 * 10)) {
-                // looping a single track
-                // last position was close to the end of the track
-                updateCurrentTrack(currentItem, forceNewTrack: true); // add to playback history
-                //TODO handle reporting track changes based on history changes, as that is more reliable
-                onTrackChanged(currentItem, currentState, prevItem, prevState, true);
-                isSeekEvent = false; // don't report seek event
-              } else {
-                // rewinding
-                updateCurrentTrack(currentItem, forceNewTrack: true); // add to playback history
-                // don't return, report seek event
-                isSeekEvent = true;
+          if (isSeekEvent) {
+            // rate limit updates (only send update after no changes for 3 seconds) and if the track is still the same
+            Future.delayed(const Duration(seconds: 3, milliseconds: 500), () {
+              var newCurrentTrack =
+                  _audioService.queueIndex != null && _audioService.sequenceState.effectiveSequence.isNotEmpty
+                  ? _audioService.sequenceState.effectiveSequence[_audioService.queueIndex!].tag as FinampQueueItem
+                  : null;
+              if (_lastPositionUpdate.add(const Duration(seconds: 3)).isBefore(DateTime.now()) &&
+                  currentItem.item.id == newCurrentTrack?.item.id) {
+                _playbackHistoryServiceLogger.fine("Handling seek event for ${currentItem.item.title}");
+                onPlaybackStateChanged(currentItem, currentState, prevState);
               }
-            }
-
-            if (isSeekEvent) {
-              // rate limit updates (only send update after no changes for 3 seconds) and if the track is still the same
-              Future.delayed(const Duration(seconds: 3, milliseconds: 500), () {
-                if (_lastPositionUpdate.add(const Duration(seconds: 3)).isBefore(DateTime.now()) &&
-                    currentItem.id == _queueService.getCurrentTrack()?.id) {
-                  _playbackHistoryServiceLogger.fine("Handling seek event for ${currentItem.item.title}");
-                  onPlaybackStateChanged(currentItem, currentState, prevState);
-                }
-                _lastPositionUpdate = DateTime.now();
-              });
-            }
+              _lastPositionUpdate = DateTime.now();
+            });
           }
         }
         // maybe handle toggling shuffle when sending the queue? would result in duplicate entries in the activity log, so maybe it's not desirable
         // same for updating the queue / next up
+      } finally {
+        _previousPlaybackState = currentState;
       }
-      _previousPlaybackState = event;
     });
 
     // initialize periodic session updates
@@ -330,7 +328,6 @@ class PlaybackHistoryService {
     PlaybackState currentState,
     FinampQueueItem? previousItem,
     PlaybackState? previousState,
-    bool skippingForward,
   ) async {
     final shouldReportPreviousTrack =
         previousItem != null &&
@@ -520,7 +517,7 @@ class PlaybackHistoryService {
   }) {
     try {
       return jellyfin_models.PlaybackProgressInfo(
-        itemId: item.baseItem?.id ?? jellyfin_models.BaseItemId(""),
+        itemId: item.baseItem.id,
         playSessionId: item.item.extras?["playSessionId"] as String? ?? "",
         sessionId: _queueService.getQueue().id,
         isPaused: isPaused,
@@ -559,7 +556,7 @@ class PlaybackHistoryService {
 
     try {
       return jellyfin_models.PlaybackProgressInfo(
-        itemId: currentTrack.baseItem?.id ?? jellyfin_models.BaseItemId(""),
+        itemId: currentTrack.baseItem.id,
         playSessionId: currentTrack.item.extras?["playSessionId"] as String? ?? "",
         sessionId: _queueService.getQueue().id,
         canSeek: true,
@@ -587,7 +584,7 @@ class PlaybackHistoryService {
         (FinampSettingsHelper.finampSettings.enablePlayon || FinampSettingsHelper.finampSettings.reportQueueToServer)) {
       final queue = _queueService
           .peekQueue(next: _maxQueueLengthToReport)
-          .map((e) => jellyfin_models.QueueItem(id: e.baseItem?.id.raw ?? "", playlistItemId: e.type.name))
+          .map((e) => jellyfin_models.QueueItem(id: e.baseItem.id.raw, playlistItemId: e.type.name))
           .toList();
       return queue;
     } else {

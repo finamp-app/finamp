@@ -1,5 +1,6 @@
 package com.unicornsonlsd.finamp
 
+import android.app.UiModeManager
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -17,6 +18,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import android.os.Build
+
 
 class MainActivity : AudioServiceActivity() {
     companion object {
@@ -25,6 +28,9 @@ class MainActivity : AudioServiceActivity() {
 
         private const val OUTPUT_SWITCHER_CHANNEL = "com.unicornsonlsd.finamp/output_switcher"
         private const val OUTPUT_SWITCHER_CHANNEL_LOG_TAG = "OutputSwitcherChannel"
+
+        private const val SET_NATIVE_THEME_CHANNEL = "com.unicornsonlsd.finamp/set_native_theme"
+        private const val SET_NATIVE_THEME_CHANNEL_LOG_TAG = "setNativeThemeChannel"
     }
 
     private lateinit var mediaRouter: MediaRouter
@@ -53,6 +59,48 @@ class MainActivity : AudioServiceActivity() {
                 }
                 else -> {
                     Log.e(DOWNLOADS_SERVICE_CHANNEL_LOG_TAG, "Method not found: '${call.method}'")
+                    result.notImplemented()
+                }
+            }
+        }
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            SET_NATIVE_THEME_CHANNEL,
+        ).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "setNativeThemeMode" -> {
+                    val uiManager: UiModeManager =
+                        applicationContext.getSystemService(UI_MODE_SERVICE) as UiModeManager
+
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                        // Only api >= 31 supports uiManager.setApplicationNightMode
+                        // There might be a way to set this on older versions of android, but
+                        // I don't feel like debugging that at the moment
+                        result.success(null)
+                        return@setMethodCallHandler
+                    }
+                    val targetMode = call.argument<Int?>("targetMode")
+                    when (targetMode) {
+                        0 -> {
+                            uiManager.setApplicationNightMode( UiModeManager.MODE_NIGHT_AUTO)
+                            result.success(null)
+                        }
+                        1 -> {
+                            uiManager.setApplicationNightMode( UiModeManager.MODE_NIGHT_NO)
+                            result.success(null)
+                        }
+                        2 -> {
+                            uiManager.setApplicationNightMode( UiModeManager.MODE_NIGHT_YES)
+                            result.success(null)
+                        }
+                        else -> {
+                            Log.e(SET_NATIVE_THEME_CHANNEL_LOG_TAG, "Method not found: '${call.method}'")
+                            result.notImplemented()
+                        }
+                    }
+                }
+                else -> {
+                    Log.e(SET_NATIVE_THEME_CHANNEL_LOG_TAG, "Method not found: '${call.method}'")
                     result.notImplemented()
                 }
             }

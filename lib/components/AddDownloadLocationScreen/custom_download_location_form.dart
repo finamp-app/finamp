@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/finamp_models.dart';
@@ -57,7 +57,7 @@ class _CustomDownloadLocationFormState extends State<CustomDownloadLocationForm>
                             IconButton(
                               icon: const Icon(Icons.folder),
                               onPressed: () async {
-                                String? newPath = await FilePicker.platform.getDirectoryPath();
+                                String? newPath = await FilePicker.getDirectoryPath();
 
                                 if (newPath != null) {
                                   setState(() {

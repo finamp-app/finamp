@@ -124,7 +124,11 @@ class _ThemedBottomSheetState extends ConsumerState<ThemedBottomSheet> {
             var (height, slivers) = widget.buildSlivers!(context);
             child = buildInternal(height, slivers);
           }
-          return ColoredBox(color: Theme.of(context).scaffoldBackgroundColor, child: child);
+          final colorScheme = ColorScheme.of(context);
+          return ColoredBox(
+            color: ElevationOverlay.applySurfaceTint(colorScheme.surface, colorScheme.surfaceTint, 1),
+            child: child,
+          );
         },
       ),
     );

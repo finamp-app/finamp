@@ -23,3 +23,12 @@ Stream<ProgressState> get progressStateStream {
     (mediaItem, playbackState, position) => ProgressState(mediaItem, playbackState, position),
   );
 }
+
+ProgressState? get progressState {
+  final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+  return ProgressState(
+    audioHandler.mediaItem.value,
+    audioHandler.playbackState.value,
+    audioHandler.playbackState.value.position,
+  );
+}

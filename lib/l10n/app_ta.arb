@@ -36,23 +36,14 @@
         "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
     },
     "username": "பயனர்பெயர்",
-    "@username": {},
     "password": "கடவுச்சொல்",
-    "@password": {},
     "genres": "வகைகள்",
-    "@genres": {},
     "music": "இசை",
-    "@music": {},
     "criticRating": "விமர்சகர் மதிப்பீடு",
-    "@criticRating": {},
     "name": "பெயர்",
-    "@name": {},
     "revenue": "வருவாய்",
-    "@revenue": {},
     "syncDownloadedPlaylists": "பதிவிறக்கம் செய்யப்பட்ட பிளேலிச்ட்கள் ஒத்திசைவு",
-    "@syncDownloadedPlaylists": {},
     "downloadMissingImages": "காணாமல் போன படங்களை பதிவிறக்கவும்",
-    "@downloadMissingImages": {},
     "downloadCount": "{count, plural, one {{count} பதிவிறக்கம்} other {{count} பதிவிறக்கங்கள்}}",
     "@downloadCount": {
         "placeholders": {
@@ -80,21 +71,15 @@
         }
     },
     "required": "தேவை",
-    "@required": {},
     "confirmDownloadStarted": "பதிவிறக்கம் தொடங்கியது",
     "@confirmDownloadStarted": {
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
     },
     "addButtonLabel": "கூட்டு",
-    "@addButtonLabel": {},
     "logsCopied": "பதிவுகள் நகலெடுக்கப்பட்டன.",
-    "@logsCopied": {},
     "message": "செய்தி",
-    "@message": {},
     "customLocation": "தனிப்பயன் இடம்",
-    "@customLocation": {},
     "grid": "வலைவாய்",
-    "@grid": {},
     "customizationSettingsTitle": "தனிப்பயனாக்கம்",
     "@customizationSettingsTitle": {
         "description": "Title for the customization settings screen"
@@ -112,9 +97,7 @@
         "description": "Used as an option in the playback speed visibility settings"
     },
     "addToMorePlaylistsTooltip": "மேலும் பிளேலிச்ட்களில் சேர்க்கவும்",
-    "@addToMorePlaylistsTooltip": {},
     "replaceQueue": "வரிசையை மாற்றவும்",
-    "@replaceQueue": {},
     "placeholderSource": "எங்கோ",
     "@placeholderSource": {
         "description": "Placeholder text used when the source of the current track/queue is unknown"
@@ -165,11 +148,8 @@
         }
     },
     "confirm": "உறுதிப்படுத்தவும்",
-    "@confirm": {},
     "close": "மூடு",
-    "@close": {},
     "showUncensoredLogMessage": "இந்த பதிவில் உங்கள் உள்நுழைவு செய்தி உள்ளது. காட்டு?",
-    "@showUncensoredLogMessage": {},
     "volumeNormalizationIOSBaseGainEditorTitle": "அடிப்படை ஆதாயம்",
     "@volumeNormalizationIOSBaseGainEditorTitle": {
         "description": "Title for the input that sets the replay gain base gain on iOS and other non-Android platforms"
@@ -200,9 +180,7 @@
         "description": "Tooltip for button that sets a download location as the default."
     },
     "fixedGridSizeSwitchTitle": "நிலையான அளவு கட்டம் ஓடுகளைப் பயன்படுத்தவும்",
-    "@fixedGridSizeSwitchTitle": {},
     "fixedGridSizeSwitchSubtitle": "கட்டம் ஓடு அளவுகள் சாளரம்/திரை அளவிற்கு பதிலளிக்காது.",
-    "@fixedGridSizeSwitchSubtitle": {},
     "fixedGridTileSizeEnum": "{size, select, small {சிறிய} medium {நடுத்தர} large {பெரிய} veryLarge {மிகப் பெரிய} other {}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
@@ -249,7 +227,6 @@
         }
     },
     "keepScreenOnAlwaysOn": "எப்போதும் இயக்கவும்",
-    "@keepScreenOnAlwaysOn": {},
     "aboutReleaseNotes": "அண்மைக் கால வெளியீட்டுக் குறிப்புகளைப் படியுங்கள்:",
     "@aboutReleaseNotes": {
         "description": "Link to the release notes, shown in the about screen."
@@ -303,7 +280,6 @@
         "description": "Heading for the server selection step during the login flow."
     },
     "serverUrl": "சேவையக முகவரி",
-    "@serverUrl": {},
     "internalExternalIpExplanation": "உங்கள் செல்லிஃபின் சேவையகத்தை தொலைவிலிருந்து அணுக விரும்பினால், உங்கள் வெளிப்புற ஐபி பயன்படுத்த வேண்டும்.\n\n உங்கள் சேவையகம் HTTP இயல்புநிலை துறைமுகம் (80 அல்லது 443) அல்லது செல்லிஃபின் இயல்புநிலை துறைமுகம் (8096) இல் இருந்தால், நீங்கள் துறைமுகத்தை குறிப்பிட வேண்டியதில்லை.\n\n முகவரி சரியாக இருந்தால், உங்கள் சேவையகத்தைப் பற்றிய சில தகவல்களை உள்ளீட்டு புலத்திற்கு கீழே பாப் அப் பார்க்க வேண்டும்.",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
@@ -365,29 +341,21 @@
         "description": "Label for the login button."
     },
     "logs": "பதிவுகள்",
-    "@logs": {},
     "next": "அடுத்தது",
-    "@next": {},
     "selectMusicLibraries": "இசை நூலகங்களைத் தேர்ந்தெடுக்கவும்",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
     "tracks": "தடங்கள்",
-    "@tracks": {},
     "couldNotFindLibraries": "எந்த நூலகங்களையும் கண்டுபிடிக்க முடியவில்லை.",
     "@couldNotFindLibraries": {
         "description": "Error message when the user does not have any libraries"
     },
     "unknownName": "தெரியாத பெயர்",
-    "@unknownName": {},
     "albums": "தொகுப்புகள்",
-    "@albums": {},
     "artists": "கலைஞர்கள்",
-    "@artists": {},
     "playlists": "பிளேலிச்ட்கள்",
-    "@playlists": {},
     "startMix": "கலவையைத் தொடங்குங்கள்",
-    "@startMix": {},
     "startMixNoTracksArtist": "கலவையைத் தொடங்குவதற்கு முன் அதை மிக்ச் பில்டரிலிருந்து சேர்க்க அல்லது அகற்ற ஒரு கலைஞரை நீண்ட அழுத்தவும்",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
@@ -396,50 +364,30 @@
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
-    "startMixNoTracksGenre": "கலவையைத் தொடங்குவதற்கு முன் அதை மிக்ச் பில்டரிலிருந்து சேர்க்க அல்லது அகற்ற ஒரு வகையை நீண்ட அழுத்தவும்",
+    "startMixNoTracksGenre": "கலவையைத் தொடங்கும் முன், மிக்ச் பில்டரில் இருந்து அதைச் சேர்க்க அல்லது அகற்ற, ஒரு வகையை நீண்ட நேரம் அழுத்தவும்",
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
     "clear": "தெளிவான",
-    "@clear": {},
     "shuffleAll": "அனைத்தையும் மாற்றவும்",
-    "@shuffleAll": {},
     "downloads": "பதிவிறக்கங்கள்",
-    "@downloads": {},
     "settings": "அமைப்புகள்",
-    "@settings": {},
     "offlineMode": "இணைப்பில்லாத பயன்முறை",
-    "@offlineMode": {},
     "sortOrder": "வரிசைப்படுத்தும் முறை",
-    "@sortOrder": {},
     "sortBy": "வரிசைப்படுத்தவும்",
-    "@sortBy": {},
     "title": "தலைப்பு",
-    "@title": {},
     "album": "தொகுப்பு",
-    "@album": {},
     "albumArtist": "ஆல்பம் கலைஞர்",
-    "@albumArtist": {},
     "artist": "கலைஞர்",
-    "@artist": {},
     "budget": "பட்செட்",
-    "@budget": {},
     "communityRating": "சமூக மதிப்பீடு",
-    "@communityRating": {},
     "dateAdded": "தேதி சேர்க்கப்பட்டது",
-    "@dateAdded": {},
     "datePlayed": "கடைசியாக விளையாடிய தேதி",
-    "@datePlayed": {},
     "playCount": "விளையாட்டு எண்ணிக்கை",
-    "@playCount": {},
     "premiereDate": "வெளியீட்டு தேதி",
-    "@premiereDate": {},
     "productionYear": "விளைவாக்கம் ஆண்டு",
-    "@productionYear": {},
     "random": "சீரற்ற",
-    "@random": {},
     "activeDownloads": "செயலில் பதிவிறக்கங்கள்",
-    "@activeDownloads": {},
     "downloadedMissingImages": "{count, plural, =0 {No missing images found} =1 {பதிவிறக்கம் செய்யப்பட்ட {count} காணாமல் போன படம்} other {பதிவிறக்கம் {count} காணாமல் போன படங்கள்}}",
     "@downloadedMissingImages": {
         "description": "Message that shows when the user downloads missing images",
@@ -482,15 +430,10 @@
         }
     },
     "activeDownloadsTitle": "செயலில் பதிவிறக்கங்கள்",
-    "@activeDownloadsTitle": {},
     "noActiveDownloads": "செயலில் பதிவிறக்கங்கள் இல்லை.",
-    "@noActiveDownloads": {},
     "errorScreenError": "பிழைகளின் பட்டியலைப் பெறும்போது பிழை ஏற்பட்டது! இந்த கட்டத்தில், நீங்கள் கிதுபில் ஒரு சிக்கலை உருவாக்கி பயன்பாட்டு தரவை நீக்க வேண்டும்",
-    "@errorScreenError": {},
     "failedToGetTrackFromDownloadId": "பதிவிறக்க ஐடியிலிருந்து கண்காணிப்பதில் தோல்வி",
-    "@failedToGetTrackFromDownloadId": {},
     "error": "பிழை",
-    "@error": {},
     "discNumber": "வட்டு {number}",
     "@discNumber": {
         "placeholders": {
@@ -500,9 +443,7 @@
         }
     },
     "playButtonLabel": "விளையாடுங்கள்",
-    "@playButtonLabel": {},
     "shuffleButtonLabel": "கலக்கு",
-    "@shuffleButtonLabel": {},
     "trackCount": "{count, plural, one {{count} டிராக்} other {{count} தடங்கள்}}",
     "@trackCount": {
         "placeholders": {
@@ -531,21 +472,13 @@
         }
     },
     "updateButtonLabel": "புதுப்பிப்பு",
-    "@updateButtonLabel": {},
     "playlistUpdated": "பிளேலிச்ட் பெயர் புதுப்பிக்கப்பட்டது.",
-    "@playlistUpdated": {},
     "downloadsDeleted": "பதிவிறக்கங்கள் நீக்கப்பட்டன.",
-    "@downloadsDeleted": {},
     "addDownloads": "பதிவிறக்கங்களைச் சேர்க்கவும்",
-    "@addDownloads": {},
     "location": "இடம்",
-    "@location": {},
     "downloadsQueued": "கோப்புகளைப் பதிவிறக்குகிறது",
-    "@downloadsQueued": {},
     "shareLogs": "பதிவுகளைப் பகிரவும்",
-    "@shareLogs": {},
     "stackTrace": "ச்டாக் சுவடு",
-    "@stackTrace": {},
     "applicationLegalese": "மொசில்லா பொது உரிமம் 2.0 உடன் உரிமம் பெற்றது.\n மூலக் குறியீடு {sourceCodeLink} இல் கிடைக்கிறது.",
     "@applicationLegalese": {
         "placeholders": {
@@ -556,57 +489,31 @@
         }
     },
     "transcoding": "டிரான்ச்கோடிங்",
-    "@transcoding": {},
     "downloadLocations": "இருப்பிடங்களைப் பதிவிறக்கவும்",
-    "@downloadLocations": {},
     "audioService": "ஆடியோ பணி",
-    "@audioService": {},
     "interactions": "இடைவினைகள்",
-    "@interactions": {},
     "layoutAndTheme": "தளவமைப்பு மற்றும் கருப்பொருள்",
-    "@layoutAndTheme": {},
     "notAvailableInOfflineMode": "இணைப்பில்லாத பயன்முறையில் கிடைக்கவில்லை",
-    "@notAvailableInOfflineMode": {},
     "areYouSure": "நீங்கள் உறுதியாக இருக்கிறீர்களா?",
-    "@areYouSure": {},
     "logOut": "விடுபதிகை",
-    "@logOut": {},
     "enableTranscoding": "டிரான்ச்கோடிங்கை இயக்கவும்",
-    "@enableTranscoding": {},
     "enableTranscodingSubtitle": "சேவையக பக்கத்தில் இசை ச்ட்ரீம்களை டிரான்ச்கோட்ச்.",
-    "@enableTranscodingSubtitle": {},
     "bitrate": "பிட்ரேட்",
-    "@bitrate": {},
     "bitrateSubtitle": "அதிக பிட்ரேட் அதிக அலைவரிசை செலவில் உயர் தரமான ஆடியோவை வழங்குகிறது. இழப்பற்ற கோடெக்குகளுக்கு பொருந்தாது, எ.கா. Flac",
-    "@bitrateSubtitle": {},
     "appDirectory": "பயன்பாட்டு அடைவு",
-    "@appDirectory": {},
     "addDownloadLocation": "பதிவிறக்க இருப்பிடத்தைச் சேர்க்கவும்",
-    "@addDownloadLocation": {},
     "selectDirectory": "கோப்பகத்தைத் தேர்ந்தெடு",
-    "@selectDirectory": {},
     "unknownError": "தெரியாத பிழை",
-    "@unknownError": {},
     "pathReturnSlashErrorMessage": "\"/\" திரும்பும் பாதைகளை பயன்படுத்த முடியாது",
-    "@pathReturnSlashErrorMessage": {},
     "directoryMustBeEmpty": "அடைவு காலியாக இருக்க வேண்டும்",
-    "@directoryMustBeEmpty": {},
     "customLocationsBuggy": "தனிப்பயன் இருப்பிடங்கள் மிகவும் தரமற்றவை மற்றும் பெரும்பாலான சந்தர்ப்பங்களில் பரிந்துரைக்கப்படவில்லை. 'மியூசிக்' கோப்புறையின் கீழ் உள்ள இடங்கள் OS வரம்புகள் காரணமாக ஆல்பத்தை சேமிப்பதைத் தடுக்கின்றன.",
-    "@customLocationsBuggy": {},
     "enterLowPriorityStateOnPause": "இடைநிறுத்தத்தில் குறைந்த முன்னுரிமை நிலையை உள்ளிடவும்",
-    "@enterLowPriorityStateOnPause": {},
     "enterLowPriorityStateOnPauseSubtitle": "இடைநிறுத்தப்படும்போது அறிவிப்பை ச்வைப் செய்ய அனுமதிக்கிறது. இடைநிறுத்தப்படும்போது சேவையை கொல்ல ஆண்ட்ராய்டு ஐ அனுமதிக்கிறது.",
-    "@enterLowPriorityStateOnPauseSubtitle": {},
     "shuffleAllTrackCount": "அனைத்து தட எண்ணிக்கையையும் மாற்றவும்",
-    "@shuffleAllTrackCount": {},
     "shuffleAllTrackCountSubtitle": "டிராக்குகள் தாவல் அல்லது வகைத் திரையில் சஃபிள் அனைத்து பொத்தானையும் பயன்படுத்தும் போது ஏற்ற வேண்டிய தடங்களின் அளவு.",
-    "@shuffleAllTrackCountSubtitle": {},
     "viewType": "பார்வை வகை",
-    "@viewType": {},
     "viewTypeSubtitle": "இசை திரைக்கான வகை",
-    "@viewTypeSubtitle": {},
     "list": "பட்டியல்",
-    "@list": {},
     "shown": "காட்டப்பட்டுள்ளது",
     "@shown": {
         "description": "Used as an option in the playback speed visibility settings"
@@ -646,9 +553,7 @@
         "description": "Used for a button in the playback speed menu"
     },
     "portrait": "உருவப்படம்",
-    "@portrait": {},
     "landscape": "நிலப்பரப்பு",
-    "@landscape": {},
     "gridCrossAxisCount": "{value} கட்டம் குறுக்கு-அச்சு எண்ணிக்கை",
     "@gridCrossAxisCount": {
         "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
@@ -660,7 +565,6 @@
         }
     },
     "useCoverAsBackgroundSubtitle": "பயன்பாட்டின் பல்வேறு பகுதிகளில் மங்கலான ஆல்பம் அட்டையை பின்னணியாகப் பயன்படுத்தலாமா இல்லையா.",
-    "@useCoverAsBackgroundSubtitle": {},
     "playerScreenMinimumCoverPaddingEditorTitle": "குறைந்தபட்ச ஆல்பம் கவர் திணிப்பு",
     "@playerScreenMinimumCoverPaddingEditorTitle": {
         "description": "Title for the editor that allows the user to set the minimum padding around the album cover on the player screen."
@@ -676,51 +580,32 @@
         }
     },
     "showTextOnGridView": "கட்டம் பார்வையில் உரையைக் காட்டு",
-    "@showTextOnGridView": {},
     "showTextOnGridViewSubtitle": "கட்டம் இசைத் திரையில் உரையை (தலைப்பு, கலைஞர் போன்றவை) காண்பிக்கலாமா வேண்டாமா.",
-    "@showTextOnGridViewSubtitle": {},
     "useCoverAsBackground": "மங்கலான அட்டையை பின்னணியாகப் பயன்படுத்தவும்",
-    "@useCoverAsBackground": {},
     "playerScreenMinimumCoverPaddingEditorSubtitle": "திரை அகலத்தின் % இல், பிளேயர் திரையில் ஆல்பத்தை சுற்றி குறைந்தபட்ச திணிப்பு.",
     "@playerScreenMinimumCoverPaddingEditorSubtitle": {
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
     "disableGesture": "சைகைகளை முடக்கு",
-    "@disableGesture": {},
     "disableGestureSubtitle": "சைகைகளை முடக்க வேண்டுமா.",
-    "@disableGestureSubtitle": {},
     "showFastScroller": "ஃபாச்ட் ச்க்ரோலரைக் காட்டு",
-    "@showFastScroller": {},
     "hideTrackArtistsIfSameAsAlbumArtists": "ஆல்பம் கலைஞர்களைப் போலவே டிராக் கலைஞர்களையும் மறைக்கவும்",
-    "@hideTrackArtistsIfSameAsAlbumArtists": {},
     "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "ஆல்பம் கலைஞர்களிடமிருந்து வேறுபடாவிட்டால் ஆல்பம் திரையில் டிராக் கலைஞர்களைக் காண்பிக்கலாமா.",
-    "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
     "theme": "கருப்பொருள்",
-    "@theme": {},
     "system": "மண்டலம்",
-    "@system": {},
     "light": "ஒளி",
-    "@light": {},
     "dark": "இருண்ட",
-    "@dark": {},
     "tabs": "தாவல்கள்",
-    "@tabs": {},
     "playerScreen": "பிளேயர் திரை",
     "@playerScreen": {
         "description": "Name for the expanded player"
     },
     "yesButtonLabel": "ஆம்",
-    "@yesButtonLabel": {},
     "noButtonLabel": "இல்லை",
-    "@noButtonLabel": {},
     "hours": "மணி",
-    "@hours": {},
     "seconds": "நொடிகள்",
-    "@seconds": {},
     "minutes": "நிமிடங்கள்",
-    "@minutes": {},
     "cancelSleepTimer": "ச்லீப் டைமரை ரத்து செய்யவா?",
-    "@cancelSleepTimer": {},
     "timeFractionTooltip": "மொத்த {totalTime} இல் {currentTime}",
     "@timeFractionTooltip": {
         "description": "Tooltip and accessibility label for the track progress. {currentTime} is the current position within the track, as a translated string like '2 minutes 40 seconds', and {totalTime} is the total duration of the track, also a translated string."
@@ -740,9 +625,7 @@
         }
     },
     "invalidNumber": "செல்லாத எண்",
-    "@invalidNumber": {},
     "sleepTimerTooltip": "தூக்க நேரங்குறிகருவி",
-    "@sleepTimerTooltip": {},
     "sleepTimerRemainingTime": "உறக்கம் {time,plural,=1{<1 நிமையம்} other{{time} நிமையங்கள்}}",
     "@sleepTimerRemainingTime": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
@@ -753,19 +636,12 @@
         }
     },
     "addToPlaylistTooltip": "பிளேலிச்ட்டில் சேர்க்கவும்",
-    "@addToPlaylistTooltip": {},
     "addToPlaylistTitle": "பிளேலிச்ட்டில் சேர்க்கவும்",
-    "@addToPlaylistTitle": {},
     "addToMorePlaylistsTitle": "மேலும் பிளேலிச்ட்களில் சேர்க்கவும்",
-    "@addToMorePlaylistsTitle": {},
     "createButtonLabel": "உருவாக்கு",
-    "@createButtonLabel": {},
     "playlistCreated": "பிளேலிச்ட் உருவாக்கப்பட்டது.",
-    "@playlistCreated": {},
     "removeFromPlaylistTooltip": "இந்த பிளேலிச்ட்டிலிருந்து அகற்று",
-    "@removeFromPlaylistTooltip": {},
     "removeFromPlaylistTitle": "இந்த பிளேலிச்ட்டிலிருந்து அகற்று",
-    "@removeFromPlaylistTitle": {},
     "removeFromPlaylistNamedTooltip": "பிளேலிச்ட்டில் இருந்து அகற்று '{playlistName}'",
     "@removeFromPlaylistNamedTooltip": {
         "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
@@ -787,21 +663,15 @@
         }
     },
     "newPlaylist": "புதிய பிளேலிச்ட்",
-    "@newPlaylist": {},
     "playlistActionsMenuButtonTooltip": "பிளேலிச்ட்டில் சேர்க்க தட்டவும். பிடித்ததை மாற்றுவதற்கு நீண்ட அழுத்தவும்.",
     "@playlistActionsMenuButtonTooltip": {
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
     },
     "noAlbum": "ஆல்பம் இல்லை",
-    "@noAlbum": {},
     "noItem": "உருப்படி இல்லை",
-    "@noItem": {},
     "noArtist": "கலைஞர் இல்லை",
-    "@noArtist": {},
     "unknownArtist": "தெரியாத கலைஞர்",
-    "@unknownArtist": {},
     "unknownAlbum": "தெரியாத ஆல்பம்",
-    "@unknownAlbum": {},
     "playbackModeDirectPlaying": "நேரடி விளையாட்டு",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -825,23 +695,16 @@
         "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
     },
     "queue": "வரிசை",
-    "@queue": {},
     "addToQueue": "வரிசையில் சேர்க்கவும்",
     "@addToQueue": {
         "description": "Popup menu item title for adding an item to the end of the play queue."
     },
     "instantMix": "உடனடி கலவை",
-    "@instantMix": {},
     "goToAlbum": "ஆல்பத்திற்குச் செல்லுங்கள்",
-    "@goToAlbum": {},
     "goToArtist": "கலைஞரிடம் செல்லுங்கள்",
-    "@goToArtist": {},
     "goToGenre": "வகைக்குச் செல்லுங்கள்",
-    "@goToGenre": {},
     "confirmFavoriteAdded": "பிடித்தது சேர்க்கப்பட்டது",
-    "@confirmFavoriteAdded": {},
     "confirmFavoriteRemoved": "பிடித்தது",
-    "@confirmFavoriteRemoved": {},
     "addedToQueue": "வரிசையில் சேர்க்கப்பட்டது.",
     "@addedToQueue": {
         "description": "Snackbar message that shows when the user successfully adds items to the end of the play queue."
@@ -851,7 +714,6 @@
         "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
     },
     "queueReplaced": "வரிசை மாற்றப்பட்டது.",
-    "@queueReplaced": {},
     "responseError": "{error} நிலை குறியீடு {statusCode}.",
     "@responseError": {
         "placeholders": {
@@ -870,11 +732,8 @@
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
     },
     "removedFromPlaylist": "பிளேலிச்ட்டில் இருந்து அகற்றப்பட்டது.",
-    "@removedFromPlaylist": {},
     "startingInstantMix": "உடனடி கலவையைத் தொடங்குகிறது.",
-    "@startingInstantMix": {},
     "anErrorHasOccured": "பிழை ஏற்பட்டுள்ளது.",
-    "@anErrorHasOccured": {},
     "responseError401": "{error} நிலை குறியீடு {statusCode}. இதன் பொருள் என்னவென்றால், நீங்கள் தவறான பயனர்பெயர்/கடவுச்சொல்லைப் பயன்படுத்தினீர்கள், அல்லது உங்கள் வாடிக்கையாளர் இனி உள்நுழையவில்லை.",
     "@responseError401": {
         "placeholders": {
@@ -889,9 +748,7 @@
         }
     },
     "removeFromMix": "கலவையிலிருந்து அகற்று",
-    "@removeFromMix": {},
     "addToMix": "கலக்க சேர்க்கவும்",
-    "@addToMix": {},
     "redownloadedItems": "{count, plural, =0 {Redownloads தேவையில்லை} other {Redownloads தேவை}}",
     "@redownloadedItems": {
         "placeholders": {
@@ -901,11 +758,8 @@
         }
     },
     "bufferDuration": "இடையக காலம்",
-    "@bufferDuration": {},
-    "bufferDurationSubtitle": "சில நொடிகளில் இடையகப்படுத்தப்பட வேண்டிய அதிகபட்ச காலம். மறுதொடக்கம் தேவை.",
-    "@bufferDurationSubtitle": {},
+    "bufferDurationSubtitle": "பஃபர் செய்யப்பட வேண்டிய கால அளவு, நொடிகளில். மறுதொடக்கம் தேவை.",
     "language": "மொழி",
-    "@language": {},
     "skipToPreviousTrackButtonTooltip": "தொடக்கத்திற்கு அல்லது முந்தைய பாதையில் செல்லவும்",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -950,11 +804,11 @@
     "@shuffleToNextUp": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
     },
-    "shuffleToQueue": "வரிசையில் கலக்கவும்",
+    "shuffleToQueue": "வரிசைக்கு மாற்றவும்",
     "@shuffleToQueue": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
-    "confirmAddToNextUp": "சேர்க்கப்பட்டது {type, select, track{டிராக்} album{ஆல்பம்} artist{கலைஞர்} playlist{பிளேலிச்ட்} genre{வகை} other {item}}",
+    "confirmAddToNextUp": "{type, select, track{தடம்} album{ஆல்பம்} artist{பிளேலிச்ட்} playlist{பாட்டுபட்டியல்} genre{வகை} disc{வட்டு} other{உருப்படி}} அடுத்ததாகச் சேர்க்கப்பட்டது",
     "@confirmAddToNextUp": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the \"Next Up\" queue",
         "placeholders": {
@@ -963,7 +817,7 @@
             }
         }
     },
-    "confirmAddToQueue": "{type, select, track{பாடல்} album{ஆல்பம்} artist{கலைஞர்} playlist{பாடல்பட்டி} genre{வகை} other{உருப்படி}} வரிசையில் சேர்க்கப்பட்டது",
+    "confirmAddToQueue": "வரிசையில் {type, select, track{தடம்} album{ஆல்பம்} artist{artist} playlist{playlist} genre{வகை} disc{வட்டு} other{உருப்படி}} சேர்க்கப்பட்டது",
     "@confirmAddToQueue": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the regular queue",
         "placeholders": {
@@ -1011,7 +865,7 @@
             }
         }
     },
-    "playingFromType": "{source, select, album{ஆல்பம்} playlist{பாடல்பட்டி} trackMix{பாடல் கலவை} artistMix{கலைஞர் கலவை} albumMix{ஆல்பம் கலவை} genreMix{வகை கலவை} favorites{பிடித்தவை} allTracks{அனைத்து பாடல்கள்} filteredList{பாடல்கள்} genre{வகை} artist{கலைஞர்} track{பாடல்} nextUpAlbum{அடுத்தது - ஆல்பம்} nextUpPlaylist{அடுத்தது - பாடல்பட்டி} nextUpArtist{அடுத்தது - கலைஞர்} nextUpGenre{அடுத்தது - வகை} remoteClient{தொலை கண்டிப்பு கிளையண்ட்} other{}} இலிருந்து இயக்கப்படுகிறது",
+    "playingFromType": "{source, select, nextUpAlbum{ஆல்பம்} nextUpPlaylist{பிளேலிஸ்ட்} nextUpArtist{டிராக் மிக்ஸ்} nextUpGenre{கலைஞர் மிக்ஸ்} remoteClient{ஆல்பம் மிக்ஸ்} radio{ஜானர் மிக்ஸ்} other{}}",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -1126,7 +980,6 @@
         "description": "Description of the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
     },
     "topTracks": "மேல் தடங்கள்",
-    "@topTracks": {},
     "periodicPlaybackSessionUpdateFrequencyDetails": "கடந்த 5 நிமிடங்களில் ஒரு வாடிக்கையாளரிடமிருந்து செல்லிஃபின் சேவையகம் எந்த புதுப்பிப்புகளையும் பெறவில்லை என்றால், பிளேபேக் முடிந்தது என்று கருதுகிறது. இதன் பொருள் 5 நிமிடங்களுக்கும் மேலான தடங்களுக்கு, அந்த பின்னணி முடிவடைந்ததாக தவறாக அறிவிக்கப்படலாம், இது பிளேபேக் அறிக்கையிடல் தரவின் தரத்தை குறைக்கிறது.",
     "@periodicPlaybackSessionUpdateFrequencyDetails": {
         "description": "Additional details for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
@@ -1151,24 +1004,19 @@
     "@shuffleAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of Next Up"
     },
-    "shuffleAlbumsToQueue": "வரிசையில் ஆல்பங்களை மாற்றவும்",
+    "shuffleAlbumsToQueue": "ஆல்பங்களை வரிசையாக மாற்றவும்",
     "@shuffleAlbumsToQueue": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of the regular queue"
     },
     "resetTabs": "தாவல்களை மீட்டமைக்கவும்",
-    "@resetTabs": {},
     "resetToDefaults": "இயல்புநிலைகளுக்கு மீட்டமைக்கவும்",
-    "@resetToDefaults": {},
     "noMusicLibrariesTitle": "இசை நூலகங்கள் இல்லை",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
     "noMusicLibrariesBody": "ஃபினாம்பால் எந்த இசை நூலகங்களையும் கண்டுபிடிக்க முடியவில்லை. உங்கள் செல்லிஃபின் சேவையகத்தில் \"இசை\" என அமைக்கப்பட்ட உள்ளடக்க வகையுடன் குறைந்தது ஒரு நூலகத்தையாவது இருப்பதை உறுதிப்படுத்தவும்.",
-    "@noMusicLibrariesBody": {},
     "refresh": "புதுப்பிப்பு",
-    "@refresh": {},
     "moreInfo": "மேலும் செய்தி",
-    "@moreInfo": {},
     "volumeNormalizationSettingsTitle": "தொகுதி இயல்பாக்கம்",
     "@volumeNormalizationSettingsTitle": {
         "description": "Title for the replay gain settings screen"
@@ -1209,7 +1057,7 @@
     "@volumeNormalizationModeAlbumOnly": {
         "description": "'Only for Albums' option for the replay gain mode dropdown. In albums-only mode, Volume Normalization is only applied while playing albums (using the album gain), but not for individual tracks."
     },
-    "volumeNormalizationIOSBaseGainEditorSubtitle": "தற்போது, IOS இல் தொகுதி இயல்பாக்கத்திற்கு ஆதாய மாற்றத்தைப் பின்பற்ற பிளேபேக் அளவை மாற்ற வேண்டும். 100%க்கு மேல் அளவை நாம் அதிகரிக்க முடியாது என்பதால், இயல்புநிலையாக அளவைக் குறைக்க வேண்டும், இதனால் அமைதியான தடங்களின் அளவை அதிகரிக்க முடியும். மதிப்பு டெசிபல்களில் (டி.பி.) உள்ளது, அங்கு -10 டிபி ~ 30% தொகுதி, -4.5 டி.பி. ~ 60% தொகுதி மற்றும் -2 டி.பி.",
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "வால்யூம் ஆதாய ஆஃப்செட்டைத் தேர்ந்தெடுக்கவும் (dB இல்)",
     "@volumeNormalizationIOSBaseGainEditorSubtitle": {
         "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
@@ -1224,11 +1072,8 @@
         }
     },
     "startInstantMixForIndividualTracksSwitchSubtitle": "இயக்கப்பட்டால், டிராக்குகள் தாவலில் ஒரு பாதையைத் தட்டுவது ஒரு தடத்தை விளையாடுவதற்குப் பதிலாக அந்த பாதையின் உடனடி கலவையைத் தொடங்கும்.",
-    "@startInstantMixForIndividualTracksSwitchSubtitle": {},
     "swipeInsertQueueNext": "அடுத்து ச்வைப் பாதையில் விளையாடுங்கள்",
-    "@swipeInsertQueueNext": {},
     "swipeInsertQueueNextSubtitle": "ட்ராக் பட்டியலில் ச்வைப் செய்யும்போது அடுத்த உருப்படியாக வரிசையில் ஒரு பாதையைச் செருகவும்.",
-    "@swipeInsertQueueNextSubtitle": {},
     "startInstantMixForIndividualTracksSwitchTitle": "தனிப்பட்ட தடங்களுக்கான உடனடி கலவைகளைத் தொடங்கவும்",
     "@startInstantMixForIndividualTracksSwitchTitle": {
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
@@ -1320,7 +1165,6 @@
         "description": "Description of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
     },
     "downloadSettings": "பதிவிறக்கங்கள்",
-    "@downloadSettings": {},
     "maxConcurrentDownloads": "அதிகபட்சம் ஒரே நேரத்தில் பதிவிறக்கங்கள்",
     "@maxConcurrentDownloads": {
         "description": "Title of setting controlling max concurrent downloads."
@@ -1500,41 +1344,27 @@
         "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
     },
     "fixedGridSizeTitle": "கட்டம் ஓடு அளவு",
-    "@fixedGridSizeTitle": {},
     "redownloadSubtitle": "பெற்றோர் சேகரிப்பு மாற்றங்கள் காரணமாக வேறுபட்ட தரத்தில் இருக்கும் என்று எதிர்பார்க்கப்படும் தடங்களை தானாகவே மாற்றியமைத்தல்.",
     "@redownloadSubtitle": {
         "description": "subtitle for download transcode setting which redownloads tracks with higher allowed qualities"
     },
     "allowSplitScreenTitle": "ச்ப்ளிட்ச்கிரீன் பயன்முறையை அனுமதிக்கவும்",
-    "@allowSplitScreenTitle": {},
     "allowSplitScreenSubtitle": "பரந்த காட்சிகளில் மற்ற காட்சிகளுடன் பிளேயர் காண்பிக்கப்படும்.",
-    "@allowSplitScreenSubtitle": {},
     "enableVibration": "அதிர்வுகளை இயக்கவும்",
-    "@enableVibration": {},
     "hidePlayerBottomActions": "கீழே செயல்களை மறைக்கவும்",
-    "@hidePlayerBottomActions": {},
     "hidePlayerBottomActionsSubtitle": "பிளேயர் திரையில் வரிசை மற்றும் பாடல் பொத்தான்களை மறைக்கவும். வரிசையை அணுக ச்வைப் செய்யுங்கள், கிடைத்தால் பாடல் வரிகளைக் காண இடதுபுறத்தை (ஆல்பம் அட்டைக்கு கீழே) ச்வைப் செய்யவும்.",
-    "@hidePlayerBottomActionsSubtitle": {},
     "enableVibrationSubtitle": "அதிர்வு இயக்க வேண்டுமா.",
-    "@enableVibrationSubtitle": {},
     "prioritizePlayerCover": "ஆல்பம் அட்டைக்கு முன்னுரிமை கொடுங்கள்",
-    "@prioritizePlayerCover": {},
     "suppressPlayerPadding": "பிளேயர் திணிப்பைக் கட்டுப்படுத்துகிறது",
-    "@suppressPlayerPadding": {},
     "suppressPlayerPaddingSubtitle": "ஆல்பம் கவர் முழு அளவில் இல்லாதபோது பிளேயர் திரை கட்டுப்பாடுகளுக்கு இடையில் திணிப்பை முழுமையாகக் குறைக்கிறது.",
-    "@suppressPlayerPaddingSubtitle": {},
     "prioritizePlayerCoverSubtitle": "பிளேயர் திரையில் ஒரு பெரிய ஆல்பம் அட்டையைக் காண்பிப்பதற்கு முன்னுரிமை அளிக்கவும். சிறிய திரை அளவுகளில் விமர்சனமற்ற கட்டுப்பாடுகள் மிகவும் ஆக்ரோசமாக மறைக்கப்படும்.",
-    "@prioritizePlayerCoverSubtitle": {},
     "scrollToCurrentTrack": "தற்போதைய பாதையில் உருட்டவும்",
     "@scrollToCurrentTrack": {
         "description": "Tooltip for button that scrolls the queue list back to the current track"
     },
     "removeFromPlaylistConfirm": "அகற்று",
-    "@removeFromPlaylistConfirm": {},
     "showArtistChipImage": "கலைஞரின் பெயருடன் கலைஞர் படங்களைக் காட்டு",
-    "@showArtistChipImage": {},
     "showArtistChipImageSubtitle": "இது பிளேயர் திரை போன்ற சிறிய கலைஞர் பட மாதிரிக்காட்சிகளை பாதிக்கிறது.",
-    "@showArtistChipImageSubtitle": {},
     "removeFromPlaylistPrompt": "பிளேலிச்ட்டில் இருந்து '{itemName}' ஐ அகற்று '{playlistName}'?",
     "@removeFromPlaylistPrompt": {
         "placeholders": {
@@ -1559,30 +1389,20 @@
     "@addRemoveFromPlaylist": {
         "description": "Header for add to/remove from playlist popup menu"
     },
-    "addPlaylistSubheader": "பிளேலிச்ட்டில் தடத்தைச் சேர்க்கவும்",
+    "addPlaylistSubheader": "பிளேலிச்ட்டில் உருப்படிகளைச் சேர்க்கவும்",
     "@addPlaylistSubheader": {
         "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
     },
     "trackOfflineFavorites": "அனைத்து பிடித்த நிலைகளையும் ஒத்திசைக்கவும்",
-    "@trackOfflineFavorites": {},
     "allPlaylistsInfoSetting": "பிளேலிச்ட் மெட்டாடேட்டாவைப் பதிவிறக்கவும்",
-    "@allPlaylistsInfoSetting": {},
     "trackOfflineFavoritesSubtitle": "இது ஆஃப்லைனில் இருக்கும்போது மிகவும் புதுப்பித்த பிடித்த நிலைகளைக் காட்ட அனுமதிக்கிறது. கூடுதல் கோப்புகளை பதிவிறக்கம் செய்யாது.",
-    "@trackOfflineFavoritesSubtitle": {},
     "allPlaylistsInfoSettingSubtitle": "உங்கள் பிளேலிச்ட் அனுபவத்தை மேம்படுத்த அனைத்து பிளேலிச்ட்களுக்கும் மெட்டாடேட்டாவை ஒத்திசைக்கவும்",
-    "@allPlaylistsInfoSettingSubtitle": {},
     "downloadFavoritesSetting": "அனைத்து பிடித்தவைகளையும் பதிவிறக்கவும்",
-    "@downloadFavoritesSetting": {},
     "downloadAllPlaylistsSetting": "அனைத்து பிளேலிச்ட்களையும் பதிவிறக்கவும்",
-    "@downloadAllPlaylistsSetting": {},
     "fiveLatestAlbumsSetting": "5 அண்மைக் கால ஆல்பங்களைப் பதிவிறக்கவும்",
-    "@fiveLatestAlbumsSetting": {},
     "fiveLatestAlbumsSettingSubtitle": "பதிவிறக்கங்கள் வயதாகும்போது அகற்றப்படும். ஒரு ஆல்பம் அகற்றப்படுவதைத் தடுக்க பதிவிறக்கத்தை பூட்டுங்கள்.",
-    "@fiveLatestAlbumsSettingSubtitle": {},
     "cacheLibraryImagesSettings": "தற்போதைய நூலக படங்களை கேச்",
-    "@cacheLibraryImagesSettings": {},
     "cacheLibraryImagesSettingsSubtitle": "தற்போது செயலில் உள்ள நூலகத்தில் உள்ள அனைத்து ஆல்பம், கலைஞர், வகை மற்றும் பிளேலிச்ட் கவர்கள் பதிவிறக்கம் செய்யப்படும்.",
-    "@cacheLibraryImagesSettingsSubtitle": {},
     "showProgressOnNowPlayingBarTitle": "பயன்பாட்டில் உள்ள மினிப்ளேயரில் தட முன்னேற்றத்தைக் காட்டு",
     "@showProgressOnNowPlayingBarTitle": {
         "description": "Title for the setting that controls if the in-app miniplayer / now playing bar at the botton of the music screen functions as a progress bar"
@@ -1672,9 +1492,7 @@
         "description": "Option to keep the screen on while using the app"
     },
     "keepScreenOnSubtitle": "திரையை எப்போது வைத்திருக்க வேண்டும்",
-    "@keepScreenOnSubtitle": {},
     "keepScreenOnDisabled": "முடக்கப்பட்டது",
-    "@keepScreenOnDisabled": {},
     "showCoversOnAlbumScreenTitle": "தடங்களுக்கான ஆல்பம் அட்டைகளைக் காட்டு",
     "@showCoversOnAlbumScreenTitle": {
         "description": "Title for the setting that controls if album covers are shown for each track separately on the album screen"
@@ -1700,19 +1518,14 @@
         "description": "Button to reset filters on a list of items"
     },
     "keepScreenOnWhilePlaying": "இசை வாசிக்கும் போது",
-    "@keepScreenOnWhilePlaying": {},
     "keepScreenOnWhileLyrics": "பாடல் காண்பிக்கும் போது",
-    "@keepScreenOnWhileLyrics": {},
     "keepScreenOnWhilePluggedIn": "செருகும்போது மட்டுமே திரையை வைக்கவும்",
-    "@keepScreenOnWhilePluggedIn": {},
     "keepScreenOnWhilePluggedInSubtitle": "சாதனம் அவிழ்க்கப்படுகிறதா என்று அமைப்பதில் வைத்திருக்கும் திரையை புறக்கணிக்கவும்",
-    "@keepScreenOnWhilePluggedInSubtitle": {},
     "genericToggleButtonTooltip": "மாற்றுவதைத் தட்டவும்.",
     "@genericToggleButtonTooltip": {
         "description": "Tooltip for toggle buttons that can be tapped to toggle their state"
     },
     "artwork": "ஒளிமறைப்பு",
-    "@artwork": {},
     "artworkTooltip": "{title} க்கு க்கான கலைப்படைப்பு",
     "@artworkTooltip": {
         "placeholders": {
@@ -1798,25 +1611,17 @@
         "description": "All Libraries"
     },
     "appearsOnAlbums": "தோன்றும்",
-    "@appearsOnAlbums": {},
     "noGenres": "வகைகள் இல்லை",
     "@noGenres": {
         "description": "Gets shown when there are no genres available for an album or artist"
     },
     "favorite": "பிடித்த",
-    "@favorite": {},
     "favorites": "பிடித்தவை",
-    "@favorites": {},
     "onlineMode": "நிகழ்நிலை பயன்முறை",
-    "@onlineMode": {},
     "albumArtists": "ஆல்பம் கலைஞர்கள்",
-    "@albumArtists": {},
     "performingArtists": "நிகழ்த்தும் கலைஞர்கள்",
-    "@performingArtists": {},
     "performingArtist": "நிகழ்த்தும் கலைஞர்",
-    "@performingArtist": {},
     "duration": "காலம்",
-    "@duration": {},
     "defaultOrder": "இயல்புநிலை வரிசை",
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
@@ -1874,19 +1679,12 @@
         }
     },
     "exportLogs": "பதிவுகளை சேமிக்கவும்",
-    "@exportLogs": {},
     "playbackReporting": "பின்னணி அறிக்கை",
-    "@playbackReporting": {},
     "notAvailable": "கிடைக்கவில்லை",
-    "@notAvailable": {},
     "autoSwitchItemCurationTypeTitle": "ஆட்டோ-சுவிட்ச் உருப்படி க்யூரேசன் வகை",
-    "@autoSwitchItemCurationTypeTitle": {},
     "autoSwitchItemCurationTypeSubtitle": "இயக்கப்பட்டால், கலைஞரின் உருப்படி பிரிவுகள் மற்றும் வகைகள் எதுவும் கிடைக்கவில்லை என்றால் (எ.கா., ஒரு குறிப்பிட்ட கலைஞருக்கு பிடித்தவை எதுவும் இல்லை) என்றால் தானாகவே வேறு க்யூரேசன் வகைக்கு மாறுகிறது.",
-    "@autoSwitchItemCurationTypeSubtitle": {},
     "showArtistsTracksSection": "தடங்கள் பகுதியைக் காட்டு",
-    "@showArtistsTracksSection": {},
     "showArtistsTracksSectionSubtitle": "ஐந்து தடங்கள் வரை ஒரு பகுதியைக் காட்ட வேண்டுமா. இயக்கப்பட்டால், நீங்கள் மிகவும் விளையாடிய, பிடித்த, சீரற்ற, அண்மைக் கால வெளியீடுகள், அண்மைக் காலத்தில் சேர்க்கப்பட்ட மற்றும் அண்மைக் காலத்தில் விளையாடிய தடங்களுக்கு இடையில் தேர்வு செய்யலாம்.",
-    "@showArtistsTracksSectionSubtitle": {},
     "sleepTimerRemainingTracks": "தூக்கம் {time, plural, =1{இந்தப் பாடலுக்குப் பிறகு} other{{time} தடங்கள்}}",
     "@sleepTimerRemainingTracks": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
@@ -1901,17 +1699,11 @@
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
     },
     "removeFavorite": "பிடித்ததை அகற்று",
-    "@removeFavorite": {},
     "addFavorite": "பிடித்ததைச் சேர்க்கவும்",
-    "@addFavorite": {},
     "bufferDisableSizeConstraintsTitle": "இடையக அளவைக் கட்டுப்படுத்த வேண்டாம்",
-    "@bufferDisableSizeConstraintsTitle": {},
     "bufferDisableSizeConstraintsSubtitle": "இடையக அளவு கட்டுப்பாடுகளை முடக்குகிறது ('இடையக அளவு'). மிகப் பெரிய கோப்புகளுக்கு கூட, இடையக எப்போதும் உள்ளமைக்கப்பட்ட காலத்திற்கு ('இடையக காலம்') ஏற்றப்படும். செயலிழப்புகளை ஏற்படுத்தும். மறுதொடக்கம் தேவை.",
-    "@bufferDisableSizeConstraintsSubtitle": {},
     "bufferSizeTitle": "இடையக அளவு",
-    "@bufferSizeTitle": {},
-    "bufferSizeSubtitle": "MB இல் இடையகத்தின் அதிகபட்ச அளவு. மறுதொடக்கம் தேவை",
-    "@bufferSizeSubtitle": {},
+    "bufferSizeSubtitle": "MB இல் இடையகத்தின் அளவு. மறுதொடக்கம் தேவை",
     "stopAndClearQueue": "பிளேபேக் மற்றும் தெளிவான வரிசையை நிறுத்துங்கள்",
     "@stopAndClearQueue": {
         "description": "Label for a button that stops playback and removes all tracks from the queue."
@@ -1960,9 +1752,7 @@
         "description": "Description of the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
     },
     "topAlbums": "சிறந்த ஆல்பங்கள்",
-    "@topAlbums": {},
     "topArtists": "சிறந்த கலைஞர்கள்",
-    "@topArtists": {},
     "recentlyAddedTracks": "அண்மைக் காலத்தில் சேர்க்கப்பட்ட தடங்கள்",
     "@recentlyAddedTracks": {
         "description": "Label for the artist section that shows tracks that were recently added to the library, sorted by the date they were added."
@@ -1976,45 +1766,27 @@
         "description": "Label for the genre section that shows artists that were recently added to the library, sorted by the date they were added."
     },
     "latestTracks": "அண்மைக் கால தடங்கள்",
-    "@latestTracks": {},
     "latestAlbums": "அண்மைக் கால ஆல்பங்கள்",
-    "@latestAlbums": {},
     "latestArtists": "அண்மைக் கால கலைஞர்கள்",
-    "@latestArtists": {},
     "recentlyPlayedTracks": "அண்மைக் காலத்தில் தடங்கள் விளையாடியது",
-    "@recentlyPlayedTracks": {},
     "recentlyPlayedAlbums": "அண்மைக் காலத்தில் ஆல்பங்கள் வாசித்தன",
-    "@recentlyPlayedAlbums": {},
     "recentlyPlayedArtists": "அண்மைக் காலத்தில் கலைஞர்களாக நடித்தார்",
-    "@recentlyPlayedArtists": {},
     "favoriteTracks": "பிடித்த தடங்கள்",
-    "@favoriteTracks": {},
     "favoriteAlbums": "பிடித்த ஆல்பங்கள்",
-    "@favoriteAlbums": {},
     "favoriteArtists": "பிடித்த கலைஞர்கள்",
-    "@favoriteArtists": {},
     "randomTracks": "தடங்கள் (சீரற்ற தேர்வுகள்)",
-    "@randomTracks": {},
     "randomAlbums": "ஆல்பங்கள் (சீரற்ற தேர்வுகள்)",
-    "@randomAlbums": {},
     "randomArtists": "கலைஞர்கள் (சீரற்ற தேர்வுகள்)",
-    "@randomArtists": {},
     "mostPlayed": "அதிகம் விளையாடியது",
-    "@mostPlayed": {},
     "randomFavoritesFirst": "சீரற்ற (பிடித்தவை முதலில்)",
-    "@randomFavoritesFirst": {},
     "recentlyAdded": "அண்மைக் காலத்தில் சேர்க்கப்பட்டது",
-    "@recentlyAdded": {},
     "recentlyPlayed": "அண்மைக் காலத்தில் விளையாடியது",
-    "@recentlyPlayed": {},
     "latestReleases": "அண்மைக் கால வெளியீடுகள்",
-    "@latestReleases": {},
     "itemSectionsOrder": "உருப்படி பிரிவுகள் ஆர்டர்",
     "@itemSectionsOrder": {
         "description": "Label for the setting that controls the order of item sections on the screens."
     },
     "unknown": "தெரியவில்லை",
-    "@unknown": {},
     "itemSectionsOrderSubtitle": "உருப்படி பிரிவுகளின் வரிசையை கட்டுப்படுத்துகிறது.",
     "@itemSectionsOrderSubtitle": {
         "description": "Description of the setting that controls the order of item sections on the screens."
@@ -2099,13 +1871,9 @@
         "description": "Title for the playback reporting settings screen"
     },
     "swipeLeftToRightAction": "சரியான செயலுக்கு ச்வைப் செய்யுங்கள்",
-    "@swipeLeftToRightAction": {},
     "swipeLeftToRightActionSubtitle": "பட்டியலில் ஒரு பாதையை இடமிருந்து வலமாக ச்வைப் செய்யும்போது செயல் தூண்டப்படுகிறது.",
-    "@swipeLeftToRightActionSubtitle": {},
     "swipeRightToLeftAction": "இடது செயலுக்கு ச்வைப் செய்யவும்",
-    "@swipeRightToLeftAction": {},
     "swipeRightToLeftActionSubtitle": "பட்டியலில் ஒரு பாதையை வலமிருந்து இடமாக மாற்றும்போது செயல் தூண்டப்படுகிறது.",
-    "@swipeRightToLeftActionSubtitle": {},
     "downloadButtonDisabledGenreFilterTooltip": "பதிவிறக்க செயல்களை இயக்க வகை வடிகட்டியை அகற்றவும்.",
     "@downloadButtonDisabledGenreFilterTooltip": {
         "description": "Tooltip shown when a download button is disabled because of an active genre filter."
@@ -2128,19 +1896,12 @@
         "description": "Title for the dropdown that selects the format for transcoded streams"
     },
     "transcodingStreamingFormatSubtitle": "டிரான்ச்கோட் செய்யப்பட்ட ஆடியோவை ச்ட்ரீமிங் செய்யும் போது பயன்படுத்த வடிவமைப்பைத் தேர்ந்தெடுக்கவும். ஏற்கனவே வரிசைப்படுத்தப்பட்ட தடங்கள் பாதிக்கப்படாது.",
-    "@transcodingStreamingFormatSubtitle": {},
     "hideQueueButton": "வரிசை பொத்தானை மறைக்கவும்",
-    "@hideQueueButton": {},
     "hideQueueButtonSubtitle": "பிளேயர் திரையில் வரிசை பொத்தானை மறைக்கவும். வரிசையை அணுக ச்வைப் செய்யுங்கள்.",
-    "@hideQueueButtonSubtitle": {},
     "oneLineMarqueeTextButton": "ஆட்டோ-ச்க்ரோல் நீண்ட தலைப்புகள்",
-    "@oneLineMarqueeTextButton": {},
     "oneLineMarqueeTextButtonSubtitle": "இரண்டு வரிகளில் காண்பிக்க மிக நீளமான டிராக் தலைப்புகளை தானாக உருட்டவும்",
-    "@oneLineMarqueeTextButtonSubtitle": {},
     "marqueeOrTruncateButton": "நீண்ட தலைப்புகளுக்கு நீள்வட்டத்தைப் பயன்படுத்தவும்",
-    "@marqueeOrTruncateButton": {},
     "marqueeOrTruncateButtonSubtitle": "காட்டு… உரையை ச்க்ரோலிங் செய்வதற்கு பதிலாக நீண்ட தலைப்புகளின் முடிவில்",
-    "@marqueeOrTruncateButtonSubtitle": {},
     "sleepTimerProjectedDuration": "பிளேபேக் ~ {duration} இல் இடைநிறுத்தப்படும்",
     "@sleepTimerProjectedDuration": {
         "description": "Displays duration until playback is expected to be ended by the sleep timer (unless the queue is modified before). {duration} is a pre-formatted string.",
@@ -2320,12 +2081,11 @@
     "@autoOfflineOptionUnreachable": {
         "description": "This is shown when the autoOffline feature is set to Unreachable, this means offline mode will be automatically enabled when - after a network change - the server cant be pinged"
     },
-    "autoOfflineSettingDescription": "இணைப்பில்லாத பயன்முறையை தானாக இயக்கவும். \nமுடக்கப்பட்டது: இணைப்பில்லாத பயன்முறையை தானாக இயக்காது. பேட்டரியைச் சேமிக்கலாம். \nஉள்ளக நெட்வொர்க்: வைஃபை அல்லது ஈதர்நெட்டுடன் இணைக்கப்படாதபோது இணைப்பில்லாத பயன்முறையை இயக்கவும். \nதுண்டிக்கப்பட்டது: எதையும் இணைக்காதபோது இணைப்பில்லாத பயன்முறையை இயக்கவும். \nஅணுக முடியாதது: நெட்வொர்க்குகளை மாற்றிய பின் சேவையகம் பிங் செய்யப்படும்போது இணைப்பில்லாத பயன்முறையை இயக்கவும். \nநீங்கள் எப்போதும் இணைப்பில்லாத பயன்முறையை கைமுறையாக இயக்கலாம், இது இணைப்பில்லாத பயன்முறையை மீண்டும் அணைக்கும் வரை ஆட்டோமேசனை இடைநிறுத்துகிறது",
+    "autoOfflineSettingDescription": "{disabledModeName}: \nஇணைப்பில்லாத பயன்முறையை தானாகவே இயக்காது. பேட்டரியைச் சேமிக்கலாம். \n\n{localNetworkModeName}: \nவைஃபை அல்லது ஈதர்நெட்டுடன் இணைக்கப்படாத போது இணைப்பில்லாத பயன்முறையை இயக்கவும். \n\n{disconnectedModeName}: \nஎதனுடனும் இணைக்கப்படாதபோது இணைப்பில்லாத பயன்முறையை இயக்கவும். \n\n{unreachableModeName}: \nநெட்வொர்க்குகளை மாற்றிய பின் சேவையகத்தை பிங் செய்ய முடியாதபோது இணைப்பில்லாத பயன்முறையை இயக்கவும். \n\nநீங்கள் எப்போதும் இணைப்பில்லாத பயன்முறையை கைமுறையாக மாற்றலாம், இது நீங்கள் மீண்டும் இயக்கும் வரை ஆட்டோமேசனை இடைநிறுத்துகிறது.",
     "@autoOfflineSettingDescription": {
         "description": "Setting description. Make sure the Mode names match the translations."
     },
     "autoOfflineSettingTitle": "தானியங்கு இணைப்பில்லாத பயன்முறை",
-    "@autoOfflineSettingTitle": {},
     "autoOfflineNotification": "தானாகவே ஆஃப்லைன் நிலை {state, select, enabled{இயக்கப்பட்டது} disabled{இடைநிறுத்தப்பட்டது} other{அளவிடப்பட்ட நிலைக்கு அமைக்கப்பட்டது}}",
     "@autoOfflineNotification": {
         "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
@@ -2409,17 +2169,11 @@
         "description": "Shows the active address inside the network settings screen so the user can see if this feature works"
     },
     "preferLocalNetworkTargetAddressLocalSettingTitle": "உள்ளக பிணைய முகவரி",
-    "@preferLocalNetworkTargetAddressLocalSettingTitle": {},
     "preferLocalNetworkTargetAddressLocalSettingDescription": "உங்கள் உள்ளக பிணையத்திற்குள் செல்லிஃபின் சேவையகத்தின் இலக்கு முகவரி",
-    "@preferLocalNetworkTargetAddressLocalSettingDescription": {},
     "preferLocalNetworkEnableSwitchTitle": "உள்ளக நெட்வொர்க்கை விரும்புங்கள்",
-    "@preferLocalNetworkEnableSwitchTitle": {},
     "preferLocalNetworkEnableSwitchDescription": "உங்கள் செலிஃபின் சேவையகத்தின் உள்ளக நெட்வொர்க்கில் இருக்கும்போது வேறு முகவரியைப் பயன்படுத்தலாமா வேண்டாமா",
-    "@preferLocalNetworkEnableSwitchDescription": {},
     "preferLocalNetworkPublicAddressSettingTitle": "பொது முகவரி",
-    "@preferLocalNetworkPublicAddressSettingTitle": {},
     "preferLocalNetworkPublicAddressSettingDescription": "உங்கள் செல்லிஃபின் சேவையகத்துடன் இணைக்க பயன்படுத்தப்படும் முதன்மை முகவரி",
-    "@preferLocalNetworkPublicAddressSettingDescription": {},
     "preferLocalNetworkInfoBox": "இந்த அம்சத்திற்கு பிணையம் பெயரைப் படிக்க இருப்பிட அனுமதிகள் (மற்றும் இருப்பிடத்தை இயக்க வேண்டும்) தேவை.",
     "@preferLocalNetworkInfoBox": {
         "description": "This is only shown on ios and android since desktop doesnt require location permissions"
@@ -2432,7 +2186,7 @@
     "@downloadPaused": {
         "description": "Gets shown in the snackbar if loosing wifi connection while downloads are running and the 'requireWifiForDownloads' is enabled"
     },
-    "missingSchemaError": "முகவரி HTTP (கள்) உடன் தொடங்க வேண்டும்: //",
+    "missingSchemaError": "Url என்பது http(s):// இதனால் தொடங்க வேண்டும்",
     "@missingSchemaError": {
         "description": "Snackbar message when the user changes their home/public address but it doesn't start with http"
     },
@@ -2515,7 +2269,6 @@
         "description": "Label for the checkbox that toggled is the pitch is adjusted along with the playback speed, or if the pitch is kept constant. Shown in the speed submenu on the track menu"
     },
     "adaptive": "தகவமைப்பு",
-    "@adaptive": {},
     "shuffleCountButton": "கலக்கு ({count,plural,=1{{count} டிராக்} other{{count} தடங்கள்}})",
     "@shuffleCountButton": {
         "placeholders": {
@@ -2525,10 +2278,8 @@
         }
     },
     "logoutButtonSubtitle": "வேறு சேவையகத்தில் உள்நுழைவது ஏற்கனவே உள்ள பதிவிறக்கங்களை நீக்கும்",
-    "@logoutButtonSubtitle": {},
     "none": "எதுவுமில்லை",
-    "@none": {},
-    "createPlaylistFromCurrentQueue": "வரிசையை பிளேலிச்ட்டாக சேமிக்கவும்",
+    "createPlaylistFromCurrentQueue": "வரிசையை பிளேலிச்ட்டில் சேமிக்கவும்",
     "@createPlaylistFromCurrentQueue": {
         "description": "Label for a button that creates a new playlist from the current queue."
     },
@@ -2679,5 +2430,534 @@
     "autoExpandPlayerScreenSubtitle": "புதிய வரிசையின் பிளேபேக்கைத் தொடங்கும்போது இது இப்போது இயங்கும் திரையைத் திறக்கும்",
     "@autoExpandPlayerScreenSubtitle": {
         "description": "Subtitle for the setting that controls if the player screen is opened directly after starting a new queue"
+    },
+    "shuffleSome": "சிலவற்றை கலக்கவும்",
+    "playbackActionPageMoveWithinQueue": "வரிசைக்குள் நகர்த்தவும்",
+    "@playbackActionPageMoveWithinQueue": {
+        "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
+    },
+    "playbackActionPageRegularTrackOptions": "விளையாடு",
+    "@playbackActionPageRegularTrackOptions": {
+        "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "playbackActionPageNewQueue": "புதிய வரிசை",
+    "@playbackActionPageNewQueue": {
+        "description": "Label for the playback action page that contains all actions related to starting a new queue"
+    },
+    "playbackActionPageNext": "அடுத்து விளையாடு",
+    "@playbackActionPageNext": {
+        "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
+    },
+    "playbackActionPageNextUp": "அடுத்து இணைக்கவும்",
+    "@playbackActionPageNextUp": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
+    },
+    "playbackActionPageAppendToQueue": "கடைசியாக விளையாடு",
+    "@playbackActionPageAppendToQueue": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks at the end of the queue"
+    },
+    "updatePlaylistButtonLabel": "பிளேலிச்ட்டைப் புதுப்பிக்கவும்",
+    "@updatePlaylistButtonLabel": {
+        "description": "Label for the button that updates the playlist on the edit playlist screen"
+    },
+    "savingChanges": "மாற்றங்களைச் சேமிக்கிறது…",
+    "@savingChanges": {
+        "description": "Text shown while the changes to a playlist are being saved"
+    },
+    "accentColor": "உச்சரிப்பு நிறம்",
+    "@accentColor": {
+        "description": "Title of the accent color setting"
+    },
+    "accentColorTitle": "உச்சரிப்பு நிறத்தைத் தேர்ந்தெடுக்கவும்",
+    "@accentColorTitle": {
+        "description": "Title for the accent color picker sheet"
+    },
+    "systemAccentColor": "கணினி உச்சரிப்பைப் பயன்படுத்தவும்",
+    "@systemAccentColor": {
+        "description": "Title of the System Accent Color setting."
+    },
+    "systemAccentColorHasPriorityInfo": "கணினி உச்சரிப்பு தற்போது பயன்பாட்டில் இருப்பதால் தனிப்பயன் உச்சரிப்பு வண்ணம் முடக்கப்பட்டுள்ளது",
+    "@systemAccentColorHasPriorityInfo": {
+        "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
+    },
+    "useMonochromeIcon": "மோனோக்ரோம் லோகோவைப் பயன்படுத்தவும்",
+    "@useMonochromeIcon": {
+        "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
+    },
+    "useMonochromeIconSubtitle": "இது பயன்பாட்டில் உள்ள ஐகானை மட்டுமே பாதிக்கும், துவக்கி ஐகானை அல்ல.",
+    "@useMonochromeIconSubtitle": {
+        "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
+    },
+    "defaultWord": "இயல்புநிலை",
+    "useDefaultButton": "இயல்புநிலை உச்சரிப்பு நிறத்திற்கு மீட்டமைக்கவும்",
+    "colorCode": "வண்ணக் குறியீடு (எக்ச்)",
+    "@colorCode": {
+        "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
+    },
+    "colorCodeHint": "எ.கா. #FFFFFF அல்லது #காபி",
+    "@colorCodeHint": {
+        "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
+    },
+    "save": "சேமி",
+    "invalidColorCode": "தவறான வண்ணக் குறியீடு",
+    "@invalidColorCode": {
+        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
+    },
+    "startRadio": "வானொலியைத் தொடங்கு",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
+    },
+    "shuffleSomeNext": "அடுத்து சிலவற்றை கலக்கவும்",
+    "@shuffleSomeNext": {
+        "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "shuffleSomeToNextUp": "சிலவற்றை அடுத்ததாக மாற்றவும்",
+    "@shuffleSomeToNextUp": {
+        "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
+    },
+    "shuffleSomeToQueue": "சிலவற்றை வரிசைக்கு மாற்றவும்",
+    "@shuffleSomeToQueue": {
+        "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "movePlayNext": "அடுத்து விளையாடு",
+    "@movePlayNext": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "moveAddToNextUp": "அடுத்ததாக நகர்த்தவும்",
+    "@moveAddToNextUp": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
+    },
+    "moveAddToQueue": "முடிவுக்கு நகர்த்தவும்",
+    "@moveAddToQueue": {
+        "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
+    },
+    "radio": "வானொலி",
+    "@radio": {
+        "description": "Title for the queue source when the user is playing a track added via radio"
+    },
+    "radioForItem": "{radioSource} - வானொலி",
+    "@radioForItem": {
+        "description": "Suffix added to a queue source when playing a radio track. Example: \"Never Gonna Give You Up - Radio\"",
+        "placeholders": {
+            "radioSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "shuffleSomeAlbums": "சில ஆல்பங்களை கலக்கவும்",
+    "@shuffleSomeAlbums": {
+        "description": "Label for action that shuffles some albums of a genre"
+    },
+    "shuffleSomeAlbumsNext": "அடுத்து சில ஆல்பங்களை கலக்கவும்",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "shuffleSomeAlbumsToNextUp": "சில ஆல்பங்களை அடுத்ததாக மாற்றவும்",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
+    },
+    "shuffleSomeAlbumsToQueue": "சில ஆல்பங்களை வரிசையாக மாற்றவும்",
+    "@shuffleSomeAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "தற்போது, ஆன்ட்ராய்டு அல்லாத பிற இயங்குதளங்களில் ஒலியளவை இயல்பாக்குவதற்கு, ஆதாய மாற்றத்தைப் பின்பற்ற, பிளேபேக் ஒலியளவை மாற்ற வேண்டும். ஒலியளவை 100%க்கு மேல் அதிகரிக்க முடியாது என்பதால், ஒலியளவை இயல்பாகக் குறைக்க வேண்டும், இதனால் அமைதியான டிராக்குகளின் ஒலியளவை அதிகரிக்க முடியும். \n\nமதிப்பு டெசிபல்களில் (dB), -10 dB என்பது ~30% தொகுதி, -4.5 dB என்பது ~60% தொகுதி மற்றும் -2 dB என்பது ~80% தொகுதி. \nநேர்மறை மதிப்புகள் என்பது த்ரெசோல்ட் (அதாவது +6.4 dB ஆஃப்செட்டிற்கு -6.4 dB ஆதாயம் (மேலும் நேர்மறை) வரை) எந்த அளவு குறைப்பும் பயன்படுத்தப்படாது, ஆனால் அமைதியான டிராக்குகள் அதிகரிக்கப்படுவதைத் தடுக்கிறது. \n\nஇதை உங்கள் லைப்ரரியில் உள்ள அதிகபட்ச (மிக நேர்மறை) ஆதாயத்தின் தலைகீழாக அமைக்க வேண்டும், அதாவது, உங்கள் லைப்ரரியில் அதிகபட்ச லாபம் -3 dB எனில் அதை +3 dB ஆக அமைக்கவும் (மற்றும் மற்ற எல்லா டிராக்குகளும் -5 dB, -8 dB, -10 dB, போன்ற பலன்களைக் கொண்டுள்ளன).",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "downloadAllPlaylistsSettingWarning": "குறிப்பு: இது எந்த லைப்ரரியில் இருந்து வந்தாலும், எல்லா பிளேலிச்ட்டுகளிலும் உள்ள அனைத்து பொருட்களையும் பதிவிறக்கும்.",
+    "lyricsEmptyStateLoading": "பாடல் வரிகளை ஏற்றுகிறது...",
+    "@lyricsEmptyStateLoading": {
+        "description": "Message shown while lyrics are being loaded"
+    },
+    "lyricsEmptyStateFailed": "பாடல் வரிகளை ஏற்ற முடியவில்லை",
+    "@lyricsEmptyStateFailed": {
+        "description": "Message shown when lyrics failed to load"
+    },
+    "lyricsEmptyStateNoLyrics": "பாடல் வரிகள் எதுவும் கிடைக்கவில்லை",
+    "@lyricsEmptyStateNoLyrics": {
+        "description": "Message shown when no lyrics are available for the current track"
+    },
+    "lyricsMissingLyricLinePlaceholder": "பாடல் வரி இல்லை",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "emptyAlbum": "தடங்கள் இல்லை.",
+    "@emptyAlbum": {
+        "description": "Message shown as a placeholder when an album or playlist is empty."
+    },
+    "confirmAddCollectionItemToPlaylist": "இந்த பிளேலிஸ்டில் {itemType, select, album{ஆல்பம்} playlist{பிளேலிஸ்ட்} artist{கலைஞர்} genre{வகை} other{உருப்பு}} '{itemName}' இலிருந்து எல்லா டிராக்குகளையும் சேர்க்க விரும்புகிறீர்களா? அவை தனித்தனியாக மட்டுமே அகற்றப்படும்.",
+    "@confirmAddCollectionItemToPlaylist": {
+        "description": "Warning dialog for adding an album, artist, etc. or multiple tracks to a playlist, clarifying that this cannot be undone without removing all tracks individually and manually.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            },
+            "itemName": {
+                "type": "String"
+            }
+        }
+    },
+    "confirmAddMultipleTracksToPlaylist": "இந்த பிளேலிச்ட்டில் {trackCount} டிராக்குகளைச் சேர்க்க விரும்புகிறீர்களா? அவை தனித்தனியாக மட்டுமே அகற்றப்படும்.",
+    "@confirmAddMultipleTracksToPlaylist": {
+        "description": "Warning dialog for adding multiple tracks to a playlist, clarifying that this cannot be undone without removing all tracks individually and manually.",
+        "placeholders": {
+            "trackCount": {
+                "type": "int"
+            }
+        }
+    },
+    "autoOfflineSettingSubtitle": "பிணையம் இணைப்பு அல்லது சேவையக அணுகல் அடிப்படையில் இணைப்பில்லாத பயன்முறையை தானாக இயக்கவும்.",
+    "@autoOfflineSettingSubtitle": {
+        "description": "Subtitle for the automated offline mode setting."
+    },
+    "radioModeSettingsTitle": "ரேடியோ பயன்முறை",
+    "@radioModeSettingsTitle": {
+        "description": "Title for the setting that controls the radio mode/algorithm."
+    },
+    "radioModeSettingsSubtitle": "ரேடியோ நற்பொருத்தம் பாடல்களைச் சேர்ப்பதற்குப் பயன்படுத்தும் முறையை அமைக்கிறது.",
+    "@radioModeSettingsSubtitle": {
+        "description": "Subtitle for the setting that controls the radio mode/algorithm."
+    },
+    "radioModeMenuTitle": "ரேடியோ பயன்முறையைத் தேர்ந்தெடுக்கவும்",
+    "@radioModeMenuTitle": {
+        "description": "Title for menu that allows users to choose the radio mode."
+    },
+    "loopingOverriddenByRadioSubtitle": "ரேடியோ இயக்கப்பட்டிருக்கும் போது வரிசை வளையம் முடக்கப்பட்டுள்ளது",
+    "@loopingOverriddenByRadioSubtitle": {
+        "description": "Subtitle displayed in the radio menu to show that queue looping is disabled while radio mode is enabled."
+    },
+    "radioFailedSubtitle": "ரேடியோ டிராக்குகள் எதுவும் இல்லை. பயன்முறையை மாற்ற முயற்சிக்கவும்.",
+    "@radioFailedSubtitle": {
+        "description": "Subtitle displayed in the radio menu to show that no radio tracks could be generated."
+    },
+    "radioModeOptionName": "{option, select, reshuffle{மறுசீரமைப்பு} random{சீரற்ற} similar{ஒத்த} continuous{தொடர்ச்சியான} albumMix{ஆல்பம் கலவை} other{{option}}}",
+    "@radioModeOptionName": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Radio mode names in radio mode/algorithm dropdown"
+    },
+    "radioModeOptionTitle": "{option, select, reshuffle{மறுசீரமைப்பு முறை} random{சீரற்ற முறை} similar{ஒத்த முறை} continuous{தொடர்ச்சியான முறை} albumMix{ஆல்பம் கலவை முறை} other{{option}}} இயலுமைப்படுத்தப்பட்டது",
+    "@radioModeOptionTitle": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Title displayed in the queue, showing which radio mode/algorithm is currently being used."
+    },
+    "radioModeActiveTitle": "ரேடியோ ஆக்டிவ்",
+    "@radioModeActiveTitle": {
+        "description": "Title displayed in the queue to show that radio mode is enabled and active."
+    },
+    "radioModeDisabledTitle": "ரேடியோ முடக்கப்பட்டது",
+    "@radioModeDisabledTitle": {
+        "description": "Title displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeInactiveTitle": "வானொலி இடைநிறுத்தப்பட்டது",
+    "@radioModeInactiveTitle": {
+        "description": "Title displayed in the queue to show that the radio is enabled but not active."
+    },
+    "radioModeEnableButtonTitle": "ரேடியோவை இயக்கு",
+    "@radioModeEnableButtonTitle": {
+        "description": "Title for the option that enables radio mode."
+    },
+    "radioModeDisableButtonTitle": "வானொலியை முடக்கு",
+    "@radioModeDisableButtonTitle": {
+        "description": "Title for the option that disables radio mode."
+    },
+    "radioModeDisableButtonSubtitle": "முந்தைய லூப் பயன்முறைக்கு மாறுகிறது",
+    "@radioModeDisableButtonSubtitle": {
+        "description": "Subtitle for the option that disables radio mode."
+    },
+    "radioModeOptionConfirmation": "{option, select, reshuffle{மறுசீரமைப்பு முறை} random{சீரற்ற முறை} similar{ஒத்த முறை} continuous{தொடர்ச்சியான முறை} albumMix{ஆல்பம் மிக்ஸ் முறை} other{{option}}}க்கு மாறியது",
+    "@radioModeOptionConfirmation": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Confirmation displayed when the radio mode is changed."
+    },
+    "radioModeEnabledSubtitle": "கட்டமைக்க தட்டவும்",
+    "@radioModeEnabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show when radio mode is enabled."
+    },
+    "radioModeDisabledSubtitle": "இயக்க தட்டவும்",
+    "@radioModeDisabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "தற்போதைய பயன்முறை ஆஃப்லைனில் இல்லை.",
+    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
+    },
+    "radioModeDescription": "{mode, select, reshuffle{வரிசையை தொடர்ந்து மறுசீரமைக்கும்} random{ஆரம்பத் தேர்விலிருந்து சீரற்ற டிராக்குகளைச் சேர்க்கும்} similar{ஒத்த டிராக்குகளை இயக்கும்} continuous{தொடர்ச்சியாக இயக்கும்} albumMix{ஆல்பம் மிக்ஸ் டிராக்குகளை இயக்கும்} other{}}",
+    "@radioModeDescription": {
+        "placeholders": {
+            "mode": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Subtitle displayed in the queue to describe what the radio is doing if enabled"
+    },
+    "radioModeUnavailableWhileOfflineDescription": "ஆஃப்லைனில் இருக்கும்போது கிடைக்காது",
+    "@radioModeUnavailableWhileOfflineDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
+    },
+    "radioModeUnavailableWhileOfflineSubtitle": "ஆஃப்லைனில் இருக்கும்போது {modeName} கிடைக்காது",
+    "@radioModeUnavailableWhileOfflineSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
+    },
+    "radioModeUnavailableForSourceItemDescription": "இந்த வரிசை ஆதாரத்திற்கு கிடைக்கவில்லை",
+    "@radioModeUnavailableForSourceItemDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
+    },
+    "radioModeUnavailableForSourceItemSubtitle": "இந்த வரிசை மூலத்திற்கு {modeName} கிடைக்கவில்லை",
+    "@radioModeUnavailableForSourceItemSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
+    },
+    "radioModeUnavailableQueueEmptyDescription": "வரிசை காலியாக இருப்பதால் கிடைக்கவில்லை",
+    "@radioModeUnavailableQueueEmptyDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioModeUnavailableQueueEmptySubtitle": "வரிசை காலியாக இருப்பதால் {modeName} கிடைக்கவில்லை",
+    "@radioModeUnavailableQueueEmptySubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioModeRandomUnavailableNotDownloadedDescription": "'{sourceName}' பதிவிறக்கம் செய்யப்படாததால் கிடைக்கவில்லை",
+    "@radioModeRandomUnavailableNotDownloadedDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedSubtitle": "'{sourceName}' பதிவிறக்கம் செய்யப்படாததால் {modeName} கிடைக்கவில்லை",
+    "@radioModeRandomUnavailableNotDownloadedSubtitle": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            },
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericDescription": "சான்று பதிவிறக்கம் செய்யப்படாததால் கிடைக்கவில்லை",
+    "@radioModeRandomUnavailableNotDownloadedGenericDescription": {
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericSubtitle": "சான்று பதிவிறக்கம் செய்யப்படாததால் {modeName} கிடைக்கவில்லை",
+    "@radioModeRandomUnavailableNotDownloadedGenericSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "radioNoTracksFound": "பொருத்தமான தடங்கள் எதுவும் கிடைக்காததால் ரேடியோவைத் தொடங்க முடியவில்லை.",
+    "@radioNoTracksFound": {
+        "description": "Shown when the user tries to start radio mode but no suitable tracks were found to start the radio with."
+    },
+    "loopingUnavailableWhileRadioActiveWarning": "ரேடியோ செயலில் இருக்கும்போது லூப் பயன்முறையை மாற்ற முடியாது, ஏனெனில் வரிசை முடிவில்லாமல் தொடரும்.",
+    "@loopingUnavailableWhileRadioActiveWarning": {
+        "description": "Warning message when trying to change the loop mode while radio is active."
+    },
+    "preferAddingToFavoritesOverPlaylistsTitle": "இதய ஐகானைத் தட்டும்போது பிடித்தவைகளில் சேர்க்கவும்",
+    "@preferAddingToFavoritesOverPlaylistsTitle": {
+        "description": "Title for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "preferAddingToFavoritesOverPlaylistsSubtitle": "இயக்கப்பட்டால், ஒரு சிறிய தட்டினால் பிடித்தவை சேர்க்கப்படும், மேலும் நீண்ட நேரம் அழுத்தினால் 'பிளேலிச்ட்டில் சேர்' பட்டியல் திறக்கும். இயல்புநிலை தலைகீழ்.",
+    "@preferAddingToFavoritesOverPlaylistsSubtitle": {
+        "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "preferNextUpPrependingTitle": "அடுத்து வருவதற்கு முன்வருவதை விரும்புங்கள்",
+    "@preferNextUpPrependingTitle": {
+        "description": "Title for the setting to prefer prepending to Next Up over appending"
+    },
+    "preferNextUpPrependingSubtitle": "இயக்கப்பட்டால், அடுத்தது காலியாக இருக்கும்போது \"அடுத்து விளையாடு\" பொத்தான்கள் காண்பிக்கப்படும். இல்லையெனில், \"அடுத்ததில் சேர்\" என்பது இயல்புநிலையாக இருக்கும்.",
+    "@preferNextUpPrependingSubtitle": {
+        "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "rememberLastUsedPlaybackActionRowPageTitle": "கடைசி பின்னணி பயன்முறையை நினைவில் கொள்க",
+    "@rememberLastUsedPlaybackActionRowPageTitle": {
+        "description": "Title for the setting to remember the last used playback mode."
+    },
+    "rememberLastUsedPlaybackActionRowPageSubtitle": "இயக்கப்பட்டால், நீங்கள் கடைசியாகப் பயன்படுத்திய பிளேபேக் பயன்முறை (எ.கா., அடுத்தது) நினைவில் வைக்கப்படும்.",
+    "@rememberLastUsedPlaybackActionRowPageSubtitle": {
+        "description": "Subtitle for the setting to remember the last used playback mode."
+    },
+    "discOfAlbum": "[வட்டு {number}] {albumName}",
+    "@discOfAlbum": {
+        "description": "Used when a single disc of album is opened, then album name is replaced with this string",
+        "placeholders": {
+            "number": {
+                "type": "int",
+                "example": "1"
+            },
+            "albumName": {
+                "type": "String"
+            }
+        }
+    },
+    "moreActionsOnAlbumDisc": "ஆல்பம் வட்டில் மேலும் செயல்கள்",
+    "@moreActionsOnAlbumDisc": {
+        "description": "Label for the disc header menu button."
+    },
+    "dragToReorder": "மறுவரிசைப்படுத்த இழுக்கவும்",
+    "@dragToReorder": {
+        "description": "Label shown on drag handles of track list  tiles in the queue list"
+    },
+    "addDownloadLocationsErrorTitle": "இருப்பிடத்தைப் பதிவிறக்க எழுத முடியவில்லை",
+    "@addDownloadLocationsErrorTitle": {
+        "description": "Title of popup dialog when adding a download location fails"
+    },
+    "addDownloadLocationsErrorPrompt": "தேர்ந்தெடுக்கப்பட்ட கோப்பகத்தில் எழுதுவது தோல்வியடைந்தது. நீங்கள் அனுமதிகளை மாற்ற வேண்டும் அல்லது வேறு இடத்தை தேர்வு செய்ய வேண்டும்.",
+    "@addDownloadLocationsErrorPrompt": {
+        "description": "Label shown on popup dialog when adding a download location when writing songs fails"
+    },
+    "androidImageErrorPrompt": "OS கட்டுப்பாடுகள் காரணமாக எங்களால் ஆண்ட்ராய்டு மியூசிக் கோப்புறையில் படங்களை எழுத முடியவில்லை. நீங்கள் மற்றொரு இடத்தை தேர்வு செய்ய வேண்டும்.",
+    "@androidImageErrorPrompt": {
+        "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
+    },
+    "addDownloadLocationsErrorButton": "எப்படியும் சேர்",
+    "@addDownloadLocationsErrorButton": {
+        "description": "Label shown on button for adding a download location we suspect to be buggy"
+    },
+    "syncFailedWarningShort": "எச்சரிக்கை: சில பதிவிறக்கங்களை சர்வருடன் ஒத்திசைப்பதில் தோல்வி.",
+    "@syncFailedWarningShort": {
+        "description": "Simple warning message for when download sync fails due to items being deleted from the server."
+    },
+    "syncFailedWarningLong": "சில பதிவிறக்கங்கள் சேவையகத்துடன் ஒத்திசைக்க முடியவில்லை. பொருந்தக்கூடிய சர்வர் உருப்படி நீக்கப்பட்டிருக்கலாம். காலாவதியான கோப்புகளை தூய்மை செய்ய தோல்வியுற்ற பதிவிறக்கம் நீக்கப்பட வேண்டும்.",
+    "@syncFailedWarningLong": {
+        "description": "Expanded warning message for when download sync fails due to items being deleted from the server."
+    },
+    "openDownloads": "பதிவிறக்கங்களைத் திறக்கவும்",
+    "@openDownloads": {
+        "description": "Label on a button to open the downloads screen after a sync fails."
+    },
+    "syncingFailed": "ஒத்திசைவு தோல்வியடைந்தது. இந்த பதிவிறக்கம் சர்வரில் இருந்து அகற்றப்பட்டிருக்கலாம், மேலும் நீக்கப்பட வேண்டும்.",
+    "@syncingFailed": {
+        "description": "Message shown for downloads with the sync failed status, which is generally caused by the server-side item being removed."
+    },
+    "autoplayRestoredQueueTitle": "மீட்டமைக்கப்பட்ட வரிசைகளை தானாக இயக்கவும்",
+    "@autoplayRestoredQueueTitle": {
+        "description": "Title for the setting that controls if restored queues automatically play."
+    },
+    "autoplayRestoredQueueSubtitle": "தொடக்கத்தில் தானாக மீட்டமைக்கப்பட்ட வரிசைகள் அல்லது வரிசை மீட்டெடுப்புத் திரை வழியாக தானாகவே இயங்கத் தொடங்கும். இந்த அமைப்பைப் பொருட்படுத்தாமல், எல்லா டிராக்குகளையும் மீட்டெடுக்கத் தவறிய வரிசைகள் தானாக இயங்காது.",
+    "@autoplayRestoredQueueSubtitle": {
+        "description": "Subtitle for the setting that controls if restored queues automatically play."
+    },
+    "missingBlurhashWarning": "எச்சரிக்கை: செல்லிஃபின் சேவையகம் தவறாக உள்ளமைக்கப்பட்டதாகத் தெரிகிறது மற்றும் மங்கலானதைக் கணக்கிடவில்லை. இது படப் பதிவிறக்கங்களை நகலெடுப்பதில் இருந்து Finamp ஐத் தடுக்கிறது. தயவு செய்து சர்வரை சரிசெய்து பதிவிறக்கம் பழுதுபார்க்கவும்.",
+    "@missingBlurhashWarning": {
+        "description": "A warning message displayed on the downloads screen if the jellyfin server is missing blurhashes."
+    },
+    "noPermissionToEditMetadata": "மேனிலை தரவு படங்களைத் திருத்த நீங்கள் நிர்வாகியாக இருக்க வேண்டும்.",
+    "@noPermissionToEditMetadata": {
+        "description": "Error message shown when the user tries to edit metadata but doesn't have permission to do so, i.e. because they are not an admin"
+    },
+    "removedTracks": "நீக்கப்பட்ட தடங்கள்",
+    "@removedTracks": {
+        "description": "Section header for the list of removed tracks on the playlist edit screen"
+    },
+    "removedTracksEmptyListPlaceholder": "அகற்றப்பட்ட தடங்கள் இங்கே தோன்றும்",
+    "@removedTracksEmptyListPlaceholder": {
+        "description": "Placeholder text shown when there are no removed tracks"
+    },
+    "restoreTrack": "தடத்தை மீட்டமை",
+    "@restoreTrack": {
+        "description": "Button title for restoring a track that was marked to be removed"
+    },
+    "discardChangesTitle": "மாற்றங்களை நிராகரிக்கவா?",
+    "@discardChangesTitle": {
+        "description": "Title for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "discardChangesDescription": "உங்களிடம் சேமிக்கப்படாத மாற்றங்கள் உள்ளன. அவற்றை நிராகரித்துவிட்டு திரும்பிச் செல்லவா?",
+    "@discardChangesDescription": {
+        "description": "Description for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "discardChangesConfirmButton": "மாற்றங்களை நிராகரிக்கவும்",
+    "@discardChangesConfirmButton": {
+        "description": "Positive action button for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "snackbarOptionsMenuTitle": "செய்திகளை நிர்வகிக்கவும்",
+    "@snackbarOptionsMenuTitle": {
+        "description": "Title for the snackbar options menu that allows the user to manage snackbar messages"
+    },
+    "snackbarOptionsMenuClearAllButton": "அனைத்து செய்திகளையும் அழிக்கவும்",
+    "@snackbarOptionsMenuClearAllButton": {
+        "description": "Button title for clearing all snackbar messages"
+    },
+    "snackbarOptionsMenuViewLogsButton": "பதிவுகளைப் பார்க்கவும்",
+    "@snackbarOptionsMenuViewLogsButton": {
+        "description": "Button title for opening the logs screen from the snackbar options menu"
+    },
+    "duckOnAudioInterruptionTitle": "குறுக்கீடுகளில் ஒலியளவைக் குறைக்கவும்",
+    "@duckOnAudioInterruptionTitle": {
+        "description": "Title for the setting that controls ducking."
+    },
+    "duckOnAudioInterruptionSubtitle": "மற்றொரு ஆப்ச் சுருக்கமாக ஆடியோவை இயக்கும் போது ஒலியளவைக் (டக்) குறைக்கவும். மறுதொடக்கம் தேவை.",
+    "@duckOnAudioInterruptionSubtitle": {
+        "description": "Subtitle for the setting that controls ducking."
+    },
+    "forceAudioOffloadingOnAndroidTitle": "கட்டாய ஆடியோ ஆஃப்லோடிங்",
+    "@forceAudioOffloadingOnAndroidTitle": {
+        "description": "Title for the setting that controls audio offloading on Android."
+    },
+    "forceAudioOffloadingOnAndroidSubtitle": "சாதனம் ஆதரிக்கும் பட்சத்தில், வன்பொருளில் ஆடியோ செயலாக்கத்தை ஆஃப்லோட் செய்யவும்.",
+    "@forceAudioOffloadingOnAndroidSubtitle": {
+        "description": "Subtitle for the setting that controls audio offloading on Android."
+    },
+    "explicit": "வெளிப்படையானது",
+    "@explicit": {
+        "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
+    },
+    "multichannelHandlingTitle": "பல சேனல் டிரான்ஸ்கோட் கையாளுதல்",
+    "@multichannelHandlingTitle": {
+        "description": "Title for multi-channel handling dropdown"
+    },
+    "multichannelHandlingSubtitle": "டிரான்ஸ்கோடிங் செய்யும் போது மல்டி-சேனல் டிராக்குகளை (> 2 சேனல்கள்) கையாள்வது எப்படி. ஸ்ட்ரீமிங் மற்றும் பதிவிறக்கம் ஆகிய இரண்டிற்கும் பொருந்தும்.",
+    "@multichannelHandlingSubtitle": {
+        "description": "Subtitle for multi-channel handling dropdown"
+    },
+    "multichannelHandlingOption": "{option, select, stereoDownmixLossy{ஸ்டீரியோவுக்கு மட்டும் டவுன்மிக்ஸ் லாஸி} stereoDownmixAll{அனைத்தையும் ஸ்டீரியோவில் கலக்கவும்} fixedBitrate{ஒருபோதும் டவுன்மிக்ஸ் வேண்டாம்} other{{option}} }",
+    "@multichannelHandlingOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in multi-channel handling dropdown"
     }
 }

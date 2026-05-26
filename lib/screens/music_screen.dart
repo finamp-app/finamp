@@ -84,7 +84,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
         ? [widget.tabTypeFilter!]
         : ref
               .watch(finampSettingsProvider.tabOrder)
-              .where((e) => ref.watch(finampSettingsProvider.select((value) => value.value?.showTabs[e])) ?? false);
+              .where((e) => ref.watch(finampSettingsProvider.showTabs(e)) ?? false);
 
     _tabController = TabController(length: tabs.length, vsync: this, initialIndex: 0);
 
@@ -113,9 +113,9 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
         onPressed: () async {
           try {
             await _audioServiceHelper.shuffleAll(
-              onlyShowFavorites:
-                  (isFavoriteOverride == true ||
-                  (isFavoriteOverride == null && ref.read(finampSettingsProvider.onlyShowFavorites))),
+              onlyShowFavorites: isFavoriteOverride != null
+                  ? isFavoriteOverride!
+                  : ref.read(finampSettingsProvider.onlyShowFavorites),
               genreFilter: widget.genreFilter,
             );
           } catch (e) {

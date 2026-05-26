@@ -12,8 +12,6 @@ extension AtContrast on Color {
       'black': blackTinted.contrastAgainst(onBackground),
     };
 
-    print("contrasts: $contrasts");
-    print("contrasts selected color: ${contrasts.entries.sortedBy((e) => -e.value).first.key}");
     return switch (contrasts.entries.sortedBy((e) => -e.value).first.key) {
       'white' => whiteTinted,
       'black' => blackTinted,

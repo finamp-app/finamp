@@ -388,7 +388,7 @@
     "@disableGestureSubtitle": {},
     "bufferDuration": "Длительность буфера",
     "@bufferDuration": {},
-    "bufferDurationSubtitle": "Максимальная длительность, которая должна быть буферизована, в секундах. Требует перезапуска.",
+    "bufferDurationSubtitle": "Длительность, которая должна быть буферизована, в секундах. Требует перезапуска.",
     "@bufferDurationSubtitle": {},
     "removedFromPlaylist": "Удалено из плейлиста.",
     "@removedFromPlaylist": {},
@@ -759,7 +759,7 @@
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
     },
-    "volumeNormalizationIOSBaseGainEditorSubtitle": "В настоящее время нормализация громкости на iOS требует изменения громкости воспроизведения, чтобы эмулировать изменение усиления. Поскольку мы не можем увеличить громкость выше 100%, нам необходимо уменьшить громкость по умолчанию, чтобы мы могли увеличить громкость тихих композиций. Значение указывается в децибелах (дБ), где -10 дБ соответствует ~30% громкости, -4,5 дБ - ~60% громкости, а -2 дБ - ~80% громкости.",
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "Выберите смещение уровня громкости (в дБ)",
     "@volumeNormalizationIOSBaseGainEditorSubtitle": {
         "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
@@ -841,7 +841,7 @@
     "@playbackOrderLinearButtonTooltip": {
         "description": "Tooltip for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in linear/in-order mode"
     },
-    "playingFromType": "Воспроизведение из {source, select, album{альбома} playlist{плейлиста} trackMix{микса композиций} artistMix{микса исполнителей} albumMix{микса альбомов} genreMix{микса жанров} favorites{избранного} allTracks{всех композиций} filteredList{композиций} genre{жанра} artist{исполнителя} track{композиции} nextUpAlbum{альбома в следующих} nextUpPlaylist{плейлиста в следующих} nextUpArtist{исполнителя в следующих} nextUpGenre{жанра в следующих} remoteClient{удаленного клиента} other{}}",
+    "playingFromType": "Воспроизведение из {source, select, album{альбома} playlist{плейлиста} trackMix{микса композиций} artistMix{микса исполнителей} albumMix{микса альбомов} genreMix{микса жанров} favorites{избранного} allTracks{всех композиций} filteredList{композиций} genre{жанра} artist{исполнителя} track{композиции} nextUpAlbum{альбома в следующих} nextUpPlaylist{плейлиста в следующих} nextUpArtist{исполнителя в следующих} nextUpGenre{жанра в следующих} remoteClient{удаленного клиента} radio{радио} other{}}",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -1340,7 +1340,7 @@
     "@bufferDisableSizeConstraintsSubtitle": {},
     "bufferSizeTitle": "Размер буфера",
     "@bufferSizeTitle": {},
-    "bufferSizeSubtitle": "­Максимальный размер буфера в МБ. Требует перезапуска",
+    "bufferSizeSubtitle": "­Размер буфера в МБ. Требует перезапуска",
     "@bufferSizeSubtitle": {},
     "togglePlaybackButtonTooltip": "Начать/Остановить воспроизведение",
     "@togglePlaybackButtonTooltip": {
@@ -2051,7 +2051,7 @@
     "@stopAndClearQueue": {
         "description": "Label for a button that stops playback and removes all tracks from the queue."
     },
-    "autoOfflineSettingDescription": "Автоматически включать автономный режим.\nВыключено: Автономный режим не будет включаться автоматически. Может экономить заряд батареи.\nЛокальная Сеть: Автономный режим будет включаться когда вы не подключены к wifi или интернету.\nОтключение: Автономный режим будет включаться когда вы ни к чему не подключены.\nНедоступность: Автономный режим будет включаться если сервер не отвечает после смены сети.\nВы всегда можете вручную включить автономный режим. Это приостановит автоматизацию до тех пор пока вы снова не выключите его",
+    "autoOfflineSettingDescription": "{disabledModeName}:\nАвтономный режим не будет включаться автоматически. Может экономить заряд батареи.\n\n{localNetworkModeName}:\nАвтономный режим будет включаться когда вы не подключены к WiFi или интернету.\n\n{disconnectedModeName}:\n Автономный режим будет включаться когда вы ни к чему не подключены.\n\n{unreachableModeName}:\nАвтономный режим будет включаться если сервер не отвечает после смены сети.\n\nВы всегда можете вручную включить автономный режим. Это приостановит автоматизацию до тех пор пока вы снова не выключите его",
     "@autoOfflineSettingDescription": {
         "description": "Setting description. Make sure the Mode names match the translations."
     },
@@ -2063,7 +2063,7 @@
     "@ping": {
         "description": "Gets shown in the Snackbar when using the Test Connection Button inside the Network Settings. true means reachable, false means unreachable. the first value is for the public address, the second value is fot the home address."
     },
-    "showFavoriteButtonOnMediaNotificationSubtitle": "Управляет тем, будет ли в медиа-уведомлении присутствовать кнопка добавления в избранное. Это позволяет вам добавить/убрать текущий трек из изранных, не открывая приложение. Не присутствует в оффлайн режиме.",
+    "showFavoriteButtonOnMediaNotificationSubtitle": "Управляет тем, будет ли в медиа-уведомлении присутствовать кнопка добавления в избранное. Это позволяет вам добавить/убрать текущий трек из изранных, не открывая приложение. Не присутствует в автономном режиме.",
     "@showFavoriteButtonOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a favorite button."
     },
@@ -2298,7 +2298,7 @@
     "@genreListsInheritSortingSubtitle": {
         "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
     },
-    "curatedItemsMostPlayedOfflineTooltip": "Недоступно в Оффлайн-Режиме.",
+    "curatedItemsMostPlayedOfflineTooltip": "Недоступно в Автономном Режиме.",
     "@curatedItemsMostPlayedOfflineTooltip": {
         "description": "Tooltip for Most Played on Curated Items in Offline Mode."
     },
@@ -2623,7 +2623,7 @@
     "@discordRPCSettingTitle": {
         "description": "Title for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
     },
-    "discordRPCSettingDescription": "Включает активность Discord, отображающую, в вашем статусе Discord что вы слушаете. Не будет подключаться к Discord, в оффлайн режиме.",
+    "discordRPCSettingDescription": "Включает активность Discord, отображающую, в вашем статусе Discord что вы слушаете. Не будет подключаться к Discord в автономном режиме.",
     "@discordRPCSettingDescription": {
         "description": "Description for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
     },
@@ -2772,7 +2772,7 @@
     "@addDownloadLocationsErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs fails"
     },
-    "androidImageErrorPrompt": "ВНИМАНИЕ: Мы не можем записать картинки в папку Музыки на Android из-за ограничений ОС. Выберите другую папку.",
+    "androidImageErrorPrompt": "Мы не можем записать картинки в папку Музыки на Android из-за ограничений ОС. Выберите другую папку.",
     "@androidImageErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
     },
@@ -2865,5 +2865,311 @@
     "invalidColorCode": "Неверный код цвета",
     "@invalidColorCode": {
         "description": "Snackbar message shown when the user tries to save an invalid hex color code"
+    },
+    "playbackActionPageMoveWithinQueue": "Переместить внутри очереди",
+    "@playbackActionPageMoveWithinQueue": {
+        "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
+    },
+    "playbackActionPageRegularTrackOptions": "Воспроизвести",
+    "@playbackActionPageRegularTrackOptions": {
+        "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "systemAccentColorHasPriorityInfo": "Пользовательский Цвет Акцента отключен, потому что используется Системный Акцент",
+    "@systemAccentColorHasPriorityInfo": {
+        "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
+    },
+    "startRadio": "Начать Радио",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
+    },
+    "movePlayNext": "Воспроизвести следующим",
+    "@movePlayNext": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "moveAddToNextUp": "Поставить в конец очереди",
+    "@moveAddToNextUp": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
+    },
+    "moveAddToQueue": "Поставить в конец",
+    "@moveAddToQueue": {
+        "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
+    },
+    "radio": "Радио",
+    "@radio": {
+        "description": "Title for the queue source when the user is playing a track added via radio"
+    },
+    "radioForItem": "{radioSource} - Радио",
+    "@radioForItem": {
+        "description": "Suffix added to a queue source when playing a radio track. Example: \"Never Gonna Give You Up - Radio\"",
+        "placeholders": {
+            "radioSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "downloadAllPlaylistsSettingWarning": "Примечание: Это скачает все элементы во всех плейлистах, независимо от того, в какой они библиотеке",
+    "@downloadAllPlaylistsSettingWarning": {},
+    "lyricsEmptyStateLoading": "Загрузка текста...",
+    "@lyricsEmptyStateLoading": {
+        "description": "Message shown while lyrics are being loaded"
+    },
+    "lyricsEmptyStateFailed": "Не удалось загрузить текст",
+    "@lyricsEmptyStateFailed": {
+        "description": "Message shown when lyrics failed to load"
+    },
+    "lyricsEmptyStateNoLyrics": "Текст песни недоступен",
+    "@lyricsEmptyStateNoLyrics": {
+        "description": "Message shown when no lyrics are available for the current track"
+    },
+    "lyricsMissingLyricLinePlaceholder": "Пропущенная строка",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "radioModeSettingsTitle": "Режим Радио",
+    "@radioModeSettingsTitle": {
+        "description": "Title for the setting that controls the radio mode/algorithm."
+    },
+    "radioModeSettingsSubtitle": "Настраивает метод, по которому радио выбирает песни.",
+    "@radioModeSettingsSubtitle": {
+        "description": "Subtitle for the setting that controls the radio mode/algorithm."
+    },
+    "radioModeMenuTitle": "Выберите Режим Радио",
+    "@radioModeMenuTitle": {
+        "description": "Title for menu that allows users to choose the radio mode."
+    },
+    "loopingOverriddenByRadioSubtitle": "Повтор очереди отключен при работе радио",
+    "@loopingOverriddenByRadioSubtitle": {
+        "description": "Subtitle displayed in the radio menu to show that queue looping is disabled while radio mode is enabled."
+    },
+    "radioFailedSubtitle": "Больше не найдено песен для радио. Попробуйте сменить режим.",
+    "@radioFailedSubtitle": {
+        "description": "Subtitle displayed in the radio menu to show that no radio tracks could be generated."
+    },
+    "radioModeOptionName": "{option, select, reshuffle{Перемешка} random{Случайно} similar{Похожие} continuous{Продолжительный} albumMix{Микс Альбома} other{{option}}}",
+    "@radioModeOptionName": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Radio mode names in radio mode/algorithm dropdown"
+    },
+    "radioModeOptionTitle": "{option, select, reshuffle{Режим Перемешки} random{Случайный Режим} similar{Режим Похожих} continuous{Продолжительный Режим} albumMix{Альбомный Микс} other{{option}}} Включён",
+    "@radioModeOptionTitle": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Title displayed in the queue, showing which radio mode/algorithm is currently being used."
+    },
+    "radioModeActiveTitle": "Работает Радио",
+    "@radioModeActiveTitle": {
+        "description": "Title displayed in the queue to show that radio mode is enabled and active."
+    },
+    "radioModeDisabledTitle": "Радио Выключено",
+    "@radioModeDisabledTitle": {
+        "description": "Title displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeInactiveTitle": "Радио на Паузе",
+    "@radioModeInactiveTitle": {
+        "description": "Title displayed in the queue to show that the radio is enabled but not active."
+    },
+    "radioModeEnableButtonTitle": "Включить Радио",
+    "@radioModeEnableButtonTitle": {
+        "description": "Title for the option that enables radio mode."
+    },
+    "radioModeDisableButtonTitle": "Выключить Радио",
+    "@radioModeDisableButtonTitle": {
+        "description": "Title for the option that disables radio mode."
+    },
+    "radioModeDisableButtonSubtitle": "Переключается на последний использованный режим повтора",
+    "@radioModeDisableButtonSubtitle": {
+        "description": "Subtitle for the option that disables radio mode."
+    },
+    "shuffleSomeToQueue": "Перемешать в очередь",
+    "@shuffleSomeToQueue": {
+        "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "shuffleSomeAlbums": "Перемешать альбомы",
+    "@shuffleSomeAlbums": {
+        "description": "Label for action that shuffles some albums of a genre"
+    },
+    "shuffleSomeAlbumsNext": "Перемешать Альбомы Следующими",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "shuffleSomeAlbumsToNextUp": "Перемешать Альбомы в Следующие",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
+    },
+    "shuffleSomeAlbumsToQueue": "Перемешать Альбомы в Очередь",
+    "@shuffleSomeAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "В настоящее время Нормализация Громкости на платформах, отличных от Android, требует изменения громкости воспроизведения для эмуляции усиления. Поскольку мы не можем увеличить громкость выше 100%, нам необходимо по умолчанию уменьшить громкость, чтобы можно было увеличить громкость тихих треков.\n\nЗначение измеряется в децибелах (дБ), где -10 дБ соответствует ~30% громкости, -4,5 дБ ~60% громкости, а -2 дБ ~80% громкости.\nПоложительные значения означают, что уменьшение громкости для звука ниже порога не применяется (т. е. громкость -6,4 дБ (и более положительное) для смещения +6,4 дБ), но предотвращается усиление более тихих треков.\n\nВы должны установить это значение в обратной зависимости от самой высокой (самой положительной) громкости в вашей библиотеке, т. е. установить его на +3 дБ, если самая высокая громкость в вашей библиотеке составляет -3 дБ (а все остальные треки имеют усиление -5 дБ, -8 дБ, -10 дБ и т. д.).",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "autoOfflineSettingSubtitle": "Автоматически включать Автономный Режим в зависимости от наличия интернета и доступности сервера.",
+    "@autoOfflineSettingSubtitle": {
+        "description": "Subtitle for the automated offline mode setting."
+    },
+    "radioModeOptionConfirmation": "Переключено на {option, select, reshuffle{режим перемешки} random{случайный режим} similar{режим похожих} continuous{продолжительный режим} albumMix{Альбомный микс} other{{option}}}",
+    "@radioModeOptionConfirmation": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Confirmation displayed when the radio mode is changed."
+    },
+    "radioModeEnabledSubtitle": "Нажмите для настройки",
+    "@radioModeEnabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show when radio mode is enabled."
+    },
+    "radioModeDisabledSubtitle": "Нажмите, чтобы включить",
+    "@radioModeDisabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "Текущий режим недоступен в автономном режиме.",
+    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
+    },
+    "radioModeDescription": "{mode, select, reshuffle{Бесконечно перемешивать очередь} random{Добавлять треки из первичного выбора случайно} similar{Добавлять треки на основании оригинальной очереди} continuous{Добавлять треки на основании текущего трека} albumMix{Добавлять похожие альбомы} other{}}",
+    "@radioModeDescription": {
+        "placeholders": {
+            "mode": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Subtitle displayed in the queue to describe what the radio is doing if enabled"
+    },
+    "radioModeUnavailableWhileOfflineDescription": "Недоступно в автономном режиме",
+    "@radioModeUnavailableWhileOfflineDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
+    },
+    "radioModeUnavailableWhileOfflineSubtitle": "\"{modeName}\" недоступен в автономном режиме",
+    "@radioModeUnavailableWhileOfflineSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
+    },
+    "radioModeUnavailableForSourceItemDescription": "Недоступно для этого источника очереди",
+    "@radioModeUnavailableForSourceItemDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
+    },
+    "radioModeUnavailableForSourceItemSubtitle": "\"{modeName}\" недоступен для этого источника очереди",
+    "@radioModeUnavailableForSourceItemSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
+    },
+    "radioModeUnavailableQueueEmptyDescription": "Недоступно, потому что очередь пуста",
+    "@radioModeUnavailableQueueEmptyDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioModeUnavailableQueueEmptySubtitle": "\"{modeName}\" недоступен, потому что очередь пуста",
+    "@radioModeUnavailableQueueEmptySubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioModeRandomUnavailableNotDownloadedDescription": "Недоступно, потому что '{sourceName}' не скачан(-а)",
+    "@radioModeRandomUnavailableNotDownloadedDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedSubtitle": "\"{modeName}\" недоступен, потому что '{sourceName}' не скачан(-а)",
+    "@radioModeRandomUnavailableNotDownloadedSubtitle": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            },
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericDescription": "Недоступно, потому что источник не скачан",
+    "@radioModeRandomUnavailableNotDownloadedGenericDescription": {
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericSubtitle": "\"{modeName}\" недоступен, потому что источник не скачан",
+    "@radioModeRandomUnavailableNotDownloadedGenericSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "radioNoTracksFound": "Не удалось запустить радио, так как не нашлись подходящие треки.",
+    "@radioNoTracksFound": {
+        "description": "Shown when the user tries to start radio mode but no suitable tracks were found to start the radio with."
+    },
+    "loopingUnavailableWhileRadioActiveWarning": "Изменение режима повтора недоступно пока включено радио, поскольку очередь будет продолжаться бесконечно.",
+    "@loopingUnavailableWhileRadioActiveWarning": {
+        "description": "Warning message when trying to change the loop mode while radio is active."
+    },
+    "addDownloadLocationsErrorTitle": "Не удалось записать в место загрузок",
+    "@addDownloadLocationsErrorTitle": {
+        "description": "Title of popup dialog when adding a download location fails"
+    },
+    "snackbarOptionsMenuTitle": "Управлять Сообщениями",
+    "@snackbarOptionsMenuTitle": {
+        "description": "Title for the snackbar options menu that allows the user to manage snackbar messages"
+    },
+    "snackbarOptionsMenuClearAllButton": "Очистить Все Сообщения",
+    "@snackbarOptionsMenuClearAllButton": {
+        "description": "Button title for clearing all snackbar messages"
+    },
+    "snackbarOptionsMenuViewLogsButton": "Просмотреть Журнал (лог)",
+    "@snackbarOptionsMenuViewLogsButton": {
+        "description": "Button title for opening the logs screen from the snackbar options menu"
+    },
+    "duckOnAudioInterruptionTitle": "Уменьшать Громкость при Прерываниях",
+    "@duckOnAudioInterruptionTitle": {
+        "description": "Title for the setting that controls ducking."
+    },
+    "duckOnAudioInterruptionSubtitle": "Уменьшать громкость, если другое приложение проигрывает звук. Требует перезагрузки.",
+    "@duckOnAudioInterruptionSubtitle": {
+        "description": "Subtitle for the setting that controls ducking."
+    },
+    "forceAudioOffloadingOnAndroidTitle": "Принудительно Разгружать Аудио",
+    "@forceAudioOffloadingOnAndroidTitle": {
+        "description": "Title for the setting that controls audio offloading on Android."
+    },
+    "forceAudioOffloadingOnAndroidSubtitle": "Передает обработку звука устройству, если поддерживается.",
+    "@forceAudioOffloadingOnAndroidSubtitle": {
+        "description": "Subtitle for the setting that controls audio offloading on Android."
+    },
+    "explicit": "Explicit",
+    "@explicit": {
+        "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
     }
 }
