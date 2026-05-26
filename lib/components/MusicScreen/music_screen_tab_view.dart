@@ -40,6 +40,7 @@ class MusicScreenTabView extends ConsumerStatefulWidget {
     this.refresh,
     this.genreFilter,
     this.artistFilter,
+    this.selectedCurationType,
     this.tabBarFiltered = false,
     this.sortByOverride,
     this.sortOrderOverride,
@@ -52,6 +53,7 @@ class MusicScreenTabView extends ConsumerStatefulWidget {
   final MusicRefreshCallback? refresh;
   final BaseItemDto? genreFilter;
   final BaseItemDto? artistFilter;
+  final CuratedItemSelectionType? selectedCurationType;
   final bool tabBarFiltered;
   final SortBy? sortByOverride;
   final SortOrder? sortOrderOverride;
@@ -484,6 +486,9 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                                     ? true
                                     : false,
                                 isOnArtistScreen: widget.artistFilter != null ? true : false,
+                                selectedFilter: widget.selectedCurationType,
+                                lazyAddMoreTracksToQueue:
+                                    widget.artistFilter != null && widget.selectedCurationType != null,
                                 parentItem: widget.artistFilter ?? widget.genreFilter,
                                 forceAlbumArtists: (sortBy == SortBy.albumArtist),
                                 adaptiveAdditionalInfoSortBy: sortBy,

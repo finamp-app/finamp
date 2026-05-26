@@ -118,6 +118,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         builder: (context) => MusicScreen(
           artistFilter: widget.parent,
           genreFilter: genreFilter,
+          selectedCurationType: itemSelectionType,
           tabTypeFilter: tabContentType,
           sortByOverrideInit: sortByOverride,
           sortOrderOverrideInit: sortOrderOverride,

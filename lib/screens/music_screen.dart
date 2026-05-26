@@ -32,6 +32,7 @@ class MusicScreen extends ConsumerStatefulWidget {
     super.key,
     this.genreFilter,
     this.artistFilter,
+    this.selectedCurationType,
     this.tabTypeFilter,
     this.sortByOverrideInit,
     this.sortOrderOverrideInit,
@@ -43,6 +44,7 @@ class MusicScreen extends ConsumerStatefulWidget {
   // Optional parameters for genre and tab filtering
   final BaseItemDto? genreFilter;
   final BaseItemDto? artistFilter;
+  final CuratedItemSelectionType? selectedCurationType;
   final TabContentType? tabTypeFilter;
   final SortBy? sortByOverrideInit;
   final SortOrder? sortOrderOverrideInit;
@@ -432,6 +434,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                         artistFilter: widget.artistFilter != null && tabType.itemType == BaseItemDtoType.track
                             ? widget.artistFilter
                             : null,
+                        selectedCurationType: widget.selectedCurationType,
                         tabBarFiltered: (widget.tabTypeFilter != null),
                         sortByOverride: sortByOverride,
                         sortOrderOverride: sortOrderOverride,
