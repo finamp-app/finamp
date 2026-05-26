@@ -294,17 +294,22 @@ class TrackListTile extends ConsumerWidget {
             items: items,
             startingIndex: startingIndex,
             source: QueueItemSource(
-              name: QueueItemSourceName(
-                type: item.name != null ? QueueItemSourceNameType.mix : QueueItemSourceNameType.instantMix,
-                localizationParameter: item.name ?? "",
-              ),
-              type: QueueItemSourceType.allTracks,
+              name: isOnArtistScreen && parentItem != null
+                  ? QueueItemSourceName(
+                      type: QueueItemSourceNameType.preTranslated,
+                      pretranslatedName: parentItem!.name,
+                    )
+                  : QueueItemSourceName(
+                      type: item.name != null ? QueueItemSourceNameType.mix : QueueItemSourceNameType.instantMix,
+                      localizationParameter: item.name ?? "",
+                    ),
+              type: isOnArtistScreen ? QueueItemSourceType.artist : QueueItemSourceType.allTracks,
               id: item.id,
               item: item,
             ),
           );
         } else {
-          if (FinampSettingsHelper.finampSettings.startInstantMixForIndividualTracks) {
+          if (FinampSettingsHelper.finampSettings.startInstantMixForIndividualTracks && !isOnArtistScreen) {
             await audioServiceHelper.startInstantMixForItem(item);
           } else {
             await queueService.startPlayback(

@@ -480,13 +480,18 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                                 // we can allow Dismiss gestures in the track list
                                 allowDismiss: widget.tabBarFiltered,
                                 genreFilter: widget.genreFilter,
-                                isOnGenreScreen: (widget.genreFilter != null) ? true : false,
-                                parentItem: widget.genreFilter,
+                                isOnGenreScreen: widget.genreFilter != null && widget.artistFilter == null
+                                    ? true
+                                    : false,
+                                isOnArtistScreen: widget.artistFilter != null ? true : false,
+                                parentItem: widget.artistFilter ?? widget.genreFilter,
                                 forceAlbumArtists: (sortBy == SortBy.albumArtist),
                                 adaptiveAdditionalInfoSortBy: sortBy,
                                 // since we can't re-create the current random sorting, we simply pass the pre-sorted tracks along
                                 // only done in offline mode since online mode doesn't support playing the tab contents in order anyway
-                                children: FinampSettingsHelper.finampSettings.isOffline && sortBy == SortBy.random
+                                children:
+                                    (FinampSettingsHelper.finampSettings.isOffline && sortBy == SortBy.random) ||
+                                        widget.artistFilter != null
                                     ? _pagingController.itemList
                                     : null,
                               )
