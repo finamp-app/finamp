@@ -18,6 +18,7 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(BaseItemPersonAdapter());
     registerAdapter(ClientCapabilitiesAdapter());
     registerAdapter(CodecProfileAdapter());
+    registerAdapter(CollectionHomeSectionAdapter());
     registerAdapter(ContainerProfileAdapter());
     registerAdapter(ContentTypeAdapter());
     registerAdapter(ContentViewTypeAdapter());
@@ -52,7 +53,6 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(GenreItemSectionsAdapter());
     registerAdapter(HomeScreenSectionConfigurationAdapter());
     registerAdapter(HomeScreenSectionPresetTypeAdapter());
-    registerAdapter(HomeScreenSectionTypeAdapter());
     registerAdapter(HttpHeaderInfoAdapter());
     registerAdapter(ImageBlurHashesAdapter());
     registerAdapter(ItemFilterAdapter());
@@ -90,6 +90,7 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(QueueItemSourceNameAdapter());
     registerAdapter(QueueItemSourceNameTypeAdapter());
     registerAdapter(QueueItemSourceTypeAdapter());
+    registerAdapter(QueuesHomeSectionAdapter());
     registerAdapter(QuickActionConfigAdapter());
     registerAdapter(RadioModeAdapter());
     registerAdapter(RawThemeResultAdapter());
@@ -105,6 +106,7 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(SortByAdapter());
     registerAdapter(SortOrderAdapter());
     registerAdapter(SubtitleProfileAdapter());
+    registerAdapter(TabsHomeSectionAdapter());
     registerAdapter(TileAdditionalInfoTypeAdapter());
     registerAdapter(TranscodeDownloadsSettingAdapter());
     registerAdapter(TranscodingProfileAdapter());
@@ -129,6 +131,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(BaseItemPersonAdapter());
     registerAdapter(ClientCapabilitiesAdapter());
     registerAdapter(CodecProfileAdapter());
+    registerAdapter(CollectionHomeSectionAdapter());
     registerAdapter(ContainerProfileAdapter());
     registerAdapter(ContentTypeAdapter());
     registerAdapter(ContentViewTypeAdapter());
@@ -163,7 +166,6 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(GenreItemSectionsAdapter());
     registerAdapter(HomeScreenSectionConfigurationAdapter());
     registerAdapter(HomeScreenSectionPresetTypeAdapter());
-    registerAdapter(HomeScreenSectionTypeAdapter());
     registerAdapter(HttpHeaderInfoAdapter());
     registerAdapter(ImageBlurHashesAdapter());
     registerAdapter(ItemFilterAdapter());
@@ -201,6 +203,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(QueueItemSourceNameAdapter());
     registerAdapter(QueueItemSourceNameTypeAdapter());
     registerAdapter(QueueItemSourceTypeAdapter());
+    registerAdapter(QueuesHomeSectionAdapter());
     registerAdapter(QuickActionConfigAdapter());
     registerAdapter(RadioModeAdapter());
     registerAdapter(RawThemeResultAdapter());
@@ -216,6 +219,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(SortByAdapter());
     registerAdapter(SortOrderAdapter());
     registerAdapter(SubtitleProfileAdapter());
+    registerAdapter(TabsHomeSectionAdapter());
     registerAdapter(TileAdditionalInfoTypeAdapter());
     registerAdapter(TranscodeDownloadsSettingAdapter());
     registerAdapter(TranscodingProfileAdapter());

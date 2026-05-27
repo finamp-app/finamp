@@ -63,8 +63,8 @@ Future<List<BaseItemDto>> globalSearch(Ref ref, String searchTerm, {required boo
 
 @Riverpod(keepAlive: true)
 Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSectionConfiguration section) async {
-  switch (section.type) {
-    case HomeScreenSectionType.tabView:
+  switch (section.base) {
+    case TabsHomeSection tabSection:
       final source = QueueItemSource.rawId(
         type: QueueItemSourceType.homeScreenSection,
         name: QueueItemSourceName(
@@ -75,17 +75,13 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
         id: section.id,
       );
       return MusicScreenPlayable(
-        tab: section.contentType,
-        library: section.itemId,
+        tab: tabSection.contentType,
+        library: tabSection.libraryId,
         source: source,
-        sortConfig: SortAndFilterController.resolveOffline(
-          ref,
-          section.contentType,
-          section.sortAndFilterConfiguration,
-        ),
+        sortConfig: SortAndFilterController.resolveOffline(ref, tabSection.contentType, section.sortConfig),
       );
-    case HomeScreenSectionType.collection:
-      final item = await ref.watch(itemByIdProvider(section.itemId as BaseItemId).future);
+    case CollectionHomeSection collectionSection:
+      final item = await ref.watch(itemByIdProvider(collectionSection.itemId).future);
       // TODO better source
       if (item == null) {
         // TODO should we be throwing?  Or returning null?
@@ -96,7 +92,7 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
               type: QueueItemSourceNameType.preTranslated,
               pretranslatedName: GlobalSnackbar.requireL10n.errorLoadingHomeSection,
             ),
-            id: section.itemId as BaseItemId,
+            id: collectionSection.itemId,
           ),
           tracks: [],
         );
@@ -114,8 +110,8 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
       );
       final resolvedSort = SortAndFilterController.resolveOffline(
         ref,
-        section.contentType,
-        section.sortAndFilterConfiguration,
+        collectionSection.contentType,
+        section.sortConfig,
       );
 
       // TODO this is a pretty horrible abuse of the contentType field.  Refactor storage method?
@@ -124,25 +120,16 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
           item,
           source: source,
           sortConfig: resolvedSort,
-          type: switch (section.contentType) {
-            ContentType.tracks => ArtistChildType.tracks,
-            ContentType.performingArtists => ArtistChildType.appearsOnAlbums,
-            ContentType.albumArtists => ArtistChildType.albumsFromArtist,
-            _ => throw UnsupportedError("Bad section content type ${section.contentType}"),
-          },
+          type: ArtistChildType.fromContentType(collectionSection.contentType),
+          library: collectionSection.libraryId,
         );
       } else if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.genre) {
         return Genre(
           item,
           source: source,
           sortConfig: resolvedSort,
-          type: switch (section.contentType) {
-            ContentType.tracks => GenreChildType.tracks,
-            ContentType.genericArtists => GenreChildType.artists,
-            ContentType.playlists => GenreChildType.playlists,
-            ContentType.albums => GenreChildType.albums,
-            _ => throw UnsupportedError("Bad section content type ${section.contentType}"),
-          },
+          type: GenreChildType.fromContentType(collectionSection.contentType),
+          library: collectionSection.libraryId,
         );
       }
       final playable = FinampPlayableDto.fromItem(item, source: source, sortOverride: resolvedSort);
@@ -153,7 +140,7 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
         case InstantMix():
           throw UnsupportedError("Invalid home section collection $playable");
       }
-    case HomeScreenSectionType.queues:
+    case QueuesHomeSection():
       final source = QueueItemSource.rawId(
         type: QueueItemSourceType.homeScreenSection,
         name: QueueItemSourceName(
@@ -163,10 +150,7 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
         ),
         id: section.id,
       );
-      return LatestQueues(
-        sortConfig: ResolvedSortConfig.skipResolving(section.sortAndFilterConfiguration),
-        source: source,
-      );
+      return LatestQueues(sortConfig: ResolvedSortConfig.skipResolving(section.sortConfig), source: source);
   }
 }
 
@@ -254,6 +238,8 @@ Future<List<BaseItemDto>> _getPagedChildTracks(
 }) async {
   // Drop normal child size by half to reduce the odds of undershooting.  Clamps to a minimum expected child size of one.
   int childLimit = (trackLimit / min(1.0, item.normalChildSize / 2.0)).ceil();
+  // Keep page provider alive even though we only read its notifier.
+  ref.listen(pagedContentProvider(item), (_, _) {});
   final pager = ref.read(pagedContentProvider(item).notifier);
   final children = await pager.loadSlice(startingChild, childLimit);
   final output = <BaseItemDto>[];
@@ -313,7 +299,7 @@ Future<List<Track>> getChildTracks(Ref ref, {required FinampUnpagedDisplayable<T
       final children = await ref.watch(
         getArtistTracksProvider(
           artist: item.item,
-          libraryFilter: ref.watch(FinampUserHelper.finampCurrentUserProvider)?.currentView,
+          libraryFilter: item.library,
           genreFilter: item.sortConfig.genreFilter?.id,
           onlyFavorites: item.sortConfig.favoritesFilter,
         ).future,
@@ -324,12 +310,14 @@ Future<List<Track>> getChildTracks(Ref ref, {required FinampUnpagedDisplayable<T
       final sort = item.sortConfig.copyWithGenre(item.item);
       final playable = MusicScreenPlayable(
         tab: ContentType.tracks,
-        library: currentLibraryPlaceholder,
+        library: item.library,
         source: item.source,
         sortConfig: sort,
       );
       // TODO something smarter?  But if the genre has more than 999 tracks, we probably shouldn't be loading them anyway.
       // should we make genres paged?
+      // Keep page provider alive even though we only read its notifier.
+      ref.listen(pagedContentProvider(playable), (_, _) {});
       return (await ref.read(pagedContentProvider(playable).notifier).loadSlice(0, 9999)).cast<Track>();
   }
 }
@@ -353,7 +341,7 @@ Future<List<FinampPlayableDto>> getChildItems(
           final children = await ref.watch(
             getArtistAlbumsProvider(
               artist: item.item,
-              libraryFilter: ref.watch(FinampUserHelper.finampCurrentUserProvider)?.currentView,
+              libraryFilter: item.library,
               genreFilter: item.sortConfig.genreFilter?.id,
               sortBy: item.sortConfig.sortBy,
               sortOrder: item.sortConfig.sortOrder,
@@ -364,7 +352,7 @@ Future<List<FinampPlayableDto>> getChildItems(
           final children = await ref.watch(
             getPerformingArtistAlbumsProvider(
               artist: item.item,
-              libraryFilter: ref.watch(FinampUserHelper.finampCurrentUserProvider)?.currentView,
+              libraryFilter: item.library,
               genreFilter: item.sortConfig.genreFilter?.id,
               sortBy: item.sortConfig.sortBy,
               sortOrder: item.sortConfig.sortOrder,
@@ -385,11 +373,13 @@ Future<List<FinampPlayableDto>> getChildItems(
           GenreChildType.artists => ContentType.performingArtists,
           GenreChildType.playlists => ContentType.playlists,
         },
-        library: currentLibraryPlaceholder,
+        library: item.library,
         source: item.source,
         sortConfig: sort,
       );
-      return (await ref.read(pagedContentProvider(playable).notifier).loadSlice(0, 9999)).cast<FinampPlayableDto>();
+      // Keep page provider alive even though we only read its notifier.
+      ref.listen(pagedContentProvider(playable), (_, _) {});
+      return (await ref.watch(pagedContentProvider(playable).notifier).loadSlice(0, 9999)).cast<FinampPlayableDto>();
   }
 }
 

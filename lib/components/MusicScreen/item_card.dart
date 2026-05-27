@@ -250,25 +250,26 @@ double calculateItemCollectionCardHeight({
     (sectionInfo == null && itemType != null) || (sectionInfo != null && itemType == null),
     "Exactly one of sectionInfo or itemType must be provided",
   );
-  ContentType? sectionItemType = sectionInfo?.contentType;
-  if (sectionInfo?.type == HomeScreenSectionType.collection &&
-      [ContentType.performingArtists, ContentType.albumArtists].contains(sectionInfo?.contentType)) {
-    // TODO this is due to us overloading the unused album/performing artist types as a child type selector.  Todo fix?
-    sectionItemType = ContentType.albums;
+  final BaseItemDtoType resolvedItemType;
+  switch (sectionInfo?.base) {
+    case QueuesHomeSection():
+      return queuesHomeSectionHeight;
+    case null:
+      resolvedItemType = itemType!;
+    case TabsHomeSection base:
+      resolvedItemType = base.contentType.itemType!;
+    case CollectionHomeSection base:
+      // Fallback to albums children as the tallest type
+      resolvedItemType = base.contentType.itemType ?? BaseItemDtoType.album;
   }
-  final actualItemType = itemType ?? sectionItemType?.itemType ?? BaseItemDtoType.album;
-  return switch (sectionInfo?.type) {
-    HomeScreenSectionType.queues => queuesHomeSectionHeight,
-    _ =>
-      calculateItemCollectionCardWidth(ref).$1 +
-          (ref.watch(finampSettingsProvider.showTextOnGridView) || sectionInfo != null
-              ? _itemCollectionCardTextSpacing +
-                    calculateTextHeight(
-                      style: TextTheme.of(ref.context).bodySmall!,
-                      lines: calculateItemCollectionTextLines(actualItemType),
-                    )
-              : 0),
-  };
+  return calculateItemCollectionCardWidth(ref).$1 +
+      (ref.watch(finampSettingsProvider.showTextOnGridView) || sectionInfo != null
+          ? _itemCollectionCardTextSpacing +
+                calculateTextHeight(
+                  style: TextTheme.of(ref.context).bodySmall!,
+                  lines: calculateItemCollectionTextLines(resolvedItemType),
+                )
+          : 0);
 }
 
 double calculateTextHeight({required TextStyle style, required int lines}) {

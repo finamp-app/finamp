@@ -90,8 +90,8 @@ HomeDownloadInfo? getHomeDownloadInfo(
   HomeScreenSectionConfiguration section,
   BaseItemDto? item,
 ) {
-  switch (section.type) {
-    case HomeScreenSectionType.tabView:
+  switch (section.base) {
+    case TabsHomeSection tabSection:
       return switch (section.presetType) {
         HomeScreenSectionPresetType.favoriteTracks ||
         HomeScreenSectionPresetType.favoriteAlbums ||
@@ -99,7 +99,7 @@ HomeDownloadInfo? getHomeDownloadInfo(
         HomeScreenSectionPresetType.favoritePlaylists ||
         HomeScreenSectionPresetType.favoriteGenres => HomeDownloadInfo(
           stub: DownloadStub.fromFinampCollection(FinampCollection(type: FinampCollectionType.favorites)),
-          warning: l10n.homeFavoritesDownloadWarning(section.contentType.toLocalisedString(l10n)),
+          warning: l10n.homeFavoritesDownloadWarning(tabSection.contentType.toLocalisedString(l10n)),
         ),
         HomeScreenSectionPresetType.recentlyAddedAlbums ||
         HomeScreenSectionPresetType.recentlyAddedTracks => HomeDownloadInfo(
@@ -109,22 +109,31 @@ HomeDownloadInfo? getHomeDownloadInfo(
         _ => null,
       };
     // TODO put all playlist download somewhere?
-    case HomeScreenSectionType.collection:
+    case CollectionHomeSection collectionSection:
       if (item == null) return null;
       final type = BaseItemDtoType.fromItem(item);
       if (type == BaseItemDtoType.collection) {
         // TODO implement collection downloads
         return null;
-      } else if ([BaseItemDtoType.artist, BaseItemDtoType.genre].contains(type)) {
+      } else if ([BaseItemDtoType.artist, BaseItemDtoType.genre].contains(type) &&
+          collectionSection.libraryId != allLibraryPlaceholder) {
+        final user =
+            (ref?.watch(FinampUserHelper.finampCurrentUserProvider) ?? GetIt.instance<FinampUserHelper>().currentUser);
+        final BaseItemDto? library;
+        if (collectionSection.libraryId == currentLibraryPlaceholder) {
+          library = user?.currentView;
+        } else {
+          library = user?.views[collectionSection.libraryId as BaseItemId];
+        }
+        if (library == null) {
+          return null;
+        }
         return HomeDownloadInfo(
           stub: DownloadStub.fromFinampCollection(
             FinampCollection(
               type: FinampCollectionType.collectionWithLibraryFilter,
               // TODO allow LibraryIds?
-              library:
-                  (ref?.watch(FinampUserHelper.finampCurrentUserProvider) ??
-                          GetIt.instance<FinampUserHelper>().currentUser)!
-                      .currentView,
+              library: library,
               item: item,
             ),
           ),
@@ -139,7 +148,7 @@ HomeDownloadInfo? getHomeDownloadInfo(
           warning: null,
         );
       }
-    case HomeScreenSectionType.queues:
+    case QueuesHomeSection():
       return null;
   }
 }

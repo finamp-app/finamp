@@ -11,7 +11,9 @@ library;
 import 'package:collection/collection.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -28,35 +30,37 @@ class BaseItemIdConverter extends JsonConverter<BaseItemId, String> {
   String toJson(BaseItemId object) => object.raw;
 }
 
-class LibraryOrItemIdConverter extends JsonConverter<LibraryOrItemId, String> {
-  const LibraryOrItemIdConverter();
+class LibraryIdConverter extends JsonConverter<LibraryId, String> {
+  const LibraryIdConverter();
 
   @override
-  LibraryOrItemId fromJson(String json) => LibraryOrItemId(json);
+  LibraryId fromJson(String json) => LibraryId(json);
 
   @override
-  String toJson(LibraryOrItemId object) => object.raw;
+  String toJson(LibraryId object) => object.raw;
 }
 
-extension type BaseItemId._(String raw) implements LibraryOrItemId {
+extension type BaseItemId._(String raw) implements LibraryId {
   /// Construct a BaseItemDto id from a raw string.  Please be sure you have a valid ID before using, and
   /// if you might not, consider the invalid ID's scope and if you can use an alternative, such as null
   const BaseItemId(this.raw);
-
-  String operator +(BaseItemId other) => raw + other.raw;
 }
 
-extension type LibraryOrItemId._(String raw) {
+extension type LibraryId._(String raw) {
   /// Construct a BaseItemDto id from a raw string.  Please be sure you have a valid ID before using, and
   /// if you might not, consider the invalid ID's scope and if you can use an alternative, such as null
-  const LibraryOrItemId(this.raw);
+  const LibraryId(this.raw);
 
-  String operator +(LibraryOrItemId other) => raw + other.raw;
+  BaseItemId? resolve(Ref ref) => switch (this) {
+    currentLibraryPlaceholder => ref.watch(FinampUserHelper.finampCurrentUserProvider)?.currentViewId,
+    allLibraryPlaceholder => null,
+    _ => this as BaseItemId,
+  };
 }
 
 // These get saved into home screen configuration and cannot be modified.
-const LibraryOrItemId allLibraryPlaceholder = LibraryOrItemId("finamp-all-libraries-placeholder");
-const LibraryOrItemId currentLibraryPlaceholder = LibraryOrItemId("finamp-current-library-placeholder");
+const LibraryId allLibraryPlaceholder = LibraryId("finamp-all-libraries-placeholder");
+const LibraryId currentLibraryPlaceholder = LibraryId("finamp-current-library-placeholder");
 
 /// An abstract class to implement converting runTimeTicks into a duration.
 /// Ideally, we'd hold runTimeTicks here, but that would break offline storage

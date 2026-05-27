@@ -1,8 +1,10 @@
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../extensions/localizations.dart';
 
 class GenreSettingsScreen extends ConsumerStatefulWidget {
   const GenreSettingsScreen({super.key});
@@ -43,7 +45,9 @@ class _GenreSettingsScreenState extends ConsumerState<GenreSettingsScreen> {
                     index: index,
                     child: ListTile(
                       title: Text(
-                        FinampSettingsHelper.finampSettings.genreItemSectionsOrder[index].toLocalisedString(context),
+                        FinampSettingsHelper.finampSettings.genreItemSectionsOrder[index].toLocalisedString(
+                          context.l10n,
+                        ),
                       ),
                       leading: ReorderableDragStartListener(index: index, child: const Icon(Icons.drag_handle)),
                     ),
@@ -97,7 +101,7 @@ class _GenreSettingsScreenState extends ConsumerState<GenreSettingsScreen> {
                     child: ListTile(
                       title: Text(
                         FinampSettingsHelper.finampSettings.genreItemSectionFilterChipOrder[index].toLocalisedString(
-                          context,
+                          context.l10n,
                         ),
                       ),
                       leading: ReorderableDragStartListener(index: index, child: const Icon(Icons.drag_handle)),

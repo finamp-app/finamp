@@ -247,7 +247,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
   final genreFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter);
   final searchFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.searchTerm);
   return jellyfinApiHelper.getItems(
-    libraryFilter: library,
+    libraryFilter: library?.id,
     parentItem: request.tab == ContentType.playlists ? null : library,
     includeItemTypes: [request.tab.itemType?.jellyfinName].join(","),
     sortBy: request.sortConfig.sortBy.jellyfinName(request.tab),

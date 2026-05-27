@@ -1,9 +1,11 @@
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../extensions/localizations.dart';
 
 class ArtistSettingsScreen extends ConsumerStatefulWidget {
   const ArtistSettingsScreen({super.key});
@@ -56,7 +58,7 @@ class _ArtistSettingsScreenState extends ConsumerState<ArtistSettingsScreen> {
                     child: ReorderableDelayedDragStartListener(
                       index: index,
                       child: ListTile(
-                        title: Text(section.toLocalisedString(context)),
+                        title: Text(section.toLocalisedString(context.l10n)),
                         leading: ReorderableDragStartListener(index: index, child: const Icon(Icons.drag_handle)),
                       ),
                     ),
@@ -97,7 +99,7 @@ class _ArtistSettingsScreenState extends ConsumerState<ArtistSettingsScreen> {
                       child: ListTile(
                         title: Text(
                           FinampSettingsHelper.finampSettings.artistItemSectionFilterChipOrder[index].toLocalisedString(
-                            context,
+                            context.l10n,
                           ),
                         ),
                         leading: ReorderableDragStartListener(index: index, child: const Icon(Icons.drag_handle)),

@@ -94,11 +94,9 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
       MaterialPageRoute<MusicScreen>(
         builder: (context) => MusicScreen(
           singleTabConfig: HomeScreenSectionConfiguration(
-            type: HomeScreenSectionType.tabView,
-            contentType: tabContentType,
-            itemId: currentLibraryPlaceholder,
+            base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: tabContentType),
             customSectionTitle: widget.parent.name,
-            sortAndFilterConfiguration: SortAndFilterController.trackSettings(tabContentType).resolveConfig().copyWith(
+            sortConfig: SortAndFilterController.trackSettings(tabContentType).resolveConfig().copyWith(
               sortBy: sortByOverride,
               sortOrder: sortOrderOverride,
               favoriteFilter: isFavoriteOverride ? true : null,

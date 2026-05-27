@@ -60,12 +60,14 @@ sealed class FinampPlayableDto extends FinampPlayable {
         source: source,
         sortConfig: SortAndFilterConfiguration.defaultSort,
         type: ArtistChildType.tracks,
+        library: currentLibraryPlaceholder,
       ),
       BaseItemDtoType.genre => Genre(
         item,
         source: source,
         sortConfig: SortAndFilterConfiguration.defaultSort,
         type: GenreChildType.tracks,
+        library: currentLibraryPlaceholder,
       ),
       BaseItemDtoType.track => Track(item, source: source),
       BaseItemDtoType.collection => JellyfinCollection(

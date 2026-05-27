@@ -71,7 +71,7 @@ Future<List<BaseItemDto>> loadChildTracksFromBaseItem({
         newItemsFuture = ref.read(
           getArtistTracksProvider(
             artist: item,
-            libraryFilter: finampUserHelper.currentUser?.currentView,
+            libraryFilter: finampUserHelper.currentUser?.currentViewId,
             genreFilter: sortConfig.genreFilter?.id,
           ).future,
         );
@@ -159,7 +159,7 @@ Future<List<BaseItemDto>?> loadChildTracksOffline({
       items = await GetIt.instance<ProviderContainer>().read(
         getArtistTracksProvider(
           artist: item,
-          libraryFilter: finampUserHelper.currentUser?.currentView,
+          libraryFilter: finampUserHelper.currentUser?.currentViewId,
           genreFilter: sortConfig.genreFilter?.id,
         ).future,
       );

@@ -112,7 +112,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
                       }
                       return HomeScreenQuickActionButton(
                         width: buttonWidth,
-                        text: action.getTitle(context),
+                        text: action.getTitle(context.l10n),
                         label: action.action.getDescription(context),
                         icon: action.action.getIcon(),
                         vertical: buttonWidth == verticalButtonWidth,
@@ -263,7 +263,7 @@ class HomeScreenSection extends ConsumerWidget {
               icon: TablerIcons.player_play,
             ),
             IconButtonWithSemantics(
-              onPressed: sectionInfo.sortAndFilterConfiguration.sortBy == SortBy.random
+              onPressed: sectionInfo.sortConfig.sortBy == SortBy.random
                   ? null
                   : () async {
                       final queueService = GetIt.instance<QueueService>();
@@ -276,7 +276,7 @@ class HomeScreenSection extends ConsumerWidget {
                         order: FinampPlaybackOrder.shuffled,
                       );
                     },
-              label: sectionInfo.sortAndFilterConfiguration.sortBy == SortBy.random
+              label: sectionInfo.sortConfig.sortBy == SortBy.random
                   ? context.l10n.alreadyRandomized
                   : context.l10n.shuffleButtonLabel,
               icon: TablerIcons.arrows_shuffle,
@@ -305,7 +305,7 @@ class HomeScreenSection extends ConsumerWidget {
           ).push(MaterialPageRoute<MusicScreen>(builder: (context) => MusicScreen(singleTabConfig: sectionInfo)));
         },
         onSecondaryTap: () => showModalHomeSectionMenu(context: context, section: sectionInfo),
-        onDismiss: sectionInfo.contentType != ContentType.tracks
+        onDismiss: sectionDisplayable is! FinampPlayable
             ? null
             : (followUpAction) async {
                 final playable = sectionDisplayable as FinampPlayable;
@@ -368,8 +368,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
           : Center(child: Text(context.l10n.failedToLoadSectionMissingItem, maxLines: 1));
     }
     final displayable = asyncDisplayable.value!;
-    if (displayable is FinampSortable &&
-        (displayable as FinampSortable).sortConfig != sectionInfo.sortAndFilterConfiguration) {
+    if (displayable is FinampSortable && (displayable as FinampSortable).sortConfig != sectionInfo.sortConfig) {
       assert(isOffline);
       return Center(child: Text(context.l10n.notAvailableInOfflineMode, maxLines: 1));
     }
@@ -456,7 +455,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
           final double cardWidth;
           final double cardHeight;
           final bool showText;
-          if (sectionInfo.type == HomeScreenSectionType.queues) {
+          if (sectionInfo.base is QueuesHomeSection) {
             cardWidth = queuesHomeSectionWidth;
             cardHeight = queuesHomeSectionHeight;
             showText = false;

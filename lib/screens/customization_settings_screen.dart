@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
+import '../extensions/localizations.dart';
+
 class CustomizationSettingsScreen extends StatefulWidget {
   const CustomizationSettingsScreen({super.key});
 
@@ -166,7 +168,7 @@ class ReleaseDateFormatDropdownListTile extends ConsumerWidget {
           Text(AppLocalizations.of(context)!.releaseDateFormatSubtitle),
           FinampSettingsDropdown<ReleaseDateFormat>(
             dropdownItems: ReleaseDateFormat.values
-                .map((e) => DropdownMenuEntry<ReleaseDateFormat>(value: e, label: e.toLocalisedString(context)))
+                .map((e) => DropdownMenuEntry<ReleaseDateFormat>(value: e, label: e.toLocalisedString(context.l10n)))
                 .toList(),
             selectedValue: ref.watch(finampSettingsProvider.releaseDateFormat),
             onSelected: FinampSetters.setReleaseDateFormat.ifNonNull,

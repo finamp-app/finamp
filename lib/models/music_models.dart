@@ -76,7 +76,7 @@ class Playlist extends _SortableItem<Track> {
 
 class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _SortablePagedPlayable<ChildType> {
   final ContentType tab;
-  final LibraryOrItemId library;
+  final LibraryId library;
 
   MusicScreenPlayable._({required this.tab, required this.library, required super.source, required super.sortConfig}) {
     switch (tab) {
@@ -95,13 +95,15 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
       case ContentType.genericArtists:
       case ContentType.inPlaylist:
       case ContentType.mixed:
+      case ContentType.inPerformingArtistAlbums:
+      case ContentType.inAlbumArtistAlbums:
         throw UnsupportedError("Invalid content type $tab for music screen tab.");
     }
   }
 
   factory MusicScreenPlayable({
     required ContentType tab,
-    required LibraryOrItemId library,
+    required LibraryId library,
     required QueueItemSource source,
     required ResolvedSortConfig sortConfig,
   }) {
@@ -131,6 +133,8 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
       case ContentType.genericArtists:
       case ContentType.home:
       case ContentType.mixed:
+      case ContentType.inPerformingArtistAlbums:
+      case ContentType.inAlbumArtistAlbums:
         throw UnsupportedError("Invalid content type $tab for music screen tab.");
     }
   }
@@ -153,6 +157,8 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
       case ContentType.genericArtists:
       case ContentType.inPlaylist:
       case ContentType.mixed:
+      case ContentType.inPerformingArtistAlbums:
+      case ContentType.inAlbumArtistAlbums:
         throw UnsupportedError("Invalid content type $tab for music screen tab.");
     }
   }
@@ -167,6 +173,8 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
     ContentType.home ||
     ContentType.genericArtists ||
     ContentType.inPlaylist ||
+    ContentType.inAlbumArtistAlbums ||
+    ContentType.inPerformingArtistAlbums ||
     ContentType.mixed => throw UnsupportedError("Invalid music screen content type $tab"),
   };
 
@@ -328,25 +336,29 @@ class JellyfinCollection extends _SortableItem<FinampPlayableDto> {
 }
 
 class Artist<ChildType extends FinampPlayableDto> extends _SortableItem<ChildType> {
-  Artist._(super.item, {super.source, required super.sortConfig, required this.type}) {
+  Artist._(super.item, {super.source, required super.sortConfig, required this.type, required this.library}) {
     if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.artist) {
       throw UnsupportedError("Wrong BaseItemDto type: ${item.type}");
     }
   }
 
   final ArtistChildType type;
+  final LibraryId library;
 
   factory Artist(
     BaseItemDto item, {
     QueueItemSource? source,
     required ResolvedSortConfig sortConfig,
     required ArtistChildType type,
+    required LibraryId library,
   }) {
     switch (type) {
       case ArtistChildType.albumsFromArtist || ArtistChildType.appearsOnAlbums:
-        return Artist<Album>._(item, source: source, sortConfig: sortConfig, type: type) as Artist<ChildType>;
+        return Artist<Album>._(item, source: source, sortConfig: sortConfig, type: type, library: library)
+            as Artist<ChildType>;
       case ArtistChildType.tracks:
-        return Artist<Track>._(item, source: source, sortConfig: sortConfig, type: type) as Artist<ChildType>;
+        return Artist<Track>._(item, source: source, sortConfig: sortConfig, type: type, library: library)
+            as Artist<ChildType>;
     }
   }
 
@@ -355,44 +367,64 @@ class Artist<ChildType extends FinampPlayableDto> extends _SortableItem<ChildTyp
     source: QueueItemSource.fromBaseItem(item),
     sortConfig: ResolvedSortConfig.defaultSort,
     type: ArtistChildType.tracks,
+    // TODO should this resolve current library on creation?
+    library: currentLibraryPlaceholder,
   );
 
   @override
-  bool equalsHelper(Object other) => other is Artist && type == other.type;
+  bool equalsHelper(Object other) => other is Artist && type == other.type && other.library == library;
 
   @override
-  int get hashHelper => Object.hash(Artist, type);
+  int get hashHelper => Object.hash(Artist, type, library);
 
   @override
-  Artist copyWith(ResolvedSortConfig newSort) => Artist(item, source: source, sortConfig: newSort, type: type);
+  Artist copyWith(ResolvedSortConfig newSort) =>
+      Artist(item, source: source, sortConfig: newSort, type: type, library: library);
 }
 
-enum ArtistChildType { tracks, albumsFromArtist, appearsOnAlbums }
+enum ArtistChildType {
+  tracks,
+  albumsFromArtist,
+  appearsOnAlbums;
+
+  factory ArtistChildType.fromContentType(ContentType type) => switch (type) {
+    ContentType.tracks => ArtistChildType.tracks,
+    ContentType.inPerformingArtistAlbums => ArtistChildType.appearsOnAlbums,
+    ContentType.inAlbumArtistAlbums => ArtistChildType.albumsFromArtist,
+    _ => throw UnsupportedError("Invalid artist content type $type"),
+  };
+}
 
 class Genre<ChildType extends FinampPlayableDto> extends _SortableItem<ChildType> {
-  Genre._(super.item, {super.source, required super.sortConfig, required this.type}) {
+  Genre._(super.item, {super.source, required super.sortConfig, required this.type, required this.library}) {
     if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.genre) {
       throw UnsupportedError("Wrong BaseItemDto type: ${item.type}");
     }
   }
 
   final GenreChildType type;
+  final LibraryId library;
 
   factory Genre(
     BaseItemDto item, {
     QueueItemSource? source,
     required ResolvedSortConfig sortConfig,
     required GenreChildType type,
+    required LibraryId library,
   }) {
     switch (type) {
       case GenreChildType.tracks:
-        return Genre<Track>._(item, source: source, sortConfig: sortConfig, type: type) as Genre<ChildType>;
+        return Genre<Track>._(item, source: source, sortConfig: sortConfig, type: type, library: library)
+            as Genre<ChildType>;
       case GenreChildType.artists:
-        return Genre<Artist>._(item, source: source, sortConfig: sortConfig, type: type) as Genre<ChildType>;
+        return Genre<Artist>._(item, source: source, sortConfig: sortConfig, type: type, library: library)
+            as Genre<ChildType>;
       case GenreChildType.albums:
-        return Genre<Album>._(item, source: source, sortConfig: sortConfig, type: type) as Genre<ChildType>;
+        return Genre<Album>._(item, source: source, sortConfig: sortConfig, type: type, library: library)
+            as Genre<ChildType>;
       case GenreChildType.playlists:
-        return Genre<Playlist>._(item, source: source, sortConfig: sortConfig, type: type) as Genre<ChildType>;
+        return Genre<Playlist>._(item, source: source, sortConfig: sortConfig, type: type, library: library)
+            as Genre<ChildType>;
     }
   }
 
@@ -401,16 +433,31 @@ class Genre<ChildType extends FinampPlayableDto> extends _SortableItem<ChildType
     source: QueueItemSource.fromBaseItem(item),
     sortConfig: ResolvedSortConfig.defaultSort,
     type: GenreChildType.tracks,
+    library: currentLibraryPlaceholder,
   );
 
   @override
-  bool equalsHelper(Object other) => other is Genre && type == other.type;
+  bool equalsHelper(Object other) => other is Genre && type == other.type && other.library == library;
 
   @override
-  int get hashHelper => Object.hash(Genre, type);
+  int get hashHelper => Object.hash(Genre, type, library);
 
   @override
-  Genre copyWith(ResolvedSortConfig newSort) => Genre(item, source: source, sortConfig: newSort, type: type);
+  Genre copyWith(ResolvedSortConfig newSort) =>
+      Genre(item, source: source, sortConfig: newSort, type: type, library: library);
 }
 
-enum GenreChildType { tracks, albums, artists, playlists }
+enum GenreChildType {
+  tracks,
+  albums,
+  artists,
+  playlists;
+
+  factory GenreChildType.fromContentType(ContentType type) => switch (type) {
+    ContentType.tracks => GenreChildType.tracks,
+    ContentType.playlists => GenreChildType.playlists,
+    ContentType.genericArtists => GenreChildType.artists,
+    ContentType.albums => GenreChildType.albums,
+    _ => throw UnsupportedError("Invalid genre content type $type"),
+  };
+}

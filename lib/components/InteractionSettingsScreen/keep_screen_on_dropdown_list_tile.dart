@@ -3,6 +3,7 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../extensions/localizations.dart';
 import '../../models/finamp_models.dart';
 import '../../services/finamp_settings_helper.dart';
 
@@ -20,7 +21,7 @@ class KeepScreenOnDropdownListTile extends ConsumerWidget {
           Text(AppLocalizations.of(context)!.keepScreenOnSubtitle),
           FinampSettingsDropdown<KeepScreenOnOption>(
             dropdownItems: KeepScreenOnOption.values
-                .map((e) => DropdownMenuEntry<KeepScreenOnOption>(value: e, label: e.toLocalisedString(context)))
+                .map((e) => DropdownMenuEntry<KeepScreenOnOption>(value: e, label: e.toLocalisedString(context.l10n)))
                 .toList(),
             selectedValue: ref.watch(finampSettingsProvider.keepScreenOnOption),
             onSelected: (value) {

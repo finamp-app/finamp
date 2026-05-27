@@ -113,7 +113,7 @@ class JellyfinApiHelper {
 
   Future<List<BaseItemDto>?> getItems({
     BaseItemDto? parentItem,
-    BaseItemDto? libraryFilter,
+    BaseItemId? libraryFilter,
     String? includeItemTypes,
     String? sortBy,
     String? sortOrder,
@@ -170,7 +170,7 @@ class JellyfinApiHelper {
 
   Future<QueryResult_BaseItemDto> getItemsWithTotalRecordCount({
     BaseItemDto? parentItem,
-    BaseItemDto? libraryFilter,
+    BaseItemId? libraryFilter,
     String? includeItemTypes,
     String? sortBy,
     String? sortOrder,
@@ -209,7 +209,7 @@ class JellyfinApiHelper {
 
   Future<QueryResult_BaseItemDto> _fetchGetItemsResponse({
     BaseItemDto? parentItem,
-    BaseItemDto? libraryFilter,
+    BaseItemId? libraryFilter,
     String? includeItemTypes,
     String? sortBy,
     String? sortOrder,
@@ -305,7 +305,7 @@ class JellyfinApiHelper {
           // Albums of Album Artists
           response = await api.getItems(
             userId: currentUserId,
-            parentId: libraryFilter?.id,
+            parentId: libraryFilter,
             albumArtistIds: parentItem?.id.raw,
             includeItemTypes: includeItemTypes,
             recursive: recursive,
@@ -325,7 +325,7 @@ class JellyfinApiHelper {
           // Performing Artists
           response = await api.getItems(
             userId: currentUserId,
-            parentId: libraryFilter?.id,
+            parentId: libraryFilter,
             artistIds: parentItem?.id.raw,
             includeItemTypes: includeItemTypes,
             recursive: recursive,
@@ -355,7 +355,7 @@ class JellyfinApiHelper {
         );
       } else if (parentItem?.type == "MusicGenre") {
         response = await api.getItems(
-          parentId: libraryFilter?.id,
+          parentId: libraryFilter,
           userId: currentUserId,
           albumIds: albumIds?.join(","),
           genreIds: parentItem?.id.raw,

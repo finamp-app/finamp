@@ -494,7 +494,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
               similarAlbums = await providers.read(
                 getPerformingArtistAlbumsProvider(
                   artist: artist,
-                  libraryFilter: currentQueue.sourceLibrary,
+                  libraryFilter: currentQueue.sourceLibrary?.id,
                   sortBy: SortBy.random,
                 ).future,
               );
@@ -502,7 +502,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
               similarAlbums = await providers.read(
                 getArtistAlbumsProvider(
                   artist: artist,
-                  libraryFilter: currentQueue.sourceLibrary,
+                  libraryFilter: currentQueue.sourceLibrary?.id,
                   sortBy: SortBy.random,
                 ).future,
               );

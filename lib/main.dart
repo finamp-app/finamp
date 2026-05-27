@@ -537,16 +537,16 @@ void _migrateSortOptions() {
 
   var changed = false;
 
-  if (finampSettings.tabSortBy.isEmpty) {
+  if (finampSettings.tabSortBy.isEmpty && finampSettings.sortBy != null) {
     for (var type in ContentType.values.where((x) => x.isTab)) {
-      finampSettings.tabSortBy[type] = finampSettings.sortBy;
+      finampSettings.tabSortBy[type] = finampSettings.sortBy!;
     }
     changed = true;
   }
 
-  if (finampSettings.tabSortOrder.isEmpty) {
+  if (finampSettings.tabSortOrder.isEmpty && finampSettings.sortOrder != null) {
     for (var type in ContentType.values.where((x) => x.isTab)) {
-      finampSettings.tabSortOrder[type] = finampSettings.sortOrder;
+      finampSettings.tabSortOrder[type] = finampSettings.sortOrder!;
     }
     changed = true;
   }

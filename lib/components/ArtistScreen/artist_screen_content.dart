@@ -99,7 +99,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         .watch(
           getArtistAlbumsProvider(
             artist: widget.parent,
-            libraryFilter: widget.library,
+            libraryFilter: widget.library?.id,
             genreFilter: sortConfig.genreFilter?.id,
           ),
         )
@@ -108,7 +108,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         .watch(
           getPerformingArtistAlbumsProvider(
             artist: widget.parent,
-            libraryFilter: widget.library,
+            libraryFilter: widget.library?.id,
             genreFilter: sortConfig.genreFilter?.id,
           ),
         )
@@ -117,7 +117,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         .watch(
           getPerformingArtistTracksProvider(
             artist: widget.parent,
-            libraryFilter: widget.library,
+            libraryFilter: widget.library?.id,
             genreFilter: sortConfig.genreFilter?.id,
           ),
         )
@@ -125,7 +125,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
     final allTracks = ref.watch(
       getArtistTracksProvider(
         artist: widget.parent,
-        libraryFilter: widget.library,
+        libraryFilter: widget.library?.id,
         genreFilter: sortConfig.genreFilter?.id,
       ).future,
     );

@@ -44,19 +44,15 @@ Widget _getMenuHeaderForItemType({
     },
     MusicScreenPlayable(sortConfig: final config, library: final library, tab: final content) => HomeSectionInfo(
       config: HomeScreenSectionConfiguration(
-        type: HomeScreenSectionType.tabView,
-        itemId: library,
-        contentType: content,
-        sortAndFilterConfiguration: config,
+        base: TabsHomeSection(libraryId: library, contentType: content),
+        sortConfig: config,
         customSectionTitle: item.source.name.getLocalized(context.l10n),
       ),
     ),
     LatestQueues() => HomeSectionInfo(
       config: HomeScreenSectionConfiguration(
-        type: HomeScreenSectionType.queues,
-        itemId: currentLibraryPlaceholder,
-        contentType: ContentType.home,
-        sortAndFilterConfiguration: SortAndFilterConfiguration.defaultSort,
+        base: QueuesHomeSection(),
+        sortConfig: SortAndFilterConfiguration.defaultSort,
         customSectionTitle: item.source.name.getLocalized(context.l10n),
       ),
     ),
@@ -472,7 +468,7 @@ class HomeSectionInfo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final Widget image;
-    if (item != null && config.type == HomeScreenSectionType.collection) {
+    if (item != null && config.base is CollectionHomeSection) {
       image = AlbumImage(item: item, borderRadius: BorderRadius.zero, tapToZoom: true);
     } else {
       image = Container(
@@ -529,14 +525,12 @@ class HomeSectionInfo extends ConsumerWidget {
                         maxLines: 2,
                       ),
                       IconAndText(
-                        iconData: config.sortAndFilterConfiguration.sortOrder == SortOrder.ascending
+                        iconData: config.sortConfig.sortOrder == SortOrder.ascending
                             ? TablerIcons.sort_ascending
                             : TablerIcons.sort_descending,
-                        textSpan: TextSpan(
-                          text: config.sortAndFilterConfiguration.sortBy.toLocalisedString(context.l10n),
-                        ),
+                        textSpan: TextSpan(text: config.sortConfig.sortBy.toLocalisedString(context.l10n)),
                       ),
-                      ...config.sortAndFilterConfiguration.filters.map(
+                      ...config.sortConfig.filters.map(
                         (filter) => IconAndText(
                           iconData: TablerIcons.filter,
                           textSpan: TextSpan(text: filter.getName(context.l10n)),

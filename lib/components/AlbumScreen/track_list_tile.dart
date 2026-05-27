@@ -19,6 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../extensions/localizations.dart';
 import '../../models/music_models.dart';
 import '../../services/downloads_service.dart';
 import '../../services/finamp_settings_helper.dart';
@@ -250,7 +251,7 @@ Widget buildSwipeActionBackground({
   double? iconSize,
 }) {
   final icon = getSwipeActionIcon(action);
-  final label = action.toLocalisedString(context);
+  final label = action.toLocalisedString(context.l10n);
 
   final children = [
     Icon(icon, color: Theme.of(context).colorScheme.secondary, size: iconSize ?? 28.0),

@@ -45,10 +45,10 @@ class GlobalSnackbar {
     return null;
   }
 
-  static final _englishL10n = AppLocalizationsEn();
+  static final englishL10n = AppLocalizationsEn();
   static AppLocalizations? _localizationsCache;
 
-  static AppLocalizations get requireL10n => _contextL10n ?? _localizationsCache ?? _englishL10n;
+  static AppLocalizations get requireL10n => _contextL10n ?? _localizationsCache ?? englishL10n;
 
   static final _logger = Logger("GlobalSnackbar");
 

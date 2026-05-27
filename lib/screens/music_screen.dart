@@ -195,7 +195,13 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     // Get the filtered tab or the tabs from the user's tab order,
     // and filter them to only include enabled tabs
     final sortedTabs = widget.singleTabConfig != null
-        ? [widget.singleTabConfig!.contentType]
+        ? [
+            switch (widget.singleTabConfig!.base) {
+              QueuesHomeSection() => ContentType.home,
+              TabsHomeSection tabSection => tabSection.contentType,
+              CollectionHomeSection() => ContentType.home,
+            },
+          ]
         : ref
               .watch(finampSettingsProvider.tabOrder)
               .where((e) => ref.watch(finampSettingsProvider.showTabs(e)) ?? false);
@@ -275,7 +281,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                     : tabType;
                 sortAndFilterControllerMap[contentTabType] ??= widget.singleTabConfig != null
                     ? SortAndFilterController(
-                        startingConfig: widget.singleTabConfig!.sortAndFilterConfiguration,
+                        startingConfig: widget.singleTabConfig!.sortConfig,
                         contentType: contentTabType,
                       )
                     : SortAndFilterController.trackSettings(contentTabType);
