@@ -3336,5 +3336,13 @@
   "carPlayLoginPrompt": "Open the Finamp app on your phone to log in to your Jellyfin server.",
   "@carPlayLoginPrompt": {
     "description": "Label shown when the user is trying to use CarPlay without being logged in."
+  },
+  "radioModeContinuousThresholdTitle": "Allow repeats after",
+  "@radioModeContinuousThresholdTitle": {
+    "description": "Title for the setting that defines how many minutes between repetitions is allowed in continuous radio mode."
+  },
+  "radioModeContinuousThresholdSubtitle": "Minutes, 0 to disable",
+  "@radioModeContinuousThresholdSybtitle": {
+    "description": "Subtitle for the setting that defines how many minutes between repetitions is allowed in continuous radio mode."
   }
 }

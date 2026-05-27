@@ -121,6 +121,54 @@ Future<void> showRadioMenu(
                 ),
               ],
       )
+      .followedBy(<Widget>[
+        Consumer(
+          builder: (context, ref, child) {
+            final currentRadioMode = ref.watch(finampSettingsProvider.radioMode);
+            if (currentRadioMode == RadioMode.continuous) {
+              final threshold = ref.watch(finampSettingsProvider.continuousModeRepetitionThresholdMinutes);
+              final controller = TextEditingController(text: threshold.toString());
+              return ListTile(
+                leading: Padding(
+                  padding: const EdgeInsets.only(right: 2.0),
+                  child: Icon(TablerIcons.reload, size: 32.0, color: ColorScheme.of(context).primary),
+                ),
+                title: Text(
+                  AppLocalizations.of(context)!.radioModeContinuousThresholdTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.clip,
+                ),
+                subtitle: Text(
+                  AppLocalizations.of(context)!.radioModeContinuousThresholdSubtitle,
+                  style: Theme.of(context).textTheme.bodySmall,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
+                ),
+                trailing: SizedBox(
+                  width: 60,
+                  child: TextField(
+                    controller: controller,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 8)),
+                    onSubmitted: (value) {
+                      int? minutes = int.tryParse(value);
+                      if (minutes == null || minutes < 0) {
+                        controller.text = "0";
+                        minutes = 0;
+                      }
+                      FinampSetters.setContinuousModeRepetitionThresholdMinutes(minutes);
+                    },
+                  ),
+                ),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          },
+        ),
+      ])
       .toList();
 
   await showThemedBottomSheet(
