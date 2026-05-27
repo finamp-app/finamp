@@ -531,13 +531,11 @@ class HomeSectionInfo extends ConsumerWidget {
                 : Colors.white.withOpacity(0.15),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          padding: config.type == HomeScreenSectionType.collection
-              ? EdgeInsets.zero
-              : const EdgeInsets.symmetric(horizontal: 6.0),
+          padding: config.base is CollectionHomeSection ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 6.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (config.type == HomeScreenSectionType.collection) AspectRatio(aspectRatio: 1.0, child: image),
+              if (config.base is CollectionHomeSection) AspectRatio(aspectRatio: 1.0, child: image),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 26.0),
