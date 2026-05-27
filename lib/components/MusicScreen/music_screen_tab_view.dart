@@ -285,7 +285,9 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     String getSortName(BaseItemDto item) {
       if (tabSortBy == SortBy.albumArtist) {
         final artists = item.albumArtists;
-        return removeDiacritics(artists?.sortedBy((e) => e.name ?? '').map((e) => e.name ?? '').join(", ") ?? item.albumArtist ?? "");
+        return removeDiacritics(
+          artists?.sortedBy((e) => e.name ?? '').map((e) => e.name ?? '').join(", ") ?? item.albumArtist ?? "",
+        );
       }
 
       return removeDiacritics(item.nameForSorting ?? "");
