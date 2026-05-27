@@ -178,7 +178,8 @@ class SortAndFilterRow extends ConsumerWidget {
   final SortAndFilterController controller;
 
   final bool removeOnly;
-  final bool hideArtistGenreFilters;
+  final bool hideGenreFilters;
+  final bool hideArtistFilters;
 
   static double get height => (Platform.isIOS || Platform.isAndroid) ? 30 : 26;
 
@@ -186,19 +187,32 @@ class SortAndFilterRow extends ConsumerWidget {
     super.key,
     required this.tabType,
     required this.controller,
-    this.hideArtistGenreFilters = false,
+    this.hideGenreFilters = false,
+    this.hideArtistFilters = false,
   }) : removeOnly = false;
 
-  const SortAndFilterRow.removeOnly({super.key, required this.controller, this.hideArtistGenreFilters = false})
-    : tabType = ContentType.tracks,
-      removeOnly = true;
+  const SortAndFilterRow.removeOnly({
+    super.key,
+    required this.controller,
+    this.hideGenreFilters = false,
+    this.hideArtistFilters = false,
+  }) : tabType = ContentType.tracks,
+       removeOnly = true;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentConfig = ref.watch(resolveSortProvider(controller));
-    final activeFilters = hideArtistGenreFilters
-        ? currentConfig.filters.whereNot((x) => x.type.isArtistGenre)
-        : currentConfig.filters;
+    final activeFilters = currentConfig.filters.where((filter) {
+      if (hideGenreFilters && filter.type == ItemFilterType.genreFilter) {
+        return false;
+      }
+
+      if (hideArtistFilters && filter.type == ItemFilterType.artistFilter) {
+        return false;
+      }
+
+      return true;
+    }).toList();
     final int activeFilterCount = activeFilters.length;
     String statusText = context.l10n.activeFilterCount(activeFilterCount);
 
@@ -207,7 +221,8 @@ class SortAndFilterRow extends ConsumerWidget {
       tabType: tabType,
       controller: controller,
       removeOnly: removeOnly,
-      hideArtistGenreFilters: hideArtistGenreFilters,
+      hideGenreFilters: hideGenreFilters,
+      hideArtistFilters: hideArtistFilters,
     );
     return SafeArea(
       top: false,
@@ -316,7 +331,8 @@ Future<void> showSortAndFilterMenu(
   required ContentType tabType,
   required SortAndFilterController controller,
   bool removeOnly = false,
-  bool hideArtistGenreFilters = false,
+  bool hideGenreFilters = false,
+  bool hideArtistFilters = false,
 }) async {
   return await showThemedBottomSheet<void>(
     context: context,
@@ -327,7 +343,8 @@ Future<void> showSortAndFilterMenu(
         tabType: tabType,
         controller: controller,
         removeOnly: removeOnly,
-        hideArtistGenreFilters: hideArtistGenreFilters,
+        hideGenreFilters: hideGenreFilters,
+        hideArtistFilters: hideArtistFilters,
       );
     },
   );
@@ -346,7 +363,8 @@ class SortAndFilterMenu extends ConsumerStatefulWidget {
     required this.tabType,
     required this.controller,
     required this.removeOnly,
-    required this.hideArtistGenreFilters,
+    required this.hideGenreFilters,
+    required this.hideArtistFilters,
   });
 
   final ScrollBuilder childBuilder;
@@ -354,7 +372,8 @@ class SortAndFilterMenu extends ConsumerStatefulWidget {
   final ContentType tabType;
   final SortAndFilterController controller;
   final bool removeOnly;
-  final bool hideArtistGenreFilters;
+  final bool hideGenreFilters;
+  final bool hideArtistFilters;
 
   @override
   ConsumerState<SortAndFilterMenu> createState() => _SortAndFilterMenuState();
@@ -370,7 +389,8 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
   ];
   Set<ItemFilter> get excessFilters => currentConfig.filters
       .whereNot((x) => toggalableFilterTypes.contains(x.type))
-      .whereNot((x) => widget.hideArtistGenreFilters && x.type.isArtistGenre)
+      .whereNot((x) => widget.hideGenreFilters && x.type == ItemFilterType.genreFilter)
+      .whereNot((x) => widget.hideArtistFilters && x.type == ItemFilterType.artistFilter)
       .toSet();
 
   @override
@@ -534,6 +554,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
           ItemFilterType.isFullyDownloaded => TablerIcons.download,
           ItemFilterType.startsWithCharacter => TablerIcons.sort_ascending,
           ItemFilterType.genreFilter => TablerIcons.tag,
+          ItemFilterType.artistFilter => TablerIcons.user,
           ItemFilterType.searchTerm => TablerIcons.list_search,
           ItemFilterType.isUnplayed => TablerIcons.headphones_off,
         }),
@@ -551,6 +572,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
         ItemFilterType.isUnplayed => currentConfig.filters.contains(ItemFilter(type: ItemFilterType.isUnplayed)),
         ItemFilterType.startsWithCharacter ||
         ItemFilterType.genreFilter ||
+        ItemFilterType.artistFilter ||
         ItemFilterType.searchTerm => throw UnsupportedError("Filter type $option should not be toggleable"),
       },
       onToggle: (currentState) async {
@@ -567,6 +589,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
               newFilters.add(ItemFilter(type: ItemFilterType.isUnplayed));
             case ItemFilterType.startsWithCharacter:
             case ItemFilterType.genreFilter:
+            case ItemFilterType.artistFilter:
             case ItemFilterType.searchTerm:
               throw UnsupportedError("Filter type $option should not be toggleable");
           }
@@ -588,6 +611,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
           ItemFilterType.isFullyDownloaded => TablerIcons.download,
           ItemFilterType.startsWithCharacter => TablerIcons.sort_ascending,
           ItemFilterType.genreFilter => TablerIcons.tag,
+          ItemFilterType.artistFilter => TablerIcons.user,
           ItemFilterType.searchTerm => TablerIcons.list_search,
           ItemFilterType.isUnplayed => TablerIcons.headphones_off,
         }),

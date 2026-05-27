@@ -105,7 +105,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
               genreFilter: widget.parent,
             ),
           ),
-          hideArtistGenreFilters: true,
+          hideGenreFilters: true,
         ),
       ),
     );
@@ -292,7 +292,12 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 10)),
         SliverToBoxAdapter(
-          child: PlaybackActionRow(compactLayout: true, item: Genre.fromItem(widget.parent), popContext: false, trackCount: trackCount),
+          child: PlaybackActionRow(
+            compactLayout: true,
+            item: Genre.fromItem(widget.parent),
+            popContext: false,
+            trackCount: trackCount,
+          ),
         ),
         if (!isLoading)
           ...genreItemSectionsOrder.map((type) {

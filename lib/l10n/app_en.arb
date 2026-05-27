@@ -3603,7 +3603,16 @@
   },
   "genreFilter": "Genre: {name}",
   "@genreFilter": {
-    "description": "Name of genrefilter",
+    "description": "Name of genreFilter",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "artistFilter": "Artist: {name}",
+  "@artistFilter": {
+    "description": "Name of artistFilter",
     "placeholders": {
       "name": {
         "type": "String"

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:finamp/extensions/list.dart';
 import 'package:finamp/models/music_models.dart';
+import 'package:finamp/services/artist_content_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -244,10 +245,20 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
   }
 
   final genreFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter);
+  final artistFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.artistFilter);
   final searchFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.searchTerm);
+
+  final tabArtistType = switch (request.tab) {
+    ContentType.albumArtists => ArtistType.albumArtist,
+    ContentType.performingArtists => ArtistType.artist,
+    _ => null,
+  };
+
+  final artistType = artistFilter != null ? ref.watch(finampSettingsProvider.defaultArtistType) : tabArtistType;
+
   return jellyfinApiHelper.getItems(
     libraryFilter: library?.id,
-    parentItem: request.tab == ContentType.playlists ? null : library,
+    parentItem: request.tab == ContentType.playlists ? null : (artistFilter?.extraBaseItem ?? library),
     includeItemTypes: [request.tab.itemType?.jellyfinName].join(","),
     sortBy: request.sortConfig.sortBy.jellyfinName(request.tab),
     sortOrder: request.sortConfig.sortOrder.toString(),
@@ -261,6 +272,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
             ItemFilterType.startsWithCharacter =>
               throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
             ItemFilterType.genreFilter => null,
+            ItemFilterType.artistFilter => null,
             ItemFilterType.searchTerm => null,
             ItemFilterType.isUnplayed => "IsUnplayed",
           },
@@ -274,11 +286,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
     //    sortAndFilterConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite))
     //     ? true
     //    : null,
-    artistType: switch (request.tab) {
-      ContentType.albumArtists => ArtistType.albumArtist,
-      ContentType.performingArtists => ArtistType.artist,
-      _ => null,
-    },
+    artistType: artistType,
     genreFilter: genreFilter?.extraBaseItem.id,
   );
 }
@@ -296,6 +304,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
 
   final searchFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.searchTerm);
   final genreFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter);
+  final artistFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.artistFilter);
 
   BaseItemId? libraryId;
   if (request.library == allLibraryPlaceholder) {
@@ -312,35 +321,47 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
   }
 
   //FIXME this seems to also return metadata-only albums which don't have any downloaded children
-  if (request.tab == ContentType.tracks) {
-    // tracks are not stored as collections, so we need to get them differently
-    offlineItems = await downloadsService.getAllTracks(
-      nameFilter: searchFilter?.extraString.trim(),
-      viewFilter: libraryId,
-      nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
-      onlyFavorites: request.sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
-      genreFilter: genreFilter?.extraBaseItem.id,
+  if (request.tab == ContentType.tracks && artistFilter != null) {
+    final artistType = ref.watch(finampSettingsProvider.defaultArtistType);
+    items = await ref.watch(
+      getArtistTracksProvider(
+        artist: artistFilter.extraBaseItem,
+        libraryFilter: libraryId,
+        genreFilter: genreFilter?.extraBaseItem.id,
+        filterOfflineArtistType: artistType,
+      ).future,
     );
   } else {
-    offlineItems = await downloadsService.getAllCollections(
-      nameFilter: searchFilter?.extraString.trim(),
-      includeItemTypes: [request.tab.itemType ?? BaseItemDtoType.album], //FIXME support allowing multiple types
-      // TODO use the filter config for this instead of global(several places)?
-      fullyDownloaded: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
-      viewFilter: libraryId,
-      childViewFilter: [ContentType.albums, ContentType.playlists].contains(request.tab) ? null : libraryId,
-      nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
-      onlyFavorites: request.sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
-      infoForType: switch (request.tab) {
-        ContentType.albumArtists => BaseItemDtoType.album,
-        ContentType.performingArtists => BaseItemDtoType.track,
-        _ => null,
-      },
-      genreFilter: request.tab == ContentType.playlists ? null : genreFilter?.extraBaseItem.id,
-    );
-  }
+    if (request.tab == ContentType.tracks) {
+      // tracks are not stored as collections, so we need to get them differently
+      offlineItems = await downloadsService.getAllTracks(
+        nameFilter: searchFilter?.extraString.trim(),
+        viewFilter: libraryId,
+        nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
+        onlyFavorites: request.sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
+        genreFilter: genreFilter?.extraBaseItem.id,
+      );
+    } else {
+      offlineItems = await downloadsService.getAllCollections(
+        nameFilter: searchFilter?.extraString.trim(),
+        includeItemTypes: [request.tab.itemType ?? BaseItemDtoType.album], //FIXME support allowing multiple types
+        // TODO use the filter config for this instead of global(several places)?
+        fullyDownloaded: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
+        viewFilter: libraryId,
+        childViewFilter: [ContentType.albums, ContentType.playlists].contains(request.tab) ? null : libraryId,
+        nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
+        onlyFavorites: request.sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
+        infoForType: switch (request.tab) {
+          ContentType.albumArtists => BaseItemDtoType.album,
+          ContentType.performingArtists => BaseItemDtoType.track,
+          _ => null,
+        },
+        genreFilter: request.tab == ContentType.playlists ? null : genreFilter?.extraBaseItem.id,
+      );
+    }
 
-  items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
+    items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
+  }
 
   var sortBy = request.sortConfig.sortBy;
   // PlayCount and Last Played are not representative in Offline Mode
@@ -565,6 +586,7 @@ Future<List<BaseItemDto>?> getJellyfinCollection(
               ItemFilterType.startsWithCharacter =>
                 throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
               ItemFilterType.genreFilter => throw UnimplementedError(),
+              ItemFilterType.artistFilter => throw UnimplementedError(),
               ItemFilterType.searchTerm => throw UnimplementedError(),
               ItemFilterType.isUnplayed => "IsUnplayed",
             },

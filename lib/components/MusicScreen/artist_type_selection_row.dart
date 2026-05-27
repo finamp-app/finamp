@@ -3,26 +3,25 @@ import 'dart:io';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
-import 'package:finamp/models/jellyfin_models.dart';
 import 'package:flutter/material.dart';
 
 class ArtistTypeSelectionRow extends StatelessWidget {
   final ContentType tabType;
   final ArtistType defaultArtistType;
   final void Function(ContentType) refreshTab;
-  final BaseItemDto? artistFilter;
+  final HomeScreenSectionConfiguration? singleTabConfig;
 
   const ArtistTypeSelectionRow({
     super.key,
     required this.tabType,
     required this.defaultArtistType,
     required this.refreshTab,
-    this.artistFilter,
+    this.singleTabConfig,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isArtistTrackList = tabType == ContentType.tracks && artistFilter != null;
+    final isArtistTrackList = tabType == ContentType.tracks && singleTabConfig?.sortConfig.artistFilter != null;
 
     if (tabType == ContentType.genericArtists || isArtistTrackList) {
       double screenWidth = MediaQuery.widthOf(context);

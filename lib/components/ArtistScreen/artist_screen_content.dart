@@ -118,10 +118,10 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
               sortOrder: sortOrderOverride,
               favoriteFilter: isFavoriteOverride ? true : null,
               genreFilter: genreFilter,
-              //artistFilter: widget.parent,
+              artistFilter: widget.parent,
             ),
           ),
-          hideArtistGenreFilters: true,
+          hideArtistFilters: true,
         ),
       ),
     );
