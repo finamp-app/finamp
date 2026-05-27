@@ -24,26 +24,29 @@ class ViewListTile extends ConsumerWidget {
     return Semantics.fromProperties(
       properties: SemanticsProperties(label: view.name, selected: currentViewId == view.id),
       container: true,
-      child: ListTile(
-        leading: Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: ViewIcon(
-            collectionType: view.collectionType,
-            color: currentViewId == view.id ? Theme.of(context).colorScheme.primary : null,
+      child: Material(
+        color: Colors.transparent,
+        child: ListTile(
+          leading: Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: ViewIcon(
+              collectionType: view.collectionType,
+              color: currentViewId == view.id ? Theme.of(context).colorScheme.primary : null,
+            ),
           ),
-        ),
-        title: Text(
-          view.name ?? context.l10n.unknownName,
-          semanticsLabel: "", // covered by SemanticsProperties
-          style: TextStyle(color: currentViewId == view.id ? Theme.of(context).colorScheme.primary : null),
-        ),
-        onTap: () {
-          finampUserHelper.setCurrentUserCurrentViewId(view.id);
-          Navigator.of(context).pop();
-        },
-        trailing: DownloadButton(
-          isLibrary: true,
-          item: DownloadStub.fromItem(item: view, type: DownloadItemType.collection),
+          title: Text(
+            view.name ?? context.l10n.unknownName,
+            semanticsLabel: "", // covered by SemanticsProperties
+            style: TextStyle(color: currentViewId == view.id ? Theme.of(context).colorScheme.primary : null),
+          ),
+          onTap: () {
+            finampUserHelper.setCurrentUserCurrentViewId(view.id);
+            Navigator.of(context).pop();
+          },
+          trailing: DownloadButton(
+            isLibrary: true,
+            item: DownloadStub.fromItem(item: view, type: DownloadItemType.collection),
+          ),
         ),
       ),
     );

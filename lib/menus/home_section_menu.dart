@@ -52,14 +52,14 @@ Future<void> showModalHomeSectionMenu({
       includePlaybackRow: showPlayback,
     );
     List<Widget> menu = [
-      SliverPersistentHeader(delegate: MenuItemInfoSliverHeader(item: item), pinned: true),
+      SliverPersistentHeader(delegate: MenuItemInfoSliverHeader.condensed(item: item), pinned: true),
       if (showPlayback)
         MenuMask(
-          height: MenuItemInfoSliverHeader.defaultHeight,
+          height: MenuItemInfoSliverHeader.condensedHeight,
           child: SliverToBoxAdapter(child: PlaybackActionRow(item: item as FinampPlayable)),
         ),
       MenuMask(
-        height: MenuItemInfoSliverHeader.defaultHeight,
+        height: MenuItemInfoSliverHeader.condensedHeight,
         child: SliverPadding(
           padding: const EdgeInsets.only(left: 8.0),
           sliver: SliverList(delegate: SliverChildListDelegate(menuEntries)),

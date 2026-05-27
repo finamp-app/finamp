@@ -88,20 +88,29 @@ Future<void> showFinampMainMenu({required BuildContext context}) async {
                 SizedBox(height: 8.0),
                 const OfflineModeSwitchListTile(),
                 const OfflineModeStatusLabel(),
-                ListTile(
-                  leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.file_download)),
-                  title: Text(AppLocalizations.of(context)!.downloads),
-                  onTap: () => Navigator.of(context).pushNamed(DownloadsScreen.routeName),
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.file_download)),
+                    title: Text(AppLocalizations.of(context)!.downloads),
+                    onTap: () => Navigator.of(context).pushNamed(DownloadsScreen.routeName),
+                  ),
                 ),
-                ListTile(
-                  leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(TablerIcons.clock)),
-                  title: Text(AppLocalizations.of(context)!.playbackHistory),
-                  onTap: () => Navigator.of(context).pushNamed(PlaybackHistoryScreen.routeName),
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(TablerIcons.clock)),
+                    title: Text(AppLocalizations.of(context)!.playbackHistory),
+                    onTap: () => Navigator.of(context).pushNamed(PlaybackHistoryScreen.routeName),
+                  ),
                 ),
-                ListTile(
-                  leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.auto_delete)),
-                  title: Text(AppLocalizations.of(context)!.queuesScreen),
-                  onTap: () => Navigator.of(context).pushNamed(QueueRestoreScreen.routeName),
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.auto_delete)),
+                    title: Text(AppLocalizations.of(context)!.queuesScreen),
+                    onTap: () => Navigator.of(context).pushNamed(QueueRestoreScreen.routeName),
+                  ),
                 ),
                 const Divider(),
               ]),
@@ -126,15 +135,21 @@ Future<void> showFinampMainMenu({required BuildContext context}) async {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Divider(),
-                  ListTile(
-                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.warning)),
-                    title: Text(AppLocalizations.of(context)!.logs),
-                    onTap: () => Navigator.of(context).pushNamed(LogsScreen.routeName),
+                  Material(
+                    color: Colors.transparent,
+                    child: ListTile(
+                      leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.warning)),
+                      title: Text(AppLocalizations.of(context)!.logs),
+                      onTap: () => Navigator.of(context).pushNamed(LogsScreen.routeName),
+                    ),
                   ),
-                  ListTile(
-                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.settings)),
-                    title: Text(AppLocalizations.of(context)!.settings),
-                    onTap: () => Navigator.of(context).pushNamed(SettingsScreen.routeName),
+                  Material(
+                    color: Colors.transparent,
+                    child: ListTile(
+                      leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.settings)),
+                      title: Text(AppLocalizations.of(context)!.settings),
+                      onTap: () => Navigator.of(context).pushNamed(SettingsScreen.routeName),
+                    ),
                   ),
                 ],
               ),

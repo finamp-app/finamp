@@ -13,11 +13,14 @@ class MenuEntry extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var iconColor = Theme.of(context).colorScheme.primary;
 
-    return ListTile(
-      enabled: enabled,
-      leading: Icon(icon, color: enabled ? iconColor : iconColor.withOpacity(0.5)),
-      title: Text(title),
-      onTap: onTap,
+    return Material(
+      color: Colors.transparent,
+      child: ListTile(
+        enabled: enabled,
+        leading: Icon(icon, color: enabled ? iconColor : iconColor.withOpacity(0.5)),
+        title: Text(title),
+        onTap: onTap,
+      ),
     );
   }
 }

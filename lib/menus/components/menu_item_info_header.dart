@@ -60,7 +60,7 @@ Widget _getMenuHeaderForItemType({
   };
 }
 
-enum MenuItemInfoHeaderFeatures { openItem, addToPlaylistAndFavorite }
+enum MenuItemInfoHeaderFeatures { artwork, openItem, addToPlaylistAndFavorite }
 
 class MenuItemInfoSliverHeader extends SliverPersistentHeaderDelegate {
   final FinampDisplayableOrPlayable item;
@@ -69,11 +69,25 @@ class MenuItemInfoSliverHeader extends SliverPersistentHeaderDelegate {
 
   MenuItemInfoSliverHeader({
     required this.item,
-    this.features = const [MenuItemInfoHeaderFeatures.openItem, MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite],
+    this.features = const [
+      MenuItemInfoHeaderFeatures.artwork,
+      MenuItemInfoHeaderFeatures.openItem,
+      MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite,
+    ],
   }) : condensed = false;
 
-  MenuItemInfoSliverHeader.condensed({required this.item, this.features = const [MenuItemInfoHeaderFeatures.openItem]})
-    : condensed = true;
+  MenuItemInfoSliverHeader.condensed({
+    required this.item,
+    this.features = const [MenuItemInfoHeaderFeatures.artwork, MenuItemInfoHeaderFeatures.openItem],
+  }) : condensed = true;
+
+  MenuItemInfoSliverHeader.noArtwork({required this.item, this.features = const [MenuItemInfoHeaderFeatures.openItem]})
+    : condensed = false;
+
+  MenuItemInfoSliverHeader.condensedNoArtwork({
+    required this.item,
+    this.features = const [MenuItemInfoHeaderFeatures.openItem],
+  }) : condensed = true;
 
   static const MenuMaskHeight defaultHeight = MenuMaskHeight(151.0);
   static const MenuMaskHeight condensedHeight = MenuMaskHeight(80.0);
@@ -101,10 +115,26 @@ class MenuItemInfoHeader extends ConsumerWidget {
   const MenuItemInfoHeader({
     super.key,
     required this.item,
-    this.features = const [MenuItemInfoHeaderFeatures.openItem, MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite],
+    this.features = const [
+      MenuItemInfoHeaderFeatures.artwork,
+      MenuItemInfoHeaderFeatures.openItem,
+      MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite,
+    ],
   }) : condensed = false;
 
   const MenuItemInfoHeader.condensed({
+    super.key,
+    required this.item,
+    this.features = const [MenuItemInfoHeaderFeatures.artwork, MenuItemInfoHeaderFeatures.openItem],
+  }) : condensed = true;
+
+  const MenuItemInfoHeader.noArtwork({
+    super.key,
+    required this.item,
+    this.features = const [MenuItemInfoHeaderFeatures.openItem],
+  }) : condensed = false;
+
+  const MenuItemInfoHeader.condensedNoArtwork({
     super.key,
     required this.item,
     this.features = const [MenuItemInfoHeaderFeatures.openItem],
@@ -437,7 +467,8 @@ class ItemInfo extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AspectRatio(aspectRatio: 1.0, child: featureImage),
+                  if (features.contains(MenuItemInfoHeaderFeatures.artwork))
+                    AspectRatio(aspectRatio: 1.0, child: featureImage),
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.only(left: 8.0, right: 26.0),
@@ -500,10 +531,13 @@ class HomeSectionInfo extends ConsumerWidget {
                 : Colors.white.withOpacity(0.15),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
+          padding: config.type == HomeScreenSectionType.collection
+              ? EdgeInsets.zero
+              : const EdgeInsets.symmetric(horizontal: 6.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AspectRatio(aspectRatio: 1.0, child: image),
+              if (config.type == HomeScreenSectionType.collection) AspectRatio(aspectRatio: 1.0, child: image),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 26.0),

@@ -459,7 +459,7 @@ class _GetPlayerSliceProviderElement
   int? get limit => (origin as GetPlayerSliceProvider).limit;
 }
 
-String _$getChildTracksHash() => r'e8be34dc51bb2390e93925347fb5226012d0087a';
+String _$getChildTracksHash() => r'337bdbe26f034427c19c5ec507582e7580dfbacc';
 
 /// See also [getChildTracks].
 @ProviderFor(getChildTracks)
@@ -580,7 +580,7 @@ class _GetChildTracksProviderElement
       (origin as GetChildTracksProvider).item;
 }
 
-String _$getChildItemsHash() => r'eb5b7de4959d1382b531ad5d1e3f2850a7011ded';
+String _$getChildItemsHash() => r'869975f570383046aa9ecf8e25f6c1e57961b19f';
 
 /// See also [getChildItems].
 @ProviderFor(getChildItems)
