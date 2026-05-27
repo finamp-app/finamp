@@ -1,10 +1,10 @@
 import 'package:finamp/models/finamp_models.dart';
-import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
+import '../../../components/HomeScreen/home_section_editor.dart';
 import '../../../extensions/localizations.dart';
 import 'menu_entry.dart';
 

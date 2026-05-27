@@ -5,6 +5,7 @@ import 'package:balanced_text/balanced_text.dart';
 import 'package:finamp/components/AlbumScreen/download_button.dart';
 import 'package:finamp/components/Buttons/cta_small.dart';
 import 'package:finamp/components/HomeScreen/home_screen_quick_action_button.dart';
+import 'package:finamp/components/HomeScreen/quick_action_editor.dart';
 import 'package:finamp/components/HomeScreen/show_all_button.dart';
 import 'package:finamp/components/MusicScreen/item_card.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';

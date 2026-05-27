@@ -146,7 +146,7 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
               titleSpacing: 0,
               flexibleSpace: AlbumScreenContentFlexibleSpaceBar(
                 parentItem: widget.parent,
-                items: queueChildren,
+                items: isLoading ? null : queueChildren,
                 controller: sortAndFilterController,
               ),
               actions: actions,
