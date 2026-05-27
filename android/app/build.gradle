@@ -19,6 +19,12 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+configurations.all {
+    resolutionStrategy {
+        force "androidx.glance:glance-appwidget:1.1.1"
+    }
+}
+
 android {
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
