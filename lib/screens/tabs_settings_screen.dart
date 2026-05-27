@@ -1,4 +1,6 @@
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,10 +14,18 @@ class TabsSettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tabOrder = ref.watch(finampSettingsProvider.tabOrder);
+    final tabOrder = ref.watch(finampSettingsProvider.tabOrder).where((x) => x.isTab).toList();
+
+    // Reset tab order if something funny is going on
+    if (tabOrder.length != DefaultSettings.tabOrder.length ||
+        tabOrder.toSet().length != DefaultSettings.tabOrder.length) {
+      FinampSetters.setTabOrder(DefaultSettings.tabOrder);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.tabs),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetTabsSettings),
         ],

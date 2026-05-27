@@ -21,7 +21,7 @@ typedef SliverBuilder = (double, List<Widget>) Function(BuildContext);
 typedef WrapperBuilder = Widget Function(BuildContext, DraggableScrollableController, ScrollBuilder);
 typedef ScrollBuilder = Widget Function(double, List<Widget>);
 
-Future<void> showThemedBottomSheet({
+Future<T?> showThemedBottomSheet<T>({
   required BuildContext context,
   BaseItemDto? item,
   required String routeName,
@@ -39,7 +39,7 @@ Future<void> showThemedBottomSheet({
     minDraggableHeight: minDraggableHeight,
     showDragHandle: showDragHandle,
   );
-  await showModalBottomSheet<void>(
+  return await showModalBottomSheet<T>(
     context: context,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.0))),
     isScrollControlled: true,

@@ -972,36 +972,36 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   List<MediaItem> _getRootMenu() {
     return [
       MediaItem(
-        id: MediaItemId(contentType: TabContentType.albums, parentType: MediaItemParentType.rootCollection).toString(),
+        id: MediaItemId(contentType: ContentType.albums, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.albums ?? TabContentType.albums.toString(),
-        playable: false,
-      ),
-      MediaItem(
-        id: MediaItemId(contentType: TabContentType.artists, parentType: MediaItemParentType.rootCollection).toString(),
-        // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.artists ?? TabContentType.artists.toString(),
+        title: _appLocalizations?.albums ?? ContentType.albums.toString(),
         playable: false,
       ),
       MediaItem(
         id: MediaItemId(
-          contentType: TabContentType.playlists,
+          contentType: ContentType.performingArtists,
           parentType: MediaItemParentType.rootCollection,
         ).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.playlists ?? TabContentType.playlists.toString(),
+        title: _appLocalizations?.artists ?? ContentType.performingArtists.toString(),
         playable: false,
       ),
       MediaItem(
-        id: MediaItemId(contentType: TabContentType.genres, parentType: MediaItemParentType.rootCollection).toString(),
+        id: MediaItemId(contentType: ContentType.playlists, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.genres ?? TabContentType.genres.toString(),
+        title: _appLocalizations?.playlists ?? ContentType.playlists.toString(),
         playable: false,
       ),
       MediaItem(
-        id: MediaItemId(contentType: TabContentType.tracks, parentType: MediaItemParentType.rootCollection).toString(),
+        id: MediaItemId(contentType: ContentType.genres, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.tracks ?? TabContentType.tracks.toString(),
+        title: _appLocalizations?.genres ?? ContentType.genres.toString(),
+        playable: false,
+      ),
+      MediaItem(
+        id: MediaItemId(contentType: ContentType.tracks, parentType: MediaItemParentType.rootCollection).toString(),
+        // ignore: deprecated_member_use_from_same_package
+        title: _appLocalizations?.tracks ?? ContentType.tracks.toString(),
         playable: false,
       ),
     ];
@@ -1026,7 +1026,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       // return await _androidAutoHelper.getRecentItems();
       // return playlists for now
       return await _androidAutoHelper.getMediaItems(
-        MediaItemId(contentType: TabContentType.playlists, parentType: MediaItemParentType.rootCollection),
+        MediaItemId(contentType: ContentType.playlists, parentType: MediaItemParentType.rootCollection),
       );
     } else {
       try {
@@ -1238,9 +1238,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           MediaControl.custom(
             name: CustomPlaybackActions.toggleFavorite.name,
             androidIcon: isFavorite ? "drawable/baseline_heart_filled_24" : "drawable/baseline_heart_24",
-            label: isFavorite
-                ? GlobalSnackbar.localizations?.removeFavorite ?? "Remove Favorite"
-                : GlobalSnackbar.localizations?.addFavorite ?? "Add Favorite",
+            label: isFavorite ? GlobalSnackbar.requireL10n.removeFavorite : GlobalSnackbar.requireL10n.addFavorite,
           ),
         if (FinampSettingsHelper.finampSettings.showShuffleButtonOnMediaNotification)
           //TODO eventually we probably want separate settings for this, and not store them as individual booleans in Hive
@@ -1249,8 +1247,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
                   name: CustomPlaybackActions.radio.name,
                   androidIcon: radioActive ? "drawable/tabler_icons_radio_24" : "drawable/tabler_icons_radio_off_24",
                   label: radioActive
-                      ? GlobalSnackbar.localizations?.radioModeActiveTitle ?? "Radio active"
-                      : GlobalSnackbar.localizations?.radioModeInactiveTitle ?? "Radio paused",
+                      ? GlobalSnackbar.requireL10n.radioModeActiveTitle
+                      : GlobalSnackbar.requireL10n.radioModeInactiveTitle,
                 )
               : MediaControl.custom(
                   name: CustomPlaybackActions.shuffle.name,
@@ -1258,8 +1256,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
                       ? "drawable/baseline_shuffle_on_24"
                       : "drawable/baseline_shuffle_24",
                   label: _player.shuffleModeEnabled
-                      ? GlobalSnackbar.localizations?.playbackOrderShuffledButtonLabel ?? "Shuffle enabled"
-                      : GlobalSnackbar.localizations?.playbackOrderLinearButtonLabel ?? "Shuffle disabled",
+                      ? GlobalSnackbar.requireL10n.playbackOrderShuffledButtonLabel
+                      : GlobalSnackbar.requireL10n.playbackOrderLinearButtonLabel,
                 ),
         if (FinampSettingsHelper.finampSettings.showStopButtonOnMediaNotification)
           MediaControl.stop.copyWith(androidIcon: "drawable/baseline_stop_24"),

@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.mediarouter.app.SystemOutputSwitcherDialogController
 import androidx.mediarouter.media.MediaRouter
 import com.ryanheise.audioservice.AudioServiceActivity
+import io.flutter.plugin.common.EventChannel
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,10 @@ class MainActivity : AudioServiceActivity() {
         private const val DOWNLOADS_SERVICE_CHANNEL = "com.unicornsonlsd.finamp/downloads_service"
         private const val DOWNLOADS_SERVICE_CHANNEL_LOG_TAG = "DownloadsServiceChannel"
 
+        private const val INTENT_CHANNEL = "com.unicornsonlsd.finamp/intent"
+        private const val INTENT_EVENTS_CHANNEL = "com.unicornsonlsd.finamp/intent/events"
+        private const val INTENT_CHANNEL_LOG_TAG = "intentChannel"
+
         private const val OUTPUT_SWITCHER_CHANNEL = "com.unicornsonlsd.finamp/output_switcher"
         private const val OUTPUT_SWITCHER_CHANNEL_LOG_TAG = "OutputSwitcherChannel"
 
@@ -34,15 +39,56 @@ class MainActivity : AudioServiceActivity() {
     }
 
     private lateinit var mediaRouter: MediaRouter
+    private var intentChannel: MethodChannel? = null
+    private var intentEventSink: EventChannel.EventSink? = null
+    private var pendingIntent: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         mediaRouter = MediaRouter.getInstance(this)
+        cacheLaunchIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        cacheLaunchIntent(intent)
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        EventChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            INTENT_EVENTS_CHANNEL,
+        ).setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+                intentEventSink = events
+                flushPendingIntent()
+            }
+
+            override fun onCancel(arguments: Any?) {
+                intentEventSink = null
+            }
+        })
+        intentChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            INTENT_CHANNEL,
+        ).also { channel ->
+            channel.setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "consumeIntent" -> {
+                        result.success(pendingIntent)
+                        pendingIntent = null
+                    }
+                    else -> {
+                        Log.e(INTENT_CHANNEL_LOG_TAG, "Method not found: '${call.method}'")
+                        result.notImplemented()
+                    }
+                }
+            }
+        }
+        flushPendingIntent()
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             DOWNLOADS_SERVICE_CHANNEL,
@@ -222,5 +268,39 @@ class MainActivity : AudioServiceActivity() {
 
     private fun showOutputSwitcherDialog() {
         SystemOutputSwitcherDialogController.showDialog(this)
+    }
+
+    private fun cacheLaunchIntent(intent: Intent?) {
+        val action = intent?.action ?: return
+        
+        Log.d(INTENT_CHANNEL_LOG_TAG, "Caching launch action: $action")
+        pendingIntent = action
+        flushPendingIntent()
+    }
+
+    private fun flushPendingIntent() {
+        val action = pendingIntent ?: return
+        val eventSink = intentEventSink
+        if (eventSink != null) {
+            eventSink.success(action)
+            pendingIntent = null
+            return
+        }
+
+        val channel = intentChannel ?: return
+
+        channel.invokeMethod("onIntent", action, object : MethodChannel.Result {
+            override fun success(result: Any?) {
+                pendingIntent = null
+            }
+
+            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                Log.e(INTENT_CHANNEL_LOG_TAG, "Failed to dispatch intent '$action': $errorCode $errorMessage")
+            }
+
+            override fun notImplemented() {
+                Log.w(INTENT_CHANNEL_LOG_TAG, "Flutter intent handler is not ready yet")
+            }
+        })
     }
 }

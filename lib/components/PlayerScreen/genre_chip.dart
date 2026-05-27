@@ -19,64 +19,36 @@ import '../../models/jellyfin_models.dart';
 final _borderRadius = BorderRadius.circular(4);
 
 class GenreIconAndText extends StatelessWidget {
-  const GenreIconAndText({required this.parent, this.genreFilter, this.updateGenreFilter});
+  const GenreIconAndText({super.key, required this.parent, this.updateGenreFilter});
 
   final BaseItemDto parent;
-  final BaseItemDto? genreFilter;
   final void Function(BaseItemDto?)? updateGenreFilter;
 
   @override
   Widget build(BuildContext context) {
-    final bool hasFilter = genreFilter != null;
     final theme = Theme.of(context);
     final List<NameLongIdPair> genres = parent.genreItems ?? [];
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: hasFilter ? 4 : 0),
-      child: Container(
-        decoration: hasFilter
-            ? BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(6))
-            : null,
-        padding: EdgeInsets.symmetric(horizontal: 1),
-        child: Row(
-          children: [
-            Icon(
-              TablerIcons.color_swatch,
-              color: hasFilter
-                  ? theme.colorScheme.onPrimary
-                  : theme.iconTheme.color?.withOpacity(theme.brightness == Brightness.light ? 0.38 : 0.5),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: hasFilter
-                  ? Text(
-                      genreFilter?.name ?? "Unknown Genre",
-                      style: TextStyle(color: theme.colorScheme.onPrimary),
-                      overflow: TextOverflow.ellipsis,
-                    )
-                  : (genres.isNotEmpty)
-                  ? GenreChips(
-                      parentType: BaseItemDtoType.fromItem(parent),
-                      genres: genres,
-                      backgroundColor: IconTheme.of(context).color!.withOpacity(0.1),
-                      updateGenreFilter: updateGenreFilter,
-                    )
-                  : Text(AppLocalizations.of(context)!.noGenres),
-            ),
-            if (hasFilter)
-              GestureDetector(
-                onTap: () {
-                  if (updateGenreFilter != null) {
-                    updateGenreFilter!(null);
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 4, right: 2),
-                  child: Icon(Icons.close, size: 18, color: theme.colorScheme.onPrimary),
-                ),
-              ),
-          ],
-        ),
+      padding: EdgeInsets.symmetric(horizontal: 1),
+      child: Row(
+        children: [
+          Icon(
+            TablerIcons.color_swatch,
+            color: theme.iconTheme.color?.withOpacity(theme.brightness == Brightness.light ? 0.38 : 0.5),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: genres.isNotEmpty
+                ? GenreChips(
+                    parentType: BaseItemDtoType.fromItem(parent),
+                    genres: genres,
+                    backgroundColor: IconTheme.of(context).color!.withOpacity(0.1),
+                    updateGenreFilter: updateGenreFilter,
+                  )
+                : Text(AppLocalizations.of(context)!.noGenres),
+          ),
+        ],
       ),
     );
   }
@@ -267,7 +239,7 @@ Future<BaseItemDto?> getPlaylistGenreBaseItemDto(String genreName, bool isOfflin
     final isarDownloader = GetIt.instance<DownloadsService>();
     final genreItemDownloadStubs = await isarDownloader.getAllCollections(
       nameFilter: genreName,
-      baseTypeFilter: BaseItemDtoType.genre,
+      includeItemTypes: [BaseItemDtoType.genre],
     );
     genreItems = genreItemDownloadStubs.map((e) => e.baseItem).nonNulls.toList();
   } else {

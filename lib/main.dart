@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:app_links/app_links.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:background_downloader/background_downloader.dart';
+import 'package:collection/collection.dart';
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
-import 'package:finamp/components/Shortcuts/global_shortcut_manager.dart';
 import 'package:finamp/gen/assets.gen.dart';
 import 'package:finamp/hive_registrar.g.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -18,6 +19,7 @@ import 'package:finamp/screens/album_settings_screen.dart';
 import 'package:finamp/screens/artist_settings_screen.dart';
 import 'package:finamp/screens/downloads_settings_screen.dart';
 import 'package:finamp/screens/genre_settings_screen.dart';
+import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/screens/interaction_settings_screen.dart';
 import 'package:finamp/screens/login_screen.dart';
 import 'package:finamp/screens/lyrics_settings_screen.dart';
@@ -74,6 +76,7 @@ import 'components/Buttons/simple_button.dart';
 import 'components/LogsScreen/copy_logs_button.dart';
 import 'components/LogsScreen/share_logs_button.dart';
 import 'components/PlayerScreen/player_split_screen_scaffold.dart';
+import 'components/Shortcuts/global_shortcut_manager.dart';
 import 'components/global_snackbar.dart';
 import 'models/finamp_models.dart';
 import 'models/migration_adapters.dart';
@@ -105,6 +108,8 @@ import 'setup_logging.dart';
 
 final _mainLog = Logger("Main()");
 late DateTime startTime;
+const _androidIntentChannel = MethodChannel("com.unicornsonlsd.finamp/intent");
+const _androidIntentEvents = EventChannel("com.unicornsonlsd.finamp/intent/events");
 
 final providerScopeKey = GlobalKey();
 
@@ -128,6 +133,8 @@ Future<void> main({bool integrationTesting = false, bool loginTesting = false}) 
     _mainLog.info("Setup hive and isar");
     _migrateDownloadLocations();
     _migrateSortOptions();
+    _migrateGridSize();
+    _migrateHomescreen();
     await _migrateThemeModeLocale();
     _mainLog.info("Completed applicable migrations");
     await _trustAndroidUserCerts();
@@ -356,7 +363,7 @@ Future<void> _setupOSIntegration() async {
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
-      minimumSize: Size(400, 250),
+      minimumSize: Size(336, 607),
     );
     unawaited(
       WindowManager.instance.waitUntilReadyToShow(windowOptions, () async {
@@ -470,30 +477,154 @@ void _migrateDownloadLocations() {
   }
 }
 
+/// Migrates defaults for the home screen (e.g. add home screen tab)
+void _migrateHomescreen() {
+  final finampSettings = FinampSettingsHelper.finampSettings;
+
+  var changed = false;
+
+  if (!finampSettings.tabOrder.contains(ContentType.home)) {
+    finampSettings.tabOrder = [ContentType.home, ...finampSettings.tabOrder.whereNot((e) => e == ContentType.home)];
+    finampSettings.showTabs[ContentType.home] = true;
+
+    // we set this here because it's a non-constant value
+    finampSettings.homeScreenConfiguration = DefaultSettings.homeScreenConfiguration;
+
+    changed = true;
+  }
+
+  if (!finampSettings.tabOrder.contains(ContentType.albumArtists)) {
+    finampSettings.tabOrder.add(ContentType.albumArtists);
+
+    changed = true;
+  }
+
+  if (!finampSettings.tabOrder.contains(ContentType.performingArtists)) {
+    finampSettings.tabOrder.add(ContentType.performingArtists);
+
+    changed = true;
+  }
+
+  if (!finampSettings.tabSortBy.keys.contains(ContentType.performingArtists)) {
+    finampSettings.tabSortBy[ContentType.performingArtists] =
+        finampSettings.tabSortBy[ContentType.genericArtists] ?? SortAndFilterConfiguration.defaultSort.sortBy;
+    finampSettings.tabSortOrder[ContentType.performingArtists] =
+        finampSettings.tabSortOrder[ContentType.genericArtists] ?? SortAndFilterConfiguration.defaultSort.sortOrder;
+    finampSettings.tabSortBy[ContentType.albumArtists] =
+        finampSettings.tabSortBy[ContentType.genericArtists] ?? SortAndFilterConfiguration.defaultSort.sortBy;
+    finampSettings.tabSortOrder[ContentType.albumArtists] =
+        finampSettings.tabSortOrder[ContentType.genericArtists] ?? SortAndFilterConfiguration.defaultSort.sortOrder;
+    changed = true;
+  }
+
+  if (!finampSettings.tabSortBy.keys.contains(ContentType.inPlaylist)) {
+    finampSettings.tabSortBy[ContentType.inPlaylist] =
+        finampSettings.playlistTracksSortBy ?? SortAndFilterConfiguration.defaultInAlbumSort.sortBy;
+    finampSettings.tabSortOrder[ContentType.inPlaylist] =
+        finampSettings.playlistTracksSortOrder ?? SortAndFilterConfiguration.defaultInAlbumSort.sortOrder;
+    changed = true;
+  }
+
+  if (changed) {
+    FinampSettingsHelper.overwriteFinampSettings(finampSettings);
+  }
+}
+
 /// Migrates the old SortBy/SortOrder to a map indexed by tab content type
+// ignore: deprecated_member_use_from_same_package
 void _migrateSortOptions() {
   final finampSettings = FinampSettingsHelper.finampSettings;
 
   var changed = false;
 
-  if (finampSettings.tabSortBy.isEmpty) {
-    for (var type in TabContentType.values) {
-      // ignore: deprecated_member_use_from_same_package
-      finampSettings.tabSortBy[type] = finampSettings.sortBy;
+  if (finampSettings.tabSortBy.isEmpty && finampSettings.sortBy != null) {
+    for (var type in ContentType.values.where((x) => x.isTab)) {
+      finampSettings.tabSortBy[type] = finampSettings.sortBy!;
     }
     changed = true;
   }
 
-  if (finampSettings.tabSortOrder.isEmpty) {
-    for (var type in TabContentType.values) {
-      // ignore: deprecated_member_use_from_same_package
-      finampSettings.tabSortOrder[type] = finampSettings.sortOrder;
+  if (finampSettings.tabSortOrder.isEmpty && finampSettings.sortOrder != null) {
+    for (var type in ContentType.values.where((x) => x.isTab)) {
+      finampSettings.tabSortOrder[type] = finampSettings.sortOrder!;
     }
     changed = true;
   }
 
   if (changed) {
     FinampSettingsHelper.overwriteFinampSettings(finampSettings);
+  }
+}
+
+/// Migrates old grid size options to FinampSettings.gridImageSize
+// ignore: deprecated_member_use_from_same_package
+void _migrateGridSize() {
+  final finampSettings = FinampSettingsHelper.finampSettings;
+  // Use this bool being null as a flag to skip migration
+  if (finampSettings.useFixedSizeGridTiles == null) return;
+  if (finampSettings.useFixedSizeGridTiles!) {
+    finampSettings.gridImageSize = finampSettings.fixedGridTileSize!;
+  } else {
+    finampSettings.gridImageSize = _calculateGridImageSize(finampSettings);
+  }
+  finampSettings.useFixedSizeGridTiles = null;
+  FinampSettingsHelper.overwriteFinampSettings(finampSettings);
+}
+
+/// Predicts the grid item size based off legacy settings and current device screen size
+int _calculateGridImageSize(FinampSettings settings) {
+  Size? screenSize;
+  if (Platform.isAndroid || Platform.isIOS) {
+    final view = PlatformDispatcher.instance.implicitView!;
+    final physicalSize = view.physicalSize;
+    // If we are in landscape, this padding might not necessarily match what it would be in portrait.  But whatever.
+    final padding = view.viewPadding;
+    screenSize = Size(
+      physicalSize.width - padding.left - padding.right,
+      physicalSize.height - padding.top - padding.bottom,
+    );
+    screenSize = screenSize / view.devicePixelRatio;
+  } else {
+    final fullScreenSize = settings.screenSize?.size;
+    // screenSize setting is external bounds of window.  We need the internal view size, but that isn't available yet,
+    // so we just subtract off the window decorations.  These values are for windows, but hopefully mac/linux are relatively similar.
+    screenSize = fullScreenSize == null ? null : Size(fullScreenSize.width - 16, fullScreenSize.height - 39);
+  }
+
+  if (screenSize == null || screenSize.width <= 0 || screenSize.height <= 0) {
+    // Screen size failed to load for some reason, just reset to default
+    return DefaultSettings.gridImageSize;
+  } else {
+    int targetCount;
+    double totalSize;
+    // Making the migration hinge on the devices current orientation seems questionable, so we attempt to guess the primary layout here.
+    // If this device would go into splitscreen in landscape, we will assume that is the primary orientation.
+    // Otherwise, we assume the primary orientation is portrait.
+
+    // Normalize to landscape for easier tablet calculations
+    screenSize = Size(max(screenSize.height, screenSize.width), min(screenSize.height, screenSize.width));
+    if (screenSize.width >= 800 && screenSize.height >= 500 && settings.allowSplitScreen) {
+      totalSize = screenSize.width - settings.splitScreenPlayerWidth - 10;
+      if (totalSize > screenSize.height) {
+        targetCount = settings.contentGridViewCrossAxisCountLandscape!;
+      } else {
+        targetCount = settings.contentGridViewCrossAxisCountPortrait!;
+      }
+    } else {
+      // This will always be the devices smallest side
+      totalSize = screenSize.height;
+      targetCount = settings.contentGridViewCrossAxisCountPortrait!;
+    }
+    if (targetCount < 1 || totalSize < 200) {
+      // Something fishy is going on in the sizing calculations.  Reset to default.
+      return DefaultSettings.gridImageSize;
+    }
+    if (settings.showFastScroller) {
+      totalSize -= 22;
+    }
+    // Account for xtra padding added to left of grid.  This could theoretically be smaller, but that shouldn't matter much.
+    totalSize -= 10;
+    return (totalSize / targetCount).round().clamp(50, 1000);
   }
 }
 
@@ -563,12 +694,41 @@ class Finamp extends StatefulWidget {
 class _FinampState extends State<Finamp> with WindowListener {
   static final Logger windowManagerLogger = Logger("WindowManager");
   static final Logger linkHandlingLogger = Logger("LinkHandling");
+  static final Logger launchIntentLogger = Logger("LaunchIntentHandling");
 
   StreamSubscription<Uri>? _uriLinkSubscription;
+  StreamSubscription<dynamic>? _androidIntentSubscription;
 
   @override
   void initState() {
     super.initState();
+
+    if (Platform.isAndroid) {
+      _androidIntentSubscription = _androidIntentEvents.receiveBroadcastStream().listen(
+        (dynamic event) async {
+          final intent = event as String?;
+          if (intent != null) {
+            await _handleAndroidIntent(intent);
+          }
+        },
+        onError: (Object error, StackTrace stackTrace) {
+          launchIntentLogger.warning("Failed to receive Android intent stream event", error, stackTrace);
+        },
+      );
+
+      _androidIntentChannel.setMethodCallHandler((call) async {
+        switch (call.method) {
+          case "onIntent":
+            final intent = call.arguments as String?;
+            if (intent != null) {
+              await _handleAndroidIntent(intent);
+            }
+            return null;
+          default:
+            throw MissingPluginException("Unknown method: ${call.method}");
+        }
+      });
+    }
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _uriLinkSubscription = AppLinks().uriLinkStream.listen((uri) async {
@@ -582,6 +742,10 @@ class _FinampState extends State<Finamp> with WindowListener {
           linkHandlingLogger.warning("No context available to handle link");
         }
       });
+
+      if (Platform.isAndroid) {
+        unawaited(_consumeInitialAndroidLaunchIntent());
+      }
     });
 
     // If the app is running on desktop, we add a listener to the window manager
@@ -591,10 +755,30 @@ class _FinampState extends State<Finamp> with WindowListener {
     }
   }
 
+  Future<void> _consumeInitialAndroidLaunchIntent() async {
+    final String? action = await _androidIntentChannel.invokeMethod<String>("consumeIntent");
+    if (action != null) {
+      await _handleAndroidIntent(action);
+    }
+  }
+
+  Future<void> _handleAndroidIntent(String action) async {
+    launchIntentLogger.info("Received Android launch action: $action");
+    switch (action) {
+      case "android.intent.action.MUSIC_PLAYER":
+        {
+          await GetIt.instance<AudioServiceHelper>().startSurpriseMeMix();
+        }
+      default:
+        launchIntentLogger.warning("Unhandled Android launch action: $action");
+    }
+  }
+
   @override
   Future<void> dispose() async {
     super.dispose();
     await DiscordRpc.stop().timeout(Duration(milliseconds: 500));
+    await _androidIntentSubscription?.cancel();
     await _uriLinkSubscription?.cancel();
 
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
@@ -686,6 +870,7 @@ class FinampApp extends ConsumerWidget {
         LogsScreen.routeName: (context) => const LogsScreen(),
         QueueRestoreScreen.routeName: (context) => const QueueRestoreScreen(),
         SettingsScreen.routeName: (context) => const SettingsScreen(),
+        HomeScreenSettingsScreen.routeName: (context) => const HomeScreenSettingsScreen(),
         TranscodingSettingsScreen.routeName: (context) => const TranscodingSettingsScreen(),
         DownloadsLocationScreen.routeName: (context) => const DownloadsLocationScreen(),
         DownloadsSettingsScreen.routeName: (context) => const DownloadsSettingsScreen(),
@@ -707,6 +892,7 @@ class FinampApp extends ConsumerWidget {
         AccessibilitySettingsScreen.routeName: (context) => const AccessibilitySettingsScreen(),
         PlaylistEditScreen.routeName: (context) =>
             PlaylistEditScreen(playlist: ModalRoute.settingsOf(context)!.arguments as BaseItemDto),
+        //ShowAllScreen.routeName: (context) => const ShowAllScreen(),
       },
       initialRoute: SplashScreen.routeName,
       navigatorObservers: [SplitScreenNavigatorObserver(), KeepScreenOnObserver()],
@@ -734,6 +920,7 @@ class FinampApp extends ConsumerWidget {
           // ),
           dismissDirection: DismissDirection.horizontal,
         ),
+        tooltipTheme: const TooltipThemeData(waitDuration: Duration(milliseconds: 800)),
         pageTransitionsTheme: transitionBuilder,
       ),
       darkTheme: ThemeData(
@@ -820,7 +1007,7 @@ class ErrorScreen extends StatelessWidget {
               Text.rich(
                 TextSpan(
                   text: AppLocalizations.of(context)!.startupErrorTitle,
-                  style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500),
                   children: [
                     TextSpan(
                       text: "\n\n${error.toString()}",
@@ -870,7 +1057,7 @@ class ErrorScreen extends StatelessWidget {
                       ),
                     TextSpan(
                       text: "\n\n${AppLocalizations.of(context)!.startupErrorCallToAction}",
-                      style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500),
                     ),
                     TextSpan(
                       text: "\n\n${AppLocalizations.of(context)!.startupErrorWorkaround}",

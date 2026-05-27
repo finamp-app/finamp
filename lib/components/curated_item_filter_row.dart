@@ -4,6 +4,7 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../extensions/localizations.dart';
 import '../models/finamp_models.dart';
 import '../services/finamp_settings_helper.dart';
 
@@ -55,7 +56,7 @@ Widget buildCuratedItemFilterRow({
                                     : AppLocalizations.of(context)!.curatedItemsNotListenedYet('other'))
                               : null);
                     final chip = FilterChip(
-                      label: Text(type.toLocalisedString(context)),
+                      label: Text(type.toLocalisedString(context.l10n)),
                       onSelected: disabledFiltersList.contains(type)
                           ? null
                           : (_) {

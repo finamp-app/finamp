@@ -54,7 +54,7 @@ class DataSourceService {
       }
     });
 
-    ref.listen(FinampUserHelper.finampCurrentUserProvider.select((user) => user.value?.baseURL), (_, newUrl) {
+    ref.listen(FinampUserHelper.finampCurrentUserProvider.select((user) => user?.baseURL), (_, newUrl) {
       _dataSourceServiceLogger.info("Base URL Changed: $newUrl");
       bool isLocalUrl = finampUserHelper.currentUser?.isLocal ?? false;
       _onDataSourceChange(isLocalUrl ? SourceChangeType.toLocalUrl : SourceChangeType.toRemoteUrl);

@@ -67,129 +67,127 @@ class _LoginServerSelectionPageState extends State<LoginServerSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0),
-        child: Center(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 32.0, bottom: 20.0),
-                child: Hero(tag: "finamp_logo", child: FinampIcon(75, 75)),
-              ),
-              Text(
-                AppLocalizations.of(context)!.loginFlowServerSelectionHeading,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0, bottom: 12.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: SimpleButton(
-                    icon: TablerIcons.chevron_left,
-                    text: AppLocalizations.of(context)!.back,
-                    onPressed: () {
-                      widget.serverState.manualServer = null;
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-              ),
-              _buildServerUrlInput(context),
-              ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 95.0),
-                child: widget.serverState.baseUrlToTest != null && widget.serverState.manualServer == null
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Padding(padding: EdgeInsets.all(4.0), child: CircularProgressIndicator()),
-                            const SizedBox(width: 8.0),
-                            Text(
-                              AppLocalizations.of(context)!.connectingToServer,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      )
-                    : Visibility(
-                        visible: widget.serverState.manualServer != null,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
-                          child: JellyfinServerSelectionWidget(
-                            baseUrl: widget.serverState.baseUrl,
-                            serverInfo: widget.serverState.manualServer,
-                            onPressed: () {
-                              widget.onServerSelected?.call(
-                                widget.serverState.manualServer!,
-                                widget.serverState.baseUrl!,
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0, bottom: 16.0),
-                child: Text(
-                  AppLocalizations.of(context)!.loginFlowLocalNetworkServers,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ),
-              SizedBox(
-                height: 180,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  clipBehavior: Clip.antiAlias,
-                  itemCount: widget.serverState.discoveredServers.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index < widget.serverState.discoveredServers.length) {
-                      // get key and value
-                      final entry = widget.serverState.discoveredServers.entries.elementAt(index);
-                      final serverUrl = entry.key;
-                      final serverInfo = entry.value;
-                      return Padding(
-                        key: ValueKey(serverUrl),
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: JellyfinServerSelectionWidget(
-                          baseUrl: null,
-                          serverInfo: serverInfo,
-                          onPressed: () {
-                            widget.onServerSelected?.call(serverInfo, serverUrl.toString());
-                          },
-                        ),
-                      );
-                    } else {
-                      // show loading indicator below list of discovered servers
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(4.0),
-                              child: SizedBox(
-                                height: 20.0,
-                                width: 20.0,
-                                child: CircularProgressIndicator(strokeWidth: 2.0),
-                              ),
-                            ),
-                            const SizedBox(width: 8.0),
-                            Text(
-                              AppLocalizations.of(context)!.loginFlowLocalNetworkServersScanningForServers,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      );
-                    }
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+      child: Center(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 32.0, bottom: 20.0),
+              child: Hero(tag: "finamp_logo", child: FinampIcon(75, 75)),
+            ),
+            Text(
+              AppLocalizations.of(context)!.loginFlowServerSelectionHeading,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0, bottom: 12.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: SimpleButton(
+                  icon: TablerIcons.chevron_left,
+                  text: AppLocalizations.of(context)!.back,
+                  onPressed: () {
+                    widget.serverState.manualServer = null;
+                    Navigator.of(context).pop();
                   },
                 ),
               ),
-            ],
-          ),
+            ),
+            _buildServerUrlInput(context),
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 95.0),
+              child: widget.serverState.baseUrlToTest != null && widget.serverState.manualServer == null
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Padding(padding: EdgeInsets.all(4.0), child: CircularProgressIndicator()),
+                          const SizedBox(width: 8.0),
+                          Text(
+                            AppLocalizations.of(context)!.connectingToServer,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    )
+                  : Visibility(
+                      visible: widget.serverState.manualServer != null,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 12.0),
+                        child: JellyfinServerSelectionWidget(
+                          baseUrl: widget.serverState.baseUrl,
+                          serverInfo: widget.serverState.manualServer,
+                          onPressed: () {
+                            widget.onServerSelected?.call(
+                              widget.serverState.manualServer!,
+                              widget.serverState.baseUrl!,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0, bottom: 16.0),
+              child: Text(
+                AppLocalizations.of(context)!.loginFlowLocalNetworkServers,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+            SizedBox(
+              height: 180,
+              child: ListView.builder(
+                shrinkWrap: true,
+                clipBehavior: Clip.antiAlias,
+                itemCount: widget.serverState.discoveredServers.length + 1,
+                itemBuilder: (context, index) {
+                  if (index < widget.serverState.discoveredServers.length) {
+                    // get key and value
+                    final entry = widget.serverState.discoveredServers.entries.elementAt(index);
+                    final serverUrl = entry.key;
+                    final serverInfo = entry.value;
+                    return Padding(
+                      key: ValueKey(serverUrl),
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: JellyfinServerSelectionWidget(
+                        baseUrl: null,
+                        serverInfo: serverInfo,
+                        onPressed: () {
+                          widget.onServerSelected?.call(serverInfo, serverUrl.toString());
+                        },
+                      ),
+                    );
+                  } else {
+                    // show loading indicator below list of discovered servers
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.all(4.0),
+                            child: SizedBox(
+                              height: 20.0,
+                              width: 20.0,
+                              child: CircularProgressIndicator(strokeWidth: 2.0),
+                            ),
+                          ),
+                          const SizedBox(width: 8.0),
+                          Text(
+                            AppLocalizations.of(context)!.loginFlowLocalNetworkServersScanningForServers,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,19 +1,19 @@
 import 'dart:async';
 
-import 'package:finamp/components/MusicScreen/item_collection_wrapper.dart';
 import 'package:finamp/components/album_image.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
-import 'package:finamp/services/downloads_service.dart';
-import 'package:finamp/services/finamp_settings_helper.dart';
-import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/item_by_id_provider.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
+
+import '../../extensions/localizations.dart';
+import '../MusicScreen/item_wrapper.dart';
 
 class QueueRestoreTile extends ConsumerWidget {
   const QueueRestoreTile({super.key, required this.info});
@@ -25,13 +25,13 @@ class QueueRestoreTile extends ConsumerWidget {
     final queueService = GetIt.instance<QueueService>();
     int remainingTracks = info.trackCount - info.previousTracks.length;
 
-    BaseItemDto? track = ref.watch(trackProvider(info.currentTrack)).value;
+    BaseItemDto? track = info.currentTrack == null ? null : ref.watch(itemByIdProvider(info.currentTrack!)).value;
 
     QueueItemSource source = info.source;
     if (source.wantsItem) {
       // BaseItemId uses String equals, the linter is mistaken.
       // ignore: provider_parameters
-      final sourceItem = ref.watch(trackProvider(BaseItemId(source.id))).value;
+      final sourceItem = ref.watch(itemByIdProvider(BaseItemId(source.id))).value;
       if (sourceItem != null) {
         source = source.withItem(sourceItem);
       }
@@ -45,7 +45,7 @@ class QueueRestoreTile extends ConsumerWidget {
       child: ListTile(
         // Prevent undersized album images on desktop
         visualDensity: VisualDensity.standard,
-        title: Text(source.name.getLocalized(context)),
+        title: Text(source.name.getLocalized(context.l10n)),
         titleAlignment: ListTileTitleAlignment.center,
         leading: Padding(
           padding: const EdgeInsets.only(right: 16),
@@ -92,14 +92,3 @@ class QueueRestoreTile extends ConsumerWidget {
     );
   }
 }
-
-final AutoDisposeFutureProviderFamily<BaseItemDto?, BaseItemId?> trackProvider = FutureProvider.autoDispose
-    .family<BaseItemDto?, BaseItemId?>((ref, itemId) async {
-      if (itemId == null) {
-        return null;
-      } else if (ref.watch(finampSettingsProvider.isOffline)) {
-        return GetIt.instance<DownloadsService>().getTrackInfo(id: itemId).then((value) => value?.baseItem);
-      } else {
-        return GetIt.instance<JellyfinApiHelper>().getItemByIdBatched(itemId).then((x) => x, onError: (_) => null);
-      }
-    });

@@ -11,7 +11,9 @@ library;
 import 'package:collection/collection.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -28,13 +30,37 @@ class BaseItemIdConverter extends JsonConverter<BaseItemId, String> {
   String toJson(BaseItemId object) => object.raw;
 }
 
-extension type BaseItemId._(String raw) {
+class LibraryIdConverter extends JsonConverter<LibraryId, String> {
+  const LibraryIdConverter();
+
+  @override
+  LibraryId fromJson(String json) => LibraryId(json);
+
+  @override
+  String toJson(LibraryId object) => object.raw;
+}
+
+extension type BaseItemId._(String raw) implements LibraryId {
   /// Construct a BaseItemDto id from a raw string.  Please be sure you have a valid ID before using, and
   /// if you might not, consider the invalid ID's scope and if you can use an alternative, such as null
-  BaseItemId(this.raw);
-
-  String operator +(BaseItemId other) => raw + other.raw;
+  const BaseItemId(this.raw);
 }
+
+extension type LibraryId._(String raw) {
+  /// Construct a BaseItemDto id from a raw string.  Please be sure you have a valid ID before using, and
+  /// if you might not, consider the invalid ID's scope and if you can use an alternative, such as null
+  const LibraryId(this.raw);
+
+  BaseItemId? resolve(Ref ref) => switch (this) {
+    currentLibraryPlaceholder => ref.watch(FinampUserHelper.finampCurrentUserProvider)?.currentViewId,
+    allLibraryPlaceholder => null,
+    _ => this as BaseItemId,
+  };
+}
+
+// These get saved into home screen configuration and cannot be modified.
+const LibraryId allLibraryPlaceholder = LibraryId("finamp-all-libraries-placeholder");
+const LibraryId currentLibraryPlaceholder = LibraryId("finamp-current-library-placeholder");
 
 /// An abstract class to implement converting runTimeTicks into a duration.
 /// Ideally, we'd hold runTimeTicks here, but that would break offline storage
@@ -1315,23 +1341,6 @@ class SubtitleProfile {
   Map<String, dynamic> toJson() => _$SubtitleProfileToJson(this);
 }
 
-// Here because sealed class works inside one file only
-sealed class PlayableItem {}
-
-class AlbumDisc implements PlayableItem {
-  AlbumDisc({required this.parent, required this.tracks}) {
-    assert(
-      // there's no "all" in dart (at least IDE doesn't see it). De Morgan's law is here to save the day!
-      !tracks.any((e) {
-        return e.parentIndexNumber != tracks.first.parentIndexNumber;
-      }),
-    );
-  }
-
-  List<BaseItemDto> tracks;
-  BaseItemDto parent;
-}
-
 @JsonSerializable(
   fieldRename: FieldRename.pascal,
   explicitToJson: true,
@@ -1340,7 +1349,7 @@ class AlbumDisc implements PlayableItem {
   converters: [BaseItemIdConverter()],
 )
 @HiveType(typeId: 0)
-class BaseItemDto with RunTimeTickDuration implements PlayableItem {
+class BaseItemDto with RunTimeTickDuration {
   BaseItemDto({
     this.name,
     this.originalTitle,
@@ -2167,15 +2176,6 @@ class BaseItemDto with RunTimeTickDuration implements PlayableItem {
     return name!.toLowerCase();
   }
 
-  static BaseItemDto fromPlayableItem(PlayableItem item) {
-    switch (item) {
-      case AlbumDisc():
-        return item.parent;
-      case BaseItemDto():
-        return item;
-    }
-  }
-
   factory BaseItemDto.fromJson(Map<String, dynamic> json) => _$BaseItemDtoFromJson(json);
   Map<String, dynamic> toJson({bool setOffline = true}) {
     var json = _$BaseItemDtoToJson(this);
@@ -2758,6 +2758,8 @@ class NameLongIdPair {
 
   factory NameLongIdPair.fromJson(Map<String, dynamic> json) => _$NameLongIdPairFromJson(json);
   Map<String, dynamic> toJson() => _$NameLongIdPairToJson(this);
+
+  factory NameLongIdPair.from(BaseItemDto item) => NameLongIdPair(name: item.name, id: item.id);
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal, explicitToJson: true, anyMap: true, includeIfNull: false)
@@ -3267,11 +3269,11 @@ enum SortBy {
   @HiveField(15)
   defaultOrder;
 
-  static List<SortBy> defaultsFor({required TabContentType type, bool includeDefaultOrder = false}) {
+  static List<SortBy> defaultsFor({required BaseItemDtoType? type, bool includeDefaultOrder = false}) {
     List<SortBy> options;
 
     switch (type) {
-      case TabContentType.tracks:
+      case BaseItemDtoType.track:
         options = [
           SortBy.sortName,
           SortBy.album,
@@ -3286,7 +3288,7 @@ enum SortBy {
           SortBy.runtime,
           SortBy.random,
         ];
-      case TabContentType.albums:
+      case BaseItemDtoType.album:
         options = [
           SortBy.sortName,
           SortBy.albumArtist,
@@ -3298,8 +3300,8 @@ enum SortBy {
           SortBy.runtime,
           SortBy.random,
         ];
-      case TabContentType.playlists:
-      case TabContentType.artists:
+      case BaseItemDtoType.playlist:
+      case BaseItemDtoType.artist:
         options = [
           SortBy.sortName,
           //SortBy.datePlayed,
@@ -3307,8 +3309,10 @@ enum SortBy {
           SortBy.runtime,
           SortBy.random,
         ];
-      case TabContentType.genres:
+      case BaseItemDtoType.genre:
         options = [SortBy.sortName, SortBy.dateCreated, SortBy.random];
+      default:
+        options = [SortBy.sortName];
     }
     if (includeDefaultOrder) {
       options.insert(0, SortBy.defaultOrder);
@@ -3323,237 +3327,138 @@ enum SortBy {
   @Deprecated("Use toLocalisedString when possible")
   String toString() => _humanReadableName(this);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
+  String toLocalisedString(AppLocalizations l10n) => _humanReadableLocalisedName(this, l10n);
 
   /// Name used by Jellyfin in API requests.
-  String jellyfinName(TabContentType? contentType) {
-    switch (contentType) {
-      case TabContentType.albums:
-        return _jellyfinNameMusicAlbums(this);
-      case TabContentType.tracks:
-        return _jellyfinNameTracks(this);
-      default:
-        return _jellyfinName(this);
-    }
+  String jellyfinName(ContentType? contentType) {
+    return switch (contentType) {
+      ContentType.albums => _jellyfinNameMusicAlbums(this),
+      ContentType.tracks => _jellyfinNameTracks(this),
+      _ => _jellyfinName(this),
+    };
   }
 
   String _humanReadableName(SortBy sortBy) {
-    switch (sortBy) {
-      case SortBy.album:
-        return "Album";
-      case SortBy.albumArtist:
-        return "Album Artist";
-      case SortBy.artist:
-        return "Performing Artist";
-      case SortBy.budget:
-        return "Budget";
-      case SortBy.communityRating:
-        return "Community Rating";
-      case SortBy.criticRating:
-        return "Critic Rating";
-      case SortBy.dateCreated:
-        return "Date Added";
-      case SortBy.datePlayed:
-        return "Date Played";
-      case SortBy.playCount:
-        return "Play Count";
-      case SortBy.premiereDate:
-        return "Release Date";
-      case SortBy.productionYear:
-        return "Production Year";
-      case SortBy.sortName:
-        return "Name";
-      case SortBy.random:
-        return "Random";
-      case SortBy.revenue:
-        return "Revenue";
-      case SortBy.runtime:
-        return "Runtime";
-      case SortBy.defaultOrder:
-        return "Server Order";
-    }
+    return switch (sortBy) {
+      SortBy.album => "Album",
+      SortBy.albumArtist => "Album Artist",
+      SortBy.artist => "Performing Artist",
+      SortBy.budget => "Budget",
+      SortBy.communityRating => "Community Rating",
+      SortBy.criticRating => "Critic Rating",
+      SortBy.dateCreated => "Date Added",
+      SortBy.datePlayed => "Date Played",
+      SortBy.playCount => "Play Count",
+      SortBy.premiereDate => "Release Date",
+      SortBy.productionYear => "Production Year",
+      SortBy.sortName => "Name",
+      SortBy.random => "Random",
+      SortBy.revenue => "Revenue",
+      SortBy.runtime => "Runtime",
+      SortBy.defaultOrder => "Server Order",
+    };
   }
 
-  String _humanReadableLocalisedName(SortBy sortBy, BuildContext context) {
-    switch (sortBy) {
-      case SortBy.album:
-        return AppLocalizations.of(context)!.album;
-      case SortBy.albumArtist:
-        return AppLocalizations.of(context)!.albumArtist;
-      case SortBy.artist:
-        return AppLocalizations.of(context)!.performingArtist;
-      case SortBy.budget:
-        return AppLocalizations.of(context)!.budget;
-      case SortBy.communityRating:
-        return AppLocalizations.of(context)!.communityRating;
-      case SortBy.criticRating:
-        return AppLocalizations.of(context)!.criticRating;
-      case SortBy.dateCreated:
-        return AppLocalizations.of(context)!.dateAdded;
-      case SortBy.datePlayed:
-        return AppLocalizations.of(context)!.datePlayed;
-      case SortBy.playCount:
-        return AppLocalizations.of(context)!.playCount;
-      case SortBy.premiereDate:
-        return AppLocalizations.of(context)!.premiereDate;
-      case SortBy.productionYear:
-        return AppLocalizations.of(context)!.productionYear;
-      case SortBy.sortName:
-        return AppLocalizations.of(context)!.name;
-      case SortBy.random:
-        return AppLocalizations.of(context)!.random;
-      case SortBy.revenue:
-        return AppLocalizations.of(context)!.revenue;
-      case SortBy.runtime:
-        return AppLocalizations.of(context)!.duration;
-      case SortBy.defaultOrder:
-        return AppLocalizations.of(context)!.defaultOrder;
-    }
+  String _humanReadableLocalisedName(SortBy sortBy, AppLocalizations l10n) {
+    return switch (sortBy) {
+      SortBy.album => l10n.album,
+      SortBy.albumArtist => l10n.albumArtist,
+      SortBy.artist => l10n.performingArtist,
+      SortBy.budget => l10n.budget,
+      SortBy.communityRating => l10n.communityRating,
+      SortBy.criticRating => l10n.criticRating,
+      SortBy.dateCreated => l10n.dateAdded,
+      SortBy.datePlayed => l10n.datePlayed,
+      SortBy.playCount => l10n.playCount,
+      SortBy.premiereDate => l10n.premiereDate,
+      SortBy.productionYear => l10n.productionYear,
+      SortBy.sortName => l10n.name,
+      SortBy.random => l10n.random,
+      SortBy.revenue => l10n.revenue,
+      SortBy.runtime => l10n.duration,
+      SortBy.defaultOrder => l10n.defaultOrder,
+    };
   }
 
   String _jellyfinName(SortBy sortBy) {
-    switch (sortBy) {
-      case SortBy.album:
-        return "Album";
-      case SortBy.albumArtist:
-        return "AlbumArtist";
-      case SortBy.artist:
-        return "Artist";
-      case SortBy.budget:
-        return "Budget";
-      case SortBy.communityRating:
-        return "CommunityRating";
-      case SortBy.criticRating:
-        return "CriticRating";
-      case SortBy.dateCreated:
-        return "DateCreated";
-      case SortBy.datePlayed:
-        return "DatePlayed";
-      case SortBy.playCount:
-        return "PlayCount";
-      case SortBy.premiereDate:
-        return "PremiereDate";
-      case SortBy.productionYear:
-        return "ProductionYear";
-      case SortBy.sortName:
-        return "SortName";
-      case SortBy.random:
-        return "Random";
-      case SortBy.revenue:
-        return "Revenue";
-      case SortBy.runtime:
-        return "Runtime";
-      case SortBy.defaultOrder:
-        return "";
-    }
+    return switch (sortBy) {
+      SortBy.album => "Album",
+      SortBy.albumArtist => "AlbumArtist",
+      SortBy.artist => "Artist",
+      SortBy.budget => "Budget",
+      SortBy.communityRating => "CommunityRating",
+      SortBy.criticRating => "CriticRating",
+      SortBy.dateCreated => "DateCreated",
+      SortBy.datePlayed => "DatePlayed",
+      SortBy.playCount => "PlayCount",
+      SortBy.premiereDate => "PremiereDate",
+      SortBy.productionYear => "ProductionYear",
+      SortBy.sortName => "SortName",
+      SortBy.random => "Random",
+      SortBy.revenue => "Revenue",
+      SortBy.runtime => "Runtime",
+      SortBy.defaultOrder => "",
+    };
   }
 
   String _jellyfinNameMusicAlbums(SortBy sortBy) {
-    switch (sortBy) {
-      case SortBy.album:
-        return "Album";
-      case SortBy.albumArtist:
-        return "AlbumArtist,SortName";
-      case SortBy.artist:
-        return "Artist";
-      case SortBy.budget:
-        return "Budget";
-      case SortBy.communityRating:
-        return "CommunityRating,SortName";
-      case SortBy.criticRating:
-        return "CriticRating,SortName";
-      case SortBy.dateCreated:
-        return "DateCreated,SortName";
-      case SortBy.datePlayed:
-        return "DatePlayed";
-      case SortBy.playCount:
-        return "PlayCount";
-      case SortBy.premiereDate:
-        return "PremiereDate,SortName";
-      case SortBy.productionYear:
-        return "ProductionYear,PremiereDate,SortName";
-      case SortBy.sortName:
-        return "SortName";
-      case SortBy.random:
-        return "Random,SortName";
-      case SortBy.revenue:
-        return "Revenue";
-      case SortBy.runtime:
-        return "Runtime";
-      case SortBy.defaultOrder:
-        return "";
-    }
+    return switch (sortBy) {
+      SortBy.album => "Album",
+      SortBy.albumArtist => "AlbumArtist,SortName",
+      SortBy.artist => "Artist",
+      SortBy.budget => "Budget",
+      SortBy.communityRating => "CommunityRating,SortName",
+      SortBy.criticRating => "CriticRating,SortName",
+      SortBy.dateCreated => "DateCreated,SortName",
+      SortBy.datePlayed => "DatePlayed",
+      SortBy.playCount => "PlayCount",
+      SortBy.premiereDate => "PremiereDate,SortName",
+      SortBy.productionYear => "ProductionYear,PremiereDate,SortName",
+      SortBy.sortName => "SortName",
+      SortBy.random => "Random,SortName",
+      SortBy.revenue => "Revenue",
+      SortBy.runtime => "Runtime",
+      SortBy.defaultOrder => "",
+    };
   }
 
   String _jellyfinNameTracks(SortBy sortBy) {
-    switch (sortBy) {
-      case SortBy.album:
-        return "Album,SortName";
-      case SortBy.albumArtist:
-        return "AlbumArtist,Album,SortName";
-      case SortBy.artist:
-        return "Artist,Album,SortName";
-      case SortBy.budget:
-        return "Budget";
-      case SortBy.communityRating:
-        return "CommunityRating";
-      case SortBy.criticRating:
-        return "CriticRating";
-      case SortBy.dateCreated:
-        return "DateCreated,SortName";
-      case SortBy.datePlayed:
-        return "DatePlayed,SortName";
-      case SortBy.playCount:
-        return "PlayCount,SortName";
-      case SortBy.premiereDate:
-        return "PremiereDate,Album,ParentIndexNumber,IndexNumber,SortName";
-      case SortBy.productionYear:
-        return "ProductionYear";
-      case SortBy.sortName:
-        return "Name";
-      case SortBy.random:
-        return "Random";
-      case SortBy.revenue:
-        return "Revenue";
-      case SortBy.runtime:
-        return "Runtime,AlbumArtist,Album,SortName";
-      case SortBy.defaultOrder:
-        return "";
-    }
+    return switch (sortBy) {
+      SortBy.album => "Album,SortName",
+      SortBy.albumArtist => "AlbumArtist,Album,SortName",
+      SortBy.artist => "Artist,Album,SortName",
+      SortBy.budget => "Budget",
+      SortBy.communityRating => "CommunityRating",
+      SortBy.criticRating => "CriticRating",
+      SortBy.dateCreated => "DateCreated,SortName",
+      SortBy.datePlayed => "DatePlayed,SortName",
+      SortBy.playCount => "PlayCount,SortName",
+      SortBy.premiereDate => "PremiereDate,Album,ParentIndexNumber,IndexNumber,SortName",
+      SortBy.productionYear => "ProductionYear",
+      SortBy.sortName => "Name",
+      SortBy.random => "Random",
+      SortBy.revenue => "Revenue",
+      SortBy.runtime => "Runtime,AlbumArtist,Album,SortName",
+      SortBy.defaultOrder => "",
+    };
   }
 
-  IconData? getIcon() {
-    switch (this) {
-      case SortBy.album:
-        return TablerIcons.disc;
-      case SortBy.albumArtist:
-      case SortBy.artist:
-        return TablerIcons.user;
-      case SortBy.communityRating:
-      case SortBy.criticRating:
-        return TablerIcons.chart_bar_popular;
-      case SortBy.dateCreated:
-        return TablerIcons.calendar_plus;
-      case SortBy.datePlayed:
-        return TablerIcons.clock;
-      case SortBy.playCount:
-        return TablerIcons.sum;
-      case SortBy.premiereDate:
-      case SortBy.productionYear:
-        return TablerIcons.calendar;
-      case SortBy.sortName:
-        return TablerIcons.abc;
-      case SortBy.random:
-        return TablerIcons.arrows_shuffle;
-      case SortBy.revenue:
-        return TablerIcons.coins;
-      case SortBy.runtime:
-        return TablerIcons.stopwatch;
-      case SortBy.defaultOrder:
-        return TablerIcons.server;
-      default:
-        return null;
-    }
+  IconData getIcon() {
+    return switch (this) {
+      SortBy.album => TablerIcons.disc,
+      SortBy.albumArtist || SortBy.artist => TablerIcons.user,
+      SortBy.communityRating || SortBy.criticRating => TablerIcons.chart_bar_popular,
+      SortBy.dateCreated => TablerIcons.calendar_plus,
+      SortBy.datePlayed => TablerIcons.clock,
+      SortBy.playCount => TablerIcons.sum,
+      SortBy.premiereDate || SortBy.productionYear => TablerIcons.calendar,
+      SortBy.sortName => TablerIcons.abc,
+      SortBy.random => TablerIcons.arrows_shuffle,
+      SortBy.revenue => TablerIcons.coins,
+      SortBy.runtime => TablerIcons.stopwatch,
+      SortBy.defaultOrder => TablerIcons.server,
+      SortBy.budget => TablerIcons.moneybag,
+    };
   }
 }
 
@@ -3574,12 +3479,26 @@ enum SortOrder {
   String toString() => _humanReadableName(this);
 
   String _humanReadableName(SortOrder sortOrder) {
-    switch (sortOrder) {
-      case SortOrder.ascending:
-        return "Ascending";
-      case SortOrder.descending:
-        return "Descending";
-    }
+    return switch (sortOrder) {
+      SortOrder.ascending => "Ascending",
+      SortOrder.descending => "Descending",
+    };
+  }
+
+  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
+
+  String _humanReadableLocalisedName(SortOrder sortOrder, BuildContext context) {
+    return switch (sortOrder) {
+      SortOrder.ascending => AppLocalizations.of(context)!.ascending,
+      SortOrder.descending => AppLocalizations.of(context)!.descending,
+    };
+  }
+
+  IconData getIcon() {
+    return switch (this) {
+      SortOrder.ascending => TablerIcons.sort_ascending,
+      SortOrder.descending => TablerIcons.sort_descending,
+    };
   }
 }
 

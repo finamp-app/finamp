@@ -12,9 +12,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
+import '../../menus/track_menu.dart';
 import '../../services/current_album_image_provider.dart';
 import '../../services/favorite_provider.dart';
-import '../../menus/track_menu.dart';
 import '../album_image.dart';
 
 class PlayerScreenAlbumImage extends ConsumerWidget {
@@ -46,11 +46,10 @@ class PlayerScreenAlbumImage extends ConsumerWidget {
                 var inPlaylist = queueItemInPlaylist(queueItem);
                 await showModalTrackMenu(
                   context: context,
-                  item: queueItem!.baseItem!,
+                  item: queueItem!.baseItem,
                   showPlaybackControls: true,
                   // show controls on player screen
                   parentItem: inPlaylist ? queueItem.source.item : null,
-                  isInPlaylist: inPlaylist,
                 );
               }
             },

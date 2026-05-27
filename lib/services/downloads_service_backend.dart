@@ -300,6 +300,8 @@ class IsarTaskQueue implements TaskQueue {
     }
   }
 
+  bool get isRunning => _callbacksComplete != null;
+
   /// Advance the queue if possible and ready, no-op if not.
   /// Will loop until all downloads have been enqueued.  Will enqueue
   /// finampSettings.maxConcurrentDownloads at once.
@@ -401,7 +403,8 @@ class IsarTaskQueue implements TaskQueue {
     return true;
   }
 
-  /// Remove a download task from this queue and cancel any active download.
+  /// Remove a download task from this queue and
+  /// cancel any active download.
   Future<void> remove(DownloadItem item) async {
     if (item.state == DownloadItemState.enqueued || item.state == DownloadItemState.downloading) {
       _isar.writeTxnSync(() {
@@ -473,6 +476,8 @@ class DownloadsDeleteService {
       _callbacksComplete = null;
     }
   }
+
+  bool get isRunning => _callbacksComplete != null;
 
   /// Execute all queued _syncdeletes.  Will call itself until there are max concurrent
   /// download workers running at once.  Uses age variable to determine if queued
@@ -1377,6 +1382,7 @@ class DownloadsSyncService {
               ) ??
               [];
           // Artists use a different endpoint, so request those separately
+          //TODO this ^ seems to be outdated?
           outputItems.addAll(
             await _jellyfinApiData.getItems(includeItemTypes: "MusicArtist", filters: "IsFavorite", fields: fields) ??
                 [],
@@ -1423,8 +1429,8 @@ class DownloadsSyncService {
           outputItems =
               await _jellyfinApiData.getItems(
                 parentItem: (baseItemType == BaseItemDtoType.genre) ? collection.library! : item,
-                libraryFilter: (baseItemType == BaseItemDtoType.artist) ? collection.library! : null,
-                genreFilter: (baseItemType == BaseItemDtoType.genre) ? item : null,
+                libraryFilter: (baseItemType == BaseItemDtoType.artist) ? collection.library!.id : null,
+                genreFilter: (baseItemType == BaseItemDtoType.genre) ? item.id : null,
                 includeItemTypes: BaseItemDtoType.album.jellyfinName,
                 fields: fields,
               ) ??
@@ -1437,7 +1443,7 @@ class DownloadsSyncService {
             outputItems.addAll(
               await _jellyfinApiData.getItems(
                     parentItem: item,
-                    libraryFilter: collection.library!,
+                    libraryFilter: collection.library!.id,
                     includeItemTypes: BaseItemDtoType.track.jellyfinName,
                     filters: "Artist=${parent.name}",
                     artistType: ArtistType.artist,

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:background_downloader/background_downloader.dart';
@@ -13,8 +12,10 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/radio_service_helper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:isar/isar.dart';
@@ -25,9 +26,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../builders/annotations.dart';
+import '../components/MusicScreen/sort_and_filter_row.dart';
 import '../services/finamp_settings_helper.dart';
 import 'jellyfin_models.dart';
 import 'migration_adapters.dart';
+import 'music_models.dart';
 
 part 'finamp_models.g.dart';
 
@@ -119,9 +122,7 @@ class DefaultSettings {
   static const volumeNormalizationMode = VolumeNormalizationMode.hybrid;
   static const contentViewType = ContentViewType.list;
   static const playbackSpeedVisibility = PlaybackSpeedVisibility.automatic;
-  static const contentGridViewCrossAxisCountPortrait = 2;
-  static const contentGridViewCrossAxisCountLandscape = 3;
-  static const showTextOnGridView = false;
+  static const showTextOnGridView = true;
   static const sleepTimerDurationSeconds = 60 * 30;
   static const useCoverAsBackground = true;
   static const playerScreenCoverMinimumPadding = 1.5;
@@ -132,7 +133,28 @@ class DefaultSettings {
   static const bufferDisableSizeConstraints = false;
   static const bufferDurationSeconds = 600;
   static const bufferSizeMegabytes = 50;
-  static const tabOrder = TabContentType.values;
+  static const tabOrder = [
+    ContentType.home,
+    ContentType.albums,
+    ContentType.genericArtists,
+    // Hidden by default
+    ContentType.albumArtists,
+    // Hidden by default
+    ContentType.performingArtists,
+    ContentType.playlists,
+    ContentType.tracks,
+    ContentType.genres,
+  ];
+  static const showTabs = {
+    ContentType.home: true,
+    ContentType.albums: true,
+    ContentType.genericArtists: true,
+    ContentType.albumArtists: false,
+    ContentType.performingArtists: false,
+    ContentType.playlists: true,
+    ContentType.tracks: true,
+    ContentType.genres: true,
+  };
   static const itemSwipeActionLeftToRight = ItemSwipeActions.nothing;
   static const itemSwipeActionRightToLeft = ItemSwipeActions.addToNextUp;
   static const loopMode = FinampLoopMode.none;
@@ -144,8 +166,6 @@ class DefaultSettings {
   static const multichannelHandlingSetting = MultichannelHandlingSetting.stereoDownmixLossy;
   static const shouldRedownloadTranscodes = false;
   static const resyncOnStartup = true;
-  static const fixedGridTileSize = 150;
-  static const useFixedSizeGridTiles = false;
   static const splitScreenPlayerWidth = 400.0;
   static const enableVibration = true;
   static const prioritizeCoverFactor = 8.0;
@@ -222,22 +242,21 @@ class DefaultSettings {
   static const artistItemSectionFilterChipOrder = CuratedItemSelectionType.values;
   static const artistItemSectionsOrder = ArtistItemSections.values;
   static const autoSwitchItemCurationType = true;
-  static const playlistTracksSortBy = SortBy.defaultOrder;
-  static const playlistTracksSortOrder = SortOrder.ascending;
   static const genreFilterPlaylists = false;
   static const clearQueueOnStopEvent = false;
   static const useHighContrastColors = false;
   static const tileAdditionalInfoType = {
-    TabContentType.tracks: TileAdditionalInfoType.adaptive,
-    TabContentType.albums: TileAdditionalInfoType.adaptive,
-    TabContentType.artists: TileAdditionalInfoType.adaptive,
-    TabContentType.playlists: TileAdditionalInfoType.adaptive,
-    TabContentType.genres: TileAdditionalInfoType.adaptive,
+    ContentType.tracks: TileAdditionalInfoType.adaptive,
+    ContentType.albums: TileAdditionalInfoType.adaptive,
+    ContentType.performingArtists: TileAdditionalInfoType.adaptive,
+    ContentType.albumArtists: TileAdditionalInfoType.adaptive,
+    ContentType.playlists: TileAdditionalInfoType.adaptive,
+    ContentType.genres: TileAdditionalInfoType.adaptive,
   };
   static const rpcEnabled = false;
   static const rpcIcon = DiscordRpcIcon.transparent;
   static const preferAddingToFavoritesOverPlaylists = false;
-  static const previousTracksExpaned = false;
+  static const previousTracksExpanded = false;
   static const autoplayRestoredQueue = false;
   static const preferNextUpPrepending = true;
   static const rememberLastUsedPlaybackActionRowPage = true;
@@ -250,6 +269,21 @@ class DefaultSettings {
   static const duckOnAudioInterruption = true;
   static const forceAudioOffloadingOnAndroid = false;
   static const previousTracksPersistenceMode = PreviousTracksPersistenceMode.persistent;
+  static final homeScreenConfiguration = FinampHomeScreenConfiguration(
+    actions: [
+      QuickActionConfig(action: FinampQuickActions.shuffleTracks),
+      QuickActionConfig(action: FinampQuickActions.browseRecentQueues),
+      QuickActionConfig(action: FinampQuickActions.surpriseMe),
+    ],
+    sections: [
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoriteTracks),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.forgottenFavoriteTracks),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.recentlyPlayedTracks),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.recentlyAddedAlbums),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoriteArtists),
+    ],
+  );
+  static const gridImageSize = 160;
   static const useAndroidGainEffect = true;
 }
 
@@ -264,18 +298,16 @@ class FinampSettings {
     // downloadLocations.
     required this.downloadLocations,
     this.androidStopForegroundOnPause = DefaultSettings.androidStopForegroundOnPause,
-    required this.showTabs,
+    this.showTabs = DefaultSettings.showTabs,
     this.onlyShowFavorites = DefaultSettings.onlyShowFavorites,
-    this.sortBy = SortBy.sortName,
-    this.sortOrder = SortOrder.ascending,
     this.trackShuffleItemCount = DefaultSettings.trackShuffleItemCount,
     this.volumeNormalizationActive = DefaultSettings.volumeNormalizationActive,
     this.volumeNormalizationIOSBaseGain = DefaultSettings.volumeNormalizationIOSBaseGain,
     this.volumeNormalizationMode = DefaultSettings.volumeNormalizationMode,
     this.contentViewType = DefaultSettings.contentViewType,
     this.playbackSpeedVisibility = DefaultSettings.playbackSpeedVisibility,
-    this.contentGridViewCrossAxisCountPortrait = DefaultSettings.contentGridViewCrossAxisCountPortrait,
-    this.contentGridViewCrossAxisCountLandscape = DefaultSettings.contentGridViewCrossAxisCountLandscape,
+    this.contentGridViewCrossAxisCountPortrait,
+    this.contentGridViewCrossAxisCountLandscape,
     this.showTextOnGridView = DefaultSettings.showTextOnGridView,
     required this.downloadLocationsMap,
     this.useCoverAsBackground = DefaultSettings.useCoverAsBackground,
@@ -310,8 +342,8 @@ class FinampSettings {
     this.shouldRedownloadTranscodes = DefaultSettings.shouldRedownloadTranscodes,
     this.itemSwipeActionLeftToRight = DefaultSettings.itemSwipeActionLeftToRight,
     this.itemSwipeActionRightToLeft = DefaultSettings.itemSwipeActionRightToLeft,
-    this.useFixedSizeGridTiles = DefaultSettings.useFixedSizeGridTiles,
-    this.fixedGridTileSize = DefaultSettings.fixedGridTileSize,
+    this.useFixedSizeGridTiles,
+    this.fixedGridTileSize,
     this.allowSplitScreen = DefaultSettings.allowSplitScreen,
     this.splitScreenPlayerWidth = DefaultSettings.splitScreenPlayerWidth,
     this.enableVibration = DefaultSettings.enableVibration,
@@ -366,8 +398,6 @@ class FinampSettings {
     this.artistItemSectionFilterChipOrder = DefaultSettings.artistItemSectionFilterChipOrder,
     this.artistItemSectionsOrder = DefaultSettings.artistItemSectionsOrder,
     this.autoSwitchItemCurationType = DefaultSettings.autoSwitchItemCurationType,
-    this.playlistTracksSortBy = DefaultSettings.playlistTracksSortBy,
-    this.playlistTracksSortOrder = DefaultSettings.playlistTracksSortOrder,
     this.genreFilterPlaylists = DefaultSettings.genreFilterPlaylists,
     this.clearQueueOnStopEvent = DefaultSettings.clearQueueOnStopEvent,
     this.useHighContrastColors = DefaultSettings.useHighContrastColors,
@@ -377,7 +407,7 @@ class FinampSettings {
     this.rpcEnabled = DefaultSettings.rpcEnabled,
     this.rpcIcon = DefaultSettings.rpcIcon,
     this.preferAddingToFavoritesOverPlaylists = DefaultSettings.preferAddingToFavoritesOverPlaylists,
-    this.previousTracksExpaned = DefaultSettings.previousTracksExpaned,
+    this.previousTracksExpanded = DefaultSettings.previousTracksExpanded,
     this.autoplayRestoredQueue = DefaultSettings.autoplayRestoredQueue,
     this.preferNextUpPrepending = DefaultSettings.preferNextUpPrepending,
     this.rememberLastUsedPlaybackActionRowPage = DefaultSettings.rememberLastUsedPlaybackActionRowPage,
@@ -395,6 +425,8 @@ class FinampSettings {
     this.duckOnAudioInterruption = DefaultSettings.duckOnAudioInterruption,
     this.forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid,
     this.previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode,
+    required this.homeScreenConfiguration,
+    this.gridImageSize = DefaultSettings.gridImageSize,
     this.useAndroidGainEffect = DefaultSettings.useAndroidGainEffect,
   });
 
@@ -414,7 +446,7 @@ class FinampSettings {
 
   @HiveField(5)
   @SettingsHelperMap("tabContentType")
-  Map<TabContentType, bool> showTabs;
+  Map<ContentType, bool> showTabs;
 
   /// Used to remember if the user has set their music screen to favorites
   /// mode.
@@ -424,12 +456,12 @@ class FinampSettings {
   /// Current sort by setting.
   @Deprecated("Use per-tab sort by instead")
   @HiveField(7)
-  SortBy sortBy;
+  SortBy? sortBy;
 
   /// Current sort order setting.
   @Deprecated("Use per-tab sort order instead")
   @HiveField(8)
-  SortOrder sortOrder;
+  SortOrder? sortOrder;
 
   /// Amount of tracks to get when shuffling tracks.
   @HiveField(9, defaultValue: DefaultSettings.trackShuffleItemCount)
@@ -440,12 +472,14 @@ class FinampSettings {
   ContentViewType contentViewType;
 
   /// Amount of grid tiles to use per-row when portrait.
-  @HiveField(11, defaultValue: DefaultSettings.contentGridViewCrossAxisCountPortrait)
-  int contentGridViewCrossAxisCountPortrait;
+  @HiveField(11)
+  @Deprecated("Use gridImageSize instead")
+  int? contentGridViewCrossAxisCountPortrait;
 
   /// Amount of grid tiles to use per-row when landscape.
-  @HiveField(12, defaultValue: DefaultSettings.contentGridViewCrossAxisCountLandscape)
-  int contentGridViewCrossAxisCountLandscape;
+  @HiveField(12)
+  @Deprecated("Use gridImageSize instead")
+  int? contentGridViewCrossAxisCountLandscape;
 
   /// Whether or not to show the text (title, artist etc) on the grid music
   /// screen.
@@ -468,16 +502,16 @@ class FinampSettings {
   @HiveField(19, defaultValue: DefaultSettings.disableGesture)
   bool disableGesture = DefaultSettings.disableGesture;
 
-  @HiveField(20, defaultValue: <TabContentType, SortBy>{})
+  @HiveField(20, defaultValue: <ContentType, SortBy>{})
   @SettingsHelperMap("tabContentType")
-  Map<TabContentType, SortBy> tabSortBy;
+  Map<ContentType, SortBy> tabSortBy;
 
-  @HiveField(21, defaultValue: <TabContentType, SortOrder>{})
+  @HiveField(21, defaultValue: <ContentType, SortOrder>{})
   @SettingsHelperMap("tabContentType")
-  Map<TabContentType, SortOrder> tabSortOrder;
+  Map<ContentType, SortOrder> tabSortOrder;
 
   @HiveField(22, defaultValue: DefaultSettings.tabOrder)
-  List<TabContentType> tabOrder;
+  List<ContentType> tabOrder;
 
   @HiveField(25, defaultValue: DefaultSettings.showFastScroller)
   bool showFastScroller = DefaultSettings.showFastScroller;
@@ -561,7 +595,6 @@ class FinampSettings {
   bool reportQueueToServer;
 
   @HiveField(53, defaultValue: DefaultSettings.periodicPlaybackSessionUpdateFrequencySeconds)
-  @HiveField(53, defaultValue: DefaultSettings.periodicPlaybackSessionUpdateFrequencySeconds)
   int periodicPlaybackSessionUpdateFrequencySeconds;
 
   @HiveField(54, defaultValue: DefaultSettings.showArtistsTracksSection)
@@ -580,11 +613,13 @@ class FinampSettings {
   @HiveField(58, defaultValue: null)
   String? defaultDownloadLocation;
 
-  @HiveField(59, defaultValue: DefaultSettings.useFixedSizeGridTiles)
-  bool useFixedSizeGridTiles;
+  @HiveField(59)
+  @Deprecated("Use gridImageSize instead")
+  bool? useFixedSizeGridTiles;
 
-  @HiveField(60, defaultValue: DefaultSettings.fixedGridTileSize)
-  int fixedGridTileSize;
+  @HiveField(60)
+  @Deprecated("Use gridImageSize instead")
+  int? fixedGridTileSize;
 
   @HiveField(61, defaultValue: DefaultSettings.allowSplitScreen)
   bool allowSplitScreen;
@@ -747,11 +782,13 @@ class FinampSettings {
   @HiveField(112, defaultValue: DefaultSettings.autoSwitchItemCurationType)
   bool autoSwitchItemCurationType;
 
-  @HiveField(113, defaultValue: DefaultSettings.playlistTracksSortBy)
-  SortBy playlistTracksSortBy;
+  @HiveField(113)
+  @Deprecated("Prefer tabSortBy[ContentType.inPlaylist] instead")
+  SortBy? playlistTracksSortBy;
 
-  @HiveField(114, defaultValue: DefaultSettings.playlistTracksSortOrder)
-  SortOrder playlistTracksSortOrder;
+  @HiveField(114)
+  @Deprecated("Prefer tabSortOrder[ContentType.inPlaylist] instead")
+  SortOrder? playlistTracksSortOrder;
 
   @HiveField(115, defaultValue: DefaultSettings.genreFilterPlaylists)
   bool genreFilterPlaylists;
@@ -778,7 +815,7 @@ class FinampSettings {
 
   @HiveField(122, defaultValue: DefaultSettings.tileAdditionalInfoType)
   @SettingsHelperMap("tabContentType")
-  Map<TabContentType, TileAdditionalInfoType> tileAdditionalInfoType;
+  Map<ContentType, TileAdditionalInfoType> tileAdditionalInfoType;
 
   @HiveField(123, defaultValue: DefaultSettings.rpcEnabled)
   bool rpcEnabled;
@@ -790,10 +827,10 @@ class FinampSettings {
   bool autoExpandPlayerScreen = DefaultSettings.autoExpandPlayerScreen;
 
   @HiveField(126, defaultValue: DefaultSettings.preferAddingToFavoritesOverPlaylists)
-  bool preferAddingToFavoritesOverPlaylists = DefaultSettings.preferAddingToFavoritesOverPlaylists;
+  bool preferAddingToFavoritesOverPlaylists;
 
-  @HiveField(127, defaultValue: DefaultSettings.previousTracksExpaned)
-  bool previousTracksExpaned = DefaultSettings.previousTracksExpaned;
+  @HiveField(127, defaultValue: DefaultSettings.previousTracksExpanded)
+  bool previousTracksExpanded = DefaultSettings.previousTracksExpanded;
 
   @HiveField(128, defaultValue: DefaultSettings.autoplayRestoredQueue)
   bool autoplayRestoredQueue = DefaultSettings.autoplayRestoredQueue;
@@ -802,10 +839,10 @@ class FinampSettings {
   bool preferNextUpPrepending = DefaultSettings.preferNextUpPrepending;
 
   @HiveField(130, defaultValue: DefaultSettings.rememberLastUsedPlaybackActionRowPage)
-  bool rememberLastUsedPlaybackActionRowPage = DefaultSettings.rememberLastUsedPlaybackActionRowPage;
+  bool rememberLastUsedPlaybackActionRowPage;
 
   @HiveField(131, defaultValue: DefaultSettings.lastUsedPlaybackActionRowPage)
-  PlaybackActionRowPage lastUsedPlaybackActionRowPage = DefaultSettings.lastUsedPlaybackActionRowPage;
+  PlaybackActionRowPage lastUsedPlaybackActionRowPage;
 
   @HiveField(132, defaultValue: DefaultSettings.accentColor)
   Color? accentColor = DefaultSettings.accentColor;
@@ -830,8 +867,7 @@ class FinampSettings {
   bool useMonochromeIcon = DefaultSettings.useMonochromeIcon;
 
   @HiveField(139, defaultValue: DefaultSettings.lastUsedPlaybackActionRowPageForQueueMenu)
-  PlaybackActionRowPage lastUsedPlaybackActionRowPageForQueueMenu =
-      DefaultSettings.lastUsedPlaybackActionRowPageForQueueMenu;
+  PlaybackActionRowPage lastUsedPlaybackActionRowPageForQueueMenu;
 
   @HiveField(140, defaultValue: DefaultSettings.radioEnabled)
   bool radioEnabled = DefaultSettings.radioEnabled;
@@ -849,12 +885,22 @@ class FinampSettings {
   MultichannelHandlingSetting multichannelHandlingSetting;
 
   @HiveField(145, defaultValue: DefaultSettings.previousTracksPersistenceMode)
-  PreviousTracksPersistenceMode previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode;
+  PreviousTracksPersistenceMode previousTracksPersistenceMode;
 
-  @HiveField(146, defaultValue: DefaultSettings.amoledTheme)
+  @HiveField(
+    146,
+    //!!! this is a dummy value, the actual default is set in [_migrateHomescreen] because it's a non-constant value, and therefore not supported as a Hive default value
+    defaultValue: FinampHomeScreenConfiguration(actions: [], sections: []),
+  )
+  FinampHomeScreenConfiguration homeScreenConfiguration = DefaultSettings.homeScreenConfiguration;
+
+  @HiveField(147, defaultValue: DefaultSettings.gridImageSize)
+  int gridImageSize;
+
+  @HiveField(148, defaultValue: DefaultSettings.amoledTheme)
   bool amoledTheme = DefaultSettings.amoledTheme;
 
-  @HiveField(147, defaultValue: DefaultSettings.useAndroidGainEffect)
+  @HiveField(149, defaultValue: DefaultSettings.useAndroidGainEffect)
   bool useAndroidGainEffect;
 
   static Future<FinampSettings> create() async {
@@ -865,12 +911,10 @@ class FinampSettings {
     );
     return FinampSettings(
       downloadLocations: [],
-      // Create a map of TabContentType from TabContentType's values.
-      showTabs: Map.fromEntries(TabContentType.values.map((e) => MapEntry(e, true))),
       downloadLocationsMap: {downloadLocation.id: downloadLocation},
       tabSortBy: {},
       tabSortOrder: {},
-      useFixedSizeGridTiles: !(Platform.isIOS || Platform.isAndroid),
+      homeScreenConfiguration: DefaultSettings.homeScreenConfiguration,
     );
   }
 
@@ -887,11 +931,11 @@ class FinampSettings {
 
   set bufferDuration(Duration duration) => bufferDurationSeconds = duration.inSeconds;
 
-  SortBy getTabSortBy(TabContentType tabType) {
+  SortBy getTabSortBy(ContentType tabType) {
     return tabSortBy[tabType] ?? SortBy.sortName;
   }
 
-  SortOrder getSortOrder(TabContentType tabType) {
+  SortOrder getSortOrder(ContentType tabType) {
     return tabSortOrder[tabType] ?? SortOrder.ascending;
   }
 }
@@ -1029,77 +1073,123 @@ class NewDownloadLocation {
 
 /// Supported tab types in MusicScreenTabView.
 @HiveType(typeId: 36)
-enum TabContentType {
+enum ContentType {
   @HiveField(0)
   albums(BaseItemDtoType.album),
   @HiveField(1)
-  artists(BaseItemDtoType.artist),
+  genericArtists(BaseItemDtoType.artist),
   @HiveField(2)
   playlists(BaseItemDtoType.playlist),
   @HiveField(3)
   genres(BaseItemDtoType.genre),
   @HiveField(4)
-  tracks(BaseItemDtoType.track);
+  tracks(BaseItemDtoType.track),
+  @HiveField(5)
+  home(null),
+  @HiveField(6)
+  performingArtists(BaseItemDtoType.artist),
+  @HiveField(7)
+  albumArtists(BaseItemDtoType.artist),
+  @HiveField(8)
+  inPlaylist(BaseItemDtoType.track),
+  @HiveField(9)
+  mixed(null),
+  @HiveField(10)
+  inPerformingArtistAlbums(BaseItemDtoType.album),
+  @HiveField(11)
+  inAlbumArtistAlbums(BaseItemDtoType.album);
 
-  const TabContentType(this.itemType);
+  const ContentType(this.itemType);
 
-  final BaseItemDtoType itemType;
+  final BaseItemDtoType? itemType;
 
-  /// Human-readable version of the [TabContentType]. For example, toString() on
-  /// [TabContentType.tracks], toString() would return "TabContentType.tracks".
+  /// Human-readable version of the [ContentType]. For example, toString() on
+  /// [ContentType.tracks], toString() would return "TabContentType.tracks".
   /// With this function, the same input would return "Tracks".
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(TabContentType tabContentType) {
-    switch (tabContentType) {
-      case TabContentType.tracks:
-        return "Tracks";
-      case TabContentType.albums:
-        return "Albums";
-      case TabContentType.artists:
-        return "Artists";
-      case TabContentType.genres:
-        return "Genres";
-      case TabContentType.playlists:
-        return "Playlists";
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
+      case ContentType.tracks:
+        return l10n.tracks;
+      case ContentType.albums:
+        return l10n.albums;
+      case ContentType.genericArtists:
+        return l10n.artists;
+      case ContentType.genres:
+        return l10n.genres;
+      case ContentType.playlists:
+        return l10n.playlists;
+      case ContentType.home:
+        return l10n.home;
+      case ContentType.performingArtists:
+        return l10n.performingArtists;
+      case ContentType.albumArtists:
+        return l10n.albumArtists;
+      case ContentType.inPlaylist:
+        return l10n.inPlaylist;
+      case ContentType.mixed:
+        return l10n.inCollection;
+      case ContentType.inPerformingArtistAlbums:
+        return l10n.performingArtistFilter;
+      case ContentType.inAlbumArtistAlbums:
+        return l10n.albumArtistFilter;
     }
   }
 
-  String _humanReadableLocalisedName(TabContentType tabContentType, BuildContext context) {
-    switch (tabContentType) {
-      case TabContentType.tracks:
-        return AppLocalizations.of(context)!.tracks;
-      case TabContentType.albums:
-        return AppLocalizations.of(context)!.albums;
-      case TabContentType.artists:
-        return AppLocalizations.of(context)!.artists;
-      case TabContentType.genres:
-        return AppLocalizations.of(context)!.genres;
-      case TabContentType.playlists:
-        return AppLocalizations.of(context)!.playlists;
-    }
-  }
-
-  static TabContentType fromItemType(String itemType) {
+  static ContentType fromItemType(String? itemType) {
     switch (itemType) {
       case "Audio":
-        return TabContentType.tracks;
+        return ContentType.tracks;
       case "MusicAlbum":
-        return TabContentType.albums;
+        return ContentType.albums;
       case "MusicArtist":
-        return TabContentType.artists;
+        return ContentType.genericArtists;
       case "MusicGenre":
-        return TabContentType.genres;
+        return ContentType.genres;
       case "Playlist":
-        return TabContentType.playlists;
+        return ContentType.playlists;
       default:
         throw const FormatException("Unsupported itemType");
     }
   }
+
+  bool get isArtist => switch (this) {
+    ContentType.genericArtists || ContentType.performingArtists || ContentType.albumArtists => true,
+    _ => false,
+  };
+
+  bool get isTab => switch (this) {
+    ContentType.albums => true,
+    ContentType.genericArtists => true,
+    ContentType.playlists => true,
+    ContentType.genres => true,
+    ContentType.tracks => true,
+    ContentType.home => true,
+    ContentType.performingArtists => true,
+    ContentType.albumArtists => true,
+    ContentType.inPlaylist => false,
+    ContentType.mixed => false,
+    ContentType.inPerformingArtistAlbums => false,
+    ContentType.inAlbumArtistAlbums => false,
+  };
+
+  bool get directlyDisplayable => switch (this) {
+    ContentType.albums => true,
+    ContentType.genericArtists => false,
+    ContentType.playlists => true,
+    ContentType.genres => true,
+    ContentType.tracks => true,
+    ContentType.home => false,
+    ContentType.performingArtists => true,
+    ContentType.albumArtists => true,
+    ContentType.inPlaylist => false,
+    ContentType.mixed => false,
+    ContentType.inPerformingArtistAlbums => false,
+    ContentType.inAlbumArtistAlbums => false,
+  };
 }
 
 @HiveType(typeId: 39)
@@ -1110,29 +1200,18 @@ enum ContentViewType {
   grid;
 
   /// Human-readable version of this enum. I've written longer descriptions on
-  /// enums like [TabContentType], and I can't be bothered to copy and paste it
+  /// enums like [ContentType], and I can't be bothered to copy and paste it
   /// again.
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(ContentViewType contentViewType) {
-    switch (contentViewType) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case ContentViewType.list:
-        return "List";
+        return l10n.list;
       case ContentViewType.grid:
-        return "Grid";
-    }
-  }
-
-  String _humanReadableLocalisedName(ContentViewType contentViewType, BuildContext context) {
-    switch (contentViewType) {
-      case ContentViewType.list:
-        return AppLocalizations.of(context)!.list;
-      case ContentViewType.grid:
-        return AppLocalizations.of(context)!.grid;
+        return l10n.grid;
     }
   }
 }
@@ -1329,19 +1408,14 @@ class DownloadStub {
 
   factory DownloadStub.fromFinampCollection(FinampCollection collection) {
     String id = collection.id;
-    // Fetch localized name from default global context.
-    String? name;
-    var loc = GlobalSnackbar.localizations;
-    if (loc != null) {
-      name = collection.getName2(loc);
-    }
 
     return DownloadStub._build(
       id: id,
       isarId: getHash(id, DownloadItemType.finampCollection),
       jsonItem: jsonEncode(collection.toJson()),
       type: DownloadItemType.finampCollection,
-      name: name ?? "[$id]",
+      // Fetch localized name from default global context.
+      name: collection.getName(GlobalSnackbar.requireL10n),
       baseItemType: BaseItemDtoType.noItem,
     );
   }
@@ -1732,6 +1806,9 @@ enum DownloadItemStatus {
 /// The type of a BaseItemDto as determined from its type field.
 /// Enumerated by Isar, do not modify order or delete existing entries
 enum BaseItemDtoType {
+  // TODO we should probably only have the types we care about
+  // track, album, artist, playlist, library, collection.
+  // Others should map to one if close enough, else throw.
   noItem(null, true, null, null),
   album("MusicAlbum", false, [track], DownloadItemType.collection),
   artist("MusicArtist", true, [album, track], DownloadItemType.collection),
@@ -1746,6 +1823,11 @@ enum BaseItemDtoType {
   video("Video", false, [], DownloadItemType.track),
   movie("Movie", false, [], DownloadItemType.track),
   trailer("Trailer", false, [], DownloadItemType.track),
+  //!!! apparently a typo in the API docs, "BoxSet" returns an invalid result (i.e. all libraries), but "BoxSets" returns the correct thing. at least for some requests?
+  collection("BoxSet", true, [
+    album, track, playlist, artist, genre, audioBook,
+    // collection,
+  ], DownloadItemType.collection),
   unknown(null, true, null, DownloadItemType.collection);
 
   // All possible types in Jellyfin as of 10.9:
@@ -1797,12 +1879,12 @@ enum BaseItemDtoType {
   }
 
   // TODO stopgap solution until snackbars fate is decided
-  static BaseItemDtoType fromPlayableItem(PlayableItem item) {
+  static BaseItemDtoType? fromPlayableItem(FinampPlayable item) {
     switch (item) {
-      case AlbumDisc():
-        return BaseItemDtoType.fromItem(item.parent);
-      case BaseItemDto():
-        return BaseItemDtoType.fromItem(item);
+      case FinampPlayableDto():
+        return BaseItemDtoType.fromItem(item.item);
+      case _:
+        return null;
     }
   }
 }
@@ -1931,6 +2013,8 @@ enum QueueItemSourceType {
   remoteClient,
   @HiveField(22)
   radio,
+  @HiveField(23)
+  homeScreenSection,
 }
 
 @HiveType(typeId: 53)
@@ -1955,7 +2039,7 @@ class QueueItemSource {
     this.contextNormalizationGain,
   });
 
-  factory QueueItemSource.fromPlayableItem(
+  /*factory QueueItemSource.fromPlayableItem(
     PlayableItem playableItem, {
     QueueItemSourceType? type,
     QueueItemSourceNameType? nameType,
@@ -1963,10 +2047,21 @@ class QueueItemSource {
     switch (playableItem) {
       case AlbumDisc():
         return QueueItemSource.fromBaseItem(playableItem.parent, type: type, nameType: nameType);
-      case BaseItemDto():
-        return QueueItemSource.fromBaseItem(playableItem, type: type, nameType: nameType);
+      case PlayableBaseItem():
+        return QueueItemSource.fromBaseItem(playableItem.item, type: type, nameType: nameType);
+      case HomeScreenPlayable():
+        final context = GlobalSnackbar.materialAppScaffoldKey.currentContext!;
+        return QueueItemSource.rawId(
+          type: QueueItemSourceType.homeScreenSection,
+          name: QueueItemSourceName(
+            type: QueueItemSourceNameType.homeScreenSection,
+            localizationParameter: playableItem.config.presetType?.name,
+            pretranslatedName: playableItem.config.getTitle(context),
+          ),
+          id: playableItem.config.toLocalisedString(context),
+        );
     }
-  }
+  }*/
 
   factory QueueItemSource.fromBaseItem(
     BaseItemDto baseItem, {
@@ -1994,7 +2089,7 @@ class QueueItemSource {
           ? QueueItemSourceName(type: nameType, localizationParameter: baseItem.name ?? "")
           : QueueItemSourceName(
               type: QueueItemSourceNameType.preTranslated,
-              pretranslatedName: baseItem.name ?? GlobalSnackbar.localizations?.placeholderSource ?? "Somewhere",
+              pretranslatedName: baseItem.name ?? GlobalSnackbar.requireL10n.placeholderSource,
             ),
       id: baseItem.id,
       item: baseItem,
@@ -2078,6 +2173,8 @@ enum QueueItemSourceNameType {
   remoteClient,
   @HiveField(10)
   radio,
+  @HiveField(11)
+  homeScreenSection,
 }
 
 @HiveType(typeId: 56)
@@ -2095,9 +2192,7 @@ class QueueItemSourceName {
   @HiveField(2)
   final String? localizationParameter;
 
-  String getLocalized(BuildContext context) => getLocalized2(AppLocalizations.of(context)!);
-
-  String getLocalized2(AppLocalizations localizations) {
+  String getLocalized(AppLocalizations localizations) {
     switch (type) {
       case QueueItemSourceNameType.preTranslated:
         return pretranslatedName ?? "";
@@ -2125,6 +2220,13 @@ class QueueItemSourceName {
         } else {
           return localizations.radio;
         }
+      case QueueItemSourceNameType.homeScreenSection:
+        return localizationParameter != null
+            ? HomeScreenSectionConfiguration.getTitleForPreset(
+                l10n: localizations,
+                presetType: HomeScreenSectionPresetType.values.byName(localizationParameter!),
+              )
+            : pretranslatedName ?? "";
     }
   }
 
@@ -2549,33 +2651,20 @@ enum PlaybackSpeedVisibility {
   hidden;
 
   /// Human-readable version of this enum. I've written longer descriptions on
-  /// enums like [TabContentType], and I can't be bothered to copy and paste it
+  /// enums like [ContentType], and I can't be bothered to copy and paste it
   /// again.
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(PlaybackSpeedVisibility playbackSpeedVisibility) {
-    switch (playbackSpeedVisibility) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case PlaybackSpeedVisibility.automatic:
-        return "Automatic";
+        return l10n.automatic;
       case PlaybackSpeedVisibility.visible:
-        return "On";
+        return l10n.shown;
       case PlaybackSpeedVisibility.hidden:
-        return "Off";
-    }
-  }
-
-  String _humanReadableLocalisedName(PlaybackSpeedVisibility playbackSpeedVisibility, BuildContext context) {
-    switch (playbackSpeedVisibility) {
-      case PlaybackSpeedVisibility.automatic:
-        return AppLocalizations.of(context)!.automatic;
-      case PlaybackSpeedVisibility.visible:
-        return AppLocalizations.of(context)!.shown;
-      case PlaybackSpeedVisibility.hidden:
-        return AppLocalizations.of(context)!.hidden;
+        return l10n.hidden;
     }
   }
 }
@@ -2620,9 +2709,7 @@ class FinampCollection {
     FinampCollectionType.collectionWithLibraryFilter => "Collection with Library Filter:${library!.id}:${item!.id}",
   };
 
-  String getName(BuildContext context) => getName2(AppLocalizations.of(context)!);
-
-  String getName2(AppLocalizations localizations) => switch (type) {
+  String getName(AppLocalizations localizations) => switch (type) {
     FinampCollectionType.favorites => localizations.finampCollectionNames("favorites"),
     FinampCollectionType.allPlaylists => localizations.finampCollectionNames("allPlaylists"),
     FinampCollectionType.latest5Albums => localizations.finampCollectionNames("fiveLatestAlbums"),
@@ -2651,7 +2738,7 @@ class MediaItemId {
   MediaItemId({required this.contentType, required this.parentType, this.itemId, this.parentId});
 
   @HiveField(0)
-  TabContentType contentType;
+  ContentType contentType;
 
   @HiveField(1)
   MediaItemParentType parentType;
@@ -2684,29 +2771,16 @@ enum LyricsAlignment {
   /// Human-readable version of the [LyricsAlignment]
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(LyricsAlignment lyricsAlignment) {
-    switch (lyricsAlignment) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case LyricsAlignment.start:
-        return "Start";
+        return l10n.alignmentOptionStart;
       case LyricsAlignment.center:
-        return "Center";
+        return l10n.alignmentOptionCenter;
       case LyricsAlignment.end:
-        return "End";
-    }
-  }
-
-  String _humanReadableLocalisedName(LyricsAlignment lyricsAlignment, BuildContext context) {
-    switch (lyricsAlignment) {
-      case LyricsAlignment.start:
-        return AppLocalizations.of(context)!.alignmentOptionStart;
-      case LyricsAlignment.center:
-        return AppLocalizations.of(context)!.alignmentOptionCenter;
-      case LyricsAlignment.end:
-        return AppLocalizations.of(context)!.alignmentOptionEnd;
+        return l10n.alignmentOptionEnd;
     }
   }
 }
@@ -2723,29 +2797,16 @@ enum LyricsFontSize {
   /// Human-readable version of the [LyricsFontSize]
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(LyricsFontSize lyricsFontSize) {
-    switch (lyricsFontSize) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case LyricsFontSize.small:
-        return "Small";
+        return l10n.fontSizeOptionSmall;
       case LyricsFontSize.medium:
-        return "Medium";
+        return l10n.fontSizeOptionMedium;
       case LyricsFontSize.large:
-        return "Large";
-    }
-  }
-
-  String _humanReadableLocalisedName(LyricsFontSize lyricsFontSize, BuildContext context) {
-    switch (lyricsFontSize) {
-      case LyricsFontSize.small:
-        return AppLocalizations.of(context)!.fontSizeOptionSmall;
-      case LyricsFontSize.medium:
-        return AppLocalizations.of(context)!.fontSizeOptionMedium;
-      case LyricsFontSize.large:
-        return AppLocalizations.of(context)!.fontSizeOptionLarge;
+        return l10n.fontSizeOptionLarge;
     }
   }
 }
@@ -2762,37 +2823,22 @@ enum KeepScreenOnOption {
   whileLyrics;
 
   /// Human-readable version of this enum. I've written longer descriptions on
-  /// enums like [TabContentType], and I can't be bothered to copy and paste it
+  /// enums like [ContentType], and I can't be bothered to copy and paste it
   /// again.
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(KeepScreenOnOption keepScreenOnOption) {
-    switch (keepScreenOnOption) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case KeepScreenOnOption.disabled:
-        return "Disabled";
+        return l10n.keepScreenOnDisabled;
       case KeepScreenOnOption.alwaysOn:
-        return "Always On";
+        return l10n.keepScreenOnAlwaysOn;
       case KeepScreenOnOption.whilePlaying:
-        return "While Playing Music";
+        return l10n.keepScreenOnWhilePlaying;
       case KeepScreenOnOption.whileLyrics:
-        return "While Showing Lyrics";
-    }
-  }
-
-  String _humanReadableLocalisedName(KeepScreenOnOption keepScreenOnOption, BuildContext context) {
-    switch (keepScreenOnOption) {
-      case KeepScreenOnOption.disabled:
-        return AppLocalizations.of(context)!.keepScreenOnDisabled;
-      case KeepScreenOnOption.alwaysOn:
-        return AppLocalizations.of(context)!.keepScreenOnAlwaysOn;
-      case KeepScreenOnOption.whilePlaying:
-        return AppLocalizations.of(context)!.keepScreenOnWhilePlaying;
-      case KeepScreenOnOption.whileLyrics:
-        return AppLocalizations.of(context)!.keepScreenOnWhileLyrics;
+        return l10n.keepScreenOnWhileLyrics;
     }
   }
 }
@@ -2857,57 +2903,30 @@ enum FinampFeatureChipType {
   /// Human-readable version of the [FinampFeatureChipType]
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(FinampFeatureChipType featureChipType) {
-    switch (featureChipType) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case FinampFeatureChipType.playCount:
-        return "Play Count";
+        return l10n.playCount;
       case FinampFeatureChipType.additionalPeople:
-        return "Additional People";
+        return l10n.additionalPeople;
       case FinampFeatureChipType.playbackMode:
-        return "Playback Mode";
+        return l10n.playbackMode;
       case FinampFeatureChipType.codec:
-        return "codec";
+        return l10n.codec;
       case FinampFeatureChipType.bitRate:
-        return "Bit Rate";
+        return l10n.bitRate;
       case FinampFeatureChipType.bitDepth:
-        return "Bit Depth";
+        return l10n.bitDepth;
       case FinampFeatureChipType.size:
-        return "size";
+        return l10n.size;
       case FinampFeatureChipType.normalizationGain:
-        return "Normalization Gain";
+        return l10n.normalizationGain;
       case FinampFeatureChipType.sampleRate:
-        return "Sample Rate";
+        return l10n.sampleRate;
       case FinampFeatureChipType.explicit:
-        return "Explicit";
-    }
-  }
-
-  String _humanReadableLocalisedName(FinampFeatureChipType featureChipType, BuildContext context) {
-    switch (featureChipType) {
-      case FinampFeatureChipType.playCount:
-        return AppLocalizations.of(context)!.playCount;
-      case FinampFeatureChipType.additionalPeople:
-        return AppLocalizations.of(context)!.additionalPeople;
-      case FinampFeatureChipType.playbackMode:
-        return AppLocalizations.of(context)!.playbackMode;
-      case FinampFeatureChipType.codec:
-        return AppLocalizations.of(context)!.codec;
-      case FinampFeatureChipType.bitRate:
-        return AppLocalizations.of(context)!.bitRate;
-      case FinampFeatureChipType.bitDepth:
-        return AppLocalizations.of(context)!.bitDepth;
-      case FinampFeatureChipType.size:
-        return AppLocalizations.of(context)!.size;
-      case FinampFeatureChipType.normalizationGain:
-        return AppLocalizations.of(context)!.normalizationGain;
-      case FinampFeatureChipType.sampleRate:
-        return AppLocalizations.of(context)!.sampleRate;
-      case FinampFeatureChipType.explicit:
-        return AppLocalizations.of(context)!.explicit;
+        return l10n.explicit;
     }
   }
 }
@@ -2962,37 +2981,22 @@ enum ReleaseDateFormat {
   monthDayYear;
 
   /// Human-readable version of this enum. I've written longer descriptions on
-  /// enums like [TabContentType], and I can't be bothered to copy and paste it
+  /// enums like [ContentType], and I can't be bothered to copy and paste it
   /// again.
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(ReleaseDateFormat releaseDateFormat) {
-    switch (releaseDateFormat) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case ReleaseDateFormat.year:
-        return "Year";
+        return l10n.releaseDateFormatYear;
       case ReleaseDateFormat.iso:
-        return "ISO 8601";
+        return l10n.releaseDateFormatISO;
       case ReleaseDateFormat.monthYear:
-        return "Month & Year";
+        return l10n.releaseDateFormatMonthYear;
       case ReleaseDateFormat.monthDayYear:
-        return "Month, Day & Year";
-    }
-  }
-
-  String _humanReadableLocalisedName(ReleaseDateFormat releaseDateFormat, BuildContext context) {
-    switch (releaseDateFormat) {
-      case ReleaseDateFormat.year:
-        return AppLocalizations.of(context)!.releaseDateFormatYear;
-      case ReleaseDateFormat.iso:
-        return AppLocalizations.of(context)!.releaseDateFormatISO;
-      case ReleaseDateFormat.monthYear:
-        return AppLocalizations.of(context)!.releaseDateFormatMonthYear;
-      case ReleaseDateFormat.monthDayYear:
-        return AppLocalizations.of(context)!.releaseDateFormatMonthDayYear;
+        return l10n.releaseDateFormatMonthDayYear;
     }
   }
 }
@@ -3008,10 +3012,8 @@ enum AutoOfflineOption {
   @HiveField(3)
   unreachable;
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableLocalisedName(AutoOfflineOption offlineOption, BuildContext context) {
-    switch (offlineOption) {
+  String toLocalisedString(BuildContext context) {
+    switch (this) {
       case AutoOfflineOption.disabled:
         // return AppLocalizations.of(context)!.keepScreenOnDisabled;
         return AppLocalizations.of(context)!.autoOfflineOptionOff;
@@ -3041,33 +3043,18 @@ enum ItemSwipeActions {
   /// Human-readable version of this enum.
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(ItemSwipeActions itemSwipeAction) {
-    switch (itemSwipeAction) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case ItemSwipeActions.nothing:
-        return "Disabled";
+        return l10n.keepScreenOnDisabled; // reused here
       case ItemSwipeActions.addToQueue:
-        return "Add To Queue";
+        return l10n.addToQueue;
       case ItemSwipeActions.addToNextUp:
-        return "Add To Next Up";
+        return l10n.addToNextUp;
       case ItemSwipeActions.playNext:
-        return "Play next";
-    }
-  }
-
-  String _humanReadableLocalisedName(ItemSwipeActions itemSwipeAction, BuildContext context) {
-    switch (itemSwipeAction) {
-      case ItemSwipeActions.nothing:
-        return AppLocalizations.of(context)!.keepScreenOnDisabled; // reused here
-      case ItemSwipeActions.addToQueue:
-        return AppLocalizations.of(context)!.addToQueue;
-      case ItemSwipeActions.addToNextUp:
-        return AppLocalizations.of(context)!.addToNextUp;
-      case ItemSwipeActions.playNext:
-        return AppLocalizations.of(context)!.playNext;
+        return l10n.playNext;
     }
   }
 }
@@ -3078,7 +3065,12 @@ enum ArtistType {
   @HiveField(0)
   albumArtist,
   @HiveField(1)
-  artist,
+  artist;
+
+  ContentType get tabType => switch (this) {
+    ArtistType.albumArtist => ContentType.albumArtists,
+    ArtistType.artist => ContentType.performingArtists,
+  };
 }
 
 @JsonSerializable()
@@ -3147,11 +3139,6 @@ class FinampOutputRoute {
   Map<String, dynamic> toJson() {
     return _$FinampOutputRouteToJson(this);
   }
-
-  @override
-  String toString() {
-    return jsonEncode(toJson());
-  }
 }
 
 @HiveType(typeId: 94)
@@ -3199,52 +3186,26 @@ enum CuratedItemSelectionType {
   /// Human-readable version of this enum.
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String toLocalisedSectionTitle(BuildContext context, BaseItemDtoType baseType) =>
-      _toLocalisedSectionTitle(this, context, baseType);
-
-  String _humanReadableName(CuratedItemSelectionType curatedItemSelectionType) {
-    switch (curatedItemSelectionType) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case CuratedItemSelectionType.mostPlayed:
-        return "Most Played";
+        return l10n.mostPlayed;
       case CuratedItemSelectionType.favorites:
-        return "Favorites";
+        return l10n.favorites;
       case CuratedItemSelectionType.random:
-        return "Random";
+        return l10n.random;
       case CuratedItemSelectionType.latestReleases:
-        return "Latest Releases";
+        return l10n.latestReleases;
       case CuratedItemSelectionType.recentlyAdded:
-        return "Recently Added";
+        return l10n.recentlyAdded;
       case CuratedItemSelectionType.recentlyPlayed:
-        return "Recently Played";
+        return l10n.recentlyPlayed;
     }
   }
 
-  String _humanReadableLocalisedName(CuratedItemSelectionType curatedItemSelectionType, BuildContext context) {
-    switch (curatedItemSelectionType) {
-      case CuratedItemSelectionType.mostPlayed:
-        return AppLocalizations.of(context)!.mostPlayed;
-      case CuratedItemSelectionType.favorites:
-        return AppLocalizations.of(context)!.favorites;
-      case CuratedItemSelectionType.random:
-        return AppLocalizations.of(context)!.random;
-      case CuratedItemSelectionType.latestReleases:
-        return AppLocalizations.of(context)!.latestReleases;
-      case CuratedItemSelectionType.recentlyAdded:
-        return AppLocalizations.of(context)!.recentlyAdded;
-      case CuratedItemSelectionType.recentlyPlayed:
-        return AppLocalizations.of(context)!.recentlyPlayed;
-    }
-  }
-
-  String _toLocalisedSectionTitle(
-    CuratedItemSelectionType curatedItemSelectionType,
-    BuildContext context,
-    BaseItemDtoType baseType,
-  ) {
+  String toLocalisedSectionTitle(BuildContext context, BaseItemDtoType baseType) {
     final loc = AppLocalizations.of(context)!;
 
     String? getTitle(String track, String album, String artist) {
@@ -3260,7 +3221,7 @@ enum CuratedItemSelectionType {
       }
     }
 
-    switch (curatedItemSelectionType) {
+    switch (this) {
       case CuratedItemSelectionType.mostPlayed:
         return getTitle(loc.topTracks, loc.topAlbums, loc.topArtists) ?? "Unsupported Type";
       case CuratedItemSelectionType.favorites:
@@ -3308,29 +3269,16 @@ enum GenreItemSections {
   /// Human-readable version of this enum.
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(GenreItemSections genreItemSection) {
-    switch (genreItemSection) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case GenreItemSections.tracks:
-        return "Tracks";
+        return l10n.tracks;
       case GenreItemSections.albums:
-        return "Albums";
+        return l10n.albums;
       case GenreItemSections.artists:
-        return "Artists";
-    }
-  }
-
-  String _humanReadableLocalisedName(GenreItemSections genreItemSection, BuildContext context) {
-    switch (genreItemSection) {
-      case GenreItemSections.tracks:
-        return AppLocalizations.of(context)!.tracks;
-      case GenreItemSections.albums:
-        return AppLocalizations.of(context)!.albums;
-      case GenreItemSections.artists:
-        return AppLocalizations.of(context)!.artists;
+        return l10n.artists;
     }
   }
 }
@@ -3347,44 +3295,24 @@ enum ArtistItemSections {
   /// Human-readable version of this enum.
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String toLocalisedSectionTitle(BuildContext context, CuratedItemSelectionType? curatedItemSelectionType) =>
-      _toLocalisedSectionTitle(this, context, curatedItemSelectionType);
-
-  String _humanReadableName(ArtistItemSections artistItemSection) {
-    switch (artistItemSection) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case ArtistItemSections.tracks:
-        return "Tracks";
+        return l10n.tracks;
       case ArtistItemSections.albums:
-        return "Albums";
+        return l10n.albums;
       case ArtistItemSections.appearsOn:
-        return "Appears On";
+        return l10n.appearsOnAlbums;
     }
   }
 
-  String _humanReadableLocalisedName(ArtistItemSections artistItemSection, BuildContext context) {
-    switch (artistItemSection) {
-      case ArtistItemSections.tracks:
-        return AppLocalizations.of(context)!.tracks;
-      case ArtistItemSections.albums:
-        return AppLocalizations.of(context)!.albums;
-      case ArtistItemSections.appearsOn:
-        return AppLocalizations.of(context)!.appearsOnAlbums;
-    }
-  }
-
-  String _toLocalisedSectionTitle(
-    ArtistItemSections artistItemSection,
-    BuildContext context,
-    CuratedItemSelectionType? curatedItemSelectionType,
-  ) {
+  String toLocalisedSectionTitle(BuildContext context, CuratedItemSelectionType? curatedItemSelectionType) {
     final loc = AppLocalizations.of(context)!;
 
     String? getTitle(String tracks, String albums, String appearsOn) {
-      switch (artistItemSection) {
+      switch (this) {
         case ArtistItemSections.tracks:
           return tracks;
         case ArtistItemSections.albums:
@@ -3543,45 +3471,24 @@ enum TileAdditionalInfoType {
   /// Human-readable version of this enum.
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(TileAdditionalInfoType additionalInfoType) {
-    switch (additionalInfoType) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case TileAdditionalInfoType.adaptive:
-        return "Adaptive";
+        return l10n.adaptive;
       case TileAdditionalInfoType.dateAdded:
-        return "Date Added";
+        return l10n.dateAdded;
       case TileAdditionalInfoType.dateReleased:
-        return "Release Date";
+        return l10n.premiereDate;
       case TileAdditionalInfoType.duration:
-        return "Duration";
+        return l10n.duration;
       case TileAdditionalInfoType.playCount:
-        return "Play Count";
+        return l10n.playCount;
       case TileAdditionalInfoType.dateLastPlayed:
-        return "Date Last Played";
+        return l10n.datePlayed;
       case TileAdditionalInfoType.none:
-        return "None";
-    }
-  }
-
-  String _humanReadableLocalisedName(TileAdditionalInfoType additionalInfoType, BuildContext context) {
-    switch (additionalInfoType) {
-      case TileAdditionalInfoType.adaptive:
-        return AppLocalizations.of(context)!.adaptive;
-      case TileAdditionalInfoType.dateAdded:
-        return AppLocalizations.of(context)!.dateAdded;
-      case TileAdditionalInfoType.dateReleased:
-        return AppLocalizations.of(context)!.premiereDate;
-      case TileAdditionalInfoType.duration:
-        return AppLocalizations.of(context)!.duration;
-      case TileAdditionalInfoType.playCount:
-        return AppLocalizations.of(context)!.playCount;
-      case TileAdditionalInfoType.dateLastPlayed:
-        return AppLocalizations.of(context)!.datePlayed;
-      case TileAdditionalInfoType.none:
-        return AppLocalizations.of(context)!.none;
+        return l10n.none;
     }
   }
 }
@@ -3636,10 +3543,8 @@ enum DiscordRpcIcon {
     }
   }
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableLocalisedName(DiscordRpcIcon icon, BuildContext context) {
-    switch (icon) {
+  String toLocalisedString(BuildContext context) {
+    switch (this) {
       case dark:
         return AppLocalizations.of(context)!.discordRPCIconDark;
       case black:
@@ -3674,41 +3579,22 @@ enum PlaybackActionRowPage {
   /// Human-readable version of this enum.
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.englishL10n);
 
-  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
-
-  String _humanReadableName(PlaybackActionRowPage playbackActionRowPage) {
-    switch (playbackActionRowPage) {
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (this) {
       case PlaybackActionRowPage.newQueue:
-        return "New Queue";
+        return l10n.playbackActionPageNewQueue;
       case PlaybackActionRowPage.playNext:
-        return "Play Next";
+        return l10n.playbackActionPageNext;
       case PlaybackActionRowPage.appendNext:
-        return "Append Next";
+        return l10n.playbackActionPageNextUp;
       case PlaybackActionRowPage.playLast:
-        return "Play Last";
+        return l10n.playbackActionPageAppendToQueue;
       case PlaybackActionRowPage.moveWithinQueue:
-        return "Move Within Queue";
+        return l10n.playbackActionPageMoveWithinQueue;
       case PlaybackActionRowPage.regularTrackOptions:
-        return "Play";
-    }
-  }
-
-  String _humanReadableLocalisedName(PlaybackActionRowPage playbackActionRowPage, BuildContext context) {
-    switch (playbackActionRowPage) {
-      case PlaybackActionRowPage.newQueue:
-        return AppLocalizations.of(context)!.playbackActionPageNewQueue;
-      case PlaybackActionRowPage.playNext:
-        return AppLocalizations.of(context)!.playbackActionPageNext;
-      case PlaybackActionRowPage.appendNext:
-        return AppLocalizations.of(context)!.playbackActionPageNextUp;
-      case PlaybackActionRowPage.playLast:
-        return AppLocalizations.of(context)!.playbackActionPageAppendToQueue;
-      case PlaybackActionRowPage.moveWithinQueue:
-        return AppLocalizations.of(context)!.playbackActionPageMoveWithinQueue;
-      case PlaybackActionRowPage.regularTrackOptions:
-        return AppLocalizations.of(context)!.playbackActionPageRegularTrackOptions;
+        return l10n.playbackActionPageRegularTrackOptions;
     }
   }
 }
@@ -4009,8 +3895,8 @@ enum MultichannelHandlingSetting {
   **/
 }
 
-@HiveType(typeId: 112)
 /// Describes initial state of "previous tracks" header on queue open
+@HiveType(typeId: 112)
 enum PreviousTracksPersistenceMode {
   /// Use last stored state
   @HiveField(0)
@@ -4023,4 +3909,670 @@ enum PreviousTracksPersistenceMode {
   /// Override state to be expanded on open
   @HiveField(2)
   initiallyExpanded,
+}
+
+sealed class HomeScreenSectionBase {
+  /// Human-readable version of the [HomeScreenSectionType]
+  @override
+  @Deprecated("Use toLocalisedString when possible")
+  String toString() => jsonEncode(toJson());
+
+  Map<String, dynamic> toJson();
+}
+
+@HiveType(typeId: 113)
+@JsonSerializable(includeIfNull: false)
+class QueuesHomeSection extends HomeScreenSectionBase {
+  QueuesHomeSection();
+
+  @override
+  bool operator ==(Object other) {
+    return other is QueuesHomeSection;
+  }
+
+  @override
+  int get hashCode => 765346;
+
+  @override
+  Map<String, dynamic> toJson() => _$QueuesHomeSectionToJson(this);
+}
+
+@HiveType(typeId: 114)
+@JsonSerializable(converters: [LibraryIdConverter()], includeIfNull: false)
+class TabsHomeSection extends HomeScreenSectionBase {
+  TabsHomeSection({required this.libraryId, required this.contentType});
+  @HiveField(0)
+  final ContentType contentType;
+  @HiveField(1)
+  final LibraryId libraryId;
+
+  @override
+  bool operator ==(Object other) {
+    return other is TabsHomeSection && other.contentType == contentType && other.libraryId == libraryId;
+  }
+
+  @override
+  int get hashCode => Object.hash(contentType, libraryId);
+
+  @override
+  Map<String, dynamic> toJson() => _$TabsHomeSectionToJson(this);
+}
+
+@HiveType(typeId: 115)
+@JsonSerializable(converters: [LibraryIdConverter(), BaseItemIdConverter()], includeIfNull: false)
+class CollectionHomeSection extends HomeScreenSectionBase {
+  CollectionHomeSection({required this.itemId, required this.libraryId, required this.contentType});
+  @HiveField(0)
+  final BaseItemId itemId;
+  @HiveField(1)
+  final LibraryId libraryId;
+  @HiveField(2)
+  final ContentType contentType;
+
+  @override
+  bool operator ==(Object other) {
+    return other is CollectionHomeSection &&
+        other.itemId == itemId &&
+        other.libraryId == libraryId &&
+        other.contentType == contentType;
+  }
+
+  @override
+  int get hashCode => Object.hash(itemId, libraryId, contentType);
+
+  @override
+  Map<String, dynamic> toJson() => _$CollectionHomeSectionToJson(this);
+}
+
+// hive type 116-118 reserved for fusture home sections
+
+@JsonSerializable(includeIfNull: false, createFactory: false)
+@HiveType(typeId: 119)
+class HomeScreenSectionConfiguration {
+  @HiveField(0)
+  final HomeScreenSectionBase base;
+  @HiveField(1)
+  final SortAndFilterConfiguration sortConfig;
+  @HiveField(2)
+  final String? customSectionTitle;
+  @HiveField(3)
+  final HomeScreenSectionPresetType? presetType;
+
+  const HomeScreenSectionConfiguration({
+    required this.base,
+    required this.sortConfig,
+    this.customSectionTitle,
+    this.presetType,
+  });
+
+  factory HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType presetType) => switch (presetType) {
+    HomeScreenSectionPresetType.favoriteTracks => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.tracks),
+      sortConfig: SortAndFilterConfiguration(
+        sortBy: SortBy.random,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isFavorite)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.favoriteAlbums => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.albums),
+      sortConfig: SortAndFilterConfiguration(
+        sortBy: SortBy.random,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isFavorite)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.favoriteArtists => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.performingArtists),
+      sortConfig: SortAndFilterConfiguration(
+        sortBy: SortBy.random,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isFavorite)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.favoritePlaylists => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.playlists),
+      sortConfig: SortAndFilterConfiguration(
+        sortBy: SortBy.random,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isFavorite)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.favoriteGenres => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.genres),
+      sortConfig: SortAndFilterConfiguration(
+        sortBy: SortBy.random,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isFavorite)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.recentlyAddedAlbums => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: allLibraryPlaceholder, contentType: ContentType.albums),
+      sortConfig: SortAndFilterConfiguration(sortBy: SortBy.dateCreated, sortOrder: SortOrder.descending, filters: {}),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.recentlyAddedTracks => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.tracks),
+      sortConfig: SortAndFilterConfiguration(sortBy: SortBy.dateCreated, sortOrder: SortOrder.descending, filters: {}),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    // HomeScreenSectionPresetType.recentlyPlayedPlaylists => HomeScreenSectionConfiguration(
+    //   type: HomeScreenSectionType.tabView,
+    //   itemId: null,
+    //   contentType: TabContentType.playlists,
+    //   sortAndFilterConfiguration: SortAndFilterConfiguration(
+    //     sortBy: SortBy.datePlayed,
+    //     sortOrder: SortOrder.descending,
+    //     filters: {},
+    //   ),
+    //   customSectionTitle: null,
+    //   presetType: presetType,
+    // ),
+    HomeScreenSectionPresetType.frequentlyPlayedAlbums => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.albums),
+      sortConfig: SortAndFilterConfiguration(sortBy: SortBy.playCount, sortOrder: SortOrder.descending, filters: {}),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.frequentlyPlayedTracks => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.tracks),
+      sortConfig: SortAndFilterConfiguration(sortBy: SortBy.playCount, sortOrder: SortOrder.descending, filters: {}),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.frequentlyPlayedArtists => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.performingArtists),
+      sortConfig: SortAndFilterConfiguration(sortBy: SortBy.playCount, sortOrder: SortOrder.descending, filters: {}),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.neverPlayedAlbums => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.albums),
+      sortConfig: SortAndFilterConfiguration(
+        sortBy: SortBy.random,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isUnplayed)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.forgottenFavoriteTracks => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.tracks),
+      sortConfig: SortAndFilterConfiguration(
+        sortBy: SortBy.datePlayed,
+        sortOrder: SortOrder.ascending,
+        filters: {ItemFilter(type: ItemFilterType.isFavorite)},
+      ),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.recentQueues => HomeScreenSectionConfiguration(
+      base: QueuesHomeSection(),
+      sortConfig: SortAndFilterConfiguration(sortBy: SortBy.datePlayed, sortOrder: SortOrder.descending, filters: {}),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+    HomeScreenSectionPresetType.recentlyPlayedTracks => HomeScreenSectionConfiguration(
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.tracks),
+      sortConfig: SortAndFilterConfiguration(sortBy: SortBy.datePlayed, sortOrder: SortOrder.descending, filters: {}),
+      customSectionTitle: null,
+      presetType: presetType,
+    ),
+  };
+
+  String getTitle(AppLocalizations l10n) =>
+      customSectionTitle ??
+      (presetType != null ? getTitleForPreset(l10n: l10n, presetType: presetType!) : toLocalisedString(l10n));
+  static String getTitleForPreset({required AppLocalizations l10n, required HomeScreenSectionPresetType presetType}) =>
+      switch (presetType) {
+        HomeScreenSectionPresetType.favoriteTracks => l10n.homeScreenSectionPresetFavoriteTracksTitle,
+        HomeScreenSectionPresetType.favoriteAlbums => l10n.favoriteAlbums,
+        HomeScreenSectionPresetType.favoriteArtists => l10n.favoriteArtists,
+        HomeScreenSectionPresetType.favoritePlaylists => l10n.favoritePlaylists,
+        HomeScreenSectionPresetType.favoriteGenres => l10n.favoriteGenres,
+        HomeScreenSectionPresetType.recentlyAddedAlbums => l10n.newlyAddedAlbums,
+        HomeScreenSectionPresetType.recentlyAddedTracks => l10n.newlyAddedTracks,
+        // HomeScreenSectionPresetType.recentlyPlayedPlaylists => "Recent Playlists*",
+        HomeScreenSectionPresetType.frequentlyPlayedAlbums => l10n.frequentlyPlayedAlbums,
+        HomeScreenSectionPresetType.frequentlyPlayedTracks => l10n.frequentlyPlayedTracks,
+        HomeScreenSectionPresetType.frequentlyPlayedArtists => l10n.frequentlyPlayedArtists,
+        HomeScreenSectionPresetType.neverPlayedAlbums => l10n.unplayedAlbums,
+        HomeScreenSectionPresetType.forgottenFavoriteTracks => l10n.homeScreenSectionPresetForgottenFavoriteTracksTitle,
+        HomeScreenSectionPresetType.recentQueues => l10n.recentQueues,
+        HomeScreenSectionPresetType.recentlyPlayedTracks => l10n.recentlyPlayedTracks,
+      };
+
+  String getDescription(AppLocalizations l10n) =>
+      presetType != null ? getDescriptionForPreset(l10n: l10n, presetType: presetType!) : toLocalisedString(l10n);
+  static String getDescriptionForPreset({
+    required AppLocalizations l10n,
+    required HomeScreenSectionPresetType presetType,
+  }) => switch (presetType) {
+    HomeScreenSectionPresetType.favoriteTracks => l10n.homeScreenSectionPresetFavoriteTracksDescription,
+    HomeScreenSectionPresetType.favoriteAlbums => l10n.favoriteAlbumsDescription,
+    HomeScreenSectionPresetType.favoriteArtists => l10n.favoriteArtistsDescription,
+    HomeScreenSectionPresetType.favoritePlaylists => l10n.favoritePlaylistsDescription,
+    HomeScreenSectionPresetType.favoriteGenres => l10n.favoriteGenresDescription,
+    HomeScreenSectionPresetType.recentlyAddedAlbums => l10n.recentlyAddedAlbumsDescription,
+    HomeScreenSectionPresetType.recentlyAddedTracks => l10n.recentlyAddedTracksDescription,
+    // HomeScreenSectionPresetType.recentlyPlayedPlaylists =>
+    //   "Playlists you listened to recently, starting with last played*",
+    HomeScreenSectionPresetType.frequentlyPlayedAlbums => l10n.frequentlyPlayedAlbumsDescription,
+    HomeScreenSectionPresetType.frequentlyPlayedTracks => l10n.frequentlyPlayedTracksDescription,
+    HomeScreenSectionPresetType.frequentlyPlayedArtists => l10n.frequentlyPlayedArtistsDescription,
+    HomeScreenSectionPresetType.neverPlayedAlbums => l10n.neverPlayedAlbumsDescription,
+    HomeScreenSectionPresetType.forgottenFavoriteTracks =>
+      l10n.homeScreenSectionPresetForgottenFavoriteTracksDescription,
+    HomeScreenSectionPresetType.recentQueues => l10n.recentQueuesDescription,
+    HomeScreenSectionPresetType.recentlyPlayedTracks => l10n.recentlyPlayedTracksDescription,
+  };
+
+  Map<String, dynamic> toJson() => _$HomeScreenSectionConfigurationToJson(this);
+
+  @override
+  String toString() {
+    return jsonEncode(toJson());
+  }
+
+  String toLocalisedString(AppLocalizations l10n) {
+    switch (base) {
+      case QueuesHomeSection():
+        return "${l10n.queues} ${sortConfig.filters.map((filter) => filter.getName(l10n)).join(", ")} ${sortConfig.sortBy.toLocalisedString(l10n)} ${sortConfig.sortOrder == SortOrder.ascending ? "↑" : "↓"}";
+      case TabsHomeSection tab:
+        return "${sortConfig.filters.map((filter) => filter.getName(l10n)).join(", ")} ${tab.contentType.toLocalisedString(l10n)} ${sortConfig.sortBy.toLocalisedString(l10n)} ${sortConfig.sortOrder == SortOrder.ascending ? "↑" : "↓"}";
+      case CollectionHomeSection():
+        return l10n.collection;
+    }
+  }
+
+  //!!! Ignore custom title for equality, as it is not a defining feature of the section and can be changed by the user without changing the underlying section data
+  @override
+  bool operator ==(Object other) {
+    return other is HomeScreenSectionConfiguration && other.base == base && other.sortConfig == sortConfig;
+    // other.customSectionTitle == customSectionTitle &&
+    // other.presetType == presetType;
+  }
+
+  @override
+  @ignore
+  int get hashCode => Object.hash(base, sortConfig);
+
+  String get id => "home-section-$hashCode";
+}
+
+@HiveType(typeId: 120)
+enum HomeScreenSectionPresetType {
+  @HiveField(0)
+  favoriteTracks,
+  @HiveField(1)
+  favoriteAlbums,
+  @HiveField(2)
+  favoriteArtists,
+  @HiveField(3)
+  favoritePlaylists,
+  @HiveField(4)
+  favoriteGenres,
+  @HiveField(5)
+  recentlyAddedAlbums,
+  @HiveField(6)
+  recentlyAddedTracks,
+  @HiveField(7)
+  frequentlyPlayedAlbums,
+  @HiveField(8)
+  frequentlyPlayedTracks,
+  @HiveField(9)
+  frequentlyPlayedArtists,
+  @HiveField(10)
+  neverPlayedAlbums,
+  @HiveField(11)
+  forgottenFavoriteTracks,
+  @HiveField(12)
+  recentQueues,
+  @HiveField(13)
+  recentlyPlayedTracks,
+  //TODO once we can track playlists plays, add this back in
+  // @HiveField(7)
+  // recentlyPlayedPlaylists,
+  //TODO add section with generated mixes, e.g. via AudioMuse
+  //TODO add more
+}
+
+@HiveType(typeId: 121)
+enum FinampQuickActions {
+  @HiveField(0)
+  shuffleTracks,
+  @HiveField(1)
+  browseRecentQueues,
+  @HiveField(2)
+  browsePlaybackHistory,
+  @HiveField(3)
+  playRandomAlbum,
+  @HiveField(4)
+  playRandomTrack,
+  @HiveField(5)
+  playRandomFavoriteItem,
+  @HiveField(6)
+  playPreviousQueue,
+  @HiveField(7)
+  configureOutput,
+  @HiveField(8)
+  surpriseMe,
+  @HiveField(9)
+  playSpecificItem;
+  //TODO support album/artist shuffle (requires queue support)
+
+  bool get editable => switch (this) {
+    FinampQuickActions.playSpecificItem => true,
+    _ => false,
+  };
+
+  /// Human-readable version of the [FinampQuickActionType]
+  @override
+  @Deprecated("Use toLocalisedString when possible")
+  String toString() => QuickActionConfig(action: this).getTitle(GlobalSnackbar.englishL10n);
+
+  String getDescription(BuildContext context) {
+    switch (this) {
+      case FinampQuickActions.shuffleTracks:
+        return AppLocalizations.of(context)!.shuffleTracksActionDescription;
+      case FinampQuickActions.browseRecentQueues:
+        return AppLocalizations.of(context)!.browseRecentQueuesActionDescription;
+      case FinampQuickActions.browsePlaybackHistory:
+        return AppLocalizations.of(context)!.browsePlaybackHistoryActionDescription;
+      case FinampQuickActions.playRandomAlbum:
+        return AppLocalizations.of(context)!.playRandomAlbumActionDescription;
+      case FinampQuickActions.playRandomTrack:
+        return AppLocalizations.of(context)!.playRandomTrackActionDescription;
+      case FinampQuickActions.playRandomFavoriteItem:
+        return AppLocalizations.of(context)!.playRandomFavoriteItemActionDescription;
+      case FinampQuickActions.playPreviousQueue:
+        return AppLocalizations.of(context)!.playPreviousQueueActionDescription;
+      case FinampQuickActions.configureOutput:
+        return AppLocalizations.of(context)!.configureOutputActionDescription;
+      case FinampQuickActions.playSpecificItem:
+        return AppLocalizations.of(context)!.playSpecificItemActionDescription;
+      case FinampQuickActions.surpriseMe:
+        return AppLocalizations.of(context)!.surpriseMeActionDescription;
+    }
+  }
+
+  IconData getIcon() {
+    return switch (this) {
+      FinampQuickActions.shuffleTracks => TablerIcons.arrows_shuffle,
+      FinampQuickActions.browseRecentQueues => Icons.auto_delete,
+      FinampQuickActions.browsePlaybackHistory => TablerIcons.clock,
+      FinampQuickActions.playRandomAlbum => TablerIcons.album,
+      FinampQuickActions.playRandomTrack => TablerIcons.music,
+      FinampQuickActions.playRandomFavoriteItem => TablerIcons.heart_question,
+      FinampQuickActions.playPreviousQueue => TablerIcons.restore,
+      FinampQuickActions.configureOutput => TablerIcons.device_speaker,
+      FinampQuickActions.playSpecificItem => TablerIcons.music_pin,
+      FinampQuickActions.surpriseMe => TablerIcons.radio,
+    };
+  }
+}
+
+@JsonSerializable(createFactory: false)
+@HiveType(typeId: 122)
+class FinampHomeScreenConfiguration {
+  const FinampHomeScreenConfiguration({required this.actions, required this.sections});
+
+  @HiveField(0)
+  final List<QuickActionConfig> actions;
+
+  @HiveField(1)
+  final List<HomeScreenSectionConfiguration> sections;
+
+  Map<String, dynamic> toJson() => _$FinampHomeScreenConfigurationToJson(this);
+
+  @override
+  String toString() {
+    return jsonEncode(toJson());
+  }
+
+  // implement copyWith
+  FinampHomeScreenConfiguration copyWith({
+    List<QuickActionConfig>? actions,
+    List<HomeScreenSectionConfiguration>? sections,
+  }) {
+    return FinampHomeScreenConfiguration(actions: actions ?? this.actions, sections: sections ?? this.sections);
+  }
+}
+
+@HiveType(typeId: 123)
+enum ItemFilterType {
+  @HiveField(0)
+  isFavorite(Null),
+  @HiveField(1)
+  isFullyDownloaded(Null),
+  @HiveField(2)
+  startsWithCharacter(String),
+  @HiveField(3)
+  genreFilter(BaseItemDto),
+  @HiveField(4)
+  searchTerm(String),
+  @HiveField(5)
+  isUnplayed(Null);
+
+  const ItemFilterType(this.extraType);
+
+  final Type extraType;
+
+  bool get isArtistGenre => switch (this) {
+    genreFilter => true,
+    _ => false,
+  };
+}
+
+@JsonSerializable()
+@HiveType(typeId: 124)
+class ItemFilter {
+  ItemFilter({required this.type, dynamic extras}) : _extras = extras, assert(extras.runtimeType == type.extraType);
+
+  @HiveField(0)
+  final ItemFilterType type;
+
+  @HiveField(1)
+  final dynamic _extras;
+
+  /// Prefer using the [extraString] and [extraBaseItem] getters, which include a cast
+  dynamic get extras => _extras;
+  String get extraString => _extras as String;
+  BaseItemDto get extraBaseItem => _extras as BaseItemDto;
+
+  factory ItemFilter.fromJson(Map<String, dynamic> json) => _$ItemFilterFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ItemFilterToJson(this);
+
+  @override
+  String toString() {
+    return jsonEncode(toJson());
+  }
+
+  String getName(AppLocalizations l10n) {
+    switch (type) {
+      case ItemFilterType.isFavorite:
+        return l10n.isFavoriteFilter;
+      case ItemFilterType.isFullyDownloaded:
+        return l10n.isFullyDownloadedFilter;
+      case ItemFilterType.isUnplayed:
+        return l10n.isUnplayedFilter;
+      case ItemFilterType.genreFilter:
+        return l10n.genreFilter(extraBaseItem.name ?? "");
+      case ItemFilterType.startsWithCharacter:
+        return l10n.startsWithFilter(extraString.toUpperCase());
+      case ItemFilterType.searchTerm:
+        return l10n.searchTermFilter(extraString);
+    }
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ItemFilter && other.type == type && other.extras == extras;
+  }
+
+  @override
+  int get hashCode => Object.hash(type, extras);
+}
+
+@JsonSerializable()
+@HiveType(typeId: 125)
+class SortAndFilterConfiguration {
+  const SortAndFilterConfiguration({required this.sortBy, required this.sortOrder, required this.filters});
+
+  @HiveField(0)
+  final SortBy sortBy;
+
+  @HiveField(1)
+  final SortOrder sortOrder;
+
+  @HiveField(2)
+  final Set<ItemFilter> filters;
+
+  factory SortAndFilterConfiguration.fromJson(Map<String, dynamic> json) => _$SortAndFilterConfigurationFromJson(json);
+
+  BaseItemDto? get genreFilter => filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter)?.extraBaseItem;
+
+  bool get favoritesFilter => filters.firstWhereOrNull((x) => x.type == ItemFilterType.isFavorite) != null;
+
+  SortAndFilterConfiguration copyWith({
+    SortBy? sortBy,
+    SortOrder? sortOrder,
+    Set<ItemFilter>? filters,
+    BaseItemDto? genreFilter,
+    bool? favoriteFilter,
+    bool? onlyShowFullyDownloadedFilter,
+    String? searchQuery,
+  }) {
+    final processedFilters = filters ?? this.filters.toSet();
+    if (genreFilter != null) {
+      processedFilters.removeWhere((x) => x.type == ItemFilterType.genreFilter);
+      processedFilters.add(ItemFilter(type: ItemFilterType.genreFilter, extras: genreFilter));
+    }
+    if (favoriteFilter != null) {
+      processedFilters.removeWhere((x) => x.type == ItemFilterType.genreFilter);
+      if (favoriteFilter) {
+        processedFilters.add(ItemFilter(type: ItemFilterType.isFavorite));
+      }
+    }
+    if (onlyShowFullyDownloadedFilter != null) {
+      processedFilters.removeWhere((x) => x.type == ItemFilterType.isFullyDownloaded);
+      if (onlyShowFullyDownloadedFilter) {
+        processedFilters.add(ItemFilter(type: ItemFilterType.isFullyDownloaded));
+      }
+    }
+    if (searchQuery != null) {
+      processedFilters.removeWhere((x) => x.type == ItemFilterType.searchTerm);
+      processedFilters.add(ItemFilter(type: ItemFilterType.searchTerm, extras: searchQuery));
+    }
+    return SortAndFilterConfiguration(
+      sortBy: sortBy ?? this.sortBy,
+      sortOrder: sortOrder ?? this.sortOrder,
+      filters: processedFilters,
+    );
+  }
+
+  static const defaultSort = ResolvedSortConfig.defaultSort;
+
+  static const defaultInAlbumSort = ResolvedSortConfig.defaultInAlbumSort;
+
+  static ResolvedSortConfig defaultForItem(BaseItemDto item) {
+    if ([BaseItemDtoType.album, BaseItemDtoType.playlist].contains(BaseItemDtoType.fromItem(item))) {
+      return defaultInAlbumSort;
+    } else {
+      return defaultSort;
+    }
+  }
+
+  /*SortAndFilterConfiguration resolve({required bool isOffline, String? searchQuery}) {
+    final newFilters = filters.union({
+      if (searchQuery != null) ItemFilter(type: ItemFilterType.searchTerm, extras: searchQuery),
+    });
+    var newSortBy = sortBy;
+    // PlayCount and Last Played are not representative in Offline Mode
+    // so we disable it and overwrite it with the Sort Name if it was selected
+    if (isOffline && (sortBy == SortBy.playCount || sortBy == SortBy.datePlayed)) {
+      newSortBy = cont ? SortBy.defaultOrder : SortBy.sortName;
+    }
+    return copyWith(sortBy: newSortBy, filters: newFilters);
+  }*/
+
+  Map<String, dynamic> toJson() => _$SortAndFilterConfigurationToJson(this);
+
+  @override
+  String toString() {
+    return jsonEncode(toJson());
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SortAndFilterConfiguration &&
+        other.sortBy == sortBy &&
+        other.sortOrder == sortOrder &&
+        setEquals(other.filters, filters);
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(sortBy, sortOrder, Object.hashAllUnordered(filters));
+  }
+}
+
+@HiveType(typeId: 126)
+@JsonSerializable(converters: [BaseItemIdConverter()], includeIfNull: false)
+class QuickActionConfig {
+  @HiveField(0)
+  final FinampQuickActions action;
+  @HiveField(1)
+  final BaseItemId? itemId;
+  @HiveField(2)
+  final String? itemName;
+
+  const QuickActionConfig({required this.action, this.itemId, this.itemName});
+
+  String getTitle(AppLocalizations l10n) {
+    switch (action) {
+      case FinampQuickActions.shuffleTracks:
+        return l10n.shuffleTracksAction;
+      case FinampQuickActions.browseRecentQueues:
+        return l10n.recentQueues;
+      case FinampQuickActions.browsePlaybackHistory:
+        return l10n.playbackHistory;
+      case FinampQuickActions.playRandomAlbum:
+        return l10n.randomAlbumAction;
+      case FinampQuickActions.playRandomTrack:
+        return l10n.randomTrackAction;
+      case FinampQuickActions.playRandomFavoriteItem:
+        return l10n.randomFavoriteAction;
+      case FinampQuickActions.playPreviousQueue:
+        return l10n.previousQueueAction;
+      case FinampQuickActions.configureOutput:
+        return l10n.configureOutputAction;
+      case FinampQuickActions.playSpecificItem:
+        return l10n.playSpecificItemAction(itemName ?? "finamp_placeholder");
+      case FinampQuickActions.surpriseMe:
+        return l10n.surpriseMeAction;
+    }
+  }
+
+  factory QuickActionConfig.fromJson(Map<String, dynamic> json) => _$QuickActionConfigFromJson(json);
+
+  Map<String, dynamic> toJson() => _$QuickActionConfigToJson(this);
+
+  @override
+  String toString() {
+    return jsonEncode(toJson());
+  }
 }

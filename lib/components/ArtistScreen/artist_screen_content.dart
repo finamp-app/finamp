@@ -2,16 +2,18 @@ import 'dart:async';
 
 import 'package:finamp/components/AlbumScreen/download_button.dart';
 import 'package:finamp/components/ArtistScreen/artist_screen_content_flexible_space_bar.dart';
-import 'package:finamp/components/MusicScreen/item_collection_wrapper.dart';
+import 'package:finamp/components/MusicScreen/item_wrapper.dart';
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/curated_item_filter_row.dart';
+import 'package:finamp/components/curated_item_sections.dart';
 import 'package:finamp/components/favorite_button.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/services/artist_content_provider.dart';
-import 'package:finamp/components/curated_item_sections.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -35,7 +37,10 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
   JellyfinApiHelper jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final _downloadsService = GetIt.instance<DownloadsService>();
   final Set<CuratedItemSelectionType> _disabledTrackFilters = {};
-  BaseItemDto? currentGenreFilter;
+  SortAndFilterController controller = SortAndFilterController(
+    startingConfig: SortAndFilterConfiguration.defaultSort,
+    contentType: ContentType.mixed,
+  );
   CuratedItemSelectionType? clickedCuratedItemSelectionType;
 
   StreamSubscription<void>? _refreshStream;
@@ -45,7 +50,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
     _refreshStream = _downloadsService.offlineDeletesStream.listen((event) {
       _refresh();
     });
-    currentGenreFilter = widget.genreFilter;
+    controller.updateGenreFilter(widget.genreFilter);
     super.initState();
   }
 
@@ -64,18 +69,8 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
     _disabledTrackFilters.clear();
   }
 
-  // Function to update the genre filter
-  // Pass null in order to reset the filter
-  void updateGenreFilter(BaseItemDto? genre) {
-    setState(() {
-      // We also clear the disabledTrackFilters
-      _disabledTrackFilters.clear();
-      currentGenreFilter = genre;
-    });
-  }
-
   void openSeeAll(
-    TabContentType tabContentType, {
+    ContentType tabContentType, {
     bool doOverride = true,
     CuratedItemSelectionType? itemSelectionType,
     BaseItemDto? genreFilter,
@@ -84,7 +79,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
     SortBy? sortByOverride;
     SortOrder? sortOrderOverride;
 
-    if (doOverride && itemSelectionType != null) {
+    if (doOverride && ref.read(finampSettingsProvider.genreListsInheritSorting) && itemSelectionType != null) {
       switch (itemSelectionType) {
         case CuratedItemSelectionType.mostPlayed:
           sortByOverride = itemSelectionType.getSortBy();
@@ -112,17 +107,21 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
           isFavoriteOverride = false;
       }
     }
-
     Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<MusicScreen>(
         builder: (context) => MusicScreen(
-          artistFilter: widget.parent,
-          genreFilter: genreFilter,
-          selectedCurationType: itemSelectionType,
-          tabTypeFilter: tabContentType,
-          sortByOverrideInit: sortByOverride,
-          sortOrderOverrideInit: sortOrderOverride,
-          isFavoriteOverrideInit: isFavoriteOverride,
+          singleTabConfig: HomeScreenSectionConfiguration(
+            base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: tabContentType),
+            customSectionTitle: widget.parent.name,
+            sortConfig: SortAndFilterController.trackSettings(tabContentType).resolveConfig().copyWith(
+              sortBy: sortByOverride,
+              sortOrder: sortOrderOverride,
+              favoriteFilter: isFavoriteOverride ? true : null,
+              genreFilter: genreFilter,
+              //artistFilter: widget.parent,
+            ),
+          ),
+          hideArtistGenreFilters: true,
         ),
       ),
     );
@@ -135,6 +134,8 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
     final artistItemSectionsOrder = ref.watch(finampSettingsProvider.artistItemSectionsOrder);
     final artistCuratedItemSectionFilterOrder = ref.watch(finampSettingsProvider.artistItemSectionFilterChipOrder);
     final bool autoSwitchItemCurationTypeEnabled = ref.watch(finampSettingsProvider.autoSwitchItemCurationType);
+    final sortConfig = ref.watch(resolveSortProvider(controller));
+    final disableDownloads = sortConfig.filters.isNotEmpty;
 
     List<BaseItemDto> allChildren = [];
 
@@ -148,7 +149,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
               getArtistTracksSectionProvider(
                 artist: widget.parent,
                 libraryFilter: widget.library,
-                genreFilter: currentGenreFilter,
+                genreFilter: sortConfig.genreFilter?.id,
               ),
             )
             .valueOrNull ??
@@ -157,8 +158,8 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         .watch(
           getArtistAlbumsProvider(
             artist: widget.parent,
-            libraryFilter: widget.library,
-            genreFilter: currentGenreFilter,
+            libraryFilter: widget.library?.id,
+            genreFilter: sortConfig.genreFilter?.id,
           ),
         )
         .valueOrNull;
@@ -166,8 +167,8 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         .watch(
           getPerformingArtistAlbumsProvider(
             artist: widget.parent,
-            libraryFilter: widget.library,
-            genreFilter: currentGenreFilter,
+            libraryFilter: widget.library?.id,
+            genreFilter: sortConfig.genreFilter?.id,
           ),
         )
         .valueOrNull;
@@ -175,16 +176,16 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         .watch(
           getPerformingArtistTracksProvider(
             artist: widget.parent,
-            libraryFilter: widget.library,
-            genreFilter: currentGenreFilter,
+            libraryFilter: widget.library?.id,
+            genreFilter: sortConfig.genreFilter?.id,
           ),
         )
         .valueOrNull;
     final allTracks = ref.watch(
       getArtistTracksProvider(
         artist: widget.parent,
-        libraryFilter: widget.library,
-        genreFilter: currentGenreFilter,
+        libraryFilter: widget.library?.id,
+        genreFilter: sortConfig.genreFilter?.id,
       ).future,
     );
 
@@ -209,7 +210,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         context: context,
         typeSelected: clickedCuratedItemSelectionType,
         messageFor: BaseItemDtoType.artist,
-        hasGenreFilter: (currentGenreFilter != null),
+        hasGenreFilter: (sortConfig.genreFilter != null),
       );
       // When we've sent the message, we should reset the clicked value
       // so that we don't send it again on next state refresh
@@ -236,15 +237,16 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
             // This is the total height of the widget we use as a
             // FlexibleSpaceBar. We add the toolbar height ([kToolbarHeight]) since the widget
             // should appear below the appbar.
-            expandedHeight: kToolbarHeight + 125 + 24 + 100,
+            expandedHeight:
+                kToolbarHeight + 125 + 24 + 100 + (sortConfig.filters.isNotEmpty ? SortAndFilterRow.height + 10 : 0),
+            leading: FinampAppBarBackButton(),
             centerTitle: false,
             pinned: true,
             flexibleSpace: ArtistScreenContentFlexibleSpaceBar(
               parentItem: widget.parent,
               allTracks: allTracks,
               albumCount: albumArtistAlbums.length,
-              genreFilter: currentGenreFilter,
-              updateGenreFilter: updateGenreFilter,
+              controller: controller,
             ),
             actions: [
               FavoriteButton(item: widget.parent),
@@ -258,8 +260,8 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                     ),
                   ),
                   children: allChildren,
-                  downloadDisabled: (currentGenreFilter != null),
-                  customTooltip: (currentGenreFilter != null)
+                  downloadDisabled: disableDownloads,
+                  customTooltip: disableDownloads
                       ? AppLocalizations.of(context)!.downloadButtonDisabledGenreFilterTooltip
                       : null,
                 ),
@@ -285,7 +287,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                         lazyAddMoreTracksToQueue: true,
                         tracksText: type.toLocalisedSectionTitle(context, artistCuratedItemSelectionType),
                         isOnArtistScreen: true,
-                        genreFilter: currentGenreFilter,
+                        genreFilter: sortConfig.genreFilter,
                         includeFilterRow: true,
                         customFilterOrder: artistCuratedItemSectionFilterOrder,
                         selectedFilter: artistCuratedItemSelectionType,
@@ -298,9 +300,9 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                           FinampSetters.setArtistCuratedItemSelectionType(type);
                         },
                         seeAllCallbackFunction: () => openSeeAll(
-                          TabContentType.tracks,
+                          ContentType.tracks,
                           itemSelectionType: artistCuratedItemSelectionType,
-                          genreFilter: currentGenreFilter,
+                          genreFilter: sortConfig.genreFilter,
                         ),
                       ),
                     );
@@ -343,7 +345,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                   child: Center(
                     child: Text(
                       AppLocalizations.of(context)!.emptyFilteredListTitle,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),

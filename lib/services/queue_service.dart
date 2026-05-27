@@ -605,6 +605,7 @@ class QueueService {
     }
   }
 
+  // TODO cut this over to take a PlayableSlice.
   Future<void> startPlayback({
     required List<jellyfin_models.BaseItemDto> items,
     required QueueItemSource source,
@@ -624,7 +625,7 @@ class QueueService {
       skipRadioCacheInvalidation: skipRadioCacheInvalidation,
     );
     _queueServiceLogger.info(
-      "Started playing '${GlobalSnackbar.localizations != null ? source.name.getLocalized2(GlobalSnackbar.localizations!) : source.name.type}' (${source.type}) in order $order from index $startingIndex",
+      "Started playing '${source.name.getLocalized(GlobalSnackbar.requireL10n)}' (${source.type}) in order $order from index $startingIndex",
     );
     _queueServiceLogger.info("Items for queue: [${items.map((e) => e.name).join(", ")}]");
   }
@@ -1382,12 +1383,12 @@ class QueueService {
     double? contextNormalizationGain,
     MediaItemParentType? parentType,
     jellyfin_models.BaseItemId? parentId,
-    bool Function({jellyfin_models.BaseItemDto? item, TabContentType? contentType})? isPlayable,
+    bool Function({jellyfin_models.BaseItemDto? item, ContentType? contentType})? isPlayable,
   }) async {
     const uuid = Uuid();
 
     MediaItemId? itemId;
-    final tabContentType = TabContentType.fromItemType(item.type ?? "Audio");
+    final tabContentType = ContentType.fromItemType(item.type ?? "Audio");
     bool isAndroidAutoOrMediaBrowserRequest = false;
 
     if (parentType != null) {

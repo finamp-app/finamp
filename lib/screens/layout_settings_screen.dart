@@ -1,6 +1,8 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:finamp/components/LayoutSettingsScreen/automatic_accent_color_selector.dart';
 import 'package:finamp/components/LayoutSettingsScreen/use_monochrome_icon.dart';
-import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/screens/album_settings_screen.dart';
 import 'package:finamp/screens/artist_settings_screen.dart';
@@ -13,13 +15,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../components/LayoutSettingsScreen/accent_color_selector.dart';
-import '../components/LayoutSettingsScreen/content_grid_view_cross_axis_count_list_tile.dart';
+import '../components/LayoutSettingsScreen/amoled_theme.dart';
 import '../components/LayoutSettingsScreen/content_view_type_dropdown_list_tile.dart';
 import '../components/LayoutSettingsScreen/show_artist_chip_image_toggle.dart';
 import '../components/LayoutSettingsScreen/show_text_on_grid_view_selector.dart';
 import '../components/LayoutSettingsScreen/theme_selector.dart';
 import '../components/LayoutSettingsScreen/use_cover_as_background_toggle.dart';
-import '../components/LayoutSettingsScreen/amoled_theme.dart';
+import '../components/finamp_app_bar_back_button.dart';
+import '../extensions/localizations.dart';
 import '../services/finamp_settings_helper.dart';
 import 'tabs_settings_screen.dart';
 
@@ -36,6 +39,7 @@ class _LayoutSettingsScreenState extends ConsumerState<LayoutSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.layoutAndTheme),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetLayoutSettings),
         ],
@@ -86,11 +90,7 @@ class _LayoutSettingsScreenState extends ConsumerState<LayoutSettingsScreen> {
           const AutomaticAccentColorSelector(),
           const Divider(),
           const ContentViewTypeDropdownListTile(),
-          const FixedSizeGridSwitch(),
-          if (!ref.watch(finampSettingsProvider.useFixedSizeGridTiles))
-            for (final type in ContentGridViewCrossAxisCountType.values)
-              ContentGridViewCrossAxisCountListTile(type: type),
-          if (ref.watch(finampSettingsProvider.useFixedSizeGridTiles)) const FixedGridTileSizeDropdownListTile(),
+          const GridImageSizeSelector(),
           const ShowTextOnGridViewSelector(),
           const UseCoverAsBackgroundToggle(),
           const ShowArtistChipImageToggle(),
@@ -98,20 +98,6 @@ class _LayoutSettingsScreenState extends ConsumerState<LayoutSettingsScreen> {
           const ShowProgressOnNowPlayingBarToggle(),
         ],
       ),
-    );
-  }
-}
-
-class FixedSizeGridSwitch extends ConsumerWidget {
-  const FixedSizeGridSwitch({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return SwitchListTile.adaptive(
-      title: Text(AppLocalizations.of(context)!.fixedGridSizeSwitchTitle),
-      subtitle: Text(AppLocalizations.of(context)!.fixedGridSizeSwitchSubtitle),
-      value: ref.watch(finampSettingsProvider.useFixedSizeGridTiles),
-      onChanged: FinampSetters.setUseFixedSizeGridTiles,
     );
   }
 }
@@ -130,29 +116,6 @@ class AllowSplitScreenSwitch extends ConsumerWidget {
   }
 }
 
-class FixedGridTileSizeDropdownListTile extends ConsumerWidget {
-  const FixedGridTileSizeDropdownListTile({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      title: Text(AppLocalizations.of(context)!.fixedGridSizeTitle),
-      subtitle: FinampSettingsDropdown<FixedGridTileSize>(
-        dropdownItems: FixedGridTileSize.values
-            .map(
-              (e) => DropdownMenuEntry<FixedGridTileSize>(
-                value: e,
-                label: AppLocalizations.of(context)!.fixedGridTileSizeEnum(e.name),
-              ),
-            )
-            .toList(),
-        selectedValue: FixedGridTileSize.fromInt(FinampSettingsHelper.finampSettings.fixedGridTileSize),
-        onSelected: (value) => FinampSetters.setFixedGridTileSize.ifNonNull(value?.toInt),
-      ),
-    );
-  }
-}
-
 class ShowProgressOnNowPlayingBarToggle extends ConsumerWidget {
   const ShowProgressOnNowPlayingBarToggle({super.key});
 
@@ -163,6 +126,82 @@ class ShowProgressOnNowPlayingBarToggle extends ConsumerWidget {
       subtitle: Text(AppLocalizations.of(context)!.showProgressOnNowPlayingBarSubtitle),
       value: ref.watch(finampSettingsProvider.showProgressOnNowPlayingBar),
       onChanged: FinampSetters.setShowProgressOnNowPlayingBar,
+    );
+  }
+}
+
+class GridImageSizeSelector extends ConsumerStatefulWidget {
+  const GridImageSizeSelector({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _GridImageSizeSelectorState();
+  }
+}
+
+class _GridImageSizeSelectorState extends ConsumerState<GridImageSizeSelector> {
+  // We'll just assume the setting can only be changed by this widget
+  double? colCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final predictedGridWidth =
+        MediaQuery.widthOf(context) -
+        MediaQuery.paddingOf(context).left -
+        MediaQuery.paddingOf(context).right -
+        10 -
+        (ref.watch(finampSettingsProvider.showFastScroller) ? 22 : 0);
+
+    // Always allow scaling items down to 45 px wide as the smallest reasonable value.  Desktop platforms are guaranteed
+    // 25 options even if they go below this to increase flexibility and because they can handle the more precise slider
+    final maxAvailable = max((predictedGridWidth / 45).ceil(), Platform.isAndroid || Platform.isIOS ? 0 : 25);
+
+    colCount ??= predictedGridWidth / FinampSettingsHelper.finampSettings.gridImageSize;
+    colCount = colCount!.clamp(1, maxAvailable.toDouble());
+
+    String numLabel;
+    if (colCount!.round() * 20 == (colCount! * 20).round()) {
+      numLabel = "${colCount!.round()}";
+    } else {
+      numLabel = "~${colCount!.round()}";
+    }
+    final sizeLabel = AppLocalizations.of(context)!.fixedGridTileSizeEnum(switch (predictedGridWidth / colCount!) {
+      < 80 => "verySmall",
+      < 125 => "small",
+      < 190 => "medium",
+      < 300 => "large",
+      _ => "veryLarge",
+    });
+
+    return Column(
+      children: [
+        ListTile(title: Text(context.l10n.gridImageSizeTitle), subtitle: Text(context.l10n.gridImageSizeSubtitle)),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Slider(
+              min: 1,
+              max: maxAvailable.toDouble(),
+              value: colCount!,
+              label: numLabel,
+              divisions: Platform.isAndroid || Platform.isIOS ? maxAvailable - 1 : null,
+              onChanged: (value) {
+                setState(() {
+                  colCount = value;
+                });
+              },
+              onChangeEnd: (value) {
+                final pixels = predictedGridWidth / value;
+                FinampSetters.setGridImageSize(pixels.toInt());
+              },
+              autofocus: false,
+              focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
+            ),
+            Text(context.l10n.gridImageSizeLabel(sizeLabel, numLabel), style: Theme.of(context).textTheme.titleLarge),
+          ],
+        ),
+      ],
     );
   }
 }

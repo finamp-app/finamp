@@ -1,15 +1,16 @@
 import 'dart:async';
 
-import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../components/MusicScreen/sort_and_filter_row.dart';
 import '../models/jellyfin_models.dart';
 import 'downloads_service.dart';
 import 'finamp_settings_helper.dart';
 import 'jellyfin_api_helper.dart';
+import 'music_screen_provider.dart';
 
 part 'album_screen_provider.g.dart';
 
@@ -39,19 +40,30 @@ Future<(List<BaseItemDto>, List<BaseItemDto>)> getAlbumOrPlaylistTracks(Ref ref,
   return (allTracks, playableTracks);
 }
 
+SortAndFilterController _defaultPlaylistSort = SortAndFilterController.trackSettings(ContentType.inPlaylist);
+
+@riverpod
+Future<(List<BaseItemDto>, List<BaseItemDto>)> getDefaultSortedPlaylistTracks(Ref ref, BaseItemDto parent) {
+  final sortConfig = ref.watch(resolveSortProvider(_defaultPlaylistSort));
+  return ref.watch(getSortedPlaylistTracksProvider(parent, sortConfig).future);
+}
+
 // Get sorted Tracks of a playlist
 @riverpod
 Future<(List<BaseItemDto>, List<BaseItemDto>)> getSortedPlaylistTracks(
   Ref ref,
-  BaseItemDto parent, {
-  BaseItemDto? genreFilter,
-}) async {
+  BaseItemDto parent,
+  SortAndFilterConfiguration sortConfig,
+) async {
   // Get the currently active playlist sorting
   final bool isOffline = ref.watch(finampSettingsProvider.isOffline);
   List<BaseItemDto> playlistAllTracksSorted;
   List<BaseItemDto> playlistPlayableTracksSorted;
-  SortOrder playlistSortOrder = ref.watch(finampSettingsProvider.playlistTracksSortOrder);
-  SortBy playlistSortBySetting = ref.watch(finampSettingsProvider.playlistTracksSortBy);
+  SortOrder playlistSortOrder = sortConfig.sortOrder;
+  SortBy playlistSortBySetting = sortConfig.sortBy;
+  final genreFilter = sortConfig.genreFilter;
+  // TODO can we, and do we want to, support other filter config options?
+  // TODO is it better to resolve offline fallback here, or in controller creator like musicscreen currently does?
   final playlistSortBy =
       (isOffline && (playlistSortBySetting == SortBy.datePlayed || playlistSortBySetting == SortBy.playCount))
       ? SortBy.defaultOrder

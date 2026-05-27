@@ -5,6 +5,7 @@ import 'package:finamp/services/metadata_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../extensions/localizations.dart';
 import '../../../models/finamp_models.dart';
 import '../../../services/finamp_settings_helper.dart';
 
@@ -30,7 +31,9 @@ class PlaybackSpeedControlVisibilityDropdownListTile extends ConsumerWidget {
           ),
           FinampSettingsDropdown<PlaybackSpeedVisibility>(
             dropdownItems: PlaybackSpeedVisibility.values
-                .map((e) => DropdownMenuEntry<PlaybackSpeedVisibility>(value: e, label: e.toLocalisedString(context)))
+                .map(
+                  (e) => DropdownMenuEntry<PlaybackSpeedVisibility>(value: e, label: e.toLocalisedString(context.l10n)),
+                )
                 .toList(),
             selectedValue: ref.watch(finampSettingsProvider.playbackSpeedVisibility),
             onSelected: (value) {

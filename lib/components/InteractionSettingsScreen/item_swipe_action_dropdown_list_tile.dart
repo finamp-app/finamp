@@ -5,6 +5,8 @@ import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../extensions/localizations.dart';
+
 class ItemSwipeLeftToRightActionDropdownListTile extends ConsumerWidget {
   const ItemSwipeLeftToRightActionDropdownListTile({super.key});
 
@@ -20,7 +22,7 @@ class ItemSwipeLeftToRightActionDropdownListTile extends ConsumerWidget {
           Text(AppLocalizations.of(context)!.swipeLeftToRightActionSubtitle),
           FinampSettingsDropdown<ItemSwipeActions>(
             dropdownItems: ItemSwipeActions.values
-                .map((e) => DropdownMenuEntry<ItemSwipeActions>(value: e, label: e.toLocalisedString(context)))
+                .map((e) => DropdownMenuEntry<ItemSwipeActions>(value: e, label: e.toLocalisedString(context.l10n)))
                 .toList(),
             selectedValue: action,
             onSelected: (value) {
@@ -50,7 +52,7 @@ class ItemSwipeRightToLeftActionDropdownListTile extends ConsumerWidget {
           Text(AppLocalizations.of(context)!.swipeRightToLeftActionSubtitle),
           FinampSettingsDropdown<ItemSwipeActions>(
             dropdownItems: ItemSwipeActions.values
-                .map((e) => DropdownMenuEntry<ItemSwipeActions>(value: e, label: e.toLocalisedString(context)))
+                .map((e) => DropdownMenuEntry<ItemSwipeActions>(value: e, label: e.toLocalisedString(context.l10n)))
                 .toList(),
             selectedValue: action,
             onSelected: (value) {

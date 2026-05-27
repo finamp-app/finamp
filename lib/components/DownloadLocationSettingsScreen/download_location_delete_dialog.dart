@@ -3,6 +3,7 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../extensions/localizations.dart';
 import '../../services/downloads_service.dart';
 import '../../services/finamp_settings_helper.dart';
 
@@ -16,12 +17,12 @@ class DownloadLocationDeleteDialog extends StatelessWidget {
     var downloads = GetIt.instance<DownloadsService>().getDownloadsForLocation(id, false);
     if (downloads.isEmpty) {
       return AlertDialog(
-        title: const Text("Are you sure?"),
-        content: Text("No downloads are currently present in this location."),
+        title: Text(context.l10n.areYouSure),
+        content: Text(context.l10n.noDownloadsInLocation),
         actions: [
-          TextButton(child: const Text("CANCEL"), onPressed: () => Navigator.of(context).pop()),
+          TextButton(child: Text(context.l10n.genericCancel), onPressed: () => Navigator.of(context).pop()),
           TextButton(
-            child: const Text("DELETE"),
+            child: Text(context.l10n.deleteDownloadLocation),
             onPressed: () {
               var fileDownloads = GetIt.instance<DownloadsService>().getDownloadsForLocation(id, true);
               if (fileDownloads.isNotEmpty) {
@@ -40,13 +41,11 @@ class DownloadLocationDeleteDialog extends StatelessWidget {
       );
     } else {
       return AlertDialog(
-        title: const Text("Cannot delete location"),
+        title: Text(context.l10n.cannotDeleteLocation),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              "This location currently contains downloads and cannot be deleted.  Remove these downloads first:",
-            ),
+            Text(context.l10n.cannotDeleteLocationEplanation),
             ...downloads.map(
               (stub) => Text(AppLocalizations.of(context)!.itemTypeSubtitle(stub.baseItemType.name, stub.name)),
             ),

@@ -15,6 +15,8 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:http/http.dart' hide Response;
 import 'package:logging/logging.dart';
 
+import '../l10n/app_localizations_en.dart';
+
 typedef _QueueFunction = void Function(BuildContext);
 
 @Deprecated("Use GlobalSnackbar.error(dynamic error) instead")
@@ -31,13 +33,22 @@ class GlobalSnackbar {
 
   static ScaffoldMessengerState? get scaffoldState => rawMaterialAppScaffoldKey.currentState;
   static NavigatorState? get navigatorState => rawMaterialAppNavigatorKey.currentState;
-  static AppLocalizations? get localizations {
+  static AppLocalizations? get _contextL10n {
     final context = rawMaterialAppNavigatorKey.currentContext;
     if (context != null && context.mounted) {
-      return AppLocalizations.of(context);
+      final localization = AppLocalizations.of(context);
+      if (localization != null) {
+        _localizationsCache = localization;
+      }
+      return localization;
     }
     return null;
   }
+
+  static final englishL10n = AppLocalizationsEn();
+  static AppLocalizations? _localizationsCache;
+
+  static AppLocalizations get requireL10n => _contextL10n ?? _localizationsCache ?? englishL10n;
 
   static final _logger = Logger("GlobalSnackbar");
 
@@ -127,6 +138,11 @@ class GlobalSnackbar {
               showSnackbarOptionsMenu(context);
             }
           },
+          onSecondaryTap: () {
+            if (context.mounted) {
+              showSnackbarOptionsMenu(context);
+            }
+          },
           child: Text(text),
         ),
         actionOverflowThreshold: 0.5,
@@ -200,6 +216,11 @@ class GlobalSnackbar {
       SnackBar(
         content: GestureDetector(
           onLongPress: () {
+            if (context.mounted) {
+              showSnackbarOptionsMenu(context);
+            }
+          },
+          onSecondaryTap: () {
             if (context.mounted) {
               showSnackbarOptionsMenu(context);
             }
@@ -299,7 +320,7 @@ class GlobalSnackbar {
       return (stackHeight, menu);
     }
 
-    await showThemedBottomSheet(
+    await showThemedBottomSheet<void>(
       context: context,
       routeName: snackbarOptionsRoute,
       minDraggableHeight: 0.15,

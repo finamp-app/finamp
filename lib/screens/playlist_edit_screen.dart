@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/components/album_image.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/components/print_duration.dart';
@@ -112,27 +113,27 @@ class _PlaylistEditScreenState extends ConsumerState<PlaylistEditScreen> {
     _isLoading = true;
     _name = playlist.name;
     _fetchPublicVisibility();
-    final tracksAsync = ref.read(getSortedPlaylistTracksProvider(playlist));
+    final tracksAsync = ref.read(getDefaultSortedPlaylistTracksProvider(playlist));
     final (allTracks, playableTracks) = tracksAsync.valueOrNull ?? (<BaseItemDto>[], <BaseItemDto>[]);
     playlistTracks = List.from(allTracks);
     if (tracksAsync.hasValue) {
       setState(() => _isLoading = false);
     } else {
       // wait for playlist tracks, then mark loading as false
-      ref.listenManual<AsyncValue<(List<BaseItemDto>, List<BaseItemDto>)>>(getSortedPlaylistTracksProvider(playlist), (
-        _,
-        tracksAsyncLoaded,
-      ) {
-        if (mounted) {
-          final (allTracksLoaded, playableTracksLoaded) =
-              tracksAsyncLoaded.valueOrNull ?? (<BaseItemDto>[], <BaseItemDto>[]);
-          setState(() {
-            playlistTracks = List.from(allTracksLoaded);
-            _initialTrackIdsOrder = playlistTracks.map((t) => t.id.raw).toList();
-            _isLoading = false;
-          });
-        }
-      });
+      ref.listenManual<AsyncValue<(List<BaseItemDto>, List<BaseItemDto>)>>(
+        getDefaultSortedPlaylistTracksProvider(playlist),
+        (_, tracksAsyncLoaded) {
+          if (mounted) {
+            final (allTracksLoaded, playableTracksLoaded) =
+                tracksAsyncLoaded.valueOrNull ?? (<BaseItemDto>[], <BaseItemDto>[]);
+            setState(() {
+              playlistTracks = List.from(allTracksLoaded);
+              _initialTrackIdsOrder = playlistTracks.map((t) => t.id.raw).toList();
+              _isLoading = false;
+            });
+          }
+        },
+      );
     }
     _initialName = _name ?? '';
     _initialVisibility = _publicVisibility ?? false;
@@ -247,6 +248,7 @@ class _PlaylistEditScreenState extends ConsumerState<PlaylistEditScreen> {
           slivers: [
             SliverAppBar(
               title: Text(AppLocalizations.of(context)!.editItemTitle(BaseItemDtoType.fromItem(playlist).name)),
+              leading: FinampAppBarBackButton(),
               actions: [
                 if (_isDirty)
                   IconButtonWithSemantics(
@@ -473,7 +475,7 @@ class _HeaderSection extends ConsumerWidget {
                               labelText: AppLocalizations.of(context)!.name,
                               floatingLabelBehavior: FloatingLabelBehavior.never,
                               filled: true,
-                              fillColor: Theme.of(context).brightness == Brightness.dark
+                              fillColor: Theme.brightnessOf(context) == Brightness.dark
                                   ? Colors.black.withOpacity(0.8)
                                   : Colors.white.withOpacity(0.8),
                               border: OutlineInputBorder(

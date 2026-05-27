@@ -179,10 +179,6 @@
   "@selectMusicLibraries": {
     "description": "App bar title for library select screen"
   },
-  "couldNotFindLibraries": "Could not find any libraries.",
-  "@couldNotFindLibraries": {
-    "description": "Error message when the user does not have any libraries"
-  },
   "allLibraries": "All Libraries",
   "@allLibraries": {
     "description": "All Libraries"
@@ -237,10 +233,6 @@
   "@settings": {},
   "offlineMode": "Offline Mode",
   "@offlineMode": {},
-  "onlineMode": "Online Mode",
-  "@onlineMode": {},
-  "sortOrder": "Sort order",
-  "@sortOrder": {},
   "sortBy": "Sort by",
   "@sortBy": {},
   "title": "Title",
@@ -298,19 +290,6 @@
       "value": {
         "type": "int",
         "example": "5"
-      }
-    }
-  },
-  "syncDownloadedPlaylists": "Sync downloaded playlists",
-  "@syncDownloadedPlaylists": {},
-  "downloadMissingImages": "Download missing images",
-  "@downloadMissingImages": {},
-  "downloadedMissingImages": "{count,plural, =0{No missing images found} =1{Downloaded {count} missing image} other{Downloaded {count} missing images}}",
-  "@downloadedMissingImages": {
-    "description": "Message that shows when the user downloads missing images",
-    "placeholders": {
-      "count": {
-        "type": "int"
       }
     }
   },
@@ -380,26 +359,6 @@
   "@noActiveDownloads": {},
   "errorScreenError": "An error occurred while getting the list of errors! At this point, you should probably just create an issue on GitHub and delete app data",
   "@errorScreenError": {},
-  "failedToGetTrackFromDownloadId": "Failed to get track from download ID",
-  "@failedToGetTrackFromDownloadId": {},
-  "deleteDownloadsPrompt": "Are you sure you want to delete the {itemType, select, album{album} playlist{playlist} artist{artist} genre{genre} track{track} library{library} other{item}} '{itemName}' from this device?",
-  "@deleteDownloadsPrompt": {
-    "placeholders": {
-      "itemName": {
-        "type": "String",
-        "example": "Abandon Ship"
-      },
-      "itemType": {
-        "type": "String",
-        "example": "album"
-      }
-    },
-    "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-  },
-  "deleteDownloadsConfirmButtonText": "Delete",
-  "@deleteDownloadsConfirmButtonText": {
-    "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-  },
   "specialDownloads": "Special downloads",
   "@specialDownloads": {
     "description": "Title for the special downloads section on the downloads screen."
@@ -426,14 +385,6 @@
   "@playButtonLabel": {},
   "shuffleButtonLabel": "Shuffle",
   "@shuffleButtonLabel": {},
-  "shuffleCountButton": "Shuffle ({count,plural,=1{{count} Track} other{{count} Tracks}})",
-  "@shuffleCountButton": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "playbackActionPageMoveWithinQueue": "Move Within Queue",
   "@playbackActionPageMoveWithinQueue": {
     "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
@@ -495,8 +446,6 @@
   },
   "required": "Required",
   "@required": {},
-  "updateButtonLabel": "Update",
-  "@updateButtonLabel": {},
   "updatePlaylistButtonLabel": "Update Playlist",
   "@updatePlaylistButtonLabel": {
     "description": "Label for the button that updates the playlist on the edit playlist screen"
@@ -507,8 +456,6 @@
   },
   "playlistUpdated": "Playlist updated.",
   "@playlistUpdated": {},
-  "downloadsDeleted": "Downloads deleted.",
-  "@downloadsDeleted": {},
   "addDownloads": "Add Downloads",
   "@addDownloads": {},
   "location": "Location",
@@ -546,8 +493,6 @@
   "@downloadLocations": {},
   "audioService": "Audio Service",
   "@audioService": {},
-  "playbackReporting": "Playback Reporting",
-  "@playbackReporting": {},
   "interactions": "Interactions",
   "@interactions": {},
   "layoutAndTheme": "Layout & Theme",
@@ -582,8 +527,6 @@
   "@unknownError": {},
   "pathReturnSlashErrorMessage": "Paths that return \"/\" can't be used",
   "@pathReturnSlashErrorMessage": {},
-  "directoryMustBeEmpty": "Directory must be empty",
-  "@directoryMustBeEmpty": {},
   "customLocationsBuggy": "Custom locations can be extremely buggy and are not recommended in most cases. Locations under the system 'Music' folder prevent saving album covers due to OS limitations.",
   "@customLocationsBuggy": {},
   "enterLowPriorityStateOnPause": "Enter Low-Priority State on Pause",
@@ -658,30 +601,8 @@
   "@apply": {
     "description": "Used for a button in the playback speed menu"
   },
-  "portrait": "Portrait",
-  "@portrait": {},
   "landscape": "Landscape",
   "@landscape": {},
-  "gridCrossAxisCount": "{value} Grid Cross-Axis Count",
-  "@gridCrossAxisCount": {
-    "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-    "placeholders": {
-      "value": {
-        "type": "String",
-        "example": "Portrait"
-      }
-    }
-  },
-  "gridCrossAxisCountSubtitle": "Amount of grid tiles to use per-row when {value}.",
-  "@gridCrossAxisCountSubtitle": {
-    "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-    "placeholders": {
-      "value": {
-        "type": "String",
-        "example": "landscape"
-      }
-    }
-  },
   "showTextOnGridView": "Show text in grid view",
   "@showTextOnGridView": {},
   "showTextOnGridViewSubtitle": "Whether or not to show the text (title, artist etc) on the grid music screen.",
@@ -698,10 +619,6 @@
   "@playerScreenMinimumCoverPaddingEditorSubtitle": {
     "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
   },
-  "hideTrackArtistsIfSameAsAlbumArtists": "Hide track artists if same as album artists",
-  "@hideTrackArtistsIfSameAsAlbumArtists": {},
-  "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Whether to show track artists on the album screen if not differing from album artists.",
-  "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
   "autoSwitchItemCurationTypeTitle": "Auto-Switch Item Curation Type",
   "@autoSwitchItemCurationTypeTitle": {},
   "autoSwitchItemCurationTypeSubtitle": "When enabled, Item Sections on the Artist and Genre Screens automatically switch to a different curation type if no items are available (e.g., no favorites for a specific artist).",
@@ -767,10 +684,6 @@
   },
   "save": "Save",
   "@save": {},
-  "invalidColorCode": "Invalid color code",
-  "@invalidColorCode": {
-    "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-  },
   "tabs": "Tabs",
   "@tabs": {},
   "playerScreen": "Player Screen",
@@ -817,8 +730,6 @@
       }
     }
   },
-  "invalidNumber": "Invalid Number",
-  "@invalidNumber": {},
   "sleepTimerTooltip": "Sleep timer",
   "@sleepTimerTooltip": {},
   "sleepTimerRemainingTime": "Sleeping in {time,plural,=1{<1 minute} other{{time} minutes}}",
@@ -843,34 +754,12 @@
   "@addToPlaylistTooltip": {},
   "addToPlaylistTitle": "Add to Playlist",
   "@addToPlaylistTitle": {},
-  "addToMorePlaylistsTooltip": "Add to more playlists",
-  "@addToMorePlaylistsTooltip": {},
   "addToMorePlaylistsTitle": "Add to More Playlists",
   "@addToMorePlaylistsTitle": {},
   "removeFromPlaylistTooltip": "Remove from this playlist",
   "@removeFromPlaylistTooltip": {},
   "removeFromPlaylistTitle": "Remove From This Playlist",
   "@removeFromPlaylistTitle": {},
-  "removeFromPlaylistNamedTooltip": "Remove from playlist '{playlistName}'",
-  "@removeFromPlaylistNamedTooltip": {
-    "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-    "placeholders": {
-      "playlistName": {
-        "type": "String",
-        "example": "My Favorite Tracks"
-      }
-    }
-  },
-  "removeFromPlaylistNamedTitle": "Remove from Playlist '{playlistName}'",
-  "@removeFromPlaylistNamedTitle": {
-    "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-    "placeholders": {
-      "playlistName": {
-        "type": "String",
-        "example": "My Favorite Tracks"
-      }
-    }
-  },
   "newPlaylist": "New Playlist",
   "@newPlaylist": {},
   "createButtonLabel": "Create",
@@ -889,12 +778,8 @@
   "@noAlbum": {},
   "noItem": "No Item",
   "@noItem": {},
-  "noArtist": "No Artist",
-  "@noArtist": {},
   "unknownArtist": "Unknown Artist",
   "@unknownArtist": {},
-  "unknownAlbum": "Unknown Album",
-  "@unknownAlbum": {},
   "playbackModeDirectPlaying": "Direct Playing",
   "@playbackModeDirectPlaying": {
     "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -923,8 +808,6 @@
   "@addToQueue": {
     "description": "Popup menu item title for adding an item to the end of the play queue."
   },
-  "replaceQueue": "Replace Queue",
-  "@replaceQueue": {},
   "instantMix": "Instant Mix",
   "@instantMix": {},
   "goToAlbum": "Go to Album",
@@ -937,20 +820,6 @@
   "@removeFavorite": {},
   "addFavorite": "Add Favorite",
   "@addFavorite": {},
-  "confirmFavoriteAdded": "Added Favorite",
-  "@confirmFavoriteAdded": {},
-  "confirmFavoriteRemoved": "Removed Favorite",
-  "@confirmFavoriteRemoved": {},
-  "addedToQueue": "Added to queue.",
-  "@addedToQueue": {
-    "description": "Snackbar message that shows when the user successfully adds items to the end of the play queue."
-  },
-  "insertedIntoQueue": "Inserted into queue.",
-  "@insertedIntoQueue": {
-    "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-  },
-  "queueReplaced": "Queue replaced.",
-  "@queueReplaced": {},
   "confirmAddedToPlaylist": "Added to playlist.",
   "@confirmAddedToPlaylist": {
     "description": "Snackbar message that shows when the user successfully adds items to a playlist."
@@ -994,14 +863,6 @@
   "startRadio": "Start Radio",
   "@startRadio": {
     "description": "Menu label for starting a radio from a playlist, album, etc."
-  },
-  "redownloadedItems": "{count,plural, =0{No redownloads needed.} =1{Redownloaded {count} item} other{Redownloaded {count} items}}",
-  "@redownloadedItems": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "bufferDuration": "Buffer Duration",
   "@bufferDuration": {},
@@ -1184,7 +1045,7 @@
   "@savedQueue": {
     "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
   },
-  "playingFromType": "Playing From {source, select, album{Album} playlist{Playlist} trackMix{Track Mix} artistMix{Artist Mix} albumMix{Album Mix} genreMix{Genre Mix} favorites{Favorites} allTracks{All Tracks} filteredList{Tracks} genre{Genre} artist{Artist} track{Track} nextUpAlbum{Album in Next Up} nextUpPlaylist{Playlist in Next Up} nextUpArtist{Artist in Next Up} nextUpGenre{Genre in Next Up} remoteClient{a Remote Client} radio{Radio} other{}}",
+  "playingFromType": "Playing From {source, select, album{Album} playlist{Playlist} trackMix{Track Mix} artistMix{Artist Mix} albumMix{Album Mix} genreMix{Genre Mix} favorites{Favorites} allTracks{All Tracks} filteredList{Tracks} genre{Genre} artist{Artist} track{Track} nextUpAlbum{Album in Next Up} nextUpPlaylist{Playlist in Next Up} nextUpArtist{Artist in Next Up} nextUpGenre{Genre in Next Up} remoteClient{a Remote Client} radio{Radio} homeScreenSection{} other{}}",
   "@playingFromType": {
     "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
     "placeholders": {
@@ -1399,20 +1260,22 @@
   "@favoriteArtists": {},
   "randomTracks": "Tracks (Random Picks)",
   "@randomTracks": {},
-  "randomAlbums": "Albums (Random Picks)",
-  "@randomAlbums": {},
-  "randomArtists": "Artists (Random Picks)",
-  "@randomArtists": {},
   "mostPlayed": "Most Played",
   "@mostPlayed": {},
-  "randomFavoritesFirst": "Random (Favorites First)",
-  "@randomFavoritesFirst": {},
   "recentlyAdded": "Recently Added",
   "@recentlyAdded": {},
   "recentlyPlayed": "Recently Played",
   "@recentlyPlayed": {},
   "latestReleases": "Latest Releases",
   "@latestReleases": {},
+  "ascending": "Ascending",
+  "@ascending": {
+    "description": "Label for ascending order."
+  },
+  "descending": "Descending",
+  "@descending": {
+    "description": "Label for descending order."
+  },
   "itemSectionsOrder": "Item Sections Order",
   "@itemSectionsOrder": {
     "description": "Label for the setting that controls the order of item sections on the screens."
@@ -1462,10 +1325,6 @@
   "genreListsInheritSortingSubtitle": "When enabled, the \"See All\" lists will inherit the sorting and filtering from the Genre Screen. If disabled, settings from the corresponding library tab will be used instead. Tapping on the Counts on the top of the Genre Screen or the \"Browse Playlists\" button will always open a full list with the sorting settings from the library tab.",
   "@genreListsInheritSortingSubtitle": {
     "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
-  },
-  "curatedItemsMostPlayedOfflineTooltip": "Not available in Offline Mode.",
-  "@curatedItemsMostPlayedOfflineTooltip": {
-    "description": "Tooltip for Most Played on Curated Items in Offline Mode."
   },
   "curatedItemsNotListenedYet": "You haven't listened to any tracks{itemType, select, artistGenreFilter{ by this artist in this genre} artist{ by this artist} genre{ in this genre} other{}}.",
   "@curatedItemsNotListenedYet": {
@@ -1561,8 +1420,6 @@
   "@close": {},
   "showUncensoredLogMessage": "This log contains your login information. Show?",
   "@showUncensoredLogMessage": {},
-  "resetTabs": "Reset tabs",
-  "@resetTabs": {},
   "resetToDefaults": "Reset to defaults",
   "@resetToDefaults": {},
   "noMusicLibrariesTitle": "No Music Libraries",
@@ -1641,10 +1498,6 @@
       }
     }
   },
-  "swipeInsertQueueNext": "Play Swiped Track Next",
-  "@swipeInsertQueueNext": {},
-  "swipeInsertQueueNextSubtitle": "Enable to insert a track as next item in queue when swiped in track list instead of appending it to the end.",
-  "@swipeInsertQueueNextSubtitle": {},
   "swipeLeftToRightAction": "Swipe to Right Action",
   "@swipeLeftToRightAction": {},
   "swipeLeftToRightActionSubtitle": "Action triggered when swiping a track in the list from left to right.",
@@ -2002,13 +1855,7 @@
   "@defaultDownloadLocationButton": {
     "description": "Tooltip for button that sets a download location as the default."
   },
-  "fixedGridSizeSwitchTitle": "Use fixed size grid tiles",
-  "@fixedGridSizeSwitchTitle": {},
-  "fixedGridSizeSwitchSubtitle": "Grid tile sizes will not respond to window/screen size.",
-  "@fixedGridSizeSwitchSubtitle": {},
-  "fixedGridSizeTitle": "Grid Tile Size",
-  "@fixedGridSizeTitle": {},
-  "fixedGridTileSizeEnum": "{size, select, small{Small} medium{Medium} large{Large} veryLarge{Very Large} other{???}}",
+  "fixedGridTileSizeEnum": "{size, select, verySmall{Very Small} small{Small} medium{Medium} large{Large} veryLarge{Very Large} other{???}}",
   "@fixedGridTileSizeEnum": {
     "placeholders": {
       "size": {
@@ -2025,18 +1872,10 @@
   "@enableVibration": {},
   "enableVibrationSubtitle": "Whether to enable vibration.",
   "@enableVibrationSubtitle": {},
-  "hideQueueButton": "Hide queue button",
-  "@hideQueueButton": {},
-  "hideQueueButtonSubtitle": "Hide the queue button on the player screen. Swipe up to access the queue.",
-  "@hideQueueButtonSubtitle": {},
   "oneLineMarqueeTextButton": "Auto-scroll Long Titles",
   "@oneLineMarqueeTextButton": {},
   "oneLineMarqueeTextButtonSubtitle": "Automatically scroll track titles that are too long to display in two lines",
   "@oneLineMarqueeTextButtonSubtitle": {},
-  "marqueeOrTruncateButton": "Use ellipsis for long titles",
-  "@marqueeOrTruncateButton": {},
-  "marqueeOrTruncateButtonSubtitle": "Show … at the end of long titles instead of scrolling text",
-  "@marqueeOrTruncateButtonSubtitle": {},
   "hidePlayerBottomActions": "Hide bottom actions",
   "@hidePlayerBottomActions": {},
   "hidePlayerBottomActionsSubtitle": "Hide the queue and lyrics buttons on the player screen. Swipe up to access the queue, swipe left (below the album cover) to view lyrics if available.",
@@ -2403,10 +2242,6 @@
   "@genreScreen": {
     "description": "Name for the view/screen that shows genres"
   },
-  "emptyTopTracksList": "You haven't listened to any track by this artist yet.",
-  "@emptyTopTracksList": {
-    "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
-  },
   "emptyAlbum": "No tracks.",
   "@emptyAlbum": {
     "description": "Message shown as a placeholder when an album or playlist is empty."
@@ -2692,10 +2527,6 @@
   "@preferLocalNetworkPublicAddressSettingTitle": {},
   "preferLocalNetworkPublicAddressSettingDescription": "The primary address used to connect to your Jellyfin server",
   "@preferLocalNetworkPublicAddressSettingDescription": {},
-  "preferLocalNetworkInfoBox": "This Feature requires Location permissions (and location needs to be enabled) to read the network name.",
-  "@preferLocalNetworkInfoBox": {
-    "description": "This is only shown on ios and android since desktop doesnt require location permissions"
-  },
   "networkSettingsTitle": "Network",
   "@networkSettingsTitle": {
     "description": "Title for the network settings screen"
@@ -2731,14 +2562,6 @@
   "clearQueueOnStopEventSubtitle": "Clear the queue and close the player if a 'stop' command is received from the OS. In-app stop actions will always close the player and clear the queue.",
   "@clearQueueOnStopEventSubtitle": {
     "description": "Subtitle for the setting that controls if OS stop commands clear the queue."
-  },
-  "radioModeSettingsTitle": "Radio Mode",
-  "@radioModeSettingsTitle": {
-    "description": "Title for the setting that controls the radio mode/algorithm."
-  },
-  "radioModeSettingsSubtitle": "Sets the method that the radio feature uses to pick songs to add.",
-  "@radioModeSettingsSubtitle": {
-    "description": "Subtitle for the setting that controls the radio mode/algorithm."
   },
   "radioModeMenuTitle": "Choose Radio Mode",
   "@radioModeMenuTitle": {
@@ -2796,16 +2619,6 @@
   "@radioModeDisableButtonSubtitle": {
     "description": "Subtitle for the option that disables radio mode."
   },
-  "radioModeOptionConfirmation": "Switched to {option, select, reshuffle{reshuffle mode} random{random mode} similar{similar mode} continuous{continuous mode} albumMix{album mix} other{{option}}}",
-  "@radioModeOptionConfirmation": {
-    "placeholders": {
-      "option": {
-        "type": "String",
-        "description": "Corresponds to RadioMode.name"
-      }
-    },
-    "description": "Confirmation displayed when the radio mode is changed."
-  },
   "radioModeEnabledSubtitle": "Tap to configure",
   "@radioModeEnabledSubtitle": {
     "description": "Subtitle displayed in the queue to show when radio mode is enabled."
@@ -2813,10 +2626,6 @@
   "radioModeDisabledSubtitle": "Tap to enable",
   "@radioModeDisabledSubtitle": {
     "description": "Subtitle displayed in the queue to show that radio mode is disabled."
-  },
-  "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "Current mode not available offline.",
-  "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
-    "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
   },
   "radioModeDescription": "{mode, select, reshuffle{Continuously reshuffle queue} random{Append tracks randomly from the initial selection} similar{Append based on the original queue} continuous{Append based on the current track} albumMix{Append similar albums} other{}}",
   "@radioModeDescription": {
@@ -3165,10 +2974,6 @@
   "@androidImageErrorPrompt": {
     "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
   },
-  "addDownloadLocationsErrorButton": "Add anyway",
-  "@addDownloadLocationsErrorButton": {
-    "description": "Label shown on button for adding a download location we suspect to be buggy"
-  },
   "syncFailedWarningShort": "Warning: Failed to synchronize some downloads with server.",
   "@syncFailedWarningShort": {
     "description": "Simple warning message for when download sync fails due to items being deleted from the server."
@@ -3297,6 +3102,544 @@
   "@previousTracksPersistenceModeExpanded": {
     "description": "Overrides saved value to expand previous tracks header on queue list open"
   },
+  "home": "Home",
+  "@home": {
+    "description": "Label for the home tab in the main navigation bar"
+  },
+  "homeScreenSettingsTitle": "Home Screen",
+  "@homeScreenSettingsTitle": {
+    "description": "Title for the home screen settings"
+  },
+  "homeScreenSectionPresetPickerMenuTitle": "Pick a Preset",
+  "@homeScreenSectionPresetPickerMenuTitle": {
+    "description": "Title for the preset picker menu, which allows users to pick a preset section to add to the home screen"
+  },
+  "homeScreenSectionCustomSectionTitle": "Custom Section",
+  "@homeScreenSectionCustomSectionTitle": {
+    "description": "Title for the custom section type, which can be added to the home screen"
+  },
+  "homeScreenSectionCustomSectionDescription": "Configure your own section",
+  "@homeScreenSectionCustomSectionDescription": {
+    "description": "Description for the custom section type, which can be added to the home screen"
+  },
+  "homeScreenQuickActionPickerMenuTitle": "Pick an Action",
+  "@homeScreenQuickActionPickerMenuTitle": {
+    "description": "Title for the quick action picker menu, which allows users to pick a quick action to add to the home screen"
+  },
+  "homeScreenSectionPresetFavoriteTracksTitle": "Favorite Tracks",
+  "@homeScreenSectionPresetFavoriteTracksTitle": {
+    "description": "Title for the favorite tracks preset section, which can be added to the home screen"
+  },
+  "homeScreenSectionPresetFavoriteTracksDescription": "Liked tracks in random order",
+  "@homeScreenSectionPresetFavoriteTracksDescription": {
+    "description": "Description for the favorite tracks preset section, which can be added to the home screen"
+  },
+  "homeScreenSectionPresetForgottenFavoriteTracksTitle": "Forgotten Favorite Tracks",
+  "@homeScreenSectionPresetForgottenFavoriteTracksTitle": {
+    "description": "Title for the forgotten favorite tracks preset section, which can be added to the home screen"
+  },
+  "homeScreenSectionPresetForgottenFavoriteTracksDescription": "Liked tracks which you least recently played",
+  "@homeScreenSectionPresetForgottenFavoriteTracksDescription": {
+    "description": "Description for the forgotten favorite tracks preset section, which can be added to the home screen"
+  },
+  "noExternalDirectories": "No external directories.",
+  "@noExternalDirectories": {
+    "description": "Message when the user tries to configure an Appdirectory external download directory but none are availible"
+  },
+  "nameRequired": "Name (required)",
+  "@nameRequired": {
+    "description": "Descriptor for the required name field when adding download locations."
+  },
+  "exteranlStorageTip": "If the path doesn't contain \"emulated\", it is proably external storage.",
+  "@exteranlStorageTip": {
+    "description": "Helper text in Appdirectory download location config form"
+  },
+  "tooltipDisabled": "{tip} (Disabled)",
+  "@tooltipDisabled": {
+    "placeholders": {
+      "tip": {
+        "type": "String"
+      }
+    },
+    "description": "Added to tooltips on disabled buttons"
+  },
+  "noDownloadsInLocation": "No downloads are currently present in this location.",
+  "@noDownloadsInLocation": {
+    "description": "Message when deleting a downloads location informing the user it is empty."
+  },
+  "deleteDownloadLocation": "Delete Location",
+  "@deleteDownloadLocation": {
+    "description": "Button for confirming deletion of deownload location"
+  },
+  "cannotDeleteLocation": "Cannot delete location",
+  "@cannotDeleteLocation": {
+    "description": "Message that a download location cannot currently be deleted."
+  },
+  "cannotDeleteLocationEplanation": "This location currently contains downloads and cannot be deleted.  Remove these downloads first:",
+  "@cannotDeleteLocationEplanation": {
+    "description": "Explanation that the download location cannot be deleted due to not being empty."
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Tooltip for music screen search button"
+  },
+  "globalMenu": "Menu",
+  "@globalMenu": {
+    "description": "Tooltip for menu open button on music screen"
+  },
+  "lookingForSomethingElse": "Looking for something else?",
+  "@lookingForSomethingElse": {
+    "description": "Header for home screen customization button"
+  },
+  "builtWithByTheFinampContributors": "Built with ♥ by the Finamp contributors.",
+  "@builtWithByTheFinampContributors": {
+    "description": "Message in home screen footer"
+  },
+  "showAll": "Show All",
+  "@showAll": {
+    "description": "Tooltip for show all button on home screen sections"
+  },
+  "failedToLoadSection": "Failed to load section.",
+  "@failedToLoadSection": {
+    "description": "Message when an error is thrown while resolving home screen section"
+  },
+  "sectionContentsNotDownloaded": "Section contents not downloaded.",
+  "@sectionContentsNotDownloaded": {
+    "description": "Message when a home screen section has no items while offline"
+  },
+  "failedToLoadSectionMissingItem": "Failed to load section - missing item.",
+  "@failedToLoadSectionMissingItem": {
+    "description": "Message when the parent item of a home screen section is missing from the server"
+  },
+  "errorLoadingItems": "Error loading items.",
+  "@errorLoadingItems": {
+    "description": "Message when an error occurs while loading home screen section contents"
+  },
+  "noItemsAvailable": "No items available.",
+  "@noItemsAvailable": {
+    "description": "Message when a home screen section has no items while online"
+  },
+  "filters": "Filters",
+  "@filters": {
+    "description": "Label for filters in Sort & Filter menu"
+  },
+  "sortOrder": "Order",
+  "@sortOrder": {
+    "description": "Label for sort order in Sort & Filter menu"
+  },
+  "removeFilters": "Remove Filters",
+  "@removeFilters": {
+    "description": "Title for remove filters only variant of sort and filter menu"
+  },
+  "sortFilter": "Sort & Filter",
+  "@sortFilter": {
+    "description": "title for Sort & Filter menu"
+  },
+  "editSection": "Edit section",
+  "@editSection": {
+    "description": "Label for edit home section menu entry"
+  },
+  "connected": "Connected",
+  "@connected": {
+    "description": "Fallback for 'Connected to <server name>' message while server info is loaded"
+  },
+  "timerMinutes": "{minutes} min",
+  "@timerMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    },
+    "description": "Label for sleep timer duration slider"
+  },
+  "timerTracks": "{tracks} tracks",
+  "@timerTracks": {
+    "placeholders": {
+      "tracks": {
+        "type": "int"
+      }
+    },
+    "description": "Label for sleep timer track count slider"
+  },
+  "quickActionsSubtitle": "Select and reorder the quick actions displayed on the home screen.",
+  "@quickActionsSubtitle": {
+    "description": "Subtitle for quick actions edit menu"
+  },
+  "selectAnItem": "Select an item",
+  "@selectAnItem": {
+    "description": "Title for 'play specific item' quick action edit menu"
+  },
+  "sectionsMenu": "Sections",
+  "@sectionsMenu": {
+    "description": "Title for home screen sections edit menu"
+  },
+  "sectionMenuSubtitle": "Select and reorder the sections displayed on the home screen.",
+  "@sectionMenuSubtitle": {
+    "description": "Subtitle for home screen sections edit menu"
+  },
+  "sectionType": "Section Type",
+  "@sectionType": {
+    "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
+  },
+  "featuredCollection": "Featured Collection",
+  "@featuredCollection": {
+    "description": "Title for home screen section editor collection selector"
+  },
+  "tabType": "Tab Type",
+  "@tabType": {
+    "description": "Title for home screen section editor tab type dropdown (albums, artists, ect...)"
+  },
+  "library": "Library",
+  "@library": {
+    "description": "Title for home screen section editor library selector dropdown"
+  },
+  "currentLibrary": "Current library",
+  "@currentLibrary": {
+    "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Message when items or libraries are loading in home screen section editor"
+  },
+  "sectionTitle": "Section Title",
+  "@sectionTitle": {
+    "description": "Title for custom section title editor in home screen section editor"
+  },
+  "egFavoriteTracks": "e.g. Favorite tracks",
+  "@egFavoriteTracks": {
+    "description": "Placeholder text in custom section title editor in home screen section editor"
+  },
+  "customSectionTitleRequired": "Please give the custom section a title",
+  "@customSectionTitleRequired": {
+    "description": "Message when a custom section title is needed in home screen section editor"
+  },
+  "editHomeScreenSection": "Edit Home Screen Section",
+  "@editHomeScreenSection": {
+    "description": "Title for home screen section editor menu"
+  },
+  "sectionConfigInvalid": "Current config is not valid.",
+  "@sectionConfigInvalid": {
+    "description": "Message in home screen section edit menu preview window when a valid preview cannot be generated"
+  },
+  "searchNotAvailibleWhileOffline": "Search not available while offline!",
+  "@searchNotAvailibleWhileOffline": {
+    "description": "Message in home screen section editor search widget when offline"
+  },
+  "noSearchResults": "No search results.",
+  "@noSearchResults": {
+    "description": "Message in home screen section editor search widget when no results are returned"
+  },
+  "collectionDropdownHint": "Choose a collection",
+  "@collectionDropdownHint": {
+    "description": "Hint for selector dropdown in home screen editor search widget"
+  },
+  "gridImageSizeTitle": "Grid Tile Size",
+  "@gridImageSizeTitle": {
+    "description": "Title of grid tile image size setting"
+  },
+  "gridImageSizeSubtitle": "Select the size of items in the grid",
+  "@gridImageSizeSubtitle": {
+    "description": "Subtitle of grid tile image size setting"
+  },
+  "gridImageSizeLabel": "{sizeDescriptor} (currently {colCount} columns)",
+  "@gridImageSizeLabel": {
+    "placeholders": {
+      "sizeDescriptor": {
+        "type": "String",
+        "example": "Very Small"
+      },
+      "colCount": {
+        "type": "String"
+      }
+    },
+    "description": "Slider label in grid tile image size setting"
+  },
+  "noFilterActive": "No Filter Active",
+  "@noFilterActive": {
+    "description": "Message in sort & filter row when no filters are active"
+  },
+  "activeFilterCount": "{filterCount, plural, =0{No Filter} =1{1 Filter} other{{filterCount} Filters}} Active",
+  "@activeFilterCount": {
+    "placeholders": {
+      "filterCount": {
+        "type": "int"
+      }
+    },
+    "description": "Message in sort & filter row"
+  },
+  "inPlaylist": "In playlist",
+  "@inPlaylist": {
+    "description": "Name of 'In Playlist' content type"
+  },
+  "inCollection": "In collection",
+  "@inCollection": {
+    "description": "Name of jellyfin 'Collection' content type"
+  },
+  "tabView": "Tab View",
+  "@tabView": {
+    "description": "Name of home screen section type which uses the contents of a music screen tab"
+  },
+  "collection": "Collection",
+  "@collection": {
+    "description": "Name of home screen section type which uses the contents of a supplied playable item"
+  },
+  "queues": "Queues",
+  "@queues": {
+    "description": "Name of home screen section type which shows the latest played queues"
+  },
+  "favoritePlaylists": "Favorite Playlists",
+  "@favoritePlaylists": {
+    "description": "Name of a home screen section preset"
+  },
+  "favoriteGenres": "Favorite Genres",
+  "@favoriteGenres": {
+    "description": "Name of a home screen section preset"
+  },
+  "newlyAddedAlbums": "Newly Added Albums",
+  "@newlyAddedAlbums": {
+    "description": "Name of a home screen section preset"
+  },
+  "newlyAddedTracks": "Newly Added Tracks",
+  "@newlyAddedTracks": {
+    "description": "Name of a home screen section preset"
+  },
+  "frequentlyPlayedAlbums": "Often Played Albums",
+  "@frequentlyPlayedAlbums": {
+    "description": "Name of a home screen section preset"
+  },
+  "frequentlyPlayedTracks": "Often Played Tracks",
+  "@frequentlyPlayedTracks": {
+    "description": "Name of a home screen section preset"
+  },
+  "frequentlyPlayedArtists": "Often Played Artists",
+  "@frequentlyPlayedArtists": {
+    "description": "Name of a home screen section preset"
+  },
+  "unplayedAlbums": "Unplayed Albums",
+  "@unplayedAlbums": {
+    "description": "Name of a home screen section preset"
+  },
+  "recentQueues": "Recent Queues",
+  "@recentQueues": {
+    "description": "Name of a home screen section preset"
+  },
+  "favoriteAlbumsDescription": "Liked Albums in random order",
+  "@favoriteAlbumsDescription": {
+    "description": "Description of a home screen section preset"
+  },
+  "favoriteArtistsDescription": "Liked Artists in random order",
+  "@favoriteArtistsDescription": {
+    "description": "Description  of a home screen section preset"
+  },
+  "favoritePlaylistsDescription": "Liked Playlists in random order",
+  "@favoritePlaylistsDescription": {
+    "description": "Description of a home screen section preset"
+  },
+  "favoriteGenresDescription": "Liked Genres in random order",
+  "@favoriteGenresDescription": {
+    "description": "Description of a home screen section preset"
+  },
+  "recentlyAddedAlbumsDescription": "Albums which were recently added to your library, starting with newest",
+  "@recentlyAddedAlbumsDescription": {
+    "description": "Description of a home screen section preset"
+  },
+  "recentlyAddedTracksDescription": "Tracks which were recently added to your library, starting with newest",
+  "@recentlyAddedTracksDescription": {
+    "description": "Description of a home screen section preset"
+  },
+  "frequentlyPlayedAlbumsDescription": "Albums you have listened to a lot, starting with most frequent",
+  "@frequentlyPlayedAlbumsDescription": {
+    "description": "Description of a home screen section preset"
+  },
+  "frequentlyPlayedTracksDescription": "Tracks you have listened to a lot, starting with most frequent",
+  "@frequentlyPlayedTracksDescription": {
+    "description": "Description of a home screen section preset"
+  },
+  "frequentlyPlayedArtistsDescription": "Artists you have listened to a lot, starting with most frequent",
+  "@frequentlyPlayedArtistsDescription": {
+    "description": "Description of a home screen section preset"
+  },
+  "neverPlayedAlbumsDescription": "Albums you haven't yet listened to, in random order",
+  "@neverPlayedAlbumsDescription": {
+    "description": "Description of a home screen section preset"
+  },
+  "recentQueuesDescription": "Queues you have created recently, starting with newest",
+  "@recentQueuesDescription": {
+    "description": "Description of a home screen section preset"
+  },
+  "shuffleTracksActionDescription": "Shuffles random tracks from your library",
+  "@shuffleTracksActionDescription": {
+    "description": "Description of a home screen quick action"
+  },
+  "browseRecentQueuesActionDescription": "Choose from your recently played queues",
+  "@browseRecentQueuesActionDescription": {
+    "description": "Description of a home screen quick action"
+  },
+  "browsePlaybackHistoryActionDescription": "Browse your playback history",
+  "@browsePlaybackHistoryActionDescription": {
+    "description": "Description of a home screen quick action"
+  },
+  "playRandomAlbumActionDescription": "Starts playback of a random album",
+  "@playRandomAlbumActionDescription": {
+    "description": "Description of a home screen quick action"
+  },
+  "surpriseMeActionDescription": "Starts 'Continuous' radio from a random track",
+  "@surpriseMeActionDescription": {
+    "description": "Description of a home screen quick action"
+  },
+  "playRandomTrackActionDescription": "Starts playback of a random track",
+  "@playRandomTrackActionDescription": {
+    "description": "Description of a home screen quick action"
+  },
+  "playRandomFavoriteItemActionDescription": "Starts playback from a random favorite item",
+  "@playRandomFavoriteItemActionDescription": {
+    "description": "Description of a home screen quick action"
+  },
+  "playPreviousQueueActionDescription": "Restores and plays your most recent archived queue",
+  "@playPreviousQueueActionDescription": {
+    "description": "Description of a home screen quick action"
+  },
+  "configureOutputActionDescription": "Opens output device configuration",
+  "@configureOutputActionDescription": {
+    "description": "Description of a home screen quick action"
+  },
+  "playSpecificItemActionDescription": "Plays a specific configured item",
+  "@playSpecificItemActionDescription": {
+    "description": "Description of a home screen quick action"
+  },
+  "shuffleTracksAction": "Shuffle Tracks",
+  "@shuffleTracksAction": {
+    "description": "Name of a home screen quick action"
+  },
+  "randomAlbumAction": "Random Album",
+  "@randomAlbumAction": {
+    "description": "Name of a home screen quick action"
+  },
+  "randomTrackAction": "Random Track",
+  "@randomTrackAction": {
+    "description": "Name of a home screen quick action"
+  },
+  "randomFavoriteAction": "Random Favorite",
+  "@randomFavoriteAction": {
+    "description": "Name of a home screen quick action"
+  },
+  "previousQueueAction": "Previous Queue",
+  "@previousQueueAction": {
+    "description": "Name of a home screen quick action"
+  },
+  "configureOutputAction": "Configure Output",
+  "@configureOutputAction": {
+    "description": "Name of a home screen quick action"
+  },
+  "playSpecificItemAction": "Play {itemName, select, finamp_placeholder{<Item>} other{{itemName}}}",
+  "@playSpecificItemAction": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    },
+    "description": "Name of a home screen quick action"
+  },
+  "surpriseMeAction": "Surprise Me",
+  "@surpriseMeAction": {
+    "description": "Name of a home screen quick action"
+  },
+  "editAction": "Edit Action",
+  "@editAction": {
+    "description": "Button to edit a quick action"
+  },
+  "removeAction": "Remove Action",
+  "@removeAction": {
+    "description": "Button to remove a quick action"
+  },
+  "addNewAction": "Add New Action",
+  "@addNewAction": {
+    "description": "Button to add a new quick action"
+  },
+  "removeSection": "Remove Section",
+  "@removeSection": {
+    "description": "Button to remove a home screen section"
+  },
+  "addNewSection": "Add New Section",
+  "@addNewSection": {
+    "description": "Button to add a new home screen section"
+  },
+  "preview": "Preview",
+  "unnamedCollection": "Unnamed Collection",
+  "@unnamedCollection": {
+    "description": "Placeholder for unnamed collection in home screen section editor"
+  },
+  "noTracksFound": "No tracks found to start Surprise Me Mix.",
+  "@noTracksFound": {
+    "description": "Message if SurpriseMeMix creation fails"
+  },
+  "nothingFoundToPlay": "Nothing found to play.",
+  "@nothingFoundToPlay": {
+    "description": "Message if play random item fails"
+  },
+  "errorLoadingHomeSection": "Error loading home section",
+  "@errorLoadingHomeSection": {
+    "description": "Message if a home screen section cannot be loaded due to a missing item"
+  },
+  "noPreviousQueueFoundToPlay": "No previous queue found to play.",
+  "@noPreviousQueueFoundToPlay": {
+    "description": "Message if play previous queue quick action fails"
+  },
+  "unknownVersion": "Unknown Version",
+  "@unknownVersion": {
+    "description": "Reported server version if request fails"
+  },
+  "isFavoriteFilter": "Favorites",
+  "@isFavoriteFilter": {
+    "description": "Name of favorite filter"
+  },
+  "isUnplayedFilter": "Unplayed",
+  "@isUnplayedFilter": {
+    "description": "Name of unplayed items filter"
+  },
+  "isFullyDownloadedFilter": "Fully downloaded",
+  "@isFullyDownloadedFilter": {
+    "description": "Name of fully downloaded items filter"
+  },
+  "genreFilter": "Genre: {name}",
+  "@genreFilter": {
+    "description": "Name of genrefilter",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "startsWithFilter": "Starts with: {letter}",
+  "@startsWithFilter": {
+    "description": "Name of starts with letter filter",
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      }
+    }
+  },
+  "searchTermFilter": "Search: {searchTerm}",
+  "@searchTermFilter": {
+    "description": "Name of search term filter",
+    "placeholders": {
+      "searchTerm": {
+        "type": "String"
+      }
+    }
+  },
+  "customizeHomeScreen": "Customize home screen",
+  "@customizeHomeScreen": {
+    "description": "Label for home screen customize button"
+  },
+  "connectedTo": "Connected to",
+  "@connectedTo": {
+    "description": "Server info in music screen menu"
+  },
+  "performingArtistFilter": "Albums (Appears on)",
+  "albumArtistFilter": "Albums (Album Artist of)",
+  "allTypes": "All Types",
+  "itemTypeFilterHeader": "Child Type",
   "useAndroidGainEffectTitle": "Use Gain Effect",
   "@useAndroidGainEffectTitle": {
     "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
@@ -3312,5 +3655,27 @@
   "losslessNoBitrate": "Not applicable to FLAC transcodes",
   "@losslessNoBitrate": {
     "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+  },
+  "recentlyPlayedTracksDescription": "Tracks you listened to recently, starting with last played",
+  "@recentlyPlayedTracksDescription": {
+    "description": "Description for a home screen section preset"
+  },
+  "homeFavoritesDownloadWarning": "Are you sure you want to download favorites?  This will download favorites of all types, not just {sectionType}.",
+  "@homeFavoritesDownloadWarning": {
+    "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because home sections show a specific item type, like Albums, but the download covers all.",
+    "placeholders": {
+      "sectionType": {
+        "type": "String",
+        "example": "Albums"
+      }
+    }
+  },
+  "homeRecentAlbumsDownloadWarning": "This will download the 5 latest albums on the server.  This will be updated and the excess downloads removed as new albums are added to the server in the future.",
+  "@homeRecentAlbumsDownloadWarning": {
+    "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because the behavior of the 5 latest albums download is not a 100% match to the home sections."
+  },
+  "alreadyRandomized": "This section is already presented in a random order",
+  "@alreadyRandomized": {
+    "description": "Tooltip for shuffle button on home screen sections using a random sort order, where it is disabled due to being unneeded"
   }
 }

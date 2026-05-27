@@ -164,8 +164,143 @@ class _GetAlbumOrPlaylistTracksProviderElement
   BaseItemDto get parent => (origin as GetAlbumOrPlaylistTracksProvider).parent;
 }
 
+String _$getDefaultSortedPlaylistTracksHash() =>
+    r'38b604cd5f85a459804c174426a400065db8ce9e';
+
+/// See also [getDefaultSortedPlaylistTracks].
+@ProviderFor(getDefaultSortedPlaylistTracks)
+const getDefaultSortedPlaylistTracksProvider =
+    GetDefaultSortedPlaylistTracksFamily();
+
+/// See also [getDefaultSortedPlaylistTracks].
+class GetDefaultSortedPlaylistTracksFamily
+    extends Family<AsyncValue<(List<BaseItemDto>, List<BaseItemDto>)>> {
+  /// See also [getDefaultSortedPlaylistTracks].
+  const GetDefaultSortedPlaylistTracksFamily();
+
+  /// See also [getDefaultSortedPlaylistTracks].
+  GetDefaultSortedPlaylistTracksProvider call(BaseItemDto parent) {
+    return GetDefaultSortedPlaylistTracksProvider(parent);
+  }
+
+  @override
+  GetDefaultSortedPlaylistTracksProvider getProviderOverride(
+    covariant GetDefaultSortedPlaylistTracksProvider provider,
+  ) {
+    return call(provider.parent);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getDefaultSortedPlaylistTracksProvider';
+}
+
+/// See also [getDefaultSortedPlaylistTracks].
+class GetDefaultSortedPlaylistTracksProvider
+    extends AutoDisposeFutureProvider<(List<BaseItemDto>, List<BaseItemDto>)> {
+  /// See also [getDefaultSortedPlaylistTracks].
+  GetDefaultSortedPlaylistTracksProvider(BaseItemDto parent)
+    : this._internal(
+        (ref) => getDefaultSortedPlaylistTracks(
+          ref as GetDefaultSortedPlaylistTracksRef,
+          parent,
+        ),
+        from: getDefaultSortedPlaylistTracksProvider,
+        name: r'getDefaultSortedPlaylistTracksProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$getDefaultSortedPlaylistTracksHash,
+        dependencies: GetDefaultSortedPlaylistTracksFamily._dependencies,
+        allTransitiveDependencies:
+            GetDefaultSortedPlaylistTracksFamily._allTransitiveDependencies,
+        parent: parent,
+      );
+
+  GetDefaultSortedPlaylistTracksProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.parent,
+  }) : super.internal();
+
+  final BaseItemDto parent;
+
+  @override
+  Override overrideWith(
+    FutureOr<(List<BaseItemDto>, List<BaseItemDto>)> Function(
+      GetDefaultSortedPlaylistTracksRef provider,
+    )
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetDefaultSortedPlaylistTracksProvider._internal(
+        (ref) => create(ref as GetDefaultSortedPlaylistTracksRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        parent: parent,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<(List<BaseItemDto>, List<BaseItemDto>)>
+  createElement() {
+    return _GetDefaultSortedPlaylistTracksProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetDefaultSortedPlaylistTracksProvider &&
+        other.parent == parent;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, parent.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetDefaultSortedPlaylistTracksRef
+    on AutoDisposeFutureProviderRef<(List<BaseItemDto>, List<BaseItemDto>)> {
+  /// The parameter `parent` of this provider.
+  BaseItemDto get parent;
+}
+
+class _GetDefaultSortedPlaylistTracksProviderElement
+    extends
+        AutoDisposeFutureProviderElement<(List<BaseItemDto>, List<BaseItemDto>)>
+    with GetDefaultSortedPlaylistTracksRef {
+  _GetDefaultSortedPlaylistTracksProviderElement(super.provider);
+
+  @override
+  BaseItemDto get parent =>
+      (origin as GetDefaultSortedPlaylistTracksProvider).parent;
+}
+
 String _$getSortedPlaylistTracksHash() =>
-    r'1974a7dff3f5caf9252295431018e9f38229d03e';
+    r'b1a38a61289c3bbe1d0939f15ff0ca19e22e4da4';
 
 /// See also [getSortedPlaylistTracks].
 @ProviderFor(getSortedPlaylistTracks)
@@ -179,17 +314,17 @@ class GetSortedPlaylistTracksFamily
 
   /// See also [getSortedPlaylistTracks].
   GetSortedPlaylistTracksProvider call(
-    BaseItemDto parent, {
-    BaseItemDto? genreFilter,
-  }) {
-    return GetSortedPlaylistTracksProvider(parent, genreFilter: genreFilter);
+    BaseItemDto parent,
+    SortAndFilterConfiguration sortConfig,
+  ) {
+    return GetSortedPlaylistTracksProvider(parent, sortConfig);
   }
 
   @override
   GetSortedPlaylistTracksProvider getProviderOverride(
     covariant GetSortedPlaylistTracksProvider provider,
   ) {
-    return call(provider.parent, genreFilter: provider.genreFilter);
+    return call(provider.parent, provider.sortConfig);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -212,25 +347,25 @@ class GetSortedPlaylistTracksProvider
     extends AutoDisposeFutureProvider<(List<BaseItemDto>, List<BaseItemDto>)> {
   /// See also [getSortedPlaylistTracks].
   GetSortedPlaylistTracksProvider(
-    BaseItemDto parent, {
-    BaseItemDto? genreFilter,
-  }) : this._internal(
-         (ref) => getSortedPlaylistTracks(
-           ref as GetSortedPlaylistTracksRef,
-           parent,
-           genreFilter: genreFilter,
-         ),
-         from: getSortedPlaylistTracksProvider,
-         name: r'getSortedPlaylistTracksProvider',
-         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-             ? null
-             : _$getSortedPlaylistTracksHash,
-         dependencies: GetSortedPlaylistTracksFamily._dependencies,
-         allTransitiveDependencies:
-             GetSortedPlaylistTracksFamily._allTransitiveDependencies,
-         parent: parent,
-         genreFilter: genreFilter,
-       );
+    BaseItemDto parent,
+    SortAndFilterConfiguration sortConfig,
+  ) : this._internal(
+        (ref) => getSortedPlaylistTracks(
+          ref as GetSortedPlaylistTracksRef,
+          parent,
+          sortConfig,
+        ),
+        from: getSortedPlaylistTracksProvider,
+        name: r'getSortedPlaylistTracksProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$getSortedPlaylistTracksHash,
+        dependencies: GetSortedPlaylistTracksFamily._dependencies,
+        allTransitiveDependencies:
+            GetSortedPlaylistTracksFamily._allTransitiveDependencies,
+        parent: parent,
+        sortConfig: sortConfig,
+      );
 
   GetSortedPlaylistTracksProvider._internal(
     super._createNotifier, {
@@ -240,11 +375,11 @@ class GetSortedPlaylistTracksProvider
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.parent,
-    required this.genreFilter,
+    required this.sortConfig,
   }) : super.internal();
 
   final BaseItemDto parent;
-  final BaseItemDto? genreFilter;
+  final SortAndFilterConfiguration sortConfig;
 
   @override
   Override overrideWith(
@@ -263,7 +398,7 @@ class GetSortedPlaylistTracksProvider
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         parent: parent,
-        genreFilter: genreFilter,
+        sortConfig: sortConfig,
       ),
     );
   }
@@ -278,14 +413,14 @@ class GetSortedPlaylistTracksProvider
   bool operator ==(Object other) {
     return other is GetSortedPlaylistTracksProvider &&
         other.parent == parent &&
-        other.genreFilter == genreFilter;
+        other.sortConfig == sortConfig;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, parent.hashCode);
-    hash = _SystemHash.combine(hash, genreFilter.hashCode);
+    hash = _SystemHash.combine(hash, sortConfig.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -298,8 +433,8 @@ mixin GetSortedPlaylistTracksRef
   /// The parameter `parent` of this provider.
   BaseItemDto get parent;
 
-  /// The parameter `genreFilter` of this provider.
-  BaseItemDto? get genreFilter;
+  /// The parameter `sortConfig` of this provider.
+  SortAndFilterConfiguration get sortConfig;
 }
 
 class _GetSortedPlaylistTracksProviderElement
@@ -311,8 +446,8 @@ class _GetSortedPlaylistTracksProviderElement
   @override
   BaseItemDto get parent => (origin as GetSortedPlaylistTracksProvider).parent;
   @override
-  BaseItemDto? get genreFilter =>
-      (origin as GetSortedPlaylistTracksProvider).genreFilter;
+  SortAndFilterConfiguration get sortConfig =>
+      (origin as GetSortedPlaylistTracksProvider).sortConfig;
 }
 
 // ignore_for_file: type=lint

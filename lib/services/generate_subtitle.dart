@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 
 import '../models/jellyfin_models.dart';
 import 'process_artist.dart';
@@ -11,11 +11,11 @@ import 'process_artist.dart';
 String? generateSubtitle({
   required BuildContext context,
   required BaseItemDto item,
-  String? parentType,
+  ContentType? parentType,
   ArtistType? artistType,
 }) {
   // If the parentType is MusicArtist, this is being called by an ItemCollectionListTile in an AlbumView of an artist.
-  if (parentType == "MusicArtist") {
+  if (parentType?.isArtist ?? false) {
     return ReleaseDateHelper.autoFormat(item);
   }
 
@@ -28,6 +28,8 @@ String? generateSubtitle({
           : processArtist(item.albumArtist, context);
     case BaseItemDtoType.playlist:
       return AppLocalizations.of(context)!.trackCount(item.childCount!);
+    case BaseItemDtoType.track:
+      return item.artistItems?.map((e) => processArtist(e.name, context)).join(", ");
     // case BaseItemDtoType.genre:
     // Currently, for each album Jellyfin only increases the childCount of ONE album-artist
     // If there are multiple, we get incorrect childCounts on those (and if they only have albums

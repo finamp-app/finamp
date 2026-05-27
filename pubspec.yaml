@@ -79,7 +79,7 @@ dependencies:
   permission_handler: ^12.0.0
   provider: ^6.0.5
   uuid: ^4.5.1
-  infinite_scroll_pagination: ^4.0.0
+  infinite_scroll_pagination: ^5.0.0
   flutter_sticky_header: ^0.8.0
   # TODO: switch to regular `flutter_user_certificates_android` when this PR is
   # merged:

@@ -12,7 +12,7 @@ part of 'finamp_settings_helper.dart';
 // **************************************************************************
 
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, unused_element
 
 /// Generated setters for all finampSettings.  Must be directly accessed until
 /// static extension methods are added to dart
@@ -52,7 +52,7 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setShowTabs(TabContentType tabContentType, bool newValue) {
+  static void setShowTabs(ContentType tabContentType, bool newValue) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     try {
       finampSettingsTemp.showTabs[tabContentType] = newValue;
@@ -90,28 +90,6 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setContentGridViewCrossAxisCountPortrait(
-    int newContentGridViewCrossAxisCountPortrait,
-  ) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.contentGridViewCrossAxisCountPortrait =
-        newContentGridViewCrossAxisCountPortrait;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setContentGridViewCrossAxisCountLandscape(
-    int newContentGridViewCrossAxisCountLandscape,
-  ) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.contentGridViewCrossAxisCountLandscape =
-        newContentGridViewCrossAxisCountLandscape;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
   static void setShowTextOnGridView(bool newShowTextOnGridView) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showTextOnGridView = newShowTextOnGridView;
@@ -144,7 +122,7 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setTabSortBy(TabContentType tabContentType, SortBy newValue) {
+  static void setTabSortBy(ContentType tabContentType, SortBy newValue) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     try {
       finampSettingsTemp.tabSortBy[tabContentType] = newValue;
@@ -158,10 +136,7 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setTabSortOrder(
-    TabContentType tabContentType,
-    SortOrder newValue,
-  ) {
+  static void setTabSortOrder(ContentType tabContentType, SortOrder newValue) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     try {
       finampSettingsTemp.tabSortOrder[tabContentType] = newValue;
@@ -177,7 +152,7 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setTabOrder(List<TabContentType> newTabOrder) {
+  static void setTabOrder(List<ContentType> newTabOrder) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     if (finampSettingsTemp.tabOrder == newTabOrder) {
       newTabOrder = newTabOrder.toList();
@@ -463,22 +438,6 @@ extension FinampSetters on FinampSettingsHelper {
   static void setDefaultDownloadLocation(String? newDefaultDownloadLocation) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.defaultDownloadLocation = newDefaultDownloadLocation;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setUseFixedSizeGridTiles(bool newUseFixedSizeGridTiles) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.useFixedSizeGridTiles = newUseFixedSizeGridTiles;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setFixedGridTileSize(int newFixedGridTileSize) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.fixedGridTileSize = newFixedGridTileSize;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -987,22 +946,6 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setPlaylistTracksSortBy(SortBy newPlaylistTracksSortBy) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.playlistTracksSortBy = newPlaylistTracksSortBy;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setPlaylistTracksSortOrder(SortOrder newPlaylistTracksSortOrder) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.playlistTracksSortOrder = newPlaylistTracksSortOrder;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
   static void setGenreFilterPlaylists(bool newGenreFilterPlaylists) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.genreFilterPlaylists = newGenreFilterPlaylists;
@@ -1063,7 +1006,7 @@ extension FinampSetters on FinampSettingsHelper {
   }
 
   static void setTileAdditionalInfoType(
-    TabContentType tabContentType,
+    ContentType tabContentType,
     TileAdditionalInfoType newValue,
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
@@ -1116,9 +1059,9 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setPreviousTracksExpaned(bool newPreviousTracksExpaned) {
+  static void setPreviousTracksExpanded(bool newPreviousTracksExpanded) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.previousTracksExpaned = newPreviousTracksExpaned;
+    finampSettingsTemp.previousTracksExpanded = newPreviousTracksExpanded;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -1289,6 +1232,24 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setHomeScreenConfiguration(
+    FinampHomeScreenConfiguration newHomeScreenConfiguration,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.homeScreenConfiguration = newHomeScreenConfiguration;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setGridImageSize(int newGridImageSize) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.gridImageSize = newGridImageSize;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setAmoledTheme(bool newAmoledTheme) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.amoledTheme = newAmoledTheme;
@@ -1328,7 +1289,7 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.androidStopForegroundOnPause,
       );
-  ProviderListenable<bool?> showTabs(TabContentType tabContentType) =>
+  ProviderListenable<bool?> showTabs(ContentType tabContentType) =>
       finampSettingsProvider.select(
         (value) => value.requireValue.showTabs[tabContentType],
       );
@@ -1340,14 +1301,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.contentViewType,
       );
-  ProviderListenable<int> get contentGridViewCrossAxisCountPortrait =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.contentGridViewCrossAxisCountPortrait,
-      );
-  ProviderListenable<int> get contentGridViewCrossAxisCountLandscape =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.contentGridViewCrossAxisCountLandscape,
-      );
   ProviderListenable<bool> get showTextOnGridView => finampSettingsProvider
       .select((value) => value.requireValue.showTextOnGridView);
   ProviderListenable<bool> get useCoverAsBackground => finampSettingsProvider
@@ -1357,15 +1310,15 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ProviderListenable<bool> get disableGesture => finampSettingsProvider.select(
     (value) => value.requireValue.disableGesture,
   );
-  ProviderListenable<SortBy?> tabSortBy(TabContentType tabContentType) =>
+  ProviderListenable<SortBy?> tabSortBy(ContentType tabContentType) =>
       finampSettingsProvider.select(
         (value) => value.requireValue.tabSortBy[tabContentType],
       );
-  ProviderListenable<SortOrder?> tabSortOrder(TabContentType tabContentType) =>
+  ProviderListenable<SortOrder?> tabSortOrder(ContentType tabContentType) =>
       finampSettingsProvider.select(
         (value) => value.requireValue.tabSortOrder[tabContentType],
       );
-  ProviderListenable<List<TabContentType>> get tabOrder =>
+  ProviderListenable<List<ContentType>> get tabOrder =>
       finampSettingsProvider.select((value) => value.requireValue.tabOrder);
   ProviderListenable<bool> get showFastScroller => finampSettingsProvider
       .select((value) => value.requireValue.showFastScroller);
@@ -1466,10 +1419,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.defaultDownloadLocation,
       );
-  ProviderListenable<bool> get useFixedSizeGridTiles => finampSettingsProvider
-      .select((value) => value.requireValue.useFixedSizeGridTiles);
-  ProviderListenable<int> get fixedGridTileSize => finampSettingsProvider
-      .select((value) => value.requireValue.fixedGridTileSize);
   ProviderListenable<bool> get allowSplitScreen => finampSettingsProvider
       .select((value) => value.requireValue.allowSplitScreen);
   ProviderListenable<double> get splitScreenPlayerWidth =>
@@ -1651,12 +1600,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.autoSwitchItemCurationType,
       );
-  ProviderListenable<SortBy> get playlistTracksSortBy => finampSettingsProvider
-      .select((value) => value.requireValue.playlistTracksSortBy);
-  ProviderListenable<SortOrder> get playlistTracksSortOrder =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.playlistTracksSortOrder,
-      );
   ProviderListenable<bool> get genreFilterPlaylists => finampSettingsProvider
       .select((value) => value.requireValue.genreFilterPlaylists);
   ProviderListenable<SleepTimer?> get sleepTimer =>
@@ -1677,7 +1620,7 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
         (value) => value.requireValue.hasCompletedDownloadsFileOwnerMigration,
       );
   ProviderListenable<TileAdditionalInfoType?> tileAdditionalInfoType(
-    TabContentType tabContentType,
+    ContentType tabContentType,
   ) => finampSettingsProvider.select(
     (value) => value.requireValue.tileAdditionalInfoType[tabContentType],
   );
@@ -1691,8 +1634,8 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.preferAddingToFavoritesOverPlaylists,
       );
-  ProviderListenable<bool> get previousTracksExpaned => finampSettingsProvider
-      .select((value) => value.requireValue.previousTracksExpaned);
+  ProviderListenable<bool> get previousTracksExpanded => finampSettingsProvider
+      .select((value) => value.requireValue.previousTracksExpanded);
   ProviderListenable<bool> get autoplayRestoredQueue => finampSettingsProvider
       .select((value) => value.requireValue.autoplayRestoredQueue);
   ProviderListenable<bool> get preferNextUpPrepending => finampSettingsProvider
@@ -1743,6 +1686,13 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ProviderListenable<PreviousTracksPersistenceMode>
   get previousTracksPersistenceMode => finampSettingsProvider.select(
     (value) => value.requireValue.previousTracksPersistenceMode,
+  );
+  ProviderListenable<FinampHomeScreenConfiguration>
+  get homeScreenConfiguration => finampSettingsProvider.select(
+    (value) => value.requireValue.homeScreenConfiguration,
+  );
+  ProviderListenable<int> get gridImageSize => finampSettingsProvider.select(
+    (value) => value.requireValue.gridImageSize,
   );
   ProviderListenable<bool> get amoledTheme =>
       finampSettingsProvider.select((value) => value.requireValue.amoledTheme);

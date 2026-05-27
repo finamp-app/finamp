@@ -9,6 +9,7 @@ import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/album_screen.dart';
 import 'package:finamp/screens/artist_screen.dart';
 import 'package:finamp/screens/genre_screen.dart';
@@ -17,49 +18,83 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
+import '../../components/finamp_icon.dart';
+import '../../extensions/localizations.dart';
+import '../../services/finamp_settings_helper.dart';
+
 const double infoHeaderFullExtent = 162.0;
 const double infoHeaderFullInternalHeight = 140.0;
 const double infoHeaderCondensedInternalHeight = 80.0;
 
 Widget _getMenuHeaderForItemType({
-  required PlayableItem item,
+  required FinampDisplayableOrPlayable item,
   required bool condensed,
   required List<MenuItemInfoHeaderFeatures> features,
+  required BuildContext context,
 }) {
   return switch (item) {
     AlbumDisc() => AlbumInfo(item: item, condensed: condensed, features: features),
-    BaseItemDto() => switch (BaseItemDtoType.fromItem(item)) {
-      BaseItemDtoType.track => TrackInfo(item: item, condensed: condensed, features: features),
+    FinampPlayableDto(item: final baseItem) => switch (BaseItemDtoType.fromItem(baseItem)) {
+      BaseItemDtoType.track => TrackInfo(item: baseItem, condensed: condensed, features: features),
       BaseItemDtoType.album => AlbumInfo(item: item, condensed: condensed, features: features),
-      BaseItemDtoType.playlist => PlaylistInfo(item: item, condensed: condensed, features: features),
-      BaseItemDtoType.genre => GenreInfo(item: item, condensed: condensed, features: features),
-      BaseItemDtoType.artist => ArtistInfo(item: item, condensed: condensed, features: features),
-      _ => TrackInfo(item: item, condensed: condensed, features: features),
+      BaseItemDtoType.playlist => PlaylistInfo(item: baseItem, condensed: condensed, features: features),
+      BaseItemDtoType.genre => GenreInfo(item: baseItem, condensed: condensed, features: features),
+      BaseItemDtoType.artist => ArtistInfo(item: baseItem, condensed: condensed, features: features),
+      _ => TrackInfo(item: baseItem, condensed: condensed, features: features),
     },
+    MusicScreenPlayable(sortConfig: final config, library: final library, tab: final content) => HomeSectionInfo(
+      config: HomeScreenSectionConfiguration(
+        base: TabsHomeSection(libraryId: library, contentType: content),
+        sortConfig: config,
+        customSectionTitle: item.source.name.getLocalized(context.l10n),
+      ),
+    ),
+    LatestQueues() => HomeSectionInfo(
+      config: HomeScreenSectionConfiguration(
+        base: QueuesHomeSection(),
+        sortConfig: SortAndFilterConfiguration.defaultSort,
+        customSectionTitle: item.source.name.getLocalized(context.l10n),
+      ),
+    ),
+    _ => throw UnsupportedError("Cannot show menu header for $item"),
   };
 }
 
-enum MenuItemInfoHeaderFeatures { openItem, addToPlaylistAndFavorite }
+enum MenuItemInfoHeaderFeatures { artwork, openItem, addToPlaylistAndFavorite }
 
 class MenuItemInfoSliverHeader extends SliverPersistentHeaderDelegate {
-  final PlayableItem item;
+  final FinampDisplayableOrPlayable item;
   final bool condensed;
   final List<MenuItemInfoHeaderFeatures> features;
 
   MenuItemInfoSliverHeader({
     required this.item,
-    this.features = const [MenuItemInfoHeaderFeatures.openItem, MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite],
+    this.features = const [
+      MenuItemInfoHeaderFeatures.artwork,
+      MenuItemInfoHeaderFeatures.openItem,
+      MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite,
+    ],
   }) : condensed = false;
 
-  MenuItemInfoSliverHeader.condensed({required this.item, this.features = const [MenuItemInfoHeaderFeatures.openItem]})
-    : condensed = true;
+  MenuItemInfoSliverHeader.condensed({
+    required this.item,
+    this.features = const [MenuItemInfoHeaderFeatures.artwork, MenuItemInfoHeaderFeatures.openItem],
+  }) : condensed = true;
+
+  MenuItemInfoSliverHeader.noArtwork({required this.item, this.features = const [MenuItemInfoHeaderFeatures.openItem]})
+    : condensed = false;
+
+  MenuItemInfoSliverHeader.condensedNoArtwork({
+    required this.item,
+    this.features = const [MenuItemInfoHeaderFeatures.openItem],
+  }) : condensed = true;
 
   static const MenuMaskHeight defaultHeight = MenuMaskHeight(151.0);
   static const MenuMaskHeight condensedHeight = MenuMaskHeight(80.0);
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return _getMenuHeaderForItemType(item: item, condensed: condensed, features: features);
+    return _getMenuHeaderForItemType(item: item, condensed: condensed, features: features, context: context);
   }
 
   @override
@@ -73,24 +108,44 @@ class MenuItemInfoSliverHeader extends SliverPersistentHeaderDelegate {
 }
 
 class MenuItemInfoHeader extends ConsumerWidget {
-  final BaseItemDto item;
+  final FinampDisplayableOrPlayable item;
   final bool condensed;
   final List<MenuItemInfoHeaderFeatures> features;
 
   const MenuItemInfoHeader({
+    super.key,
     required this.item,
-    this.features = const [MenuItemInfoHeaderFeatures.openItem, MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite],
+    this.features = const [
+      MenuItemInfoHeaderFeatures.artwork,
+      MenuItemInfoHeaderFeatures.openItem,
+      MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite,
+    ],
   }) : condensed = false;
 
-  const MenuItemInfoHeader.condensed({required this.item, this.features = const [MenuItemInfoHeaderFeatures.openItem]})
-    : condensed = true;
+  const MenuItemInfoHeader.condensed({
+    super.key,
+    required this.item,
+    this.features = const [MenuItemInfoHeaderFeatures.artwork, MenuItemInfoHeaderFeatures.openItem],
+  }) : condensed = true;
+
+  const MenuItemInfoHeader.noArtwork({
+    super.key,
+    required this.item,
+    this.features = const [MenuItemInfoHeaderFeatures.openItem],
+  }) : condensed = false;
+
+  const MenuItemInfoHeader.condensedNoArtwork({
+    super.key,
+    required this.item,
+    this.features = const [MenuItemInfoHeaderFeatures.openItem],
+  }) : condensed = true;
 
   static const MenuMaskHeight defaultHeight = MenuMaskHeight(152.0);
   static const MenuMaskHeight condensedHeight = MenuMaskHeight(35.0);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return _getMenuHeaderForItemType(item: item, condensed: condensed, features: features);
+    return _getMenuHeaderForItemType(item: item, condensed: condensed, features: features, context: context);
   }
 }
 
@@ -152,7 +207,7 @@ class TrackInfo extends ConsumerWidget {
 class AlbumInfo extends ConsumerWidget {
   const AlbumInfo({super.key, required this.item, required this.condensed, required this.features});
 
-  final PlayableItem item;
+  final FinampDisplayableOrPlayable item;
   final bool condensed;
   final List<MenuItemInfoHeaderFeatures> features;
 
@@ -164,14 +219,16 @@ class AlbumInfo extends ConsumerWidget {
 
     switch (item) {
       case AlbumDisc():
-        baseItem = item.parent;
+        baseItem = item.item;
         title = AppLocalizations.of(context)!.discOfAlbum(
           item.tracks.first.parentIndexNumber!,
           baseItem.name ?? AppLocalizations.of(context)!.unknownName,
         );
-      case BaseItemDto():
-        baseItem = item;
+      case Album():
+        baseItem = item.item;
         title = baseItem.name ?? AppLocalizations.of(context)!.unknownName;
+      case _:
+        throw UnsupportedError("Unexpected type $item in album info header");
     }
 
     return ItemInfo(
@@ -196,6 +253,7 @@ class AlbumInfo extends ConsumerWidget {
         Padding(
           padding: condensed ? const EdgeInsets.only(top: 6.0) : const EdgeInsets.symmetric(vertical: 0.0),
           child: ArtistChips(
+            artistType: ArtistType.albumArtist, // show only album artist for albums
             baseItem: baseItem,
             backgroundColor:
                 IconTheme.of(context).color?.withOpacity(0.1) ??
@@ -337,7 +395,7 @@ class GenreInfo extends ConsumerWidget {
   }
 }
 
-class ItemInfo extends ConsumerStatefulWidget {
+class ItemInfo extends StatelessWidget {
   const ItemInfo({
     super.key,
     required this.item,
@@ -356,29 +414,24 @@ class ItemInfo extends ConsumerStatefulWidget {
   final List<MenuItemInfoHeaderFeatures> features;
 
   @override
-  ConsumerState createState() => _ItemInfoState();
-}
-
-class _ItemInfoState extends ConsumerState<ItemInfo> {
-  @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
       child: Center(
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: widget.condensed ? 28.0 : 12.0),
-          height: widget.condensed ? infoHeaderCondensedInternalHeight : infoHeaderFullInternalHeight,
+          margin: EdgeInsets.symmetric(horizontal: condensed ? 28.0 : 12.0),
+          height: condensed ? infoHeaderCondensedInternalHeight : infoHeaderFullInternalHeight,
           clipBehavior: Clip.antiAlias,
           decoration: ShapeDecoration(
             color: Theme.brightnessOf(context) == Brightness.dark
                 ? Colors.black.withOpacity(0.25)
                 : Colors.white.withOpacity(0.15),
-            shape: widget.shape,
+            shape: shape,
           ),
           child: Stack(
             children: [
-              if (BaseItemDtoType.fromItem(widget.item) != BaseItemDtoType.track &&
-                  widget.features.contains(MenuItemInfoHeaderFeatures.openItem))
+              if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.track &&
+                  features.contains(MenuItemInfoHeaderFeatures.openItem))
                 Positioned(
                   top: 0,
                   right: 0,
@@ -387,26 +440,26 @@ class _ItemInfoState extends ConsumerState<ItemInfo> {
                     padding: const EdgeInsets.all(0.0),
                     visualDensity: VisualDensity(horizontal: -2.0, vertical: -3.0),
                     onPressed: () {
-                      if (BaseItemDtoType.fromItem(widget.item) == BaseItemDtoType.track) {
+                      if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.track) {
                         return;
                       }
-                      Navigator.pushNamed(context, switch (BaseItemDtoType.fromItem(widget.item)) {
+                      Navigator.pushNamed(context, switch (BaseItemDtoType.fromItem(item)) {
                         BaseItemDtoType.album => AlbumScreen.routeName,
                         BaseItemDtoType.playlist => AlbumScreen.routeName,
                         BaseItemDtoType.genre => GenreScreen.routeName,
                         BaseItemDtoType.artist => ArtistScreen.routeName,
                         _ => AlbumScreen.routeName,
-                      }, arguments: widget.item);
+                      }, arguments: item);
                     },
                     color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
                   ),
                 ),
-              if (widget.features.contains(MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite))
+              if (features.contains(MenuItemInfoHeaderFeatures.addToPlaylistAndFavorite))
                 Positioned(
                   bottom: 0,
                   right: 0,
                   child: AddToPlaylistButton(
-                    item: widget.item,
+                    item: item,
                     size: 20,
                     visualDensity: VisualDensity(horizontal: -4.0, vertical: -3.0),
                   ),
@@ -414,7 +467,8 @@ class _ItemInfoState extends ConsumerState<ItemInfo> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AspectRatio(aspectRatio: 1.0, child: widget.featureImage),
+                  if (features.contains(MenuItemInfoHeaderFeatures.artwork))
+                    AspectRatio(aspectRatio: 1.0, child: featureImage),
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.only(left: 8.0, right: 26.0),
@@ -422,11 +476,101 @@ class _ItemInfoState extends ConsumerState<ItemInfo> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
-                        children: widget.infoRows,
+                        children: infoRows,
                       ),
                     ),
                   ),
                 ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HomeSectionInfo extends ConsumerWidget {
+  const HomeSectionInfo({super.key, required this.config, this.item});
+
+  final HomeScreenSectionConfiguration config;
+  final BaseItemDto? item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Widget image;
+    if (item != null && config.base is CollectionHomeSection) {
+      image = AlbumImage(item: item, borderRadius: BorderRadius.zero, tapToZoom: true);
+    } else {
+      image = Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: ColorScheme.of(context).primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: FinampIcon(
+          70,
+          70,
+          overrideColor: ref.watch(finampSettingsProvider.isOffline)
+              ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
+              : null,
+        ),
+      );
+    }
+
+    return Container(
+      color: Colors.transparent,
+      child: Center(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 12.0),
+          height: infoHeaderFullInternalHeight,
+          clipBehavior: Clip.antiAlias,
+          decoration: ShapeDecoration(
+            color: Theme.brightnessOf(context) == Brightness.dark
+                ? Colors.black.withOpacity(0.25)
+                : Colors.white.withOpacity(0.15),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          padding: config.base is CollectionHomeSection ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 6.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (config.base is CollectionHomeSection) AspectRatio(aspectRatio: 1.0, child: image),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 26.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        config.getTitle(context.l10n),
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 18,
+                          height: 1.2,
+                          color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                        maxLines: 2,
+                      ),
+                      IconAndText(
+                        iconData: config.sortConfig.sortOrder == SortOrder.ascending
+                            ? TablerIcons.sort_ascending
+                            : TablerIcons.sort_descending,
+                        textSpan: TextSpan(text: config.sortConfig.sortBy.toLocalisedString(context.l10n)),
+                      ),
+                      ...config.sortConfig.filters.map(
+                        (filter) => IconAndText(
+                          iconData: TablerIcons.filter,
+                          textSpan: TextSpan(text: filter.getName(context.l10n)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

@@ -6,6 +6,7 @@ import 'package:finamp/services/discord_rpc.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/playon_service.dart';
 import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/utils/platform_helper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
@@ -55,18 +56,33 @@ class PlaybackHistoryService {
 
     bool throttleRemoteSessionReporting = false;
 
+    void onPlaybackStopped() {
+      _playbackHistoryServiceLogger.info("Handling playback stop event");
+      reportPlaybackStopped();
+      // stop periodic background updates if playback has ended
+      _periodicUpdateTimer?.cancel();
+      if (isDesktop) {
+        WindowManager.instance.setTitle("Finamp");
+      }
+      return;
+    }
+
+    _queueService.getQueueStream().listen((queueInfo) {
+      if (queueInfo?.currentTrack == null && _currentTrack != null) {
+        // playback stopped
+        onPlaybackStopped();
+      }
+    });
+
     _audioService.playbackState.listen((event) {
       final prevState = _previousPlaybackState;
       final prevItem = _currentTrack?.item;
       final currentState = event;
       final currentIndex = currentState.queueIndex;
       try {
-        if (event.processingState == AudioProcessingState.completed) {
-          _playbackHistoryServiceLogger.info("Handling playback stop event");
-          reportPlaybackStopped();
-          // stop periodic background updates if playback has ended
-          _periodicUpdateTimer?.cancel();
-          return;
+        if (event.processingState == AudioProcessingState.completed &&
+            prevState?.processingState != event.processingState) {
+          onPlaybackStopped();
         }
 
         if (_playOnService.isControlled && !throttleRemoteSessionReporting) {
@@ -75,7 +91,7 @@ class PlaybackHistoryService {
           Future.delayed(Duration(seconds: 1), () {
             throttleRemoteSessionReporting = false;
           });
-          // If the session is being remote controlled, report playback agressively
+          // If the session is being remote controlled, report playback aggressively
           _updatePlaybackInfo();
           return;
         }
@@ -84,11 +100,17 @@ class PlaybackHistoryService {
         if (currentIndex is! int ||
             currentIndex < 0 ||
             currentIndex >= _audioService.sequenceState.effectiveSequence.length) {
+          if (isDesktop) {
+            WindowManager.instance.setTitle("Finamp");
+          }
           return;
         }
         if (_audioService.sequenceState.effectiveSequence[currentIndex].tag case FinampQueueItem item) {
           currentItem = item;
         } else {
+          if (isDesktop) {
+            WindowManager.instance.setTitle("Finamp");
+          }
           return;
         }
         if (currentItem.id != prevItem?.id) {

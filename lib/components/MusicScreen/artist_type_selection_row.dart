@@ -1,16 +1,15 @@
 import 'dart:io';
 
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/finamp_models.dart';
-import '../../services/finamp_settings_helper.dart';
-
 class ArtistTypeSelectionRow extends StatelessWidget {
-  final TabContentType tabType;
+  final ContentType tabType;
   final ArtistType defaultArtistType;
-  final void Function(TabContentType) refreshTab;
+  final void Function(ContentType) refreshTab;
   final BaseItemDto? artistFilter;
 
   const ArtistTypeSelectionRow({
@@ -23,9 +22,9 @@ class ArtistTypeSelectionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArtistTrackList = tabType == TabContentType.tracks && artistFilter != null;
+    final isArtistTrackList = tabType == ContentType.tracks && artistFilter != null;
 
-    if (tabType == TabContentType.artists || isArtistTrackList) {
+    if (tabType == ContentType.genericArtists || isArtistTrackList) {
       double screenWidth = MediaQuery.widthOf(context);
       bool alignLeft = screenWidth > 600;
 

@@ -8,7 +8,6 @@ import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/http_aggregate_logging_interceptor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' show MultipartFile;
 import 'package:http/io_client.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -71,6 +70,10 @@ abstract class JellyfinApi extends ChopperService {
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
   @GET(path: "/Users/Me")
   Future<dynamic> getUser();
+
+  @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
+  @GET(path: "/Users/{id}")
+  Future<dynamic> getUserById(@Path() String id);
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
   @Get(path: "/Users/{id}/Views")
