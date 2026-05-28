@@ -69,6 +69,7 @@ class HomeScreenWidget {
 
   static void reloadWidget() {
     HomeWidget.updateWidget(qualifiedAndroidName: "com.unicornsonlsd.finamp.widget.receiver.CircularWidgetReceiver");
+    HomeWidget.updateWidget(qualifiedAndroidName: "com.unicornsonlsd.finamp.widget.receiver.RectangularWidgetReceiver");
   }
 
   static Future<void> saveFavorite() async {
