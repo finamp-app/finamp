@@ -81,7 +81,6 @@ class RectangularWidget : GlanceAppWidget() {
         // Two thirds for now playing info
         val imageSize = buttonGridSize * 2
 
-        Log.i(HOME_WIDGET_LOG_TAG, size.height.toString() + " " + size.width.toString())
         Box(
             modifier = GlanceModifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
@@ -93,15 +92,19 @@ class RectangularWidget : GlanceAppWidget() {
                 // Now Playing Info
                 Row(
                     modifier = GlanceModifier
-                    .background(GlanceTheme.colors.secondary)
+                    .background(GlanceTheme.colors.inversePrimary)
                     .fillMaxWidth()
                     .height(imageSize)
+                    .clickable(onClick = actionStartActivity<MainActivity>(
+                        context, Uri.parse("finamp://"))
+                    ),
                 ) {
                     AlbumArt(context, currentState, GlanceModifier
                         .size(imageSize)
                         .cornerRadius(15.dp)
                         .padding(10.dp)
                     )
+                    NowPlayingText(currentState)
                 }
 
                 // This spacer takes all the space not used by the left/right rows
@@ -120,11 +123,7 @@ class RectangularWidget : GlanceAppWidget() {
                         RepeatButton(currentState)
                     }
                     PreviousButton()
-                    PlayPauseButton(
-                        currentState,
-                        backgroundColor = GlanceTheme.colors.widgetBackground,
-                        contentColor = GlanceTheme.colors.primary
-                    )
+                    PlayPauseButton(currentState)
                     NextButton()
                     if (size.width > 300.dp) {
                         ShuffleButton(currentState)
