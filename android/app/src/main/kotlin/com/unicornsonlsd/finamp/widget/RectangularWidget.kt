@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.DpSize
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.action.ActionParameters
@@ -35,7 +36,9 @@ import androidx.glance.Button
 import androidx.glance.LocalSize
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.fillMaxHeight
 import androidx.glance.layout.width
+import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -63,45 +66,70 @@ class RectangularWidget : GlanceAppWidget() {
       get() = HomeWidgetGlanceStateDefinition()
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-      provideContent {
-        GlanceContent(context, currentState())
-      }
+        provideContent {
+            GlanceTheme {
+              GlanceContent(context, currentState())
+            }
+        }
     }
 
     @Composable
     private fun GlanceContent(context: Context, currentState: HomeWidgetGlanceState) {
         val size = LocalSize.current
-        // Scale the image to the shortest dimension
-        val imageSize = if (size.width > size.height) size.height else size.width
-        var buttonGridSize = imageSize
+        // One third of the verical space for media controls
+        var buttonGridSize = size.height / 3
+        // Two thirds for now playing info
+        val imageSize = buttonGridSize * 2
 
-        // prefs holds the data sent from Flutter
-        val prefs = currentState.preferences
-        val playing = prefs.getBoolean("playing", true)
-
-        val favorited = prefs.getBoolean("favorited", false)
-        val favIcon = if (favorited) R.drawable.favorite_filled_20px else R.drawable.favorite_20px
-
-        val imagePath = prefs.getString("albumArt", null)
-        val bitmap = imagePath?.takeIf { File(it).isFile }?.let { path -> BitmapFactory.decodeFile(path) }
-
+        Log.i(HOME_WIDGET_LOG_TAG, size.height.toString() + " " + size.width.toString())
         Box(
             modifier = GlanceModifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            if (bitmap != null) {
-                Image(
-                    provider = ImageProvider(bitmap),
-                    contentDescription = "album art", // maybe put album name
-                    contentScale = ContentScale.Fit, // Fit uses all space while maintaining aspect ratio
+            Column(
+                verticalAlignment = Alignment.Top,
+                modifier = GlanceModifier.fillMaxSize(),
+            ) {
+                // Now Playing Info
+                Row(
                     modifier = GlanceModifier
-                    .size(imageSize) // Scales the image to the space available
-                    .cornerRadius(imageSize/2) // Shapes the image into a circle
-                    // opens the app when clicked
-                    .clickable(onClick = actionStartActivity<MainActivity>(
-                        context, Uri.parse("finamp://"))
-                    ),
-                )
+                    .background(GlanceTheme.colors.secondary)
+                    .fillMaxWidth()
+                    .height(imageSize)
+                ) {
+                    AlbumArt(context, currentState, GlanceModifier
+                        .size(imageSize)
+                        .cornerRadius(15.dp)
+                        .padding(10.dp)
+                    )
+                }
+
+                // This spacer takes all the space not used by the left/right rows
+                Spacer(modifier = GlanceModifier.defaultWeight())
+
+                // Media Controls
+                Row(
+                    modifier = GlanceModifier
+                    .background(GlanceTheme.colors.widgetBackground)
+                    .fillMaxWidth()
+                    .height(buttonGridSize),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (size.width > 300.dp) {
+                        RepeatButton(currentState)
+                    }
+                    PreviousButton()
+                    PlayPauseButton(
+                        currentState,
+                        backgroundColor = GlanceTheme.colors.widgetBackground,
+                        contentColor = GlanceTheme.colors.primary
+                    )
+                    NextButton()
+                    if (size.width > 300.dp) {
+                        ShuffleButton(currentState)
+                    }
+                }
             }
         }
     }
