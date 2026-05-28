@@ -20,7 +20,7 @@ import androidx.glance.layout.ContentScale
 import es.antonborri.home_widget.actionStartActivity
 import es.antonborri.home_widget.HomeWidgetGlanceState
 import com.unicornsonlsd.finamp.MainActivity
-import com.unicornsonlsd.finamp.widget.PlayerAction
+import com.unicornsonlsd.finamp.widget.MediaControls
 
 import com.unicornsonlsd.finamp.R
 
@@ -32,16 +32,16 @@ fun PlayPauseButton(
 ) {
     var imageProvider = ImageProvider(R.drawable.play_arrow_24px)
     var contentDescription = "play"
-    var onClick = actionRunCallback<PlayerAction>(
-        actionParametersOf(PlayerAction.KEY to PlayerAction.PLAY)
+    var onClick = actionRunCallback<MediaControls>(
+        actionParametersOf(MediaControls.KEY to MediaControls.PLAY)
     )
 
     val playing = state.preferences.getBoolean("playing", false)
     if (playing) {
         imageProvider = ImageProvider(R.drawable.pause_24px)
         contentDescription = "pause"
-        onClick = actionRunCallback<PlayerAction>(
-            actionParametersOf(PlayerAction.KEY to PlayerAction.PAUSE)
+        onClick = actionRunCallback<MediaControls>(
+            actionParametersOf(MediaControls.KEY to MediaControls.PAUSE)
         )
     }
     SquareIconButton(
@@ -63,8 +63,8 @@ fun NextButton(
         backgroundColor = backgroundColor,
         contentColor = contentColor,
         contentDescription = "skip next",
-        onClick = actionRunCallback<PlayerAction>(
-            actionParametersOf(PlayerAction.KEY to PlayerAction.NEXT)
+        onClick = actionRunCallback<MediaControls>(
+            actionParametersOf(MediaControls.KEY to MediaControls.NEXT)
         ),
     )
 }
@@ -79,8 +79,8 @@ fun PreviousButton(
         backgroundColor = backgroundColor,
         contentColor = contentColor,
         contentDescription = "skip back",
-        onClick = actionRunCallback<PlayerAction>(
-            actionParametersOf(PlayerAction.KEY to PlayerAction.PREVIOUS)
+        onClick = actionRunCallback<MediaControls>(
+            actionParametersOf(MediaControls.KEY to MediaControls.PREVIOUS)
         ),
     )
 }
@@ -96,8 +96,8 @@ fun ShuffleButton(
         backgroundColor = backgroundColor,
         contentColor = contentColor,
         contentDescription = "shuffle",
-        onClick = actionRunCallback<PlayerAction>(
-            actionParametersOf(PlayerAction.KEY to PlayerAction.SHUFFLE)
+        onClick = actionRunCallback<MediaControls>(
+            actionParametersOf(MediaControls.KEY to MediaControls.SHUFFLE)
         ),
     )
 }
@@ -113,8 +113,8 @@ fun RepeatButton(
         backgroundColor = backgroundColor,
         contentColor = contentColor,
         contentDescription = "repeat",
-        onClick = actionRunCallback<PlayerAction>(
-            actionParametersOf(PlayerAction.KEY to PlayerAction.REPEAT)
+        onClick = actionRunCallback<MediaControls>(
+            actionParametersOf(MediaControls.KEY to MediaControls.REPEAT)
         ),
     )
 }
@@ -131,8 +131,8 @@ fun FavoriteButton(
     SquareIconButton(
         imageProvider = ImageProvider(favIcon),
         contentDescription = "toggle favorite",
-        onClick = actionRunCallback<PlayerAction>(
-            actionParametersOf(PlayerAction.KEY to PlayerAction.FAVORITE)
+        onClick = actionRunCallback<MediaControls>(
+            actionParametersOf(MediaControls.KEY to MediaControls.FAVORITE)
         ),
     )
 }

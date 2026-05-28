@@ -9,7 +9,7 @@ import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 
 
 
-class PlayerAction : ActionCallback {
+class MediaControls : ActionCallback {
     companion object {
         //val KEY: String = "action"
         val PLAY: String = "play"
