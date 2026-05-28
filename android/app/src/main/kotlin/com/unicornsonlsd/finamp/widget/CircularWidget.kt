@@ -45,7 +45,6 @@ import es.antonborri.home_widget.HomeWidgetGlanceState
 import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
 import es.antonborri.home_widget.actionStartActivity
 import com.unicornsonlsd.finamp.MainActivity
-import com.unicornsonlsd.finamp.widget.PlayerAction
 
 
 class CircularWidget : GlanceAppWidget() {
