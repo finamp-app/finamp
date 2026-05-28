@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.DpSize
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.action.actionParametersOf
@@ -75,7 +76,7 @@ class CircularWidget : GlanceAppWidget() {
 
         // Scale down the button grid so it doesn't sit outside the circle
         if (imageSize > MEDIUM_SQUARE.height) {
-            buttonGridSize = imageSize - (imageSize / 8)
+            buttonGridSize = imageSize - (imageSize / 6)
         }
 
         Box(
@@ -99,7 +100,12 @@ class CircularWidget : GlanceAppWidget() {
                 ) {
                     // Hide the favorite button when too small
                     if (size.height >= MEDIUM_SQUARE.height) {
-                        FavoriteButton(currentState)
+                        FavoriteButton(
+                            currentState,
+                            backgroundColor = GlanceTheme.colors.secondary,
+                            contentColor = GlanceTheme.colors.onSecondary,
+                            modifier = GlanceModifier.size(50.dp)
+                        )
                     }
                 }
 
@@ -111,7 +117,12 @@ class CircularWidget : GlanceAppWidget() {
                     modifier = GlanceModifier.width(buttonGridSize),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    PlayPauseButton(currentState)
+                    PlayPauseButton(
+                        currentState,
+                        backgroundColor = GlanceTheme.colors.primary,
+                        contentColor = GlanceTheme.colors.onPrimary,
+                        modifier = GlanceModifier.size(55.dp)
+                    )
                 }
             }
         }
