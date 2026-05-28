@@ -91,14 +91,23 @@ fun ShuffleButton(
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
+    var imageProvider = ImageProvider(R.drawable.shuffle_24px)
+    var contentDescription = "shuffle on"
+
+    val shuffled = state.preferences.getBoolean("shuffled", false)
+    if (shuffled) {
+        imageProvider = ImageProvider(R.drawable.shuffle_on_24px)
+        contentDescription = "shuffle off"
+    }
+
     SquareIconButton(
-        imageProvider = ImageProvider(R.drawable.shuffle_24px),
+        imageProvider = imageProvider,
         backgroundColor = backgroundColor,
         contentColor = contentColor,
-        contentDescription = "shuffle",
+        contentDescription = contentDescription,
         onClick = actionRunCallback<MediaControls>(
             actionParametersOf(MediaControls.KEY to MediaControls.SHUFFLE)
-        ),
+        )
     )
 }
 
@@ -108,11 +117,23 @@ fun RepeatButton(
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
+    var imageProvider = ImageProvider(R.drawable.repeat_24px)
+    var contentDescription = "repeat off"
+
+    val repeatMode = state.preferences.getString("repeatMode", "")
+    if (repeatMode == "all") {
+        imageProvider = ImageProvider(R.drawable.repeat_all_24px)
+        contentDescription = "repeat all"
+    } else if (repeatMode == "one") {
+        imageProvider = ImageProvider(R.drawable.repeat_one_24px)
+        contentDescription = "repeat single"
+    }
+
     SquareIconButton(
-        imageProvider = ImageProvider(R.drawable.repeat_24px),
+        imageProvider = imageProvider,
         backgroundColor = backgroundColor,
         contentColor = contentColor,
-        contentDescription = "repeat",
+        contentDescription = contentDescription,
         onClick = actionRunCallback<MediaControls>(
             actionParametersOf(MediaControls.KEY to MediaControls.REPEAT)
         ),
