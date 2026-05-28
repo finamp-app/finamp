@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:finamp/services/favorite_provider.dart';
@@ -29,65 +30,59 @@ class HomeScreenWidget {
 
     // receives the command from the widget and excutes the action
     receivePort.listen((message) async {
-      _logger.info("message received: ${message}");
-      // These must match the Strings defined in PlayerAction
+      _logger.info("command from home widget received: ${message}");
+      // These must match the Strings defined in MediaControls
       switch (message) {
         case "skip_previous":
-          await _audioHandler.skipToPrevious();
-          break;
+          return await _audioHandler.skipToPrevious();
         case "skip_next":
-          await _audioHandler.skipToNext();
-          break;
+          return await _audioHandler.skipToNext();
         case "pause":
-          await _audioHandler.pause();
-          break;
+          return await _audioHandler.pause();
         case "play":
-          await _audioHandler.play();
-          break;
+          return await _audioHandler.play();
         case "favorite_toggle":
-          await _audioHandler.toggleFavoriteStatusOfCurrentTrack();
-          await HomeScreenWidget.saveFavorite();
-          break;
+          return await _audioHandler.customAction("toggleFavorite");
+        case "shuffle_toggle":
+          return await _audioHandler.customAction("shuffle");
+        case "repeat_increment":
+          return await _audioHandler.customAction("incrementRepeat");
       }
     });
 
-    // Save the now playing info when the item changes
+    // Update the widget data when there's MediaItem or PlaybackState changed
     _audioHandler.mediaItem.listen((MediaItem? item) {
-      _logger.info("updated to media item ${item}");
-      HomeScreenWidget.saveFavorite();
-      HomeScreenWidget.saveNowPlaying();
+      HomeScreenWidget.updateWidgetData();
       HomeScreenWidget.reloadWidget();
     });
 
     _audioHandler.playbackState.listen((PlaybackState? state) {
-      _logger.info("playbackState changed ${state}");
       // Does this run unnecessarily?
-      HomeWidget.saveWidgetData("playing", state?.playing);
+      HomeScreenWidget.updateWidgetData();
+      HomeScreenWidget.reloadWidget();
+    });
+
+    _queueService.getLoopModeStream().listen((FinampLoopMode loopMode) {
+      HomeWidget.saveWidgetData("repeatMode", loopMode.name);
       HomeScreenWidget.reloadWidget();
     });
   }
 
-  static void reloadWidget() {
-    HomeWidget.updateWidget(qualifiedAndroidName: "com.unicornsonlsd.finamp.widget.receiver.CircularWidgetReceiver");
-    HomeWidget.updateWidget(qualifiedAndroidName: "com.unicornsonlsd.finamp.widget.receiver.RectangularWidgetReceiver");
-  }
+  // The save data keys needs to match the values in SharedComponents
+  static Future<void> updateWidgetData() async {
+    // Save audio player states
+    await HomeWidget.saveWidgetData("playing", !_audioHandler.paused);
+    await HomeWidget.saveWidgetData("repeatMode", _queueService.loopMode.name);
+    await HomeWidget.saveWidgetData("shuffled", _audioHandler.shuffled);
 
-  static Future<void> saveFavorite() async {
     final currentTrack = _queueService.getCurrentTrack();
     if (currentTrack == null) {
       return;
     }
     final isFavorite = _providers.read(isFavoriteProvider(currentTrack.baseItem));
     await HomeWidget.saveWidgetData("favorited", isFavorite);
-  }
 
-  static Future<void> saveNowPlaying() async {
-    final currentTrack = _queueService.getCurrentTrack();
-    if (currentTrack == null) {
-      return;
-    }
-    _logger.info('started album art saving for: ${currentTrack.item.album} ${currentTrack.item.title}');
-
+    // Save current album art
     final request = AlbumImageRequest(item: currentTrack.baseItem);
     final albumImage = _providers.refresh(albumImageProvider(request));
     FinampImage track = albumImage.asTheme(ThemeInfo(currentTrack.baseItem, useIsolate: true));
@@ -96,11 +91,23 @@ class HomeScreenWidget {
       await HomeWidget.saveImage("albumArt", art);
       _logger.info("saved album art");
     }
+
+    // Save now playing info
+    await HomeWidget.saveWidgetData("arist", currentTrack.item.artist);
+    await HomeWidget.saveWidgetData("album", currentTrack.item.album);
+    await HomeWidget.saveWidgetData("title", currentTrack.item.title);
+  }
+
+  static void reloadWidget() {
+    HomeWidget.updateWidget(qualifiedAndroidName: "com.unicornsonlsd.finamp.widget.receiver.CircularWidgetReceiver");
+    HomeWidget.updateWidget(qualifiedAndroidName: "com.unicornsonlsd.finamp.widget.receiver.RectangularWidgetReceiver");
   }
 }
 
-// called when the user clicks on the widget
+// Called when the user clicks on the widget
 // sends the command over a port so it can excute with the main audio handler
+// Using an IsolatedAudioHandler here was getting this error
+// https://github.com/ryanheise/audio_service/issues/817
 @pragma("vm:entry-point")
 FutureOr<void> _userInteraction(Uri? data) async {
   if (data == null) {
