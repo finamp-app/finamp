@@ -12,11 +12,9 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
-import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.SizeMode
@@ -43,16 +41,13 @@ import androidx.glance.text.TextStyle
 import androidx.glance.state.GlanceStateDefinition
 import java.io.File
 import android.util.Log
-import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import es.antonborri.home_widget.HomeWidgetGlanceState
 import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
 import es.antonborri.home_widget.actionStartActivity
 import com.unicornsonlsd.finamp.MainActivity
+import com.unicornsonlsd.finamp.widget.PlayerAction
 import com.unicornsonlsd.finamp.R
 
-private val playerActionKey = ActionParameters.Key<String>(
-  PlayerAction.KEY,
-);
 
 class CircularWidget : GlanceAppWidget() {
 
@@ -129,7 +124,7 @@ class CircularWidget : GlanceAppWidget() {
                             imageProvider = ImageProvider(favIcon),
                             contentDescription = "toggle favorite",
                             onClick = actionRunCallback<PlayerAction>(
-                                actionParametersOf(playerActionKey to PlayerAction.FAVORITE)
+                                actionParametersOf(PlayerAction.KEY to PlayerAction.FAVORITE)
                             ),
                         )
                     }
@@ -148,7 +143,7 @@ class CircularWidget : GlanceAppWidget() {
                             imageProvider = ImageProvider(R.drawable.pause_24px),
                             contentDescription = "pause",
                             onClick = actionRunCallback<PlayerAction>(
-                                actionParametersOf(playerActionKey to PlayerAction.PAUSE)
+                                actionParametersOf(PlayerAction.KEY to PlayerAction.PAUSE)
                             ),
                         )
                     } else {
@@ -156,28 +151,12 @@ class CircularWidget : GlanceAppWidget() {
                             imageProvider = ImageProvider(R.drawable.play_arrow_24px),
                             contentDescription = "play",
                             onClick = actionRunCallback<PlayerAction>(
-                                actionParametersOf(playerActionKey to PlayerAction.PLAY)
+                                actionParametersOf(PlayerAction.KEY to PlayerAction.PLAY)
                             ),
                         )
                     }
                 }
             }
         }
-    }
-}
-
-class PlayerAction : ActionCallback {
-    companion object {
-        val KEY: String = "action"
-        val PLAY: String = "play"
-        val PAUSE: String = "pause"
-        val NEXT: String = "skip_next"
-        val PREVIOUS: String = "skip_previous"
-        val FAVORITE: String = "favorite_toggle"
-    }
-
-    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        val backgroundIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("finamp://" + parameters[playerActionKey]))
-        backgroundIntent.send()
     }
 }
