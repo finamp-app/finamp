@@ -46,7 +46,6 @@ import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
 import es.antonborri.home_widget.actionStartActivity
 import com.unicornsonlsd.finamp.MainActivity
 import com.unicornsonlsd.finamp.widget.PlayerAction
-import com.unicornsonlsd.finamp.R
 
 
 class CircularWidget : GlanceAppWidget() {
@@ -80,34 +79,15 @@ class CircularWidget : GlanceAppWidget() {
             buttonGridSize = imageSize - (imageSize / 8)
         }
 
-        // prefs holds the data sent from Flutter
-        val prefs = currentState.preferences
-        val playing = prefs.getBoolean("playing", true)
-
-        val favorited = prefs.getBoolean("favorited", false)
-        val favIcon = if (favorited) R.drawable.favorite_filled_20px else R.drawable.favorite_20px
-
-        val imagePath = prefs.getString("albumArt", null)
-        val bitmap = imagePath?.takeIf { File(it).isFile }?.let { path -> BitmapFactory.decodeFile(path) }
-
         Box(
             modifier = GlanceModifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            if (bitmap != null) {
-                Image(
-                    provider = ImageProvider(bitmap),
-                    contentDescription = "album art", // maybe put album name
-                    contentScale = ContentScale.Fit, // Fit uses all space while maintaining aspect ratio
-                    modifier = GlanceModifier
-                    .size(imageSize) // Scales the image to the space available
-                    .cornerRadius(imageSize/2) // Shapes the image into a circle
-                    // opens the app when clicked
-                    .clickable(onClick = actionStartActivity<MainActivity>(
-                        context, Uri.parse("finamp://"))
-                    ),
-                )
-            }
+            AlbumArt(context, currentState, GlanceModifier
+                .size(imageSize) // Scales the image to the space available
+                .cornerRadius(imageSize/2) // Shapes the image into a circle
+            )
+
             // This Column holds the grid of buttons
             Column(
                 modifier = GlanceModifier.size(buttonGridSize),
@@ -120,13 +100,7 @@ class CircularWidget : GlanceAppWidget() {
                 ) {
                     // Hide the favorite button when too small
                     if (size.height >= MEDIUM_SQUARE.height) {
-                        SquareIconButton(
-                            imageProvider = ImageProvider(favIcon),
-                            contentDescription = "toggle favorite",
-                            onClick = actionRunCallback<PlayerAction>(
-                                actionParametersOf(PlayerAction.KEY to PlayerAction.FAVORITE)
-                            ),
-                        )
+                        FavoriteButton(currentState)
                     }
                 }
 
@@ -138,23 +112,7 @@ class CircularWidget : GlanceAppWidget() {
                     modifier = GlanceModifier.width(buttonGridSize),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    if (playing) {
-                        SquareIconButton(
-                            imageProvider = ImageProvider(R.drawable.pause_24px),
-                            contentDescription = "pause",
-                            onClick = actionRunCallback<PlayerAction>(
-                                actionParametersOf(PlayerAction.KEY to PlayerAction.PAUSE)
-                            ),
-                        )
-                    } else {
-                        SquareIconButton(
-                            imageProvider = ImageProvider(R.drawable.play_arrow_24px),
-                            contentDescription = "play",
-                            onClick = actionRunCallback<PlayerAction>(
-                                actionParametersOf(PlayerAction.KEY to PlayerAction.PLAY)
-                            ),
-                        )
-                    }
+                    PlayPauseButton(currentState)
                 }
             }
         }

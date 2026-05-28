@@ -17,6 +17,8 @@ class PlayerAction : ActionCallback {
         val NEXT: String = "skip_next"
         val PREVIOUS: String = "skip_previous"
         val FAVORITE: String = "favorite_toggle"
+        val REPEAT: String = "repeat"
+        val SHUFFLE: String = "shuffle"
 
         val KEY = ActionParameters.Key<String>(
           "action",
