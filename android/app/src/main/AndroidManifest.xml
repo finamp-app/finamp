@@ -104,6 +104,15 @@
         android:resource="@xml/circular_widget_config" />
     </receiver>
 
+    <receiver android:name=".widget.receiver.RectangularWidgetReceiver" android:exported="true">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/rectangular_widget_config" />
+    </receiver>
+
     <!-- Used for Background Work -->
     <receiver android:name="es.antonborri.home_widget.HomeWidgetBackgroundReceiver"  android:exported="true">
       <intent-filter>
