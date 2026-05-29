@@ -38,6 +38,7 @@ class RectangularWidget : GlanceAppWidget() {
 
     companion object {
         private val HOME_WIDGET_LOG_TAG = "RECTANGULAR_WIDGET"
+        private val SMALL_WIDTH = 300.dp
     }
 
     override val sizeMode = SizeMode.Exact
@@ -60,55 +61,63 @@ class RectangularWidget : GlanceAppWidget() {
         // One third of the verical space for media controls
         var buttonGridSize = size.height / 3
         // Two thirds for now playing info
-        val imageSize = buttonGridSize * 2
+        val nowPlayingSize = buttonGridSize * 2
 
-        Box(
+        Column(
+            verticalAlignment = Alignment.Top,
             modifier = GlanceModifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
         ) {
-            Column(
-                verticalAlignment = Alignment.Top,
-                modifier = GlanceModifier.fillMaxSize(),
+            // Now Playing info
+            Row(
+                modifier = GlanceModifier
+                .background(GlanceTheme.colors.inversePrimary)
+                .fillMaxWidth()
+                .height(nowPlayingSize)
+                .clickable(onClick = actionStartActivity<MainActivity>(
+                    context, Uri.parse("finamp://"))
+                ),
             ) {
-                // Now Playing Info
-                Row(
-                    modifier = GlanceModifier
-                    .background(GlanceTheme.colors.inversePrimary)
-                    .fillMaxWidth()
-                    .height(imageSize)
-                    .clickable(onClick = actionStartActivity<MainActivity>(
-                        context, Uri.parse("finamp://"))
-                    ),
-                ) {
-                    AlbumArt(context, currentState, GlanceModifier
-                        .size(imageSize)
-                        .cornerRadius(15.dp)
-                        .padding(10.dp)
-                    )
-                    NowPlayingText(currentState)
+                AlbumArt(context, currentState, GlanceModifier
+                    .size(nowPlayingSize)
+                    .cornerRadius(15.dp)
+                    .padding(10.dp)
+                )
+                NowPlayingText(currentState)
+
+                // hide favorite button when too small
+                if (size.width > SMALL_WIDTH) {
+                    // This spacer takes all the space not used by the art and track info
+                    Spacer(modifier = GlanceModifier.defaultWeight())
+                    Column(
+                        modifier = GlanceModifier.height(nowPlayingSize),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        FavoriteButton(
+                            currentState,
+                            backgroundColor = GlanceTheme.colors.inversePrimary,
+                            modifier = GlanceModifier.size(40.dp)
+                        )
+                    }
                 }
+            }
 
-                // This spacer takes all the space not used by the left/right rows
-                Spacer(modifier = GlanceModifier.defaultWeight())
-
-                // Media Controls
-                Row(
-                    modifier = GlanceModifier
-                    .background(GlanceTheme.colors.widgetBackground)
-                    .fillMaxWidth()
-                    .height(buttonGridSize),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    if (size.width > 300.dp) {
-                        RepeatButton(currentState)
-                    }
-                    PreviousButton()
-                    PlayPauseButton(currentState)
-                    NextButton()
-                    if (size.width > 300.dp) {
-                        ShuffleButton(currentState)
-                    }
+            // Media Controls
+            Row(
+                modifier = GlanceModifier
+                .background(GlanceTheme.colors.widgetBackground)
+                .fillMaxWidth()
+                .height(buttonGridSize),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (size.width > SMALL_WIDTH) {
+                    RepeatButton(currentState)
+                }
+                PreviousButton()
+                PlayPauseButton(currentState)
+                NextButton()
+                if (size.width > SMALL_WIDTH) {
+                    ShuffleButton(currentState)
                 }
             }
         }

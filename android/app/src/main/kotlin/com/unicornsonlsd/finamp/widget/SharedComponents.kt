@@ -24,6 +24,7 @@ import androidx.glance.layout.ContentScale
 import androidx.glance.layout.Column
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.fillMaxSize
+import androidx.glance.layout.fillMaxHeight
 
 import es.antonborri.home_widget.actionStartActivity
 import es.antonborri.home_widget.HomeWidgetGlanceState
@@ -154,8 +155,8 @@ fun RepeatButton(
 fun FavoriteButton(
     state: HomeWidgetGlanceState,
     modifier: GlanceModifier = GlanceModifier,
-    backgroundColor: ColorProvider = GlanceTheme.colors.primary,
-    contentColor: ColorProvider = GlanceTheme.colors.onPrimary
+    backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
+    contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
     val favorited = state.preferences.getBoolean("favorited", false)
     val favIcon = if (favorited) R.drawable.favorite_filled_20px else R.drawable.favorite_20px
@@ -202,7 +203,7 @@ fun NowPlayingText(state: HomeWidgetGlanceState) {
     val title = state.preferences.getString("title", "") ?: ""
 
     Column(
-        modifier = GlanceModifier.fillMaxSize(),
+        modifier = GlanceModifier.fillMaxHeight(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(

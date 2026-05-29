@@ -36,8 +36,8 @@ import com.unicornsonlsd.finamp.MainActivity
 class CircularWidget : GlanceAppWidget() {
 
     companion object {
-        private val MEDIUM_SQUARE = DpSize(180.dp, 180.dp)
         private val HOME_WIDGET_LOG_TAG = "CIRCULAR_WIDGET"
+        private val MEDIUM_HEIGHT = 180.dp
     }
 
     override val sizeMode = SizeMode.Exact
@@ -47,9 +47,11 @@ class CircularWidget : GlanceAppWidget() {
       get() = HomeWidgetGlanceStateDefinition()
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-      provideContent {
-        GlanceContent(context, currentState())
-      }
+        provideContent {
+            GlanceTheme {
+                GlanceContent(context, currentState())
+            }
+        }
     }
 
     @Composable
@@ -60,7 +62,7 @@ class CircularWidget : GlanceAppWidget() {
         var buttonGridSize = imageSize
 
         // Scale down the button grid so it doesn't sit outside the circle
-        if (imageSize > MEDIUM_SQUARE.height) {
+        if (imageSize > MEDIUM_HEIGHT) {
             buttonGridSize = imageSize - (imageSize / 6)
         }
 
@@ -84,7 +86,7 @@ class CircularWidget : GlanceAppWidget() {
                     horizontalAlignment = Alignment.End
                 ) {
                     // Hide the favorite button when too small
-                    if (size.height >= MEDIUM_SQUARE.height) {
+                    if (size.height >= MEDIUM_HEIGHT) {
                         FavoriteButton(
                             currentState,
                             backgroundColor = GlanceTheme.colors.secondary,
@@ -97,7 +99,7 @@ class CircularWidget : GlanceAppWidget() {
                 // This spacer takes all the space not used by the top/bottom row
                 Spacer(modifier = GlanceModifier.defaultWeight())
 
-                // Bottom Row forces play/pause buttons to the left
+                // Bottom Row forces play/pause button to the left
                 Row(
                     modifier = GlanceModifier.width(buttonGridSize),
                     horizontalAlignment = Alignment.Start
