@@ -52,19 +52,11 @@ class HomeScreenWidget {
 
     // Update the widget data when there's MediaItem or PlaybackState changed
     _audioHandler.mediaItem.listen((MediaItem? item) async {
-      final installed = await HomeScreenWidget.isInstalled();
-      if (installed) {
-        await HomeScreenWidget.updateWidgetData();
-        await HomeScreenWidget.reloadWidget();
-      }
+      await HomeScreenWidget.updateWidgetData();
     });
 
     _audioHandler.playbackState.listen((PlaybackState? state) async {
-      final installed = await HomeScreenWidget.isInstalled();
-      if (installed) {
-        await HomeScreenWidget.updateWidgetData();
-        await HomeScreenWidget.reloadWidget();
-      }
+      await HomeScreenWidget.updateWidgetData();
     });
 
     _queueService.getLoopModeStream().listen((FinampLoopMode loopMode) async {
@@ -78,7 +70,12 @@ class HomeScreenWidget {
 
   // The save data keys needs to match the values in SharedComponents
   static Future<void> updateWidgetData() async {
-    _logger.info("updating data ##########################################################################");
+    final installed = await HomeScreenWidget.isInstalled();
+    if (!installed) {
+      return;
+    }
+
+    _logger.info("updating data");
 
     // Save audio player states
     await HomeWidget.saveWidgetData("playing", !_audioHandler.paused);
@@ -106,6 +103,8 @@ class HomeScreenWidget {
     await HomeWidget.saveWidgetData("arist", currentTrack.item.artist);
     await HomeWidget.saveWidgetData("album", currentTrack.item.album);
     await HomeWidget.saveWidgetData("title", currentTrack.item.title);
+
+    await HomeScreenWidget.reloadWidget();
   }
 
   static Future<void> reloadWidget() async {
