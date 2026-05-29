@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.Dp
 import androidx.glance.appwidget.components.SquareIconButton
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.action.ActionParameters
@@ -25,6 +26,7 @@ import androidx.glance.layout.Column
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxHeight
+import androidx.glance.layout.width
 
 import es.antonborri.home_widget.actionStartActivity
 import es.antonborri.home_widget.HomeWidgetGlanceState
@@ -197,13 +199,15 @@ fun AlbumArt(
 }
 
 @Composable
-fun NowPlayingText(state: HomeWidgetGlanceState) {
+fun NowPlayingText(state: HomeWidgetGlanceState, maxWidth: Dp) {
     val artist = state.preferences.getString("arist", "") ?: ""
     val album = state.preferences.getString("album", "") ?: ""
     val title = state.preferences.getString("title", "") ?: ""
 
     Column(
-        modifier = GlanceModifier.fillMaxHeight(),
+        modifier = GlanceModifier
+        .fillMaxHeight()
+        .width(maxWidth),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(

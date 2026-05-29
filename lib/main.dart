@@ -293,7 +293,10 @@ Future<void> _setupDiscordRpc() async {
 }
 
 Future<void> _setupHomeScreenWidget() async {
-  HomeScreenWidget.initialize();
+  // No iOS support currently
+  if (Platform.isAndroid) {
+    HomeScreenWidget.initialize();
+  }
 }
 
 Future<void> _setupKeepScreenOnHelper() async {
