@@ -3,7 +3,6 @@ package com.unicornsonlsd.finamp.widget
 import java.io.File
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.util.Log
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.sp
@@ -25,6 +24,7 @@ import androidx.glance.layout.ContentScale
 import androidx.glance.layout.Column
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.fillMaxSize
+
 import es.antonborri.home_widget.actionStartActivity
 import es.antonborri.home_widget.HomeWidgetGlanceState
 import com.unicornsonlsd.finamp.MainActivity

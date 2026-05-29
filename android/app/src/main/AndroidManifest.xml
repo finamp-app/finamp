@@ -98,7 +98,10 @@
       android:name="com.android.automotive"
       android:resource="@xml/automotive_app_desc" /> -->
 
-    <receiver android:name=".widget.receiver.CircularWidgetReceiver" android:exported="true">
+    <receiver
+        android:name=".widget.receiver.CircularWidgetReceiver"
+        android:label="@string/circular_widget_label"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
       </intent-filter>
@@ -107,7 +110,10 @@
         android:resource="@xml/circular_widget_config" />
     </receiver>
 
-    <receiver android:name=".widget.receiver.RectangularWidgetReceiver" android:exported="true">
+    <receiver
+        android:name=".widget.receiver.RectangularWidgetReceiver"
+        android:label="@string/rectangular_widget_label"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
       </intent-filter>
