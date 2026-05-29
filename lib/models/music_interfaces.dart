@@ -99,64 +99,6 @@ sealed class FinampSortable<ChildType extends FinampDisplayableOrPlayable> exten
 
 //
 //
-//  Public slice classes to return
-//
-//
-
-final class PlayableSlice {
-  PlayableSlice({required this.items, required this.startingIndex, required this.source, required this.shuffleState})
-    : assert(items.every((x) => BaseItemDtoType.fromItem(x) == BaseItemDtoType.track));
-
-  final List<BaseItemDto> items;
-  final int startingIndex;
-  final QueueItemSource source;
-  final SliceShuffleState shuffleState;
-
-  PlayableSlice shuffle() {
-    return PlayableSlice(
-      items: items,
-      startingIndex: 0,
-      source: source,
-      shuffleState: shuffleState == SliceShuffleState.linear ? SliceShuffleState.playerShuffled : shuffleState,
-    );
-  }
-
-  // TODO is this useful?
-  PlayableSlice preShuffle() {
-    final clonedItems = List<BaseItemDto>.from(items);
-    clonedItems.shuffle();
-    return PlayableSlice(
-      items: clonedItems,
-      startingIndex: 0,
-      source: source,
-      shuffleState: SliceShuffleState.preShuffled,
-    );
-  }
-
-  PlayableSlice fromIndex(int newIndex, {int? limit}) {
-    newIndex = newIndex.clamp(0, max(0, items.length - 1));
-    if (limit == null) {
-      return PlayableSlice(items: items, startingIndex: newIndex, source: source, shuffleState: shuffleState);
-    }
-
-    final excess = limit - (items.length - newIndex);
-    final preTracks = excess.clamp(0, newIndex);
-
-    return PlayableSlice(
-      items: items.safeSliceByLength(newIndex - preTracks, min(newIndex + limit, items.length)),
-      startingIndex: preTracks,
-      source: source,
-      shuffleState: shuffleState,
-    );
-  }
-}
-
-// TODO add class extends PlayableSlice with a shuffle order for player already prepared to allow passing queues around easily?
-
-enum SliceShuffleState { preShuffled, playerShuffled, linear }
-
-//
-//
 //   Private classes to ease implementations
 //
 //
@@ -249,6 +191,7 @@ mixin _NeedsEquals {
   }
 }
 
-extension MaybeGetItem on FinampDisplayableOrPlayable {
+extension PlayableHelpers on FinampDisplayableOrPlayable {
   BaseItemDto? get maybeItem => this is FinampPlayableDto ? (this as FinampPlayableDto).item : null;
+  bool get canShuffleAlbums => this is Genre || this is Artist || this is FinampDisplayable<Album>;
 }

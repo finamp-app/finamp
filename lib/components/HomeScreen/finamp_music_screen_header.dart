@@ -16,6 +16,7 @@ import 'package:finamp/screens/tabs_settings_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/item_by_id_provider.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_providers.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../extensions/localizations.dart';
 import '../../menus/home_section_menu.dart';
+import '../../screens/album_screen.dart';
+import '../../screens/artist_screen.dart';
+import '../../screens/genre_screen.dart';
 
 class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWidget {
   final List<ContentType> sortedTabs;
@@ -231,16 +235,38 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                         refreshTab();
                       },
                     ),
-                  IconButtonWithSemantics(
-                    label: context.l10n.search,
-                    icon: TablerIcons.search,
-                    iconSize: 28.0,
-                    onPressed: () {
-                      if (onSearch != null) {
-                        onSearch!();
-                      }
-                    },
-                  ),
+                  if (singleTabConfig == null || singleTabConfig?.base is TabsHomeSection)
+                    IconButtonWithSemantics(
+                      label: context.l10n.search,
+                      icon: TablerIcons.search,
+                      iconSize: 28.0,
+                      onPressed: () {
+                        if (onSearch != null) {
+                          onSearch!();
+                        }
+                      },
+                    ),
+                  if (singleTabConfig?.base case CollectionHomeSection collection)
+                    IconButtonWithSemantics(
+                      label: singleTabConfig!.getTitle(context.l10n),
+                      icon: TablerIcons.external_link,
+                      iconSize: 28.0,
+                      onPressed: () async {
+                        final item = await ref.read(itemByIdProvider(collection.itemId).future);
+                        if (item == null || !context.mounted) return;
+                        if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.track) {
+                          return;
+                        }
+                        await Navigator.pushNamed(context, switch (BaseItemDtoType.fromItem(item)) {
+                          BaseItemDtoType.album => AlbumScreen.routeName,
+                          BaseItemDtoType.playlist => AlbumScreen.routeName,
+                          BaseItemDtoType.genre => GenreScreen.routeName,
+                          BaseItemDtoType.artist => ArtistScreen.routeName,
+                          // TODO add collection type?  Use music screen as generic?
+                          _ => AlbumScreen.routeName,
+                        }, arguments: item);
+                      },
+                    ),
                 ],
                 IconButtonWithSemantics(
                   label: context.l10n.globalMenu,

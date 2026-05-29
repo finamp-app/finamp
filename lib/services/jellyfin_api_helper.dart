@@ -242,7 +242,7 @@ class JellyfinApiHelper {
         return QueryResult_BaseItemDto(totalRecordCount: 0, startIndex: 0, items: []);
       }
     } else {
-      _jellyfinApiHelperLogger.fine("Getting items.");
+      _jellyfinApiHelperLogger.fine("Getting up to $limit items of type $includeItemTypes.");
     }
 
     return runInIsolate((api) async {

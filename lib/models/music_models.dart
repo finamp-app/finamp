@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:finamp/extensions/list.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

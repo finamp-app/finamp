@@ -200,7 +200,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
             switch (widget.singleTabConfig!.base) {
               QueuesHomeSection() => ContentType.home,
               TabsHomeSection tabSection => tabSection.contentType,
-              CollectionHomeSection() => ContentType.home,
+              CollectionHomeSection() => ContentType.mixed,
             },
           ]
         : ref

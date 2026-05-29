@@ -215,55 +215,9 @@ class HomeScreenSection extends ConsumerWidget {
               onPressed: () async {
                 final queueService = GetIt.instance<QueueService>();
                 final playable = sectionDisplayable as FinampPlayable;
-                // TODO restore gradual queue buildup?
-                await queueService.startPlayback(
-                  items: (await ref.read(getPlayerSliceProvider(item: playable, startingOffset: 0).future)).items,
-                  source: playable.source,
-                  order: FinampPlaybackOrder.linear,
+                await queueService.startSlicePlayback(
+                  await ref.read(getPlayerSliceProvider(item: playable, startingOffset: 0).future),
                 );
-
-                /*
-                        final source = QueueItemSource.rawId(
-                          type: QueueItemSourceType.homeScreenSection,
-                          name: QueueItemSourceName(
-                            type: QueueItemSourceNameType.homeScreenSection,
-                            localizationParameter: sectionInfo.presetType?.name,
-                            pretranslatedName: sectionInfo.getTitle(context),
-                          ),
-                          id: sectionInfo.toLocalisedString(context),
-                        );
-                        // only add loaded items at first, to ensure order (for random sections) is the same, and to improve responsiveness
-                        final initialItems = await ref.read(
-                          loadHomeSectionItemsProvider(
-                            sectionInfo: sectionInfo,
-                            startIndex: 0,
-                            limit: homeScreenSectionItemLimit,
-                          ).future,
-                        );
-                        await queueService.startPlayback(
-                          items: initialItems ?? [],
-                          source: source,
-                          order: FinampPlaybackOrder.linear,
-                        );
-                        var items = (await ref.read(
-                          loadHomeSectionItemsProvider(
-                            sectionInfo: sectionInfo,
-                            // skipping existing items in randomized sections isn't needed since the order will be different
-                            startIndex: homeScreenSectionItemLimit,
-                            limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
-                          ).future,
-                        ));
-                        await queueService.addToQueue(
-                          // ensure we only add exactly [trackShuffleItemCount] items in total, since we fetched more tracks initially
-                          items:
-                              items
-                                  ?.take(
-                                    FinampSettingsHelper.finampSettings.trackShuffleItemCount -
-                                        (initialItems?.length ?? 0),
-                                  )
-                                  .toList() ??
-                              [],
-                        );*/
               },
               label: AppLocalizations.of(context)!.playButtonLabel,
               icon: TablerIcons.player_play,
@@ -275,11 +229,8 @@ class HomeScreenSection extends ConsumerWidget {
                       final queueService = GetIt.instance<QueueService>();
                       final playable = sectionDisplayable as FinampPlayable;
                       // TODO better shuffling?  need to think about shuffle all versus shuffle first
-                      // TODO restore gradual queue buildup?
-                      await queueService.startPlayback(
-                        items: (await ref.read(getPlayerSliceProvider(item: playable, startingOffset: 0).future)).items,
-                        source: playable.source,
-                        order: FinampPlaybackOrder.shuffled,
+                      await queueService.startSlicePlayback(
+                        (await ref.read(getPlayerSliceProvider(item: playable, startingOffset: 0).future)).shuffle(),
                       );
                     },
               label: sectionInfo.sortConfig.sortBy == SortBy.random

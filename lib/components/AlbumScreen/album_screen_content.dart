@@ -193,8 +193,7 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
               ),
               onDismiss: (followUpAction) => onConfirmPlayableDismiss(
                 followUpAction: followUpAction,
-                sourceItem: AlbumDisc(widget.parent, tracks: childrenOfThisDisc),
-                tracks: childrenOfThisDisc,
+                item: AlbumDisc(widget.parent, tracks: childrenOfThisDisc),
               ),
               sectionContentSliver: TracksSliverList(
                 childrenForList: childrenOfThisDisc,

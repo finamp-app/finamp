@@ -12,7 +12,7 @@ part of 'music_screen_provider.dart';
 // **************************************************************************
 
 String _$loadHomeSectionItemsHash() =>
-    r'8b7d876305ae2524f0b3cca6ea9167d52bbd9925';
+    r'1d9f5a11693b0c6c0bebbb3eae6759998d2cc51d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -85,7 +85,8 @@ class LoadHomeSectionItemsFamily
 }
 
 /// See also [loadHomeSectionItems].
-class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
+class LoadHomeSectionItemsProvider
+    extends AutoDisposeFutureProvider<List<BaseItemDto>?> {
   /// See also [loadHomeSectionItems].
   LoadHomeSectionItemsProvider({
     required MusicScreenPlayable<FinampPlayableDto> request,
@@ -149,7 +150,7 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
   }
 
   @override
-  FutureProviderElement<List<BaseItemDto>?> createElement() {
+  AutoDisposeFutureProviderElement<List<BaseItemDto>?> createElement() {
     return _LoadHomeSectionItemsProviderElement(this);
   }
 
@@ -174,7 +175,8 @@ class LoadHomeSectionItemsProvider extends FutureProvider<List<BaseItemDto>?> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin LoadHomeSectionItemsRef on FutureProviderRef<List<BaseItemDto>?> {
+mixin LoadHomeSectionItemsRef
+    on AutoDisposeFutureProviderRef<List<BaseItemDto>?> {
   /// The parameter `request` of this provider.
   MusicScreenPlayable<FinampPlayableDto> get request;
 
@@ -186,7 +188,7 @@ mixin LoadHomeSectionItemsRef on FutureProviderRef<List<BaseItemDto>?> {
 }
 
 class _LoadHomeSectionItemsProviderElement
-    extends FutureProviderElement<List<BaseItemDto>?>
+    extends AutoDisposeFutureProviderElement<List<BaseItemDto>?>
     with LoadHomeSectionItemsRef {
   _LoadHomeSectionItemsProviderElement(super.provider);
 
