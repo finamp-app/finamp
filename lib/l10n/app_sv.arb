@@ -629,7 +629,7 @@
     "@playerScreen": {
         "description": "Name for the expanded player"
     },
-    "sleepTimerRemainingTime": "Sover om {time,plural,=1{en minut} other{{time} minuter}}",
+    "sleepTimerRemainingTime": "Sover om {time,plural,=1{<1 minut} other{{time} minuter}}",
     "@sleepTimerRemainingTime": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
         "placeholders": {
@@ -2253,5 +2253,129 @@
     "playbackActionPageRegularTrackOptions": "Spela",
     "@playbackActionPageRegularTrackOptions": {
         "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "adaptive": "Adaptiv",
+    "shuffleCountButton": "Shuffla ({count} Spår)",
+    "@shuffleCountButton": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "playbackActionPageMoveWithinQueue": "Flytta Inom Kön",
+    "@playbackActionPageMoveWithinQueue": {
+        "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
+    },
+    "savingChanges": "Sparar ändringar…",
+    "@savingChanges": {
+        "description": "Text shown while the changes to a playlist are being saved"
+    },
+    "playbackActionPageNext": "Spela Näst",
+    "@playbackActionPageNext": {
+        "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
+    },
+    "playbackActionPageNewQueue": "Ny Spelkö",
+    "@playbackActionPageNewQueue": {
+        "description": "Label for the playback action page that contains all actions related to starting a new queue"
+    },
+    "updatePlaylistButtonLabel": "Uppdatera Spellista",
+    "@updatePlaylistButtonLabel": {
+        "description": "Label for the button that updates the playlist on the edit playlist screen"
+    },
+    "playbackActionPageAppendToQueue": "Spela Sist",
+    "@playbackActionPageAppendToQueue": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks at the end of the queue"
+    },
+    "logoutButtonSubtitle": "Att logga in på en annan server kommer ta bort alla nedladdningar som redan finns",
+    "amoledTheme": "Använd AMOLED Tema",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "accentColorTitle": "Välj en Accentfärg",
+    "@accentColorTitle": {
+        "description": "Title for the accent color picker sheet"
+    },
+    "accentColor": "Accentfärg",
+    "@accentColor": {
+        "description": "Title of the accent color setting"
+    },
+    "systemAccentColor": "Använd System Accenten",
+    "@systemAccentColor": {
+        "description": "Title of the System Accent Color setting."
+    },
+    "colorCode": "Färg Kod (Hex)",
+    "@colorCode": {
+        "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
+    },
+    "defaultWord": "Förval",
+    "save": "Spara",
+    "invalidColorCode": "Ogiltig färgkod",
+    "@invalidColorCode": {
+        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
+    },
+    "colorCodeHint": "t.ex. #FFFFFF eller #coffee",
+    "@colorCodeHint": {
+        "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
+    },
+    "playbackActionPageNextUp": "Lägg till Näst",
+    "@playbackActionPageNextUp": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
+    },
+    "amoledThemeSubtitle": "Ersätta det mörka temat med ett kolsvart tema.",
+    "useMonochromeIcon": "Använd Monokrom Loga",
+    "@useMonochromeIcon": {
+        "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
+    },
+    "useMonochromeIconSubtitle": "Detta påverkar endast ikonen i appen, inte ikonen i appstartaren.",
+    "@useMonochromeIconSubtitle": {
+        "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
+    },
+    "useDefaultButton": "Återställ till Förvalsaccentfärgen",
+    "startRadio": "Starta Radio",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
+    },
+    "shuffleSomeNext": "Shuffla vissa näst",
+    "@shuffleSomeNext": {
+        "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "shuffleSomeToNextUp": "Shuffla vissa till Näst Upp",
+    "@shuffleSomeToNextUp": {
+        "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
+    },
+    "shuffleSomeToQueue": "Shuffla vissa till Spelkön",
+    "@shuffleSomeToQueue": {
+        "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "moveAddToNextUp": "Flytta till Näst Upp",
+    "@moveAddToNextUp": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
+    },
+    "radio": "Radio",
+    "@radio": {
+        "description": "Title for the queue source when the user is playing a track added via radio"
+    },
+    "radioForItem": "{radioSource} - Radio",
+    "@radioForItem": {
+        "description": "Suffix added to a queue source when playing a radio track. Example: \"Never Gonna Give You Up - Radio\"",
+        "placeholders": {
+            "radioSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "shuffleSomeAlbums": "Shuffla vissa Album",
+    "@shuffleSomeAlbums": {
+        "description": "Label for action that shuffles some albums of a genre"
+    },
+    "shuffleSomeAlbumsNext": "Shuffla vissa Album Näst",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "shuffleSomeAlbumsToNextUp": "Shuffla vissa Album till Näst Upp",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
     }
 }
