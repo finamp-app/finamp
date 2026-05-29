@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="circular_widget_label">Album Art</string>
+    <string name="circular_widget_desc">Current album art with minimum media controls.</string>
+    <string name="rectangular_widget_label">Now Playing</string>
+    <string name="rectangular_widget_desc">Current track info with access to media controls.</string>
+</resources>
