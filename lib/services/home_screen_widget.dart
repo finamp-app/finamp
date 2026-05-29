@@ -51,25 +51,35 @@ class HomeScreenWidget {
     });
 
     // Update the widget data when there's MediaItem or PlaybackState changed
-    _audioHandler.mediaItem.listen((MediaItem? item) {
-      HomeScreenWidget.updateWidgetData();
-      HomeScreenWidget.reloadWidget();
+    _audioHandler.mediaItem.listen((MediaItem? item) async {
+      final installed = await HomeScreenWidget.isInstalled();
+      if (installed) {
+        await HomeScreenWidget.updateWidgetData();
+        await HomeScreenWidget.reloadWidget();
+      }
     });
 
-    _audioHandler.playbackState.listen((PlaybackState? state) {
-      // Does this run unnecessarily?
-      HomeScreenWidget.updateWidgetData();
-      HomeScreenWidget.reloadWidget();
+    _audioHandler.playbackState.listen((PlaybackState? state) async {
+      final installed = await HomeScreenWidget.isInstalled();
+      if (installed) {
+        await HomeScreenWidget.updateWidgetData();
+        await HomeScreenWidget.reloadWidget();
+      }
     });
 
-    _queueService.getLoopModeStream().listen((FinampLoopMode loopMode) {
-      HomeWidget.saveWidgetData("repeatMode", loopMode.name);
-      HomeScreenWidget.reloadWidget();
+    _queueService.getLoopModeStream().listen((FinampLoopMode loopMode) async {
+      final installed = await HomeScreenWidget.isInstalled();
+      if (installed) {
+        await HomeWidget.saveWidgetData("repeatMode", loopMode.name);
+        await HomeScreenWidget.reloadWidget();
+      }
     });
   }
 
   // The save data keys needs to match the values in SharedComponents
   static Future<void> updateWidgetData() async {
+    _logger.info("updating data ##########################################################################");
+
     // Save audio player states
     await HomeWidget.saveWidgetData("playing", !_audioHandler.paused);
     await HomeWidget.saveWidgetData("repeatMode", _queueService.loopMode.name);
@@ -98,9 +108,14 @@ class HomeScreenWidget {
     await HomeWidget.saveWidgetData("title", currentTrack.item.title);
   }
 
-  static void reloadWidget() {
-    HomeWidget.updateWidget(qualifiedAndroidName: "com.unicornsonlsd.finamp.widget.receiver.CircularWidgetReceiver");
-    HomeWidget.updateWidget(qualifiedAndroidName: "com.unicornsonlsd.finamp.widget.receiver.RectangularWidgetReceiver");
+  static Future<void> reloadWidget() async {
+    await HomeWidget.updateWidget(qualifiedAndroidName: "com.unicornsonlsd.finamp.widget.receiver.CircularWidgetReceiver");
+    await HomeWidget.updateWidget(qualifiedAndroidName: "com.unicornsonlsd.finamp.widget.receiver.RectangularWidgetReceiver");
+  }
+
+  static Future<bool> isInstalled() async {
+    final List<HomeWidgetInfo> info = await HomeWidget.getInstalledWidgets();
+    return info.isNotEmpty;
   }
 }
 

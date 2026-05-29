@@ -39,6 +39,7 @@ class RectangularWidget : GlanceAppWidget() {
     companion object {
         private val HOME_WIDGET_LOG_TAG = "RECTANGULAR_WIDGET"
         private val SMALL_WIDTH = 300.dp
+        private val FAVORITE_BUTTON_SIZE = 40.dp
     }
 
     override val sizeMode = SizeMode.Exact
@@ -59,9 +60,18 @@ class RectangularWidget : GlanceAppWidget() {
     private fun GlanceContent(context: Context, currentState: HomeWidgetGlanceState) {
         val size = LocalSize.current
         // One third of the verical space for media controls
-        var buttonGridSize = size.height / 3
+        var buttonGridHeight = size.height / 3
         // Two thirds for now playing info
-        val nowPlayingSize = buttonGridSize * 2
+        val nowPlayingHeight = buttonGridHeight * 2
+
+        val isBig = size.width > SMALL_WIDTH
+
+        // Leaves room for favorite button
+        // Since the image will be square can use nowPlayingHeight
+        var nowPlayingTextWidth = size.width - nowPlayingHeight
+        if (isBig) {
+            nowPlayingTextWidth -= FAVORITE_BUTTON_SIZE
+        }
 
         Column(
             verticalAlignment = Alignment.Top,
@@ -72,24 +82,24 @@ class RectangularWidget : GlanceAppWidget() {
                 modifier = GlanceModifier
                 .background(GlanceTheme.colors.inversePrimary)
                 .fillMaxWidth()
-                .height(nowPlayingSize)
+                .height(nowPlayingHeight)
                 .clickable(onClick = actionStartActivity<MainActivity>(
                     context, Uri.parse("finamp://"))
                 ),
             ) {
                 AlbumArt(context, currentState, GlanceModifier
-                    .size(nowPlayingSize)
+                    .size(nowPlayingHeight)
                     .cornerRadius(15.dp)
                     .padding(10.dp)
                 )
-                NowPlayingText(currentState)
+                NowPlayingText(currentState, nowPlayingTextWidth)
 
                 // hide favorite button when too small
-                if (size.width > SMALL_WIDTH) {
+                if (isBig) {
                     // This spacer takes all the space not used by the art and track info
                     Spacer(modifier = GlanceModifier.defaultWeight())
                     Column(
-                        modifier = GlanceModifier.height(nowPlayingSize),
+                        modifier = GlanceModifier.height(nowPlayingHeight),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         FavoriteButton(
@@ -106,17 +116,17 @@ class RectangularWidget : GlanceAppWidget() {
                 modifier = GlanceModifier
                 .background(GlanceTheme.colors.widgetBackground)
                 .fillMaxWidth()
-                .height(buttonGridSize),
+                .height(buttonGridHeight),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (size.width > SMALL_WIDTH) {
+                if (isBig) {
                     RepeatButton(currentState)
                 }
                 PreviousButton()
                 PlayPauseButton(currentState)
                 NextButton()
-                if (size.width > SMALL_WIDTH) {
+                if (isBig) {
                     ShuffleButton(currentState)
                 }
             }
