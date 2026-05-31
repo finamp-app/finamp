@@ -125,6 +125,15 @@ class JellyfinApiHelper {
     BaseItemDto? genreFilter,
     bool? isFavorite,
 
+    /// Optional. Filter by items whose name starts with a given string.
+    String? nameStartsWith,
+
+    /// Optional. Filter by items whose name is sorted equally or greater than a given input string.
+    String? nameStartsWithOrGreater,
+
+    /// Optional. Filter by items whose name is equally or lesser than a given input string.
+    String? nameLessThan,
+
     /// The record index to start at. All items with a lower index will be
     /// dropped from the results.
     int? startIndex,
@@ -160,6 +169,9 @@ class JellyfinApiHelper {
       artistType: artistType,
       genreFilter: genreFilter,
       isFavorite: isFavorite,
+      nameStartsWith: nameStartsWith,
+      nameStartsWithOrGreater: nameStartsWithOrGreater,
+      nameLessThan: nameLessThan,
       startIndex: startIndex,
       limit: limit,
     );
@@ -220,6 +232,9 @@ class JellyfinApiHelper {
     ArtistType? artistType,
     BaseItemDto? genreFilter,
     bool? isFavorite,
+    String? nameStartsWith,
+    String? nameStartsWithOrGreater,
+    String? nameLessThan,
     int? startIndex,
     int? limit,
   }) async {
@@ -276,6 +291,7 @@ class JellyfinApiHelper {
             userId: currentUserId,
             fields: fields,
             isFavorite: isFavorite,
+            nameStartsWith: nameStartsWith,
           );
         } else {
           //artistType == ArtistType.artist
@@ -291,6 +307,7 @@ class JellyfinApiHelper {
             limit: limit,
             fields: fields,
             isFavorite: isFavorite,
+            nameStartsWith: nameStartsWith,
           );
         }
       } else if (parentItem?.type == "MusicArtist") {
@@ -386,6 +403,9 @@ class JellyfinApiHelper {
           ids: itemIds?.join(","),
           fields: fields,
           isFavorite: isFavorite,
+          nameStartsWith: nameStartsWith,
+          nameStartsWithOrGreater: nameStartsWithOrGreater,
+          nameLessThan: nameLessThan,
         );
       }
       return QueryResult_BaseItemDto.fromJson(response as Map<String, dynamic>);

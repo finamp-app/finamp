@@ -19,7 +19,7 @@ class AudioServiceHelper {
   final audioServiceHelperLogger = Logger("AudioServiceHelper");
 
   /// Shuffles every track in the user's current view.
-  Future<void> shuffleAll({required bool onlyShowFavorites, BaseItemDto? genreFilter}) async {
+  Future<void> shuffleAll({required bool onlyShowFavorites, BaseItemDto? genreFilter, int? itemCount}) async {
     List<jellyfin_models.BaseItemDto>? items;
 
     if (FinampSettingsHelper.finampSettings.isOffline) {
@@ -34,8 +34,9 @@ class AudioServiceHelper {
         nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
       )).map((e) => e.baseItem!).toList();
       items.shuffle();
-      if (items.length - 1 > FinampSettingsHelper.finampSettings.trackShuffleItemCount) {
-        items = items.sublist(0, FinampSettingsHelper.finampSettings.trackShuffleItemCount);
+      final count = itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount;
+      if (items.length - 1 > count) {
+        items = items.sublist(0, count);
       }
     } else {
       // If online, get all audio items from the user's view
@@ -43,7 +44,7 @@ class AudioServiceHelper {
         parentItem: _finampUserHelper.currentUser!.currentView,
         includeItemTypes: "Audio",
         filters: onlyShowFavorites ? "IsFavorite" : null,
-        limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+        limit: itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount,
         sortBy: "Random",
         genreFilter: genreFilter,
       );
