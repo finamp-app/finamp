@@ -2,7 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id("org.jetbrains.kotlin.plugin.compose") version "2.2.10" // this version matches your Kotlin version
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.10"
 }
 
 def localProperties = new Properties()
@@ -113,5 +113,4 @@ dependencies {
     implementation "androidx.core:core-splashscreen:1.2.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
     implementation "androidx.glance:glance-appwidget:1.1.1"
-
 }

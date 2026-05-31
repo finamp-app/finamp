@@ -1108,7 +1108,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           RadioServiceHelper.toggleRadio();
         case CustomPlaybackActions.toggleFavorite:
           return toggleFavoriteStatusOfCurrentTrack();
-        case CustomPlaybackActions.incrementRepeat:
+        case CustomPlaybackActions.toggleLoopMode:
           final queueService = GetIt.instance<QueueService>();
           return queueService.toggleLoopMode();
       }

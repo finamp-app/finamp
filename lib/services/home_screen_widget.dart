@@ -45,8 +45,8 @@ class HomeScreenWidget {
           return await _audioHandler.customAction("toggleFavorite");
         case "shuffle_toggle":
           return await _audioHandler.customAction("shuffle");
-        case "repeat_increment":
-          return await _audioHandler.customAction("incrementRepeat");
+        case "toggle_loop":
+          return await _audioHandler.customAction("toggleLoopMode");
       }
     });
 

@@ -36,13 +36,12 @@ import com.unicornsonlsd.finamp.MainActivity
 class CircularWidget : GlanceAppWidget() {
 
     companion object {
-        private val HOME_WIDGET_LOG_TAG = "CIRCULAR_WIDGET"
+        private val LOG_TAG = "CIRCULAR_WIDGET"
         private val MEDIUM_HEIGHT = 180.dp
     }
 
     override val sizeMode = SizeMode.Exact
 
-    // Needed for Updating
     override val stateDefinition: GlanceStateDefinition<*>?
       get() = HomeWidgetGlanceStateDefinition()
 
@@ -71,16 +70,16 @@ class CircularWidget : GlanceAppWidget() {
             contentAlignment = Alignment.Center,
         ) {
             AlbumArt(context, currentState, GlanceModifier
-                .size(imageSize) // Scales the image to the space available
+                .size(imageSize)
                 .cornerRadius(imageSize/2) // Shapes the image into a circle
             )
 
-            // This Column holds the grid of buttons
+            // Holds the grid of buttons
             Column(
                 modifier = GlanceModifier.size(buttonGridSize),
                 verticalAlignment = Alignment.Top
             ) {
-                // Top Row forces favorite icon to the right
+                // Top row forces favorite button to the right
                 Row(
                     modifier = GlanceModifier.width(buttonGridSize),
                     horizontalAlignment = Alignment.End
