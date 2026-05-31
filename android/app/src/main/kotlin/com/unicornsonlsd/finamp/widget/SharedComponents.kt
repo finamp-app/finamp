@@ -37,13 +37,14 @@ import com.unicornsonlsd.finamp.R
 
 @Composable
 fun PlayPauseButton(
+    context: Context,
     state: HomeWidgetGlanceState,
     modifier: GlanceModifier = GlanceModifier,
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
     var imageProvider = ImageProvider(R.drawable.play_arrow_24px)
-    var contentDescription = "play"
+    var contentDescription = context.getString(R.string.play_description)
     var onClick = actionRunCallback<MediaControls>(
         actionParametersOf(MediaControls.KEY to MediaControls.PLAY)
     )
@@ -51,7 +52,7 @@ fun PlayPauseButton(
     val playing = state.preferences.getBoolean("playing", false)
     if (playing) {
         imageProvider = ImageProvider(R.drawable.pause_24px)
-        contentDescription = "pause"
+        contentDescription = context.getString(R.string.play_description)
         onClick = actionRunCallback<MediaControls>(
             actionParametersOf(MediaControls.KEY to MediaControls.PAUSE)
         )
@@ -68,6 +69,7 @@ fun PlayPauseButton(
 
 @Composable
 fun NextButton(
+    context: Context,
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
@@ -75,7 +77,7 @@ fun NextButton(
         imageProvider = ImageProvider(R.drawable.skip_next_24px),
         backgroundColor = backgroundColor,
         contentColor = contentColor,
-        contentDescription = "skip next",
+        contentDescription = context.getString(R.string.next_description),
         onClick = actionRunCallback<MediaControls>(
             actionParametersOf(MediaControls.KEY to MediaControls.NEXT)
         ),
@@ -84,6 +86,7 @@ fun NextButton(
 
 @Composable
 fun PreviousButton(
+    context: Context,
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
@@ -91,7 +94,7 @@ fun PreviousButton(
         imageProvider = ImageProvider(R.drawable.skip_previous_24px),
         backgroundColor = backgroundColor,
         contentColor = contentColor,
-        contentDescription = "skip back",
+        contentDescription = context.getString(R.string.previous_description),
         onClick = actionRunCallback<MediaControls>(
             actionParametersOf(MediaControls.KEY to MediaControls.PREVIOUS)
         ),
@@ -100,17 +103,18 @@ fun PreviousButton(
 
 @Composable
 fun ShuffleButton(
+    context: Context,
     state: HomeWidgetGlanceState,
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
     var imageProvider = ImageProvider(R.drawable.shuffle_24px)
-    var contentDescription = "shuffle on"
+    var contentDescription = context.getString(R.string.shuffle_description)
 
     val shuffled = state.preferences.getBoolean("shuffled", false)
     if (shuffled) {
         imageProvider = ImageProvider(R.drawable.shuffle_on_24px)
-        contentDescription = "shuffle off"
+        contentDescription = context.getString(R.string.unshuffle_description)
     }
 
     SquareIconButton(
@@ -126,20 +130,21 @@ fun ShuffleButton(
 
 @Composable
 fun RepeatButton(
+    context: Context,
     state: HomeWidgetGlanceState,
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
     var imageProvider = ImageProvider(R.drawable.repeat_24px)
-    var contentDescription = "repeat off"
+    var contentDescription = context.getString(R.string.repeat_none_description)
 
     val repeatMode = state.preferences.getString("repeatMode", "")
     if (repeatMode == "all") {
         imageProvider = ImageProvider(R.drawable.repeat_all_24px)
-        contentDescription = "repeat all"
+        contentDescription = context.getString(R.string.repeat_queue_description)
     } else if (repeatMode == "one") {
         imageProvider = ImageProvider(R.drawable.repeat_one_24px)
-        contentDescription = "repeat single"
+        contentDescription = context.getString(R.string.repeat_track_description)
     }
 
     SquareIconButton(
@@ -155,19 +160,26 @@ fun RepeatButton(
 
 @Composable
 fun FavoriteButton(
+    context: Context,
     state: HomeWidgetGlanceState,
     modifier: GlanceModifier = GlanceModifier,
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
+    var imageProvider = ImageProvider(R.drawable.favorite_20px)
+    var contentDescription = context.getString(R.string.favorite_description)
+
     val favorited = state.preferences.getBoolean("favorited", false)
-    val favIcon = if (favorited) R.drawable.favorite_filled_20px else R.drawable.favorite_20px
+    if (favorited) {
+        imageProvider = ImageProvider(R.drawable.favorite_filled_20px)
+        contentDescription = context.getString(R.string.unfavorite_description)
+    }
 
     SquareIconButton(
-        imageProvider = ImageProvider(favIcon),
+        imageProvider = imageProvider,
         backgroundColor = backgroundColor,
         contentColor = contentColor,
-        contentDescription = "toggle favorite",
+        contentDescription = contentDescription,
         modifier = modifier,
         onClick = actionRunCallback<MediaControls>(
             actionParametersOf(MediaControls.KEY to MediaControls.FAVORITE)
@@ -179,7 +191,8 @@ fun FavoriteButton(
 fun AlbumArt(
     context: Context,
     state: HomeWidgetGlanceState,
-    modifier: GlanceModifier,
+    contentDescription: String? = null,
+    modifier: GlanceModifier = GlanceModifier,
 ) {
     val imagePath = state.preferences.getString("albumArt", null)
     val bitmap = imagePath?.takeIf { File(it).isFile }?.let { path -> BitmapFactory.decodeFile(path) }
@@ -187,7 +200,7 @@ fun AlbumArt(
     if (bitmap != null) {
         Image(
             provider = ImageProvider(bitmap),
-            contentDescription = "album art", // maybe put album name
+            contentDescription = contentDescription,
             contentScale = ContentScale.Fit, // Fit uses all space while maintaining aspect ratio
             modifier = modifier
             // opens the app when clicked
