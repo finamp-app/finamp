@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.plugin.compose") version "2.2.10" // this version matches your Kotlin versios
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.10"
 }
 
 allprojects {

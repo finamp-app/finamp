@@ -1115,7 +1115,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
             await _volume.setInternalVolume(volume);
           }
           break;
-        case CustomPlaybackActions.incrementRepeat:
+        case CustomPlaybackActions.toggleLoopMode:
           final queueService = GetIt.instance<QueueService>();
           return queueService.toggleLoopMode();
       }

@@ -44,7 +44,6 @@ class RectangularWidget : GlanceAppWidget() {
 
     override val sizeMode = SizeMode.Exact
 
-    // Needed for Updating
     override val stateDefinition: GlanceStateDefinition<*>?
       get() = HomeWidgetGlanceStateDefinition()
 
@@ -66,11 +65,10 @@ class RectangularWidget : GlanceAppWidget() {
 
         val isBig = size.width > SMALL_WIDTH
 
-        // Leaves room for favorite button
-        // Since the image will be square can use nowPlayingHeight
-        var nowPlayingTextWidth = size.width - nowPlayingHeight
+        // Leaves room on right side for favorite button
+        var textWidth = size.width - nowPlayingHeight
         if (isBig) {
-            nowPlayingTextWidth -= FAVORITE_BUTTON_SIZE
+            textWidth -= FAVORITE_BUTTON_SIZE
         }
 
         Column(
@@ -92,9 +90,9 @@ class RectangularWidget : GlanceAppWidget() {
                     .cornerRadius(15.dp)
                     .padding(10.dp)
                 )
-                NowPlayingText(currentState, nowPlayingTextWidth)
+                NowPlayingText(currentState, textWidth)
 
-                // hide favorite button when too small
+                // Hide favorite button when too small
                 if (isBig) {
                     // This spacer takes all the space not used by the art and track info
                     Spacer(modifier = GlanceModifier.defaultWeight())
@@ -105,7 +103,7 @@ class RectangularWidget : GlanceAppWidget() {
                         FavoriteButton(
                             currentState,
                             backgroundColor = GlanceTheme.colors.inversePrimary,
-                            modifier = GlanceModifier.size(40.dp)
+                            modifier = GlanceModifier.size(FAVORITE_BUTTON_SIZE)
                         )
                     }
                 }

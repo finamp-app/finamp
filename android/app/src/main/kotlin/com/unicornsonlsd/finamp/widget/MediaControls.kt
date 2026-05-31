@@ -11,13 +11,12 @@ import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 
 class MediaControls : ActionCallback {
     companion object {
-        //val KEY: String = "action"
         val PLAY: String = "play"
         val PAUSE: String = "pause"
         val NEXT: String = "skip_next"
         val PREVIOUS: String = "skip_previous"
         val FAVORITE: String = "favorite_toggle"
-        val REPEAT: String = "repeat_increment"
+        val REPEAT: String = "toggle_loop"
         val SHUFFLE: String = "shuffle_toggle"
 
         val KEY = ActionParameters.Key<String>(
