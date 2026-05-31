@@ -2283,6 +2283,8 @@ class MediaItemParentTypeAdapter extends TypeAdapter<MediaItemParentType> {
         return MediaItemParentType.rootCollection;
       case 2:
         return MediaItemParentType.instantMix;
+      case 3:
+        return MediaItemParentType.recentlyPlayed;
       default:
         return MediaItemParentType.collection;
     }
@@ -2297,6 +2299,8 @@ class MediaItemParentTypeAdapter extends TypeAdapter<MediaItemParentType> {
         writer.writeByte(1);
       case MediaItemParentType.instantMix:
         writer.writeByte(2);
+      case MediaItemParentType.recentlyPlayed:
+        writer.writeByte(3);
     }
   }
 
@@ -8974,6 +8978,7 @@ const _$MediaItemParentTypeEnumMap = {
   MediaItemParentType.collection: 'collection',
   MediaItemParentType.rootCollection: 'rootCollection',
   MediaItemParentType.instantMix: 'instantMix',
+  MediaItemParentType.recentlyPlayed: 'recentlyPlayed',
 };
 
 Value? _$JsonConverterFromJson<Json, Value>(
