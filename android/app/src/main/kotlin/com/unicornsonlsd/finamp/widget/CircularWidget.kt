@@ -31,6 +31,7 @@ import androidx.glance.state.GlanceStateDefinition
 import es.antonborri.home_widget.HomeWidgetGlanceState
 import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
 import com.unicornsonlsd.finamp.MainActivity
+import com.unicornsonlsd.finamp.R
 
 
 class CircularWidget : GlanceAppWidget() {
@@ -38,6 +39,8 @@ class CircularWidget : GlanceAppWidget() {
     companion object {
         private val LOG_TAG = "CIRCULAR_WIDGET"
         private val MEDIUM_HEIGHT = 180.dp
+        private val FAVORITE_SIZE = 50.dp
+        private val PLAY_PAUSE_SIZE = 55.dp
     }
 
     override val sizeMode = SizeMode.Exact
@@ -65,13 +68,19 @@ class CircularWidget : GlanceAppWidget() {
             buttonGridSize = imageSize - (imageSize / 6)
         }
 
+        val artist = currentState.preferences.getString("arist", "") ?: ""
+        val title = currentState.preferences.getString("title", "") ?: ""
+        var artDescription = context.getString(R.string.album_art_description, title, artist)
+
         Box(
             modifier = GlanceModifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            AlbumArt(context, currentState, GlanceModifier
-                .size(imageSize)
-                .cornerRadius(imageSize/2) // Shapes the image into a circle
+            AlbumArt(
+                context,
+                currentState,
+                contentDescription = artDescription,
+                modifier = GlanceModifier.size(imageSize).cornerRadius(imageSize/2)
             )
 
             // Holds the grid of buttons
@@ -87,10 +96,11 @@ class CircularWidget : GlanceAppWidget() {
                     // Hide the favorite button when too small
                     if (size.height >= MEDIUM_HEIGHT) {
                         FavoriteButton(
+                            context,
                             currentState,
                             backgroundColor = GlanceTheme.colors.secondary,
                             contentColor = GlanceTheme.colors.onSecondary,
-                            modifier = GlanceModifier.size(50.dp)
+                            modifier = GlanceModifier.size(FAVORITE_SIZE)
                         )
                     }
                 }
@@ -104,10 +114,11 @@ class CircularWidget : GlanceAppWidget() {
                     horizontalAlignment = Alignment.Start
                 ) {
                     PlayPauseButton(
+                        context,
                         currentState,
                         backgroundColor = GlanceTheme.colors.primary,
                         contentColor = GlanceTheme.colors.onPrimary,
-                        modifier = GlanceModifier.size(55.dp)
+                        modifier = GlanceModifier.size(PLAY_PAUSE_SIZE)
                     )
                 }
             }

@@ -8,6 +8,8 @@ import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.semantics.semantics
+import androidx.glance.semantics.contentDescription
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.provideContent
@@ -27,7 +29,6 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import androidx.glance.state.GlanceStateDefinition
-
 import es.antonborri.home_widget.HomeWidgetGlanceState
 import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
 import es.antonborri.home_widget.actionStartActivity
@@ -37,7 +38,7 @@ import com.unicornsonlsd.finamp.R
 class RectangularWidget : GlanceAppWidget() {
 
     companion object {
-        private val HOME_WIDGET_LOG_TAG = "RECTANGULAR_WIDGET"
+        private val _LOG_TAG = "RECTANGULAR_WIDGET"
         private val SMALL_WIDTH = 300.dp
         private val FAVORITE_BUTTON_SIZE = 40.dp
     }
@@ -81,11 +82,13 @@ class RectangularWidget : GlanceAppWidget() {
                 .background(GlanceTheme.colors.inversePrimary)
                 .fillMaxWidth()
                 .height(nowPlayingHeight)
+                .semantics { contentDescription = context.getString(R.string.launch_description) }
                 .clickable(onClick = actionStartActivity<MainActivity>(
                     context, Uri.parse("finamp://"))
                 ),
             ) {
-                AlbumArt(context, currentState, GlanceModifier
+                AlbumArt(context, currentState,
+                    modifier = GlanceModifier
                     .size(nowPlayingHeight)
                     .cornerRadius(15.dp)
                     .padding(10.dp)
@@ -101,6 +104,7 @@ class RectangularWidget : GlanceAppWidget() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         FavoriteButton(
+                            context,
                             currentState,
                             backgroundColor = GlanceTheme.colors.inversePrimary,
                             modifier = GlanceModifier.size(FAVORITE_BUTTON_SIZE)
@@ -119,13 +123,13 @@ class RectangularWidget : GlanceAppWidget() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (isBig) {
-                    RepeatButton(currentState)
+                    RepeatButton(context, currentState)
                 }
-                PreviousButton()
-                PlayPauseButton(currentState)
-                NextButton()
+                PreviousButton(context)
+                PlayPauseButton(context, currentState)
+                NextButton(context)
                 if (isBig) {
-                    ShuffleButton(currentState)
+                    ShuffleButton(context, currentState)
                 }
             }
         }

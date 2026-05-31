@@ -7,6 +7,11 @@ allprojects {
         google()
         mavenCentral()
     }
+    configurations.all {
+        resolutionStrategy {
+            force "androidx.glance:glance-appwidget:1.1.1"
+        }
+    }
 }
 
 def rootBuildDir = rootProject.layout.buildDirectory.get().dir('../../build')

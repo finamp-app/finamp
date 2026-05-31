@@ -19,5 +19,6 @@
     <string name="repeat_none_description">Repeat off</string>
     <string name="favorite_description">Toggle favorite on</string>
     <string name="unfavorite_description">Toggle favorite off</string>
+    <string name="album_art_description">Now playing: %1$s by %2$s. Launch Finamp</string>
     <string name="launch_description">Launch Finamp</string>
 </resources>
