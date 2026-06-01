@@ -1,42 +1,42 @@
 {
     "error": "エラー",
-    "serverUrl": "サーバー URL",
-    "internalExternalIpExplanation": "リモートからJellyfinサーバーにアクセスするには外部IPを指定する必要があります。\n\nサーバーがHTTPポート(80/443)やJellyfinのデフォルトポート(8096)で動作している場合、ポートを指定する必要はありません。\n\nURLが正しい場合、入力フィールドの下にサーバーに関する情報が表示されるはずです。",
+    "serverUrl": "サーバーURL",
+    "internalExternalIpExplanation": "Jellyfinサーバーにリモートでアクセスする場合は、外部IPを使用する必要があります。\n\nHTTPのデフォルトポート（80または443）またはJellyfinのデフォルトポート（8096）を使用している場合は、ポートを指定する必要はありません。\n\nURLが正しい場合は、入力欄の下にサーバーに関する情報が表示されます。",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
-    "emptyServerUrl": "サーバーURLを入力してください",
+    "emptyServerUrl": "サーバーURLは空にできません",
     "@emptyServerUrl": {
         "description": "Error message that shows when the user submits a login without a server URL"
     },
     "password": "パスワード",
     "logs": "ログ",
     "username": "ユーザー名",
-    "next": "次",
-    "unknownName": "タイトル不明",
-    "couldNotFindLibraries": "ライブラリが見つかりません。",
+    "next": "次へ",
+    "unknownName": "不明な名前",
+    "couldNotFindLibraries": "ライブラリが見つかりませんでした。",
     "@couldNotFindLibraries": {
         "description": "Error message when the user does not have any libraries"
     },
-    "tracks": "曲",
+    "tracks": "トラック",
     "albums": "アルバム",
     "artists": "アーティスト",
     "genres": "ジャンル",
-    "selectMusicLibraries": "ミュージック・ライブラリを選択",
+    "selectMusicLibraries": "音楽ライブラリを選択する",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
     "playlists": "プレイリスト",
-    "music": "ミュージック",
+    "music": "音楽",
     "clear": "クリア",
-    "shuffleAll": "全てシャッフル",
+    "shuffleAll": "すべてシャッフルする",
     "downloads": "ダウンロード",
-    "startMix": "ミックス開始",
-    "startMixNoTracksArtist": "アーティスト名を長押しすることでミックス対象に追加または削除できます",
+    "startMix": "ミックスを開始する",
+    "startMixNoTracksArtist": "ミックスを開始する前に、アーティストを長押ししてミックスビルダーに追加または削除する",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
     },
-    "startMixNoTracksAlbum": "アルバムを長押しすることでミックス対象に追加または削除できます",
+    "startMixNoTracksAlbum": "ミックスを開始する前に、アルバムを長押ししてミックスビルダーに追加または削除する",
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
@@ -44,7 +44,7 @@
     "offlineMode": "オフラインモード",
     "sortOrder": "並び順",
     "album": "アルバム",
-    "sortBy": "並び基準",
+    "sortBy": "並び替え基準",
     "albumArtist": "アルバムアーティスト",
     "artist": "アーティスト",
     "budget": "予算",
@@ -283,15 +283,15 @@
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
-    "changeLanguage": "言語を変更",
+    "changeLanguage": "言語を変更する",
     "@changeLanguage": {
         "description": "Label for button shown during the login process that allows the user to change the app language"
     },
-    "serverUrlHint": "例: demo.jellyfin.org/stable",
+    "serverUrlHint": "例：demo.jellyfin.org/stable",
     "@serverUrlHint": {
         "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
     },
-    "startMixNoTracksGenre": "ジャンルを長押しで追加・削除し、ミックスをカスタマイズできます",
+    "startMixNoTracksGenre": "ミックスを開始する前に、ジャンルを長押ししてミックスビルダーに追加または削除する",
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
@@ -317,7 +317,7 @@
     "@usernameValidationMissingUsername": {
         "description": "Error message that shows when the user submits a login without a username"
     },
-    "passwordHint": "パスワードを入力してください",
+    "passwordHint": "パスワードを入力する",
     "@passwordHint": {
         "description": "Hint text for the password input field."
     },
@@ -337,15 +337,15 @@
     "@aboutContributionLink": {
         "description": "Link to the Finamp GitHub repository, shown in the about screen."
     },
-    "aboutReleaseNotes": "最新のリリースノートを読む:",
+    "aboutReleaseNotes": "最新のリリースノートを読む：",
     "@aboutReleaseNotes": {
         "description": "Link to the release notes, shown in the about screen."
     },
-    "aboutContributionPrompt": "素晴らしい人々が空き時間に作りました。\nあなたもその一員になれるかもしれません！",
+    "aboutContributionPrompt": "空き時間を使って開発している素晴らしいメンバーによって作られました。\nあなたもその一員になれます！",
     "@aboutContributionPrompt": {
         "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
     },
-    "aboutTranslations": "「フィンアンプ」をあなたの言語に翻訳する手伝いをしてください：",
+    "aboutTranslations": "「フィンアンプ」をあなたの言語に翻訳する：",
     "@aboutTranslations": {
         "description": "Link to the translation project, shown in the about screen."
     },
@@ -353,11 +353,11 @@
     "@aboutThanks": {
         "description": "Thank you message shown in the about screen."
     },
-    "loginFlowSlogan": "あなたの音楽を、あなたの思い通りに。",
+    "loginFlowSlogan": "あなたの音楽を、あなたらしく。",
     "@loginFlowSlogan": {
         "description": "Slogan shown on the login screen."
     },
-    "loginFlowGetStarted": "始めましょう！",
+    "loginFlowGetStarted": "始める！",
     "@loginFlowGetStarted": {
         "description": "Button label for the login/splash screen."
     },
@@ -365,7 +365,7 @@
     "@viewLogs": {
         "description": "Label for button shown during the login process that allows the user to view the app logs"
     },
-    "loginFlowServerSelectionHeading": "Jellyfin に接続",
+    "loginFlowServerSelectionHeading": "Jellyfinに接続する",
     "@loginFlowServerSelectionHeading": {
         "description": "Heading for the server selection step during the login flow."
     },
@@ -381,7 +381,7 @@
     "@connectingToServer": {
         "description": "Text shown while the connection to the specified server is attempted"
     },
-    "loginFlowLocalNetworkServers": "ローカルネットワーク上のサーバー:",
+    "loginFlowLocalNetworkServers": "ローカルネットワーク上のサーバー：",
     "@loginFlowLocalNetworkServers": {
         "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
     },
@@ -389,7 +389,7 @@
     "@loginFlowLocalNetworkServersScanningForServers": {
         "description": "Text shown while servers are being discovered via UDP broadcasts"
     },
-    "loginFlowAccountSelectionHeading": "アカウントを選択してください",
+    "loginFlowAccountSelectionHeading": "アカウントを選択する",
     "@loginFlowAccountSelectionHeading": {
         "description": "Heading for the account selection step during the login flow."
     },
@@ -397,7 +397,7 @@
     "@backToServerSelection": {
         "description": "Label for the button that takes the user back to the server selection step during the login flow."
     },
-    "loginFlowNamelessUser": "名前なしユーザー",
+    "loginFlowNamelessUser": "名前のないユーザー",
     "@loginFlowNamelessUser": {
         "description": "Name for a user that doesn't have a name set on the server."
     },
@@ -405,7 +405,7 @@
     "@loginFlowCustomUser": {
         "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
     },
-    "loginFlowAuthenticationHeading": "アカウントにログインしてください",
+    "loginFlowAuthenticationHeading": "アカウントにログインする",
     "@loginFlowAuthenticationHeading": {
         "description": "Heading for the authentication step during the login flow."
     },
@@ -413,15 +413,15 @@
     "@backToAccountSelection": {
         "description": "Label for the button that takes the user back to the account selection step during the login flow."
     },
-    "loginFlowQuickConnectPrompt": "Quick Connect コードを使用する",
+    "loginFlowQuickConnectPrompt": "Quick Connectコードを使用する",
     "@loginFlowQuickConnectPrompt": {
         "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
-    "loginFlowQuickConnectInstructions": "Jellyfinアプリまたはウェブサイトを開き、ユーザーアイコンをクリックして「Quick Connect」を選択してください。",
+    "loginFlowQuickConnectInstructions": "Jellyfinアプリまたはウェブサイトを開き、ユーザーアイコンをクリックして、Quick Connectを選択します。",
     "@loginFlowQuickConnectInstructions": {
         "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
-    "loginFlowQuickConnectDisabled": "このサーバーでは、Quick Connect が無効になっています。",
+    "loginFlowQuickConnectDisabled": "このサーバーではQuick Connectが無効になっています。",
     "@loginFlowQuickConnectDisabled": {
         "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
     },
@@ -429,15 +429,15 @@
     "@orDivider": {
         "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
     },
-    "loginFlowSelectAUser": "ユーザーを選択",
+    "loginFlowSelectAUser": "ユーザーを選択する",
     "@loginFlowSelectAUser": {
         "description": "Heading for the list of users that the user can select from during the login flow."
     },
-    "usernameHint": "ユーザー名を入力してください",
+    "usernameHint": "ユーザー名を入力する",
     "@usernameHint": {
         "description": "Hint text for the username input field."
     },
-    "login": "ログイン",
+    "login": "ログインする",
     "@login": {
         "description": "Label for the login button."
     },
@@ -491,7 +491,7 @@
         "description": "Option to download item in long-press menu."
     },
     "downloadSettings": "ダウンロード",
-    "deleteDownloadsPrompt": "この装置から、{itemType, select, album{アルバム} playlist{playlist} artist{アーティスト} genre{ジャンル} track{曲} library{ライブラリ} other{アイテム}} 「{itemName}」を削除してもよろしいですか?",
+    "deleteDownloadsPrompt": "このデバイスから{itemType, select, album{アルバム} playlist{プレイリスト} artist{アーティスト} genre{ジャンル} track{トラック} library{ライブラリ} other{項目}}「{itemName}」を削除してもよろしいですか？",
     "@deleteDownloadsPrompt": {
         "placeholders": {
             "itemName": {
@@ -520,7 +520,7 @@
     "@apply": {
         "description": "Used for a button in the playback speed menu"
     },
-    "startupErrorCallToAction": "できるだけ早く修正できるよう、ログ（下のボタンを使用）とこのページのスクリーンショットを添えて、「github.com/jmshrv/finamp」に問題を作成してください。",
+    "startupErrorCallToAction": "下のボタンからログとこのページのスクリーンショットを添えて「github.com/jmshrv/finamp」にIssueを作成してください。できるだけ早く修正できるよう対応します。",
     "@startupErrorCallToAction": {
         "description": "The subtitle / call to action for what to do after encountering a startup error"
     },
@@ -575,7 +575,7 @@
     "@reset": {
         "description": "Used for buttons in the playback speed menu and the settings"
     },
-    "appearsOnAlbums": "登場作品",
+    "appearsOnAlbums": "参加作品",
     "performingArtists": "出演アーティスト",
     "shown": "表示",
     "@shown": {
@@ -604,7 +604,7 @@
     "@startupErrorTitle": {
         "description": "The title for the error screen that shows when startup fails."
     },
-    "startupErrorWorkaround": "このエラーを回避するためにアプリデータを消去してアプリをリセットすることができます。この場合すべての設定とダウンロードが削除されることにご注意ください。",
+    "startupErrorWorkaround": "エラーを回避する方法として、アプリデータを消去してアプリをリセットできます。この場合、すべての設定とダウンロードが削除されることにご注意ください。",
     "@startupErrorWorkaround": {
         "description": "The subtitle for how to manually recover from a startup error"
     },
@@ -1321,7 +1321,7 @@
         },
         "description": "Prompt on dialog to confirm a removal from playlist"
     },
-    "shuffleSome": "シャッフルする",
+    "shuffleSome": "いくつかシャッフルする",
     "playbackActionPageMoveWithinQueue": "キュー内で移動",
     "@playbackActionPageMoveWithinQueue": {
         "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
@@ -1795,7 +1795,7 @@
         },
         "description": "Message shown when a genre filter or open-genre action fails because the genre item could not be found."
     },
-    "incidentalDownloadTooltip": "{parentName} のダウンロードと連動しているため、単体での操作はできません。",
+    "incidentalDownloadTooltip": "この項目は{parentName}によってダウンロードが必要です。",
     "@incidentalDownloadTooltip": {
         "placeholders": {
             "parentName": {
@@ -1826,16 +1826,16 @@
     "@transcodingStreamingFormatTitle": {
         "description": "Title for the dropdown that selects the format for transcoded streams"
     },
-    "transcodingStreamingFormatSubtitle": "トランスコードされたオーディオをストリーミングするときに使用する形式を選択します。すでにキューに入っているトラックは影響を受けません。",
-    "downloadTranscodeEnableTitle": "トランスコードされたダウンロードを有効にする",
+    "transcodingStreamingFormatSubtitle": "トランスコードされた音声のストリーミング時に使用する形式を選択します。すでにキューに追加されているトラックには適用されません。",
+    "downloadTranscodeEnableTitle": "トランスコード済みダウンロードを有効にする",
     "@downloadTranscodeEnableTitle": {
         "description": "Title for Enable Transcoded Downloads dropdown"
     },
-    "downloadTranscodeCodecTitle": "ダウンロードコーデックを選択します",
+    "downloadTranscodeCodecTitle": "ダウンロード用コーデックを選択する",
     "@downloadTranscodeCodecTitle": {
         "description": "Title for Select Download Codec dropdown"
     },
-    "downloadTranscodeEnableOption": "{オプション、選択、常に{常に}決して{しない}質問しない{質問する}その他{{オプション}} }",
+    "downloadTranscodeEnableOption": "{option, select, always{常に} never{しない} ask{確認する} other{{option}} }",
     "@downloadTranscodeEnableOption": {
         "placeholders": {
             "option": {
@@ -1844,23 +1844,23 @@
         },
         "description": "Options in Select Download Codec dropdown"
     },
-    "downloadBitrate": "ダウンロードビットレート",
+    "downloadBitrate": "ダウンロードのビットレート",
     "@downloadBitrate": {
         "description": "Title for Download Bitrate settings slider"
     },
-    "downloadBitrateSubtitle": "ビットレートが高くなると、より大きなストレージ要件を犠牲にして、より高品質のオーディオが得られます。",
+    "downloadBitrateSubtitle": "ビットレートを高くすると音質は向上しますが、必要なストレージ容量が大きくなります。",
     "@downloadBitrateSubtitle": {
         "description": "subtitle for Download Bitrate settings slider"
     },
-    "multichannelHandlingTitle": "マルチチャネルトランスコード処理",
+    "multichannelHandlingTitle": "マルチチャンネルのトランスコード処理",
     "@multichannelHandlingTitle": {
         "description": "Title for multi-channel handling dropdown"
     },
-    "multichannelHandlingSubtitle": "トランスコーディング時にマルチチャンネル トラック (> 2 チャンネル) を処理する方法。ストリーミングとダウンロードの両方に適用されます。",
+    "multichannelHandlingSubtitle": "トランスコード時に、マルチチャンネル（2チャンネル超）のトラックをどのように処理するかを設定します。ストリーミングとダウンロードの両方に適用されます。",
     "@multichannelHandlingSubtitle": {
         "description": "Subtitle for multi-channel handling dropdown"
     },
-    "multichannelHandlingOption": "{オプション、選択、stereoDownmixLossy{非可逆をステレオにダウンミックスのみ} StereDownmixAll{すべてをステレオにダウンミックス} fixBitrate{決してダウンミックスしない} other{{option}} }",
+    "multichannelHandlingOption": "{option, select, stereoDownmixLossy{非可逆形式のみステレオにダウンミックス} stereoDownmixAll{すべてステレオにダウンミックス} fixedBitrate{ダウンミックスしない} other{{option}} }",
     "@multichannelHandlingOption": {
         "placeholders": {
             "option": {
@@ -1869,11 +1869,11 @@
         },
         "description": "Options in multi-channel handling dropdown"
     },
-    "transcodeHint": "トランスコード？",
+    "transcodeHint": "トランスコードしますか？",
     "@transcodeHint": {
         "description": "Initial text in downloads dropdown when 'Enable Transcoded Downloads' is set to ask."
     },
-    "doTranscode": "{コーデック} @ {bitrate}{size, select, null{} other{ - ~{size}}} としてダウンロード",
+    "doTranscode": "{codec}（{bitrate}）でダウンロード{size, select, null{} other{ - 約{size}}}",
     "@doTranscode": {
         "placeholders": {
             "bitrate": {
@@ -1891,7 +1891,7 @@
         },
         "description": "Dropdown option to download transcoded version of tracks"
     },
-    "downloadInfo": "{サイズ} {コーデック}{ビットレート、選択、null{} その他{ @ {ビットレート} トランスコード済み}}{場所、選択、null{} その他{ ({場所})}}",
+    "downloadInfo": "{size} {codec}{bitrate, select, null{} other{ @ {bitrate}でトランスコード}}{location, select, null{} other{（{location}）}}",
     "@downloadInfo": {
         "placeholders": {
             "bitrate": {
@@ -1913,7 +1913,7 @@
         },
         "description": "Track info line in downloads screen lists"
     },
-    "collectionDownloadInfo": "{size}{codec, select, ORIGINAL{} other{ as {codec} @ {bitrate}}}{location, select, null{} other{ ({location})}}",
+    "collectionDownloadInfo": "{size}{codec, select, ORIGINAL{} other{ {codec}（{bitrate}）として}}{location, select, null{} other{（{location}）}}",
     "@collectionDownloadInfo": {
         "placeholders": {
             "bitrate": {
@@ -1935,7 +1935,7 @@
         },
         "description": "Collection info line in downloads screen lists"
     },
-    "dontTranscode": "オリジナルをダウンロード{説明, 選択, null{} その他{ - {説明}}}",
+    "dontTranscode": "オリジナルをダウンロード{description, select, null{} other{ - {description}}}",
     "@dontTranscode": {
         "placeholders": {
             "description": {
@@ -1945,26 +1945,26 @@
         },
         "description": "Dropdown option to download original version of tracks"
     },
-    "redownloadcomplete": "トランスコードの再ダウンロードがキューに入れられました。",
+    "redownloadcomplete": "トランスコード済みファイルの再ダウンロードをキューに追加しました。",
     "@redownloadcomplete": {
         "description": "Mesage when Automatically Redownload Transcodes transcode setting completes operations."
     },
-    "redownloadTitle": "トランスコードを自動的に再ダウンロードする",
+    "redownloadTitle": "トランスコード済みファイルを自動的に再ダウンロードする",
     "@redownloadTitle": {
         "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
     },
-    "redownloadSubtitle": "親コレクションの変更により、異なる品質になることが予想されるトラックを自動的に再ダウンロードします。",
+    "redownloadSubtitle": "親コレクションの変更により、品質が変わる可能性のあるトラックを自動的に再ダウンロードします。",
     "@redownloadSubtitle": {
         "description": "subtitle for download transcode setting which redownloads tracks with higher allowed qualities"
     },
-    "defaultDownloadLocationButton": "デフォルトのダウンロード場所として設定します。 ダウンロードごとの選択を無効にします。",
+    "defaultDownloadLocationButton": "デフォルトのダウンロード先として設定します。無効にすると、ダウンロードごとに選択できます。",
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
-    "fixedGridSizeSwitchTitle": "固定サイズのグリッド タイルを使用する",
-    "fixedGridSizeSwitchSubtitle": "グリッド タイルのサイズはウィンドウ/画面のサイズには反応しません。",
+    "fixedGridSizeSwitchTitle": "固定サイズのグリッドタイルを使用する",
+    "fixedGridSizeSwitchSubtitle": "グリッドタイルのサイズは、ウィンドウや画面のサイズに応じて変化しません。",
     "fixedGridSizeTitle": "グリッドタイルのサイズ",
-    "fixedGridTileSizeEnum": "{サイズ、選択、small{Small}、medium{medium}、large{Large}、veryLarge{Very Large}、その他{???}}",
+    "fixedGridTileSizeEnum": "{size, select, small{小} medium{中} large{大} veryLarge{特大} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
             "size": {
@@ -1973,27 +1973,27 @@
         },
         "description": "Localized names of fixed size grid tile sizes."
     },
-    "allowSplitScreenTitle": "分割画面モードを許可する",
-    "allowSplitScreenSubtitle": "プレーヤーは、より広いディスプレイ上の他のビューと並んで表示されます。",
-    "enableVibration": "振動を有効にする",
-    "enableVibrationSubtitle": "振動を有効にするかどうか。",
-    "hideQueueButtonSubtitle": "プレーヤー画面のキューボタンを非表示にします。上にスワイプしてキューにアクセスします。",
-    "oneLineMarqueeTextButton": "長いタイトルの自動スクロール",
-    "oneLineMarqueeTextButtonSubtitle": "2 行で表示するには長すぎるトラックタイトルを自動的にスクロールします",
-    "marqueeOrTruncateButton": "長いタイトルには省略記号を使用します",
-    "marqueeOrTruncateButtonSubtitle": "テキストをスクロールする代わりに、長いタイトルの最後に … を表示します",
+    "allowSplitScreenTitle": "画面分割モードを許可する",
+    "allowSplitScreenSubtitle": "プレーヤーは、幅の広いディスプレイでは他のビューと並べて表示されます。",
+    "enableVibration": "バイブレーションを有効にする",
+    "enableVibrationSubtitle": "バイブレーションを有効にするかどうかを設定します。",
+    "hideQueueButtonSubtitle": "プレーヤー画面のキューボタンを非表示にします。キューを表示するには上にスワイプします。",
+    "oneLineMarqueeTextButton": "長いタイトルを自動スクロールする",
+    "oneLineMarqueeTextButtonSubtitle": "2行で表示しきれないトラックタイトルを自動的にスクロールします",
+    "marqueeOrTruncateButton": "長いタイトルを省略表示する",
+    "marqueeOrTruncateButtonSubtitle": "長いタイトルはスクロールせず、末尾に「…」を表示する",
     "hidePlayerBottomActions": "下部のアクションを非表示にする",
-    "hidePlayerBottomActionsSubtitle": "プレーヤー画面上のキューボタンと歌詞ボタンを非表示にします。上にスワイプしてキューにアクセスし、左にスワイプして (アルバム カバーの下)、歌詞がある場合は表示します。",
-    "prioritizePlayerCover": "アルバムジャケットを優先する",
-    "prioritizePlayerCoverSubtitle": "プレーヤー画面にアルバムのジャケットを大きく表示することを優先します。重要でないコントロールは、画面サイズが小さいほど積極的に非表示になります。",
-    "suppressPlayerPadding": "プレーヤーコントロールのパディングを抑制する",
-    "suppressPlayerPaddingSubtitle": "アルバム カバーがフル サイズでない場合、プレーヤー画面コントロール間のパディングを完全に最小限に抑えます。",
-    "lockDownload": "常にデバイス上に置いておきます",
+    "hidePlayerBottomActionsSubtitle": "プレーヤー画面のキューと歌詞ボタンを非表示にします。キューを表示するには上にスワイプし、歌詞がある場合はアルバムカバーの下を左にスワイプして表示します。",
+    "prioritizePlayerCover": "アルバムカバーを優先する",
+    "prioritizePlayerCoverSubtitle": "プレーヤー画面でアルバムカバーを大きく表示することを優先します。画面サイズが小さい場合、重要度の低いコントロールはより積極的に非表示になります。",
+    "suppressPlayerPadding": "プレーヤーコントロールの余白を抑える",
+    "suppressPlayerPaddingSubtitle": "アルバムカバーが最大サイズで表示されていない場合、プレーヤー画面のコントロール間の余白を最小限に抑えます。",
+    "lockDownload": "常にデバイスに保持する",
     "@lockDownload": {
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
     },
-    "showArtistChipImage": "アーティスト画像をアーティスト名とともに表示する",
-    "showArtistChipImageSubtitle": "これは、プレーヤー画面などの小さなアーティスト画像のプレビューに影響します。",
+    "showArtistChipImage": "アーティスト名と一緒にアーティスト画像を表示する",
+    "showArtistChipImageSubtitle": "プレーヤー画面などの小さなアーティスト画像プレビューに適用されます。",
     "scrollToCurrentTrack": "現在のトラックまでスクロールします",
     "@scrollToCurrentTrack": {
         "description": "Tooltip for button that scrolls the queue list back to the current track"
