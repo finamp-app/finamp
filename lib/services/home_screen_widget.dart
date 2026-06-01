@@ -50,19 +50,28 @@ class HomeScreenWidget {
       }
     });
 
-    // Update the widget data when there's MediaItem or PlaybackState changed
-    _audioHandler.mediaItem.listen((MediaItem? item) async {
-      await HomeScreenWidget.updateWidgetData();
-    });
-
+    // Update all the widget data when PlaybackState is ready
     _audioHandler.playbackState.listen((PlaybackState? state) async {
-      await HomeScreenWidget.updateWidgetData();
+      if (state?.processingState == AudioProcessingState.ready) {
+        await HomeScreenWidget.updateWidgetData();
+      }
     });
 
+    // Update on loop mode change
     _queueService.getLoopModeStream().listen((FinampLoopMode loopMode) async {
       final installed = await HomeScreenWidget.isInstalled();
       if (installed) {
         await HomeWidget.saveWidgetData("repeatMode", loopMode.name);
+        await HomeScreenWidget.reloadWidget();
+      }
+    });
+
+    // Update on playback order change
+    _queueService.getPlaybackOrderStream().listen((FinampPlaybackOrder playbackOrder) async {
+      final installed = await HomeScreenWidget.isInstalled();
+      if (installed) {
+        final shuffled = playbackOrder == FinampPlaybackOrder.shuffled;
+        await HomeWidget.saveWidgetData("shuffled", shuffled);
         await HomeScreenWidget.reloadWidget();
       }
     });
