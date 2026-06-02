@@ -3677,5 +3677,9 @@
   "alreadyRandomized": "This section is already presented in a random order",
   "@alreadyRandomized": {
     "description": "Tooltip for shuffle button on home screen sections using a random sort order, where it is disabled due to being unneeded"
+  },
+  "libraryQualifierActive": "active",
+  "@libraryQualifierActive": {
+    "description": "Label shown next to the currently selected library in the Finamp menu/drawer"
   }
 }

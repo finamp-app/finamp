@@ -4,6 +4,7 @@ import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/album_image.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/queue_restore_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/datetime_helper.dart';
@@ -161,17 +162,9 @@ class HomeScreenQueueTile extends ConsumerWidget {
         width: queuesHomeSectionWidth,
         // height: _queuesSectionHeight,
         child: GestureDetector(
-          onSecondaryTap: () => {
-            if (source.item != null) {openItemMenu(context: context, item: source.item!, queueInfo: info)},
-          },
-          onLongPress: () => {
-            if (source.item != null) {openItemMenu(context: context, item: source.item!, queueInfo: info)},
-          },
-          onTap: () {
-            queueService.archiveSavedQueue();
-            unawaited(queueService.loadSavedQueue(info).catchError(GlobalSnackbar.error));
-            Navigator.of(context).popUntil((route) => route.isFirst && !route.willHandlePopInternally);
-          },
+          onSecondaryTap: () => showQueueRestoreMenu(context: context, queueInfo: info),
+          onLongPress: () => showQueueRestoreMenu(context: context, queueInfo: info),
+          onTap: () => showQueueRestoreMenu(context: context, queueInfo: info),
           child: Container(
             decoration: BoxDecoration(
               color: Theme.brightnessOf(context) == Brightness.dark

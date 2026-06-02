@@ -26,7 +26,7 @@ class QueueRestoreTile extends ConsumerWidget {
     final queueService = GetIt.instance<QueueService>();
     int remainingTracks = info.trackCount - info.previousTracks.length;
 
-    BaseItemDto? track = info.currentTrack == null ? null : ref.watch(itemByIdProvider(info.currentTrack!)).value;
+    BaseItemDto? track = info.currentTrack == null ? null : ref.watch(itemByIdProvider(info.currentTrack!)).valueOrNull;
 
     QueueItemSource source = info.source;
     if (source.wantsItem) {

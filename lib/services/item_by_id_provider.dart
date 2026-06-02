@@ -33,7 +33,7 @@ Future<BaseItemDto?> itemById(Ref ref, BaseItemId baseItemId) async {
 
   return baseItem;
   } catch (e) {
-    // Don't throw on failure, just return null. Otherwise this could lead to unhandled exceptions leading to widget render errors.
-    return null;
+    // Loading failed, e.g. due to a 404 response. Any accessing widgets either need to handle (catch) the error explicitly, or use .valueOrNull and handle the null case
+    rethrow;
   }
 }

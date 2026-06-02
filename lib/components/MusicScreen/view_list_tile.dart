@@ -34,7 +34,7 @@ class ViewListTile extends ConsumerWidget {
           ),
         ),
         title: view.name ?? context.l10n.unknownName,
-        subtitle: currentViewId == view.id ? "active*" : null,
+        subtitle: currentViewId == view.id ? context.l10n.libraryQualifierActive : null,
         trailing: DownloadButton(
           isLibrary: true,
           item: DownloadStub.fromItem(item: view, type: DownloadItemType.collection),

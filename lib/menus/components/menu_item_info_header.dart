@@ -15,10 +15,13 @@ import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/album_screen.dart';
 import 'package:finamp/screens/artist_screen.dart';
 import 'package:finamp/screens/genre_screen.dart';
+import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/services/datetime_helper.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../components/finamp_icon.dart';
 import '../../extensions/localizations.dart';
@@ -420,6 +423,23 @@ class ItemInfo extends StatelessWidget {
     //TODO only push a route if the item is not already open in the current route (e.g. if we're showing an album menu from the album screen, we shouldn't push another album screen for the same album) but close the menu instead
     void openItem() {
       if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.track) {
+        return;
+      } else if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.collection) {
+        final finampUserHelper = GetIt.instance<FinampUserHelper>();
+        Navigator.of(context).push(
+          MaterialPageRoute<MusicScreen>(
+            builder: (context) => MusicScreen(
+              singleTabConfig: HomeScreenSectionConfiguration(
+                base: CollectionHomeSection(
+                  itemId: item.id,
+                  libraryId: finampUserHelper.currentUser!.currentViewId!,
+                  contentType: ContentType.mixed,
+                ),
+                sortConfig: SortAndFilterConfiguration.defaultSort,
+              ),
+            ),
+          ),
+        );
         return;
       }
       final targetRoute = switch (BaseItemDtoType.fromItem(item)) {

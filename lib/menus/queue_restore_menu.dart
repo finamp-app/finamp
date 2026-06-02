@@ -24,23 +24,7 @@ const Curve albumMenuDefaultOutCurve = Curves.easeInCubic;
 const albumMenuRouteName = "/album-menu";
 
 Future<void> showQueueRestoreMenu({required BuildContext context, required FinampStorableQueueInfo queueInfo}) async {
-  //TODO I guess we should add a property to QueueItemSource that indicates if there's a proper item behind it or not (since the BaseItemDto might be null until fetched)
-  if ([
-    QueueItemSourceType.album,
-    QueueItemSourceType.playlist,
-    QueueItemSourceType.trackMix,
-    QueueItemSourceType.artistMix,
-    QueueItemSourceType.albumMix,
-    QueueItemSourceType.genre,
-    QueueItemSourceType.artist,
-    QueueItemSourceType.nextUp,
-    QueueItemSourceType.nextUpAlbum,
-    QueueItemSourceType.nextUpPlaylist,
-    QueueItemSourceType.nextUpArtist,
-    QueueItemSourceType.nextUpGenre,
-    QueueItemSourceType.genreMix,
-    QueueItemSourceType.track,
-  ].contains(queueInfo.source.type)) {
+  if (queueInfo.source.wantsItem) {
     final item = await GetIt.instance<ProviderContainer>().read(
       itemByIdProvider(BaseItemId(queueInfo.source.id)).future,
     );
