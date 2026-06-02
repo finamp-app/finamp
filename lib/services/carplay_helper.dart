@@ -1,13 +1,12 @@
 import 'dart:convert';
 
 import 'package:finamp/components/global_snackbar.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/music_player_background_task.dart';
+import 'package:finamp/services/music_screen_provider.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/downloads_service.dart';
@@ -137,13 +136,15 @@ class CarPlayHelper {
     return sortedKeys.map((letter) => CPListSection(header: letter, items: grouped[letter]!)).toList();
   }
 
-  Future<List<BaseItemDto>> getTabItems({required TabContentType tabContentType}) async {
-    final sortBy = FinampSettingsHelper.finampSettings.getTabSortBy(tabContentType);
-    final sortOrder = FinampSettingsHelper.finampSettings.getSortOrder(tabContentType);
+  Future<List<BaseItemDto>> getTabItems({required ContentType contentType}) async {
+    final sortBy = FinampSettingsHelper.finampSettings.getTabSortBy(contentType);
+    final sortOrder = FinampSettingsHelper.finampSettings.getSortOrder(contentType);
 
     // If we are in offline mode, display all matching downloaded parents
     if (FinampSettingsHelper.finampSettings.isOffline) {
-      final collections = await _downloadsService.getAllCollections(baseTypeFilter: tabContentType.itemType);
+      final collections = await _downloadsService.getAllCollections(
+        includeItemTypes: [contentType.itemType].nonNulls.toList(),
+      );
       final baseItems = collections
           .where((d) => d.baseItem != null)
           .map((d) => d.baseItem!)
@@ -154,12 +155,10 @@ class CarPlayHelper {
 
     // Online mode: fetch from server API
     final items = await _jellyfinApiHelper.getItems(
-      parentItem: tabContentType.itemType == BaseItemDtoType.playlist
-          ? null
-          : _finampUserHelper.currentUser?.currentView,
-      includeItemTypes: tabContentType.itemType.jellyfinName,
-      sortBy: sortBy.jellyfinName(tabContentType),
-      sortOrder: tabContentType == TabContentType.tracks ? null : sortOrder.toString(),
+      parentItem: contentType.itemType == BaseItemDtoType.playlist ? null : _finampUserHelper.currentUser?.currentView,
+      includeItemTypes: contentType.itemType?.jellyfinName,
+      sortBy: sortBy.jellyfinName(contentType),
+      sortOrder: contentType == ContentType.tracks ? null : sortOrder.toString(),
       limit: _carPlayOnlineLimit,
     );
     return items ?? [];
@@ -173,7 +172,10 @@ class CarPlayHelper {
   }) async {
     final queueService = GetIt.instance<QueueService>();
 
-    final childItems = await loadChildTracksFromBaseItem(baseItem: item);
+    final childItems = await loadChildTracksFromBaseItem(
+      item: item,
+      sortConfig: SortAndFilterConfiguration(sortBy: SortBy.defaultOrder, sortOrder: SortOrder.ascending, filters: {}),
+    );
 
     await queueService.startPlayback(
       items: childItems,
@@ -199,7 +201,7 @@ class CarPlayHelper {
         type: QueueItemSourceType.allTracks,
         name: QueueItemSourceName(
           type: QueueItemSourceNameType.preTranslated,
-          pretranslatedName: sourceName ?? GlobalSnackbar.localizations!.tracks,
+          pretranslatedName: sourceName ?? GlobalSnackbar.requireL10n.tracks,
         ),
         id: "carplay-tracks-${DateTime.now().millisecondsSinceEpoch}",
       ),
@@ -282,14 +284,14 @@ class CarPlayHelper {
     CPListSection quickActionsSection = CPListSection(
       items: [
         CPListItem(
-          text: GlobalSnackbar.localizations!.shuffleAll,
+          text: GlobalSnackbar.requireL10n.shuffleAll,
           onPress: (complete, self) async {
             await shuffleAllTracks();
             complete();
           },
         ),
         CPListItem(
-          text: GlobalSnackbar.localizations!.startRadio,
+          text: GlobalSnackbar.requireL10n.startRadio,
           onPress: (complete, self) async {
             await startRadio();
             complete();
@@ -301,14 +303,14 @@ class CarPlayHelper {
 
     final recentPlays = getRecentPlays(limit: 5);
     if (recentPlays.isNotEmpty) {
-      CPListSection recentPlaysSection = CPListSection(header: GlobalSnackbar.localizations!.recentlyPlayed, items: []);
+      CPListSection recentPlaysSection = CPListSection(header: GlobalSnackbar.requireL10n.recentlyPlayed, items: []);
 
       for (final queueItem in recentPlays) {
         final baseItem = queueItem.baseItem;
 
         recentPlaysSection.items.add(
           CPListItem(
-            text: baseItem.name ?? GlobalSnackbar.localizations!.unknown,
+            text: baseItem.name ?? GlobalSnackbar.requireL10n.unknown,
             detailText: baseItem.artists?.join(", ") ?? baseItem.albumArtist,
             image: _getCarPlayImageUri(baseItem),
             onPress: (complete, self) async {
@@ -322,7 +324,7 @@ class CarPlayHelper {
                     type: QueueItemSourceType.allTracks,
                     name: QueueItemSourceName(
                       type: QueueItemSourceNameType.preTranslated,
-                      pretranslatedName: baseItem.name ?? GlobalSnackbar.localizations!.tracks,
+                      pretranslatedName: baseItem.name ?? GlobalSnackbar.requireL10n.tracks,
                     ),
                     id: baseItem.id,
                     item: baseItem,
@@ -345,15 +347,12 @@ class CarPlayHelper {
     final recentlyAdded = await getRecentlyAddedAlbums(limit: 3);
     _carPlayLogger.info("Got ${recentlyAdded.length} recently added albums");
     if (recentlyAdded.isNotEmpty) {
-      CPListSection recentlyAddedSection = CPListSection(
-        header: GlobalSnackbar.localizations!.recentlyAdded,
-        items: [],
-      );
+      CPListSection recentlyAddedSection = CPListSection(header: GlobalSnackbar.requireL10n.recentlyAdded, items: []);
 
       for (final album in recentlyAdded) {
         recentlyAddedSection.items.add(
           CPListItem(
-            text: album.name ?? GlobalSnackbar.localizations!.unknownAlbum,
+            text: album.name ?? GlobalSnackbar.requireL10n.unknownName,
             detailText: album.albumArtist,
             image: _getCarPlayImageUri(album),
             onPress: (complete, self) async {
@@ -396,14 +395,22 @@ class CarPlayHelper {
             final parentId = MediaItemId.fromJson(jsonDecode(item.id) as Map<String, dynamic>);
 
             switch (parentId.contentType) {
-              case TabContentType.albums:
-              case TabContentType.playlists:
-              case TabContentType.genres:
+              case ContentType.albums:
+              case ContentType.playlists:
+              case ContentType.genres:
+              case ContentType.mixed:
                 showBrowsableListTemplate(tabType: parentId.contentType);
-              case TabContentType.artists:
+              case ContentType.albumArtists:
+              case ContentType.performingArtists:
+              case ContentType.genericArtists:
                 showArtistsTemplate();
-              case TabContentType.tracks:
+              case ContentType.tracks:
+              case ContentType.inPlaylist:
+              case ContentType.inPerformingArtistAlbums:
+              case ContentType.inAlbumArtistAlbums:
                 showTracksTemplate();
+              case ContentType.home:
+                return complete(); // already on home, no action
             }
             complete();
           },
@@ -416,24 +423,24 @@ class CarPlayHelper {
         templates: [
           CPListTemplate(
             sections: homeSections,
-            title: GlobalSnackbar.localizations!.home,
-            emptyViewTitleVariants: [GlobalSnackbar.localizations!.home],
-            emptyViewSubtitleVariants: [GlobalSnackbar.localizations!.notAvailable],
+            title: GlobalSnackbar.requireL10n.home,
+            emptyViewTitleVariants: [GlobalSnackbar.requireL10n.home],
+            emptyViewSubtitleVariants: [GlobalSnackbar.requireL10n.notAvailable],
             systemIcon: 'music.note.house',
             sectionIndexEnabled: false,
           ),
           CPListTemplate(
             sections: [],
-            title: GlobalSnackbar.localizations!.search,
-            emptyViewTitleVariants: [GlobalSnackbar.localizations!.voiceSearch],
-            emptyViewSubtitleVariants: [GlobalSnackbar.localizations!.carPlaySiriHint],
+            title: GlobalSnackbar.requireL10n.search,
+            emptyViewTitleVariants: [GlobalSnackbar.requireL10n.voiceSearch],
+            emptyViewSubtitleVariants: [GlobalSnackbar.requireL10n.carPlaySiriHint],
             systemIcon: 'mic',
           ),
           CPListTemplate(
             sections: [librarySection],
-            title: GlobalSnackbar.localizations!.library,
-            emptyViewTitleVariants: [GlobalSnackbar.localizations!.library],
-            emptyViewSubtitleVariants: [GlobalSnackbar.localizations!.emptyFilteredListTitle],
+            title: GlobalSnackbar.requireL10n.library,
+            emptyViewTitleVariants: [GlobalSnackbar.requireL10n.library],
+            emptyViewSubtitleVariants: [GlobalSnackbar.requireL10n.emptyFilteredListTitle],
             systemIcon: 'play.square.stack',
           ),
         ],
@@ -448,9 +455,9 @@ class CarPlayHelper {
     await FlutterCarplay.setRootTemplate(
       rootTemplate: CPListTemplate(
         sections: [],
-        title: GlobalSnackbar.localizations!.finamp,
-        emptyViewTitleVariants: [GlobalSnackbar.localizations!.login],
-        emptyViewSubtitleVariants: [GlobalSnackbar.localizations!.carPlayLoginPrompt],
+        title: GlobalSnackbar.requireL10n.finamp,
+        emptyViewTitleVariants: [GlobalSnackbar.requireL10n.login],
+        emptyViewSubtitleVariants: [GlobalSnackbar.requireL10n.carPlayLoginPrompt],
         systemIcon: 'person.crop.circle.badge.exclamationmark',
       ),
     );
@@ -467,13 +474,20 @@ class CarPlayHelper {
     }
     _isPushingPageUpdate = true;
     try {
-      List<BaseItemDto> mediaItems = await loadChildTracksFromBaseItem(baseItem: parent);
+      List<BaseItemDto> mediaItems = await loadChildTracksFromBaseItem(
+        item: parent,
+        sortConfig: SortAndFilterConfiguration(
+          sortBy: SortBy.defaultOrder,
+          sortOrder: SortOrder.ascending,
+          filters: {},
+        ),
+      );
 
       CPListSection playlistSection = CPListSection(items: []);
 
       playlistSection.items.add(
         CPListItem(
-          text: GlobalSnackbar.localizations!.shuffleButtonLabel,
+          text: GlobalSnackbar.requireL10n.shuffleButtonLabel,
           onPress: (complete, self) async {
             await playItem(parent, order: FinampPlaybackOrder.shuffled);
             complete();
@@ -484,7 +498,7 @@ class CarPlayHelper {
       mediaItems.asMap().forEach((index, item) {
         playlistSection.items.add(
           CPListItem(
-            text: item.name ?? GlobalSnackbar.localizations!.unknownName,
+            text: item.name ?? GlobalSnackbar.requireL10n.unknownName,
             detailText: item.artists?.join(", ") ?? item.albumArtist,
             image: _getCarPlayImageUri(item),
             onPress: (complete, self) async {
@@ -506,7 +520,7 @@ class CarPlayHelper {
   /// Shows a browsable list of items for a library tab (albums, playlists, or
   /// genres). Tapping an item drills down: genres show their albums, albums and
   /// playlists show their tracks via [showCollectionTracksTemplate].
-  Future<void> showBrowsableListTemplate({required TabContentType tabType, BaseItemDto? genreFilter}) async {
+  Future<void> showBrowsableListTemplate({required ContentType tabType, BaseItemDto? genreFilter}) async {
     if (_isPushingPageUpdate) {
       _carPlayLogger.warning("Navigation dropped: already pushing page update");
       return;
@@ -517,8 +531,8 @@ class CarPlayHelper {
       if (genreFilter != null) {
         if (FinampSettingsHelper.finampSettings.isOffline) {
           mediaItems = (await _downloadsService.getAllCollections(
-            baseTypeFilter: BaseItemDtoType.album,
-            genreFilter: genreFilter,
+            includeItemTypes: [BaseItemDtoType.album],
+            genreFilter: genreFilter.id,
           )).where((d) => d.baseItem != null).map((d) => d.baseItem!).take(_carPlayOfflineLimit).toList();
         } else {
           mediaItems =
@@ -526,22 +540,22 @@ class CarPlayHelper {
                 parentItem: _finampUserHelper.currentUser?.currentView,
                 includeItemTypes: "MusicAlbum",
                 sortBy: "SortName",
-                genreFilter: genreFilter,
+                genreFilter: genreFilter.id,
                 limit: _carPlayOnlineLimit,
               ) ??
               [];
         }
       } else {
-        mediaItems = await getTabItems(tabContentType: tabType);
+        mediaItems = await getTabItems(contentType: tabType);
       }
 
       final sections = _groupItemsIntoSections(mediaItems, (item, index) {
         return CPListItem(
-          text: item.name ?? GlobalSnackbar.localizations!.unknown,
+          text: item.name ?? GlobalSnackbar.requireL10n.unknown,
           detailText: item.artists?.join(", ") ?? item.albumArtist,
           image: _getCarPlayImageUri(item),
           onPress: (complete, self) async {
-            if (tabType == TabContentType.genres && genreFilter == null) {
+            if (tabType == ContentType.genres && genreFilter == null) {
               await showBrowsableListTemplate(tabType: tabType, genreFilter: item);
             } else {
               await showCollectionTracksTemplate(item);
@@ -568,7 +582,7 @@ class CarPlayHelper {
     try {
       List<BaseItemDto> tracks;
       if (FinampSettingsHelper.finampSettings.isOffline) {
-        tracks = await getTabItems(tabContentType: TabContentType.tracks);
+        tracks = await getTabItems(contentType: ContentType.tracks);
         if (tracks.length > _carPlayOfflineLimit) {
           tracks = tracks.sublist(0, _carPlayOfflineLimit);
         }
@@ -585,11 +599,11 @@ class CarPlayHelper {
 
       final sections = _groupItemsIntoSections(tracks, (item, index) {
         return CPListItem(
-          text: item.name ?? GlobalSnackbar.localizations!.unknownName,
+          text: item.name ?? GlobalSnackbar.requireL10n.unknownName,
           detailText: item.artists?.join(", ") ?? item.albumArtist,
           image: _getCarPlayImageUri(item),
           onPress: (complete, self) async {
-            await playTracksAsQueue(tracks, index: index, sourceName: GlobalSnackbar.localizations!.tracks);
+            await playTracksAsQueue(tracks, index: index, sourceName: GlobalSnackbar.requireL10n.tracks);
             complete();
           },
         );
@@ -600,7 +614,7 @@ class CarPlayHelper {
         sections.first.items.insert(
           0,
           CPListItem(
-            text: GlobalSnackbar.localizations!.shuffleAll,
+            text: GlobalSnackbar.requireL10n.shuffleAll,
             onPress: (complete, self) async {
               await shuffleAllTracks();
               complete();
@@ -626,7 +640,7 @@ class CarPlayHelper {
     try {
       List<BaseItemDto> artists;
       if (FinampSettingsHelper.finampSettings.isOffline) {
-        artists = await getTabItems(tabContentType: TabContentType.artists);
+        artists = await getTabItems(contentType: ContentType.genericArtists);
         if (artists.length > _carPlayOfflineLimit) {
           artists = artists.sublist(0, _carPlayOfflineLimit);
         }
@@ -644,7 +658,7 @@ class CarPlayHelper {
 
       final sections = _groupItemsIntoSections(artists, (item, index) {
         return CPListItem(
-          text: item.name ?? GlobalSnackbar.localizations!.unknownName,
+          text: item.name ?? GlobalSnackbar.requireL10n.unknownName,
           onPress: (complete, self) async {
             await showArtistTemplate(item);
             complete();
@@ -670,25 +684,28 @@ class CarPlayHelper {
       _carPlayLogger.info("Loading artist template for ${parent.name}");
 
       CPListTemplate artistTemplate = CPListTemplate(sections: [], systemIcon: 'gear');
-      CPListSection artistAlbums = CPListSection(header: GlobalSnackbar.localizations!.albums, items: []);
+      CPListSection artistAlbums = CPListSection(header: GlobalSnackbar.requireL10n.albums, items: []);
 
       _carPlayLogger.fine("Fetching albums for artist ${parent.name}");
       List<BaseItemDto> artistAlbumsList = await GetIt.instance<ProviderContainer>().read(
-        getArtistAlbumsProvider(artist: parent, libraryFilter: _finampUserHelper.currentUser?.currentView).future,
+        getArtistAlbumsProvider(artist: parent, libraryFilter: _finampUserHelper.currentUser?.currentViewId).future,
       );
       _carPlayLogger.fine("Got ${artistAlbumsList.length} albums");
 
       artistAlbums.items.add(
         CPListItem(
-          text: GlobalSnackbar.localizations!.shuffleAll,
+          text: GlobalSnackbar.requireL10n.shuffleAll,
           onPress: (complete, self) async {
             final tracks = await GetIt.instance<ProviderContainer>().read(
-              getArtistTracksProvider(artist: parent, libraryFilter: _finampUserHelper.currentUser?.currentView).future,
+              getArtistTracksProvider(
+                artist: parent,
+                libraryFilter: _finampUserHelper.currentUser?.currentViewId,
+              ).future,
             );
             await playTracksAsQueue(
               tracks,
               order: FinampPlaybackOrder.shuffled,
-              sourceName: parent.name ?? GlobalSnackbar.localizations!.unknownName,
+              sourceName: parent.name ?? GlobalSnackbar.requireL10n.unknownName,
             );
             complete();
           },
@@ -698,7 +715,7 @@ class CarPlayHelper {
       for (final item in artistAlbumsList) {
         artistAlbums.items.add(
           CPListItem(
-            text: item.name ?? GlobalSnackbar.localizations!.unknownName,
+            text: item.name ?? GlobalSnackbar.requireL10n.unknownName,
             image: _getCarPlayImageUri(item),
             onPress: (complete, self) async {
               await showCollectionTracksTemplate(item);
