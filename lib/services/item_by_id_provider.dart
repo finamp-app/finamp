@@ -19,19 +19,19 @@ Future<BaseItemDto?> itemById(Ref ref, BaseItemId baseItemId) async {
 
   try {
     if (ref.watch(finampSettingsProvider.isOffline)) {
-    baseItem = (await downloadsService.getCollectionInfo(id: baseItemId))?.baseItem;
-    baseItem ??= (await downloadsService.getTrackInfo(id: baseItemId))?.baseItem;
-  } else {
-    baseItem = await jellyfinApiHelper.getItemById(baseItemId);
-  }
+      baseItem = (await downloadsService.getCollectionInfo(id: baseItemId))?.baseItem;
+      baseItem ??= (await downloadsService.getTrackInfo(id: baseItemId))?.baseItem;
+    } else {
+      baseItem = await jellyfinApiHelper.getItemById(baseItemId);
+    }
 
-  // Prevent re-fetching item for at least 15 minutes, even if we aren't being watched
-  // Do this after item is fetched to avoid caching errors
-  final keepAlive = ref.keepAlive();
-  final timer = Timer(const Duration(minutes: 15), keepAlive.close);
-  ref.onDispose(timer.cancel);
+    // Prevent re-fetching item for at least 15 minutes, even if we aren't being watched
+    // Do this after item is fetched to avoid caching errors
+    final keepAlive = ref.keepAlive();
+    final timer = Timer(const Duration(minutes: 15), keepAlive.close);
+    ref.onDispose(timer.cancel);
 
-  return baseItem;
+    return baseItem;
   } catch (e) {
     // Loading failed, e.g. due to a 404 response. Any accessing widgets either need to handle (catch) the error explicitly, or use .valueOrNull and handle the null case
     rethrow;
