@@ -1305,6 +1305,17 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setContinuousModeRepetitionThresholdMinutes(
+    int newContinuousModeRepetitionThresholdMinutes,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.continuousModeRepetitionThresholdMinutes =
+        newContinuousModeRepetitionThresholdMinutes;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1748,6 +1759,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select((value) => value.requireValue.amoledTheme);
   ProviderListenable<bool> get useAndroidGainEffect => finampSettingsProvider
       .select((value) => value.requireValue.useAndroidGainEffect);
+  ProviderListenable<int> get continuousModeRepetitionThresholdMinutes =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.continuousModeRepetitionThresholdMinutes,
+      );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

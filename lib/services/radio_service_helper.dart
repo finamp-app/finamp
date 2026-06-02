@@ -406,7 +406,11 @@ Future<List<BaseItemDto>> generateRadioTracks(
         maxAttempts: 10,
         randomnessExtraTracks: randomnessExtraTracks,
         // filter out recent tracks within 90 minutes
-        repetitionThresholdTracks: currentQueue.getTrackCountWithinDuration(Duration(minutes: 90)),
+        repetitionThresholdTracks: FinampSettingsHelper.finampSettings.continuousModeRepetitionThresholdMinutes > 0
+            ? currentQueue.getTrackCountWithinDuration(
+                Duration(minutes: FinampSettingsHelper.finampSettings.continuousModeRepetitionThresholdMinutes),
+              )
+            : currentQueue.trackCount,
         // don't use old queue to filter out tracks if we're starting a new queue
         ignoreDuplicatesFromQueue: forNewQueue,
       );
