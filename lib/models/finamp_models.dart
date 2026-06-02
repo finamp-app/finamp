@@ -1878,6 +1878,8 @@ enum BaseItemDtoType {
         return library;
       case "Folder":
         return folder;
+      case "BoxSet":
+        return collection;
       default:
         return unknown;
     }

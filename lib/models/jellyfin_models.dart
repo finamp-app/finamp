@@ -3309,10 +3309,12 @@ enum SortBy {
           SortBy.runtime,
           SortBy.random,
         ];
+      case BaseItemDtoType.collection:
+        options = [SortBy.sortName, SortBy.datePlayed, SortBy.dateCreated, SortBy.runtime, SortBy.random];
       case BaseItemDtoType.genre:
         options = [SortBy.sortName, SortBy.dateCreated, SortBy.random];
       default:
-        options = [SortBy.sortName];
+        options = [SortBy.sortName, SortBy.random];
     }
     if (includeDefaultOrder) {
       options.insert(0, SortBy.defaultOrder);
