@@ -50,53 +50,63 @@ class HomeScreenWidget {
       }
     });
 
-    // Update all the widget data when PlaybackState is ready
-    _audioHandler.playbackState.listen((PlaybackState? state) async {
-      if (state?.processingState == AudioProcessingState.ready) {
-        await HomeScreenWidget.updateWidgetData();
-      }
-    });
+    // This handles updates on play/pause/favorite actions
+    _audioHandler.playbackState.listen(_updatePlaybackState);
 
-    // Update on loop mode change
-    _queueService.getLoopModeStream().listen((FinampLoopMode loopMode) async {
-      final installed = await HomeScreenWidget.isInstalled();
-      if (installed) {
-        await HomeWidget.saveWidgetData("repeatMode", loopMode.name);
-        await HomeScreenWidget.reloadWidget();
-      }
-    });
+    // Listens for changes to loop mode and updates the widget
+    _queueService.getLoopModeStream().listen(_updateLoopMode);
 
-    // Update on playback order change
-    _queueService.getPlaybackOrderStream().listen((FinampPlaybackOrder playbackOrder) async {
-      final installed = await HomeScreenWidget.isInstalled();
-      if (installed) {
-        final shuffled = playbackOrder == FinampPlaybackOrder.shuffled;
-        await HomeWidget.saveWidgetData("shuffled", shuffled);
-        await HomeScreenWidget.reloadWidget();
-      }
-    });
+    // This runs when a new tracks plays or shuffle mode is toggled
+    _queueService.getCurrentTrackStream().listen(_updateAllData);
   }
 
-  // The save data keys needs to match the values in SharedComponents
-  static Future<void> updateWidgetData() async {
-    final installed = await HomeScreenWidget.isInstalled();
-    if (!installed) {
+  // Updates favorite and playing status on PlaybackState change
+  static Future<void> _updatePlaybackState(PlaybackState? state) async {
+    if (state?.processingState != AudioProcessingState.ready || !await isInstalled()) {
       return;
     }
 
-    _logger.info("updating data");
+    _logger.info("updating playing/favorite data");
+
+    await HomeWidget.saveWidgetData("playing", !_audioHandler.paused);
+    final currentTrack = _queueService.getCurrentTrack();
+    final isFavorite = _providers.read(isFavoriteProvider(currentTrack?.baseItem));
+    await HomeWidget.saveWidgetData("favorited", isFavorite);
+    await HomeScreenWidget.reloadWidget();
+  }
+
+  // Update on LoopMode changes
+  static Future<void> _updateLoopMode(FinampLoopMode loopMode) async {
+    if (!await isInstalled()) {
+      return;
+    }
+    _logger.info("updating loop mode");
+
+    await HomeWidget.saveWidgetData("repeatMode", loopMode.name);
+    await HomeScreenWidget.reloadWidget();
+  }
+
+  // Saves all data on new track
+  static Future<void> _updateAllData(FinampQueueItem? currentTrack) async {
+    if (!await isInstalled()) {
+      return;
+    }
+
+    _logger.info("updating all data");
 
     // Save audio player states
     await HomeWidget.saveWidgetData("playing", !_audioHandler.paused);
     await HomeWidget.saveWidgetData("repeatMode", _queueService.loopMode.name);
     await HomeWidget.saveWidgetData("shuffled", _audioHandler.shuffled);
 
-    final currentTrack = _queueService.getCurrentTrack();
     if (currentTrack == null) {
       return;
     }
-    final isFavorite = _providers.read(isFavoriteProvider(currentTrack.baseItem));
-    await HomeWidget.saveWidgetData("favorited", isFavorite);
+
+    // Save now playing info
+    await HomeWidget.saveWidgetData("arist", currentTrack.item.artist);
+    await HomeWidget.saveWidgetData("album", currentTrack.item.album);
+    await HomeWidget.saveWidgetData("title", currentTrack.item.title);
 
     // Save current album art
     final request = AlbumImageRequest(item: currentTrack.baseItem);
@@ -108,10 +118,9 @@ class HomeScreenWidget {
       _logger.info("saved album art");
     }
 
-    // Save now playing info
-    await HomeWidget.saveWidgetData("arist", currentTrack.item.artist);
-    await HomeWidget.saveWidgetData("album", currentTrack.item.album);
-    await HomeWidget.saveWidgetData("title", currentTrack.item.title);
+    // Save favorite status
+    final isFavorite = _providers.read(isFavoriteProvider(currentTrack.baseItem));
+    await HomeWidget.saveWidgetData("favorited", isFavorite);
 
     await HomeScreenWidget.reloadWidget();
   }
