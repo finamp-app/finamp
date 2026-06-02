@@ -123,13 +123,13 @@ class RectangularWidget : GlanceAppWidget() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (isBig) {
-                    RepeatButton(context, currentState)
+                    ShuffleButton(context, currentState)
                 }
                 PreviousButton(context)
                 PlayPauseButton(context, currentState)
                 NextButton(context)
                 if (isBig) {
-                    ShuffleButton(context, currentState)
+                    RepeatButton(context, currentState)
                 }
             }
         }

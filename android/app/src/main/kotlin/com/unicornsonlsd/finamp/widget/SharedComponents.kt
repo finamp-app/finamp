@@ -43,7 +43,7 @@ fun PlayPauseButton(
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
-    var imageProvider = ImageProvider(R.drawable.play_arrow_24px)
+    var imageProvider = ImageProvider(R.drawable.baseline_play_24)
     var contentDescription = context.getString(R.string.play_description)
     var onClick = actionRunCallback<MediaControls>(
         actionParametersOf(MediaControls.KEY to MediaControls.PLAY)
@@ -51,7 +51,7 @@ fun PlayPauseButton(
 
     val playing = state.preferences.getBoolean("playing", false)
     if (playing) {
-        imageProvider = ImageProvider(R.drawable.pause_24px)
+        imageProvider = ImageProvider(R.drawable.baseline_pause_24)
         contentDescription = context.getString(R.string.play_description)
         onClick = actionRunCallback<MediaControls>(
             actionParametersOf(MediaControls.KEY to MediaControls.PAUSE)
@@ -74,7 +74,7 @@ fun NextButton(
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
     SquareIconButton(
-        imageProvider = ImageProvider(R.drawable.skip_next_24px),
+        imageProvider = ImageProvider(R.drawable.baseline_skip_next_24),
         backgroundColor = backgroundColor,
         contentColor = contentColor,
         contentDescription = context.getString(R.string.next_description),
@@ -91,7 +91,7 @@ fun PreviousButton(
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
     SquareIconButton(
-        imageProvider = ImageProvider(R.drawable.skip_previous_24px),
+        imageProvider = ImageProvider(R.drawable.baseline_skip_previous_24),
         backgroundColor = backgroundColor,
         contentColor = contentColor,
         contentDescription = context.getString(R.string.previous_description),
@@ -108,12 +108,12 @@ fun ShuffleButton(
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
-    var imageProvider = ImageProvider(R.drawable.shuffle_24px)
+    var imageProvider = ImageProvider(R.drawable.baseline_shuffle_24)
     var contentDescription = context.getString(R.string.shuffle_description)
 
     val shuffled = state.preferences.getBoolean("shuffled", false)
     if (shuffled) {
-        imageProvider = ImageProvider(R.drawable.shuffle_on_24px)
+        imageProvider = ImageProvider(R.drawable.baseline_shuffle_on_24)
         contentDescription = context.getString(R.string.unshuffle_description)
     }
 
@@ -135,15 +135,15 @@ fun RepeatButton(
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
-    var imageProvider = ImageProvider(R.drawable.repeat_24px)
+    var imageProvider = ImageProvider(R.drawable.baseline_repeat_24)
     var contentDescription = context.getString(R.string.repeat_none_description)
 
     val repeatMode = state.preferences.getString("repeatMode", "")
     if (repeatMode == "all") {
-        imageProvider = ImageProvider(R.drawable.repeat_all_24px)
+        imageProvider = ImageProvider(R.drawable.baseline_repeat_all_24)
         contentDescription = context.getString(R.string.repeat_queue_description)
     } else if (repeatMode == "one") {
-        imageProvider = ImageProvider(R.drawable.repeat_one_24px)
+        imageProvider = ImageProvider(R.drawable.baseline_repeat_one_24)
         contentDescription = context.getString(R.string.repeat_track_description)
     }
 
@@ -166,12 +166,12 @@ fun FavoriteButton(
     backgroundColor: ColorProvider = GlanceTheme.colors.widgetBackground,
     contentColor: ColorProvider = GlanceTheme.colors.primary
 ) {
-    var imageProvider = ImageProvider(R.drawable.favorite_20px)
+    var imageProvider = ImageProvider(R.drawable.baseline_heart_24)
     var contentDescription = context.getString(R.string.favorite_description)
 
     val favorited = state.preferences.getBoolean("favorited", false)
     if (favorited) {
-        imageProvider = ImageProvider(R.drawable.favorite_filled_20px)
+        imageProvider = ImageProvider(R.drawable.baseline_heart_filled_24)
         contentDescription = context.getString(R.string.unfavorite_description)
     }
 
