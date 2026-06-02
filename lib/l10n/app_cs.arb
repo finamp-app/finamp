@@ -2994,5 +2994,29 @@
     "losslessNoBitrate": "Není použitelné na překódování FLAC",
     "@losslessNoBitrate": {
         "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+    },
+    "home": "Domů",
+    "@home": {
+        "description": "Label for the home/main screen"
+    },
+    "search": "Vyhledávání",
+    "@search": {
+        "description": "Button for the user to click to perform a search"
+    },
+    "library": "Knihovna",
+    "@library": {
+        "description": "Label for library - the user can click this and see the conent in their system."
+    },
+    "voiceSearch": "Hlasové hledání",
+    "@voiceSearch": {
+        "description": "Heading for the page that prompts the user to perform a voice search."
+    },
+    "carPlaySiriHint": "Řekněte „Hej Siri, přehraj [skladbu/umělce/album] v aplikaci Finamp]“",
+    "@carPlaySiriHint": {
+        "description": "Hint text for how to use Siri to search in CarPlay."
+    },
+    "carPlayLoginPrompt": "Otevřete aplikaci Finamp na vašem telefonu a přihlaste se do vašeho serveru Jellyfin.",
+    "@carPlayLoginPrompt": {
+        "description": "Label shown when the user is trying to use CarPlay without being logged in."
     }
 }
