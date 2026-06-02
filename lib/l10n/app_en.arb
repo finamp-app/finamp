@@ -605,7 +605,7 @@
   "@landscape": {},
   "showTextOnGridView": "Show text in grid view",
   "@showTextOnGridView": {},
-  "showTextOnGridViewSubtitle": "Whether or not to show the text (title, artist etc) on the grid music screen.",
+  "showTextOnGridViewSubtitle": "Whether or not to show the text (title, artist etc) on the grid music screen. Text is always shown on the home screen, ignoring this setting.",
   "@showTextOnGridViewSubtitle": {},
   "useCoverAsBackground": "Use blurred cover as background",
   "@useCoverAsBackground": {},

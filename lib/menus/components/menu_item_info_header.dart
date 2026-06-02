@@ -435,6 +435,7 @@ class ItemInfo extends StatelessWidget {
                   libraryId: finampUserHelper.currentUser!.currentViewId!,
                   contentType: ContentType.mixed,
                 ),
+                customSectionTitle: item.name ?? AppLocalizations.of(context)!.unknownName,
                 sortConfig: SortAndFilterConfiguration.defaultSort,
               ),
             ),

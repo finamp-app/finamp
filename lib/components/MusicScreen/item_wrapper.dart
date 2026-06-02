@@ -187,6 +187,7 @@ void openItemMenu({
     case BaseItemDtoType.album:
       await showModalAlbumMenu(context: context, item: Album.fromItem(item), queueInfo: queueInfo);
       break;
+    //TODO add collection menu
     default:
       // Do nothing for unsupported item types
       break;

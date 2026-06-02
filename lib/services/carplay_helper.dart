@@ -174,7 +174,7 @@ class CarPlayHelper {
 
     final childItems = await loadChildTracksFromBaseItem(
       item: item,
-      sortConfig: SortAndFilterConfiguration(sortBy: SortBy.defaultOrder, sortOrder: SortOrder.ascending, filters: {}),
+      sortConfig: SortAndFilterConfiguration.defaultSort,
     );
 
     await queueService.startPlayback(
@@ -476,11 +476,7 @@ class CarPlayHelper {
     try {
       List<BaseItemDto> mediaItems = await loadChildTracksFromBaseItem(
         item: parent,
-        sortConfig: SortAndFilterConfiguration(
-          sortBy: SortBy.defaultOrder,
-          sortOrder: SortOrder.ascending,
-          filters: {},
-        ),
+        sortConfig: SortAndFilterConfiguration.defaultSort,
       );
 
       CPListSection playlistSection = CPListSection(items: []);

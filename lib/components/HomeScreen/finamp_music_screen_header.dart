@@ -11,6 +11,7 @@ import 'package:finamp/menus/music_screen_drawer.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/downloads_screen.dart';
+import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/screens/settings_screen.dart';
 import 'package:finamp/screens/tabs_settings_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
@@ -216,7 +217,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                 singleTabConfig?.getTitle(context.l10n) ??
                                     finampUserHelper.currentUser?.currentView?.name ??
                                     appName,
-                                style: TextStyle(fontSize: 22),
+                                style: TextStyle(fontSize: 20),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               );
@@ -256,13 +257,15 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                         if (item == null || !context.mounted) return;
                         if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.track) {
                           return;
+                        } else if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.collection) {
+                          // nop, we're already there
+                          return;
                         }
                         await Navigator.pushNamed(context, switch (BaseItemDtoType.fromItem(item)) {
                           BaseItemDtoType.album => AlbumScreen.routeName,
                           BaseItemDtoType.playlist => AlbumScreen.routeName,
                           BaseItemDtoType.genre => GenreScreen.routeName,
                           BaseItemDtoType.artist => ArtistScreen.routeName,
-                          // TODO add collection type?  Use music screen as generic?
                           _ => AlbumScreen.routeName,
                         }, arguments: item);
                       },
