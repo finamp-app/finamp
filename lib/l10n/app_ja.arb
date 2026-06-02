@@ -1994,7 +1994,7 @@
     },
     "showArtistChipImage": "アーティスト名と一緒にアーティスト画像を表示する",
     "showArtistChipImageSubtitle": "プレーヤー画面などの小さなアーティスト画像プレビューに適用されます。",
-    "scrollToCurrentTrack": "現在のトラックまでスクロールします",
+    "scrollToCurrentTrack": "現在のトラックまでスクロール",
     "@scrollToCurrentTrack": {
         "description": "Tooltip for button that scrolls the queue list back to the current track"
     },
@@ -2002,7 +2002,7 @@
     "@enableAutoScroll": {
         "description": "Tooltip for button that can be used to re-enable auto scroll on the lyrics view after the user manually scrolled"
     },
-    "numberAsKiloHertz": "{キロヘルツ} kHz",
+    "numberAsKiloHertz": "{kiloHertz} kHz",
     "@numberAsKiloHertz": {
         "description": "Value for the sample rate of a track, in kilohertz",
         "placeholders": {
@@ -2011,7 +2011,7 @@
             }
         }
     },
-    "numberAsBit": "{ビット} ビット",
+    "numberAsBit": "{bit} bit",
     "@numberAsBit": {
         "description": "Value for the bit depth of a track, as amount of bit used",
         "placeholders": {
@@ -2020,7 +2020,7 @@
             }
         }
     },
-    "remainingDuration": "残り {期間}",
+    "remainingDuration": "残り {duration}",
     "@remainingDuration": {
         "description": "Displays duration of unplayed tracks. {duration} is a pre-formatted string.",
         "placeholders": {
@@ -2030,7 +2030,7 @@
             }
         }
     },
-    "sleepTimerProjectedDuration": "再生は ~{duration} 後に一時停止します",
+    "sleepTimerProjectedDuration": "{duration} 後に再生を一時停止",
     "@sleepTimerProjectedDuration": {
         "description": "Displays duration until playback is expected to be ended by the sleep timer (unless the queue is modified before). {duration} is a pre-formatted string.",
         "placeholders": {
@@ -2045,30 +2045,30 @@
     "@quickActions": {
         "description": "Title for the short menu that can be shown when long-pressing on the menu button on the player screen. Currently only used for adding to and removing from playlists."
     },
-    "addRemoveFromPlaylist": "プレイリストに追加/プレイリストから削除",
+    "addRemoveFromPlaylist": "プレイリストに追加 ｜ 削除",
     "@addRemoveFromPlaylist": {
         "description": "Header for add to/remove from playlist popup menu"
     },
-    "addPlaylistSubheader": "プレイリストにアイテムを追加する",
+    "addPlaylistSubheader": "プレイリストにアイテムを追加",
     "@addPlaylistSubheader": {
         "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
     },
-    "trackOfflineFavorites": "お気に入りのステータスをすべて同期する",
-    "trackOfflineFavoritesSubtitle": "これにより、オフラインでもより最新のお気に入りステータスを表示できるようになります。 追加のファイルはダウンロードしません。",
-    "allPlaylistsInfoSetting": "プレイリストのメタデータをダウンロードする",
-    "allPlaylistsInfoSettingSubtitle": "すべてのプレイリストのメタデータを同期して、プレイリストのエクスペリエンスを向上させます",
-    "downloadFavoritesSetting": "お気に入りをすべてダウンロード",
-    "downloadAllPlaylistsSetting": "すべてのプレイリストをダウンロードする",
-    "downloadAllPlaylistsSettingWarning": "注: これにより、どのライブラリからのものかに関係なく、すべてのプレイリスト内のすべてのアイテムがダウンロードされます。",
+    "trackOfflineFavorites": "すべてのお気に入りを同期",
+    "trackOfflineFavoritesSubtitle": "これによりオフラインでもより最新のお気に入りを表示できるようになります。 追加のファイルはダウンロードしません。",
+    "allPlaylistsInfoSetting": "プレイリスト情報をダウンロード",
+    "allPlaylistsInfoSettingSubtitle": "すべてのプレイリスト情報を同期し、動作を高速化します",
+    "downloadFavoritesSetting": "すべてのお気に入りをダウンロード",
+    "downloadAllPlaylistsSetting": "すべてのプレイリストをダウンロード",
+    "downloadAllPlaylistsSettingWarning": "注：すべてのライブラリを対象に、全プレイリストのアイテムすべてがダウンロードされます。",
     "fiveLatestAlbumsSetting": "最新アルバム 5 枚をダウンロード",
-    "fiveLatestAlbumsSettingSubtitle": "ダウンロードは期限切れになると削除されます。 アルバムが削除されないようにダウンロードをロックします。",
-    "cacheLibraryImagesSettings": "現在のライブラリイメージをキャッシュする",
+    "fiveLatestAlbumsSettingSubtitle": "ダウンロードされたアルバムは期限切れになると削除されます。 削除されないようにアルバムをロックしてください。",
+    "cacheLibraryImagesSettings": "ライブラリの画像をすべてキャッシュ",
     "cacheLibraryImagesSettingsSubtitle": "現在アクティブなライブラリ内のすべてのアルバム、アーティスト、ジャンル、およびプレイリストのカバーがダウンロードされます。",
-    "showProgressOnNowPlayingBarTitle": "アプリ内ミニプレーヤーにトラックの進行状況を表示する",
+    "showProgressOnNowPlayingBarTitle": "アプリ内ミニプレーヤーにトラックの進行状況を表示",
     "@showProgressOnNowPlayingBarTitle": {
         "description": "Title for the setting that controls if the in-app miniplayer / now playing bar at the bottom of the music screen functions as a progress bar"
     },
-    "showProgressOnNowPlayingBarSubtitle": "音楽画面の下部にあるアプリ内ミニプレーヤー/再生中バーが進行状況バーとして機能するかどうかを制御します。",
+    "showProgressOnNowPlayingBarSubtitle": "画面下部のミニプレーヤーにシークバーを表示します。",
     "@showProgressOnNowPlayingBarSubtitle": {
         "description": "Subtitle for the setting that controls if the now playing bar / miniplayer at the bottom of the music screen functions as a progress bar"
     },
@@ -2076,7 +2076,7 @@
     "@showLyricsTimestampsTitle": {
         "description": "Title for the setting that controls if timestamps are shown for lyrics"
     },
-    "showLyricsTimestampsSubtitle": "利用可能な場合、各歌詞行のタイムスタンプを歌詞ビューに表示するかどうかを制御します。",
+    "showLyricsTimestampsSubtitle": "利用可能な場合、各歌詞行のタイムスタンプを歌詞ビューに表示します。",
     "@showLyricsTimestampsSubtitle": {
         "description": "Subtitle for the setting that controls if timestamps are shown for lyrics"
     },
@@ -2084,15 +2084,15 @@
     "@showStopButtonOnMediaNotificationTitle": {
         "description": "Title for the setting that controls if the media notification has a stop button."
     },
-    "showStopButtonOnMediaNotificationSubtitle": "メディア通知に停止ボタンがあるかどうかを制御します。これにより、アプリを開かずに再生を停止できます。",
+    "showStopButtonOnMediaNotificationSubtitle": "メディア通知への停止ボタンの表示を切り替えます。アプリを開かずに再生を停止できます。",
     "@showStopButtonOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a stop button."
     },
-    "showShuffleButtonOnMediaNotificationTitle": "メディア通知にシャッフル ボタンを表示する",
+    "showShuffleButtonOnMediaNotificationTitle": "メディア通知にシャッフル ボタンを表示",
     "@showShuffleButtonOnMediaNotificationTitle": {
         "description": "Title for the setting that controls if the media notification has a shuffle button."
     },
-    "showShuffleButtonOnMediaNotificationSubtitle": "メディア通知にシャッフル ボタンがあるかどうかを制御します。これにより、アプリを開かずに再生をシャッフル/シャッフル解除できます。",
+    "showShuffleButtonOnMediaNotificationSubtitle": "メディア通知へのシャッフル ボタンの表示を切り替えます。アプリを開かずにシャッフル ｜ シャッフル解除できます。",
     "@showShuffleButtonOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a shuffle button."
     },
@@ -2100,19 +2100,19 @@
     "@showFavoriteButtonOnMediaNotificationTitle": {
         "description": "Title for the setting that controls if the media notification has a favorite button."
     },
-    "showFavoriteButtonOnMediaNotificationSubtitle": "メディア通知にお気に入りボタンがあるかどうかを制御します。これにより、アプリを開かずに現在のトラックをお気に入り/お気に入り解除することができます。オフラインモードでは非表示になります。",
+    "showFavoriteButtonOnMediaNotificationSubtitle": "メディア通知へのお気に入りボタンの表示を切り替えます。アプリを開かずに現在のトラックのお気に入り ｜ お気に入り解除することができます。オフラインモードでは非表示です。",
     "@showFavoriteButtonOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a favorite button."
     },
-    "showSeekControlsOnMediaNotificationTitle": "メディア通知のシークを許可する",
+    "showSeekControlsOnMediaNotificationTitle": "メディア通知でのシークを許可",
     "@showSeekControlsOnMediaNotificationTitle": {
         "description": "Title for the setting that controls if the media notification has a seekable progress bar."
     },
-    "showSeekControlsOnMediaNotificationSubtitle": "メディア通知にシーク可能な進行状況バーがあるかどうかを制御します。これにより、アプリを開かずに再生位置を変更できます。",
+    "showSeekControlsOnMediaNotificationSubtitle": "メディア通知にシークバーを表示します。アプリを開かずに再生位置を変更できます。",
     "@showSeekControlsOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a seekable progress bar."
     },
-    "lyricsEmptyStateLoading": "歌詞を読み込んでいます...",
+    "lyricsEmptyStateLoading": "歌詞を読み込み中...",
     "@lyricsEmptyStateLoading": {
         "description": "Message shown while lyrics are being loaded"
     },
@@ -2124,35 +2124,35 @@
     "@lyricsEmptyStateNoLyrics": {
         "description": "Message shown when no lyrics are available for the current track"
     },
-    "lyricsMissingLyricLinePlaceholder": "歌詞のラインが欠けている",
+    "lyricsMissingLyricLinePlaceholder": "歌詞の行が一部抜けています",
     "@lyricsMissingLyricLinePlaceholder": {
         "description": "Placeholder text for missing lyric lines in synchronized lyrics"
     },
-    "alignmentOptionStart": "始める",
+    "alignmentOptionStart": "開始",
     "@alignmentOptionStart": {
         "description": "Alignment option for things like the lyrics view. Start means left-aligned in LTR languages and right-aligned in RTL languages."
     },
-    "alignmentOptionCenter": "中心",
+    "alignmentOptionCenter": "中央揃え",
     "@alignmentOptionCenter": {
         "description": "Alignment option for things like the lyrics view. Center means centered."
     },
-    "alignmentOptionEnd": "終わり",
+    "alignmentOptionEnd": "終了",
     "@alignmentOptionEnd": {
         "description": "Alignment option for things like the lyrics view. End means right-aligned in LTR languages and left-aligned in RTL languages."
     },
-    "fontSizeOptionSmall": "小さい",
+    "fontSizeOptionSmall": "小",
     "@fontSizeOptionSmall": {
         "description": "Font size option for things like the lyrics view. Small means a smaller font size."
     },
-    "fontSizeOptionMedium": "中くらい",
+    "fontSizeOptionMedium": "中",
     "@fontSizeOptionMedium": {
         "description": "Font size option for things like the lyrics view. Medium means a medium font size."
     },
-    "fontSizeOptionLarge": "大きい",
+    "fontSizeOptionLarge": "大",
     "@fontSizeOptionLarge": {
         "description": "Font size option for things like the lyrics view. Large means a larger font size."
     },
-    "lyricsAlignmentSubtitle": "歌詞ビューでの歌詞の配置を制御します。",
+    "lyricsAlignmentSubtitle": "歌詞ビューでの歌詞の配置を設定します。",
     "@lyricsAlignmentSubtitle": {
         "description": "Subtitle for the setting that controls the alignment of lyrics in the lyrics view"
     },
@@ -2164,22 +2164,22 @@
     "@showLyricsScreenAlbumPreludeTitle": {
         "description": "Title for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
     },
-    "showLyricsScreenAlbumPreludeSubtitle": "スクロールして離れる前にアルバム カバーを歌詞の上に表示するかどうかを制御します。",
+    "showLyricsScreenAlbumPreludeSubtitle": "歌詞画面の初期表示で、アルバムカバーを上部に表示するかどうかを設定します。",
     "@showLyricsScreenAlbumPreludeSubtitle": {
         "description": "Subtitle for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
     },
-    "keepScreenOn": "画面をオンのままにする",
+    "keepScreenOn": "画面の常時点灯",
     "@keepScreenOn": {
         "description": "Option to keep the screen on while using the app"
     },
-    "keepScreenOnSubtitle": "画面をオンにしたままにする場合",
+    "keepScreenOnSubtitle": "画面の常時点灯にする場合",
     "keepScreenOnDisabled": "無効",
     "keepScreenOnAlwaysOn": "常時オン",
-    "keepScreenOnWhilePlaying": "音楽再生中",
-    "keepScreenOnWhileLyrics": "歌詞を表示しながら",
-    "keepScreenOnWhilePluggedIn": "接続されている間のみ画面をオンのままにする",
-    "keepScreenOnWhilePluggedInSubtitle": "デバイスが接続されていない場合は、「画面をオンのままにする」設定を無視します",
-    "genericToggleButtonTooltip": "タップして切り替えます。",
+    "keepScreenOnWhilePlaying": "音楽の再生中",
+    "keepScreenOnWhileLyrics": "歌詞の表示中",
+    "keepScreenOnWhilePluggedIn": "充電中のみ画面を常時点灯",
+    "keepScreenOnWhilePluggedInSubtitle": "充電されていない場合は「画面の常時点灯」の設定を無視する",
+    "genericToggleButtonTooltip": "タップして切り替える。",
     "@genericToggleButtonTooltip": {
         "description": "Tooltip for toggle buttons that can be tapped to toggle their state"
     },
@@ -2194,7 +2194,7 @@
         },
         "description": "Tooltip for album artwork on track and album tiles as well as the album screen"
     },
-    "playerAlbumArtworkTooltip": "{title} のアートワーク。タップして再生を切り替えます。左または右にスワイプしてトラックを切り替えます。",
+    "playerAlbumArtworkTooltip": "{title} のアートワーク。タップして再生を切り替えます。左右にスワイプしてトラックを切り替えます。",
     "@playerAlbumArtworkTooltip": {
         "placeholders": {
             "title": {
@@ -2208,7 +2208,7 @@
     "@nowPlayingBarTooltip": {
         "description": "Tooltip for the now playing bar at the bottom of the screen"
     },
-    "additionalPeople": "人々",
+    "additionalPeople": "人物",
     "@additionalPeople": {
         "description": "Label for the feature chips showing additional people in the credits of a track or album"
     },
@@ -2228,7 +2228,7 @@
     "@size": {
         "description": "Label for the feature chips showing the size (original file size or transcoded size, if available) of a track"
     },
-    "normalizationGain": "得",
+    "normalizationGain": "ゲイン",
     "@normalizationGain": {
         "description": "Label for the feature chips showing the normalization gain / LUFS offset of a track"
     },
@@ -2252,7 +2252,7 @@
     "@albumScreen": {
         "description": "Name for the view/screen that shows albums"
     },
-    "showCoversOnAlbumScreenTitle": "トラックのアルバム カバーを表示",
+    "showCoversOnAlbumScreenTitle": "トラックのアルバムカバーを表示",
     "@showCoversOnAlbumScreenTitle": {
         "description": "Title for the setting that controls if album covers are shown for each track separately on the album screen"
     },
@@ -3024,7 +3024,7 @@
     "@androidGainDisabled": {
         "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
     },
-    "losslessNoBitrate": "FLAC トランスコードには適用されません",
+    "losslessNoBitrate": "FLACへのトランスコード時には適用されません",
     "@losslessNoBitrate": {
         "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
     }
