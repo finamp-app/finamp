@@ -50,13 +50,8 @@ class HomeScreenWidget {
       }
     });
 
-    // This handles updates on play/pause/favorite actions
     _audioHandler.playbackState.listen(_updatePlaybackState);
-
-    // Listens for changes to loop mode and updates the widget
     _queueService.getLoopModeStream().listen(_updateLoopMode);
-
-    // This runs when a new tracks plays or shuffle mode is toggled
     _queueService.getCurrentTrackStream().listen(_updateAllData);
   }
 
@@ -65,14 +60,15 @@ class HomeScreenWidget {
     if (state?.processingState != AudioProcessingState.ready || !await isInstalled()) {
       return;
     }
-
     _logger.info("updating playing/favorite data");
 
-    await HomeWidget.saveWidgetData("playing", !_audioHandler.paused);
     final currentTrack = _queueService.getCurrentTrack();
-    final isFavorite = _providers.read(isFavoriteProvider(currentTrack?.baseItem));
-    await HomeWidget.saveWidgetData("favorited", isFavorite);
-    await HomeScreenWidget.reloadWidget();
+    final favorited = _providers.read(isFavoriteProvider(currentTrack?.baseItem));
+    final playing = !_audioHandler.paused;
+
+    await HomeWidget.saveWidgetData("playing", playing);
+    await HomeWidget.saveWidgetData("favorited", favorited);
+    await reloadWidget();
   }
 
   // Update on LoopMode changes
@@ -83,7 +79,7 @@ class HomeScreenWidget {
     _logger.info("updating loop mode");
 
     await HomeWidget.saveWidgetData("repeatMode", loopMode.name);
-    await HomeScreenWidget.reloadWidget();
+    await reloadWidget();
   }
 
   // Saves all data on new track
@@ -91,7 +87,6 @@ class HomeScreenWidget {
     if (!await isInstalled()) {
       return;
     }
-
     _logger.info("updating all data");
 
     // Save audio player states
@@ -122,7 +117,7 @@ class HomeScreenWidget {
     final isFavorite = _providers.read(isFavoriteProvider(currentTrack.baseItem));
     await HomeWidget.saveWidgetData("favorited", isFavorite);
 
-    await HomeScreenWidget.reloadWidget();
+    await reloadWidget();
   }
 
   static Future<void> reloadWidget() async {
