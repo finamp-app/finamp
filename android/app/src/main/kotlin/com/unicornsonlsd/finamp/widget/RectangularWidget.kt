@@ -29,11 +29,15 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import androidx.glance.state.GlanceStateDefinition
+
 import es.antonborri.home_widget.HomeWidgetGlanceState
 import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
+import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import es.antonborri.home_widget.actionStartActivity
+
 import com.unicornsonlsd.finamp.MainActivity
 import com.unicornsonlsd.finamp.R
+
 
 class RectangularWidget : GlanceAppWidget() {
 
@@ -49,6 +53,9 @@ class RectangularWidget : GlanceAppWidget() {
       get() = HomeWidgetGlanceStateDefinition()
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val backgroundIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("finamp://widget_created"))
+        backgroundIntent.send()
+
         provideContent {
             GlanceTheme {
               GlanceContent(context, currentState())
@@ -133,5 +140,10 @@ class RectangularWidget : GlanceAppWidget() {
                 }
             }
         }
+    }
+
+    override suspend fun onDelete(context: Context, glanceId: GlanceId): Unit {
+        val backgroundIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("finamp://widget_deleted"))
+        backgroundIntent.send()
     }
 }

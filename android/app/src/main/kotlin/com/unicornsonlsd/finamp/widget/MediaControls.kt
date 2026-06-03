@@ -8,7 +8,6 @@ import androidx.glance.appwidget.action.ActionCallback
 import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 
 
-
 class MediaControls : ActionCallback {
     companion object {
         val PLAY: String = "play"

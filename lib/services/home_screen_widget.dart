@@ -21,7 +21,12 @@ class HomeScreenWidget {
   static final _queueService = GetIt.instance<QueueService>();
   static final _audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
 
-  static void initialize() {
+  static StreamSubscription<void>? _playbackStateSub;
+  static StreamSubscription<void>? _loopModeSub;
+  static StreamSubscription<void>? _currentTrackSub;
+
+
+  static Future<void> initialize() async {
     HomeWidget.registerInteractivityCallback(_userInteraction);
 
     final receivePort = ReceivePort();
@@ -47,12 +52,32 @@ class HomeScreenWidget {
           return await _audioHandler.customAction("shuffle");
         case "toggle_loop":
           return await _audioHandler.customAction("toggleLoopMode");
+        case "widget_created":
+          return await resumeListners();
+        case "widget_deleted":
+          return await pauseListners();
       }
     });
 
-    _audioHandler.playbackState.listen(_updatePlaybackState);
-    _queueService.getLoopModeStream().listen(_updateLoopMode);
-    _queueService.getCurrentTrackStream().listen(_updateAllData);
+    _playbackStateSub = _audioHandler.playbackState.listen(_updatePlaybackState);
+    _loopModeSub = _queueService.getLoopModeStream().listen(_updateLoopMode);
+    _currentTrackSub = _queueService.getCurrentTrackStream().listen(_updateAllData);
+    await pauseListners();
+  }
+
+  static Future<void> resumeListners() async {
+    _playbackStateSub?.resume();
+    _loopModeSub?.resume();
+    _currentTrackSub?.resume();
+  }
+
+  static Future<void> pauseListners() async {
+    if (!await isInstalled()) {
+      _logger.info("nothing installed pausing listners");
+      _playbackStateSub?.pause();
+      _loopModeSub?.pause();
+      _currentTrackSub?.pause();
+    }
   }
 
   // Updates favorite and playing status on PlaybackState change
