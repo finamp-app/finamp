@@ -2,6 +2,7 @@ package com.unicornsonlsd.finamp.widget
 
 import android.content.Context
 import android.util.Log
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,8 @@ import androidx.glance.state.GlanceStateDefinition
 
 import es.antonborri.home_widget.HomeWidgetGlanceState
 import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
+import es.antonborri.home_widget.HomeWidgetBackgroundIntent
+
 import com.unicornsonlsd.finamp.MainActivity
 import com.unicornsonlsd.finamp.R
 
@@ -49,6 +52,9 @@ class CircularWidget : GlanceAppWidget() {
       get() = HomeWidgetGlanceStateDefinition()
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val backgroundIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("finamp://widget_created"))
+        backgroundIntent.send()
+
         provideContent {
             GlanceTheme {
                 GlanceContent(context, currentState())
@@ -123,5 +129,10 @@ class CircularWidget : GlanceAppWidget() {
                 }
             }
         }
+    }
+
+    override suspend fun onDelete(context: Context, glanceId: GlanceId): Unit {
+        val backgroundIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("finamp://widget_deleted"))
+        backgroundIntent.send()
     }
 }
