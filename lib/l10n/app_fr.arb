@@ -3008,5 +3008,29 @@
     "losslessNoBitrate": "Ne s'applique pas aux transcodages FLAC",
     "@losslessNoBitrate": {
         "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+    },
+    "home": "Accueil",
+    "@home": {
+        "description": "Label for the home/main screen"
+    },
+    "search": "Rechercher",
+    "@search": {
+        "description": "Button for the user to click to perform a search"
+    },
+    "library": "Bibliothèque",
+    "@library": {
+        "description": "Label for library - the user can click this and see the conent in their system."
+    },
+    "voiceSearch": "Recherche Vocale",
+    "@voiceSearch": {
+        "description": "Heading for the page that prompts the user to perform a voice search."
+    },
+    "carPlaySiriHint": "Dites « Hey Siri, joue [morceau/artiste/album] sur Finamp »",
+    "@carPlaySiriHint": {
+        "description": "Hint text for how to use Siri to search in CarPlay."
+    },
+    "carPlayLoginPrompt": "Ouvrez l'application Finamp sur votre téléphone pour vous connecter à votre serveur Jellyfin.",
+    "@carPlayLoginPrompt": {
+        "description": "Label shown when the user is trying to use CarPlay without being logged in."
     }
 }
