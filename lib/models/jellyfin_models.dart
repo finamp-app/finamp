@@ -3269,6 +3269,12 @@ enum SortBy {
   @HiveField(15)
   defaultOrder;
 
+  bool get onlineOnly => switch (this) {
+    SortBy.datePlayed => true,
+    SortBy.playCount => true,
+    _ => false,
+  };
+
   static List<SortBy> defaultsFor({required BaseItemDtoType? type, bool includeDefaultOrder = false}) {
     List<SortBy> options;
 

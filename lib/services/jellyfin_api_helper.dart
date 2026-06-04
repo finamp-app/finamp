@@ -496,6 +496,7 @@ class JellyfinApiHelper {
   /// Fetch the public server info from the server.
   /// Can be used to check if the server is online / the URL is correct.
   Future<PublicSystemInfoResult?> loadServerPublicInfo({Duration? timeout}) async {
+    assert(_verifyCallable());
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
     // Some users won't have a password.
     if (baseUrlTemp == null && finampUserHelper.currentUser?.baseURL == null) {
@@ -522,6 +523,7 @@ class JellyfinApiHelper {
   /// Can be used to check if the server is online / the URL is correct.
   /// Since we're potentially looking multiple servers, while the user is entering another base URL, we use a custom http client for this request.
   Future<PublicSystemInfoResult?> loadCustomServerPublicInfo(Uri customServerUrl) async {
+    assert(_verifyCallable());
     final requestUrl = customServerUrl.replace(
       pathSegments: customServerUrl.pathSegments.followedBy(["System", "Info", "Public"]),
     );
@@ -540,6 +542,7 @@ class JellyfinApiHelper {
 
   /// Fetch all public users from the server.
   Future<PublicUsersResponse> loadPublicUsers() async {
+    assert(_verifyCallable());
     // Some users won't have a password.
     if (_finampUserHelper.currentUser?.baseURL == null && baseUrlTemp == null) {
       return PublicUsersResponse(users: []);
@@ -638,18 +641,21 @@ class JellyfinApiHelper {
 
   /// Gets the current user.
   Future<UserDto> getUser() async {
+    assert(_verifyCallable());
     var response = await jellyfinApi.getUser();
     return UserDto.fromJson(response as Map<String, dynamic>);
   }
 
   /// Gets a user by their id.
   Future<UserDto?> getUserById(String userId) async {
+    assert(_verifyCallable());
     var response = await jellyfinApi.getUserById(userId);
     return UserDto.fromJson(response as Map<String, dynamic>);
   }
 
   /// Gets all the user's views.
   Future<List<BaseItemDto>> getViews() async {
+    assert(_verifyCallable());
     var response = await jellyfinApi.getViews(_finampUserHelper.currentUser!.id);
 
     return QueryResult_BaseItemDto.fromJson(response as Map<String, dynamic>).items!;

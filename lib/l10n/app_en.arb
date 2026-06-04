@@ -3678,7 +3678,7 @@
   "@alreadyRandomized": {
     "description": "Tooltip for shuffle button on home screen sections using a random sort order, where it is disabled due to being unneeded"
   },
-  "libraryQualifierActive": "active",
+  "libraryQualifierActive": "Active",
   "@libraryQualifierActive": {
     "description": "Label shown next to the currently selected library in the Finamp menu/drawer"
   },
@@ -3693,5 +3693,15 @@
   "carPlayLoginPrompt": "Open the Finamp app on your phone to log in to your Jellyfin server.",
   "@carPlayLoginPrompt": {
     "description": "Label shown when the user is trying to use CarPlay without being logged in."
-  }
+  },
+  "offlineSortFallback": "Sorting by {onlineSort} is only available online.  Currently falling back to default sort order",
+    "@offlineSortFallback": {
+      "description": "Warning presented in sort and filter menu when an online-only sort is chosen.",
+      "placeholders": {
+        "onlineSort": {
+          "type": "String",
+          "example": "Play Count"
+        }
+      }
+    }
 }

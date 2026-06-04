@@ -42,7 +42,7 @@ abstract class SortAndFilterController {
   void _updateConfiguration(SortAndFilterConfiguration newConfig) =>
       _notifier.value = _SortControllerState(newConfig, _type);
 
-  ResolvedSortConfig _getValue(Ref ref);
+  SortAndFilterConfiguration _getValue(Ref ref);
 
   static ResolvedSortConfig resolveOffline(Ref ref, ContentType type, SortAndFilterConfiguration config) {
     // PlayCount and Last Played are not representative in Offline Mode
@@ -110,14 +110,10 @@ class StaticSortAndFilterController extends SortAndFilterController {
   void updateConfiguration(SortAndFilterConfiguration newConfig) => _updateConfiguration(newConfig);
 
   @override
-  ResolvedSortConfig _getValue(Ref ref) {
+  SortAndFilterConfiguration _getValue(Ref ref) {
     _notifier.addListener(ref.invalidateSelf);
     ref.onDispose(() => _notifier.removeListener(ref.invalidateSelf));
-    if (skipResolving) {
-      return ResolvedSortConfig._(_config);
-    } else {
-      return SortAndFilterController.resolveOffline(ref, _type, _config);
-    }
+    return _config;
   }
 }
 
@@ -153,24 +149,27 @@ class TrackingSortAndFilterController extends SortAndFilterController {
   }
 
   @override
-  ResolvedSortConfig _getValue(Ref ref) {
+  SortAndFilterConfiguration _getValue(Ref ref) {
     _notifier.addListener(ref.invalidateSelf);
     ref.onDispose(() => _notifier.removeListener(ref.invalidateSelf));
-    return SortAndFilterController.resolveOffline(
-      ref,
-      _type,
-      _config.copyWith(
-        sortBy: ref.watch(finampSettingsProvider.tabSortBy(_type)),
-        sortOrder: ref.watch(finampSettingsProvider.tabSortOrder(_type)),
-        favoriteFilter: ref.watch(finampSettingsProvider.onlyShowFavorites),
-        onlyShowFullyDownloadedFilter: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
-      ),
+    return _config.copyWith(
+      sortBy: ref.watch(finampSettingsProvider.tabSortBy(_type)),
+      sortOrder: ref.watch(finampSettingsProvider.tabSortOrder(_type)),
+      favoriteFilter: ref.watch(finampSettingsProvider.onlyShowFavorites),
+      onlyShowFullyDownloadedFilter: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
     );
   }
 }
 
 final resolveSortProvider = Provider.family((Ref ref, SortAndFilterController controller) {
-  return controller._getValue(ref);
+  if (controller is StaticSortAndFilterController && controller.skipResolving) {
+    return ResolvedSortConfig.skipResolving(controller._getValue(ref));
+  }
+  return SortAndFilterController.resolveOffline(ref, controller._type, controller._getValue(ref));
+});
+
+final _unresolvedSortProvider = Provider.family((Ref ref, SortAndFilterController controller) {
+  return ResolvedSortConfig.skipResolving(controller._getValue(ref));
 });
 
 class SortAndFilterRow extends ConsumerWidget {
@@ -377,10 +376,10 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
   void initState() {
     super.initState();
 
-    // TODO actually explain what the real current selection is and why we're not using it somewhere?
-    // TODO should this be dynamic?
-    currentConfig = ref.read(resolveSortProvider(widget.controller));
+    currentConfig = ref.read(_unresolvedSortProvider(widget.controller));
   }
+
+  bool get showOfflineSortWarning => ref.watch(finampSettingsProvider.isOffline) && currentConfig.sortBy.onlineOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -415,7 +414,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
     }
 
     // Actual height was 490, bump to 520 for extra bottom padding and wiggle room on element sizes
-    final stackHeight = 520.0 + 56.0 * excessFilters.length;
+    final stackHeight = 520.0 + 56.0 * excessFilters.length + (showOfflineSortWarning ? 60.0 : 0.0);
 
     return widget.childBuilder(stackHeight, menu(context, menuEntries));
   }
@@ -427,10 +426,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
       includeDefaultOrder: widget.tabType == ContentType.inPlaylist,
     );
     final sortOptions = ref.watch(finampSettingsProvider.isOffline)
-        ? [
-            ...rawSortOptions.where((s) => s != SortBy.playCount && s != SortBy.datePlayed),
-            ...rawSortOptions.where((s) => s == SortBy.playCount || s == SortBy.datePlayed),
-          ]
+        ? [...rawSortOptions.whereNot((s) => s.onlineOnly), ...rawSortOptions.where((s) => s.onlineOnly)]
         : rawSortOptions;
     return [
       Column(
@@ -462,6 +458,12 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
               }
             },
           ),
+          if (showOfflineSortWarning)
+            ListTile(
+              leading: Icon(TablerIcons.info_circle),
+              title: Text(context.l10n.offlineSortFallback(currentConfig.sortBy.toLocalisedString(context.l10n))),
+              contentPadding: EdgeInsets.zero,
+            ),
         ],
       ),
       SizedBox(height: 20.0),

@@ -43,11 +43,12 @@ class ViewListTile extends ConsumerWidget {
         state: currentViewId == view.id,
         onToggle: (bool currentState) async {
           finampUserHelper.setCurrentUserCurrentViewId(view.id);
-          await Future.delayed(
-            const Duration(milliseconds: 400),
-          ); // update state first to give visual feedback, then close menu
+          await Future<void>.delayed(const Duration(milliseconds: 400));
+          // update state first to give visual feedback, then close menu
+          if (!context.mounted) return;
           Navigator.of(context).pop();
         },
+        lowContrast: true,
       ),
       // child: Material(
       //   color: Colors.transparent,

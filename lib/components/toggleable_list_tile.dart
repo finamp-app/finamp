@@ -18,6 +18,7 @@ class ToggleableListTile extends ConsumerWidget {
     this.enabled = true,
     this.confirmationFeedback = true,
     this.condensed = false,
+    this.lowContrast = false,
   });
 
   final String title;
@@ -32,6 +33,7 @@ class ToggleableListTile extends ConsumerWidget {
   final bool confirmationFeedback;
   final bool? divider;
   final bool condensed;
+  final bool lowContrast;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +46,15 @@ class ToggleableListTile extends ConsumerWidget {
           : const EdgeInsets.only(left: 12.0, right: 12.0, top: 4.0, bottom: 4.0),
       child: Container(
         decoration: ShapeDecoration(
-          color: themeColor.withOpacity(state ? 0.3 : 0.1),
+          color: themeColor.withOpacity(
+            lowContrast
+                ? state
+                      ? 0.1
+                      : 0.0
+                : state
+                ? 0.3
+                : 0.1,
+          ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         clipBehavior: Clip.antiAlias,

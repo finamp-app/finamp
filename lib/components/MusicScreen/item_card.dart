@@ -1,8 +1,4 @@
-import 'dart:async';
-
-import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/album_image.dart';
-import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/queue_restore_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -10,10 +6,8 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/generate_subtitle.dart';
-import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get_it/get_it.dart';
 
 import '../../extensions/localizations.dart';
 import '../../services/item_by_id_provider.dart';
@@ -141,10 +135,9 @@ class HomeScreenQueueTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final queueService = GetIt.instance<QueueService>();
     int remainingTracks = info.trackCount - info.previousTracks.length;
 
-    BaseItemDto? track = info.currentTrack == null ? null : ref.watch(itemByIdProvider(info.currentTrack!)).value;
+    BaseItemDto? track = info.currentTrack == null ? null : ref.watch(itemByIdProvider(info.currentTrack!)).valueOrNull;
 
     QueueItemSource source = info.source;
     if (source.wantsItem) {

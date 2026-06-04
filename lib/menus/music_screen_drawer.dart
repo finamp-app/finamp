@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:finamp/components/MusicScreen/offline_mode_status_label.dart';
 import 'package:finamp/components/MusicScreen/offline_mode_switch_list_tile.dart';
 import 'package:finamp/components/MusicScreen/view_list_tile.dart';
@@ -5,7 +7,6 @@ import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
-import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/downloads_screen.dart';
 import 'package:finamp/screens/logs_screen.dart';
 import 'package:finamp/screens/playback_history_screen.dart';
@@ -16,6 +17,7 @@ import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/server_info_provider.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -52,12 +54,9 @@ Future<void> showFinampMainMenu({required BuildContext context}) async {
                           : null,
                     ),
                     SizedBox(height: 8),
-                    FutureBuilder(
-                      future: PackageInfo.fromPlatform(),
-                      builder: (context, snapshot) {
-                        final appName = snapshot.data?.appName ?? AppLocalizations.of(context)!.finamp;
-                        return Text(appName, style: const TextStyle(fontSize: 20));
-                      },
+                    Text(
+                      ref.watch(packageNameProvider).valueOrNull ?? AppLocalizations.of(context)!.finamp,
+                      style: const TextStyle(fontSize: 20),
                     ),
                     if (ref.watch(finampSettingsProvider.isOffline))
                       Text.rich(
@@ -200,12 +199,9 @@ class MusicScreenDrawer extends ConsumerWidget {
                               : null,
                         ),
                         SizedBox(height: 8),
-                        FutureBuilder(
-                          future: PackageInfo.fromPlatform(),
-                          builder: (context, snapshot) {
-                            final appName = snapshot.data?.appName ?? AppLocalizations.of(context)!.finamp;
-                            return Text(appName, style: const TextStyle(fontSize: 20));
-                          },
+                        Text(
+                          ref.watch(packageNameProvider).valueOrNull ?? AppLocalizations.of(context)!.finamp,
+                          style: const TextStyle(fontSize: 20),
                         ),
                         if (settings?.isOffline ?? false)
                           Text.rich(
@@ -217,27 +213,19 @@ class MusicScreenDrawer extends ConsumerWidget {
                             overflow: TextOverflow.ellipsis,
                           )
                         else
-                          FutureBuilder<PublicSystemInfoResult?>(
-                            future: jellyfinApiHelper.loadServerPublicInfo(),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return Text(context.l10n.connected);
-                              }
-                              final PublicSystemInfoResult serverInfo = snapshot.data!;
-                              return Text.rich(
+                          Text.rich(
+                            TextSpan(
+                              text: context.l10n.connectedTo,
+                              children: [
                                 TextSpan(
-                                  text: context.l10n.connectedTo,
-                                  children: [
-                                    TextSpan(
-                                      text: " ${serverInfo.serverName ?? context.l10n.unknown}",
-                                      style: const TextStyle(fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
+                                  text:
+                                      " ${ref.watch(currentServerInfoProvider).value?.publicServerInfo.serverName ?? context.l10n.unknown}",
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              );
-                            },
+                              ],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                       ],
                     ),
@@ -302,3 +290,11 @@ class MusicScreenDrawer extends ConsumerWidget {
     );
   }
 }
+
+final packageNameProvider = FutureProvider((Ref ref) async {
+  final info = await PackageInfo.fromPlatform();
+  if (Platform.isLinux) {
+    return info.appName.capitalize;
+  }
+  return info.appName;
+});
