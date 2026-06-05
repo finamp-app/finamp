@@ -945,7 +945,7 @@ class FinampSettings {
   }
 }
 
-enum CustomPlaybackActions { shuffle, toggleFavorite, radio }
+enum CustomPlaybackActions { shuffle, toggleFavorite, radio, dbusVolume }
 
 /// Custom storage locations for storing music/images.
 @HiveType(typeId: 31)

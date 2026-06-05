@@ -14,7 +14,8 @@ class ReleaseDateHelper {
     final locale = getDateFormatLocaleString();
 
     final premiereDate = baseItem?.premiereDate != null ? DateTime.parse(baseItem!.premiereDate!) : null;
-    if (premiereDate == null) {
+    // Ignore premiere date if null or set to .NET DateTimne.MinValue
+    if (premiereDate == null || premiereDate.year <= 1) {
       return baseItem?.productionYear?.toString();
     }
     switch (format) {

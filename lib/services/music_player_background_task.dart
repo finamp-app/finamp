@@ -1108,6 +1108,12 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           RadioServiceHelper.toggleRadio();
         case CustomPlaybackActions.toggleFavorite:
           return toggleFavoriteStatusOfCurrentTrack();
+        case CustomPlaybackActions.dbusVolume:
+          final volume = extras?["value"] as double?;
+          if (volume != null) {
+            _audioServiceBackgroundTaskLogger.info("Setting volume to $volume from dbus.");
+            await _volume.setInternalVolume(volume);
+          }
       }
     } catch (e) {
       _audioServiceBackgroundTaskLogger.severe("Custom action '$name' not found.", e);
