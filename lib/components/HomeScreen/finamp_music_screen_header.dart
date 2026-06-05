@@ -11,7 +11,6 @@ import 'package:finamp/menus/music_screen_drawer.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/downloads_screen.dart';
-import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/screens/settings_screen.dart';
 import 'package:finamp/screens/tabs_settings_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
@@ -354,7 +353,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                       ),
                                     );
                                   }
-                                  if (userInfo.value == null) {
+                                  if (userInfo.value == null && userInfo.isLoading) {
                                     return SizedBox(
                                       width: 24,
                                       height: 24,

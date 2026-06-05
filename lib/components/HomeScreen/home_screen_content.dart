@@ -32,6 +32,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:logging/logging.dart';
 
 import '../../extensions/localizations.dart';
+import '../../services/finamp_user_helper.dart';
 import '../../services/music_providers.dart';
 
 final _homeScreenLogger = Logger("HomeScreen");
@@ -56,6 +57,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
       final displayable = await ref.watch(resolveSectionProvider(section).future);
       ref.read(pagedContentProvider(displayable).notifier).refresh();
     }
+    ref.invalidate(UserInfoProviders.userInfoProvider);
   }
 
   @override
