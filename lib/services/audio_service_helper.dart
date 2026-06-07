@@ -226,6 +226,9 @@ class AudioServiceHelper {
     final randomFavorite = (await _jellyfinApiHelper.getItems(
       parentItem: _finampUserHelper.currentUser!.currentView,
       filters: favoritesOnly ? "IsFavorite" : null,
+      // Jellyfin 10.10 and 10.11 use the [isFavorite] boolean filter instead of the list-based [filters] parameter for genres, so add that here
+      // I guess part of the reason for this is that it's not possible to favorite a genre through the Jellyfin Web UI at all...
+      isFavorite: favoritesOnly,
       includeItemTypes:
           (limitItemTypes ??
                   [
