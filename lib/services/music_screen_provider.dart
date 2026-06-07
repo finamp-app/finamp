@@ -302,7 +302,11 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
         .join(","),
     startIndex: request.sortConfig.sortBy == SortBy.random ? 0 : startIndex,
     limit: limit,
-    //isFavorite:
+    // Jellyfin 10.10 and 10.11 use the [isFavorite] boolean filter instead of the list-based [filters] parameter for genres, so add that here
+    // I guess part of the reason for this is that it's not possible to favorite a genre through the Jellyfin Web UI at all...
+    isFavorite: request.tab == ContentType.genres
+        ? request.sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite)
+        : null,
     //(widget.tabContentType.itemType == BaseItemDtoType.genre &&
     //    sortAndFilterConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite))
     //     ? true
