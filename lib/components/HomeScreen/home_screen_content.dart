@@ -329,7 +329,20 @@ class HomeScreenSectionContent extends ConsumerWidget {
         return _buildHorizontalSkeletonLoader(ref);
       } else if (pageState.error != null) {
         _homeScreenLogger.severe("Error loading items: ${pageState.error}", pageState.error);
-        return Center(child: Text(context.l10n.errorLoadingItems, maxLines: 1));
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 30,
+          children: [
+            Text(context.l10n.errorLoadingItems, maxLines: 1),
+            CTASmall(
+              icon: TablerIcons.refresh,
+              text: context.l10n.retry,
+              onPressed: () {
+                ref.read(pagedContentProvider(displayable).notifier).retry();
+              },
+            ),
+          ],
+        );
       } else {
         ref.read(pagedContentProvider(displayable).notifier).fetchHomeScreenItems();
         return _buildHorizontalSkeletonLoader(ref);

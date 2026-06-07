@@ -24,10 +24,11 @@ import '../../services/downloads_service.dart';
 import '../../services/finamp_settings_helper.dart';
 import '../../services/music_screen_provider.dart';
 import '../AlbumScreen/track_list_tile.dart';
-import '../first_page_progress_indicator.dart';
-import '../new_page_progress_indicator.dart';
 import 'alphabet_item_list.dart';
+import 'first_page_progress_indicator.dart';
 import 'item_wrapper.dart';
+import 'new_page_error_indicator.dart';
+import 'new_page_progress_indicator.dart';
 
 // this is used to allow refreshing the music screen from other parts of the app, e.g. after deleting items from the server
 final musicScreenRefreshStream = StreamController<void>.broadcast();
@@ -213,6 +214,11 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     // TODO test error cases?
   }
 
+  void _retry() {
+    if (!context.mounted) return;
+    ref.read(pageControl.notifier).retry();
+  }
+
   PagedContentProvider get pageControl => pagedContentProvider(widget.displayable);
 
   @override
@@ -326,6 +332,8 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                 firstPageProgressIndicatorBuilder: (_) => const FirstPageProgressIndicator(),
                 newPageProgressIndicatorBuilder: (_) => const NewPageProgressIndicator(),
                 noItemsFoundIndicatorBuilder: (_) => emptyListIndicator,
+                newPageErrorIndicatorBuilder: (_) => NewPageErrorIndicator(onTap: _retry),
+                firstPageErrorIndicatorBuilder: (_) => FirstPageErrorIndicator(onTap: _retry),
                 noMoreItemsIndicatorBuilder: (_) => SizedBox(height: TrackListItemTile.defaultTileHeight / 2),
                 invisibleItemsThreshold: 70,
               ),
@@ -379,6 +387,8 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
               noMoreItemsIndicatorBuilder: (_) => SizedBox(
                 height: MediaQuery.paddingOf(context).bottom + ref.watch(finampSettingsProvider.gridImageSize) / 2,
               ),
+              newPageErrorIndicatorBuilder: (_) => NewPageErrorIndicator(onTap: _retry),
+              firstPageErrorIndicatorBuilder: (_) => FirstPageErrorIndicator(onTap: _retry),
               invisibleItemsThreshold: 70,
             ),
             gridDelegate: MusicScreenGridLayout(ref: ref, contentType: widget.contentType!),

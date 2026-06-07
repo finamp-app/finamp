@@ -3707,5 +3707,7 @@
         "example": "Play Count"
       }
     }
-  }
+  },
+"retry":  "Retry",
+  "retryPageLoad": "Failed to load items from the server.  Click to retry."
 }

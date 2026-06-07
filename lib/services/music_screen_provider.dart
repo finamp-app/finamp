@@ -25,7 +25,7 @@ const homeScreenSectionItemLimit = 20;
 @riverpod
 class PagedContent extends _$PagedContent {
   List<int> _pageSizes = [];
-  List<ProviderBase<Object?>> _dependencies = [];
+  List<ProviderBase<AsyncValue<Object?>>> _dependencies = [];
 
   @override
   PagingState<int, FinampDisplayableOrPlayable> build(FinampDisplayable<FinampDisplayableOrPlayable> request) {
@@ -182,6 +182,30 @@ class PagedContent extends _$PagedContent {
           break;
       }
     });
+  }
+
+  void retry() {
+    for (var provider in _dependencies) {
+      if (ref.read(provider).hasError) {
+        ref.invalidate(provider);
+      }
+    }
+    switch (request) {
+      case FinampPlayableDto item:
+        ref.invalidate(itemByIdProvider(item.item.id));
+      case MusicScreenPlayable<FinampPlayableDto> library:
+        final libraryId = library.library.resolve(ref);
+        if (libraryId != null && ref.exists(itemByIdProvider(libraryId))) {
+          try {
+            ref.read(itemByIdProvider(libraryId));
+          } catch (_) {
+            ref.invalidate(itemByIdProvider(libraryId));
+          }
+        }
+      case LatestQueues():
+      case PrecalculatedPlayable():
+        break;
+    }
   }
 
   // TODO optimize for fast response, like play all on home screen?
