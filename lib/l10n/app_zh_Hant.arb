@@ -3005,5 +3005,21 @@
     "search": "搜尋",
     "@search": {
         "description": "Button for the user to click to perform a search"
+    },
+    "library": "音樂庫",
+    "@library": {
+        "description": "Label for library - the user can click this and see the conent in their system."
+    },
+    "voiceSearch": "語音搜尋",
+    "@voiceSearch": {
+        "description": "Heading for the page that prompts the user to perform a voice search."
+    },
+    "carPlaySiriHint": "你可以說Hey Siri，在Finamp播放 [曲目/歌手/專輯]",
+    "@carPlaySiriHint": {
+        "description": "Hint text for how to use Siri to search in CarPlay."
+    },
+    "carPlayLoginPrompt": "請在手機上開啟Finamp App，登入你的Jellyfin伺服器。",
+    "@carPlayLoginPrompt": {
+        "description": "Label shown when the user is trying to use CarPlay without being logged in."
     }
 }
