@@ -173,9 +173,9 @@ class MusicScreenDrawer extends ConsumerWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final minWidth = min(304.0, constraints.maxWidth * .90);
+        final minWidth = min(304.0, constraints.maxWidth * .80);
         final excessWidth = constraints.maxWidth - minWidth;
-        final expandedWidth = minWidth + excessWidth * 0.6;
+        final expandedWidth = minWidth + excessWidth * 0.5;
         final targetWidth = min(expandedWidth, 500.0);
         return Drawer(
           surfaceTintColor: colorScheme.surfaceTint,
