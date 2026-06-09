@@ -7,7 +7,6 @@ import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/extensions/color_extensions.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/icon_button_with_semantics.dart';
-import 'package:finamp/menus/music_screen_drawer.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/downloads_screen.dart';
@@ -124,8 +123,8 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                   GestureDetector(
                     onTap: () {
                       // open drawer
-                      // Scaffold.of(context).openDrawer();
-                      showFinampMainMenu(context: context);
+                      Scaffold.of(context).openDrawer();
+                      // showFinampMainMenu(context: context);
                     },
                     onSecondaryTap: ref.watch(pollingDownloadsSyncingProvider)
                         ? () {
