@@ -69,7 +69,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
       child: CustomScrollView(
         slivers: [
           if (ref.watch(finampSettingsProvider.homeScreenConfiguration).actions.isNotEmpty)
-            SliverPadding(padding: const EdgeInsets.only(top: 16.0)),
+            SliverPadding(padding: const EdgeInsets.only(top: 10.0)),
           SliverLayoutBuilder(
             builder: (context, constraints) {
               final double maxWidth = isDesktop ? 800.0 : 600.0;
@@ -134,7 +134,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
               );
             },
           ),
-          const SliverPadding(padding: EdgeInsets.only(top: 8)),
+          const SliverPadding(padding: EdgeInsets.only(top: 4)),
           SliverMainAxisGroup(
             slivers: ref
                 .watch(finampSettingsProvider.homeScreenConfiguration)

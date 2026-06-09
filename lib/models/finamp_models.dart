@@ -278,15 +278,17 @@ class DefaultSettings {
   static final homeScreenConfiguration = FinampHomeScreenConfiguration(
     actions: [
       QuickActionConfig(action: FinampQuickActions.shuffleTracks),
-      QuickActionConfig(action: FinampQuickActions.browseRecentQueues),
+      QuickActionConfig(action: FinampQuickActions.playRandomFavoriteItem),
+      QuickActionConfig(action: FinampQuickActions.playPreviousQueue),
       QuickActionConfig(action: FinampQuickActions.surpriseMe),
     ],
     sections: [
-      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoriteTracks),
-      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.forgottenFavoriteTracks),
-      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.recentlyPlayedTracks),
       HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.recentlyAddedAlbums),
-      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoriteArtists),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoriteTracks),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.frequentlyPlayedAlbums),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoritePlaylists),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.forgottenFavoriteTracks),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.recentQueues),
     ],
   );
   static const gridImageSizeMobile = 150;
