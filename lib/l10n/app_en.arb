@@ -1855,7 +1855,7 @@
   "@defaultDownloadLocationButton": {
     "description": "Tooltip for button that sets a download location as the default."
   },
-  "fixedGridTileSizeEnum": "{size, select, verySmall{Very Small} small{Small} medium{Medium} large{Large} veryLarge{Very Large} other{???}}",
+  "fixedGridTileSizeEnum": "{size, select, tiny{tiny} verySmall{very small} small{small} medium{medium} large{large} veryLarge{very large} huge{huge} giant{giant} other{???}}",
   "@fixedGridTileSizeEnum": {
     "placeholders": {
       "size": {
@@ -3341,7 +3341,7 @@
   "@gridImageSizeSubtitle": {
     "description": "Subtitle of grid tile image size setting"
   },
-  "gridImageSizeLabel": "{sizeDescriptor} (currently {colCount} columns)",
+  "gridImageSizeLabel": "{colCountExact, plural, =0{~} =1{} other{}}{colCount, plural, =1{1 column ({sizeDescriptor})} other{{colCount} columns ({sizeDescriptor})}}",
   "@gridImageSizeLabel": {
     "placeholders": {
       "sizeDescriptor": {
@@ -3349,7 +3349,11 @@
         "example": "Very Small"
       },
       "colCount": {
-        "type": "String"
+        "type": "int"
+      },
+      "colCountExact": {
+        "type": "int",
+        "description": "0 = not exact, add e.g. tilde character (~), 1 = exact, just show the number"
       }
     },
     "description": "Slider label in grid tile image size setting"

@@ -12,6 +12,7 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/radio_service_helper.dart';
+import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -288,9 +289,12 @@ class DefaultSettings {
       HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoriteArtists),
     ],
   );
-  //TODO these values should be set based on the platform
-  static const gridImageSize = 160;
-  static const homeScreenImageSize = 80;
+  static const gridImageSizeMobile = 150;
+  static const gridImageSizeDesktop = 140;
+  static int get homeScreenImageSize => isDesktop ? homeScreenImageSizeDesktop : homeScreenImageSizeMobile;
+  static const homeScreenImageSizeMobile = 90;
+  static const homeScreenImageSizeDesktop = 120;
+  static int get gridImageSize => isDesktop ? gridImageSizeDesktop : gridImageSizeMobile;
   static const useAndroidGainEffect = true;
 }
 
@@ -433,8 +437,8 @@ class FinampSettings {
     this.forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid,
     this.previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode,
     required this.homeScreenConfiguration,
-    this.gridImageSize = DefaultSettings.gridImageSize,
-    this.homeScreenImageSize = DefaultSettings.homeScreenImageSize,
+    required this.gridImageSize,
+    required this.homeScreenImageSize,
     this.useAndroidGainEffect = DefaultSettings.useAndroidGainEffect,
   });
 
@@ -902,7 +906,7 @@ class FinampSettings {
   )
   FinampHomeScreenConfiguration homeScreenConfiguration = DefaultSettings.homeScreenConfiguration;
 
-  @HiveField(147, defaultValue: DefaultSettings.gridImageSize)
+  @HiveField(147, defaultValue: DefaultSettings.gridImageSizeMobile)
   int gridImageSize;
 
   @HiveField(148, defaultValue: DefaultSettings.amoledTheme)
@@ -911,7 +915,7 @@ class FinampSettings {
   @HiveField(149, defaultValue: DefaultSettings.useAndroidGainEffect)
   bool useAndroidGainEffect;
 
-  @HiveField(150, defaultValue: DefaultSettings.homeScreenImageSize)
+  @HiveField(150, defaultValue: DefaultSettings.homeScreenImageSizeMobile)
   int homeScreenImageSize;
 
   static Future<FinampSettings> create() async {
@@ -926,6 +930,8 @@ class FinampSettings {
       tabSortBy: {},
       tabSortOrder: {},
       homeScreenConfiguration: DefaultSettings.homeScreenConfiguration,
+      gridImageSize: DefaultSettings.gridImageSize,
+      homeScreenImageSize: DefaultSettings.homeScreenImageSize,
     );
   }
 

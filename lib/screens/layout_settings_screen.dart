@@ -142,7 +142,6 @@ class GridImageSizeSelector extends StatelessWidget {
       onChanged: FinampSetters.setGridImageSize,
       title: (l10n) => l10n.gridImageSizeTitle,
       subtitle: (l10n) => l10n.gridImageSizeSubtitle,
-      label: (l10n, sizeLabel, numLabel) => l10n.gridImageSizeLabel(sizeLabel, numLabel),
     );
   }
 }
@@ -157,7 +156,6 @@ class HomeScreenImageSizeSelector extends StatelessWidget {
       onChanged: FinampSetters.setHomeScreenImageSize,
       title: (l10n) => l10n.homeScreenImageSizeTitle,
       subtitle: (l10n) => l10n.homeScreenImageSizeSubtitle,
-      label: (l10n, sizeLabel, numLabel) => l10n.gridImageSizeLabel(sizeLabel, numLabel),
     );
   }
 }
@@ -169,14 +167,12 @@ class GenericImageSizeSlider extends ConsumerStatefulWidget {
     required this.onChanged,
     required this.title,
     required this.subtitle,
-    required this.label,
   });
 
   final int Function(FinampSettings settings) settingSelector;
   final ValueChanged<int> onChanged;
   final String Function(AppLocalizations l10n) title;
   final String Function(AppLocalizations l10n) subtitle;
-  final String Function(AppLocalizations l10n, String sizeLabel, String numLabel) label;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -197,26 +193,24 @@ class _GenericImageSizeSliderState extends ConsumerState<GenericImageSizeSlider>
         10 -
         (ref.watch(finampSettingsProvider.showFastScroller) ? 22 : 0);
 
-    // Always allow scaling items down to 45 px wide as the smallest reasonable value.  Desktop platforms are guaranteed
+    // Always allow scaling items down to 48 px wide as the smallest reasonable value.  Desktop platforms are guaranteed
     // 25 options even if they go below this to increase flexibility and because they can handle the more precise slider
-    final maxAvailable = max((predictedGridWidth / 45).ceil(), Platform.isAndroid || Platform.isIOS ? 0 : 25);
+    final maxAvailable = max((predictedGridWidth / 48).ceil(), Platform.isAndroid || Platform.isIOS ? 0 : 16);
 
     colCount ??= predictedGridWidth / widget.settingSelector(FinampSettingsHelper.finampSettings);
     colCount = colCount!.clamp(1, maxAvailable.toDouble());
 
-    String numLabel;
-    if (colCount!.round() * 20 == (colCount! * 20).round()) {
-      numLabel = "${colCount!.round()}";
-    } else {
-      numLabel = "~${colCount!.round()}";
-    }
-    //TODO this mapping might work for desktop, but on mobile it jumps from "medium" to "very large", and half the slider is "very small"
+    bool colCountExact = colCount!.round() * 20 == (colCount! * 20).round();
+    int finalColCount = colCount!.round();
+
     final sizeLabel = AppLocalizations.of(context)!.fixedGridTileSizeEnum(switch (predictedGridWidth / colCount!) {
-      < 80 => "verySmall",
-      < 125 => "small",
-      < 190 => "medium",
+      < 50 => "tiny",
+      < 60 => "verySmall",
+      < 80 => "small",
+      < 120 => "medium",
       < 300 => "large",
-      _ => "veryLarge",
+      < 350 => "huge",
+      _ => "giant",
     });
 
     return Column(
@@ -230,8 +224,8 @@ class _GenericImageSizeSliderState extends ConsumerState<GenericImageSizeSlider>
               min: 1,
               max: maxAvailable.toDouble(),
               value: colCount!,
-              label: numLabel,
-              divisions: Platform.isAndroid || Platform.isIOS ? maxAvailable - 1 : null,
+              label: finalColCount.toString(),
+              divisions: maxAvailable - 1,
               onChanged: (value) {
                 setState(() {
                   colCount = value;
@@ -244,7 +238,10 @@ class _GenericImageSizeSliderState extends ConsumerState<GenericImageSizeSlider>
               autofocus: false,
               focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
             ),
-            Text(widget.label(context.l10n, sizeLabel, numLabel), style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              context.l10n.gridImageSizeLabel(sizeLabel, finalColCount, colCountExact ? 1 : 0),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             SizedBox(height: 12),
           ],
         ),
