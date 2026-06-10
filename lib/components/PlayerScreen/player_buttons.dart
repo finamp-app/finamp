@@ -7,6 +7,7 @@ import 'package:finamp/components/Shortcuts/music_control_shortcuts.dart';
 import 'package:finamp/components/audio_fade_progress_visualizer_container.dart';
 import 'package:finamp/screens/player_screen.dart';
 import 'package:finamp/services/feedback_helper.dart';
+import 'package:finamp/services/remote_session_service.dart';
 import 'package:finamp/utils/locale_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -25,18 +26,36 @@ class PlayerButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+    final remoteSession = GetIt.instance<RemoteSessionService>();
 
-    return StreamBuilder<MediaState>(
-      stream: mediaStateStream,
-      initialData: MediaState(
-        audioHandler.mediaItem.valueOrNull,
-        audioHandler.playbackState.value,
-        audioHandler.fadeState.value,
-      ),
-      builder: (context, snapshot) {
-        final mediaState = snapshot.data!;
-        final playbackState = mediaState.playbackState;
-        final fadeState = mediaState.fadeState;
+    return StreamBuilder<RemotePlaybackState?>(
+      stream: remoteSession.getRemotePlaybackStateStream(),
+      builder: (context, remoteSnapshot) {
+        final remote = remoteSession.isRemote ? remoteSnapshot.data : null;
+        return StreamBuilder<MediaState>(
+          stream: mediaStateStream,
+          initialData: MediaState(
+            audioHandler.mediaItem.valueOrNull,
+            audioHandler.playbackState.value,
+            audioHandler.fadeState.value,
+          ),
+          builder: (context, snapshot) {
+            final mediaState = snapshot.data!;
+            final playbackState = mediaState.playbackState;
+            final fadeState = mediaState.fadeState;
+
+            // In remote mode the play/pause icon reflects the remote session's
+            // state (Slice D3); the local fade animation only applies locally.
+            final IconData playPauseIcon;
+            if (remote != null) {
+              playPauseIcon = remote.playing ? TablerIcons.player_pause : TablerIcons.player_play;
+            } else {
+              playPauseIcon = playbackState.playing
+                  ? (fadeState.fadeDirection != FadeDirection.fadeOut
+                        ? TablerIcons.player_pause
+                        : TablerIcons.player_play)
+                  : TablerIcons.player_play;
+            }
 
         return Row(
           mainAxisSize: MainAxisSize.max,
@@ -59,7 +78,11 @@ class PlayerButtons extends StatelessWidget {
                 icon: const Icon(TablerIcons.player_skip_back),
                 onPressed: () async {
                   FeedbackHelper.feedback(FeedbackType.light);
-                  await audioHandler.skipToPrevious();
+                  if (remoteSession.isRemote) {
+                    await remoteSession.previous();
+                  } else {
+                    await audioHandler.skipToPrevious();
+                  }
                 },
               ),
             ),
@@ -76,7 +99,11 @@ class PlayerButtons extends StatelessWidget {
                 borderRadius: BorderRadius.circular(controller.shouldShow(PlayerHideable.bigPlayButton) ? 16 : 12),
                 onTap: () {
                   FeedbackHelper.feedback(FeedbackType.light);
-                  unawaited(audioHandler.togglePlayback());
+                  if (remoteSession.isRemote) {
+                    unawaited(remoteSession.playPause());
+                  } else {
+                    unawaited(audioHandler.togglePlayback());
+                  }
                 },
                 label: AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
                 tooltip: getStringComponentsInLocaleOrder(context, [
@@ -90,11 +117,7 @@ class PlayerButtons extends StatelessWidget {
                   ),
                   color: IconTheme.of(context).color!.withAlpha(128),
                   child: Icon(
-                    playbackState.playing
-                        ? fadeState.fadeDirection != FadeDirection.fadeOut
-                              ? TablerIcons.player_pause
-                              : TablerIcons.player_play
-                        : TablerIcons.player_play,
+                    playPauseIcon,
                     size: 32,
                   ),
                 ),
@@ -115,13 +138,19 @@ class PlayerButtons extends StatelessWidget {
                 icon: const Icon(TablerIcons.player_skip_forward),
                 onPressed: () async {
                   FeedbackHelper.feedback(FeedbackType.light);
-                  await audioHandler.skipToNext();
+                  if (remoteSession.isRemote) {
+                    await remoteSession.next();
+                  } else {
+                    await audioHandler.skipToNext();
+                  }
                 },
               ),
             ),
             if (controller.shouldShow(PlayerHideable.loopShuffleButtons)) PlayerButtonsLoopMode(),
           ],
         );
+      },
+    );
       },
     );
   }

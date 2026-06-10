@@ -560,6 +560,76 @@ final class _$JellyfinApi extends JellyfinApi {
   }
 
   @override
+  Future<dynamic> getSessions({String? controllableByUserId}) async {
+    final Uri $url = Uri.parse('/Sessions');
+    final Map<String, dynamic> $params = <String, dynamic>{
+      'controllableByUserId': controllableByUserId,
+    };
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
+    final Response $response = await client.send<dynamic, dynamic>(
+      $request,
+      responseConverter: JsonConverter.responseFactory,
+    );
+    return $response.bodyOrThrow;
+  }
+
+  @override
+  Future<dynamic> sendPlayToSession({
+    required String sessionId,
+    required String playCommand,
+    required String itemIds,
+    int? startIndex,
+    int? startPositionTicks,
+  }) async {
+    final Uri $url = Uri.parse('/Sessions/${sessionId}/Playing');
+    final Map<String, dynamic> $params = <String, dynamic>{
+      'playCommand': playCommand,
+      'itemIds': itemIds,
+      'startIndex': startIndex,
+      'startPositionTicks': startPositionTicks,
+    };
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
+    final Response $response = await client.send<dynamic, dynamic>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+    );
+    return $response.bodyOrThrow;
+  }
+
+  @override
+  Future<dynamic> sendPlaystateCommand({
+    required String sessionId,
+    required String command,
+    int? seekPositionTicks,
+  }) async {
+    final Uri $url = Uri.parse('/Sessions/${sessionId}/Playing/${command}');
+    final Map<String, dynamic> $params = <String, dynamic>{
+      'seekPositionTicks': seekPositionTicks,
+    };
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
+    final Response $response = await client.send<dynamic, dynamic>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+    );
+    return $response.bodyOrThrow;
+  }
+
+  @override
   Future<dynamic> getPlaylistItems({
     required BaseItemId playlistId,
     required String userId,

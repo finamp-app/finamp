@@ -4,6 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:finamp/components/print_duration.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/progress_state_stream.dart';
+import 'package:finamp/services/remote_session_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -34,6 +35,8 @@ class _ProgressSliderState extends State<ProgressSlider> {
   /// Value used to hold the slider's value when dragging.
   double? _dragValue;
 
+  final _remoteSession = GetIt.instance<RemoteSessionService>();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -53,10 +56,16 @@ class _ProgressSliderState extends State<ProgressSlider> {
             // RepaintBoundary to avoid more areas being repainted than necessary
             child: SliderTheme(
               data: SliderThemeData(trackHeight: 3.5, trackShape: CustomTrackShape()),
-              child: StreamBuilder<ProgressState>(
-                initialData: progressState,
-                stream: progressStateStream,
-                builder: (context, snapshot) {
+              child: StreamBuilder<RemotePlaybackState?>(
+                stream: _remoteSession.getRemotePlaybackStateStream(),
+                builder: (context, remoteSnapshot) {
+                  if (_remoteSession.isRemote && remoteSnapshot.data != null) {
+                    return _buildRemoteSlider(context, remoteSnapshot.data!);
+                  }
+                  return StreamBuilder<ProgressState>(
+                    initialData: progressState,
+                    stream: progressStateStream,
+                    builder: (context, snapshot) {
                   if (snapshot.data?.mediaItem == null) {
                     // If nothing is playing or the AudioService isn't connected, return a
                     // greyed out slider with some fake numbers. We also do this if
@@ -118,12 +127,59 @@ class _ProgressSliderState extends State<ProgressSlider> {
                       "Snapshot doesn't have data and MediaItem isn't null and AudioService is connected?",
                     );
                   }
+                    },
+                  );
                 },
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  /// Slider mirroring the remote session's playback position (Slice D3) and
+  /// seeking it (Slice D4). While dragging, [_dragValue] overrides the polled
+  /// position so the 1 Hz poll rebuilds don't fight the finger; on release we
+  /// send a Seek command to the remote and clear the drag value.
+  Widget _buildRemoteSlider(BuildContext context, RemotePlaybackState remote) {
+    final durationMicros = remote.duration?.inMicroseconds.toDouble() ?? 0;
+    final maxMicros = durationMicros > 0 ? durationMicros : 1.0;
+    final sliderValue = (_dragValue ?? remote.position.inMicroseconds.toDouble()).clamp(0.0, maxMicros);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: 24.0,
+          child: Slider(
+            min: 0.0,
+            max: maxMicros,
+            value: sliderValue,
+            onChanged: widget.allowSeeking
+                ? (newValue) => setState(() {
+                    _dragValue = newValue;
+                  })
+                : null,
+            onChangeEnd: widget.allowSeeking
+                ? (newValue) async {
+                    await _remoteSession.seek(Duration(microseconds: newValue.toInt()));
+                    if (mounted) {
+                      setState(() {
+                        _dragValue = null;
+                      });
+                    }
+                  }
+                : null,
+            autofocus: false,
+            focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
+          ),
+        ),
+        if (widget.showDuration)
+          _ProgressSliderDuration(
+            position: _dragValue == null ? remote.position : Duration(microseconds: _dragValue!.toInt()),
+            itemDuration: remote.duration,
+          ),
+      ],
     );
   }
 }
