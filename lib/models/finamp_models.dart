@@ -109,7 +109,11 @@ class DefaultSettings {
   static const Color? accentColor = null;
   static const shouldTranscode = false;
   static const transcodeBitrate = 320000;
-  static const androidStopForegroundOnPause = true;
+  // Default to keeping the audio service in the foreground while paused.
+  // Entering a low-priority state on pause lets Android (12+/API 31) deny the
+  // background foreground-service restart needed to resume after a transient
+  // audio-focus interruption, silently stopping playback. See issue #956.
+  static const androidStopForegroundOnPause = false;
   static const onlyShowFavorites = false;
   static const trackShuffleItemCount = 250;
 
