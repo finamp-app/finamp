@@ -484,38 +484,6 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
                   );
                 },
               ),
-              SizedBox(height: 20.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                spacing: 4.0,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4.0),
-                    child: Text(context.l10n.sectionTitle, style: Theme.of(context).textTheme.bodyMedium),
-                  ),
-                  TextField(
-                    controller: TextEditingController(text: tabTitle)
-                      ..selection = TextSelection.fromPosition(TextPosition(offset: tabTitle.length)),
-                    decoration: InputDecoration(
-                      hintText: context.l10n.egFavoriteTracks,
-                      filled: true,
-                      fillColor: Color.alphaBlend(
-                        ColorScheme.of(context).onSurface.withOpacity(0.1),
-                        ColorScheme.of(context).surface,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                      border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
-                    ),
-                    onChanged: (newValue) {
-                      setState(() {
-                        tabTitle = newValue;
-                      });
-                    },
-                  ),
-                ],
-              ),
             ],
           ),
       ],
@@ -530,19 +498,49 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
           mainAxisSize: MainAxisSize.min,
           spacing: 4.0,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 4.0),
-              child: Text(context.l10n.sortBy, style: Theme.of(context).textTheme.bodyMedium),
-            ),
-            SortAndFilterRow(
+            SortAndFilterEmbeddedMenu(
               tabType: selectedSectionType == _SectionType.collection
                   ? collectionContent ?? ContentType.tracks
                   : tabContent,
               controller: activeSortController!,
+              removeOnly: false,
+              hideArtistGenreFilters: false,
             ),
           ],
         ),
       ],
+      SizedBox(height: 20.0),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        spacing: 4.0,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 4.0),
+            child: Text(context.l10n.sectionTitle, style: Theme.of(context).textTheme.bodyMedium),
+          ),
+          TextField(
+            controller: TextEditingController(text: tabTitle)
+              ..selection = TextSelection.fromPosition(TextPosition(offset: tabTitle.length)),
+            decoration: InputDecoration(
+              hintText: context.l10n.egFavoriteTracks,
+              filled: true,
+              fillColor: Color.alphaBlend(
+                ColorScheme.of(context).onSurface.withOpacity(0.1),
+                ColorScheme.of(context).surface,
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+              floatingLabelBehavior: FloatingLabelBehavior.never,
+              border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
+            ),
+            onChanged: (newValue) {
+              setState(() {
+                tabTitle = newValue;
+              });
+            },
+          ),
+        ],
+      ),
       SizedBox(height: 24.0),
       if (tabTitle == "" && selectedSectionType == _SectionType.tab)
         Text(

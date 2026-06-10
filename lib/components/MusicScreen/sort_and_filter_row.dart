@@ -208,6 +208,7 @@ class SortAndFilterRow extends ConsumerWidget {
       removeOnly: removeOnly,
       hideArtistGenreFilters: hideArtistGenreFilters,
     );
+
     return SafeArea(
       top: false,
       bottom: false,
@@ -359,71 +360,43 @@ class SortAndFilterMenu extends ConsumerStatefulWidget {
   ConsumerState<SortAndFilterMenu> createState() => _SortAndFilterMenuState();
 }
 
-class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
-  late SortAndFilterConfiguration currentConfig;
-
+mixin _SortAndFilterMenuEntriesMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   static const toggalableFilterTypes = [
     ItemFilterType.isFavorite,
     ItemFilterType.isFullyDownloaded,
     ItemFilterType.isUnplayed,
   ];
+
+  SortAndFilterConfiguration get currentConfig;
+  set currentConfig(SortAndFilterConfiguration value);
+
+  ContentType get tabType;
+  SortAndFilterController get controller;
+  bool get removeOnly;
+  bool get hideArtistGenreFilters;
+  bool get applyChangesImmediately;
+
   Set<ItemFilter> get excessFilters => currentConfig.filters
       .whereNot((x) => toggalableFilterTypes.contains(x.type))
-      .whereNot((x) => widget.hideArtistGenreFilters && x.type.isArtistGenre)
+      .whereNot((x) => hideArtistGenreFilters && x.type.isArtistGenre)
       .toSet();
-
-  @override
-  void initState() {
-    super.initState();
-
-    currentConfig = ref.read(_unresolvedSortProvider(widget.controller));
-  }
 
   bool get showOfflineSortWarning => ref.watch(finampSettingsProvider.isOffline) && currentConfig.sortBy.onlineOnly;
 
-  @override
-  Widget build(BuildContext context) {
-    final List<Widget> menuEntries;
-    if (widget.removeOnly) {
-      menuEntries = [
-        SizedBox(height: 20.0),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          spacing: 4.0,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 4.0),
-              child: Text(context.l10n.filters, style: Theme.of(context).textTheme.bodyMedium),
-            ),
-            ...excessFilters.map((filter) => _makeExcessFilterTile(ref, filter)),
-          ],
-        ),
-        SizedBox(height: 32.0),
-        CTAMedium(
-          text: context.l10n.apply,
-          icon: TablerIcons.check,
-          onPressed: () {
-            widget.controller._updateConfiguration(currentConfig);
-            Navigator.of(context).pop();
-          },
-        ),
-      ];
-    } else {
-      menuEntries = _getMenuEntries(context);
+  void _updateCurrentConfig(SortAndFilterConfiguration newConfig) {
+    setState(() {
+      currentConfig = newConfig;
+    });
+    if (applyChangesImmediately) {
+      controller._updateConfiguration(newConfig);
     }
-
-    // Actual height was 490, bump to 520 for extra bottom padding and wiggle room on element sizes
-    final stackHeight = 520.0 + 56.0 * excessFilters.length + (showOfflineSortWarning ? 60.0 : 0.0);
-
-    return widget.childBuilder(stackHeight, menu(context, menuEntries));
   }
 
-  // Normal track menu entries, excluding headers
+  // Normal sort & filter menu entries, excluding headers
   List<Widget> _getMenuEntries(BuildContext context) {
     final rawSortOptions = SortBy.defaultsFor(
-      type: widget.tabType.itemType,
-      includeDefaultOrder: widget.tabType == ContentType.inPlaylist,
+      type: tabType.itemType,
+      includeDefaultOrder: tabType == ContentType.inPlaylist,
     );
     final sortOptions = ref.watch(finampSettingsProvider.isOffline)
         ? [...rawSortOptions.whereNot((s) => s.onlineOnly), ...rawSortOptions.where((s) => s.onlineOnly)]
@@ -452,9 +425,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
             selectedIcon: currentConfig.sortBy.getIcon(),
             onSelected: (sortBy) {
               if (sortBy != null) {
-                setState(() {
-                  currentConfig = currentConfig.copyWith(sortBy: sortBy);
-                });
+                _updateCurrentConfig(currentConfig.copyWith(sortBy: sortBy));
               }
             },
           ),
@@ -490,9 +461,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
             selectedIcon: currentConfig.sortOrder.getIcon(),
             onSelected: (sortOrder) {
               if (sortOrder != null) {
-                setState(() {
-                  currentConfig = currentConfig.copyWith(sortOrder: sortOrder);
-                });
+                _updateCurrentConfig(currentConfig.copyWith(sortOrder: sortOrder));
               }
             },
           ),
@@ -510,8 +479,26 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
           ),
           ...ItemFilterType.values
               .where((x) => toggalableFilterTypes.contains(x))
-              .map((option) => _makeFilterTile(ref, option)),
-          ...excessFilters.map((filter) => _makeExcessFilterTile(ref, filter)),
+              .map((option) => _makeFilterTile(option)),
+          ...excessFilters.map((filter) => _makeExcessFilterTile(filter)),
+        ],
+      ),
+    ];
+  }
+
+  List<Widget> _getRemoveOnlyMenuEntries(BuildContext context) {
+    return [
+      SizedBox(height: 20.0),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        spacing: 4.0,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 4.0),
+            child: Text(context.l10n.filters, style: Theme.of(context).textTheme.bodyMedium),
+          ),
+          ...excessFilters.map((filter) => _makeExcessFilterTile(filter)),
         ],
       ),
       SizedBox(height: 32.0),
@@ -519,14 +506,14 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
         text: context.l10n.apply,
         icon: TablerIcons.check,
         onPressed: () {
-          widget.controller._updateConfiguration(currentConfig);
+          controller._updateConfiguration(currentConfig);
           Navigator.of(context).pop();
         },
       ),
     ];
   }
 
-  Widget _makeFilterTile(WidgetRef ref, ItemFilterType option) {
+  Widget _makeFilterTile(ItemFilterType option) {
     return ToggleableListTile(
       title: ItemFilter(type: option).getName(context.l10n),
       leading: Padding(
@@ -573,14 +560,13 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
               throw UnsupportedError("Filter type $option should not be toggleable");
           }
         }
-        setState(() {
-          currentConfig = currentConfig.copyWith(filters: newFilters);
-        });
+
+        _updateCurrentConfig(currentConfig.copyWith(filters: newFilters));
       },
     );
   }
 
-  Widget _makeExcessFilterTile(WidgetRef ref, ItemFilter filter) {
+  Widget _makeExcessFilterTile(ItemFilter filter) {
     return ToggleableListTile(
       title: filter.getName(context.l10n),
       leading: Padding(
@@ -606,11 +592,148 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu> {
             "This tile is expected to be immediately removed once toggled off, so this shouldn't happen.",
           );
         }
-        setState(() {
-          currentConfig = currentConfig.copyWith(filters: newFilters);
-        });
+
+        _updateCurrentConfig(currentConfig.copyWith(filters: newFilters));
       },
     );
+  }
+}
+
+class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu>
+    with _SortAndFilterMenuEntriesMixin<SortAndFilterMenu> {
+  late SortAndFilterConfiguration currentConfig;
+
+  @override
+  ContentType get tabType => widget.tabType;
+
+  @override
+  SortAndFilterController get controller => widget.controller;
+
+  @override
+  bool get removeOnly => widget.removeOnly;
+
+  @override
+  bool get hideArtistGenreFilters => widget.hideArtistGenreFilters;
+
+  @override
+  bool get applyChangesImmediately => false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    currentConfig = ref.read(_unresolvedSortProvider(widget.controller));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Widget> menuEntries;
+    if (widget.removeOnly) {
+      menuEntries = _getRemoveOnlyMenuEntries(context);
+    } else {
+      menuEntries = [
+        ..._getMenuEntries(context),
+        SizedBox(height: 32.0),
+        CTAMedium(
+          text: context.l10n.apply,
+          icon: TablerIcons.check,
+          onPressed: () {
+            widget.controller._updateConfiguration(currentConfig);
+            Navigator.of(context).pop();
+          },
+        ),
+      ];
+    }
+
+    // Actual height was 490, bump to 520 for extra bottom padding and wiggle room on element sizes
+    final stackHeight = 520.0 + 56.0 * excessFilters.length + (showOfflineSortWarning ? 60.0 : 0.0);
+
+    return widget.childBuilder(stackHeight, menu(context, menuEntries));
+  }
+
+  // All track menu slivers, including headers
+  List<Widget> menu(BuildContext context, List<Widget> menuEntries) {
+    return [
+      SliverStickyHeader(
+        header: Padding(
+          padding: const EdgeInsets.only(top: 10.0, bottom: 8.0, left: 16.0, right: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 2.0,
+            children: [
+              Text(
+                widget.removeOnly ? context.l10n.removeFilters : context.l10n.sortFilter,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          ),
+        ),
+        sliver: MenuMask(
+          height: MenuMaskHeight(32.0),
+          child: SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            sliver: SliverList.list(children: menuEntries),
+          ),
+        ),
+      ),
+    ];
+  }
+}
+
+class SortAndFilterEmbeddedMenu extends ConsumerStatefulWidget {
+  const SortAndFilterEmbeddedMenu({
+    super.key,
+    required this.tabType,
+    required this.controller,
+    required this.removeOnly,
+    required this.hideArtistGenreFilters,
+  });
+
+  final ContentType tabType;
+  final SortAndFilterController controller;
+  final bool removeOnly;
+  final bool hideArtistGenreFilters;
+
+  @override
+  ConsumerState<SortAndFilterEmbeddedMenu> createState() => _SortAndFilterEmbeddedMenuState();
+}
+
+class _SortAndFilterEmbeddedMenuState extends ConsumerState<SortAndFilterEmbeddedMenu>
+    with _SortAndFilterMenuEntriesMixin<SortAndFilterEmbeddedMenu> {
+  late SortAndFilterConfiguration currentConfig;
+
+  @override
+  ContentType get tabType => widget.tabType;
+
+  @override
+  SortAndFilterController get controller => widget.controller;
+
+  @override
+  bool get removeOnly => widget.removeOnly;
+
+  @override
+  bool get hideArtistGenreFilters => widget.hideArtistGenreFilters;
+
+  @override
+  bool get applyChangesImmediately => true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    currentConfig = ref.read(_unresolvedSortProvider(widget.controller));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Widget> menuEntries;
+    if (widget.removeOnly) {
+      menuEntries = _getRemoveOnlyMenuEntries(context);
+    } else {
+      menuEntries = _getMenuEntries(context);
+    }
+
+    return Column(children: menuEntries);
   }
 
   // All track menu slivers, including headers
