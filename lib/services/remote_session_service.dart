@@ -74,6 +74,17 @@ class RemoteSessionService {
   /// player UI to mirror.
   Stream<RemotePlaybackState?> getRemotePlaybackStateStream() => _remoteStateStream.map(_toPlaybackState);
 
+  /// The remote session's now-playing item, or null when not connected or the
+  /// remote is idle.
+  BaseItemDto? get currentRemoteItem => _remoteStateStream.valueOrNull?.nowPlayingItem;
+
+  /// A stream of the remote session's now-playing item for the player UI to
+  /// mirror (Slice D3b). Emits only when the track actually changes: the poll
+  /// fires every second, but metadata/artwork consumers should only rebuild
+  /// (and re-resolve images) on a track change.
+  Stream<BaseItemDto?> getRemoteNowPlayingItemStream() =>
+      _remoteStateStream.map((session) => session?.nowPlayingItem).distinct((a, b) => a?.id == b?.id);
+
   RemotePlaybackState? _toPlaybackState(SessionInfo? session) {
     if (session == null) return null;
     // Fall back to the last known position when the remote reports null (e.g.

@@ -1,6 +1,7 @@
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/services/remote_session_service.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -37,15 +38,30 @@ final currentAlbumImageProvider = Provider<FinampImage>((ref) {
     }
   }
 
-  final currentTrack = ref.watch(currentTrackProvider).value?.baseItem;
-  if (currentTrack != null) {
-    final request = AlbumImageRequest(item: currentTrack);
+  final displayItem = ref.watch(currentDisplayItemProvider);
+  if (displayItem != null) {
+    final request = AlbumImageRequest(item: displayItem);
     // Setting useIsolate to false provides negligible speedup for player images and induces lag, so use true.
     final albumImage = ref.watch(albumImageProvider(request));
     assert(albumImage.fullQuality);
-    return albumImage.asTheme(ThemeInfo(currentTrack, useIsolate: true));
+    return albumImage.asTheme(ThemeInfo(displayItem, useIsolate: true));
   }
   return FinampImage.empty();
 });
 
 final currentTrackProvider = StreamProvider((_) => GetIt.instance<QueueService>().getCurrentTrackStream());
+
+/// The remote session's now-playing item, or null when not controlling a
+/// remote session (or before its first poll). Only emits on track changes.
+final remoteNowPlayingItemProvider = StreamProvider(
+  (_) => GetIt.instance<RemoteSessionService>().getRemoteNowPlayingItemStream(),
+);
+
+/// The item the player screen should display: the remote session's
+/// now-playing item while controlling one (Play On, Slice D3b), so metadata,
+/// artwork and theming follow the remote as it advances tracks; the local
+/// queue's current track otherwise.
+final currentDisplayItemProvider = Provider<BaseItemDto?>((ref) {
+  final remoteItem = ref.watch(remoteNowPlayingItemProvider).valueOrNull;
+  return remoteItem ?? ref.watch(currentTrackProvider).value?.baseItem;
+});
