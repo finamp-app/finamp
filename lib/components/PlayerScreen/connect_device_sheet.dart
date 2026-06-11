@@ -1,4 +1,5 @@
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/jellyfin_api.dart' as jellyfin_api;
 import 'package:finamp/services/jellyfin_api_helper.dart';
@@ -61,7 +62,8 @@ class _ConnectDeviceSheetState extends State<_ConnectDeviceSheet> {
 
     if (allItems.isEmpty) {
       _log.warning("Queue is empty, aborting sendPlay");
-      GlobalSnackbar.message((context) => "No items in queue");
+      GlobalSnackbar.message(
+          (context) => AppLocalizations.of(context)!.playOnEmptyQueue);
       return;
     }
 
@@ -88,11 +90,15 @@ class _ConnectDeviceSheetState extends State<_ConnectDeviceSheet> {
       // can mirror it (Slice D3+) and transport commands have a target.
       GetIt.instance<RemoteSessionService>().connect(session.id!);
       GlobalSnackbar.message(
-        (context) => "Playing on ${session.deviceName ?? session.client ?? 'remote device'}",
+        (context) => AppLocalizations.of(context)!.playOnPlayingOnDevice(
+            session.deviceName ??
+                session.client ??
+                AppLocalizations.of(context)!.playOnRemoteDeviceFallback),
       );
     } catch (e, stack) {
       _log.severe("sendPlayToSession failed", e, stack);
-      GlobalSnackbar.message((context) => "Connect failed: $e");
+      GlobalSnackbar.message((context) =>
+          AppLocalizations.of(context)!.playOnConnectFailed(e.toString()));
     }
   }
 
@@ -103,17 +109,18 @@ class _ConnectDeviceSheetState extends State<_ConnectDeviceSheet> {
     final remoteSession = GetIt.instance<RemoteSessionService>();
     final name = remoteSession.currentRemoteState?.deviceName ??
         remoteSession.currentRemoteState?.client ??
-        "remote device";
+        AppLocalizations.of(context)!.playOnRemoteDeviceFallback;
     return ListTile(
       leading: const Icon(Icons.cast_connected),
-      title: Text("Connected to $name"),
+      title: Text(AppLocalizations.of(context)!.playOnConnectedTo(name)),
       trailing: TextButton(
         onPressed: () {
           remoteSession.disconnect();
           Navigator.of(context).pop();
-          GlobalSnackbar.message((context) => "Disconnected");
+          GlobalSnackbar.message(
+              (context) => AppLocalizations.of(context)!.playOnDisconnected);
         },
-        child: const Text("Disconnect"),
+        child: Text(AppLocalizations.of(context)!.playOnDisconnect),
       ),
     );
   }
@@ -130,7 +137,7 @@ class _ConnectDeviceSheetState extends State<_ConnectDeviceSheet> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
             child: Text(
-              "Play on device",
+              AppLocalizations.of(context)!.playOnDeviceTitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -147,14 +154,18 @@ class _ConnectDeviceSheetState extends State<_ConnectDeviceSheet> {
               if (snapshot.hasError) {
                 return Padding(
                   padding: const EdgeInsets.all(32.0),
-                  child: Center(child: Text("Error: ${snapshot.error}")),
+                  child: Center(
+                      child: Text(AppLocalizations.of(context)!
+                          .playOnDeviceListError(snapshot.error.toString()))),
                 );
               }
               final sessions = snapshot.data ?? [];
               if (sessions.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: Center(child: Text("No devices found")),
+                return Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Center(
+                      child: Text(
+                          AppLocalizations.of(context)!.playOnNoDevicesFound)),
                 );
               }
               return ListView.builder(
@@ -164,7 +175,9 @@ class _ConnectDeviceSheetState extends State<_ConnectDeviceSheet> {
                   final session = sessions[index];
                   return ListTile(
                     leading: const Icon(Icons.cast),
-                    title: Text(session.deviceName ?? session.client ?? "Unknown device"),
+                    title: Text(session.deviceName ??
+                        session.client ??
+                        AppLocalizations.of(context)!.playOnUnknownDevice),
                     subtitle: session.client != null ? Text(session.client!) : null,
                     onTap: () => _sendPlay(session),
                   );

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
@@ -155,7 +156,8 @@ class RemoteSessionService {
         );
         if (_consecutiveMisses >= _maxConsecutiveMisses) {
           _log.info("Remote session gone after $_consecutiveMisses misses; falling back to local");
-          GlobalSnackbar.message((context) => "Remote device disconnected");
+          GlobalSnackbar.message((context) =>
+              AppLocalizations.of(context)!.playOnRemoteDeviceDisconnected);
           // disconnect() cancels this timer, clears state, and emits null so the
           // player UI returns to local control (left paused; user taps play).
           disconnect();

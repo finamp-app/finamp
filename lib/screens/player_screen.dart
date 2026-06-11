@@ -211,7 +211,7 @@ class _PlayerScreenContent extends ConsumerWidget {
                   final isRemote = GetIt.instance<RemoteSessionService>().isRemote;
                   return IconButton(
                     onPressed: () => showConnectDeviceSheet(context),
-                    tooltip: "Play on device",
+                    tooltip: AppLocalizations.of(context)!.playOnDeviceTitle,
                     icon: Icon(
                       isRemote ? Icons.cast_connected : Icons.cast,
                       color: Theme.of(context).iconTheme.color ?? Colors.white,
