@@ -745,7 +745,7 @@ class _FinampState extends State<Finamp> with WindowListener {
       // Also see _hasInitialPlayLink in QueueService
       case "play":
         switch (uri.pathSegments) {
-          case ["instantmix"]:
+          case ["surprisemix"]:
             await GetIt.instance<AudioServiceHelper>().startSurpriseMeMix();
           case [String itemId]:
             final item = await container.read(itemByIdProvider(BaseItemId(itemId)).future);

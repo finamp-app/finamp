@@ -54,7 +54,7 @@ class MainActivity : AudioServiceActivity() {
     private fun updateIntent(intent: Intent){
         if((intent.action==INTENT_ACTION_MUSIC_PLAYER || intent.action==CATEGORY_APP_MUSIC)
             &&intent.data==null){
-            intent.data = "finamp://play/instantmix".toUri()
+            intent.data = "finamp://play/surprisemix".toUri()
         }
     }
 

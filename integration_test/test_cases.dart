@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:dbus/dbus.dart';
 import 'package:finamp/components/AlbumScreen/album_screen_content.dart';
-import 'package:finamp/components/Buttons/cta_large.dart';
+import 'package:finamp/components/Buttons/cta_huge.dart';
 import 'package:finamp/components/LoginScreen/login_server_selection_page.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/main.dart' as app;
@@ -111,7 +111,7 @@ void main() async {
       await tester.pumpWidget(app.Finamp());
       await tester.pumpAndSettle();
 
-      final startButton = find.byType(CTALarge);
+      final startButton = find.byType(CTAHuge);
       await tester.tap(startButton);
       await tester.pump();
 
