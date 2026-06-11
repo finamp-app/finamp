@@ -5,6 +5,7 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
+import 'package:finamp/services/queue_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
@@ -114,13 +115,14 @@ class RemoteSessionService {
   /// to local playback.
   void disconnect() {
     _log.info("Disconnecting from remote session $_activeSessionId");
-    // Continue locally from where the remote left off: seek local playback to
-    // the remote's last-known position before we tear down state (the getter
-    // reads from it). Position only — the track is not synced. Local stays
-    // paused (option A); the user taps play to resume from here.
+    // Continue locally from where the remote left off: sync local playback to
+    // the remote's last-known track and position before we tear down state
+    // (the getters read from it). Local stays paused (option A); the user
+    // taps play to resume from here.
+    final lastItemId = _lastKnownItemId;
     final lastPosition = remotePlaybackState?.position;
     if (lastPosition != null) {
-      unawaited(GetIt.instance<MusicPlayerBackgroundTask>().seek(lastPosition));
+      unawaited(_syncLocalToRemote(lastItemId, lastPosition));
     }
     _pollTimer?.cancel();
     _pollTimer = null;
@@ -129,6 +131,54 @@ class RemoteSessionService {
     _lastKnownItemId = null;
     _consecutiveMisses = 0;
     _remoteStateStream.add(null);
+  }
+
+  /// Best-effort sync of local playback to where the remote left off. Finds
+  /// [itemId] in the local queue and skips to it at [position] in a single
+  /// atomic player seek, so the player never passes through "new track at
+  /// 0:00". just_audio's seek never starts playback, so local stays paused.
+  /// If the remote was playing something outside the local queue, local
+  /// playback is left untouched (better than seeking the wrong track to a
+  /// meaningless position).
+  Future<void> _syncLocalToRemote(String? itemId, Duration position) async {
+    if (itemId == null) {
+      // Remote item unknown (e.g. the remote went idle): the track can't have
+      // changed under us, so just seek the current local track.
+      await GetIt.instance<MusicPlayerBackgroundTask>().seek(position);
+      return;
+    }
+    final queueInfo = GetIt.instance<QueueService>().getQueue();
+    if (queueInfo.currentTrack == null) return;
+    final fullQueue = queueInfo.fullQueue;
+    // The current track's index in fullQueue. (Not currentTrackIndex, which
+    // counts tracks up to and including the current one.)
+    final currentIndex = queueInfo.previousTracks.length;
+    // Search forward from the current track first: the remote plays the
+    // handed-off queue sequentially, so the first match at or after the
+    // current track is the right one even if a song appears twice. Only then
+    // look backwards (e.g. the remote was skipped to a previous track).
+    var matchIndex = -1;
+    for (var i = currentIndex; i < fullQueue.length; i++) {
+      if (fullQueue[i].baseItemId.raw == itemId) {
+        matchIndex = i;
+        break;
+      }
+    }
+    if (matchIndex == -1) {
+      for (var i = currentIndex - 1; i >= 0; i--) {
+        if (fullQueue[i].baseItemId.raw == itemId) {
+          matchIndex = i;
+          break;
+        }
+      }
+    }
+    if (matchIndex == -1) {
+      _log.warning("Remote track $itemId not in local queue; leaving local playback untouched");
+      return;
+    }
+    final offset = matchIndex - currentIndex;
+    _log.info("Syncing local playback to remote track $itemId (offset $offset, position $position)");
+    await GetIt.instance<QueueService>().skipByOffset(offset, position: position);
   }
 
   Future<void> _poll() async {

@@ -1092,8 +1092,8 @@ class QueueService {
     _buildQueueFromNativePlayerQueue(); // update internal queues
   }
 
-  Future<void> skipByOffset(int offset) async {
-    await _audioHandler.skipByOffset(offset);
+  Future<void> skipByOffset(int offset, {Duration position = Duration.zero}) async {
+    await _audioHandler.skipByOffset(offset, position: position);
   }
 
   Future<void> removeAtOffset(int offset) async {

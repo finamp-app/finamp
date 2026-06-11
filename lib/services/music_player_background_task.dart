@@ -862,7 +862,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     }
   }
 
-  Future<void> skipByOffset(int offset) async {
+  Future<void> skipByOffset(int offset, {Duration position = Duration.zero}) async {
     _audioServiceBackgroundTaskLogger.fine("skipping by offset: $offset");
 
     try {
@@ -885,7 +885,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           queueIndex %= (_player.effectiveIndices.length);
         }
       }
-      await _player.seek(Duration.zero, index: _player.shuffleModeEnabled ? shuffleIndices[queueIndex] : queueIndex);
+      await _player.seek(position, index: _player.shuffleModeEnabled ? shuffleIndices[queueIndex] : queueIndex);
     } catch (e) {
       _audioServiceBackgroundTaskLogger.severe(e);
       return Future.error(e);
