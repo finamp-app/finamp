@@ -501,15 +501,6 @@ mixin _SortAndFilterMenuEntriesMixin<T extends ConsumerStatefulWidget> on Consum
           ...excessFilters.map((filter) => _makeExcessFilterTile(filter)),
         ],
       ),
-      SizedBox(height: 32.0),
-      CTAMedium(
-        text: context.l10n.apply,
-        icon: TablerIcons.check,
-        onPressed: () {
-          controller._updateConfiguration(currentConfig);
-          Navigator.of(context).pop();
-        },
-      ),
     ];
   }
 
@@ -627,23 +618,18 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu>
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> menuEntries;
-    if (widget.removeOnly) {
-      menuEntries = _getRemoveOnlyMenuEntries(context);
-    } else {
-      menuEntries = [
-        ..._getMenuEntries(context),
-        SizedBox(height: 32.0),
-        CTAMedium(
-          text: context.l10n.apply,
-          icon: TablerIcons.check,
-          onPressed: () {
-            widget.controller._updateConfiguration(currentConfig);
-            Navigator.of(context).pop();
-          },
-        ),
-      ];
-    }
+    final List<Widget> menuEntries = [
+      ...(widget.removeOnly ? _getRemoveOnlyMenuEntries(context) : _getMenuEntries(context)),
+      SizedBox(height: 32.0),
+      CTAMedium(
+        text: context.l10n.apply,
+        icon: TablerIcons.check,
+        onPressed: () {
+          controller._updateConfiguration(currentConfig);
+          Navigator.of(context).pop();
+        },
+      ),
+    ];
 
     // Actual height was 490, bump to 520 for extra bottom padding and wiggle room on element sizes
     final stackHeight = 520.0 + 56.0 * excessFilters.length + (showOfflineSortWarning ? 60.0 : 0.0);
