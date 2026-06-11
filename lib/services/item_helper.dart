@@ -11,9 +11,15 @@ import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
+import '../menus/track_menu.dart';
+import '../screens/album_screen.dart';
+import '../screens/artist_screen.dart';
+import '../screens/genre_screen.dart';
+import '../screens/music_screen.dart';
 import 'music_screen_provider.dart';
 /*
 Future<List<BaseItemDto>> loadChildTracks({required PlayableItem item, bool shuffleGenreAlbums = false}) {
@@ -265,4 +271,40 @@ Future<List<BaseItemDto>> loadChildTracksFromShuffledGenreAlbums({required BaseI
   }
 
   return newItems;
+}
+
+//TODO only push a route if the item is not already open in the current route (e.g. if we're showing an album menu from the album screen, we shouldn't push another album screen for the same album) but close the menu instead
+void openItemPage(BaseItemDto item, NavigatorState navigator, {bool showTracks = false}) {
+  if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.track) {
+    if (showTracks) {
+      showModalTrackMenu(context: navigator.context, item: item);
+    }
+    return;
+  } else if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.collection) {
+    final finampUserHelper = GetIt.instance<FinampUserHelper>();
+    navigator.push(
+      MaterialPageRoute<MusicScreen>(
+        builder: (context) => MusicScreen(
+          singleTabConfig: HomeScreenSectionConfiguration(
+            base: CollectionHomeSection(
+              itemId: item.id,
+              libraryId: finampUserHelper.currentUser!.currentViewId!,
+              contentType: ContentType.mixed,
+            ),
+            customSectionTitle: item.name ?? AppLocalizations.of(context)!.unknownName,
+            sortConfig: SortAndFilterConfiguration.defaultSort,
+          ),
+        ),
+      ),
+    );
+    return;
+  }
+  final targetRoute = switch (BaseItemDtoType.fromItem(item)) {
+    BaseItemDtoType.album => AlbumScreen.routeName,
+    BaseItemDtoType.playlist => AlbumScreen.routeName,
+    BaseItemDtoType.genre => GenreScreen.routeName,
+    BaseItemDtoType.artist => ArtistScreen.routeName,
+    _ => AlbumScreen.routeName,
+  };
+  navigator.pushNamed(targetRoute, arguments: item);
 }

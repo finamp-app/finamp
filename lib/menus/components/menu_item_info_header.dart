@@ -5,25 +5,19 @@ import 'package:finamp/components/PlayerScreen/artist_chip.dart';
 import 'package:finamp/components/PlayerScreen/genre_chip.dart';
 import 'package:finamp/components/PlayerScreen/item_amount.dart';
 import 'package:finamp/components/album_image.dart';
-import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/components/icon_and_text.dart';
 import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/models/music_models.dart';
-import 'package:finamp/screens/album_screen.dart';
-import 'package:finamp/screens/artist_screen.dart';
-import 'package:finamp/screens/genre_screen.dart';
-import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/services/datetime_helper.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:get_it/get_it.dart';
 
 import '../../extensions/localizations.dart';
+import '../../services/item_helper.dart';
 
 const double infoHeaderFullExtent = 162.0;
 const double infoHeaderFullInternalHeight = 140.0;
@@ -453,46 +447,13 @@ class ItemInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //TODO only push a route if the item is not already open in the current route (e.g. if we're showing an album menu from the album screen, we shouldn't push another album screen for the same album) but close the menu instead
-    void openItem() {
-      if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.track) {
-        return;
-      } else if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.collection) {
-        final finampUserHelper = GetIt.instance<FinampUserHelper>();
-        Navigator.of(context).push(
-          MaterialPageRoute<MusicScreen>(
-            builder: (context) => MusicScreen(
-              singleTabConfig: HomeScreenSectionConfiguration(
-                base: CollectionHomeSection(
-                  itemId: item.id,
-                  libraryId: finampUserHelper.currentUser!.currentViewId!,
-                  contentType: ContentType.mixed,
-                ),
-                customSectionTitle: item.name ?? AppLocalizations.of(context)!.unknownName,
-                sortConfig: SortAndFilterConfiguration.defaultSort,
-              ),
-            ),
-          ),
-        );
-        return;
-      }
-      final targetRoute = switch (BaseItemDtoType.fromItem(item)) {
-        BaseItemDtoType.album => AlbumScreen.routeName,
-        BaseItemDtoType.playlist => AlbumScreen.routeName,
-        BaseItemDtoType.genre => GenreScreen.routeName,
-        BaseItemDtoType.artist => ArtistScreen.routeName,
-        _ => AlbumScreen.routeName,
-      };
-      Navigator.pushNamed(context, targetRoute, arguments: item);
-    }
-
     return _getGenericMenuInfo(
       context,
       condensed: condensed,
       features: features,
       featureImage: featureImage,
       item: item,
-      onOpen: openItem,
+      onOpen: () => openItemPage(item, Navigator.of(context)),
       shape: shape,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

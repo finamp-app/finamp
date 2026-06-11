@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:app_links/app_links.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:collection/collection.dart';
 import 'package:finamp/components/PlayerScreen/queue_source_helper.dart';
@@ -397,7 +398,7 @@ class QueueService {
             unawaited(_queuesBox.deleteAll(extra));
           }
 
-          if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup) {
+          if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup && !await _hasInitialPlayLink()) {
             await loadSavedQueue(info);
           } else {
             _savedQueueState = SavedQueueState.pendingSave;
@@ -407,6 +408,15 @@ class QueueService {
         _queueServiceLogger.severe(e);
         rethrow;
       }
+    }
+  }
+
+  Future<bool> _hasInitialPlayLink() async {
+    try {
+      final initialLink = await AppLinks().getInitialLink();
+      return initialLink != null && initialLink.host == "play";
+    } catch (_) {
+      return false;
     }
   }
 
