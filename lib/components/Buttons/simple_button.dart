@@ -16,6 +16,7 @@ class SimpleButton extends StatelessWidget {
   final FontWeight? fontWeight;
   final void Function() onPressed;
   final void Function()? onPressedSecondary;
+  final void Function()? onIconPressed;
   final bool disabled;
   final Color? backgroundColor;
 
@@ -32,6 +33,7 @@ class SimpleButton extends StatelessWidget {
     required this.icon,
     required this.onPressed,
     this.onPressedSecondary,
+    this.onIconPressed,
     this.textColor,
     this.fontWeight,
     this.iconPosition = IconPosition.start,
@@ -49,6 +51,7 @@ class SimpleButton extends StatelessWidget {
     required this.icon,
     required this.onPressed,
     this.onPressedSecondary,
+    this.onIconPressed,
     this.textColor,
     this.fontWeight,
     this.iconPosition = IconPosition.start,
@@ -62,8 +65,29 @@ class SimpleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconWidget = Icon(
+      icon,
+      size: iconSize,
+      color: (disabled || inactive) ? iconColor?.withOpacity(0.5) : iconColor,
+      weight: 1.5,
+    );
+
     final contents = [
-      Icon(icon, size: iconSize, color: (disabled || inactive) ? iconColor?.withOpacity(0.5) : iconColor, weight: 1.5),
+      if (onIconPressed != null)
+        IconButton(
+          onPressed: (!disabled && !inactive) ? onIconPressed : null,
+          icon: iconWidget,
+          visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+          padding: EdgeInsets.zero,
+          constraints: BoxConstraints(maxWidth: iconSize, maxHeight: iconSize),
+          style: ButtonStyle(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+          onLongPress: () {
+            FeedbackHelper.feedback(FeedbackType.selection);
+            onPressed();
+          },
+        )
+      else
+        iconWidget,
       if (showText)
         Text(
           text,
@@ -84,8 +108,8 @@ class SimpleButton extends StatelessWidget {
       message: disabled ? context.l10n.tooltipDisabled(text) : text,
       child: GestureDetector(
         onLongPress: () {
+          FeedbackHelper.feedback(FeedbackType.selection);
           if (onPressedSecondary != null) {
-            FeedbackHelper.feedback(FeedbackType.selection);
             onPressedSecondary!();
           }
         },

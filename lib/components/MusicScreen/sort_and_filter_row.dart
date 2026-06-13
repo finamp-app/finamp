@@ -277,28 +277,15 @@ class SortAndFilterRow extends ConsumerWidget {
                 SimpleButton(
                   icon: currentConfig.sortOrder.getIcon(),
                   text: currentConfig.sortBy.toLocalisedString(context.l10n),
-                  onPressed: () => controller._updateConfiguration(
+                  onPressed: showMenu,
+                  onIconPressed: () => controller._updateConfiguration(
                     currentConfig.copyWith(
                       sortOrder: currentConfig.sortOrder == SortOrder.ascending
                           ? SortOrder.descending
                           : SortOrder.ascending,
                     ),
                   ),
-                  onPressedSecondary: showMenu,
                 ),
-              // FilterMenuButton(
-              //   tabType: tabType,
-              //   filterOverride: filterOverride,
-              //   updateFilterOverride: (newFilters) => updateFilterOverride?.call(newFilters),
-              // ),
-              // SortMenuButton(
-              //   tabType: tabType,
-              //   sortByOverride: sortByOverride,
-              //   onSortByOverrideChanged: (newSortBy) => updateSortByOverride?.call(newSortBy),
-              //   sortOrderOverride: sortOrderOverride,
-              //   updateSortOrderOverride: (newSortOrder) => updateSortOrderOverride?.call(newSortOrder),
-              //   forPlaylistTracks: forPlaylistTracks,
-              // ),
             ],
           ),
         ),
