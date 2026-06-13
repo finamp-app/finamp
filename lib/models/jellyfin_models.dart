@@ -3504,8 +3504,8 @@ enum SortOrder {
 
   IconData getIcon() {
     return switch (this) {
-      SortOrder.ascending => TablerIcons.sort_ascending,
-      SortOrder.descending => TablerIcons.sort_descending,
+      SortOrder.ascending => TablerIcons.sort_ascending_letters,
+      SortOrder.descending => TablerIcons.sort_descending_letters,
     };
   }
 }

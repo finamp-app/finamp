@@ -275,11 +275,7 @@ class SortAndFilterRow extends ConsumerWidget {
               ),
               if (!removeOnly)
                 SimpleButton(
-                  // TODO the way that values ascend as you go down the page but we show an up arrow is confusing.
-                  // Is there a way to resolve this in a more intuitive manner?  What do other programs do?
-                  icon: currentConfig.sortOrder == SortOrder.ascending
-                      ? TablerIcons.sort_ascending
-                      : TablerIcons.sort_descending,
+                  icon: currentConfig.sortOrder.getIcon(),
                   text: currentConfig.sortBy.toLocalisedString(context.l10n),
                   onPressed: () => controller._updateConfiguration(
                     currentConfig.copyWith(
@@ -507,17 +503,7 @@ mixin _SortAndFilterMenuEntriesMixin<T extends ConsumerStatefulWidget> on Consum
   Widget _makeFilterTile(ItemFilterType option) {
     return ToggleableListTile(
       title: ItemFilter(type: option).getName(context.l10n),
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 16.0),
-        child: Icon(switch (option) {
-          ItemFilterType.isFavorite => TablerIcons.heart,
-          ItemFilterType.isFullyDownloaded => TablerIcons.download,
-          ItemFilterType.startsWithCharacter => TablerIcons.sort_ascending,
-          ItemFilterType.genreFilter => TablerIcons.tag,
-          ItemFilterType.searchTerm => TablerIcons.list_search,
-          ItemFilterType.isUnplayed => TablerIcons.headphones_off,
-        }),
-      ),
+      leading: Padding(padding: const EdgeInsets.only(left: 16.0), child: Icon(option.icon)),
       trailing: SizedBox.shrink(),
       enabled: switch (option) {
         ItemFilterType.isFullyDownloaded => ref.watch(finampSettingsProvider.isOffline),
@@ -560,17 +546,7 @@ mixin _SortAndFilterMenuEntriesMixin<T extends ConsumerStatefulWidget> on Consum
   Widget _makeExcessFilterTile(ItemFilter filter) {
     return ToggleableListTile(
       title: filter.getName(context.l10n),
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 16.0),
-        child: Icon(switch (filter.type) {
-          ItemFilterType.isFavorite => TablerIcons.heart,
-          ItemFilterType.isFullyDownloaded => TablerIcons.download,
-          ItemFilterType.startsWithCharacter => TablerIcons.sort_ascending,
-          ItemFilterType.genreFilter => TablerIcons.tag,
-          ItemFilterType.searchTerm => TablerIcons.list_search,
-          ItemFilterType.isUnplayed => TablerIcons.headphones_off,
-        }),
-      ),
+      leading: Padding(padding: const EdgeInsets.only(left: 16.0), child: Icon(filter.type.icon)),
       trailing: Icon(TablerIcons.x),
       enabled: true,
       state: true,

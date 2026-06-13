@@ -501,9 +501,7 @@ class HomeSectionInfo extends ConsumerWidget {
             maxLines: 2,
           ),
           IconAndText(
-            iconData: config.sortConfig.sortOrder == SortOrder.ascending
-                ? TablerIcons.sort_ascending
-                : TablerIcons.sort_descending,
+            iconData: config.sortConfig.sortOrder.getIcon(),
             textSpan: TextSpan(text: config.sortConfig.sortBy.toLocalisedString(context.l10n)),
           ),
           ...config.sortConfig.filters.map(

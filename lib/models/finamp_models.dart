@@ -4401,6 +4401,15 @@ enum ItemFilterType {
     genreFilter => true,
     _ => false,
   };
+
+  IconData get icon => switch (this) {
+    isFavorite => TablerIcons.heart,
+    isFullyDownloaded => TablerIcons.download,
+    startsWithCharacter => TablerIcons.abc,
+    genreFilter => TablerIcons.tag,
+    searchTerm => TablerIcons.list_search,
+    isUnplayed => TablerIcons.headphones_off,
+  };
 }
 
 @JsonSerializable()
