@@ -208,8 +208,8 @@ class _GenericImageSizeSliderState extends ConsumerState<GenericImageSizeSlider>
       < 50 => "tiny",
       < 60 => "verySmall",
       < 80 => "small",
-      < 120 => "medium",
-      < 240 => "large",
+      < 160 => "medium",
+      < 260 => "large",
       < 350 => "huge",
       _ => "giant",
     });

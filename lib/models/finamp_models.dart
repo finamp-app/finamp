@@ -291,8 +291,8 @@ class DefaultSettings {
       HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.recentQueues),
     ],
   );
-  static const gridImageSizeMobile = 150;
-  static const gridImageSizeDesktop = 140;
+  static const gridImageSizeMobile = 130;
+  static const gridImageSizeDesktop = 150;
   static int get homeScreenImageSize => isDesktop ? homeScreenImageSizeDesktop : homeScreenImageSizeMobile;
   static const homeScreenImageSizeMobile = 90;
   static const homeScreenImageSizeDesktop = 120;
@@ -1909,7 +1909,7 @@ enum BaseItemDtoType {
     }
   }
 
-  String localized(AppLocalizations l10n)=> l10n.itemType(name);
+  String localized(AppLocalizations l10n) => l10n.itemType(name);
 }
 
 /// The category of a section on the download screen.

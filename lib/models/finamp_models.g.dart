@@ -443,7 +443,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         homeScreenConfiguration: fields[146] == null
             ? const FinampHomeScreenConfiguration(actions: [], sections: [])
             : fields[146] as FinampHomeScreenConfiguration,
-        gridImageSize: fields[147] == null ? 150 : (fields[147] as num).toInt(),
+        gridImageSize: fields[147] == null ? 130 : (fields[147] as num).toInt(),
         homeScreenImageSize: fields[150] == null
             ? 90
             : (fields[150] as num).toInt(),
