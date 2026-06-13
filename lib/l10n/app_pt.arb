@@ -60,7 +60,7 @@
     "clear": "Limpar",
     "shuffleAll": "Misturar todas",
     "finamp": "Finamp",
-    "downloads": "Transferências",
+    "downloads": "Descargas",
     "settings": "Definições",
     "offlineMode": "Modo Offline",
     "sortOrder": "Ordenação",
@@ -79,7 +79,7 @@
     "name": "Nome",
     "random": "Aleatório",
     "revenue": "Receita",
-    "downloadMissingImages": "Transferir imagens inexistentes",
+    "downloadMissingImages": "Descarregar imagens inexistentes",
     "downloadedMissingImages": "{count,plural, =0{Não foram encontradas imagens em falta} =1{{count} imagem em falta transferida} other{{count} imagens em falta descarregadas}}",
     "@downloadedMissingImages": {
         "description": "Message that shows when the user downloads missing images",
@@ -129,7 +129,7 @@
             }
         }
     },
-    "failedToGetTrackFromDownloadId": "Falha a obter a faixa através do ID de download",
+    "failedToGetTrackFromDownloadId": "Falha a obter a faixa através do ID de descarga",
     "error": "Erro",
     "discNumber": "Disco {number}",
     "@discNumber": {
@@ -143,8 +143,8 @@
     "required": "Obrigatório",
     "updateButtonLabel": "Atualizar",
     "playlistUpdated": "Nome da lista de reprodução atualizado.",
-    "downloadsDeleted": "Transferências eliminadas.",
-    "addDownloads": "Adicionar Transferências",
+    "downloadsDeleted": "Descargas apagadas.",
+    "addDownloads": "Adicionar Descargas",
     "message": "Mensagem",
     "stackTrace": "Traçado da Pilha",
     "addButtonLabel": "Adicionar",
@@ -152,7 +152,7 @@
     "logsCopied": "Relatórios copiados.",
     "applicationLegalese": "Licenciado com a Mozilla Public License 2.0.\nO código-fonte está disponível em {sourceCodeLink}.",
     "transcoding": "Transcodificação",
-    "downloadLocations": "Locais de Transferências",
+    "downloadLocations": "Locais de Descargas",
     "audioService": "Serviço de Áudio",
     "layoutAndTheme": "Disposição e Tema",
     "notAvailableInOfflineMode": "Não disponível no modo offline",
@@ -161,7 +161,7 @@
     "bitrate": "Taxa de bits",
     "customLocation": "Localização Personalizada",
     "appDirectory": "Diretório da Aplicação",
-    "addDownloadLocation": "Adicionar Local de Transferências",
+    "addDownloadLocation": "Adicionar Local de Descargas",
     "selectDirectory": "Selecione o Diretório",
     "unknownError": "Erro Desconhecido",
     "pathReturnSlashErrorMessage": "Caminhos que retornam \"/\" não podem ser usados",
@@ -270,7 +270,7 @@
         "description": "Popup menu item title for inserting an item into the play queue after the currently-playing item."
     },
     "enterLowPriorityStateOnPauseSubtitle": "Permite que a notificação seja apagada quando pausada. Também permite que o Android elimine o serviço quando pausado.",
-    "redownloadedItems": "{count,plural, =0{Não são necessários novos downloads.} =1{{count} item baixado novamente} other{{count} itens baixados novamente}}",
+    "redownloadedItems": "{count,plural, =0{Novas descargas não são necessárias.} =1{{count} item descarregado novamente} other{{count} itens descarregados novamente}}",
     "@redownloadedItems": {
         "placeholders": {
             "count": {
@@ -428,10 +428,10 @@
             }
         }
     },
-    "activeDownloads": "Transferências em Progresso",
-    "activeDownloadsTitle": "Transferências em Progresso",
-    "noActiveDownloads": "Sem transferências em progresso.",
-    "offlineTrackCount": "{count,plural,=1{{count} Faixa} other{{count} Faixas}}, {downloads} Transferidas",
+    "activeDownloads": "Descargas em Progresso",
+    "activeDownloadsTitle": "Descargas em Progresso",
+    "noActiveDownloads": "Sem descargas em progresso.",
+    "offlineTrackCount": "{count,plural,=1{{count} Faixa} other{{count} Faixas}}, {downloads} Descarregadas",
     "@offlineTrackCount": {
         "placeholders": {
             "count": {
@@ -442,7 +442,7 @@
             }
         }
     },
-    "offlineTrackCountArtist": "{count,plural,=1{{count} Faixa} other{{count} Faixas}} Transferidas",
+    "offlineTrackCountArtist": "{count,plural,=1{{count} Faixa} other{{count} Faixas}} Descarregdas",
     "@offlineTrackCountArtist": {
         "placeholders": {
             "count": {
@@ -450,7 +450,7 @@
             }
         }
     },
-    "confirmDownloadStarted": "Transferência iniciada",
+    "confirmDownloadStarted": "Descarga iniciada",
     "@confirmDownloadStarted": {
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
     },
@@ -547,11 +547,11 @@
             }
         }
     },
-    "downloadTranscodeEnableTitle": "Ativar Transferências Transcodificadas",
+    "downloadTranscodeEnableTitle": "Ativar Descargas Transcodificadas",
     "@downloadTranscodeEnableTitle": {
         "description": "Title for Enable Transcoded Downloads dropdown"
     },
-    "downloadBitrate": "Taxa de Transferência",
+    "downloadBitrate": "Taxa de Bits de Descarga",
     "@downloadBitrate": {
         "description": "Title for Download Bitrate settings slider"
     },
@@ -813,15 +813,15 @@
             }
         }
     },
-    "downloadItem": "Download",
+    "downloadItem": "Descarregar",
     "@downloadItem": {
         "description": "Option to download item in long-press menu."
     },
-    "connectionInterruptedBackgroundAndroid": "A ligação foi interrompida durante o download. Isto pode ser causado por ativar 'Entrar em Estado de Baixa Prioridade na Pausa' ou configurações do Sistema Operativo.",
+    "connectionInterruptedBackgroundAndroid": "A ligação foi interrompida durante a descarga. Isto pode ser causado por ativar 'Entrar em Estado de Baixa Prioridade na Pausa' ou configurações do Sistema Operativo.",
     "@connectionInterruptedBackgroundAndroid": {
         "description": "Message shown when the connection is interrupted during a download while in the background on android. It advises checking OS settings, as they may cause background downloads to be blocked, or checking the  'Enter Low-Priority State on Pause' setting."
     },
-    "runRepairWarning": "Não foi possível contactar o servidor para finalizar a migração dos downloads. Por favor corre 'Reparar Downloads' através do ecrã de downloads logo que estejas online.",
+    "runRepairWarning": "Não foi possível contactar o servidor para finalizar a migração de descargas. Por favor, execute 'Reparar Downloads' através do ecrã de descargas logo que esteja online.",
     "@runRepairWarning": {
         "description": "Message shown when an error occurs during the downloads repair step of the Isar downloads migration, which requires a server connection."
     },
@@ -867,7 +867,7 @@
             }
         }
     },
-    "connectionInterruptedBackground": "A ligação foi interrompida enquanto fazia o download. Isto pode ser causado por configurações do Sistema Operativo.",
+    "connectionInterruptedBackground": "A ligação foi interrompida enquanto descarregava em segundo plano. Isto pode ser causado por configurações do Sistema Operativo.",
     "@connectionInterruptedBackground": {
         "description": "Message shown when the connection is interrupted during a download while in the background. It advises checking OS settings, as they may cause background downloads to be blocked."
     },
@@ -875,7 +875,7 @@
     "@showNullLibraryItemsSubtitle": {
         "description": "Description of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
     },
-    "maxConcurrentDownloads": "Máximo de Downloads em Simultâneo",
+    "maxConcurrentDownloads": "Máximo de Transferências em Simultâneo",
     "@maxConcurrentDownloads": {
         "description": "Title of setting controlling max concurrent downloads."
     },
@@ -889,11 +889,11 @@
             }
         }
     },
-    "requireWifiForDownloads": "É necessário WiFi para fazer download.",
+    "requireWifiForDownloads": "É necessário WiFi para descarregar.",
     "@requireWifiForDownloads": {
         "description": "Description of setting for only performing downloads while on wifi"
     },
-    "connectionInterrupted": "Ligação interrompida, a pausar os downloads.",
+    "connectionInterrupted": "Ligação interrompida, a pausar as descargas.",
     "@connectionInterrupted": {
         "description": "Message shown when the connection is interrupted during a download."
     },
@@ -1059,19 +1059,19 @@
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
     },
     "startInstantMixForIndividualTracksSwitchSubtitle": "Quando ativado, tocar numa faixa na aba de faixas irá começar uma mistura instantânea dessa faixa, em vez de apenas tocar uma única faixa.",
-    "repairComplete": "Reparação dos Downloads completa.",
+    "repairComplete": "Reparação das Descargas completa.",
     "@repairComplete": {
         "description": "Message displayed after download repair completes."
     },
-    "syncComplete": "Todos os downloads foram re-sincronizados.",
+    "syncComplete": "Todas as descargas foram re-sincronizadas.",
     "@syncComplete": {
         "description": "Message displayed after download sync completes."
     },
-    "syncDownloads": "Sincronizar e fazer download dos itens em falta.",
+    "syncDownloads": "Sincronizar e descarregar os elementos em falta.",
     "@syncDownloads": {
         "description": "Tooltip for downloads sync button."
     },
-    "repairDownloads": "Problemas com a reparação de download de ficheiros ou metadados.",
+    "repairDownloads": "Problemas com a reparação de descarga de ficheiros ou metadados.",
     "@repairDownloads": {
         "description": "Tooltip for downloads repair button."
     },
@@ -1087,7 +1087,7 @@
             }
         }
     },
-    "downloadLibraryPrompt": "Tens a certeza que queres fazer download de todo o conteúdo da biblioteca ''{libraryName}''?",
+    "downloadLibraryPrompt": "Tem a certeza que quer descarregar todo o conteúdo da biblioteca ''{libraryName}''?",
     "@downloadLibraryPrompt": {
         "description": "Confirmation prompt before downloading entire library, which may be large.",
         "placeholders": {
@@ -1100,7 +1100,7 @@
     "@onlyShowFullyDownloaded": {
         "description": "Tooltip for button that hides all partially downloaded albums"
     },
-    "filesystemFull": "Downloads em falta não podem ser completados. O sistema de ficheiros está cheio.",
+    "filesystemFull": "Descargas em falta não podem ser completadas. O sistema de ficheiros está cheio.",
     "@filesystemFull": {
         "description": "Message shown when a download cannot complete due to the filesystem being full."
     },
@@ -1116,12 +1116,12 @@
     "@syncingDownloadSize": {
         "description": "Message shown for download size while item is still syncing."
     },
-    "downloadSettings": "Downloads",
+    "downloadSettings": "Descargas",
     "showNullLibraryItemsTitle": "Mostrar Media com Biblioteca Desconhecida.",
     "@showNullLibraryItemsTitle": {
         "description": "Title of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
     },
-    "maxConcurrentDownloadsLabel": "{count} Downloads em Simultâneo",
+    "maxConcurrentDownloadsLabel": "{count} Descargas Simultâneas",
     "@maxConcurrentDownloadsLabel": {
         "description": "Label of values on max concurrent downloads slider",
         "placeholders": {
@@ -1134,7 +1134,7 @@
     "@reportQueueToServerSubtitle": {
         "description": "Description of the setting that toggles reporting of the current queue to the Jellyfin server"
     },
-    "maxConcurrentDownloadsSubtitle": "Aumentar o número de downloads simultâneos pode permitir aumento de download, mas pode também causar falhas se o ficheiro for muito grande ou causar atrasos excessivos em alguns casos.",
+    "maxConcurrentDownloadsSubtitle": "Aumentar o número de transferências em simultâneo pode permitir aumento das descargas nos bastidores, mas pode também causar falhas se o ficheiro for muito grande ou causar atrasos excessivos em alguns casos.",
     "@maxConcurrentDownloadsSubtitle": {
         "description": "Description of setting controlling max concurrent downloads."
     },
@@ -1157,7 +1157,7 @@
         "description": "A differently worded Confirm button to prevent the user from instandly clicking confirm because they are about to reset all settings to their default value"
     },
     "close": "Fechar",
-    "doTranscode": "Fazer download como {codec} @ {bitrate}{size, select, null{} other{ - ~{size}}}",
+    "doTranscode": "Descarregar como {codec} @ {bitrate}{size, select, null{} other{ - ~{size}}}",
     "@doTranscode": {
         "placeholders": {
             "bitrate": {
@@ -1175,7 +1175,7 @@
         },
         "description": "Dropdown option to download transcoded version of tracks"
     },
-    "redownloadTitle": "Fazer Novo Download de Transcodes Automaticamente",
+    "redownloadTitle": "Automaticamente Descarregar Transcodes de Novo",
     "@redownloadTitle": {
         "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
     },
@@ -1185,16 +1185,16 @@
     "prioritizePlayerCoverSubtitle": "Priorizar mostrar uma capa de álbum maior no ecrã do reprodutor. Controladores não críticos serão escondidos mais agressivamente em ecrãs mais pequenos.",
     "showArtistChipImageSubtitle": "Afeta a visualização das imagens de artista, tais como as do ecrã do reprodutor.",
     "removeFromPlaylistConfirm": "Remover",
-    "trackOfflineFavoritesSubtitle": "Isto permite mostrar os favoritos com estados mais atualizados quando offline.   Não faz download de ficheiros adicionais.",
-    "allPlaylistsInfoSetting": "Fazer Download de Metadados da Lista de Reprodução",
+    "trackOfflineFavoritesSubtitle": "Isto permite mostrar os favoritos com estados mais atualizados quando offline.   Não descarrega ficheiros adicionais.",
+    "allPlaylistsInfoSetting": "Descarregar Metadados da Lista de Reprodução",
     "addPlaylistSubheader": "Adicionar itens a uma lista de reprodução",
     "@addPlaylistSubheader": {
         "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
     },
     "trackOfflineFavorites": "Sincronizar todos os estados de favoritos",
     "allPlaylistsInfoSettingSubtitle": "Sincronizar metadados para todas as listas de reprodução para melhorar a experiência com as listas de reprodução",
-    "fiveLatestAlbumsSetting": "Fazer download dos últimos 5 álbuns",
-    "downloadAllPlaylistsSetting": "Fazer download de todas as listas de reprodução",
+    "fiveLatestAlbumsSetting": "Descarregar os últimos 5 álbuns",
+    "downloadAllPlaylistsSetting": "Descarregar todas as listas de reprodução",
     "showProgressOnNowPlayingBarSubtitle": "Controla se o mini-reprodutor embutido na aplicação / barra agora a tocar no fundo do ecrã da música funciona como barra de progresso.",
     "@showProgressOnNowPlayingBarSubtitle": {
         "description": "Subtitle for the setting that controls if the now playing bar / miniplayer at the botton of the music screen functions as a progress bar"
@@ -1292,11 +1292,11 @@
     },
     "resetToDefaults": "Reiniciar para predefinições",
     "moreInfo": "Mais Informação",
-    "downloadsWorkersSetting": "Contagem de processos que fazem download",
+    "downloadsWorkersSetting": "Contagem de Processos que fazem Descarga",
     "@downloadsWorkersSetting": {
         "description": "Title of setting controlling download worker count."
     },
-    "syncOnStartupSwitch": "Sincronizar Downloads Automaticamente ao Iniciar",
+    "syncOnStartupSwitch": "Sincronizar Descargas Automaticamente ao Iniciar",
     "@syncOnStartupSwitch": {
         "description": "Title of setting for automatically triggering a throttled resync on app startup."
     },
@@ -1304,11 +1304,11 @@
     "@preferQuickSyncSwitch": {
         "description": "Title of setting that skips completed albums while syncing."
     },
-    "downloadsWorkersSettingSubtitle": "Quantidade de processos usados para sincronizar metadata e remover downloads. Aumentar este valor pode aumentar a velocidade de sincronização e remoção, especialmente quando a latência do servidor é alta, mas pode introduzir atraso.",
+    "downloadsWorkersSettingSubtitle": "Quantidade de processos usados para sincronizar metadados e remover descargas. Aumentar este valor pode aumentar a velocidade de sincronização e remoção, especialmente quando a latência do servidor é alta, mas pode introduzir atraso.",
     "@downloadsWorkersSettingSubtitle": {
         "description": "Description of setting controlling download worker count."
     },
-    "downloadsWorkersSettingLabel": "{count} Processos de Download",
+    "downloadsWorkersSettingLabel": "{count} Processos de Descargas",
     "@downloadsWorkersSettingLabel": {
         "description": "Label of values on download worker count slider",
         "placeholders": {
@@ -1330,15 +1330,15 @@
     "@transcodeHint": {
         "description": "Initial text in downloads dropdown when 'Enable Transcoded Downloads' is set to ask."
     },
-    "redownloadcomplete": "Transcodificar novo download em fila.",
+    "redownloadcomplete": "Transcodificar nova descarga em fila.",
     "@redownloadcomplete": {
         "description": "Mesage when Automatically Redownload Transcodes transcode setting completes operations."
     },
-    "redownloadSubtitle": "Fazer novo download de faixas automaticamente que é esperado que estejam numa qualidade diferente devido a alterações na coleção pai.",
+    "redownloadSubtitle": "Descarregar de novo faixas automaticamente que é esperado que estejam numa qualidade diferente devido a alterações na coleção pai.",
     "@redownloadSubtitle": {
         "description": "subtitle for download transcode setting which redownloads tracks with higher allowed qualities"
     },
-    "defaultDownloadLocationButton": "Definir como local de download predefinido.  Desative para selecionar por cada download.",
+    "defaultDownloadLocationButton": "Definir como local de descargas predefinido.  Desative para selecionar por cada descarga.",
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
@@ -1382,8 +1382,8 @@
     "@addRemoveFromPlaylist": {
         "description": "Header for add to/remove from playlist popup menu"
     },
-    "downloadFavoritesSetting": "Fazer download de todos os favoritos",
-    "fiveLatestAlbumsSettingSubtitle": "Os downloads serão removidos à medida que envelhecem.   Tranque o download para prevenir que o álbum seja removido.",
+    "downloadFavoritesSetting": "Descarregar todos os favoritos",
+    "fiveLatestAlbumsSettingSubtitle": "As descargas serão removidas à medida que envelhecem.   Tranque a descarga para prevenir que o álbum seja removido.",
     "cacheLibraryImagesSettings": "Guardar em cache imagens da biblioteca atual",
     "showProgressOnNowPlayingBarTitle": "Mostrar o progresso da faixa no mini-reprodutor dentro da aplicação",
     "@showProgressOnNowPlayingBarTitle": {
@@ -1450,7 +1450,7 @@
     "@resetSettingsPromptGlobal": {
         "description": "Prompt which gets shown when the user is about to reset all settings to their default values"
     },
-    "preferQuickSyncSwitchSubtitle": "Alguns itens tipicamente estáticos (como faixas e álbuns) não serão atualizados quando é feita a sincronização. A reparação de downloads fará sempre uma sincronização completa.",
+    "preferQuickSyncSwitchSubtitle": "Alguns elementos tipicamente estáticos (como faixas e álbuns) não serão atualizados quando é feita a sincronização. A reparação de descargas fará sempre uma sincronização completa.",
     "@preferQuickSyncSwitchSubtitle": {
         "description": "Description of setting that skips completed albums while syncing."
     },
@@ -1467,7 +1467,7 @@
         },
         "description": "Subtitle for the type of a downloaded item, shown when syncing fails and in DownloadButton tooltip."
     },
-    "cacheLibraryImagesSettingsSubtitle": "Será feito o download de todas as capas dos álbuns, artistas, estilos e listas de reprodução da biblioteca ativa atual.",
+    "cacheLibraryImagesSettingsSubtitle": "Todas as capas dos álbuns, artistas, estilos e listas de reprodução da biblioteca ativa atual serão descarregadas.",
     "cacheLibraryImagesName": "Imagens em cache para '{libraryName}'",
     "@cacheLibraryImagesName": {
         "placeholders": {
@@ -1477,7 +1477,7 @@
         },
         "description": "Localized names of special downloadable collection representing cached images for a certain library."
     },
-    "downloadTranscodeCodecTitle": "Selecionar o Codec para Download",
+    "downloadTranscodeCodecTitle": "Selecionar o Codec para Descarga",
     "@downloadTranscodeCodecTitle": {
         "description": "Title for Select Download Codec dropdown"
     },
@@ -1524,7 +1524,7 @@
     "favorite": "Favorito",
     "performingArtist": "Artista Executor",
     "duration": "Duração",
-    "specialDownloads": "Downloads especiais",
+    "specialDownloads": "Descargas especiais",
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
     },
@@ -1589,7 +1589,7 @@
     "@startupErrorCallToAction": {
         "description": "The subtitle / call to action for what to do after encountering a startup error"
     },
-    "libraryDownloads": "Downloads de biblioteca",
+    "libraryDownloads": "Descargas de biblioteca",
     "@libraryDownloads": {
         "description": "Title for the library downloads section on the downloads screen."
     },
@@ -1682,7 +1682,7 @@
         }
     },
     "mostPlayed": "Mais Tocados",
-    "downloadButtonDisabledGenreFilterTooltip": "Por favor remova o filtro de estilo para ativar as ações de download.",
+    "downloadButtonDisabledGenreFilterTooltip": "Por favor remova o filtro de estilo para ativar as ações de descarga.",
     "@downloadButtonDisabledGenreFilterTooltip": {
         "description": "Tooltip shown when a download button is disabled because of an active genre filter."
     },
@@ -1695,7 +1695,7 @@
         },
         "description": "Message shown when a genre filter or open-genre action fails because the genre item could not be found."
     },
-    "dontTranscode": "Download original{description, select, null{} other{ - {description}}}",
+    "dontTranscode": "Descarregar original{description, select, null{} other{ - {description}}}",
     "@dontTranscode": {
         "placeholders": {
             "description": {
@@ -1716,7 +1716,7 @@
     "@startupErrorTitle": {
         "description": "The title for the error screen that shows when startup fails."
     },
-    "startupErrorWorkaround": "Como maneira de contornar o erro você pode limpar os seus dados da aplicação para a reiniciar. Tenha em mente que neste caso todas as suas definições e downloads serão apagados.",
+    "startupErrorWorkaround": "Como maneira de contornar o erro pode limpar os seus dados da aplicação para a reiniciar. Tenha em mente que neste caso todas as suas definições e descargas serão apagadas.",
     "@startupErrorWorkaround": {
         "description": "The subtitle for how to manually recover from a startup error"
     },
@@ -1872,7 +1872,7 @@
     "@outputMenuVolumeSectionTitle": {
         "description": "Title for the volume section in the output menu"
     },
-    "downloadPaused": "O download pausou porque o dispositivo não está ligado por WiFi",
+    "downloadPaused": "A descarga pausou porque o dispositivo não está ligado por WiFi",
     "@downloadPaused": {
         "description": "Gets shown in the snackbar if loosing wifi connection while downloads are running and the 'requireWifiForDownloads' is enabled"
     },
@@ -2138,7 +2138,7 @@
     "@autoReloadQueueTitle": {
         "description": "Title for the setting that controls if the queue is automatically reloaded when the source changes"
     },
-    "downloadSizeWarningCutoff": "Corte do Aviso de Tamanho do Download",
+    "downloadSizeWarningCutoff": "Corte do Aviso de Tamanho de Descarga",
     "@downloadSizeWarningCutoff": {
         "description": "Title for the setting controlling when to warn about a large download"
     },
@@ -2986,5 +2986,50 @@
     "previousTracksPersistenceModeExpanded": "Expandidos (visíveis)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "amoledTheme": "Usar Tema AMOLED",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "Substitui o esquema de cor escura por um tema de preto puro.",
+    "useAndroidGainEffectTitle": "Usar Efeito de Ganho",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "Usar efeito de ganho nativo para controlar volume.  Isto é mais flexível mas quebra o reprodutor em alguns dispositivos.  Você não deve precisar de mudar isto manualmente.  Requer reiniciar a aplicação para aplicar.",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "A mudar para efeito de ganho de recurso devido a erro de inicialização.",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+    },
+    "losslessNoBitrate": "Não aplicável a transcodificações FLAC",
+    "@losslessNoBitrate": {
+        "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+    },
+    "home": "Ecrã Inicial",
+    "@home": {
+        "description": "Label for the home/main screen"
+    },
+    "search": "Busca",
+    "@search": {
+        "description": "Button for the user to click to perform a search"
+    },
+    "library": "Biblioteca",
+    "@library": {
+        "description": "Label for library - the user can click this and see the conent in their system."
+    },
+    "voiceSearch": "Busca por Voz",
+    "@voiceSearch": {
+        "description": "Heading for the page that prompts the user to perform a voice search."
+    },
+    "carPlaySiriHint": "Diga \"Hey Siri, play [track/artist/album] on Finamp\"",
+    "@carPlaySiriHint": {
+        "description": "Hint text for how to use Siri to search in CarPlay."
+    },
+    "carPlayLoginPrompt": "Abra a aplicação Finamp no seu telefone e inicie sessão no servidor Jellyfin.",
+    "@carPlayLoginPrompt": {
+        "description": "Label shown when the user is trying to use CarPlay without being logged in."
     }
 }

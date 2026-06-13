@@ -102,7 +102,7 @@
         }
     },
     "playButtonLabel": "تشغيل",
-    "shuffleButtonLabel": "تشغيل عشوائي",
+    "shuffleButtonLabel": "شغّل عشوائياً",
     "trackCount": "{count,plural,=1{{count} أغنية} other{{count} أغاني}}",
     "@trackCount": {
         "placeholders": {
@@ -136,7 +136,7 @@
     "directoryMustBeEmpty": "يجب أن يكون المجلد فارغاً",
     "enterLowPriorityStateOnPause": "الدخول في حالة الأولوية المنخفضة عند الإيقاف المؤقت",
     "shuffleAllTrackCountSubtitle": "عدد الأغاني المراد تشغيلها عند استخدام زر \"تشغيل الكل عشوائياً\" في علامة تبويب الأغاني أو شاشة النوع.",
-    "shuffleAllTrackCount": "تشغيل عشوائي لعدد الأغاني",
+    "shuffleAllTrackCount": "عدد أغاني التشغيل العشوائي",
     "grid": "شبكة",
     "portrait": "عمودي",
     "landscape": "أفقي",
@@ -500,7 +500,7 @@
     "@playbackActionPageNewQueue": {
         "description": "Label for the playback action page that contains all actions related to starting a new queue"
     },
-    "playbackActionPageNext": "تشغيل بعد الأغنية الحالية",
+    "playbackActionPageNext": "تشغيل تالياً",
     "@playbackActionPageNext": {
         "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
     },
@@ -744,7 +744,7 @@
     "addFavorite": "إضافة إلى المفضلات",
     "confirmFavoriteAdded": "تمت الإضافة للمفضلات",
     "confirmFavoriteRemoved": "تمت الإزالة من المفضلات",
-    "insertedIntoQueue": "تم الإدخال في قائمة المحتوى.",
+    "insertedIntoQueue": "أُضيف إلى قائمة الانتظار.",
     "@insertedIntoQueue": {
         "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
     },
@@ -794,11 +794,11 @@
     "@clearNextUp": {
         "description": "Label for the action that deletes all tracks added to Next Up"
     },
-    "stopAndClearQueue": "أوقف التشغيل وامسح قائمة المحتوى",
+    "stopAndClearQueue": "أوقف التشغيل وامسح قائمة الانتظار",
     "@stopAndClearQueue": {
         "description": "Label for a button that stops playback and removes all tracks from the queue."
     },
-    "createPlaylistFromCurrentQueue": "حفظ قائمة المحتوى إلى قائمة تشغيل",
+    "createPlaylistFromCurrentQueue": "حفظ قائمة الانتظار في قائمة تشغيل",
     "@createPlaylistFromCurrentQueue": {
         "description": "Label for a button that adds the current queue to an existing or new playlist."
     },
@@ -830,11 +830,11 @@
     "@shuffleSomeToNextUp": {
         "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
     },
-    "shuffleToQueue": "شغّل عشوائياً في قائمة المحتوى",
+    "shuffleToQueue": "شغّل عشوائياً في قائمة الانتظار",
     "@shuffleToQueue": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
-    "shuffleSomeToQueue": "شغّل عشوائياً البعض في قائمة المحتوى",
+    "shuffleSomeToQueue": "شغّل عشوائياً البعض في قائمة الانتظار",
     "@shuffleSomeToQueue": {
         "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
@@ -985,7 +985,7 @@
     "@genreFilterPlaylistScreens": {
         "description": "Label for the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
     },
-    "shuffleAllQueueSource": "تشغيل عشوائي للكل",
+    "shuffleAllQueueSource": "شغّل عشوائياً الكل",
     "@shuffleAllQueueSource": {
         "description": "Title for the queue source when the user is shuffling all tracks. Should be capitalized (if applicable) to be more recognizable throughout the UI"
     },
@@ -1229,35 +1229,35 @@
             }
         }
     },
-    "shuffleAlbums": "تشغيل عشوائي للألبومات",
+    "shuffleAlbums": "شغّل عشوائياً الألبومات",
     "@shuffleAlbums": {
         "description": "Label for action that shuffles all albums of an artist"
     },
-    "shuffleSomeAlbums": "تشغيل عشوائي لبعض الألبومات",
+    "shuffleSomeAlbums": "شغّل عشوائياً بعض الألبومات",
     "@shuffleSomeAlbums": {
         "description": "Label for action that shuffles some albums of a genre"
     },
-    "shuffleAlbumsNext": "تشغيل عشوائي للألبومات بعد الأغنية الحالية",
+    "shuffleAlbumsNext": "شغّل عشوائياً الألبومات تالياً",
     "@shuffleAlbumsNext": {
         "description": "Label for action that shuffles all albums of an artist and adds them at the start of Next Up"
     },
-    "shuffleSomeAlbumsNext": "تشغيل عشوائي لبعض الألبومات بعد الأغنية الحالية",
+    "shuffleSomeAlbumsNext": "شغّل عشوائياً لبعض الألبومات تالياً",
     "@shuffleSomeAlbumsNext": {
         "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
     },
-    "shuffleAlbumsToNextUp": "تشغيل عشوائي للألبومات في آخر قائمة التالي",
+    "shuffleAlbumsToNextUp": "شغّل عشوائياً الألبومات في قائمة التالي",
     "@shuffleAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of an artist and adds them at the end of Next Up"
     },
-    "shuffleSomeAlbumsToNextUp": "تشغيل عشوائي لبعض الألبومات في آخر قائمة التالي",
+    "shuffleSomeAlbumsToNextUp": "شغّل عشوائياً لبعض الألبومات في قائمة التالي",
     "@shuffleSomeAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
     },
-    "shuffleAlbumsToQueue": "تشغيل عشوائي للألبومات في نهاية قائمة المحتوى",
+    "shuffleAlbumsToQueue": "شغّل عشوائياً الألبومات في قائمة الانتظار",
     "@shuffleAlbumsToQueue": {
         "description": "Label for action that shuffles all albums of an artist and adds them at the end of the regular queue"
     },
-    "shuffleSomeAlbumsToQueue": "تشغيل عشوائي لبعض الألبومات في نهاية قائمة المحتوى",
+    "shuffleSomeAlbumsToQueue": "شغّل عشوائياً بعض الألبومات في قائمة الانتظار",
     "@shuffleSomeAlbumsToQueue": {
         "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
     },

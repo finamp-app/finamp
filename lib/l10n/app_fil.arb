@@ -1,0 +1,190 @@
+{
+    "finamp": "Finamp",
+    "@finamp": {
+        "description": "App name, possibly translated"
+    },
+    "finampTagline": "Malayang pampatugtog para sa Jellyfin",
+    "@finampTagline": {
+        "description": "Tagline / short description for the app"
+    },
+    "startupErrorTitle": "May sumablay sa pag-start ng app!",
+    "@startupErrorTitle": {
+        "description": "The title for the error screen that shows when startup fails."
+    },
+    "startupErrorCallToAction": "Nakikiusap kaming gumawa kayo ng issue sa \"github.com/jmshrv/finamp\" na may kasamang logs (gamit ang pindutan sa ibaba) at may kasamang screenshot ng pahinang ito, upang maiayos ang app.",
+    "@startupErrorCallToAction": {
+        "description": "The subtitle / call to action for what to do after encountering a startup error"
+    },
+    "startupErrorWorkaround": "Maaaring maayos ang error kung burahin at i-reset ang app. Babalang mabubura ang iyong mga setting at mga download.",
+    "@startupErrorWorkaround": {
+        "description": "The subtitle for how to manually recover from a startup error"
+    },
+    "about": "Tungkol sa Finamp",
+    "@about": {
+        "description": "Label for the about/info button on the settings screen"
+    },
+    "loginFlowSlogan": "Musika mo, sayong sayo.",
+    "@loginFlowSlogan": {
+        "description": "Slogan shown on the login screen."
+    },
+    "loginFlowGetStarted": "Magsimula!",
+    "@loginFlowGetStarted": {
+        "description": "Button label for the login/splash screen."
+    },
+    "viewLogs": "Mga Logs",
+    "@viewLogs": {
+        "description": "Label for button shown during the login process that allows the user to view the app logs"
+    },
+    "changeLanguage": "Ibang Lenguwahe",
+    "@changeLanguage": {
+        "description": "Label for button shown during the login process that allows the user to change the app language"
+    },
+    "loginFlowServerSelectionHeading": "Kumonekta sa Jellyfin",
+    "@loginFlowServerSelectionHeading": {
+        "description": "Heading for the server selection step during the login flow."
+    },
+    "back": "Balik",
+    "@back": {
+        "description": "Label for the back button."
+    },
+    "serverUrl": "Server URL",
+    "aboutContributionPrompt": "Gawa ng mga henyong tulad mo!",
+    "@aboutContributionPrompt": {
+        "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
+    },
+    "aboutContributionLink": "Mag-ambag sa Finamp sa Github:",
+    "@aboutContributionLink": {
+        "description": "Link to the Finamp GitHub repository, shown in the about screen."
+    },
+    "aboutReleaseNotes": "Mga pagbabago:",
+    "@aboutReleaseNotes": {
+        "description": "Link to the release notes, shown in the about screen."
+    },
+    "aboutTranslations": "Tumulong na isalin ang Finamp sa iyong lenguwahe:",
+    "@aboutTranslations": {
+        "description": "Link to the translation project, shown in the about screen."
+    },
+    "aboutThanks": "Salamat sa paggamit ng Finamp!",
+    "@aboutThanks": {
+        "description": "Thank you message shown in the about screen."
+    },
+    "loginFlowWelcomeHeading": "Pasok na sa {styledName}",
+    "@loginFlowWelcomeHeading": {
+        "description": "Greeting shown on the login screen.",
+        "placeholders": {
+            "styledName": {
+                "type": "String",
+                "example": "Finamp"
+            }
+        }
+    },
+    "internalExternalIpExplanation": "Kung nais mong kumonekta nang malayo sa Jellyfin server mo, kailangan mo gamitin ang iyong external IP.\n\nKung ang server mo ay nasa default na HTTP (80 o 443), o sa default na Jellyfin (8096), di mo kailangang maglagay ng port.\n\nKung tama ang inilagay na URL, may lalabas na impormasyon sa ibaba.",
+    "@internalExternalIpExplanation": {
+        "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
+    },
+    "serverUrlHint": "e.g. demo.jellyfin.org/stable",
+    "@serverUrlHint": {
+        "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
+    },
+    "serverUrlInfoButtonTooltip": "Tulong sa Server URL",
+    "@serverUrlInfoButtonTooltip": {
+        "description": "Tooltip for the button that shows the extra info dialog for which IP to use for remote access, and info on whether or not the user needs to specify a port."
+    },
+    "emptyServerUrl": "Hindi maaaring blanko ang Server URL",
+    "@emptyServerUrl": {
+        "description": "Error message that shows when the user submits a login without a server URL"
+    },
+    "connectingToServer": "Kumokonekta sa server…",
+    "@connectingToServer": {
+        "description": "Text shown while the connection to the specified server is attempted"
+    },
+    "loginFlowLocalNetworkServers": "Mga server sa lokal na network:",
+    "@loginFlowLocalNetworkServers": {
+        "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
+    },
+    "loginFlowLocalNetworkServersScanningForServers": "Naghahanap ng mga server…",
+    "@loginFlowLocalNetworkServersScanningForServers": {
+        "description": "Text shown while servers are being discovered via UDP broadcasts"
+    },
+    "loginFlowAccountSelectionHeading": "Piliin ang iyong account",
+    "@loginFlowAccountSelectionHeading": {
+        "description": "Heading for the account selection step during the login flow."
+    },
+    "backToServerSelection": "Balik sa Piliian ng Server",
+    "@backToServerSelection": {
+        "description": "Label for the button that takes the user back to the server selection step during the login flow."
+    },
+    "loginFlowNamelessUser": "Bagong User",
+    "@loginFlowNamelessUser": {
+        "description": "Name for a user that doesn't have a name set on the server."
+    },
+    "loginFlowCustomUser": "Ibang User",
+    "@loginFlowCustomUser": {
+        "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
+    },
+    "loginFlowAuthenticationHeading": "Mag-login sa iyong account",
+    "@loginFlowAuthenticationHeading": {
+        "description": "Heading for the authentication step during the login flow."
+    },
+    "backToAccountSelection": "Balik sa Pilian ng Account",
+    "@backToAccountSelection": {
+        "description": "Label for the button that takes the user back to the account selection step during the login flow."
+    },
+    "loginFlowQuickConnectPrompt": "Gumamit ng Quick Connect code",
+    "@loginFlowQuickConnectPrompt": {
+        "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
+    },
+    "loginFlowQuickConnectInstructions": "Buksan ang Jellyfin app o webstie. i-click ang iyong icon, at piliin ang Quick Connect.",
+    "@loginFlowQuickConnectInstructions": {
+        "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
+    },
+    "loginFlowQuickConnectDisabled": "Nakapatay ang Quick Connect sa server na ito.",
+    "@loginFlowQuickConnectDisabled": {
+        "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
+    },
+    "orDivider": "o",
+    "@orDivider": {
+        "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
+    },
+    "loginFlowSelectAUser": "Pumili ng user",
+    "@loginFlowSelectAUser": {
+        "description": "Heading for the list of users that the user can select from during the login flow."
+    },
+    "username": "Username",
+    "usernameHint": "Ipasok ang iyong username",
+    "@usernameHint": {
+        "description": "Hint text for the username input field."
+    },
+    "usernameValidationMissingUsername": "Kulang ng username",
+    "@usernameValidationMissingUsername": {
+        "description": "Error message that shows when the user submits a login without a username"
+    },
+    "password": "Password",
+    "passwordHint": "Ipasok ang password",
+    "@passwordHint": {
+        "description": "Hint text for the password input field."
+    },
+    "login": "Mag-login",
+    "@login": {
+        "description": "Label for the login button."
+    },
+    "logs": "Logs",
+    "next": "Sunod",
+    "selectMusicLibraries": "Pumili ng Koleksyong Musika",
+    "@selectMusicLibraries": {
+        "description": "App bar title for library select screen"
+    },
+    "couldNotFindLibraries": "Hindi makahanap ng koleksyon.",
+    "@couldNotFindLibraries": {
+        "description": "Error message when the user does not have any libraries"
+    },
+    "allLibraries": "Lahat ng Koleksyon",
+    "@allLibraries": {
+        "description": "All Libraries"
+    },
+    "unknownName": "Di kilalang Pangngalan",
+    "tracks": "Mga Track",
+    "albums": "Mga Album",
+    "appearsOnAlbums": "Nasa",
+    "artists": "Mga Arista"
+}

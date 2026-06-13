@@ -708,7 +708,7 @@
     "@togglePlaybackButtonTooltip": {
         "description": "Tooltip for the button that toggles playback"
     },
-    "previousTracks": "先前播放的歌曲",
+    "previousTracks": "已播放歌曲",
     "@previousTracks": {
         "description": "Description in the queue panel for the list of tracks that come before the current track in the queue. The tracks might not actually have been played (e.g. if the user skipped ahead to a specific track)."
     },
@@ -2976,5 +2976,50 @@
     "previousTracksPersistenceModeExpanded": "展開 (顯示)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "amoledTheme": "使用 AMOLED 主題",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "將深色主題替換為純黑主題。",
+    "useAndroidGainEffectTitle": "使用增益效果",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "使用原生增益效果來控制音量。此方式更具彈性，但在部分裝置上可能導致播放器異常。一般情況下不需要手動更改。需重新啟動應用程式後才會生效。",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "因初始化錯誤，已切換為增益效果備用模式。",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+    },
+    "losslessNoBitrate": "不適用於FLAC轉碼",
+    "@losslessNoBitrate": {
+        "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+    },
+    "home": "首頁",
+    "@home": {
+        "description": "Label for the home/main screen"
+    },
+    "search": "搜尋",
+    "@search": {
+        "description": "Button for the user to click to perform a search"
+    },
+    "library": "音樂庫",
+    "@library": {
+        "description": "Label for library - the user can click this and see the conent in their system."
+    },
+    "voiceSearch": "語音搜尋",
+    "@voiceSearch": {
+        "description": "Heading for the page that prompts the user to perform a voice search."
+    },
+    "carPlaySiriHint": "你可以說Hey Siri，在Finamp播放 [曲目/歌手/專輯]",
+    "@carPlaySiriHint": {
+        "description": "Hint text for how to use Siri to search in CarPlay."
+    },
+    "carPlayLoginPrompt": "請在手機上開啟Finamp App，登入你的Jellyfin伺服器。",
+    "@carPlayLoginPrompt": {
+        "description": "Label shown when the user is trying to use CarPlay without being logged in."
     }
 }

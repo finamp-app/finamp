@@ -872,7 +872,7 @@
         },
         "description": "Localized names of special downloadable collection representing cached images for a certain library."
     },
-    "downloadTranscodeEnableOption": "{option, select, always{Vždy} never{Nikdy} ask{Zeptat} other{{option}} }",
+    "downloadTranscodeEnableOption": "{option, select, always{Vždy} never{Nikdy} ask{Zeptat se} other{{option}} }",
     "@downloadTranscodeEnableOption": {
         "placeholders": {
             "option": {
@@ -2973,5 +2973,50 @@
     "previousTracksPersistenceModeExpanded": "Rozbalená (viditelná)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "amoledTheme": "Použít motiv AMOLED",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "Nahrazuje tmavé barevné schéma plně černým motivem.",
+    "useAndroidGainEffectTitle": "Použít efekt zisku",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "Použít nativní efekt zisku k ovládání hlasitosti.  Toto je flexibilnější, ale na některých zařízeních může rozbít přehrávač.  Toto nastavení byste neměli mít potřebu ručně měnit.  Vyžaduje restart aplikace pro použití.",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "Přepínání na zálohu efektu zisku z důvodu chyby při inicializaci.",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+    },
+    "losslessNoBitrate": "Není použitelné na překódování FLAC",
+    "@losslessNoBitrate": {
+        "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+    },
+    "home": "Domů",
+    "@home": {
+        "description": "Label for the home/main screen"
+    },
+    "search": "Vyhledávání",
+    "@search": {
+        "description": "Button for the user to click to perform a search"
+    },
+    "library": "Knihovna",
+    "@library": {
+        "description": "Label for library - the user can click this and see the conent in their system."
+    },
+    "voiceSearch": "Hlasové hledání",
+    "@voiceSearch": {
+        "description": "Heading for the page that prompts the user to perform a voice search."
+    },
+    "carPlaySiriHint": "Řekněte „Hej Siri, přehraj [skladbu/umělce/album] v aplikaci Finamp]“",
+    "@carPlaySiriHint": {
+        "description": "Hint text for how to use Siri to search in CarPlay."
+    },
+    "carPlayLoginPrompt": "Otevřete aplikaci Finamp na vašem telefonu a přihlaste se do vašeho serveru Jellyfin.",
+    "@carPlayLoginPrompt": {
+        "description": "Label shown when the user is trying to use CarPlay without being logged in."
     }
 }

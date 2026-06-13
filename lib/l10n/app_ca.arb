@@ -1011,7 +1011,7 @@
     "@useMonochromeIcon": {
         "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
     },
-    "useMonochromeIconSubtitle": "Només afecta la icona dins l'aplicació, no la icona de llençament.",
+    "useMonochromeIconSubtitle": "Només afecta la icona dins l'aplicació, no la icona de llançament.",
     "@useMonochromeIconSubtitle": {
         "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
     },
@@ -3015,5 +3015,50 @@
     "previousTracksPersistenceModeExpanded": "Expandit (visible)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "amoledTheme": "Utilitza el tema AMOLED",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "Substitueix l'esquema de colors foscos per un tema negre pur.",
+    "useAndroidGainEffectTitle": "Utilitza l'efecte de guany",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "Fes servir l'efecte de guany natiu per controlar el volum. Això és més flexible però fa que el reproductor no funcioni en alguns dispositius. No cal que ho canviïs manualment. Cal reiniciar l'aplicació per aplicar-ho.",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "Canviant a l'efecte de guany de reserva a causa d'un error d'inicialització.",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+    },
+    "losslessNoBitrate": "No aplicable a transcodificacions FLAC",
+    "@losslessNoBitrate": {
+        "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+    },
+    "home": "Inici",
+    "@home": {
+        "description": "Label for the home/main screen"
+    },
+    "search": "Cerca",
+    "@search": {
+        "description": "Button for the user to click to perform a search"
+    },
+    "library": "Biblioteca",
+    "@library": {
+        "description": "Label for library - the user can click this and see the conent in their system."
+    },
+    "voiceSearch": "Cerca de veu",
+    "@voiceSearch": {
+        "description": "Heading for the page that prompts the user to perform a voice search."
+    },
+    "carPlaySiriHint": "Digues \"Ei Siri, reprodueix [cançó/artista/àlbum] al Finamp\"",
+    "@carPlaySiriHint": {
+        "description": "Hint text for how to use Siri to search in CarPlay."
+    },
+    "carPlayLoginPrompt": "Obre l'aplicació Finamp al teu telèfon per iniciar sessió al teu servidor Jellyfin.",
+    "@carPlayLoginPrompt": {
+        "description": "Label shown when the user is trying to use CarPlay without being logged in."
     }
 }

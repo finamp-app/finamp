@@ -11,7 +11,7 @@
     "@about": {
         "description": "Label for the about/info button on the settings screen"
     },
-    "aboutContributionPrompt": "נוצר על ידי אנשים מדהימים בזמנם החופשי.\nאתם יכולים להיות אחד/ת מהם!",
+    "aboutContributionPrompt": "נוצר על ידי אנשים מדהימים בזמנם החופשי.\nאתם יכולים להיות חלק מהם!",
     "@aboutContributionPrompt": {
         "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
     },
@@ -93,13 +93,12 @@
     "@orDivider": {
         "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
     },
-    "loginFlowSelectAUser": "בחר/י משתמש",
+    "loginFlowSelectAUser": "בחרו משתמש",
     "@loginFlowSelectAUser": {
         "description": "Heading for the list of users that the user can select from during the login flow."
     },
     "username": "שם משתמש",
-    "@username": {},
-    "usernameHint": "הקלד/י את שם המשתמש שלך",
+    "usernameHint": "הקלידו את שם המשתמש",
     "@usernameHint": {
         "description": "Hint text for the username input field."
     },
@@ -108,77 +107,47 @@
         "description": "Error message that shows when the user submits a login without a username"
     },
     "password": "סיסמה",
-    "@password": {},
-    "passwordHint": "הקלד/י את הסיסמה שלך",
+    "passwordHint": "הקלידו את הסיסמה שלכם",
     "@passwordHint": {
         "description": "Hint text for the password input field."
     },
     "next": "הבא",
-    "@next": {},
     "allLibraries": "כל הספריות",
     "@allLibraries": {
         "description": "All Libraries"
     },
     "unknownName": "שם לא ידוע",
-    "@unknownName": {},
     "albums": "אלבומים",
-    "@albums": {},
-    "appearsOnAlbums": "מופיע ב…",
-    "@appearsOnAlbums": {},
+    "appearsOnAlbums": "מופיע ב",
     "artists": "אמנים",
-    "@artists": {},
     "music": "מוזיקה",
-    "@music": {},
     "favorites": "מועדפים",
-    "@favorites": {},
     "favorite": "מועדף",
-    "@favorite": {},
     "downloads": "הורדות",
-    "@downloads": {},
     "settings": "הגדרות",
-    "@settings": {},
     "sortOrder": "סדר מיון",
-    "@sortOrder": {},
     "sortBy": "מיון לפי",
-    "@sortBy": {},
     "album": "אלבום",
-    "@album": {},
     "albumArtist": "אמן אלבום",
-    "@albumArtist": {},
     "albumArtists": "אמני אלבום",
-    "@albumArtists": {},
     "performingArtists": "אמנים מבצעים",
-    "@performingArtists": {},
     "artist": "אמן",
-    "@artist": {},
     "performingArtist": "אמן מבצע",
-    "@performingArtist": {},
     "budget": "תקציב",
-    "@budget": {},
     "communityRating": "דירוג קהילתי",
-    "@communityRating": {},
     "criticRating": "דירוג מבקרים",
-    "@criticRating": {},
     "dateAdded": "תאריך הוספה",
-    "@dateAdded": {},
     "datePlayed": "תאריך נגינה אחרון",
-    "@datePlayed": {},
     "premiereDate": "תאריך יציאה",
-    "@premiereDate": {},
     "productionYear": "שנת הפקה",
-    "@productionYear": {},
     "name": "שם",
-    "@name": {},
     "random": "אקראי",
-    "@random": {},
     "duration": "אורך",
-    "@duration": {},
     "defaultOrder": "סדר ברירת מחדל",
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
     },
     "downloadMissingImages": "הורד תמונות חסרות",
-    "@downloadMissingImages": {},
     "deleteDownloadsConfirmButtonText": "מחיקה",
     "@deleteDownloadsConfirmButtonText": {
         "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
@@ -188,9 +157,7 @@
         "description": "Title for the special downloads section on the downloads screen."
     },
     "error": "שגיאה",
-    "@error": {},
     "playButtonLabel": "נגן",
-    "@playButtonLabel": {},
     "playbackActionPageRegularTrackOptions": "נגן",
     "@playbackActionPageRegularTrackOptions": {
         "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
@@ -204,37 +171,23 @@
         "description": "Text shown while the changes to a playlist are being saved"
     },
     "addDownloads": "הוסף/י הורדות",
-    "@addDownloads": {},
     "location": "מיקום",
-    "@location": {},
     "confirmDownloadStarted": "ההורדה התחילה",
     "@confirmDownloadStarted": {
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
     },
     "downloadsQueued": "מוריד קבצים",
-    "@downloadsQueued": {},
     "message": "הודעה",
-    "@message": {},
     "downloadLocations": "מיקומי הורדות",
-    "@downloadLocations": {},
     "notAvailable": "לא זמין",
-    "@notAvailable": {},
     "logOut": "התנתקות",
-    "@logOut": {},
     "areYouSure": "את/ה בטוח?",
-    "@areYouSure": {},
     "addDownloadLocation": "הוסף מיקום הורדה",
-    "@addDownloadLocation": {},
-    "selectDirectory": "בחר/י תיקיה",
-    "@selectDirectory": {},
+    "selectDirectory": "בחרו תיקיה",
     "unknownError": "שגיאה לא ידועה",
-    "@unknownError": {},
     "directoryMustBeEmpty": "התיקיה חייבת להיות ריקה",
-    "@directoryMustBeEmpty": {},
     "list": "רשימה",
-    "@list": {},
     "none": "ללא",
-    "@none": {},
     "playbackSpeedControlSetting": "נראות מהירות נגינה",
     "@playbackSpeedControlSetting": {
         "description": "Title of the visibility setting of the playback speed controls"
@@ -259,80 +212,53 @@
     "@speed": {
         "description": "Used as a placeholder in the input of the playback speed menu"
     },
-    "apply": "החל/י",
+    "apply": "החלה",
     "@apply": {
         "description": "Used for a button in the playback speed menu"
     },
     "theme": "ערכת נושא",
-    "@theme": {},
     "system": "מערכת",
-    "@system": {},
     "light": "בהיר",
-    "@light": {},
     "dark": "כהה",
-    "@dark": {},
     "useMonochromeIcon": "השתמש בלוגו שחור לבן",
     "@useMonochromeIcon": {
         "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
     },
     "defaultWord": "ברירת מחדל",
-    "@defaultWord": {},
     "save": "שמירה",
-    "@save": {},
     "playerScreen": "מסך נגן",
     "@playerScreen": {
         "description": "Name for the expanded player"
     },
     "cancelSleepTimer": "לבטל טיימר שינה?",
-    "@cancelSleepTimer": {},
     "yesButtonLabel": "כן",
-    "@yesButtonLabel": {},
     "noButtonLabel": "לא",
-    "@noButtonLabel": {},
     "hours": "שעות",
-    "@hours": {},
     "seconds": "שניות",
-    "@seconds": {},
     "minutes": "דקות",
-    "@minutes": {},
     "invalidNumber": "מספר לא תקין",
-    "@invalidNumber": {},
     "sleepTimerTooltip": "טיימר שינה",
-    "@sleepTimerTooltip": {},
     "noAlbum": "אין אלבום",
-    "@noAlbum": {},
     "noItem": "אין פריט",
-    "@noItem": {},
     "noArtist": "אין אמן",
-    "@noArtist": {},
     "unknownArtist": "אמן לא ידוע",
-    "@unknownArtist": {},
     "unknownAlbum": "אלבום לא ידוע",
-    "@unknownAlbum": {},
     "playbackModeDirectPlaying": "נגינה ישירה",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
     },
-    "addToQueue": "הוסף/י לתור",
+    "addToQueue": "הוספה לתור",
     "@addToQueue": {
         "description": "Popup menu item title for adding an item to the end of the play queue."
     },
     "queue": "תור",
-    "@queue": {},
-    "replaceQueue": "החלף/י תור",
-    "@replaceQueue": {},
-    "goToAlbum": "עבור/עברי לאלבום",
-    "@goToAlbum": {},
-    "goToArtist": "עבור/עברי לאמן",
-    "@goToArtist": {},
-    "removeFavorite": "הסר/י ממועדפים",
-    "@removeFavorite": {},
-    "addFavorite": "הוסף/י למועדפים",
-    "@addFavorite": {},
+    "replaceQueue": "החלפת תור",
+    "goToAlbum": "מעבר לאלבום",
+    "goToArtist": "מעבר לאמן",
+    "removeFavorite": "הסרה ממועדפים",
+    "addFavorite": "הוספה למועדפים",
     "confirmFavoriteAdded": "נוסף למועדפים",
-    "@confirmFavoriteAdded": {},
     "confirmFavoriteRemoved": "הוסר ממועדפים",
-    "@confirmFavoriteRemoved": {},
     "addedToQueue": "נוסף לתור.",
     "@addedToQueue": {
         "description": "Snackbar message that shows when the user successfully adds items to the end of the play queue."
@@ -342,15 +268,12 @@
         "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
     },
     "queueReplaced": "תור הוחלף.",
-    "@queueReplaced": {},
     "anErrorHasOccured": "קרתה תקלה.",
-    "@anErrorHasOccured": {},
-    "startRadio": "התחל/י רדיו",
+    "startRadio": "התחלת רדיו",
     "@startRadio": {
         "description": "Menu label for starting a radio from a playlist, album, etc."
     },
     "language": "שפה",
-    "@language": {},
     "skipToPreviousTrackButtonTooltip": "דילוג להתחלה או לרצועת השמע הקודמת",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -404,7 +327,7 @@
             }
         }
     },
-    "playbackSpeedDecreaseLabel": "הנמך/י מהירות נגינה",
+    "playbackSpeedDecreaseLabel": "הנמכת מהירות נגינה",
     "@playbackSpeedDecreaseLabel": {
         "description": "Label for the button in the speed menu that decreases the playback speed."
     },
@@ -522,8 +445,7 @@
         "description": "The subtitle for how to manually recover from a startup error"
     },
     "serverUrl": "כתובת שרת (URL)",
-    "@serverUrl": {},
-    "internalExternalIpExplanation": "אם את/ה רוצה לגשת לשרת Jellyfin שלך מרחוק, תצטרך/י להשתמש בIP חיצוני.\n\nאם השרת שלך על פורט ברירת מחדל של HTTP (80 או 443) או ברירת המחדל של Jellyfin (פורט 8096), אין צורך לציין את הפורט.\n\nאם הכתובת URL נכונה, תוכל/י לראות מידע על השרת שלך מופיע מתחת לשורת ההקלדה.",
+    "internalExternalIpExplanation": "אם אתם רוצים לגשת לשרת Jellyfin שלכם מרחוק, תצטרכו להשתמש בIP חיצוני.\n\nאם השרת שלכם על פורט ברירת מחדל של HTTP (80 או 443) או ברירת המחדל של Jellyfin (פורט 8096), אין צורך לציין את הפורט.\n\nאם הכתובת URL נכונה, תוכלו לראות מידע על השרת שלכם מופיע מתחת לשורת ההקלדה.",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
@@ -551,7 +473,7 @@
     "@loginFlowQuickConnectPrompt": {
         "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
-    "loginFlowQuickConnectInstructions": "פתח/י את Jellyfin באפליקציה או באתר, לחץ/י על הסמל של המשתמש שלך, ובחר/י חיבור-מהיר.",
+    "loginFlowQuickConnectInstructions": "פתחו את Jellyfin באפליקציה או באתר, לחצו על הסמל של המשתמש שלך, ובחרו חיבור-מהיר.",
     "@loginFlowQuickConnectInstructions": {
         "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
@@ -564,7 +486,6 @@
         "description": "Label for the login button."
     },
     "logs": "יומנים",
-    "@logs": {},
     "selectMusicLibraries": "בחירת ספריות מוזיקה",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
@@ -574,17 +495,13 @@
         "description": "Error message when the user does not have any libraries"
     },
     "tracks": "רצועות שמע",
-    "@tracks": {},
     "genres": "ז'אנרים",
-    "@genres": {},
     "noGenres": "אין ז'אנרים",
     "@noGenres": {
         "description": "Gets shown when there are no genres available for an album or artist"
     },
     "playlists": "פלייליסטים",
-    "@playlists": {},
     "startMix": "התחל מיקס",
-    "@startMix": {},
     "startMixNoTracksArtist": "לחיצה ארוכה על אמן כדי להוסיף או להסיר אותו מבונה המיקס לפני תחילת המיקס",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
@@ -598,8 +515,7 @@
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
     "clear": "ניקוי",
-    "@clear": {},
-    "startupErrorCallToAction": "בבקשה תפתח/י בעיה ב\"github.com/jmshrv/finamp\" עם היומנים (השתמש/י בכפתור למטה) וצילום מסך של העמוד הזה, כדי שנוכל לתקן את זה כמה שיותר מהר.",
+    "startupErrorCallToAction": "בבקשה תפתחו בעיה ב\"github.com/jmshrv/finamp\" עם היומנים (השתמשו בכפתור למטה) וצילום מסך של העמוד הזה, כדי שנוכל לתקן את זה כמה שיותר מהר.",
     "@startupErrorCallToAction": {
         "description": "The subtitle / call to action for what to do after encountering a startup error"
     },
@@ -608,21 +524,13 @@
         "description": "Label for button shown during the login process that allows the user to view the app logs"
     },
     "offlineMode": "מצב לא מקוון",
-    "@offlineMode": {},
     "onlineMode": "מצב מקוון",
-    "@onlineMode": {},
     "title": "כותרת",
-    "@title": {},
     "playCount": "כמות השמעות",
-    "@playCount": {},
     "revenue": "רווחים",
-    "@revenue": {},
     "adaptive": "אדפטיבי",
-    "@adaptive": {},
     "syncDownloadedPlaylists": "סנכרון פלייליסטים שהורדו",
-    "@syncDownloadedPlaylists": {},
     "activeDownloads": "הורדות פעילות",
-    "@activeDownloads": {},
     "dlComplete": "{count} הושלמו",
     "@dlComplete": {
         "placeholders": {
@@ -648,17 +556,13 @@
         }
     },
     "activeDownloadsTitle": "הורדות פעילות",
-    "@activeDownloadsTitle": {},
     "noActiveDownloads": "אין הורדות פעילות.",
-    "@noActiveDownloads": {},
     "errorScreenError": "קרתה תקלה בזמן השגת רשימת התקלות! בשלב הזה, כדאי שתפתח/י בעיה בGitHub ותמחק את נתוני האפליקציה",
-    "@errorScreenError": {},
     "libraryDownloads": "הורדות ספרייה",
     "@libraryDownloads": {
         "description": "Title for the library downloads section on the downloads screen."
     },
     "noMusicLibrariesBody": "Finamp לא הצליח למצוא ספריות מוזיקה. בבקשה תוודאו שהשרת Jellyfin שלכם כולל לפחות ספרייה אחת עם סוג התוכן מוגדר ל\"מוסיקה\".",
-    "@noMusicLibrariesBody": {},
     "downloadLibraryPrompt": "האם להוריד את כל התוכן של הספרייה \"{libraryName}\"?",
     "@downloadLibraryPrompt": {
         "description": "Confirmation prompt before downloading entire library, which may be large.",
@@ -677,15 +581,12 @@
         "description": "Description of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
     },
     "downloadAllPlaylistsSettingWarning": "הערה: זה יוריד את כל הפריטים בכל הפלייליסטים, לא משנה מאיזו ספרייה הם מגיעים.",
-    "@downloadAllPlaylistsSettingWarning": {},
     "cacheLibraryImagesSettingsSubtitle": "כל תמונות האלבומים, אמנים, ז'אנרים, ופלייליסטים בספרייה הפעילה הנוכחים יורדו.",
-    "@cacheLibraryImagesSettingsSubtitle": {},
     "librarySelectError": "שגיאה בטעינת הספריות הקיימות למשתמש",
     "@librarySelectError": {
         "description": "Error shown when the library select screen fails to load."
     },
     "failedToGetTrackFromDownloadId": "נכשל בהשגת רצועת שמע מתוך ID הורדה",
-    "@failedToGetTrackFromDownloadId": {},
     "noItemsDownloaded": "לא הורדו פריטים.",
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
@@ -715,23 +616,16 @@
         "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
     },
     "updateButtonLabel": "עדכון",
-    "@updateButtonLabel": {},
     "updatePlaylistButtonLabel": "עדכון פלייליסט",
     "@updatePlaylistButtonLabel": {
         "description": "Label for the button that updates the playlist on the edit playlist screen"
     },
     "playlistUpdated": "פלייליסט עודכן.",
-    "@playlistUpdated": {},
     "downloadsDeleted": "ההורדות נמחקו.",
-    "@downloadsDeleted": {},
     "addButtonLabel": "הוספה",
-    "@addButtonLabel": {},
     "shareLogs": "שיתוף יומנים",
-    "@shareLogs": {},
     "exportLogs": "שמירת יומנים",
-    "@exportLogs": {},
     "logsCopied": "יומנים הועתקו.",
-    "@logsCopied": {},
     "applicationLegalese": "הורשה עם Mozilla Public License 2.0.\nקוד המקור נמצא בכתובת {sourceCodeLink}.",
     "@applicationLegalese": {
         "placeholders": {
@@ -742,87 +636,50 @@
         }
     },
     "transcoding": "מקדד",
-    "@transcoding": {},
     "audioService": "שירות קול",
-    "@audioService": {},
     "layoutAndTheme": "עיצוב וערכת נושא",
-    "@layoutAndTheme": {},
     "notAvailableInOfflineMode": "לא זמין במצב לא מקוון",
-    "@notAvailableInOfflineMode": {},
     "logoutButtonSubtitle": "התחברות לשרת אחר ימחק את ההורדות הקיימות",
-    "@logoutButtonSubtitle": {},
     "enableTranscoding": "הפעלת קידוד",
-    "@enableTranscoding": {},
     "bitrate": "קצב סיביות",
-    "@bitrate": {},
     "bitrateSubtitle": "קצב סיביות גבוה יותר נותן איכות שמיעה גבוהה יותר במחיר של שימוש גבוה יותר בנתונים. לא חל על codecs ללא אובדן נתונים, כמו FLAC",
-    "@bitrateSubtitle": {},
     "customLocation": "מיקום מותאם אישית",
-    "@customLocation": {},
     "appDirectory": "תיקיית האפליקציה",
-    "@appDirectory": {},
     "pathReturnSlashErrorMessage": "לא ניתן להשתמש בנתיבים שמחזירים \"/\"",
-    "@pathReturnSlashErrorMessage": {},
     "customLocationsBuggy": "מיקומים מותאמים אישית יכולים לגרום לבעיות ולא מומלצים ברוב המקרים. מיקומים תחת תיקיית המערכת \"Music\" לא מאפשרים שמירה של תמונות אלבום בגלל מגבלות של מערכת ההפעלה.",
-    "@customLocationsBuggy": {},
-    "enterLowPriorityStateOnPause": "היכנס למצב עדיפות-נמוכה בעצירה",
-    "@enterLowPriorityStateOnPause": {},
+    "enterLowPriorityStateOnPause": "כניסה למצב עדיפות-נמוכה בעצירה",
     "enterLowPriorityStateOnPauseSubtitle": "נותן לנקות את ההתראות בעצירת הנגינה. גם נותן לאנדרואיד לעצור את השירות בזמן עצירת הנגינה.",
-    "@enterLowPriorityStateOnPauseSubtitle": {},
     "customizationSettingsTitle": "עיצוב",
     "@customizationSettingsTitle": {
         "description": "Title for the customization settings screen"
     },
     "useCoverAsBackground": "שימוש בתמונה מטושטשת כרקע",
-    "@useCoverAsBackground": {},
     "useCoverAsBackgroundSubtitle": "האם להשתמש בתמונת אלבום מטושטשת כרגע בחלקים מסויימים של האפליקציה.",
-    "@useCoverAsBackgroundSubtitle": {},
     "hideTrackArtistsIfSameAsAlbumArtists": "הסתרת אמני רצועת השמע אם דומים לאמני האלבום",
-    "@hideTrackArtistsIfSameAsAlbumArtists": {},
     "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "האם להציג את אמני רצועת השמע במסך האלבום אם הם לא שונים מאמני האלבום.",
-    "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
     "shuffleSome": "ערבוב כמה",
-    "@shuffleSome": {},
     "shuffleAll": "ערבוב הכל",
-    "@shuffleAll": {},
     "shuffleButtonLabel": "ערבוב",
-    "@shuffleButtonLabel": {},
     "required": "צריך",
-    "@required": {},
     "playbackReporting": "דיווח נגינה",
-    "@playbackReporting": {},
     "interactions": "אינטראקציות",
-    "@interactions": {},
     "enableTranscodingSubtitle": "מקודד זרמי מוזיקה בצד השרת.",
-    "@enableTranscodingSubtitle": {},
     "shuffleAllTrackCountSubtitle": "כמה רצועות שמע לטעון כאשר משתמשים בכפתור ערבב הכל בתווית הרצועות שמע או מסך הז׳אנר.",
-    "@shuffleAllTrackCountSubtitle": {},
     "viewType": "סוג תצוגה",
-    "@viewType": {},
     "viewTypeSubtitle": "סוג התצוגה למסך המוזיקה",
-    "@viewTypeSubtitle": {},
-    "grid": "רשת",
-    "@grid": {},
+    "grid": "רשתי",
     "reset": "איפוס",
     "@reset": {
         "description": "Used for buttons in the playback speed menu and the settings"
     },
     "portrait": "אנכי",
-    "@portrait": {},
     "landscape": "אופקי",
-    "@landscape": {},
     "showTextOnGridView": "הצגת טקסט בתצוגת רשת",
-    "@showTextOnGridView": {},
     "showTextOnGridViewSubtitle": "האם להראות את הטקסט (שם, אמן וכו') בתצוגת רשת במסך המוסיקה.",
-    "@showTextOnGridViewSubtitle": {},
     "showArtistsTracksSectionSubtitle": "האם להציג קטע עם עד חמש רצועות שמע. כאשר מופעל, ניתן לבחור בין הכי מושמעים, מועדפים, אקראי, יצאו לאחרונה, נוספו לאחרונה ונוגנו לאחרונה.",
-    "@showArtistsTracksSectionSubtitle": {},
     "showArtistsTracksSection": "הצגת סקציית רצועות שמע",
-    "@showArtistsTracksSection": {},
     "disableGesture": "ביטול מחוות",
-    "@disableGesture": {},
     "disableGestureSubtitle": "האם לבטל מחוות.",
-    "@disableGestureSubtitle": {},
     "accentColor": "צבע הדגשה",
     "@accentColor": {
         "description": "Title of the accent color setting"
@@ -844,7 +701,6 @@
         "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
     },
     "useDefaultButton": "איפוס לצבע הדגשה ברירת מחדל",
-    "@useDefaultButton": {},
     "colorCode": "קוד צבע (Hex)",
     "@colorCode": {
         "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
@@ -858,7 +714,6 @@
         "description": "Snackbar message shown when the user tries to save an invalid hex color code"
     },
     "tabs": "תוויות",
-    "@tabs": {},
     "timeFractionTooltip": "{currentTime} מתוך {totalTime}",
     "@timeFractionTooltip": {
         "placeholders": {
@@ -888,13 +743,9 @@
         }
     },
     "addToPlaylistTooltip": "הוספה לפלייליסט",
-    "@addToPlaylistTooltip": {},
     "addToPlaylistTitle": "הוספה לפלייליסט",
-    "@addToPlaylistTitle": {},
     "addToMorePlaylistsTooltip": "הוספה לעוד פלייליסטים",
-    "@addToMorePlaylistsTooltip": {},
     "addToMorePlaylistsTitle": "הוספה לעוד פלייליסטים",
-    "@addToMorePlaylistsTitle": {},
     "removeFromPlaylistNamedTooltip": "הסרה מהפלייליסט '{playlistName}'",
     "@removeFromPlaylistNamedTooltip": {
         "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
@@ -916,11 +767,8 @@
         }
     },
     "newPlaylist": "פלייליסט חדש",
-    "@newPlaylist": {},
     "createButtonLabel": "יצירה",
-    "@createButtonLabel": {},
     "playlistCreated": "פלייליסט נוצר.",
-    "@playlistCreated": {},
     "playlistActionsMenuButtonTooltip": "לחץ/י כדי להוסיף לפלייליסט. לחיצה ארוכה כדי להוסיף/להסיר מועדף.",
     "@playlistActionsMenuButtonTooltip": {
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
@@ -938,15 +786,12 @@
         "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
     },
     "instantMix": "מיקס מיידי",
-    "@instantMix": {},
     "goToGenre": "מעבר לז׳אנר",
-    "@goToGenre": {},
     "confirmAddedToPlaylist": "נוסף לפלייליסט.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
     },
     "removedFromPlaylist": "הוסר מהפלייליסט.",
-    "@removedFromPlaylist": {},
     "skipToNextTrackButtonTooltip": "דילוג לרצועת השמע הבאה",
     "@skipToNextTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the next track"
@@ -1136,7 +981,6 @@
         }
     },
     "shuffleAllTrackCount": "כמות ערבוב כל רצועות השמע",
-    "@shuffleAllTrackCount": {},
     "playbackSpeedControlSettingDescription": "אוטומטי:\nFinamp ינסה לזהות אם הרצועת שמע שמנוגנת הינה פודקאסט או (חלק מ…) ספר קולי. זה נחשב לכך אם הרצועת שמע ארוכה מ{trackDuration} דקות, אם האלבום של הרצועת שמע ארוך מ{albumDuration} שעות, או אם לרצועת שמע יש את אחד מהז'אנרים האלו מוגדרים: {genreList}\nבמצב כזה השליטה במהירות הנגינה תופיעה בתפריט מסך הנגן.\n\nמוצג:\nהשליטה במהירות הנגינה תמיד תופיעה בתפריט מסך הנגן.\n\nמוסתר:\nהשליטה במהירות הנגינה אף פעם לא תופיעה בתפריט מסך הנגן.",
     "@playbackSpeedControlSettingDescription": {
         "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown",
@@ -1164,7 +1008,6 @@
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
     "showFastScroller": "הצגת גלילה מהירה",
-    "@showFastScroller": {},
     "sleepTimerRemainingTime": "ישן בעוד {time,plural,=1{פחות מדקה} other{{time} דקות}}",
     "@sleepTimerRemainingTime": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
@@ -1184,15 +1027,10 @@
         }
     },
     "removeFromPlaylistTooltip": "הסרה מהפלייליסט הנוכחי",
-    "@removeFromPlaylistTooltip": {},
     "removeFromPlaylistTitle": "הסרה מהפלייליסט הנוכחי",
-    "@removeFromPlaylistTitle": {},
     "startingInstantMix": "מתחיל מיקס מיידי.",
-    "@startingInstantMix": {},
     "removeFromMix": "הסרה מהמיקס",
-    "@removeFromMix": {},
     "addToMix": "הוספה למיקס",
-    "@addToMix": {},
     "createPlaylistFromCurrentQueue": "שמירת תור לפלייליסט",
     "@createPlaylistFromCurrentQueue": {
         "description": "Label for a button that adds the current queue to an existing or new playlist."
@@ -1261,7 +1099,7 @@
             }
         }
     },
-    "responseError401": "{error} קוד סטטוס {statusCode}. זה כנראה אומר שהשתמשת בשם משתמש/סיסמה שגויים, או שהתוכנת לקוח לא מחוברת יותר.",
+    "responseError401": "{error} קוד סטטוס {statusCode}. זה כנראה אומר שהשתמשת בשם משתמש/סיסמה שגויים, או שתוכנת הלקוח לא מחוברת יותר.",
     "@responseError401": {
         "placeholders": {
             "error": {
@@ -1275,17 +1113,11 @@
         }
     },
     "bufferDuration": "משך חוצץ",
-    "@bufferDuration": {},
     "bufferDurationSubtitle": "אורך הקטע שישמר בזיכרון, נמדד בשניות. דורש הפעלה מחדש.",
-    "@bufferDurationSubtitle": {},
     "bufferDisableSizeConstraintsTitle": "לא להגביל את גודל החוצץ",
-    "@bufferDisableSizeConstraintsTitle": {},
     "bufferDisableSizeConstraintsSubtitle": "מבטל את מגבלות גודל החוצץ (׳גודל החוצץ׳). החוצץ תמיד יטען באורך המוגדר (׳אורך החוצץ׳), אפילו לקבצים גדולים מאוד. יכול לגרום לקריסות, דורש הפעלה מחדש.",
-    "@bufferDisableSizeConstraintsSubtitle": {},
     "bufferSizeTitle": "גודל החוצץ",
-    "@bufferSizeTitle": {},
     "bufferSizeSubtitle": "גודל הקטע שישמר בזיכרון במגהבייטים. דורש הפעלה מחדש",
-    "@bufferSizeSubtitle": {},
     "editItemTitle": "עריכת {itemType, select, playlist{פלייליסט} other{}}",
     "@editItemTitle": {
         "placeholders": {
@@ -1303,41 +1135,23 @@
         "description": "Label for the genre section that shows artists that were recently added to the library, sorted by the date they were added."
     },
     "latestTracks": "רצועות שמע אחרונות",
-    "@latestTracks": {},
     "latestAlbums": "אלבומים אחרונים",
-    "@latestAlbums": {},
     "latestArtists": "אמנים אחרונים",
-    "@latestArtists": {},
     "recentlyPlayedTracks": "רצועות שמע שנוגנו לאחרונה",
-    "@recentlyPlayedTracks": {},
     "recentlyPlayedAlbums": "אלבומים שנוגנו לאחרונה",
-    "@recentlyPlayedAlbums": {},
     "recentlyPlayedArtists": "אמנים שנוגנו לאחרונה",
-    "@recentlyPlayedArtists": {},
     "favoriteTracks": "רצועות שמע במועדפים",
-    "@favoriteTracks": {},
     "favoriteAlbums": "אלבומים מועדפים",
-    "@favoriteAlbums": {},
     "favoriteArtists": "אמנים מועדפים",
-    "@favoriteArtists": {},
     "randomTracks": "רצועות שמע (בחירות אקראיות)",
-    "@randomTracks": {},
     "randomAlbums": "אלבומים (בחירות אקראיות)",
-    "@randomAlbums": {},
     "randomArtists": "אמנים (בחירות אקראיות)",
-    "@randomArtists": {},
     "mostPlayed": "הכי מנוגן",
-    "@mostPlayed": {},
     "randomFavoritesFirst": "אקראי (מועדפים קודם)",
-    "@randomFavoritesFirst": {},
     "recentlyAdded": "נוספו לאחרונה",
-    "@recentlyAdded": {},
     "recentlyPlayed": "נוגנו לאחרונה",
-    "@recentlyPlayed": {},
     "latestReleases": "יצאו לאחרונה",
-    "@latestReleases": {},
     "unknown": "לא ידוע",
-    "@unknown": {},
     "mix": "{mixSource} - מיקס",
     "@mix": {
         "description": "Suffix added to a queue source when playing a mix. Example: \"Never Gonna Give You Up - Mix\"",
@@ -1356,7 +1170,7 @@
     "@playbackOrderShuffledButtonLabel": {
         "description": "Label for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in shuffle mode"
     },
-    "playbackOrderShuffledButtonTooltip": "מערבב רצועות שמע. לחץ/י כדי לנגן לפי הסדר.",
+    "playbackOrderShuffledButtonTooltip": "מערבב רצועות שמע. לחצו כדי לנגן לפי הסדר.",
     "@playbackOrderShuffledButtonTooltip": {
         "description": "Tooltip for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in shuffle mode"
     },
@@ -1402,7 +1216,6 @@
         }
     },
     "stackTrace": "מעקב המדד (Stack Trace)",
-    "@stackTrace": {},
     "gridCrossAxisCount": "מספר ציר רוחב רשת במצב {value}",
     "@gridCrossAxisCount": {
         "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
@@ -1414,9 +1227,7 @@
         }
     },
     "autoSwitchItemCurationTypeSubtitle": "כאשר מופעל, סקציות פריטים במסכי האמנים והג'אנרים יוחלפו לסוג בחירה שונה אם אין פריטים מתאימים (למשל, אין מועדפים לאמן ספציפי).",
-    "@autoSwitchItemCurationTypeSubtitle": {},
     "autoSwitchItemCurationTypeTitle": "שינוי אוטומטי של מצב בחירת פריט",
-    "@autoSwitchItemCurationTypeTitle": {},
     "redownloadedItems": "{count,plural, =0{לא נדרש להוריד מחדש.} =1{הורד מחדש פריט {count}} other{הורדו מחדש {count} פריטים}}",
     "@redownloadedItems": {
         "placeholders": {
@@ -1511,7 +1322,7 @@
     "@genreListsInheritSorting": {
         "description": "Label for the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
     },
-    "seeAll": "ראה הכל",
+    "seeAll": "ראו הכל",
     "@seeAll": {
         "description": ""
     },
@@ -1553,23 +1364,16 @@
         }
     },
     "confirm": "אישור",
-    "@confirm": {},
     "close": "סגירה",
-    "@close": {},
     "showUncensoredLogMessage": "היומן הזה מכיל את פרטי ההתחברות שלך. להציג?",
-    "@showUncensoredLogMessage": {},
     "resetTabs": "איפוס תוויות",
-    "@resetTabs": {},
     "resetToDefaults": "איפוס לברירות מחדל",
-    "@resetToDefaults": {},
     "noMusicLibrariesTitle": "אין ספריות מוזיקה",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
     "refresh": "רענון",
-    "@refresh": {},
     "moreInfo": "מידע נוסף",
-    "@moreInfo": {},
     "volumeNormalizationModeHybrid": "דינמי",
     "@volumeNormalizationModeHybrid": {
         "description": "'Dynamic' option for the replay gain mode dropdown. In dynamic mode, the track gain is used for regular playback, but if an album is playing (either because it's the main playback queue source, or because it was added to the queue at some point), or successive tracks from a same album are in the queue, the album gain is used instead."
@@ -1583,7 +1387,6 @@
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
     },
     "startInstantMixForIndividualTracksSwitchSubtitle": "כאשר מופעל, לחיצה על רצועת שמע בתווית רצועות שמע תתחיל מיקס מיידי לרצועת השמע הזאת במקום רק לנגן רצועת שמע בודדת.",
-    "@startInstantMixForIndividualTracksSwitchSubtitle": {},
     "downloadItem": "הורדה",
     "@downloadItem": {
         "description": "Option to download item in long-press menu."
@@ -1621,7 +1424,7 @@
     "@syncOnStartupSwitch": {
         "description": "Title of setting for automatically triggering a throttled resync on app startup."
     },
-    "preferQuickSyncSwitch": "העדף/י סנכרונים מהירים",
+    "preferQuickSyncSwitch": "העדפת סנכרונים מהירים",
     "@preferQuickSyncSwitch": {
         "description": "Title of setting that skips completed albums while syncing."
     },
@@ -1714,7 +1517,7 @@
     "@redownloadTitle": {
         "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
     },
-    "redownloadSubtitle": "הורדה מחדש אוטומטית של רצועות שמע שמצופות להיות באיכות שונה בגלל ????.",
+    "redownloadSubtitle": "הורדה מחדש אוטומטית של רצועות שמע שמצופות להיות באיכות שונה בגלל שינויים באוסף הכולל.",
     "@redownloadSubtitle": {
         "description": "subtitle for download transcode setting which redownloads tracks with higher allowed qualities"
     },
@@ -1732,29 +1535,17 @@
         "description": "Localized names of fixed size grid tile sizes."
     },
     "allowSplitScreenTitle": "אפשר מצב מסך מפוצל",
-    "@allowSplitScreenTitle": {},
     "allowSplitScreenSubtitle": "הנגן יוצג לצד צגים אחרים במסכים רחבים.",
-    "@allowSplitScreenSubtitle": {},
     "enableVibration": "הפעלת רטט",
-    "@enableVibration": {},
     "enableVibrationSubtitle": "האם להפעיל רטט.",
-    "@enableVibrationSubtitle": {},
     "hideQueueButton": "הסתרת כפתור התור",
-    "@hideQueueButton": {},
     "hideQueueButtonSubtitle": "הסתרת כפתור התור במסך הנגן. החלקה למעלה תיכנס לתור.",
-    "@hideQueueButtonSubtitle": {},
     "oneLineMarqueeTextButton": "גלילה אוטומטית בכותרות ארוכות",
-    "@oneLineMarqueeTextButton": {},
     "oneLineMarqueeTextButtonSubtitle": "גלילה אוטומטית בכותרות רצועות שמע ארוכות מידי כדי להראות בשתי שורות",
-    "@oneLineMarqueeTextButtonSubtitle": {},
     "marqueeOrTruncateButton": "שימוש בהשמטה לכותרות ארוכות",
-    "@marqueeOrTruncateButton": {},
     "marqueeOrTruncateButtonSubtitle": "הצגת … בסוף של כותרות ארוכות במקום טקסט גולל",
-    "@marqueeOrTruncateButtonSubtitle": {},
     "hidePlayerBottomActions": "הסתרת פעולות בתחתית",
-    "@hidePlayerBottomActions": {},
     "hidePlayerBottomActionsSubtitle": "הסתרת כפתורי התור והמילים במסך הנגן. החלקה למעלה כדי להיכנס לתור, החלקה שמאלה (מתחת לתמונת האלבום) כדי לצפות במילים אם קיימות.",
-    "@hidePlayerBottomActionsSubtitle": {},
     "lyricsFontSizeTitle": "גודל גופן מילים",
     "@lyricsFontSizeTitle": {
         "description": "Title for the setting that controls the font size of lyrics in the lyrics view"
@@ -1772,23 +1563,16 @@
         "description": "Subtitle for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
     },
     "keepScreenOnSubtitle": "מתי להשאיר את המסך דולק",
-    "@keepScreenOnSubtitle": {},
     "keepScreenOn": "השארת המסך דולק",
     "@keepScreenOn": {
         "description": "Option to keep the screen on while using the app"
     },
     "keepScreenOnDisabled": "מבוטל",
-    "@keepScreenOnDisabled": {},
     "keepScreenOnAlwaysOn": "תמיד דולק",
-    "@keepScreenOnAlwaysOn": {},
     "keepScreenOnWhilePlaying": "בזמן נגינת מוזיקה",
-    "@keepScreenOnWhilePlaying": {},
     "keepScreenOnWhileLyrics": "בהצגת מילים",
-    "@keepScreenOnWhileLyrics": {},
     "keepScreenOnWhilePluggedIn": "השארת המסך דולק רק בזמן טעינה",
-    "@keepScreenOnWhilePluggedIn": {},
     "keepScreenOnWhilePluggedInSubtitle": "התעלמות מהגדרת השארת המסך דולק אם המכשיר לא בטעינה",
-    "@keepScreenOnWhilePluggedInSubtitle": {},
     "nowPlayingBarTooltip": "פתיחת מסך הנגן",
     "@nowPlayingBarTooltip": {
         "description": "Tooltip for the now playing bar at the bottom of the screen"
@@ -1895,11 +1679,8 @@
         "description": "Description of the setting to enable Jellyfin's 'Play On' feature (remote control)"
     },
     "topTracks": "רצועות שמע מובילות",
-    "@topTracks": {},
     "topAlbums": "אלבומים מובילים",
-    "@topAlbums": {},
     "topArtists": "אמנים מובילים",
-    "@topArtists": {},
     "curatedItemsMostPlayedOfflineTooltip": "לא זמין במצב לא מקוון.",
     "@curatedItemsMostPlayedOfflineTooltip": {
         "description": "Tooltip for Most Played on Curated Items in Offline Mode."
@@ -1991,7 +1772,7 @@
     "@volumeNormalizationModeSelectorSubtitle": {
         "description": "Subtitle for the dropdown that selects the replay gain mode"
     },
-    "volumeNormalizationModeSelectorDescription": "דינמי:\nWhen playing multiple tracks from the same album in a row, album gain is used (i.e. when playing an album, or tracks from the same album in a playlist). Otherwise, track gain is used.\n\nמבוסס רצועת שמע:\nTrack gain is always used, regardless of whether an album is playing or not.\n\nמבוסס אלבום:\nAlbum gain is always used, but if it's not available (i.e. for singles), track gain is used instead.\n\nרק אלבומים:\nVolume normalization is only applied while playing albums (using the album gain), but not for individual tracks.",
+    "volumeNormalizationModeSelectorDescription": "דינמי:\nבנגינת מספר רצועות שמע מאותו אלבום ברצף, עוצמת האלבום תהיה בשימוש (למשל בנגינת אלבום, או רצועות שמע מתוך אותו אלבום בפלייליסט). אחרת, עוצמת רצועת השמע תהיה בשימוש .\n\nמבוסס רצועת שמע:\nעוצמת רצועת השמע תמיד בשימוש, ללא קשר אם מתנגן אלבום או לא.\n\nמבוסס אלבום:\nעוצמת השמע של האלבום תמיד בשימוש, אבל אם לא קיימת עוצמת אלבום (למשל בסינגלים), עוצמת רצועת השמע תהיה בשימוש.\n\nרק אלבומים:\nנירמול עוצמת השמע יופעל רק בנגינת אלבומים (בשימוש עוצמת האלבום), אבל לא לרצועות שמע נפרדות.",
     "@volumeNormalizationModeSelectorDescription": {
         "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown"
     },
@@ -2014,13 +1795,9 @@
         }
     },
     "swipeLeftToRightAction": "פעולה בהחלקה ימינה",
-    "@swipeLeftToRightAction": {},
     "swipeLeftToRightActionSubtitle": "פעולה שמופעלת כשמחליקים רצועת שמע ברשימה משמאל לימין.",
-    "@swipeLeftToRightActionSubtitle": {},
     "swipeRightToLeftAction": "פעולה בהחלקה שמאלה",
-    "@swipeRightToLeftAction": {},
     "swipeRightToLeftActionSubtitle": "פעולה שמופעלת כשמחליקים רצועת שמע ברשימה מימין לשמאל.",
-    "@swipeRightToLeftActionSubtitle": {},
     "activeDownloadsListHeader": "{itemCount} {typeName, select, downloading{כרגע} failed{כישלונות} syncFailed{שוב לא בסנכרון} enqueued{בתור} other{}} {itemCount, plural, =1{בהורדה} other{בהורדה}}",
     "@activeDownloadsListHeader": {
         "description": "Header text for lists of active downloads of a particular state.",
@@ -2062,8 +1839,7 @@
         "description": "Message shown for download size while item is still syncing."
     },
     "downloadSettings": "הורדות",
-    "@downloadSettings": {},
-    "maxConcurrentDownloads": "מקסימום הורדות בו זמנית",
+    "maxConcurrentDownloads": "מקסימום הורדות בו זמניות",
     "@maxConcurrentDownloads": {
         "description": "Title of setting controlling max concurrent downloads."
     },
@@ -2090,23 +1866,18 @@
         "description": "Tooltip for downloadbutton on incidental downloads, which show a lock icon. It says one of the requiring downloads."
     },
     "transcodingStreamingFormatSubtitle": "בחירת הפורמט לשימוש כאשר מזרימים שמע מקודד. רצועות שמע שכבר בתור לא יושפעו.",
-    "@transcodingStreamingFormatSubtitle": {},
     "redownloadcomplete": "קידוד תור שהורד מחדש.",
     "@redownloadcomplete": {
         "description": "Mesage when Automatically Redownload Transcodes transcode setting completes operations."
     },
     "prioritizePlayerCover": "העדפת תמונת אלבום",
-    "@prioritizePlayerCover": {},
     "prioritizePlayerCoverSubtitle": "העדפה להציג תמונת אלבום גדולה יותר במסך הנגן. מקשי שליטה לא קריטיים יהיו מוסתרים באופן יותר אגרסיבי בגדלי מסך קטנים.",
-    "@prioritizePlayerCoverSubtitle": {},
     "lockDownload": "השארת המסך דולק תמיד",
     "@lockDownload": {
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
     },
     "showArtistChipImage": "הצגת תמונות אמן עם שם אמן",
-    "@showArtistChipImage": {},
     "showArtistChipImageSubtitle": "זה משפיע על התצוגות המקדימות של תמונת אמן, כמו במסך הנגן.",
-    "@showArtistChipImageSubtitle": {},
     "scrollToCurrentTrack": "גלילה לרצועת השמע הנוכחית",
     "@scrollToCurrentTrack": {
         "description": "Tooltip for button that scrolls the queue list back to the current track"
@@ -2154,7 +1925,6 @@
         }
     },
     "removeFromPlaylistConfirm": "הסרה",
-    "@removeFromPlaylistConfirm": {},
     "removeFromPlaylistPrompt": "להסיר את '{itemName}' מתוך הפלייליסט '{playlistName}'?",
     "@removeFromPlaylistPrompt": {
         "placeholders": {
@@ -2184,9 +1954,7 @@
         "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
     },
     "allPlaylistsInfoSetting": "הורדת מטא-נתונים של פלייליסט",
-    "@allPlaylistsInfoSetting": {},
     "allPlaylistsInfoSettingSubtitle": "סנכרון מטא-נתונים של כל הפלייליסטים כדי לשפר את חווית הפלייליסט",
-    "@allPlaylistsInfoSettingSubtitle": {},
     "noPermissionToEditMetadata": "צריך להיות מנהל כדי לערוך תמונות מטא-נתונים.",
     "@noPermissionToEditMetadata": {
         "description": "Error message shown when the user tries to edit metadata but doesn't have permission to do so, i.e. because they are not an admin"
@@ -2202,13 +1970,9 @@
         "description": "Dropdown option to download original version of tracks"
     },
     "downloadFavoritesSetting": "הורדת כל המועדפים",
-    "@downloadFavoritesSetting": {},
     "downloadAllPlaylistsSetting": "הורדת כל הפלייליסטים",
-    "@downloadAllPlaylistsSetting": {},
     "fiveLatestAlbumsSetting": "הורדת 5 האלבומים האחרונים",
-    "@fiveLatestAlbumsSetting": {},
     "fiveLatestAlbumsSettingSubtitle": "הורדות ימחקו ככל שהן מתיישנות.  יש לנעול את ההורדה כדי למנוע מהאלבום להימחק.",
-    "@fiveLatestAlbumsSettingSubtitle": {},
     "lyricsScreenButtonTitle": "מילים",
     "@lyricsScreenButtonTitle": {
         "description": "Label for the button for opening the lyrics screen"
@@ -2267,9 +2031,7 @@
         "description": "Localized names of special downloadable collections like favorites."
     },
     "trackOfflineFavorites": "סנכרון את כל הסטטוסים מועדפים",
-    "@trackOfflineFavorites": {},
     "trackOfflineFavoritesSubtitle": "מאפשר להראות סטטוסים מועדפים יותר עדכניים במצב לא מקוון.  לא מוריד שום קבצים נוספים.",
-    "@trackOfflineFavoritesSubtitle": {},
     "showProgressOnNowPlayingBarTitle": "הצגת התקדמות רצועת שמע במיני-נגן בתוך האפליקציה",
     "@showProgressOnNowPlayingBarTitle": {
         "description": "Title for the setting that controls if the in-app miniplayer / now playing bar at the bottom of the music screen functions as a progress bar"
@@ -2502,9 +2264,7 @@
         "description": "Subtitle for the automated offline mode setting."
     },
     "swipeInsertQueueNext": "החלקה לנגינת רצועת השמע אחרי",
-    "@swipeInsertQueueNext": {},
     "swipeInsertQueueNextSubtitle": "מאפשר להכניס רצועת שמע כהפריט הבא בתור בהחלקה ברשימת רצועות השמע במקום להעביר אותה לסוף התור.",
-    "@swipeInsertQueueNextSubtitle": {},
     "connectionInterruptedBackgroundAndroid": "החיבור נותק בזמן ההורדה ברקע. זה יכול לקרות בהפעלת 'היכנס למצב עדיפות-נמוכה בעצירה' או בגלל הגדרות מערכת ההפעלה.",
     "@connectionInterruptedBackgroundAndroid": {
         "description": "Message shown when the connection is interrupted during a download while in the background on android. It advises checking OS settings, as they may cause background downloads to be blocked, or checking the  'Enter Low-Priority State on Pause' setting."
@@ -2517,7 +2277,7 @@
     "@downloadsWorkersSetting": {
         "description": "Title of setting controlling download worker count."
     },
-    "downloadsWorkersSettingSubtitle": "כמות העובדית לסנכרון מטא-נתונים ולמחיקת הורדות. הגדלת עובדי ההורדה יכולה להאיץ את מהירות סנכרון ומחיקת הורדה, במיוחד כשלשרת לוקח זמן להגיב, אבל יכול ליצור איטיות.",
+    "downloadsWorkersSettingSubtitle": "כמות העובדים לסנכרון מטא-נתונים ולמחיקת הורדות. הגדלת עובדי ההורדה יכולה להאיץ את מהירות סנכרון ומחיקת הורדה, במיוחד כשלשרת לוקח זמן להגיב, אבל יכול ליצור איטיות.",
     "@downloadsWorkersSettingSubtitle": {
         "description": "Description of setting controlling download worker count."
     },
@@ -2584,13 +2344,9 @@
         "description": "Collection info line in downloads screen lists"
     },
     "fixedGridSizeSwitchTitle": "שימוש בגודל אריחי רשת קבוע",
-    "@fixedGridSizeSwitchTitle": {},
     "fixedGridSizeSwitchSubtitle": "גדלי אריחי הרשת לא יותאמו לגודל החלון/מסך.",
-    "@fixedGridSizeSwitchSubtitle": {},
     "fixedGridSizeTitle": "גודל אריח רשת",
-    "@fixedGridSizeTitle": {},
     "cacheLibraryImagesSettings": "שמירת תמונות של הספריה הנוכחית במטמון",
-    "@cacheLibraryImagesSettings": {},
     "sampleRate": "קצב דגימה",
     "@sampleRate": {
         "description": "Label for the feature chips showing the sample rate of a track"
@@ -2604,7 +2360,6 @@
         "description": "Used whenever item gets deleted from the device or server, message in snackbar"
     },
     "suppressPlayerPaddingSubtitle": "צמצום מלא של המרווח בין כפתורי השליטה במסך הנגן כשתמונת האלבום לא בגדול המלא.",
-    "@suppressPlayerPaddingSubtitle": {},
     "deleteFromTargetConfirmButton": "מחיקה {target, select, device{מהמכשיר} server{מהשרת} other{}}",
     "@deleteFromTargetConfirmButton": {
         "description": "(Important: Note the space in front of some cases) The button the user needs to press to execute the delete action. If no target is set, the text should just be a generic 'delete' text. This button is both visible before and after the delete confirm prompt."
@@ -2632,7 +2387,6 @@
         }
     },
     "autoOfflineSettingTitle": "מצב לא מקוון אוטומטי",
-    "@autoOfflineSettingTitle": {},
     "autoOfflineNotification": "מצב לא מקוון {state, select, enabled{הופעל} disabled{בוטל} other{שרף את הטוסט}} אוטומטית",
     "@autoOfflineNotification": {
         "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
@@ -2691,17 +2445,11 @@
         "description": "Shows the active address inside the network settings screen so the user can see if this feature works"
     },
     "preferLocalNetworkTargetAddressLocalSettingTitle": "כתובת רשת מקומית",
-    "@preferLocalNetworkTargetAddressLocalSettingTitle": {},
     "preferLocalNetworkTargetAddressLocalSettingDescription": "כתובת היעד של השרת Jellyfin בתוך הרשת המקומית",
-    "@preferLocalNetworkTargetAddressLocalSettingDescription": {},
     "preferLocalNetworkEnableSwitchTitle": "העדפת רשת מקומית",
-    "@preferLocalNetworkEnableSwitchTitle": {},
     "preferLocalNetworkEnableSwitchDescription": "האם להשתמש בכתובת שונה כאשר המכשיר מחובר לרשת המקומית של השרת Jellyfin",
-    "@preferLocalNetworkEnableSwitchDescription": {},
     "preferLocalNetworkPublicAddressSettingTitle": "כתובת ציבורית",
-    "@preferLocalNetworkPublicAddressSettingTitle": {},
     "preferLocalNetworkPublicAddressSettingDescription": "הכתובת הראשית לשימוש כדי להתחבר לשרת Jellyfin",
-    "@preferLocalNetworkPublicAddressSettingDescription": {},
     "preferLocalNetworkInfoBox": "האפשרות הזאת דורשת הרשאות מיקום (והמיקום צריך להיות מופעל) כדי לקרוא את שם הרשת.",
     "@preferLocalNetworkInfoBox": {
         "description": "This is only shown on ios and android since desktop doesnt require location permissions"
@@ -2889,7 +2637,6 @@
         "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
     "suppressPlayerPadding": "צמצום מרווח כפתורי הנגן",
-    "@suppressPlayerPadding": {},
     "genericToggleButtonTooltip": "לחצו לשינוי.",
     "@genericToggleButtonTooltip": {
         "description": "Tooltip for toggle buttons that can be tapped to toggle their state"
@@ -2955,5 +2702,357 @@
                 "type": "String"
             }
         }
+    },
+    "amoledTheme": "שימוש בצבעי AMOLED",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "מחליף את הצבעים הכהים עם צבע שחור טהור.",
+    "sleepTimerFinishLastTrack": "סיום רצועת שמע אחרונה?",
+    "@sleepTimerFinishLastTrack": {
+        "description": "Option for the sleep timer that will finish the last track before stopping playback."
+    },
+    "sleepTimerAfterCurrentTrack": "אחרי רצועת השמע הנוכחית",
+    "@sleepTimerAfterCurrentTrack": {
+        "description": "Option for the sleep timer that will stop playback after the current track finishes."
+    },
+    "sleepTimerStartTimer": "הפעלת טיימר",
+    "@sleepTimerStartTimer": {
+        "description": "Label for the button that starts the sleep timer"
+    },
+    "syncPlaybackSpeedAndPitchLabel": "סנכרון מהירות וגובה צליל",
+    "@syncPlaybackSpeedAndPitchLabel": {
+        "description": "Label for the checkbox that toggled is the pitch is adjusted along with the playback speed, or if the pitch is kept constant. Shown in the speed submenu on the track menu"
+    },
+    "serverSharingMenuTitle": "שיתוף שרת ברשת המקומית",
+    "@serverSharingMenuTitle": {
+        "description": "Title for the server sharing menu that allows the user to share their server address with other devices on the local network"
+    },
+    "serverSharingMenuButtonTitle": "שיתוף שרת",
+    "@serverSharingMenuButtonTitle": {
+        "description": "Title for the button in the drawer that opens the server sharing menu"
+    },
+    "serverSharingMenuConfirmationDialogText": "האם להפעיל שיתוף שרת למרות שמצב לא מקוון פועל? זה יגרום לFinamp לשלוח מידע דרך הרשת המקומית.",
+    "@serverSharingMenuConfirmationDialogText": {
+        "description": "Dialog text shown when enabling server sharing while offline mode is enabled"
+    },
+    "serverSharingMenuConfirmationDialogConfirmationButtonLabel": "אישור והפעלה",
+    "@serverSharingMenuConfirmationDialogConfirmationButtonLabel": {
+        "description": "Positive action label for the dialog shown when enabling server sharing while offline mode is enabled"
+    },
+    "serverSharingMenuControlTitleSharingEnabled": "משתף שרת",
+    "@serverSharingMenuControlTitleSharingEnabled": {
+        "description": "Title of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned on"
+    },
+    "serverSharingMenuControlSubtitleSharingDisabled": "לחצו לשיתוף",
+    "@serverSharingMenuControlSubtitleSharingDisabled": {
+        "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned off"
+    },
+    "serverSharingMenuControlTitleSharingDisabled": "לא משתף",
+    "@serverSharingMenuControlTitleSharingDisabled": {
+        "description": "Title of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned off"
+    },
+    "serverSharingMenuControlSubtitleSharingEnabled": "לחצו להפסקת שיתוף",
+    "@serverSharingMenuControlSubtitleSharingEnabled": {
+        "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned on"
+    },
+    "serverSharingMenuDescription": "שיתוף של כתובת השרת יכול להיות שימושי כדי להגדיר מכשירים חדשים שלא נמצאים על אותה רשת המקומית עם שרת הJellyfin שלך, כמו טלוויזיות בבתי מלון, המחשב בעבודה, או תוכנת לקוח חדשה על הטלפון מחוץ לבית.",
+    "@serverSharingMenuDescription": {
+        "description": "Description text shown in the server sharing menu, right below the controls"
+    },
+    "quickConnectAuthorizationMenuButtonTitle": "אישור חיבור-מהיר",
+    "@quickConnectAuthorizationMenuButtonTitle": {
+        "description": "Title for the button in the drawer that opens the quick connect authorization menu"
+    },
+    "quickConnectAuthorizationMenuPrompt": "הקלידו קוד חיבור-מהיר",
+    "@quickConnectAuthorizationMenuPrompt": {
+        "description": "Title for the button in server sharing menu that opens the quick connect authorization menu"
+    },
+    "quickConnectAuthorizationMenuTitle": "אישור בקשת חיבור-מהיר",
+    "@quickConnectAuthorizationMenuTitle": {
+        "description": "Title for the quick connect authorization menu that allows the user to authorize a quick connect request from another device"
+    },
+    "quickConnectAuthorizationMenuInputLabel": "קוד חיבור-מהיר",
+    "@quickConnectAuthorizationMenuInputLabel": {
+        "description": "Label for the quick connect code input, shown below the input field"
+    },
+    "quickConnectAuthorizationMenuStateSubtitleIdle": "נא להכניס או להדביק את הקוד למטה",
+    "@quickConnectAuthorizationMenuStateSubtitleIdle": {
+        "description": "Subtitle for the quick connect authorization menu state info (above the input field) while the code hasn't been submitted yet"
+    },
+    "quickConnectAuthorizationMenuStateTitleProcessing": "מנסה לאשר בקשה",
+    "@quickConnectAuthorizationMenuStateTitleProcessing": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) while a request is being processed"
+    },
+    "quickConnectAuthorizationMenuStateTitleSuccess": "הבקשה אושרה בהצלחה",
+    "@quickConnectAuthorizationMenuStateTitleSuccess": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) when the authorization was successful"
+    },
+    "quickConnectAuthorizationMenuStateTitleFailed": "קוד חיבור-מהיר לא תקין",
+    "@quickConnectAuthorizationMenuStateTitleFailed": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) when the authorization was unsuccessful"
+    },
+    "quickConnectAuthorizationMenuStateSubtitleFailed": "נא לבדוק את הקוד ולנסות שוב",
+    "@quickConnectAuthorizationMenuStateSubtitleFailed": {
+        "description": "Subtitle for the quick connect authorization menu state info (above the input field) when the authorization was unsuccessful"
+    },
+    "quickConnectAuthorizationMenuDescription": "אם אתם מנסים להתחבר לתוכנת לקוח של Jellyfin נוספת דרך חיבור-מהיר, אתם יכולים להקליד או להדביק את הקוד באורך 6 ספרות לשדה למעלה. זה יאשר את בקשת החיבור של תוכנת הלקוח האחרת, ויחבר אתכם לאותו משתמש שמחובר לFinamp.",
+    "@quickConnectAuthorizationMenuDescription": {
+        "description": "Description for the quick connect authorization menu, shown at the bottom"
+    },
+    "accessibility": "נגישות",
+    "@accessibility": {
+        "description": "Title for the accessibility settings screen"
+    },
+    "useHighContrastColorsTitle": "שימוש בצבעים עם ניגודיות גבוהה",
+    "@useHighContrastColorsTitle": {
+        "description": "Title for the setting that controls if high contrast colors are used throughout the app"
+    },
+    "useHighContrastColorsSubtitle": "שימוש בצבעים דינמיים עם ניגודיות גבוהה בשביל לשפר את הנראות.",
+    "@useHighContrastColorsSubtitle": {
+        "description": "Subtitle for the setting that controls if high contrast colors are used throughout the app"
+    },
+    "autoExpandPlayerScreenTitle": "פתיחת מסך הנגן בתחילת הנגינה",
+    "@autoExpandPlayerScreenTitle": {
+        "description": "Title for the setting that controls if the player screen is opened directly after starting a new queue"
+    },
+    "autoExpandPlayerScreenSubtitle": "אפשרות זו תפתח את מסך הנגן בהתחלת נגינה של תור חדש",
+    "@autoExpandPlayerScreenSubtitle": {
+        "description": "Subtitle for the setting that controls if the player screen is opened directly after starting a new queue"
+    },
+    "discordRPCSettingTitle": "Discord RPC",
+    "@discordRPCSettingTitle": {
+        "description": "Title for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
+    },
+    "discordRPCSettingDescription": "הפעלת Discord Rich Presence כדי להראות מה אתם מנגנים בסטטוס שלכם בDiscord. לא מתחבר לDiscord אם מצב לא מקוון מופעל.",
+    "@discordRPCSettingDescription": {
+        "description": "Description for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
+    },
+    "discordRPCIconSettingTitle": "סמל גיבוי RPC",
+    "@discordRPCIconSettingTitle": {
+        "description": "Title for the setting that controls which icon gets shown in the Discord RPC (Rich Presence) in case the local address is in use"
+    },
+    "discordRPCIconSettingDescription": "סמל גיבוי שמופיע כאשר לא נמצאת כתובת ציבורית. (כי Discord לא יכול לטעון תמונות מרשת מקומית וישתמש בגיבוי)",
+    "@discordRPCIconSettingDescription": {
+        "description": "Description for the setting that controls which Icon the discord RPC displays as a Fallback in case no public address is detected (it doenst matter what connection is active)."
+    },
+    "preferNextUpPrependingTitle": "העדפת הכנה מראש להבא בתור",
+    "@preferNextUpPrependingTitle": {
+        "description": "Title for the setting to prefer prepending to Next Up over appending"
+    },
+    "preferNextUpPrependingSubtitle": "כאשר מופעל, הכפתורים \"נגן הבא\" יוצגו כאשר הבא בתור ריק. אחרת, \"הוספה להבא בתור\" ישמש כברירת מחדל.",
+    "@preferNextUpPrependingSubtitle": {
+        "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "rememberLastUsedPlaybackActionRowPageTitle": "זכור את מצב הנגינה האחרון",
+    "@rememberLastUsedPlaybackActionRowPageTitle": {
+        "description": "Title for the setting to remember the last used playback mode."
+    },
+    "rememberLastUsedPlaybackActionRowPageSubtitle": "כאשר מופעל, מצב הנגינה שהשתמשת בו פעם אחרונה (למשל הבא בתור) יישמר.",
+    "@rememberLastUsedPlaybackActionRowPageSubtitle": {
+        "description": "Subtitle for the setting to remember the last used playback mode."
+    },
+    "autoplayRestoredQueueSubtitle": "תורים ששוחזרו אוטומטית בהפעלה או על ידי מסך שחזור התור יתחילו לנגן אוטומטית.  תורים שלא הצליחו לשחזר את כל רצועות השמע לא יתחילו לנגן אוטומטית, בלי קשר להגדרה הזאת.",
+    "@autoplayRestoredQueueSubtitle": {
+        "description": "Subtitle for the setting that controls if restored queues automatically play."
+    },
+    "removedTracks": "רצועות שמע שהוסרו",
+    "@removedTracks": {
+        "description": "Section header for the list of removed tracks on the playlist edit screen"
+    },
+    "removedTracksEmptyListPlaceholder": "רצועות שמע שהוסרו יופיעו כאן",
+    "@removedTracksEmptyListPlaceholder": {
+        "description": "Placeholder text shown when there are no removed tracks"
+    },
+    "restoreTrack": "שחזור רצועת שמע",
+    "@restoreTrack": {
+        "description": "Button title for restoring a track that was marked to be removed"
+    },
+    "discardChangesConfirmButton": "ביטול שינויים",
+    "@discardChangesConfirmButton": {
+        "description": "Positive action button for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
+    },
+    "snackbarOptionsMenuViewLogsButton": "צפייה ביומנים",
+    "@snackbarOptionsMenuViewLogsButton": {
+        "description": "Button title for opening the logs screen from the snackbar options menu"
+    },
+    "duckOnAudioInterruptionTitle": "הנמכת עוצמה בהפרעות",
+    "@duckOnAudioInterruptionTitle": {
+        "description": "Title for the setting that controls ducking."
+    },
+    "duckOnAudioInterruptionSubtitle": "מנמיך את עוצמת השמע (duck) כאשר אפליקציה נוספת מנגנת שמע קצר. דורש הפעלה מחדש.",
+    "@duckOnAudioInterruptionSubtitle": {
+        "description": "Subtitle for the setting that controls ducking."
+    },
+    "volumeControlHint": "שימוש ב{shortcut} כדי לכוון את עוצמת השמע",
+    "@volumeControlHint": {
+        "description": "Hint text displayed below the volume bar to inform users about keyboard shortcuts for volume control.",
+        "placeholders": {
+            "shortcut": {
+                "type": "String",
+                "example": "Ctrl + ↑/↓"
+            }
+        }
+    },
+    "seekControlHint": "{shortcut} כדי לעבור 5-/30+ שניות",
+    "@seekControlHint": {
+        "description": "Shortcut hint for seeking backward 5s or forward 30s.",
+        "placeholders": {
+            "shortcut": {
+                "type": "String",
+                "example": "Ctrl + ←/→"
+            }
+        }
+    },
+    "previousTracksPersistenceModeSelectorTitle": "נראות רצועות השמע הקודמות בתצוגת התור",
+    "@previousTracksPersistenceModeSelectorTitle": {
+        "description": "Title for setting that allows to override state of previous tracks header in queue list"
+    },
+    "previousTracksPersistenceModeSelectorSubtitle": "בפתיחת תצוגת התור, רצועות השמע הקודמות יהיו…",
+    "@previousTracksPersistenceModeSelectorSubtitle": {
+        "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
+    },
+    "previousTracksPersistenceModePersistent": "כמו מקודם (זכור הרחבה/צמצום)",
+    "@previousTracksPersistenceModePersistent": {
+        "description": "Does nothing to previous tracks header in queue list, using its saved value"
+    },
+    "previousTracksPersistenceModeCollapsed": "מצומצמות (מוסתרות)",
+    "@previousTracksPersistenceModeCollapsed": {
+        "description": "Overrides saved value to collapse previous tracks header on queue list open"
+    },
+    "previousTracksPersistenceModeExpanded": "מורחבות (נראות)",
+    "@previousTracksPersistenceModeExpanded": {
+        "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "multichannelHandlingSubtitle": "איך להתנהל בקידוד רצועות שמע מרובות ערוצים (יותר מ2 ערוצים). מוחל על הזרמה וגם הורדות.",
+    "@multichannelHandlingSubtitle": {
+        "description": "Subtitle for multi-channel handling dropdown"
+    },
+    "multichannelHandlingTitle": "התנהלות קידוד רצועות מרובות ערוצים",
+    "@multichannelHandlingTitle": {
+        "description": "Title for multi-channel handling dropdown"
+    },
+    "multichannelHandlingOption": "{option, select, stereoDownmixLossy{שינמוך רק Lossy לסטריאו} stereoDownmixAll{שינמוך הכל לסטריאו} fixedBitrate{אף פעם לא לשנמך} other{{option}} }",
+    "@multichannelHandlingOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in multi-channel handling dropdown"
+    },
+    "artwork": "תמונת מעטפת",
+    "artworkTooltip": "תמונת מעטפת ל{title}",
+    "@artworkTooltip": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "Abbey Road"
+            }
+        },
+        "description": "Tooltip for album artwork on track and album tiles as well as the album screen"
+    },
+    "playerAlbumArtworkTooltip": "תמונת מעטפת ל{title}. לחצו כדי להפעיל/להפסיק נגינה. החלקה ימינה או שמאלה תשנה את רצועת השמע.",
+    "@playerAlbumArtworkTooltip": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "Abbey Road"
+            }
+        },
+        "description": "Tooltip for the album artwork on the player screen"
+    },
+    "deleteFromTargetDialogText": "אתם עומדים למחוק את {itemType, select, album{האלבום הזה} playlist{הפלייליסט הזה} artist{האמן הזה} genre{הג'אנר הזה} track{רצועת השמע הזאת} library{הספרייה הזאת} other{הפריט הזה}} מתוך {device, select, device{המכשיר הזה} server{מערכת הקבצים של השרת והספרייה הזאת.{deleteType, select, canDelete{ זה גם ימחק את הפריט מהמכשיר הזה.} cantDelete{ הפריט יישאר על המכשיר הזה עד הסנכרון הבא.} notDownloaded{} other{}}\nלא ניתן לשחזר את הפעולה הזאת} other{}}.",
+    "@deleteFromTargetDialogText": {
+        "description": "(Important: Note the space in front of some cases) A Confirm Prompt used whenever an item is about to be deleted from the device or server. The Server case should explain that this cannot be reverted, this information is not needed for the device since the user can just download the track again. The delete Type adapts the server text even more in can the user can or cant delete the item."
+    },
+    "itemCount": "{childType, select, track{{amount, plural, =1{רצועת שמע אחת} other{{amount} רצועות שמע}}} album{{amount, plural, =1{אלבום אחד} other{{amount} אלבומים}}} other{{amount, plural, =1{פריט אחד} other{{amount} פריטים}}}}",
+    "@itemCount": {
+        "description": "Amount of various child item, like artist albums, performing artist tracks, or genre albums. Shown for example in the menu headers.",
+        "placeholders": {
+            "childType": {
+                "type": "String",
+                "example": "album",
+                "description": "Options match BaseItemDtoType.name"
+            },
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "ping": "{status, select, true_true{שניהם נגישים} true_false{נכשל לגשת לכתובת מקומית} false_true{נכשל לגשת לכתובת ציבורית} false_false{נכשל בגישה לשניהם} other{לא ידוע}}",
+    "@ping": {
+        "description": "Gets shown in the Snackbar when using the Test Connection Button inside the Network Settings. true means reachable, false means unreachable. the first value is for the public address, the second value is fot the home address."
+    },
+    "radioModeDescription": "{mode, select, reshuffle{ערבוב מחדש ברציפות של התור} random{הוספת רצועות שמע בצורה אקראית מהבחירה הראשונית} similar{הוספה לפי התור המקורי} continuous{הוספה לפי רצועת השמע הנוכחית} albumMix{הוספת אלבומים דומים} other{}}",
+    "@radioModeDescription": {
+        "placeholders": {
+            "mode": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Subtitle displayed in the queue to describe what the radio is doing if enabled"
+    },
+    "autoReloadPromptMissingTracks": "{amountUndownloadedTracks, plural, =1{רצועת שמע אחת תוסר מהתור כי היא לא הורדה} other{{amountUndownloadedTracks} רצועות שמע יוסרו מהתור כי הן לא הורדו}}.",
+    "@autoReloadPromptMissingTracks": {
+        "description": "Additional prompt text shown when the queue needs to be reloaded after changing network settings and some undownloaded tracks are in the queue",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            }
+        }
+    },
+    "menuButtonLabel": "פעולות נוספות",
+    "@menuButtonLabel": {
+        "description": "Generic label for menu buttons shown throughout the app. Used for the album, artist, playlist, etc. menus"
+    },
+    "autoReloadPromptReloadButton": "טעינה מחדש",
+    "@autoReloadPromptReloadButton": {
+        "description": "Button title for reloading the queue after network settings change"
+    },
+    "notImplementedYet": "לא זמין עדיין.",
+    "@notImplementedYet": {
+        "description": "Message shown when a feature is not implemented yet"
+    },
+    "automaticOfflineModeOverrideActiveTitle": "החלפה אוטומטית הופסקה",
+    "@automaticOfflineModeOverrideActiveTitle": {
+        "description": "Title for the label shown below the offline mode toggle when automatic offline mode switching is paused"
+    },
+    "automaticOfflineModeOverrideActiveSubtitle": "לחצו כאן כדי להמשיך",
+    "@automaticOfflineModeOverrideActiveSubtitle": {
+        "description": "Subtitle for the label shown below the offline mode toggle when automatic offline mode switching is paused"
+    },
+    "useAndroidGainEffectTitle": "שימוש באפקט עוצמה",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "שימוש באפקט עוצמה פנימי כדי לשלוט בעוצמת השמע.  זה יותר גמיש אבל שובר את הנגן בחלק מהמכשירים.  אתם לא אמורים לשנות את ההגדרה הזאת ידנית.  דורש הפעלה מחדש של האפליקציה כדי להחיל.",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "מחליף לגיבוי אפקט עוצמה בגלל תקלת אתחול.",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+    },
+    "serverSharingMenuDetails": "זה עובד על ידי הקשבה לבקשות גילוי השרת על ידי תוכנות לקוח אחרות על הרשת המקומית, ומשיב לבקשות אלו עם הכתובת המוגדרת של השרת Jellyfin.\nאם הגדרתם גם כתובת מקומית וגם כתובת ציבורית, Finamp יספק את שניהם לתוכנת לקוח המבקשת.",
+    "@serverSharingMenuDetails": {
+        "description": "Description text shown in the server sharing menu, below the description"
+    },
+    "missingBlurhashWarning": "אזהרה: נראה שהשרת Jellyfin לא מוגדר נכון והוא לא מחשב blurhashes.  זה מונע מFinamp למנוע כפילויות של תמונות בהורדה.  נא לתקן את השרת ולהריץ תיקון הורדות.",
+    "@missingBlurhashWarning": {
+        "description": "A warning message displayed on the downloads screen if the jellyfin server is missing blurhashes."
+    },
+    "explicit": "תוכן בוטה",
+    "@explicit": {
+        "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
+    },
+    "forceAudioOffloadingOnAndroidTitle": "כפיית העברת עומס השמע",
+    "@forceAudioOffloadingOnAndroidTitle": {
+        "description": "Title for the setting that controls audio offloading on Android."
+    },
+    "forceAudioOffloadingOnAndroidSubtitle": "העברת העומס של עיבוד השמע לחומרה, אם המכשיר תומך בזה.",
+    "@forceAudioOffloadingOnAndroidSubtitle": {
+        "description": "Subtitle for the setting that controls audio offloading on Android."
     }
 }

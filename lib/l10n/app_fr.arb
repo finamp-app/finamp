@@ -2,7 +2,7 @@
     "downloadsQueued": "Téléchargement des fichiers",
     "grid": "Mosaïque",
     "serverUrl": "URL du serveur",
-    "internalExternalIpExplanation": "Si vous souhaitez pouvoir accéder à votre serveur Jellyfin à distance, vous devez utiliser votre adresse IP externe.\n\nSi votre serveur utilise les ports HTTP par défaut (80/443) ou le port par défaut de Jellyfin (8096), vous n'avez pas besoin de spécifier le port. \n\nSi l'URL est correcte, vous devriez voir apparaître des informations sur votre serveur sous le champ de saisie.",
+    "internalExternalIpExplanation": "Si vous souhaitez pouvoir accéder à votre serveur Jellyfin à distance, vous devez utiliser votre adresse IP externe.\n\nSi votre serveur utilise les ports HTTP/S par défaut (80/443) ou le port par défaut de Jellyfin (8096/8920), vous n'avez pas besoin de spécifier le port. \n\nSi l'URL est correcte, vous devriez voir apparaître des informations sur votre serveur sous le champ de saisie.",
     "@internalExternalIpExplanation": {
         "description": "Informations supplémentaires sur l'IP à utiliser pour l'accès à distance, et sur la nécessité ou non de spécifier un port"
     },
@@ -27,9 +27,9 @@
     "albums": "Albums",
     "artists": "Artistes",
     "genres": "Genres",
-    "playlists": "Listes de lectures",
+    "playlists": "Listes de lecture",
     "startMix": "Commencer un Mix",
-    "startMixNoTracksArtist": "Appuyer longuement sur un artiste pour l'ajouter ou le retirer du mix avant de commencer",
+    "startMixNoTracksArtist": "Appuyez longuement sur un artiste pour l'ajouter ou le retirer du mix avant de commencer",
     "@startMixNoTracksArtist": {
         "description": "Notification qui intervient quand l'utilisateur lance le mix instantané sans avoir sélectionné des artistes"
     },
@@ -281,7 +281,7 @@
     "bufferDuration": "Taille du tampon",
     "bufferDurationSubtitle": "Durée de la mise en mémoire tampon, en secondes. Un redémarrage est nécessaire.",
     "language": "Langue",
-    "confirm": "Confirmé",
+    "confirm": "Confirmer",
     "showUncensoredLogMessage": "Ce journal contient vos informations de connexion. Afficher tout de même ?",
     "resetTabs": "Réinitialiser les onglets",
     "noMusicLibrariesTitle": "Aucune bibliothèque musicale",
@@ -571,7 +571,7 @@
     "@playbackSpeedControlSetting": {
         "description": "Title of the visibility setting of the playback speed controls"
     },
-    "usernameValidationMissingUsername": "S’il vous plaît, entrez un identifiant",
+    "usernameValidationMissingUsername": "Merci d'entrer un identifiant",
     "@usernameValidationMissingUsername": {
         "description": "Error message that shows when the user submits a login without a username"
     },
@@ -579,7 +579,7 @@
     "@passwordHint": {
         "description": "Hint text for the password input field."
     },
-    "offlineTrackCountArtist": "{count,plural,=1{{count} titre} other{{count} titres}} telechargé(s)",
+    "offlineTrackCountArtist": "{count,plural,=1{{count} titre} other{{count} titres}} téléchargé(s)",
     "@offlineTrackCountArtist": {
         "placeholders": {
             "count": {
@@ -795,7 +795,7 @@
     "@emptyFilteredListSubtitle": {
         "description": "Message shown when a list of items is filtered and no items match the filter"
     },
-    "bufferSizeSubtitle": "Taille du tampon en Mo. Un redémarrage est nécessaire.",
+    "bufferSizeSubtitle": "Taille du tampon en Mo. Un redémarrage est nécessaire",
     "playbackOrderLinearButtonLabel": "Jouer dans l'ordre",
     "@playbackOrderLinearButtonLabel": {
         "description": "Label for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in linear/in-order mode"
@@ -883,7 +883,7 @@
     "@periodicPlaybackSessionUpdateFrequency": {
         "description": "Label for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
     },
-    "deleteDownloadsPrompt": "Êtes vous sûr de vouloir supprimer {itemType, select, album{album} playlist{playlist} artist{artist} genre{genre} track{track} library{library} other{item}} '{itemName}' de votre appareil ?",
+    "deleteDownloadsPrompt": "Êtes-vous sûr de vouloir supprimer {itemType, select, album{album} playlist{playlist} artist{artist} genre{genre} track{track} library{library} other{item}} '{itemName}' de votre appareil ?",
     "@deleteDownloadsPrompt": {
         "placeholders": {
             "itemName": {
@@ -1047,7 +1047,7 @@
     "@startInstantMixForIndividualTracksSwitchTitle": {
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
     },
-    "downloadLibraryPrompt": "Êtes vous sûr de vouloir supprimer tous les téléchargements de la bibliothèque ''{libraryName}'' ?",
+    "downloadLibraryPrompt": "Êtes-vous sûr de vouloir supprimer tous les téléchargements de la bibliothèque ''{libraryName}'' ?",
     "@downloadLibraryPrompt": {
         "description": "Confirmation prompt before downloading entire library, which may be large.",
         "placeholders": {
@@ -1171,7 +1171,7 @@
     "@runRepairWarning": {
         "description": "Message shown when an error occurs during the downloads repair step of the Isar downloads migration, which requires a server connection."
     },
-    "connectionInterruptedBackgroundAndroid": "La connexion a été interrompue pendant le téléchargement en arrière plan. Cela est peut-être du à la configuration de votre système ou l'option 'Basse priorité en pause' est activée.",
+    "connectionInterruptedBackgroundAndroid": "La connexion a été interrompue pendant le téléchargement en arrière plan. Cela est peut-être dû à la configuration de votre système ou l'option 'Basse priorité en pause' est activée.",
     "@connectionInterruptedBackgroundAndroid": {
         "description": "Message shown when the connection is interrupted during a download while in the background on android. It advises checking OS settings, as they may cause background downloads to be blocked, or checking the  'Enter Low-Priority State on Pause' setting."
     },
@@ -1220,7 +1220,7 @@
             }
         }
     },
-    "connectionInterruptedBackground": "La connexion a été interrompue pendant le téléchargement en arrière plan. Cela est peut-être du à la configuration de votre système.",
+    "connectionInterruptedBackground": "La connexion a été interrompue pendant le téléchargement en arrière plan. Cela est peut-être dû à la configuration de votre système.",
     "@connectionInterruptedBackground": {
         "description": "Message shown when the connection is interrupted during a download while in the background. It advises checking OS settings, as they may cause background downloads to be blocked."
     },
@@ -1556,7 +1556,7 @@
     "@autoOfflineNotification": {
         "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
     },
-    "playOnReconnectionDelay": "Délai de reconnexion de la session 'Jouer sur'",
+    "playOnReconnectionDelay": "Délai de reconnexion de la session 'Play On'",
     "@playOnReconnectionDelay": {
         "description": "Label for the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
     },
@@ -1662,15 +1662,15 @@
         "description": "This is shown when the autoOffline feature is set to Network, this means offline mode will be automatically enabled when no wifi or ethernet connection is active"
     },
     "exportLogs": "Enregistrer les journaux",
-    "playOnStaleDelay": "Expiration de la session 'Jouer sur'",
+    "playOnStaleDelay": "Expiration de la session 'Play On'",
     "@playOnStaleDelay": {
         "description": "Label for the setting that controls how long a PlayOn remote session is considered active"
     },
-    "enablePlayonTitle": "Activer le support de 'Jouer sur'",
+    "enablePlayonTitle": "Activer le support de 'Play On'",
     "@enablePlayonTitle": {
         "description": "Label for the setting to enable Jellyfin's 'Play On' feature (remote control)"
     },
-    "playOnReconnectionDelaySubtitle": "Contrôle le délai entre les tentatives de reconnexion au websocket 'Jouer sur' lorsqu’il est déconnecté (en secondes). Un délai plus faible augmente l’utilisation de la bande passante.",
+    "playOnReconnectionDelaySubtitle": "Contrôle le délai entre les tentatives de reconnexion au websocket 'Play On' lorsqu’il est déconnecté (en secondes). Un délai plus faible augmente l’utilisation de la bande passante.",
     "@playOnReconnectionDelaySubtitle": {
         "description": "Description of the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
     },
@@ -1698,11 +1698,11 @@
     "@releaseDateFormatISO": {
         "description": "Date format option for the release date of an album, showing the full ISO 8601 date"
     },
-    "playOnStaleDelaySubtitle": "Combien de temps une session 'Jouer sur' à distance est considérée comme active après avoir reçu une commande. Lorsqu’elle est considérée comme active, la lecture est signalée plus fréquemment, ce qui peut entraîner une utilisation accrue de la bande passante.",
+    "playOnStaleDelaySubtitle": "Combien de temps une session 'Play On' à distance est considérée comme active après avoir reçu une commande. Lorsqu’elle est considérée comme active, la lecture est signalée plus fréquemment, ce qui peut entraîner une utilisation accrue de la bande passante.",
     "@playOnStaleDelaySubtitle": {
         "description": "Description of the setting that controls how long a PlayOn remote session is considered active"
     },
-    "enablePlayonSubtitle": "Activer la fonction 'Jouer sur' de Jellyfin (contrôle à distance de Finamp depuis un autre client). Désactivez cette option si votre serveur ou proxy inverse ne prend pas en charge les websockets.",
+    "enablePlayonSubtitle": "Activer la fonction 'Play On' de Jellyfin (contrôle à distance de Finamp depuis un autre client). Désactivez cette option si votre serveur ou proxy inverse ne prend pas en charge les websockets.",
     "@enablePlayonSubtitle": {
         "description": "Description of the setting to enable Jellyfin's 'Play On' feature (remote control)"
     },
@@ -1754,7 +1754,7 @@
     "@deleteFromTargetDialogText": {
         "description": "(Important: Note the space in front of some cases) A Confirm Prompt used whenever an item is about to be deleted from the device or server. The Server case should explain that this cannot be reverted, this information is not needed for the device since the user can just download the track again. The delete Type adapts the server text even more in can the user can or cant delete the item."
     },
-    "autoOfflineSettingDescription": "{disabledModeName} :\nLe mode hors ligne ne s'active pas automatiquement. Cela peut permettre d'économiser la batterie.\n\n{localNetworkModeName} :\nLe mode hors ligne s'active lorsque vous n'êtes pas connecté au Wi-Fi ou à un réseau Ethernet.\n\n{disconnectedModeName} :\nLe mode hors ligne s'active lorsque vous n'êtes connecté à aucun réseau.\n\n{unreachableModeName} :\nLe mode hors ligne s'active lorsque le serveur est injoignable après un changement de réseau.\n\n\nVous pouvez activer ou désactiver manuellement le mode hors ligne, ce qui suspend l'automatisation jusqu'à ce que vous la réactiviez.",
+    "autoOfflineSettingDescription": "{disabledModeName} :\nLe mode hors ligne ne s'active pas automatiquement. Cela peut permettre d'économiser la batterie.\n\n{localNetworkModeName} :\nLe mode hors ligne s'active lorsque vous n'êtes pas connecté au Wi-Fi ou à un réseau Ethernet.\n\n{disconnectedModeName} :\nLe mode hors ligne s'active lorsque vous n'êtes connecté à aucun réseau.\n\n{unreachableModeName} :\nLe mode hors ligne s'active lorsque le serveur est injoignable après un changement de réseau.\n\nVous pouvez activer ou désactiver manuellement le mode hors ligne, ce qui suspend l'automatisation jusqu'à ce que vous la réactiviez.",
     "@autoOfflineSettingDescription": {
         "description": "Setting description. Make sure the Mode names match the translations."
     },
@@ -1898,7 +1898,7 @@
     "@autoReloadQueueTitle": {
         "description": "Title for the setting that controls if the queue is automatically reloaded when the source changes"
     },
-    "audioFadeOutDurationSettingTitle": "Durée du fondu audio",
+    "audioFadeOutDurationSettingTitle": "Durée du fondu de sortie audio",
     "@audioFadeOutDurationSettingTitle": {
         "description": "Title for the audio fade-out duration setting."
     },
@@ -1938,7 +1938,7 @@
     "@autoReloadPromptReloadButton": {
         "description": "Button title for reloading the queue after network settings change"
     },
-    "audioFadeInDurationSettingTitle": "Durée du fondu audio",
+    "audioFadeInDurationSettingTitle": "Durée du fondu d'entrée audio",
     "@audioFadeInDurationSettingTitle": {
         "description": "Title for the audio fade-in duration setting."
     },
@@ -1974,7 +1974,7 @@
     "@additionalPeople": {
         "description": "Label for the feature chips showing additional people in the credits of a track or album"
     },
-    "genreListsInheritSorting": "Listes Complètes Tri Héritage",
+    "genreListsInheritSorting": "Héritage du tri des listes complètes",
     "@genreListsInheritSorting": {
         "description": "Label for the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
     },
@@ -2148,7 +2148,7 @@
     },
     "logoutButtonSubtitle": "La connexion à un autre serveur supprimera les téléchargements existants",
     "none": "Aucun",
-    "sleepTimerRemainingTracks": "Mise en Veille {time,plural,=1{after this track} other{in {time} tracks}}",
+    "sleepTimerRemainingTracks": "Mise en Veille {time,plural,=1{après cette piste} other{dans {time} pistes}}",
     "@sleepTimerRemainingTracks": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
         "placeholders": {
@@ -2713,7 +2713,7 @@
     "@radioModeMenuTitle": {
         "description": "Title for menu that allows users to choose the radio mode."
     },
-    "loopingOverriddenByRadioSubtitle": "La boucle de file d'attente est désactivée lorsque la radio est activée.",
+    "loopingOverriddenByRadioSubtitle": "La boucle de file d'attente est désactivée lorsque la radio est activée",
     "@loopingOverriddenByRadioSubtitle": {
         "description": "Subtitle displayed in the radio menu to show that queue looping is disabled while radio mode is enabled."
     },
@@ -2939,7 +2939,7 @@
     "@multichannelHandlingSubtitle": {
         "description": "Subtitle for multi-channel handling dropdown"
     },
-    "multichannelHandlingOption": "{option, select, stereoDownmixLossy{Only Downmix Lossy to Stereo} stereoDownmixAll{Downmix All to Stereo} fixedBitrate{Never Downmix} other{{option}} }",
+    "multichannelHandlingOption": "{option, select, stereoDownmixLossy{Uniquement un mixage vers le bas avec perte en stéréo} stereoDownmixAll{Tout mixer en stéréo} fixedBitrate{Ne jamais réduire la résolution} other{{option}} }",
     "@multichannelHandlingOption": {
         "placeholders": {
             "option": {
@@ -2987,5 +2987,50 @@
     "previousTracksPersistenceModeExpanded": "Développé (visible)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "amoledTheme": "Utiliser le thème AMOLED",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "Remplace la palette de couleurs sombres par un thème entièrement noir.",
+    "useAndroidGainEffectTitle": "Utiliser l'effet de gain",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "Utilisez l'effet de gain natif pour régler le volume.  Cette option offre davantage de souplesse, mais peut entraîner un dysfonctionnement du lecteur sur certains appareils.  Vous ne devriez pas avoir à modifier ce paramètre manuellement.  Un redémarrage de l'application est nécessaire pour que les modifications prennent effet.",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "Passage au mode de secours de l'effet de gain en raison d'une erreur d'initialisation.",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+    },
+    "losslessNoBitrate": "Ne s'applique pas aux transcodages FLAC",
+    "@losslessNoBitrate": {
+        "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+    },
+    "home": "Accueil",
+    "@home": {
+        "description": "Label for the home/main screen"
+    },
+    "search": "Rechercher",
+    "@search": {
+        "description": "Button for the user to click to perform a search"
+    },
+    "library": "Bibliothèque",
+    "@library": {
+        "description": "Label for library - the user can click this and see the conent in their system."
+    },
+    "voiceSearch": "Recherche Vocale",
+    "@voiceSearch": {
+        "description": "Heading for the page that prompts the user to perform a voice search."
+    },
+    "carPlaySiriHint": "Dites « Hey Siri, joue [morceau/artiste/album] sur Finamp »",
+    "@carPlaySiriHint": {
+        "description": "Hint text for how to use Siri to search in CarPlay."
+    },
+    "carPlayLoginPrompt": "Ouvrez l'application Finamp sur votre téléphone pour vous connecter à votre serveur Jellyfin.",
+    "@carPlayLoginPrompt": {
+        "description": "Label shown when the user is trying to use CarPlay without being logged in."
     }
 }
