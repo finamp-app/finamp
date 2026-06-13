@@ -35,7 +35,7 @@
     "clear": "Tyhjennä",
     "offlineMode": "Offline-tila",
     "finamp": "Finamp",
-    "sortOrder": "Lajittelujärjestys",
+    "sortOrder": "Järjestys",
     "album": "Albumi",
     "albumArtist": "Albumin artisti",
     "artist": "Artisti",
@@ -210,7 +210,7 @@
     "enterLowPriorityStateOnPause": "Siirtyminen matalan prioriteetin tilaan tauon aikana",
     "shuffleAllTrackCount": "Kaikkien sekoitettujen kappaleiden määrä",
     "shuffleAllTrackCountSubtitle": "Ladattavien kappaleiden määrä, kun käytät \"sekoita kaikki kappaleet\" -painiketta kappaleet-välilehdellä tai tyylilajit-näkymässä.",
-    "showTextOnGridViewSubtitle": "Näytetäänkö teksti (nimi, artisti jne.) ruudukon musiikkinäytöllä vai ei.",
+    "showTextOnGridViewSubtitle": "Näytetäänkö teksti (nimi, artisti jne.) ruudukon musiikkinäytöllä vai ei. Teksti näytetään aina kotinäkymässä, tästä asetuksesta riippumatta.",
     "showFastScroller": "Näytä nopea vieritin",
     "responseError401": "{error} Tilakoodi {statusCode}. Tämä tarkoittaa todennäköisesti, että olet käyttänyt väärää käyttäjätunnusta/salasanaa tai että sovellus ei ole enää kirjautuneena sisään.",
     "@responseError401": {
@@ -480,7 +480,7 @@
     "@yourLikes": {
         "description": "Title for the queue source when the user is playing their liked tracks"
     },
-    "playingFromType": "Toistetaan lähteestä {source, select, album{Albumi} playlist{Soittolista} trackMix{Kappalemixi} artistMix{Artistimixi} albumMix{Albumimixi} genreMix{Genre Mix} favorites{Suosikit} allTracks{Kaikki raidat} filteredList{Kappaleet} genre{Genre} artist{Artisti} track{Raita} nextUpAlbum{Seuraavaksi-Albumi} nextUpPlaylist{ Seuraavaksi-Soittolista} nextUpArtist{Seuraavaksi-Artisti} nextUpGenre{Seuraavaksi-Genre} remoteClient{Etäohjauslaite} radio{Radio} other{}}",
+    "playingFromType": "Toistetaan lähteestä {source, select, album{Albumi} playlist{Soittolista} trackMix{Kappalemixi} artistMix{Artistimixi} albumMix{Albumimixi} genreMix{Genre Mix} favorites{Suosikit} allTracks{Kaikki raidat} filteredList{Kappaleet} genre{Genre} artist{Artisti} track{Raita} nextUpAlbum{Seuraavaksi-Albumi} nextUpPlaylist{ Seuraavaksi-Soittolista} nextUpArtist{Seuraavaksi-Artisti} nextUpGenre{Seuraavaksi-Genre} remoteClient{Etäohjauslaite} radio{Radio} homeScreenSection{} collection{Kokoelma} collectionMix{KokoelmaMix} other{}}",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -1303,7 +1303,7 @@
     "@preferQuickSyncSwitchSubtitle": {
         "description": "Description of setting that skips completed albums while syncing."
     },
-    "fixedGridTileSizeEnum": "{size, select, small{Pieni} medium{Keskikokoinen} large{Iso} veryLarge{Todella iso} other{???}}",
+    "fixedGridTileSizeEnum": "{size, select, tiny{pikkuruinen} verySmall{erittäin pieni} small{pieni} medium{keskikokoinen} large{suuri} veryLarge{erittäin suuri} huge{valtava} giant{jättimäinen} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
             "size": {
@@ -2858,5 +2858,617 @@
     "carPlayLoginPrompt": "Avaa Finamp-sovellus puhelimessasi kirjautuaksesi Jellyfin-palvelimelle.",
     "@carPlayLoginPrompt": {
         "description": "Label shown when the user is trying to use CarPlay without being logged in."
+    },
+    "ascending": "Nouseva",
+    "@ascending": {
+        "description": "Label for ascending order."
+    },
+    "descending": "Laskeva",
+    "@descending": {
+        "description": "Label for descending order."
+    },
+    "homeScreenSettingsTitle": "Kotinäkymä",
+    "@homeScreenSettingsTitle": {
+        "description": "Title for the home screen settings"
+    },
+    "homeScreenSectionPresetPickerMenuTitle": "Valitse esiasetus",
+    "@homeScreenSectionPresetPickerMenuTitle": {
+        "description": "Title for the preset picker menu, which allows users to pick a preset section to add to the home screen"
+    },
+    "homeScreenSectionCustomSectionTitle": "Mukautettu osio",
+    "@homeScreenSectionCustomSectionTitle": {
+        "description": "Title for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenSectionCustomSectionDescription": "Määritä oma osio",
+    "@homeScreenSectionCustomSectionDescription": {
+        "description": "Description for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenQuickActionPickerMenuTitle": "Valitse toiminto",
+    "@homeScreenQuickActionPickerMenuTitle": {
+        "description": "Title for the quick action picker menu, which allows users to pick a quick action to add to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksTitle": "Suosikkikappaleet",
+    "@homeScreenSectionPresetFavoriteTracksTitle": {
+        "description": "Title for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksDescription": "Tykätyt kappaleet satunnaisessa järjestyksessä",
+    "@homeScreenSectionPresetFavoriteTracksDescription": {
+        "description": "Description for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksTitle": "Unohdetut tykätyt kappaleet",
+    "@homeScreenSectionPresetForgottenFavoriteTracksTitle": {
+        "description": "Title for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksDescription": "Tykätyt kappaleet joita olet toistanut viimeksi",
+    "@homeScreenSectionPresetForgottenFavoriteTracksDescription": {
+        "description": "Description for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "noExternalDirectories": "Ei ulkoisia kansioita.",
+    "@noExternalDirectories": {
+        "description": "Message when the user tries to configure an Appdirectory external download directory but none are availible"
+    },
+    "nameRequired": "Nimi (vaaditaan)",
+    "@nameRequired": {
+        "description": "Descriptor for the required name field when adding download locations."
+    },
+    "exteranlStorageTip": "Jos polku ei sisällä merkkijonoa ”emulated”, kyseessä on luultavasti ulkoinen tallennustila.",
+    "@exteranlStorageTip": {
+        "description": "Helper text in Appdirectory download location config form"
+    },
+    "tooltipDisabled": "{tip} (Poistettu käytöstä)",
+    "@tooltipDisabled": {
+        "placeholders": {
+            "tip": {
+                "type": "String"
+            }
+        },
+        "description": "Added to tooltips on disabled buttons"
+    },
+    "noDownloadsInLocation": "Tässä sijainnissa ei ole tällä hetkellä latauksia.",
+    "@noDownloadsInLocation": {
+        "description": "Message when deleting a downloads location informing the user it is empty."
+    },
+    "deleteDownloadLocation": "Poista sijanti",
+    "@deleteDownloadLocation": {
+        "description": "Button for confirming deletion of deownload location"
+    },
+    "cannotDeleteLocation": "Sijaintia ei voida poistaa",
+    "@cannotDeleteLocation": {
+        "description": "Message that a download location cannot currently be deleted."
+    },
+    "cannotDeleteLocationEplanation": "Sijainnissa on tällä hetkellä latauksia, eikä sitä voida poistaa.  Poista nämä lataukset ensin:",
+    "@cannotDeleteLocationEplanation": {
+        "description": "Explanation that the download location cannot be deleted due to not being empty."
+    },
+    "globalMenu": "Valikko",
+    "@globalMenu": {
+        "description": "Tooltip for menu open button on music screen"
+    },
+    "lookingForSomethingElse": "Etsitkö jotain muuta?",
+    "@lookingForSomethingElse": {
+        "description": "Header for home screen customization button"
+    },
+    "builtWithByTheFinampContributors": "Finampin kehittäjien suurella ♥:llä tekemä.",
+    "@builtWithByTheFinampContributors": {
+        "description": "Message in home screen footer"
+    },
+    "showAll": "Näytä kaikki",
+    "@showAll": {
+        "description": "Tooltip for show all button on home screen sections"
+    },
+    "failedToLoadSection": "Osion lataus epäonnistui.",
+    "@failedToLoadSection": {
+        "description": "Message when an error is thrown while resolving home screen section"
+    },
+    "sectionContentsNotDownloaded": "Osion sisältöä ei ladattu.",
+    "@sectionContentsNotDownloaded": {
+        "description": "Message when a home screen section has no items while offline"
+    },
+    "failedToLoadSectionMissingItem": "Osion lataus epäonnistui - kohde puuttuu.",
+    "@failedToLoadSectionMissingItem": {
+        "description": "Message when the parent item of a home screen section is missing from the server"
+    },
+    "errorLoadingItems": "Virhe ladattaessa kohteita.",
+    "@errorLoadingItems": {
+        "description": "Message when an error occurs while loading home screen section contents"
+    },
+    "noItemsAvailable": "Ei kohteita saatavilla.",
+    "@noItemsAvailable": {
+        "description": "Message when a home screen section has no items while online"
+    },
+    "filters": "Suodattimet",
+    "@filters": {
+        "description": "Label for filters in Sort & Filter menu"
+    },
+    "removeFilter": "Poista tämä suodatin",
+    "@removeFilter": {
+        "description": "Tooltip for removable filter chips in Sort & Filter row"
+    },
+    "removeFilters": "Poista suodattimet",
+    "@removeFilters": {
+        "description": "Title for remove filters only variant of sort and filter menu"
+    },
+    "sortFilter": "Järjestä & Suodata",
+    "@sortFilter": {
+        "description": "title for Sort & Filter menu"
+    },
+    "editSection": "Muokkaa osiota",
+    "@editSection": {
+        "description": "Label for edit home section menu entry"
+    },
+    "connected": "Yhdistetty",
+    "@connected": {
+        "description": "Fallback for 'Connected to <server name>' message while server info is loaded"
+    },
+    "timerMinutes": "{minutes} min",
+    "@timerMinutes": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer duration slider"
+    },
+    "timerTracks": "{tracks} kappaletta",
+    "@timerTracks": {
+        "placeholders": {
+            "tracks": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer track count slider"
+    },
+    "quickActionsSubtitle": "Valitse ja järjestä kotinäkymässä näytettävät pikatoiminnot.",
+    "@quickActionsSubtitle": {
+        "description": "Subtitle for quick actions edit menu"
+    },
+    "selectAnItem": "Valitse kohde",
+    "@selectAnItem": {
+        "description": "Title for 'play specific item' quick action edit menu"
+    },
+    "sectionsMenu": "Osiot",
+    "@sectionsMenu": {
+        "description": "Title for home screen sections edit menu"
+    },
+    "sectionMenuSubtitle": "Valitse ja järjestä kotinäkymässä näytettävät osiot.",
+    "@sectionMenuSubtitle": {
+        "description": "Subtitle for home screen sections edit menu"
+    },
+    "sectionType": "Osion tyyppi",
+    "@sectionType": {
+        "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
+    },
+    "featuredCollection": "Suositeltu kokoelma",
+    "@featuredCollection": {
+        "description": "Title for home screen section editor collection selector"
+    },
+    "tabType": "Välilehden tyyppi",
+    "@tabType": {
+        "description": "Title for home screen section editor tab type dropdown (albums, artists, ect...)"
+    },
+    "currentLibrary": "Tämänhetkinen kirjasto",
+    "@currentLibrary": {
+        "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
+    },
+    "loading": "Ladataan..",
+    "@loading": {
+        "description": "Message when items or libraries are loading in home screen section editor"
+    },
+    "sectionTitle": "Osion otsikko",
+    "@sectionTitle": {
+        "description": "Title for custom section title editor in home screen section editor"
+    },
+    "egFavoriteTracks": "esim. Suosikkikappaleet",
+    "@egFavoriteTracks": {
+        "description": "Placeholder text in custom section title editor in home screen section editor"
+    },
+    "customSectionTitleRequired": "Anna mukautetulle osiolle otsikko",
+    "@customSectionTitleRequired": {
+        "description": "Message when a custom section title is needed in home screen section editor"
+    },
+    "editHomeScreenSection": "Muokkaa kotinäkymäosiota",
+    "@editHomeScreenSection": {
+        "description": "Title for home screen section editor menu"
+    },
+    "sectionConfigInvalid": "Nykyinen konfiguraatio ei ole kelvollinen.",
+    "@sectionConfigInvalid": {
+        "description": "Message in home screen section edit menu preview window when a valid preview cannot be generated"
+    },
+    "searchNotAvailibleWhileOffline": "Haku ei ole käytössä offline-tilassa!",
+    "@searchNotAvailibleWhileOffline": {
+        "description": "Message in home screen section editor search widget when offline"
+    },
+    "noSearchResults": "Ei hakutuloksia.",
+    "@noSearchResults": {
+        "description": "Message in home screen section editor search widget when no results are returned"
+    },
+    "collectionDropdownHint": "Valitse kokoelma",
+    "@collectionDropdownHint": {
+        "description": "Hint for selector dropdown in home screen editor search widget"
+    },
+    "gridImageSizeTitle": "Ruudukon ruutujen koko",
+    "@gridImageSizeTitle": {
+        "description": "Title of grid tile image size setting"
+    },
+    "gridImageSizeSubtitle": "Valitse kohteiden koko ruudukkonäkymässä",
+    "@gridImageSizeSubtitle": {
+        "description": "Subtitle of grid tile image size setting"
+    },
+    "gridImageSizeLabel": "{colCountExact, plural, =0{~} =1{} other{}}{colCount, plural, =1{1 sarake ({sizeDescriptor})} other{{colCount} saraketta ({sizeDescriptor})}}",
+    "@gridImageSizeLabel": {
+        "placeholders": {
+            "sizeDescriptor": {
+                "type": "String",
+                "example": "Very Small"
+            },
+            "colCount": {
+                "type": "int"
+            },
+            "colCountExact": {
+                "type": "int",
+                "description": "0 = not exact, add e.g. tilde character (~), 1 = exact, just show the number"
+            }
+        },
+        "description": "Slider label in grid tile image size setting"
+    },
+    "homeScreenImageSizeTitle": "Kotinäkymän ruutujen koko",
+    "@homeScreenImageSizeTitle": {
+        "description": "Title of home screen tile image size setting"
+    },
+    "homeScreenImageSizeSubtitle": "Valitse kohteiden koko kotinäkymässä",
+    "@homeScreenImageSizeSubtitle": {
+        "description": "Subtitle of home screen tile image size setting"
+    },
+    "noFilterActive": "Ei suodattimia käytössä",
+    "@noFilterActive": {
+        "description": "Message in sort & filter row when no filters are active"
+    },
+    "activeFilterCount": "{filterCount, plural, =0{Ei suodattimia käytössä} =1{1 suodatin käytössä} other{{filterCount} suodatinta käytössä}}",
+    "@activeFilterCount": {
+        "placeholders": {
+            "filterCount": {
+                "type": "int"
+            }
+        },
+        "description": "Message in sort & filter row"
+    },
+    "inPlaylist": "Soittolistalla",
+    "@inPlaylist": {
+        "description": "Name of 'In Playlist' content type"
+    },
+    "inCollection": "Kokoelmassa",
+    "@inCollection": {
+        "description": "Name of jellyfin 'Collection' content type"
+    },
+    "tabView": "Välilehtinäkymä",
+    "@tabView": {
+        "description": "Name of home screen section type which uses the contents of a music screen tab"
+    },
+    "collection": "Kokoelma",
+    "@collection": {
+        "description": "Name of home screen section type which uses the contents of a supplied playable item"
+    },
+    "queues": "Jonot",
+    "@queues": {
+        "description": "Name of home screen section type which shows the latest played queues"
+    },
+    "favoritePlaylists": "Suosikkisoittolistat",
+    "@favoritePlaylists": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteGenres": "Suosikkityylilajit",
+    "@favoriteGenres": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedAlbums": "Äskettäin lisätyt albumit",
+    "@newlyAddedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedTracks": "Äskettäin lisätyt kappaleet",
+    "@newlyAddedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedAlbums": "Usein toistetut albumit",
+    "@frequentlyPlayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedTracks": "Usein toistetut kappaleet",
+    "@frequentlyPlayedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedArtists": "Usein toistetut artistit",
+    "@frequentlyPlayedArtists": {
+        "description": "Name of a home screen section preset"
+    },
+    "unplayedAlbums": "Kuuntelemattomat albumit",
+    "@unplayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "recentQueues": "Viimeisimmät jonot",
+    "@recentQueues": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteAlbumsDescription": "Tykätyt albumit satunnaisessa järjestyksessä",
+    "@favoriteAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteArtistsDescription": "Tykätyt artistit satunnaisessa järjestyksessä",
+    "@favoriteArtistsDescription": {
+        "description": "Description  of a home screen section preset"
+    },
+    "favoritePlaylistsDescription": "Tykätyt soittolistat satunnaisessa järjestyksessä",
+    "@favoritePlaylistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteGenresDescription": "Tykätyt tyylilajit satunnaisessa järjestyksessä",
+    "@favoriteGenresDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedAlbumsDescription": "Kirjastoosi viimeksi lisätyt albumit, uusimmasta alkaen",
+    "@recentlyAddedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedTracksDescription": "Kirjastoosi viimeksi lisätyt kappaleet, uusimmasta alkaen",
+    "@recentlyAddedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedAlbumsDescription": "Paljon kuuntelemasi albumit, eniten toistetut ensin",
+    "@frequentlyPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedTracksDescription": "Paljon kuuntelemasi kappaleet, eniten toistetut ensin",
+    "@frequentlyPlayedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedArtistsDescription": "Paljon kuuntelemasi artistit, eniten toistetut ensin",
+    "@frequentlyPlayedArtistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "neverPlayedAlbumsDescription": "Albumit, joita et ole vielä kuunnellut, satunnaisessa järjestyksessä",
+    "@neverPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentQueuesDescription": "Jonot joita olet luonut viimeksi, alkaen uusimmasta",
+    "@recentQueuesDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "shuffleTracksActionDescription": "Sekoittaa satunnaisia kappaleita kirjastostasi",
+    "@shuffleTracksActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browseRecentQueuesActionDescription": "Valitse viimeksi toistetuista jonoistasi",
+    "@browseRecentQueuesActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browsePlaybackHistoryActionDescription": "Selaa kuunteluhistoriaasi",
+    "@browsePlaybackHistoryActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomAlbumActionDescription": "Aloittaa toiston satunnaisesta albumista",
+    "@playRandomAlbumActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "surpriseMeActionDescription": "Aloittaa 'jatkuvan' radion satunnaisesta kappaleesta",
+    "@surpriseMeActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomTrackActionDescription": "Aloittaa toiston satunnaisesta kappaleesta",
+    "@playRandomTrackActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteItemActionDescription": "Aloittaa toiston satunnaisesta suosikkikohteesta",
+    "@playRandomFavoriteItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playPreviousQueueActionDescription": "Palauttaa ja toistaa viimeksi arkistoidun jonon",
+    "@playPreviousQueueActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "configureOutputActionDescription": "Avaa ulostulon asetukset",
+    "@configureOutputActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playSpecificItemActionDescription": "Toistaa määritetyn kohteen",
+    "@playSpecificItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "shuffleTracksAction": "Sekoita kappaleet",
+    "@shuffleTracksAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomAlbumAction": "Satunnainen albumi",
+    "@randomAlbumAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomTrackAction": "Satunnainen kappale",
+    "@randomTrackAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteAction": "Satunnainen suosikki",
+    "@randomFavoriteAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "previousQueueAction": "Edellinen jono",
+    "@previousQueueAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "configureOutputAction": "Määritä ulostulo",
+    "@configureOutputAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "playSpecificItemAction": "Toista {itemName, select, finamp_placeholder{<Item>} other{{itemName}}}",
+    "@playSpecificItemAction": {
+        "placeholders": {
+            "itemName": {
+                "type": "String"
+            }
+        },
+        "description": "Name of a home screen quick action"
+    },
+    "surpriseMeAction": "Yllätä minut",
+    "@surpriseMeAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "editAction": "Muokkaa toimintoa",
+    "@editAction": {
+        "description": "Button to edit a quick action"
+    },
+    "swapAction": "Vaihda toiminto",
+    "@swapAction": {
+        "description": "Button to swap the selected quick action"
+    },
+    "removeAction": "Poista toiminto",
+    "@removeAction": {
+        "description": "Button to remove a quick action"
+    },
+    "addNewAction": "Lisää uusi toiminto",
+    "@addNewAction": {
+        "description": "Button to add a new quick action"
+    },
+    "removeSection": "Poista osio",
+    "@removeSection": {
+        "description": "Button to remove a home screen section"
+    },
+    "addNewSection": "Lisää uusi osio",
+    "@addNewSection": {
+        "description": "Button to add a new home screen section"
+    },
+    "preview": "Esikatselu",
+    "unnamedCollection": "Nimeämätön kokoelma",
+    "@unnamedCollection": {
+        "description": "Placeholder for unnamed collection in home screen section editor"
+    },
+    "noTracksFound": "Raitoja ei löytynyt 'yllätä minut'-miksin aloittamiseen.",
+    "@noTracksFound": {
+        "description": "Message if SurpriseMeMix creation fails"
+    },
+    "nothingFoundToPlay": "Mitään ei löytynyt toistettavaksi.",
+    "@nothingFoundToPlay": {
+        "description": "Message if play random item fails"
+    },
+    "errorLoadingHomeSection": "Virhe ladattaessa kotinäkymän osiota",
+    "@errorLoadingHomeSection": {
+        "description": "Message if a home screen section cannot be loaded due to a missing item"
+    },
+    "noPreviousQueueFoundToPlay": "Aiempaa jonoa ei löytynyt toistettavaksi.",
+    "@noPreviousQueueFoundToPlay": {
+        "description": "Message if play previous queue quick action fails"
+    },
+    "unknownVersion": "Tuntematon versio",
+    "@unknownVersion": {
+        "description": "Reported server version if request fails"
+    },
+    "isFavoriteFilter": "Suosikit",
+    "@isFavoriteFilter": {
+        "description": "Name of favorite filter"
+    },
+    "isUnplayedFilter": "Kuuntelemattomat",
+    "@isUnplayedFilter": {
+        "description": "Name of unplayed items filter"
+    },
+    "isFullyDownloadedFilter": "Kokonaan ladatut",
+    "@isFullyDownloadedFilter": {
+        "description": "Name of fully downloaded items filter"
+    },
+    "genreFilter": "Tyylilaji: {name}",
+    "@genreFilter": {
+        "description": "Name of genrefilter",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "startsWithFilter": "Alkaa kirjaimella: {letter}",
+    "@startsWithFilter": {
+        "description": "Name of starts with letter filter",
+        "placeholders": {
+            "letter": {
+                "type": "String"
+            }
+        }
+    },
+    "searchTermFilter": "Etsi: {searchTerm}",
+    "@searchTermFilter": {
+        "description": "Name of search term filter",
+        "placeholders": {
+            "searchTerm": {
+                "type": "String"
+            }
+        }
+    },
+    "customizeHomeScreen": "Muokkaa kotinäkymää",
+    "@customizeHomeScreen": {
+        "description": "Label for home screen customize button"
+    },
+    "connectedTo": "Yhdistetty palvelimeen",
+    "@connectedTo": {
+        "description": "Server info in music screen menu"
+    },
+    "performingArtistFilter": "Albumit (Esiintyy)",
+    "albumArtistFilter": "Albumit (Albumin artisti)",
+    "allTypes": "Kaikki tyypit",
+    "itemTypeFilterHeader": "Alatyyppi",
+    "recentlyPlayedTracksDescription": "Viimeksi kuuntelemasi kappaleet, viimeisimpänä toistettu ensin",
+    "@recentlyPlayedTracksDescription": {
+        "description": "Description for a home screen section preset"
+    },
+    "homeFavoritesDownloadWarning": "Haluatko varmasti ladata suosikit?   Tämä lataa kaikki tyypit, ei vain kohdetta {sectionType}.",
+    "@homeFavoritesDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because home sections show a specific item type, like Albums, but the download covers all.",
+        "placeholders": {
+            "sectionType": {
+                "type": "String",
+                "example": "Albums"
+            }
+        }
+    },
+    "homeAllPlaylistsWarning": "Haluatko varmasti ladata kaikki soittolistat?   Tämä lataa kaikki soittolistat, ei pelkästään tässä osiossa näkyvät.",
+    "@homeAllPlaylistsWarning": {
+        "description": "Warning presented when pressing the download button on playlist home sections with a filter applied.  This is shown because the download will not apply the filter."
+    },
+    "homeRecentAlbumsDownloadWarning": "Tämä lataa palvelimelta 5 uusinta albumia.   Lataukset päivitetään ja ylimääräiset poistetaan sitä mukaa, kun palvelimelle lisätään uusia albumeita.",
+    "@homeRecentAlbumsDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because the behavior of the 5 latest albums download is not a 100% match to the home sections."
+    },
+    "alreadyRandomized": "Tämä osio näytetään jo satunnaisessa järjestyksessä",
+    "@alreadyRandomized": {
+        "description": "Tooltip for shuffle button on home screen sections using a random sort order, where it is disabled due to being unneeded"
+    },
+    "libraryQualifierActive": "Aktiivinen",
+    "@libraryQualifierActive": {
+        "description": "Label shown next to the currently selected library in the Finamp menu/drawer"
+    },
+    "offlineSortFallback": "Lajittelutapa {onlineSort} on käytettävissä vain online-tilassa.  Palataan oletusjärjestykseen",
+    "@offlineSortFallback": {
+        "description": "Warning presented in sort and filter menu when an online-only sort is chosen.",
+        "placeholders": {
+            "onlineSort": {
+                "type": "String",
+                "example": "Play Count"
+            }
+        }
+    },
+    "retry": "Yritä uudestaan",
+    "retryPageLoad": "Kohteiden lataaminen palvelimelta epäonnistui. Yritä uudestaan tästä.",
+    "itemType": "{itemType, select, album{Albumi} playlist{Soittolista} artist{Artisti} genre{Tyylilaji} track{Kappale} library{Kirjasto} collection{Kokoelma} unknown{Kohde} other{{itemType}}}",
+    "@itemType": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            }
+        },
+        "description": "Item type name."
+    },
+    "connectionStateInfoString": "{state, select, syncing{Synkronoidaan palvelimen kanssa} downloading{Ladataan palvelimelta} deleting{Poistetaan vanhoja latauksia} connectedLocal{Yhdistetty paikallisverkossa} syncingLocal{Synkronoidaan paikallisverkossa} downloadingLocal{Ladataan paikallisverkossa} other{}}",
+    "@connectionStateInfoString": {
+        "description": "String describing the current connection state to the server, shown in the music screen drawer/menu.",
+        "placeholders": {
+            "state": {
+                "type": "String",
+                "example": "syncingLocal"
+            }
+        }
     }
 }
