@@ -7,6 +7,7 @@ enum IconPosition { start, end }
 
 class SimpleButton extends StatelessWidget {
   final String text;
+  final String? label;
   final TextStyle textStyle;
   final IconData icon;
   final IconPosition? iconPosition;
@@ -36,6 +37,7 @@ class SimpleButton extends StatelessWidget {
     this.onIconPressed,
     this.textColor,
     this.fontWeight,
+    this.label,
     this.iconPosition = IconPosition.start,
     this.iconSize = 20.0,
     this.iconColor,
@@ -54,6 +56,7 @@ class SimpleButton extends StatelessWidget {
     this.onIconPressed,
     this.textColor,
     this.fontWeight,
+    this.label,
     this.iconPosition = IconPosition.start,
     this.iconSize = 16.0,
     this.iconColor,
@@ -105,7 +108,7 @@ class SimpleButton extends StatelessWidget {
     ];
 
     return Tooltip(
-      message: disabled ? context.l10n.tooltipDisabled(text) : text,
+      message: disabled ? context.l10n.tooltipDisabled(label ?? text) : label ?? text,
       child: GestureDetector(
         onLongPress: () {
           FeedbackHelper.feedback(FeedbackType.selection);

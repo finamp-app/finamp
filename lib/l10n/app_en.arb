@@ -3227,6 +3227,10 @@
   "@sortOrder": {
     "description": "Label for sort order in Sort & Filter menu"
   },
+  "removeFilter": "Remove This Filter",
+  "@removeFilter": {
+    "description": "Tooltip for removable filter chips in Sort & Filter row"
+  },
   "removeFilters": "Remove Filters",
   "@removeFilters": {
     "description": "Title for remove filters only variant of sort and filter menu"

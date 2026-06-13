@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -19,10 +21,11 @@ import '../../models/jellyfin_models.dart';
 final _borderRadius = BorderRadius.circular(4);
 
 class GenreIconAndText extends StatelessWidget {
-  const GenreIconAndText({super.key, required this.parent, this.updateGenreFilter});
+  const GenreIconAndText({super.key, required this.parent, this.sortConfig, this.sortConfigController});
 
   final BaseItemDto parent;
-  final void Function(BaseItemDto?)? updateGenreFilter;
+  final SortAndFilterConfiguration? sortConfig;
+  final SortAndFilterController? sortConfigController;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +47,8 @@ class GenreIconAndText extends StatelessWidget {
                     parentType: BaseItemDtoType.fromItem(parent),
                     genres: genres,
                     backgroundColor: IconTheme.of(context).color!.withOpacity(0.1),
-                    updateGenreFilter: updateGenreFilter,
+                    sortConfig: sortConfig,
+                    sortConfigController: sortConfigController,
                   )
                 : Text(AppLocalizations.of(context)!.noGenres),
           ),
@@ -59,39 +63,47 @@ class GenreChips extends ConsumerWidget {
     super.key,
     required this.parentType,
     required this.genres,
+    this.sortConfig,
     this.backgroundColor,
     this.color,
-    this.updateGenreFilter,
+    this.sortConfigController,
   });
 
   final BaseItemDtoType parentType;
   final List<NameLongIdPair> genres;
   final Color? backgroundColor;
   final Color? color;
-  final void Function(BaseItemDto?)? updateGenreFilter;
+  final SortAndFilterConfiguration? sortConfig;
+  final SortAndFilterController? sortConfigController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final activeGenreFilter = sortConfig?.filters.firstWhereOrNull(
+      (filter) => filter.type == ItemFilterType.genreFilter,
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Wrap(
-          spacing: 4.0,
-          runSpacing: 4.0,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: genres.map((genre) {
-            return GenreChip(
-              key: ValueKey(genre.id),
-              backgroundColor: backgroundColor,
-              color: color,
-              parentType: parentType,
-              genre: genre,
-              updateGenreFilter: updateGenreFilter,
-            );
-          }).toList(),
-        ),
-      ),
+      child: activeGenreFilter != null
+          ? SortAndFilterRow.removeOnly(controller: sortConfigController!, hideLeadingIcon: true)
+          : SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Wrap(
+                spacing: 4.0,
+                runSpacing: 4.0,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: genres.map((genre) {
+                  return GenreChip(
+                    key: ValueKey(genre.id),
+                    backgroundColor: backgroundColor,
+                    color: color,
+                    parentType: parentType,
+                    genre: genre,
+                    sortConfigController: sortConfigController,
+                  );
+                }).toList(),
+              ),
+            ),
     );
   }
 }
@@ -103,14 +115,14 @@ class GenreChip extends StatelessWidget {
     required this.parentType,
     this.backgroundColor,
     this.color,
-    this.updateGenreFilter,
+    this.sortConfigController,
   });
 
   final NameLongIdPair genre;
   final BaseItemDtoType parentType;
   final Color? backgroundColor;
   final Color? color;
-  final void Function(BaseItemDto?)? updateGenreFilter;
+  final SortAndFilterController? sortConfigController;
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +133,7 @@ class GenreChip extends StatelessWidget {
         parentType: parentType,
         color: color,
         backgroundColor: backgroundColor,
-        updateGenreFilter: updateGenreFilter,
+        updateGenreFilter: sortConfigController?.updateGenreFilter,
       ),
     );
   }

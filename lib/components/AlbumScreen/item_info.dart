@@ -1,3 +1,4 @@
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/PlayerScreen/artist_chip.dart';
 import 'package:finamp/components/PlayerScreen/genre_chip.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -13,11 +14,11 @@ import '../icon_and_text.dart';
 import '../print_duration.dart';
 
 class ItemInfo extends ConsumerWidget {
-  const ItemInfo({super.key, required this.item, required this.itemTracks, this.updateGenreFilter});
+  const ItemInfo({super.key, required this.item, required this.itemTracks, this.sortConfigController});
 
   final BaseItemDto item;
   final List<BaseItemDto>? itemTracks;
-  final void Function(BaseItemDto?)? updateGenreFilter;
+  final SortAndFilterController? sortConfigController;
 
   // TODO: see if there's a way to expand this column to the row that it's in
   @override
@@ -65,7 +66,7 @@ class ItemInfo extends ConsumerWidget {
         Row(
           children: [
             Expanded(
-              child: GenreIconAndText(parent: item, updateGenreFilter: updateGenreFilter),
+              child: GenreIconAndText(parent: item, sortConfigController: sortConfigController),
             ),
           ],
         ),

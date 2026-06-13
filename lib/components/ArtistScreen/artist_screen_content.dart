@@ -179,7 +179,13 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
             // FlexibleSpaceBar. We add the toolbar height ([kToolbarHeight]) since the widget
             // should appear below the appbar.
             expandedHeight:
-                kToolbarHeight + 125 + 24 + 100 + (sortConfig.filters.isNotEmpty ? SortAndFilterRow.height + 10 : 0),
+                kToolbarHeight +
+                125 +
+                24 +
+                100 +
+                (sortConfig.filters.where((x) => x.type != ItemFilterType.genreFilter).isNotEmpty
+                    ? SortAndFilterRow.height + 10
+                    : 0),
             leading: FinampAppBarBackButton(),
             centerTitle: false,
             pinned: true,

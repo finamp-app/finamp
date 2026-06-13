@@ -178,6 +178,7 @@ class SortAndFilterRow extends ConsumerWidget {
 
   final bool removeOnly;
   final bool hideArtistGenreFilters;
+  final bool hideLeadingIcon;
 
   static double get height => (Platform.isIOS || Platform.isAndroid) ? 30 : 26;
 
@@ -186,11 +187,16 @@ class SortAndFilterRow extends ConsumerWidget {
     required this.tabType,
     required this.controller,
     this.hideArtistGenreFilters = false,
+    this.hideLeadingIcon = false,
   }) : removeOnly = false;
 
-  const SortAndFilterRow.removeOnly({super.key, required this.controller, this.hideArtistGenreFilters = false})
-    : tabType = ContentType.tracks,
-      removeOnly = true;
+  const SortAndFilterRow.removeOnly({
+    super.key,
+    required this.controller,
+    this.hideArtistGenreFilters = false,
+    this.hideLeadingIcon = false,
+  }) : tabType = ContentType.tracks,
+       removeOnly = true;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -228,23 +234,25 @@ class SortAndFilterRow extends ConsumerWidget {
                     final chipSpacing = 2.0;
                     final maxChips = ((constraints.maxWidth - filerButtonWidth) / (minimumMaxChipWidth + chipSpacing))
                         .floor();
-                    final showChips = maxChips >= activeFilterCount && activeFilterCount > 0;
+                    final showChips = hideLeadingIcon || (maxChips >= activeFilterCount && activeFilterCount > 0);
                     return Row(
                       spacing: chipSpacing,
                       children: [
-                        SimpleButton(
-                          icon: TablerIcons.filter,
-                          showText: !showChips,
-                          text: statusText,
-                          fontWeight: activeFilterCount > 0 ? FontWeight.w600 : FontWeight.normal,
-                          iconColor: activeFilterCount > 0
-                              ? ColorScheme.of(context).primary
-                              : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
-                          textColor: activeFilterCount > 0
-                              ? ColorScheme.of(context).primary
-                              : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
-                          onPressed: showMenu,
-                        ),
+                        hideLeadingIcon
+                            ? SizedBox.shrink()
+                            : SimpleButton(
+                                icon: TablerIcons.filter,
+                                showText: !showChips,
+                                text: statusText,
+                                fontWeight: activeFilterCount > 0 ? FontWeight.w600 : FontWeight.normal,
+                                iconColor: activeFilterCount > 0
+                                    ? ColorScheme.of(context).primary
+                                    : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
+                                textColor: activeFilterCount > 0
+                                    ? ColorScheme.of(context).primary
+                                    : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
+                                onPressed: showMenu,
+                              ),
                         if (showChips)
                           ...activeFilters.map(
                             (filter) => ConstrainedBox(
@@ -255,6 +263,7 @@ class SortAndFilterRow extends ConsumerWidget {
                               ),
                               child: SimpleButton(
                                 text: filter.getName(context.l10n),
+                                label: context.l10n.removeFilter,
                                 icon: TablerIcons.x,
                                 iconColor: TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
                                 backgroundColor: ColorScheme.of(context).primary.withOpacity(0.1),
