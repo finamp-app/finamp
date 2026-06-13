@@ -20,6 +20,7 @@ The project includes a `flake.nix` file that can help you install Flutter and Ru
 use `nix develop`, which allows rustup for Discord RPC dependency. Also, there's `nix develop .#fenix` which stubs rustup with [fenix](https://github.com/nix-community/fenix/), but it is a hack.
 
 To get the application running on NixOS once you are in the development shell:
+
 - `flutter build linux` - generates the build files in `./build/linux/x64/release/bundle` where the `lib` folder will have all the dynamic libraries.
 - `cd ./build/linux/x64/release/bundle/lib` - flutter cannot find the dynamic libraries by default. Probably works only with this CWD because the fallback is CWD.
 - `../finamp` - start the application.  
@@ -33,8 +34,8 @@ Note that code generation fails since 21baadbaf6852d34d7d12725a293c359c05cf20b d
 
 ```diff
 diff --git a/lib/builders/finamp_settings_builder.dart b/lib/builders/finamp_settings_builder.dart
---- a/lib/builders/finamp_settings_builder.dart	(revision 66736f47c5d084463591dd74189c46123f4144ff)
-+++ b/lib/builders/finamp_settings_builder.dart	(date 1768146068892)
+--- a/lib/builders/finamp_settings_builder.dart (revision 66736f47c5d084463591dd74189c46123f4144ff)
++++ b/lib/builders/finamp_settings_builder.dart (date 1768146068892)
 @@ -129,13 +129,6 @@
    }
  
@@ -67,7 +68,14 @@ This also means that you can keep using your regular install of Finamp (from the
 If you try to install a release build you built yourself (with your signing key) on top of a release build you downloaded from the Play Store or GitHub, Android will prevent you from doing so and show a generic error message. The only solution here is to uninstall the existing version, and then install your build. Note that this will delete any logins, settings and downloads that you had configured.  
 This generally shouldn't be needed, since debug builds works fine for daily usage, even though they are a bit less performant.
 
+### Developing on Windows
+
+With recent Flutter updates, there have been some issue with caches not being closed when trying to build *on* Windows (no matter which platform).  
+If you run into this (something about "unclosed caches"), then check if your pub.dev cache is on the same drive (e.g. `C:`, `D:`) as your Finamp directory (the one you cloned via Git). If they aren't on the same drive, you'll have to move either your Finamp directory, or your pub.dev package cache. For the latter, simply clear the old cache via `flutter pub cache clean`, and then point the cache to a new location (<https://dart.dev/tools/pub/environment-variables>).  
+This should fix the issue.
+
 ### Developing on an Android Device without Android Studio on linux (not recommended)
+
 1. You need the following packages  
     *you may need to find out the equivalents for your distro, these are for Arch*  
     `android-sdk android-sdk-build-tools android-sdk-cmdline-tools-latest android-platform android-sdk-platform-tools`
@@ -79,8 +87,8 @@ This generally shouldn't be needed, since debug builds works fine for daily usag
 6. Find your device  
     `flutter devices`
 7. Run on device  
-    `flutter run -d <device>` eg. for google pixel phones `flutter run -d pixel`   
-8. Go back to develop on linux   
+    `flutter run -d <device>` eg. for google pixel phones `flutter run -d pixel`
+8. Go back to develop on linux
     `flutter run -d linux`
 
 ### Code Generation (The Arcane Arts)
@@ -149,7 +157,9 @@ As mentioned above, Finamp uses Hive for most data storage needs. If you're doin
 When creating new types, note that you'll also have to register an adapter in `main.dart`. After code generation, there should be a class called `[YourType]Adapter`, which you can initialize in `setupHive`.
 
 ## Project Structure
+
 Here is a short description on the paths you'll most likely come across
+
 ```
 lib/                                -- the codebase also known as src in other projects
     components/                     -- Contains elements used by screens
@@ -159,13 +169,14 @@ lib/                                -- the codebase also known as src in other p
         screens/                    -- All the "pages", "screens", "views" what ever you want to call them
         services/                   -- Things that run in the background, kinda like backend
 ```
+
 ## Developing
 
 *Remember to format your changes before pushing (ideally in a **separate commit**), by running `flutter gen-l10n` or the "Generate Localizations" command in VS Code*
 
 ### Extending the Jellyfin API
 
-1. Figure out the endpoint you need. You can use https://api.jellyfin.org for this, for example
+1. Figure out the endpoint you need. You can use <https://api.jellyfin.org> for this, for example
 2. Create a new matching endpoint in `jellyfin_api.dart`. Just copy-paste the needed annotations from other similar endpoints.
 3. Run code-generation (`dart run build_runner build --delete-conflicting-outputs`) to generate actual code based on the endpoint annotations
 4. Create a new method for interacting with the endpoint in `jellyfin_api_helper.dart`. Again, just copy-paste what you need.
@@ -180,7 +191,7 @@ lib/                                -- the codebase also known as src in other p
 5. Now duplicate the code for the new setting in the appropriate settings screen file, and update the settings property it references to match your newly added setting
 6. Now add new translation strings in `app_en.arb` at the bottom, then generate the new localizations via `flutter gen-l10n` (see "Adding i18n strings")
 7. Use the new translation tokens in your new settings' code, replacing the old translation tokens
-8. Format everything via `dart format . `
+8. Format everything via `dart format .`
 
 ### Adding i18n strings
 
@@ -216,7 +227,9 @@ But since **making one request for each track that is queued up is simply not fe
 Notably, since we already have the full `BaseItemDto`s and additional metadata for each track, we could simply build client-side automatic transcoding. This would be needed anyway for considering network connectivity and such, so we're not losing much here.  
 
 Should the API for this improve in the future, for example by allowing us to submit the supported codecs and bitrate limits to an endpoint like [`/Sessions/Capabilities/Full`](https://api.jellyfin.org/#tag/Session/operation/PostFullCapabilities) (that part is already possible) and then getting the corresponding `PlaySessionId`s and transcode URLs via the regular `BaseItemDto`, then we could think about doing this the proper way. But until then we'll most likely handle the ID generation and transcoding settings client-side.
+
 ### Android Debug Build stuck in 'assembleDebug'
+
 1. `cd android`
 2. `./gradlew clean`
 3. `cd ..`
@@ -238,6 +251,7 @@ Note: CarPlay can only be tested on the simulator with the included entitlements
 If Finamp doesn't appear in the CarPlay display after enabling it, the most common cause is corruption in the Xcode project file from repeated `pod install` runs. This can break entitlement embedding for simulator builds.
 
 **Fix:**
+
 ```bash
 # Restore project file to committed state
 git checkout -- ios/Runner.xcodeproj/project.pbxproj
@@ -252,6 +266,7 @@ flutter build ios --simulator
 Then restart the simulator and re-enable CarPlay via **I/O > External Displays > CarPlay**.
 
 ### Add dbus message
+
 1. Open `lib/services/dbus_manager.dart`
 2. Add another `else if (call.interface == 'com.unicornsonlsd.Finamp' && call.name == 'YOUR FUNCTION NAME')`
 3. Profit
