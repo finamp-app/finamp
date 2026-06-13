@@ -32,7 +32,6 @@
     "playButtonLabel": "播放",
     "shuffleButtonLabel": "随机播放",
     "required": "必需的",
-    "updateButtonLabel": "更新",
     "trackCount": "{count,plural,=1{{count} 首歌曲} other{{count} 首歌曲}}",
     "@trackCount": {
         "placeholders": {
@@ -43,7 +42,6 @@
     },
     "addDownloads": "添加下载",
     "downloadsQueued": "正在下载文件",
-    "downloadsDeleted": "已删除下载。",
     "location": "位置",
     "playlistUpdated": "播放列表名称已更新。",
     "addButtonLabel": "添加",
@@ -64,7 +62,6 @@
     "unknownError": "未知错误",
     "enterLowPriorityStateOnPause": "暂停时进入低优先级状态",
     "landscape": "横向",
-    "portrait": "纵向",
     "viewType": "视图类型",
     "viewTypeSubtitle": "音乐屏幕的视图类型",
     "showTextOnGridView": "在网格视图中显示文本",
@@ -74,16 +71,13 @@
     "noButtonLabel": "否",
     "yesButtonLabel": "是",
     "createButtonLabel": "创建",
-    "invalidNumber": "无效数字",
     "newPlaylist": "新建播放列表",
     "noAlbum": "没有专辑",
     "playlistCreated": "播放列表已创建。",
     "sleepTimerTooltip": "睡眠定时器",
     "unknownArtist": "未知艺术家",
     "instantMix": "速成合辑",
-    "replaceQueue": "替换队列",
     "goToAlbum": "前往专辑",
-    "queueReplaced": "队列已被替换。",
     "startingInstantMix": "生成速成合辑。",
     "anErrorHasOccured": "发生了一个错误。",
     "responseError": "{error} 状态码 {statusCode}.",
@@ -113,23 +107,12 @@
         }
     },
     "addDownloadLocation": "添加下载路径",
-    "addedToQueue": "添加至队列。",
     "addToQueue": "添加至队列",
     "addToPlaylistTooltip": "添加至播放列表",
     "addToPlaylistTitle": "添加至播放列表",
     "albumArtist": "专辑艺术家",
     "album": "专辑",
     "albums": "专辑",
-    "gridCrossAxisCountSubtitle": "每行使用的网格图块数量 {value}.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
     "shuffleAllTrackCountSubtitle": "在歌曲选项卡或流派页面上使用随机播放按钮时要加载的曲目数量。",
     "errorScreenError": "获取错误列表时出错！ 现在您可能应该在 GitHub 上创建一个问题并清除应用数据",
     "audioService": "音频服务",
@@ -137,10 +120,6 @@
     "cancelSleepTimer": "取消睡眠定时器？",
     "clear": "清除",
     "communityRating": "社区评级",
-    "couldNotFindLibraries": "找不到任何库。",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "dateAdded": "添加日期",
     "dlComplete": "{count} 完成",
     "@dlComplete": {
@@ -187,10 +166,6 @@
             }
         }
     },
-    "directoryMustBeEmpty": "目录必须为空",
-    "downloadMissingImages": "下载缺少的图片",
-    "hideTrackArtistsIfSameAsAlbumArtists": "如果歌曲艺术家与专辑艺术家相同，则隐藏歌曲艺术家",
-    "failedToGetTrackFromDownloadId": "无法通过下载 ID 获取歌曲",
     "grid": "网格",
     "finamp": "Finamp",
     "enableTranscodingSubtitle": "音乐流将由服务器转码。",
@@ -202,7 +177,6 @@
     "list": "列表",
     "logsCopied": "已复制日志。",
     "next": "下一个",
-    "noArtist": "没有艺术家",
     "playCount": "播放计数",
     "noItem": "没有项目",
     "applicationLegalese": "以 Mozilla Public License 2.0 协议许可。\n源代码位于：{sourceCodeLink}。",
@@ -229,42 +203,14 @@
     "shuffleAllTrackCount": "随机播放歌曲数量",
     "tabs": "选项卡",
     "theme": "主题",
-    "gridCrossAxisCount": "{value} 网格横轴数量",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
     "enterLowPriorityStateOnPauseSubtitle": "通知可以在暂停时滑动。 启用此功能还允许 Android 在暂停时终止服务。",
     "showTextOnGridViewSubtitle": "是否在网格音乐屏幕上显示文本（标题、艺术家等）。",
-    "downloadedMissingImages": "{count,plural, =0{未找到缺少的图片} =1{已下载 {count} 张缺少的图片} other{已下载 {count} 张缺少的图片}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "是否在专辑界面隐藏歌曲艺术家（如果他们与专辑艺术家没有区别）。",
     "removeFromMix": "从合辑中删除",
     "addToMix": "添加到合辑",
     "minutes": "分钟",
     "bufferDuration": "媒体时长",
     "disableGesture": "禁用手势",
     "disableGestureSubtitle": "是否禁用手势。",
-    "redownloadedItems": "{count,plural, =0{无需重新下载项目} =1{{count} 项重新下载的项目} other{{count} 项重新下载的项目}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "bufferDurationSubtitle": "缓冲的时间（秒）。重启生效。",
     "removedFromPlaylist": "已从播放列表删除。",
     "removeFromPlaylistTitle": "从此播放列表中移除",
@@ -272,11 +218,6 @@
     "language": "语言",
     "confirm": "确认",
     "showUncensoredLogMessage": "该日志包含您的登录信息。显示？",
-    "resetTabs": "重置选项卡",
-    "insertedIntoQueue": "已插入队列。",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
     "refresh": "刷新",
     "playNext": "下一个播放",
     "@playNext": {
@@ -287,11 +228,8 @@
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
-    "syncDownloadedPlaylists": "同步下载的播放列表",
     "showFastScroller": "显示快速滚动条",
-    "swipeInsertQueueNext": "播放滑动的下一首歌曲",
     "interactions": "交互",
-    "swipeInsertQueueNextSubtitle": "在歌曲列表中滑动时，可以将歌曲作为队列中的下一个项目插入，而不是将其附加到末尾。",
     "about": "关于 Finamp",
     "changeLanguage": "切换语言",
     "@changeLanguage": {
@@ -483,16 +421,6 @@
     "@playlistActionsMenuButtonTooltip": {
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
     },
-    "removeFromPlaylistNamedTitle": "从播放列表 '{playlistName}'中移除",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "playbackModeTranscoding": "转码",
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
@@ -515,7 +443,6 @@
     "@playbackModeLocal": {
         "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
     },
-    "confirmFavoriteRemoved": "已移出收藏",
     "skipToPreviousTrackButtonTooltip": "跳至开头或上一曲",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -622,12 +549,10 @@
         },
         "description": "Track info line in downloads screen lists"
     },
-    "fixedGridSizeSwitchTitle": "使用固定大小的网格图块",
     "redownloadTitle": "自动重新下载转码",
     "@redownloadTitle": {
         "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
     },
-    "fixedGridSizeSwitchSubtitle": "网格图块大小不会随窗口 / 屏幕大小而变化。",
     "enableVibration": "开启震动",
     "allowSplitScreenSubtitle": "播放界面将与其他界面一起显示在更宽的显示屏上。",
     "prioritizePlayerCover": "优先显示专辑封面",
@@ -688,8 +613,6 @@
             }
         }
     },
-    "addToMorePlaylistsTooltip": "添加至更多播放列表",
-    "unknownAlbum": "未知专辑",
     "timeFractionTooltip": "{currentTime} / {totalTime}",
     "@timeFractionTooltip": {
         "description": "Tooltip and accessibility label for the track progress. {currentTime} is the current position within the track, as a translated string like '2 minutes 40 seconds', and {totalTime} is the total duration of the track, also a translated string."
@@ -709,7 +632,6 @@
         }
     },
     "goToGenre": "前往流派",
-    "confirmFavoriteAdded": "已加入收藏",
     "confirmAddedToPlaylist": "已添加至播放列表。",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
@@ -1189,7 +1111,6 @@
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
-    "fixedGridSizeTitle": "网格图块大小",
     "fixedGridTileSizeEnum": "{size, select, small{小} medium{中} large{大} veryLarge{超大} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
@@ -1311,25 +1232,11 @@
     "@showCoversOnAlbumScreenSubtitle": {
         "description": "Subtitle for the setting that controls if album covers are shown for each track separately on the album screen"
     },
-    "emptyTopTracksList": "你还没有听过该艺术家的任何歌曲。",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
-    },
     "playerScreenMinimumCoverPaddingEditorSubtitle": "播放界面上专辑封面周围的最小内边距，以屏幕宽度的百分比表示。",
     "@playerScreenMinimumCoverPaddingEditorSubtitle": {
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
     "noActiveDownloads": "无正在下载。",
-    "removeFromPlaylistNamedTooltip": "从播放列表 '{playlistName}'中移除",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "bufferSizeSubtitle": "缓冲区的容量（MB）。重启生效",
     "addToMorePlaylistsTitle": "添加至更多播放列表",
     "shuffleAllQueueSource": "随机播放",
@@ -1636,18 +1543,12 @@
     "@deleteFromTargetDialogText": {
         "description": "(Important: Note the space in front of some cases) A Confirm Prompt used whenever an item is about to be deleted from the device or server. The Server case should explain that this cannot be reverted, this information is not needed for the device since the user can just download the track again. The delete Type adapts the server text even more in can the user can or cant delete the item."
     },
-    "deleteDownloadsConfirmButtonText": "删除",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
     "oneLineMarqueeTextButton": "自动滚动长标题",
     "oneLineMarqueeTextButtonSubtitle": "自动滚动太长而无法在两行中显示的歌曲标题",
     "noItemsDownloaded": "沒有下载任何项目。",
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
     },
-    "marqueeOrTruncateButton": "对长标题使用省略号",
-    "marqueeOrTruncateButtonSubtitle": "在长标题末尾显示...而不是滚动文本",
     "allowDeleteFromServerTitle": "允许从服务器删除",
     "@allowDeleteFromServerTitle": {
         "description": "Title for the setting that controls if items can be deleted from the server"
@@ -1692,26 +1593,10 @@
     "@librarySelectError": {
         "description": "Error shown when the library select screen fails to load."
     },
-    "deleteDownloadsPrompt": "您确定要从此设备中删除 {itemType, select, album{album} playlist{playlist} artist{artist} genre{genre} track{track} library{library} other{item}} '{itemName}' 吗？",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
     "specialDownloads": "特别下载",
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
     },
-    "hideQueueButton": "隐藏队列按钮",
-    "hideQueueButtonSubtitle": "隐藏播放器屏幕上的队列按钮。向上滑动即可访问队列。",
     "autoOfflineOptionDisconnected": "断开",
     "@autoOfflineOptionDisconnected": {
         "description": "This is shown when the autoOffline feature is set to Disconnected, this means offline mode will be automatically enabled when either wifi, ethernet or cellular is active"
@@ -1755,7 +1640,6 @@
     "@autoOfflineNotification": {
         "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
     },
-    "playbackReporting": "播放报告",
     "playOnStaleDelay": "“继续播放”会话超时",
     "@playOnStaleDelay": {
         "description": "Label for the setting that controls how long a PlayOn remote session is considered active"
@@ -1907,10 +1791,8 @@
     "favoriteTracks": "收藏的歌曲",
     "favoriteAlbums": "收藏的专辑",
     "favoriteArtists": "收藏的艺术家",
-    "randomArtists": "艺术家（随机选择）",
     "mostPlayed": "最常播放",
     "favorites": "收藏",
-    "randomFavoritesFirst": "随机（收藏优先）",
     "recentlyAdded": "最近添加",
     "latestReleases": "最新发布",
     "genreItemSectionFilterChipOrderSubtitle": "控制项目部分筛选器的顺序。",
@@ -1927,7 +1809,6 @@
     },
     "autoSwitchItemCurationTypeSubtitle": "启用后，如果没有可用的项目（例如，没有特定艺术家的收藏），艺术家和流派界面上的项目部分将自动切换到不同的项目类型。",
     "randomTracks": "歌曲（随机选择）",
-    "randomAlbums": "专辑（随机选择）",
     "itemSectionsOrderSubtitle": "控制项目部分的顺序。",
     "@itemSectionsOrderSubtitle": {
         "description": "Description of the setting that controls the order of item sections on the screens."
@@ -1961,7 +1842,6 @@
     "@noGenres": {
         "description": "Gets shown when there are no genres available for an album or artist"
     },
-    "onlineMode": "在线模式",
     "genreListsInheritSorting": "完整列表排序继承",
     "@genreListsInheritSorting": {
         "description": "Label for the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
@@ -2013,10 +1893,6 @@
     "@genreFilterPlaylistScreensSubtitle": {
         "description": "Description of the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
     },
-    "curatedItemsMostPlayedOfflineTooltip": "在离线模式下不可用。",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
-    },
     "defaultOrder": "默认排序",
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
@@ -2033,14 +1909,6 @@
             "value": {
                 "type": "int",
                 "example": "5"
-            }
-        }
-    },
-    "shuffleCountButton": "随机播放 ({count,plural,=1{{count} 首歌曲} other{{count} 首歌曲}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
             }
         }
     },
@@ -2276,10 +2144,6 @@
     "preferLocalNetworkEnableSwitchDescription": "位于服务器本地网络时，是否改用本地地址进行连接",
     "preferLocalNetworkPublicAddressSettingTitle": "外部访问地址",
     "preferLocalNetworkPublicAddressSettingDescription": "用于连接 Jellyfin 服务器的主要访问地址",
-    "preferLocalNetworkInfoBox": "需要开启定位功能并授予定位权限，才能读取当前网络名称。",
-    "@preferLocalNetworkInfoBox": {
-        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
-    },
     "clearQueueOnStopEventTitle": "外部停止时清空队列",
     "@clearQueueOnStopEventTitle": {
         "description": "Title for the setting that controls if OS stop commands clear the queue."
@@ -2468,10 +2332,6 @@
         "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
     },
     "save": "保存",
-    "invalidColorCode": "无效的颜色代码",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
     "startRadio": "开启电台",
     "@startRadio": {
         "description": "Menu label for starting a radio from a playlist, album, etc."
@@ -2522,14 +2382,6 @@
     "@ping": {
         "description": "Gets shown in the Snackbar when using the Test Connection Button inside the Network Settings. true means reachable, false means unreachable. the first value is for the public address, the second value is fot the home address."
     },
-    "radioModeSettingsTitle": "电台模式",
-    "@radioModeSettingsTitle": {
-        "description": "Title for the setting that controls the radio mode/algorithm."
-    },
-    "radioModeSettingsSubtitle": "设置电台用于选择要添加的歌曲的方法。",
-    "@radioModeSettingsSubtitle": {
-        "description": "Subtitle for the setting that controls the radio mode/algorithm."
-    },
     "radioModeMenuTitle": "选择电台模式",
     "@radioModeMenuTitle": {
         "description": "Title for menu that allows users to choose the radio mode."
@@ -2569,10 +2421,6 @@
     "radioModeDisabledSubtitle": "点击开启",
     "@radioModeDisabledSubtitle": {
         "description": "Subtitle displayed in the queue to show that radio mode is disabled."
-    },
-    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "当前模式不支持离线模式。",
-    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
-        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
     },
     "radioModeUnavailableWhileOfflineDescription": "离线时不可用",
     "@radioModeUnavailableWhileOfflineDescription": {
@@ -2705,16 +2553,6 @@
         },
         "description": "Title displayed in the queue, showing which radio mode/algorithm is currently being used."
     },
-    "radioModeOptionConfirmation": "已切换到{option, select, reshuffle{队列重排模式} random{随机推荐模式} similar{相似推荐模式} continuous{连续播放模式} albumMix{专辑混搭模式} other{{option}}}",
-    "@radioModeOptionConfirmation": {
-        "placeholders": {
-            "option": {
-                "type": "String",
-                "description": "Corresponds to RadioMode.name"
-            }
-        },
-        "description": "Confirmation displayed when the radio mode is changed."
-    },
     "radioModeDescription": "{mode, select, reshuffle{持续重排队列} random{基于初始选择随机添加歌曲} similar{基于原队列追加歌曲} continuous{基于当前歌曲追加} albumMix{基于相似专辑追加歌曲} other{}}",
     "@radioModeDescription": {
         "placeholders": {
@@ -2807,10 +2645,6 @@
     "androidImageErrorPrompt": "由于操作系统限制，无法将图片写入 Android 的 Music 文件夹。请选择其他位置。",
     "@androidImageErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
-    },
-    "addDownloadLocationsErrorButton": "仍要添加",
-    "@addDownloadLocationsErrorButton": {
-        "description": "Label shown on button for adding a download location we suspect to be buggy"
     },
     "syncFailedWarningShort": "警告：部分下载内容无法与服务器同步。",
     "@syncFailedWarningShort": {

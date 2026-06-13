@@ -11,16 +11,6 @@
     "viewTypeSubtitle": "Тип перегляду головного екрану",
     "list": "Список",
     "landscape": "Альбомний",
-    "gridCrossAxisCount": "{value} Кількість стовпців у сітці",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
     "showTextOnGridView": "Показати текст у режимі сітки",
     "useCoverAsBackgroundSubtitle": "Чи використовувати розмиту обкладинку альбому як фон у різних частинах застосунку.",
     "disableGestureSubtitle": "Чи вимикати жести.",
@@ -37,14 +27,10 @@
     "playlistCreated": "Плейліст створено.",
     "noAlbum": "Без альбому",
     "noItem": "Немає елемента",
-    "noArtist": "Немає Виконавця",
     "unknownArtist": "Невідомий виконавець",
     "queue": "Черга",
-    "replaceQueue": "Замінити чергу",
     "instantMix": "Миттєвий мікс",
     "goToAlbum": "Перейти до альбому",
-    "addedToQueue": "Додано в чергу.",
-    "queueReplaced": "Чергу змінено.",
     "startingInstantMix": "Початок миттєвого міксу.",
     "anErrorHasOccured": "Сталася помилка.",
     "responseError": "{error} Код статусу {statusCode}.",
@@ -65,10 +51,6 @@
     "bufferDurationSubtitle": "Тривалість буферизації в секундах. Потрібен перезапуск.",
     "language": "Мова",
     "serverUrl": "URL серверу",
-    "couldNotFindLibraries": "Не вдається знайти жодної бібліотеки.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "playlists": "Плейлісти",
     "album": "Альбом",
     "trackCount": "{count,plural,=1{{count} Трек} few{{count} Треки} other{{count} Треків}}",
@@ -109,15 +91,6 @@
     },
     "datePlayed": "Дата останнього відтворювання",
     "name": "Ім'я",
-    "downloadedMissingImages": "{count,plural, =0{Відсутніх зображень не знайдено} =1{Завантажено {count} відсутнє зображення} other{Завантажено {count} відсутніх зображень}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "dlComplete": "{count} виконано",
     "@dlComplete": {
         "placeholders": {
@@ -145,7 +118,6 @@
             }
         }
     },
-    "failedToGetTrackFromDownloadId": "Не вдалося отримати трек із ідентифікатора завантаження",
     "discNumber": "Диск {number}",
     "@discNumber": {
         "placeholders": {
@@ -154,7 +126,6 @@
             }
         }
     },
-    "updateButtonLabel": "Оновити",
     "dlRunning": "{count} запущено",
     "@dlRunning": {
         "placeholders": {
@@ -179,30 +150,15 @@
     "addDownloadLocation": "Додати теку завантаження",
     "unknownError": "Невідома помилка",
     "selectDirectory": "Вибрати теку",
-    "directoryMustBeEmpty": "Тека повинна бути порожньою",
     "enterLowPriorityStateOnPauseSubtitle": "Дозволяє змахнути сповіщення під час паузи. Також дозволяє Android вимикати службу під час паузи.",
     "viewType": "Тип перегляду",
-    "gridCrossAxisCountSubtitle": "Кількість плиток у сітці в одному рядку, коли {value}.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
     "customLocationsBuggy": "Користувацькі розташування можуть працювати з помилками, тому в більшості випадків їх не рекомендується використовувати. Розташування в системній папці «Музика» не дозволяють зберігати обкладинки альбомів через обмеження ОС.",
     "grid": "Сітка",
-    "portrait": "Портретний",
     "showTextOnGridViewSubtitle": "Чи показувати текст (назву, виконавця тощо) на головному екрані сітки.",
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Чи показувати виконавців треку на екрані альбому, якщо вони не відрізняються від виконавців альбому.",
     "disableGesture": "Вимкнути жести",
     "useCoverAsBackground": "Використовувати розмиту обкладинку як фон",
     "light": "Світла",
-    "hideTrackArtistsIfSameAsAlbumArtists": "Приховувати виконавців треку, якщо вони збігаються з виконавцями альбому",
     "sleepTimerTooltip": "Таймер сну",
-    "invalidNumber": "Некоректне число",
     "addToPlaylistTooltip": "Додати до плейлісту",
     "removeFromPlaylistTitle": "Видалити з цього плейлісту",
     "newPlaylist": "Новий Плейліст",
@@ -221,14 +177,6 @@
         }
     },
     "removedFromPlaylist": "Видалено з плейлісту.",
-    "redownloadedItems": "{count,plural, =0{Повторне завантаження не потрібне.} =1{Повторно завантажено {count} елемент} few{Повторно завантажено {count} елементи} other{Повторно завантажено {count} елементів}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "bufferDuration": "Тривалість буферу",
     "offlineMode": "Офлайн-режим",
     "sortOrder": "Порядок сортування",
@@ -260,11 +208,9 @@
     "productionYear": "Рік виходу",
     "random": "Випадково",
     "revenue": "Дохід",
-    "downloadMissingImages": "Завантажити відсутні зображення",
     "playButtonLabel": "Відтворити",
     "shuffleButtonLabel": "Перемішати",
     "playlistUpdated": "Ім'я плейлісту змінено.",
-    "downloadsDeleted": "Завантаження видалено.",
     "addDownloads": "Додати завантаження",
     "location": "Розташування",
     "downloadsQueued": "Завантаження файлів",
@@ -272,18 +218,12 @@
     "stackTrace": "Журнал помилок",
     "confirm": "Підтвердити",
     "showUncensoredLogMessage": "Цей журнал містить ваші дані для входу. Показати?",
-    "insertedIntoQueue": "Додано до черги.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
     "refresh": "Поновити",
     "noMusicLibrariesTitle": "Музичні бібліотеки відсутні",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
     "noMusicLibrariesBody": "Finamp не знайшов жодної музичної бібліотеки. Переконайтеся, що ваш сервер Jellyfin містить принаймні одну бібліотеку з типом вмісту \"Музика\".",
-    "resetTabs": "Скинути вкладки",
-    "syncDownloadedPlaylists": "Синхронізувати завантажені плейлісти",
     "showFastScroller": "Показувати швидку прокрутку",
     "playNext": "Відтворити наступним",
     "@playNext": {
@@ -407,24 +347,12 @@
     "@timeFractionTooltip": {
         "description": "Tooltip and accessibility label for the track progress. {currentTime} is the current position within the track, as a translated string like '2 minutes 40 seconds', and {totalTime} is the total duration of the track, also a translated string."
     },
-    "addToMorePlaylistsTooltip": "Додати до інших плейлістів",
-    "removeFromPlaylistNamedTooltip": "Видалити зі плейліст '{playlistName}'",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "playbackModeLocal": "Відтворюється локально",
     "@playbackModeLocal": {
         "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
     },
     "goToArtist": "Перейти до виконавця",
     "goToGenre": "Перейти до жанру",
-    "confirmFavoriteAdded": "Додано до Улюблених",
     "skipToNextTrackButtonTooltip": "На наступний трек",
     "@skipToNextTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the next track"
@@ -545,20 +473,9 @@
         "description": "Tooltip for button that can be used to re-enable auto scroll on the lyrics view after the user manually scrolled"
     },
     "removeFromPlaylistConfirm": "Вилучити",
-    "confirmFavoriteRemoved": "Вилучено з Улюблених",
     "confirmAddedToPlaylist": "Додано до плейлісту.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
-    },
-    "removeFromPlaylistNamedTitle": "Видалити з Плейлісту '{playlistName}'",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
     },
     "shuffleNext": "Перемішати наступне",
     "@shuffleNext": {
@@ -643,7 +560,6 @@
     "@playbackSpeedControlSettingSubtitle": {
         "description": "Subtitle for the playback speed visibility setting"
     },
-    "unknownAlbum": "Невідомий альбом",
     "speed": "Швидкість",
     "@speed": {
         "description": "Used as a placeholder in the input of the playback speed menu"
@@ -1122,9 +1038,6 @@
         },
         "description": "Collection info line in downloads screen lists"
     },
-    "fixedGridSizeSwitchTitle": "Використовувати плитки з фіксованим розміром сітки",
-    "fixedGridSizeSwitchSubtitle": "Розмір плиток сітки не будуть адаптовані до розміру вікна/екрану.",
-    "fixedGridSizeTitle": "Розмір плитки сітки",
     "fixedGridTileSizeEnum": "{size, select, small{Маленький} medium{Середній} large{Великий} veryLarge{Дуже великий} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
@@ -1361,8 +1274,6 @@
             }
         }
     },
-    "swipeInsertQueueNext": "Відтворити додану композицію наступною",
-    "swipeInsertQueueNextSubtitle": "Увімкнути можливість вставляти композицію як наступний об'єкт у черзі, якщо вона була додана замість вставки у кінець черги.",
     "startInstantMixForIndividualTracksSwitchTitle": "Почати миттєвий мікс для окремих композицій",
     "@startInstantMixForIndividualTracksSwitchTitle": {
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
@@ -1564,10 +1475,6 @@
     "@lyricsFontSizeTitle": {
         "description": "Title for the setting that controls the font size of lyrics in the lyrics view"
     },
-    "emptyTopTracksList": "Ви ще не слухали жодного треку від цього виконавця.",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
-    },
     "keepScreenOnSubtitle": "Коли лишати екран увімкненим",
     "emptyFilteredListTitle": "Не знайдено об'єктів",
     "@emptyFilteredListTitle": {
@@ -1597,9 +1504,7 @@
     "bufferDisableSizeConstraintsTitle": "Не обмежувати розмір буферу",
     "bufferSizeTitle": "Розмір буферу",
     "bufferSizeSubtitle": "Розмір буфера в МБ. Потрібен перезапуск",
-    "marqueeOrTruncateButton": "Використовуйте три крапки для довгих заголовків",
     "oneLineMarqueeTextButton": "Довгі заголовки з автоматичним прокручуванням",
-    "hideQueueButtonSubtitle": "Приховувати кнопку черги на екрані програвача. Проведіть угору, щоб відкрити черги.",
     "itemDeletedSnackbar": "{itemType, select, album{Album} playlist{Playlist} artist{Artist} genre{Genre} track{Track} library{Library} other{Item}} видалено з {deviceType, select, device{Device} server{сервера} other{unknown}}",
     "@itemDeletedSnackbar": {
         "description": "Used whenever item gets deleted from the device or server, message in snackbar"
@@ -1620,9 +1525,7 @@
     "@downloadSizeWarningCutoffSubtitle": {
         "description": "Subtitle for the setting controlling when to warn about a large download"
     },
-    "hideQueueButton": "Кнопка приховати чергу",
     "oneLineMarqueeTextButtonSubtitle": "Автоматично прокручуйте назви композицій, які занадто довгі для відображення в два рядки",
-    "marqueeOrTruncateButtonSubtitle": "Показувати … у кінці довгих заголовків замість тексту, що прокручується",
     "deleteFromTargetConfirmButton": "Видалити{target, select, device{ from Device} server{ from Server} other{}}",
     "@deleteFromTargetConfirmButton": {
         "description": "(Important: Note the space in front of some cases) The button the user needs to press to execute the delete action. If no target is set, the text should just be a generic 'delete' text. This button is both visible before and after the delete confirm prompt."
@@ -1635,24 +1538,6 @@
                 "type": "int"
             }
         }
-    },
-    "deleteDownloadsConfirmButtonText": "Видалити",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
-    "deleteDownloadsPrompt": "Ви впевнені, що хочете видалити {itemType, select, album{альбом} playlist{плейліст} artist{виконавця} genre{жанр} track{трек} library{бібліотеку} other{елемент}} '{itemName}' з цього пристрою?",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
     },
     "releaseDateFormatMonthYear": "Місяць і рік",
     "@releaseDateFormatMonthYear": {
@@ -1753,7 +1638,6 @@
     "@libraryDownloads": {
         "description": "Title for the library downloads section on the downloads screen."
     },
-    "playbackReporting": "Звіт про відтворення",
     "playOnStaleDelay": "Тайм-аут сесії «Play On»",
     "@playOnStaleDelay": {
         "description": "Label for the setting that controls how long a PlayOn remote session is considered active"
@@ -1923,8 +1807,6 @@
     "@genreItemSectionFilterChipOrderSubtitle": {
         "description": "Description of the setting that controls the order of item sections filter chips."
     },
-    "randomAlbums": "Альбоми (випадковий вибір)",
-    "randomFavoritesFirst": "Випадково (спочатку Улюблені)",
     "showArtistsTracksSectionSubtitle": "Чи показувати розділ із п’ятьма треками. Якщо ввімкнено, на сторінці виконавця з’являться секції з Найчастіше відтворюваними, Улюбленими, Випадковими, Останніми релізами, Нещодавно доданими та Нещодавно відтвореними треками.",
     "latestAlbums": "Найновіші альбоми",
     "recentlyAdded": "Нещодавно додані",
@@ -1971,12 +1853,6 @@
     },
     "favoriteTracks": "Улюблені треки",
     "favoriteArtists": "Улюблені виконавці",
-    "curatedItemsMostPlayedOfflineTooltip": "Недоступно в автономному режимі.",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
-    },
-    "randomArtists": "Виконавці (випадковий вибір)",
-    "onlineMode": "Онлайн-режим",
     "topAlbums": "Найкращі альбоми",
     "topArtists": "Найкращі виконавці",
     "latestTracks": "Найновіші треки",
@@ -2171,10 +2047,6 @@
     },
     "preferLocalNetworkEnableSwitchTitle": "Надавати перевагу локальній мережі",
     "preferLocalNetworkPublicAddressSettingTitle": "Публічна адреса",
-    "preferLocalNetworkInfoBox": "Ця функція вимагає дозволів на доступ до геоданих (і геодані мають бути ввімкнені), щоб зчитувати назву мережі.",
-    "@preferLocalNetworkInfoBox": {
-        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
-    },
     "menuButtonLabel": "Більше дій",
     "@menuButtonLabel": {
         "description": "Generic label for menu buttons shown throughout the app. Used for the album, artist, playlist, etc. menus"
@@ -2343,14 +2215,6 @@
     },
     "logoutButtonSubtitle": "Вхід на інший сервер призведе до видалення наявних завантажень",
     "adaptive": "Адаптивний",
-    "shuffleCountButton": "Перемішати ({count,plural,=1{{count} Трек} few{{count} Треки} other{{count} Треків}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "none": "Жоден",
     "additionalBaseItemInfoTitle": "Додаткова інформація про товар",
     "@additionalBaseItemInfoTitle": {
@@ -2470,10 +2334,6 @@
     "androidImageErrorPrompt": "Через обмеження ОС нам не вдається записати зображення в папку «Музика» на Android. Вам слід вибрати інше місце.",
     "@androidImageErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
-    },
-    "addDownloadLocationsErrorButton": "Додати все одно",
-    "@addDownloadLocationsErrorButton": {
-        "description": "Label shown on button for adding a download location we suspect to be buggy"
     },
     "syncFailedWarningShort": "Попередження: Не вдалося синхронізувати деякі завантаження із сервером.",
     "@syncFailedWarningShort": {
@@ -2619,10 +2479,6 @@
         "description": "Hint text for the color code input field"
     },
     "save": "Зберегти",
-    "invalidColorCode": "Недійсний код кольору",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
     "downloadAllPlaylistsSettingWarning": "Примітка: Це завантажить усі елементи з усіх списків відтворення, незалежно від того, з якої бібліотеки вони походять.",
     "snackbarOptionsMenuTitle": "Керування повідомленнями",
     "@snackbarOptionsMenuTitle": {
@@ -2690,14 +2546,6 @@
             }
         }
     },
-    "radioModeSettingsTitle": "Режим радіо",
-    "@radioModeSettingsTitle": {
-        "description": "Title for the setting that controls the radio mode/algorithm."
-    },
-    "radioModeSettingsSubtitle": "Встановлює метод, який функція радіо використовує для вибору пісень для додавання.",
-    "@radioModeSettingsSubtitle": {
-        "description": "Subtitle for the setting that controls the radio mode/algorithm."
-    },
     "radioModeMenuTitle": "Виберіть режим радіо",
     "@radioModeMenuTitle": {
         "description": "Title for menu that allows users to choose the radio mode."
@@ -2750,16 +2598,6 @@
     "@radioModeDisableButtonSubtitle": {
         "description": "Subtitle for the option that disables radio mode."
     },
-    "radioModeOptionConfirmation": "Перемикається на {option, select, reshuffle{reshuffle mode} random{random mode} similar{similar mode} continuous{continuous mode} albumMix{album mix} other{{option}}}",
-    "@radioModeOptionConfirmation": {
-        "placeholders": {
-            "option": {
-                "type": "String",
-                "description": "Corresponds to RadioMode.name"
-            }
-        },
-        "description": "Confirmation displayed when the radio mode is changed."
-    },
     "radioModeEnabledSubtitle": "Натисніть, щоб налаштувати",
     "@radioModeEnabledSubtitle": {
         "description": "Subtitle displayed in the queue to show when radio mode is enabled."
@@ -2767,10 +2605,6 @@
     "radioModeDisabledSubtitle": "Натисніть, щоб увімкнути",
     "@radioModeDisabledSubtitle": {
         "description": "Subtitle displayed in the queue to show that radio mode is disabled."
-    },
-    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "Поточний режим недоступний офлайн.",
-    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
-        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
     },
     "radioModeDescription": "{mode, select, reshuffle{Безперервно перетасовувати чергу} random{Додавати треки випадковим чином з початкового вибору} similar{Додавати на основі оригінальної черги} continuous{Додавати на основі поточного треку} albumMix{Додавати схожі альбоми} other{}}",
     "@radioModeDescription": {

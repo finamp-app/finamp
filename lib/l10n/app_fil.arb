@@ -174,10 +174,6 @@
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
-    "couldNotFindLibraries": "Hindi makahanap ng koleksyon.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "allLibraries": "Lahat ng Koleksyon",
     "@allLibraries": {
         "description": "All Libraries"

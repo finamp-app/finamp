@@ -147,11 +147,6 @@
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
     },
-    "downloadMissingImages": "הורד תמונות חסרות",
-    "deleteDownloadsConfirmButtonText": "מחיקה",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
     "specialDownloads": "הורדות מיוחדות",
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
@@ -185,7 +180,6 @@
     "addDownloadLocation": "הוסף מיקום הורדה",
     "selectDirectory": "בחרו תיקיה",
     "unknownError": "שגיאה לא ידועה",
-    "directoryMustBeEmpty": "התיקיה חייבת להיות ריקה",
     "list": "רשימה",
     "none": "ללא",
     "playbackSpeedControlSetting": "נראות מהירות נגינה",
@@ -236,13 +230,10 @@
     "hours": "שעות",
     "seconds": "שניות",
     "minutes": "דקות",
-    "invalidNumber": "מספר לא תקין",
     "sleepTimerTooltip": "טיימר שינה",
     "noAlbum": "אין אלבום",
     "noItem": "אין פריט",
-    "noArtist": "אין אמן",
     "unknownArtist": "אמן לא ידוע",
-    "unknownAlbum": "אלבום לא ידוע",
     "playbackModeDirectPlaying": "נגינה ישירה",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -252,22 +243,10 @@
         "description": "Popup menu item title for adding an item to the end of the play queue."
     },
     "queue": "תור",
-    "replaceQueue": "החלפת תור",
     "goToAlbum": "מעבר לאלבום",
     "goToArtist": "מעבר לאמן",
     "removeFavorite": "הסרה ממועדפים",
     "addFavorite": "הוספה למועדפים",
-    "confirmFavoriteAdded": "נוסף למועדפים",
-    "confirmFavoriteRemoved": "הוסר ממועדפים",
-    "addedToQueue": "נוסף לתור.",
-    "@addedToQueue": {
-        "description": "Snackbar message that shows when the user successfully adds items to the end of the play queue."
-    },
-    "insertedIntoQueue": "הוכנס לתור.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
-    "queueReplaced": "תור הוחלף.",
     "anErrorHasOccured": "קרתה תקלה.",
     "startRadio": "התחלת רדיו",
     "@startRadio": {
@@ -370,10 +349,6 @@
     "syncFailedWarningShort": "אזהרה: כישלון בסנכרון חלק מההורדות עם השרת.",
     "@syncFailedWarningShort": {
         "description": "Simple warning message for when download sync fails due to items being deleted from the server."
-    },
-    "addDownloadLocationsErrorButton": "הוסף בכל מקרה",
-    "@addDownloadLocationsErrorButton": {
-        "description": "Label shown on button for adding a download location we suspect to be buggy"
     },
     "androidImageErrorPrompt": "אנחנו לא מצליחים להוסיף תמונות לתיקיית המוזיקה של אנדרואיד בגלל הגבלות של מערכת ההפעלה.  תצטרך לבחור מיקום אחר.",
     "@androidImageErrorPrompt": {
@@ -490,10 +465,6 @@
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
-    "couldNotFindLibraries": "לא נמצאו ספריות מוזיקה.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "tracks": "רצועות שמע",
     "genres": "ז'אנרים",
     "noGenres": "אין ז'אנרים",
@@ -524,12 +495,10 @@
         "description": "Label for button shown during the login process that allows the user to view the app logs"
     },
     "offlineMode": "מצב לא מקוון",
-    "onlineMode": "מצב מקוון",
     "title": "כותרת",
     "playCount": "כמות השמעות",
     "revenue": "רווחים",
     "adaptive": "אדפטיבי",
-    "syncDownloadedPlaylists": "סנכרון פלייליסטים שהורדו",
     "activeDownloads": "הורדות פעילות",
     "dlComplete": "{count} הושלמו",
     "@dlComplete": {
@@ -586,7 +555,6 @@
     "@librarySelectError": {
         "description": "Error shown when the library select screen fails to load."
     },
-    "failedToGetTrackFromDownloadId": "נכשל בהשגת רצועת שמע מתוך ID הורדה",
     "noItemsDownloaded": "לא הורדו פריטים.",
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
@@ -615,13 +583,11 @@
     "@playbackActionPageNextUp": {
         "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
     },
-    "updateButtonLabel": "עדכון",
     "updatePlaylistButtonLabel": "עדכון פלייליסט",
     "@updatePlaylistButtonLabel": {
         "description": "Label for the button that updates the playlist on the edit playlist screen"
     },
     "playlistUpdated": "פלייליסט עודכן.",
-    "downloadsDeleted": "ההורדות נמחקו.",
     "addButtonLabel": "הוספה",
     "shareLogs": "שיתוף יומנים",
     "exportLogs": "שמירת יומנים",
@@ -655,13 +621,10 @@
     },
     "useCoverAsBackground": "שימוש בתמונה מטושטשת כרקע",
     "useCoverAsBackgroundSubtitle": "האם להשתמש בתמונת אלבום מטושטשת כרגע בחלקים מסויימים של האפליקציה.",
-    "hideTrackArtistsIfSameAsAlbumArtists": "הסתרת אמני רצועת השמע אם דומים לאמני האלבום",
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "האם להציג את אמני רצועת השמע במסך האלבום אם הם לא שונים מאמני האלבום.",
     "shuffleSome": "ערבוב כמה",
     "shuffleAll": "ערבוב הכל",
     "shuffleButtonLabel": "ערבוב",
     "required": "צריך",
-    "playbackReporting": "דיווח נגינה",
     "interactions": "אינטראקציות",
     "enableTranscodingSubtitle": "מקודד זרמי מוזיקה בצד השרת.",
     "shuffleAllTrackCountSubtitle": "כמה רצועות שמע לטעון כאשר משתמשים בכפתור ערבב הכל בתווית הרצועות שמע או מסך הז׳אנר.",
@@ -672,7 +635,6 @@
     "@reset": {
         "description": "Used for buttons in the playback speed menu and the settings"
     },
-    "portrait": "אנכי",
     "landscape": "אופקי",
     "showTextOnGridView": "הצגת טקסט בתצוגת רשת",
     "showTextOnGridViewSubtitle": "האם להראות את הטקסט (שם, אמן וכו') בתצוגת רשת במסך המוסיקה.",
@@ -709,10 +671,6 @@
     "@colorCodeHint": {
         "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
     },
-    "invalidColorCode": "קוד צבע לא תקין",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
     "tabs": "תוויות",
     "timeFractionTooltip": "{currentTime} מתוך {totalTime}",
     "@timeFractionTooltip": {
@@ -744,28 +702,7 @@
     },
     "addToPlaylistTooltip": "הוספה לפלייליסט",
     "addToPlaylistTitle": "הוספה לפלייליסט",
-    "addToMorePlaylistsTooltip": "הוספה לעוד פלייליסטים",
     "addToMorePlaylistsTitle": "הוספה לעוד פלייליסטים",
-    "removeFromPlaylistNamedTooltip": "הסרה מהפלייליסט '{playlistName}'",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "removeFromPlaylistNamedTitle": "הסרה מהפלייליסט '{playlistName}'",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "newPlaylist": "פלייליסט חדש",
     "createButtonLabel": "יצירה",
     "playlistCreated": "פלייליסט נוצר.",
@@ -933,15 +870,6 @@
     "@reportQueueToServerSubtitle": {
         "description": "Description of the setting that toggles reporting of the current queue to the Jellyfin server"
     },
-    "downloadedMissingImages": "{count,plural, =0{לא נמצאו תמונות חסרות} =1{ירדה תמונה חסרה {count}} other{ירדו {count} תמונות חסרות}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "downloadCount": "{count,plural, =1{ירד {count}} other{{count} ירדו}}",
     "@downloadCount": {
         "placeholders": {
@@ -957,20 +885,6 @@
                 "type": "int"
             }
         }
-    },
-    "deleteDownloadsPrompt": "האם למחוק את ה{itemType, select, album{אלבום} playlist{פלייליסט} artist{אמן} genre{ז'אנר} track{רצועת שמע} library{ספרייה} other{פריט}} '{itemName}' מהמכשיר הזה?",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
     },
     "trackCount": "{count,plural,=1{רצועת שמע {count}} other{{count} רצועות שמע}}",
     "@trackCount": {
@@ -1039,14 +953,6 @@
     "@playNext": {
         "description": "Used for adding a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "shuffleCountButton": "ערבוב ({count,plural,=1{רצועת שמע {count}} other{{count} רצועות שמע}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "offlineTrackCount": "{count,plural,=1{רצועת שמע {count}} other{{count} רצועות שמע}}, {downloads} ירדו",
     "@offlineTrackCount": {
         "placeholders": {
@@ -1063,16 +969,6 @@
         "placeholders": {
             "count": {
                 "type": "int"
-            }
-        }
-    },
-    "gridCrossAxisCountSubtitle": "כמות אריחי רשת לשימוש בכל שורה במצב {value}.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
             }
         }
     },
@@ -1144,10 +1040,7 @@
     "favoriteAlbums": "אלבומים מועדפים",
     "favoriteArtists": "אמנים מועדפים",
     "randomTracks": "רצועות שמע (בחירות אקראיות)",
-    "randomAlbums": "אלבומים (בחירות אקראיות)",
-    "randomArtists": "אמנים (בחירות אקראיות)",
     "mostPlayed": "הכי מנוגן",
-    "randomFavoritesFirst": "אקראי (מועדפים קודם)",
     "recentlyAdded": "נוספו לאחרונה",
     "recentlyPlayed": "נוגנו לאחרונה",
     "latestReleases": "יצאו לאחרונה",
@@ -1216,26 +1109,8 @@
         }
     },
     "stackTrace": "מעקב המדד (Stack Trace)",
-    "gridCrossAxisCount": "מספר ציר רוחב רשת במצב {value}",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
     "autoSwitchItemCurationTypeSubtitle": "כאשר מופעל, סקציות פריטים במסכי האמנים והג'אנרים יוחלפו לסוג בחירה שונה אם אין פריטים מתאימים (למשל, אין מועדפים לאמן ספציפי).",
     "autoSwitchItemCurationTypeTitle": "שינוי אוטומטי של מצב בחירת פריט",
-    "redownloadedItems": "{count,plural, =0{לא נדרש להוריד מחדש.} =1{הורד מחדש פריט {count}} other{הורדו מחדש {count} פריטים}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "confirmAddToNextUp": "נוסף {type, select, track{רצועת שמע} album{אלבום} artist{אמן} playlist{פלייליסט} genre{ג'אנר} disc{דיסק} other{פריט}} לבא בתור",
     "@confirmAddToNextUp": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the \"Next Up\" queue",
@@ -1366,7 +1241,6 @@
     "confirm": "אישור",
     "close": "סגירה",
     "showUncensoredLogMessage": "היומן הזה מכיל את פרטי ההתחברות שלך. להציג?",
-    "resetTabs": "איפוס תוויות",
     "resetToDefaults": "איפוס לברירות מחדל",
     "noMusicLibrariesTitle": "אין ספריות מוזיקה",
     "@noMusicLibrariesTitle": {
@@ -1538,12 +1412,8 @@
     "allowSplitScreenSubtitle": "הנגן יוצג לצד צגים אחרים במסכים רחבים.",
     "enableVibration": "הפעלת רטט",
     "enableVibrationSubtitle": "האם להפעיל רטט.",
-    "hideQueueButton": "הסתרת כפתור התור",
-    "hideQueueButtonSubtitle": "הסתרת כפתור התור במסך הנגן. החלקה למעלה תיכנס לתור.",
     "oneLineMarqueeTextButton": "גלילה אוטומטית בכותרות ארוכות",
     "oneLineMarqueeTextButtonSubtitle": "גלילה אוטומטית בכותרות רצועות שמע ארוכות מידי כדי להראות בשתי שורות",
-    "marqueeOrTruncateButton": "שימוש בהשמטה לכותרות ארוכות",
-    "marqueeOrTruncateButtonSubtitle": "הצגת … בסוף של כותרות ארוכות במקום טקסט גולל",
     "hidePlayerBottomActions": "הסתרת פעולות בתחתית",
     "hidePlayerBottomActionsSubtitle": "הסתרת כפתורי התור והמילים במסך הנגן. החלקה למעלה כדי להיכנס לתור, החלקה שמאלה (מתחת לתמונת האלבום) כדי לצפות במילים אם קיימות.",
     "lyricsFontSizeTitle": "גודל גופן מילים",
@@ -1681,10 +1551,6 @@
     "topTracks": "רצועות שמע מובילות",
     "topAlbums": "אלבומים מובילים",
     "topArtists": "אמנים מובילים",
-    "curatedItemsMostPlayedOfflineTooltip": "לא זמין במצב לא מקוון.",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
-    },
     "curatedItemsNotListenedYet": "לא הקשבת לאף רצועת שמע{itemType, select, artistGenreFilter{ של האמן הזה בג'אנר הזה} artist{ של האמן הזה} genre{ בג'אנר הזה} other{}}.",
     "@curatedItemsNotListenedYet": {
         "description": "Tooltip for Most Played and Recently Played on Curated Items in Online Mode when not yet listened to any tracks.",
@@ -2108,10 +1974,6 @@
     "@genreScreen": {
         "description": "Name for the view/screen that shows genres"
     },
-    "emptyTopTracksList": "עדיין לא הקשבת לאף רצועת שמע מאת האמן הזה.",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
-    },
     "emptyAlbum": "אין רצועות שמע.",
     "@emptyAlbum": {
         "description": "Message shown as a placeholder when an album or playlist is empty."
@@ -2263,8 +2125,6 @@
     "@autoOfflineSettingSubtitle": {
         "description": "Subtitle for the automated offline mode setting."
     },
-    "swipeInsertQueueNext": "החלקה לנגינת רצועת השמע אחרי",
-    "swipeInsertQueueNextSubtitle": "מאפשר להכניס רצועת שמע כהפריט הבא בתור בהחלקה ברשימת רצועות השמע במקום להעביר אותה לסוף התור.",
     "connectionInterruptedBackgroundAndroid": "החיבור נותק בזמן ההורדה ברקע. זה יכול לקרות בהפעלת 'היכנס למצב עדיפות-נמוכה בעצירה' או בגלל הגדרות מערכת ההפעלה.",
     "@connectionInterruptedBackgroundAndroid": {
         "description": "Message shown when the connection is interrupted during a download while in the background on android. It advises checking OS settings, as they may cause background downloads to be blocked, or checking the  'Enter Low-Priority State on Pause' setting."
@@ -2343,9 +2203,6 @@
         },
         "description": "Collection info line in downloads screen lists"
     },
-    "fixedGridSizeSwitchTitle": "שימוש בגודל אריחי רשת קבוע",
-    "fixedGridSizeSwitchSubtitle": "גדלי אריחי הרשת לא יותאמו לגודל החלון/מסך.",
-    "fixedGridSizeTitle": "גודל אריח רשת",
     "cacheLibraryImagesSettings": "שמירת תמונות של הספריה הנוכחית במטמון",
     "sampleRate": "קצב דגימה",
     "@sampleRate": {
@@ -2450,10 +2307,6 @@
     "preferLocalNetworkEnableSwitchDescription": "האם להשתמש בכתובת שונה כאשר המכשיר מחובר לרשת המקומית של השרת Jellyfin",
     "preferLocalNetworkPublicAddressSettingTitle": "כתובת ציבורית",
     "preferLocalNetworkPublicAddressSettingDescription": "הכתובת הראשית לשימוש כדי להתחבר לשרת Jellyfin",
-    "preferLocalNetworkInfoBox": "האפשרות הזאת דורשת הרשאות מיקום (והמיקום צריך להיות מופעל) כדי לקרוא את שם הרשת.",
-    "@preferLocalNetworkInfoBox": {
-        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
-    },
     "networkSettingsTitle": "רשת",
     "@networkSettingsTitle": {
         "description": "Title for the network settings screen"
@@ -2485,14 +2338,6 @@
     "clearQueueOnStopEventSubtitle": "מנקה את התור וסוגר את הנגן אם פקודת 'stop' מתקבלת ממערכת ההפעלה. פעולות עצירה בתוך האפליקציה תמיד יסגרו את הנגן וינקו את התור.",
     "@clearQueueOnStopEventSubtitle": {
         "description": "Subtitle for the setting that controls if OS stop commands clear the queue."
-    },
-    "radioModeSettingsTitle": "מצב רדיו",
-    "@radioModeSettingsTitle": {
-        "description": "Title for the setting that controls the radio mode/algorithm."
-    },
-    "radioModeSettingsSubtitle": "קובע את השיטה שבה אפשרות הרדיו משתמשת כדי לבחור שירים להוספה.",
-    "@radioModeSettingsSubtitle": {
-        "description": "Subtitle for the setting that controls the radio mode/algorithm."
     },
     "radioModeMenuTitle": "בחירת מצב רדיו",
     "@radioModeMenuTitle": {
@@ -2537,10 +2382,6 @@
     "radioModeDisabledSubtitle": "לחצו להפעלה",
     "@radioModeDisabledSubtitle": {
         "description": "Subtitle displayed in the queue to show that radio mode is disabled."
-    },
-    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "המצב הנוכחי לא קיים במצב לא מקוון.",
-    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
-        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
     },
     "radioModeUnavailableWhileOfflineDescription": "לא זמין במצב לא מקוון",
     "@radioModeUnavailableWhileOfflineDescription": {
@@ -2675,16 +2516,6 @@
             }
         },
         "description": "Title displayed in the queue, showing which radio mode/algorithm is currently being used."
-    },
-    "radioModeOptionConfirmation": "הוחלף ל{option, select, reshuffle{מצב ערבוב מחדש} random{מצב אקראי} similar{מצב דומה} continuous{מצב מתמשך} albumMix{מיקס אלבום} other{{option}}}",
-    "@radioModeOptionConfirmation": {
-        "placeholders": {
-            "option": {
-                "type": "String",
-                "description": "Corresponds to RadioMode.name"
-            }
-        },
-        "description": "Confirmation displayed when the radio mode is changed."
     },
     "radioNoTracksFound": "אין אפשרות להתחיל רדיו כי לא נמצאו רצועות שמע מתאימות.",
     "@radioNoTracksFound": {

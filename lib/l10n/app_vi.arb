@@ -1,90 +1,50 @@
 {
     "serverUrl": "URL của Máy chủ",
-    "@serverUrl": {},
     "emptyServerUrl": "URL của máy chủ không thể để trống",
     "@emptyServerUrl": {
         "description": "Error message that shows when the user submits a login without a server URL"
     },
     "username": "Tên người dùng",
-    "@username": {},
     "password": "Mật khẩu",
-    "@password": {},
     "logs": "Nhật kí hoạt động",
-    "@logs": {},
     "next": "Tiếp theo",
-    "@next": {},
     "selectMusicLibraries": "Chọn Thư viện Nhạc",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
-    "couldNotFindLibraries": "Không thể tìm thấy bất kì thư viện nào.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "unknownName": "Không có tên",
-    "@unknownName": {},
     "tracks": "Bản nhạc",
-    "@tracks": {},
     "albums": "Albums",
-    "@albums": {},
     "artists": "Nghệ sĩ",
-    "@artists": {},
     "genres": "Thể loại",
-    "@genres": {},
     "startMix": "Bắt đầu Mix",
-    "@startMix": {},
     "startMixNoTracksArtist": "Bấm giữ một nghệ sĩ để thêm hoặc loại bỏ ra khỏi bộ Mix trước khi bắt đầu một tuyển tập Mix",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
     },
     "music": "Nhạc",
-    "@music": {},
     "clear": "Loại bỏ",
-    "@clear": {},
     "shuffleAll": "Trộn hết",
-    "@shuffleAll": {},
     "finamp": "Finamp",
-    "@finamp": {},
     "downloads": "Tải xuống",
-    "@downloads": {},
     "settings": "Cài đặt",
-    "@settings": {},
     "offlineMode": "Chế độ ngoại tuyến",
-    "@offlineMode": {},
     "sortOrder": "Sắp thứ tự",
-    "@sortOrder": {},
     "sortBy": "Sắp theo",
-    "@sortBy": {},
     "album": "Album",
-    "@album": {},
     "albumArtist": "Album Nghệ Sĩ",
-    "@albumArtist": {},
     "artist": "Nghệ sĩ",
-    "@artist": {},
     "budget": "Chi phí",
-    "@budget": {},
     "criticRating": "Đánh giá nhà phê bình",
-    "@criticRating": {},
     "dateAdded": "Ngày được thêm",
-    "@dateAdded": {},
     "datePlayed": "Ngày phát",
-    "@datePlayed": {},
     "playCount": "Số lần phát",
-    "@playCount": {},
     "premiereDate": "Ngày phát hành",
-    "@premiereDate": {},
     "productionYear": "Năm sản xuất",
-    "@productionYear": {},
     "name": "Tên",
-    "@name": {},
     "random": "Ngẫu nhiên",
-    "@random": {},
     "revenue": "Lợi nhuận",
-    "@revenue": {},
-    "downloadMissingImages": "Tải ảnh thiếu",
-    "@downloadMissingImages": {},
     "playlists": "Danh sách phát",
-    "@playlists": {},
     "downloadCount": "{count,plural, =1{{count} đang tải xuống} other{{count} đang tải xuống}}",
     "@downloadCount": {
         "placeholders": {
@@ -126,11 +86,7 @@
         }
     },
     "errorScreenError": "Đã có lỗi xảy ra khi lấy danh sách lỗi! Tại thời điểm này, có lẽ bạn nên tạo một Issue trên trang GitHub và xoá dữ liệu ứng dụng",
-    "@errorScreenError": {},
-    "failedToGetTrackFromDownloadId": "Không thể tải bản nhạc từ ID tải xuống",
-    "@failedToGetTrackFromDownloadId": {},
     "error": "Lỗi",
-    "@error": {},
     "discNumber": "Đĩa {number}",
     "@discNumber": {
         "placeholders": {
@@ -140,7 +96,6 @@
         }
     },
     "playButtonLabel": "Phát",
-    "@playButtonLabel": {},
     "trackCount": "{count,plural,=1{{count} Bài hát} other{{count} Bài hát}}",
     "@trackCount": {
         "placeholders": {
@@ -150,118 +105,57 @@
         }
     },
     "required": "Được yêu cầu",
-    "@required": {},
-    "updateButtonLabel": "Cập nhật",
-    "@updateButtonLabel": {},
-    "downloadsDeleted": "Đã xóa tải xuống.",
-    "@downloadsDeleted": {},
     "addDownloads": "Thêm tải xuống",
-    "@addDownloads": {},
     "location": "Vị trí",
-    "@location": {},
     "addButtonLabel": "Thêm",
-    "@addButtonLabel": {},
     "shareLogs": "Chia sẻ bản ghi",
-    "@shareLogs": {},
     "logsCopied": "Đã sao chép bản ghi.",
-    "@logsCopied": {},
     "message": "Tin nhắn",
-    "@message": {},
     "stackTrace": "Dấu vết Ngăn xếp",
-    "@stackTrace": {},
     "transcoding": "Chuyển Mã",
-    "@transcoding": {},
     "downloadLocations": "Vị trí tải xuống",
-    "@downloadLocations": {},
     "audioService": "Dịch vụ âm thanh",
-    "@audioService": {},
     "layoutAndTheme": "Bố cục & Chủ đề",
-    "@layoutAndTheme": {},
     "notAvailableInOfflineMode": "Không khả dụng ở chế độ ngoại tuyến",
-    "@notAvailableInOfflineMode": {},
     "logOut": "Đăng xuất",
-    "@logOut": {},
     "enableTranscoding": "Bật chuyển đổi",
-    "@enableTranscoding": {},
     "enableTranscodingSubtitle": "Chuyển đổi các luồng truyền phát nhạc trên phía máy chủ.",
-    "@enableTranscodingSubtitle": {},
     "customLocation": "Vị trí tuỳ chỉnh",
-    "@customLocation": {},
     "appDirectory": "Đường dẫn ứng dụng",
-    "@appDirectory": {},
     "addDownloadLocation": "Thêm đường dẫn tải xuống",
-    "@addDownloadLocation": {},
     "selectDirectory": "Chọn đường dẫn",
-    "@selectDirectory": {},
     "pathReturnSlashErrorMessage": "Đường dẫn mà trả về \"/\" không dùng được",
-    "@pathReturnSlashErrorMessage": {},
-    "directoryMustBeEmpty": "Đường dẫn phải trống",
-    "@directoryMustBeEmpty": {},
     "enterLowPriorityStateOnPause": "Vào trạng thái Ưu Tiên Thấp khi Dừng",
-    "@enterLowPriorityStateOnPause": {},
     "enterLowPriorityStateOnPauseSubtitle": "Để thông báo được gạt đi khi dừng. Ngoài ra cho phép Android tắt dịch vụ khi dừng.",
-    "@enterLowPriorityStateOnPauseSubtitle": {},
     "shuffleAllTrackCount": "Trộn tất cả bài hát",
-    "@shuffleAllTrackCount": {},
     "shuffleAllTrackCountSubtitle": "Số lượng bài hát được tải khi dùng nút trộn tất cả trên tab bài hát hoặc thể loại.",
-    "@shuffleAllTrackCountSubtitle": {},
     "viewTypeSubtitle": "Loại xem cho màn hình nhạc",
-    "@viewTypeSubtitle": {},
     "list": "Danh sách",
-    "@list": {},
     "addToPlaylistTooltip": "Thêm vào danh sách phát",
-    "@addToPlaylistTooltip": {},
     "addToPlaylistTitle": "Thêm vào Danh sách phát",
-    "@addToPlaylistTitle": {},
     "removeFromPlaylistTooltip": "Loại bỏ khỏi danh sách phát",
-    "@removeFromPlaylistTooltip": {},
     "removeFromPlaylistTitle": "Loại bỏ khỏi Danh sách phát",
-    "@removeFromPlaylistTitle": {},
     "newPlaylist": "Danh sách phát mới",
-    "@newPlaylist": {},
     "internalExternalIpExplanation": "Nếu bạn muốn có thể truy cập máy chủ Jellyfin của mình từ xa, bạn cần sử dụng IP bên ngoài của mình.\n\nNếu máy chủ của bạn sử dụng cổng HTTP (cổng mặc định 80/443 (80 hoặc 443) hoặc cổng mặc định của Jellyfin (8096), thì bạn không cần phải chỉ định cổng đó. Điều này có thể xảy ra nếu máy chủ của bạn sử dụng proxy ngược\n\nNếu URL chính xác, bạn sẽ thấy một số thông tin về máy chủ của mình bật lên bên dưới trường nhập.",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
     "communityRating": "Đánh giá cộng đồng",
-    "@communityRating": {},
-    "downloadedMissingImages": "{count,plural, =0{Không ảnh thiếu được tìm} =1{Đã tải {count} ảnh thiếu} other{Đã tải {count} ảnh thiếu}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "shuffleButtonLabel": "Xáo trộn",
-    "@shuffleButtonLabel": {},
     "startMixNoTracksAlbum": "Bấm giữ một Album để thêm hoặc loại bỏ ra khỏi bộ Mix trước khi bắt đầu một tuyển tập Mix",
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
     "downloadsQueued": "Đang tải tệp",
-    "@downloadsQueued": {},
     "areYouSure": "Bạn chắc chứ?",
-    "@areYouSure": {},
     "unknownError": "Lỗi không xác định",
-    "@unknownError": {},
     "applicationLegalese": "Được cấp phép với Mozilla Public License 2.0.\nMã nguồn có sẵn tại {sourceCodeLink}.",
-    "@applicationLegalese": {},
     "bitrate": "Tốc độ bit",
-    "@bitrate": {},
     "bitrateSubtitle": "Một tốc độ bitrate cao hơn mang lại âm thanh tốt hơn tuy nhiên đánh đổi bằng mức băng thông cao hơn. Không áp dụng cho các codec lossless. Vd: FLAC",
-    "@bitrateSubtitle": {},
     "customLocationsBuggy": "Tuỳ chỉnh vị trí lưu rất trục trặc và không được khuyến khích trong đa số trường hợp. Những vị trí ở dưới thư mục 'Âm nhạc' cản trợ việc lưu bìa albums do giới hạn của OS.",
-    "@customLocationsBuggy": {},
     "viewType": "Loại Xem",
-    "@viewType": {},
     "playlistUpdated": "Tên danh sách phát đã được cập nhật.",
-    "@playlistUpdated": {},
-    "noArtist": "Không có Nghệ sĩ",
-    "@noArtist": {},
     "startingInstantMix": "Bắt đầu tuyển tập nhạc tức thời.",
-    "@startingInstantMix": {},
     "responseError401": "{error} Mã {statusCode}. Có thể bạn đã nhập sai tên người dùng/mật khẩu, hoặc client của bạn bị đăng xuất.",
     "@responseError401": {
         "placeholders": {
@@ -276,97 +170,34 @@
         }
     },
     "addToMix": "Thêm vào Mix",
-    "@addToMix": {},
     "noButtonLabel": "Không",
-    "@noButtonLabel": {},
     "grid": "Lưới",
-    "@grid": {},
-    "portrait": "Dọc",
-    "@portrait": {},
     "landscape": "Ngang",
-    "@landscape": {},
-    "gridCrossAxisCount": "{value} Số Lưới Trục-Chéo",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
-    "gridCrossAxisCountSubtitle": "Số lượng lưới dùng mỗi hàng khi {value}.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
     "showTextOnGridViewSubtitle": "Cho dù có hay không hiện thông tin (tiêu đề, nghệ sĩ,...) trên lưới nhạc.",
-    "@showTextOnGridViewSubtitle": {},
     "showTextOnGridView": "Hiện thông tin trong khung lưới",
-    "@showTextOnGridView": {},
     "useCoverAsBackground": "Dùng ảnh bìa mờ làm nền trình phát",
-    "@useCoverAsBackground": {},
     "useCoverAsBackgroundSubtitle": "Có hay không dùng ảnh bìa mờ làm nền trình phát trên phần phát nhạc.",
-    "@useCoverAsBackgroundSubtitle": {},
-    "hideTrackArtistsIfSameAsAlbumArtists": "Ẩn tên ca sĩ bài hát nếu giống ca sĩ album",
-    "@hideTrackArtistsIfSameAsAlbumArtists": {},
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Có hay không hiện nghệ sĩ bài hát trên phần album nếu không khác ca sĩ album.",
-    "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
     "disableGesture": "Tắt cử chỉ",
-    "@disableGesture": {},
     "disableGestureSubtitle": "Có nên tắt cử chỉ.",
-    "@disableGestureSubtitle": {},
     "theme": "Chủ đề",
-    "@theme": {},
     "system": "Hệ thống",
-    "@system": {},
     "light": "Sáng",
-    "@light": {},
     "dark": "Tối",
-    "@dark": {},
     "tabs": "Trang",
-    "@tabs": {},
     "cancelSleepTimer": "Tắt Đồng hồ Hẹn Giờ Ngủ?",
-    "@cancelSleepTimer": {},
     "yesButtonLabel": "Có",
-    "@yesButtonLabel": {},
     "minutes": "Phút",
-    "@minutes": {},
-    "invalidNumber": "Số không hợp lệ",
-    "@invalidNumber": {},
     "sleepTimerTooltip": "Đồng hồ hẹn giờ ngủ",
-    "@sleepTimerTooltip": {},
     "createButtonLabel": "Tạo",
-    "@createButtonLabel": {},
     "playlistCreated": "Đã tạo danh sách phát.",
-    "@playlistCreated": {},
     "noAlbum": "Không có Album",
-    "@noAlbum": {},
     "noItem": "Không có vật phẩm",
-    "@noItem": {},
     "unknownArtist": "Nghệ sĩ không rõ",
-    "@unknownArtist": {},
     "queue": "Hàng chờ",
-    "@queue": {},
     "addToQueue": "Thêm vào Hàng chờ",
-    "@addToQueue": {},
-    "replaceQueue": "Thay thế Hàng chờ",
-    "@replaceQueue": {},
     "goToAlbum": "Đi tới Album",
-    "@goToAlbum": {},
-    "addedToQueue": "Đã thêm vào hàng chờ.",
-    "@addedToQueue": {},
-    "queueReplaced": "Đã thay thế hàng chờ.",
-    "@queueReplaced": {},
     "removedFromPlaylist": "Đã loại bỏ khỏi danh sách.",
-    "@removedFromPlaylist": {},
     "anErrorHasOccured": "Đã có lỗi xảy ra.",
-    "@anErrorHasOccured": {},
     "responseError": "{error} Mã {statusCode}.",
     "@responseError": {
         "placeholders": {
@@ -380,24 +211,11 @@
             }
         }
     },
-    "redownloadedItems": "{count,plural, =0{Không cần tải lại.} =1{Đã tải lại {count} bài} other{Đã tải lại {count} bài}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "bufferDuration": "Thời gian bộ đệm",
-    "@bufferDuration": {},
     "bufferDurationSubtitle": "Thời lượng lâu nhất mà cần được tải trước. Cần khởi động lại app.",
-    "@bufferDurationSubtitle": {},
     "instantMix": "Instant Mix",
-    "@instantMix": {},
     "removeFromMix": "Loại bỏ khỏi Mix",
-    "@removeFromMix": {},
     "language": "Ngôn ngữ",
-    "@language": {},
     "about": "Giới thiệu về Finamp",
     "@about": {
         "description": "Label for the about/info button on the settings screen"
@@ -495,11 +313,8 @@
         "description": "Label for the login button."
     },
     "activeDownloads": "Hoạt động Tải xuống",
-    "@activeDownloads": {},
     "activeDownloadsTitle": "Hoạt động Tải xuống",
-    "@activeDownloadsTitle": {},
     "noActiveDownloads": "Không có hoạt động tải xuống.",
-    "@noActiveDownloads": {},
     "offlineTrackCount": "{count,plural,=1{{count} Bài hát} other{{count} Bài hát}}, {downloads} Đã tải xuống",
     "@offlineTrackCount": {
         "placeholders": {
@@ -512,7 +327,6 @@
         }
     },
     "interactions": "Tương tác",
-    "@interactions": {},
     "automatic": "Tự động",
     "@automatic": {
         "description": "Used as an option in the playback speed visibility settings"
@@ -526,7 +340,6 @@
         "description": "Button label for the login/splash screen."
     },
     "title": "Tiêu đề",
-    "@title": {},
     "aboutContributionPrompt": "Được thực hiện bởi những người tuyệt vời trong thời gian rảnh rỗi của họ.\nBạn có thể trở thành một trong số họ!",
     "@aboutContributionPrompt": {
         "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
@@ -607,10 +420,7 @@
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
-    "syncDownloadedPlaylists": "Đồng bộ danh sách phát đã tải xuống",
-    "@syncDownloadedPlaylists": {},
     "showFastScroller": "Hiển thị thanh cuộn nhanh",
-    "@showFastScroller": {},
     "offlineTrackCountArtist": "{count,plural,=1{{count} Bài hát} other{{count} Bài hát}} Đã tải xuống",
     "@offlineTrackCountArtist": {
         "placeholders": {
@@ -672,31 +482,21 @@
         "description": "All Libraries"
     },
     "appearsOnAlbums": "Hiện Trên",
-    "@appearsOnAlbums": {},
     "noGenres": "Không có Thể loại",
     "@noGenres": {
         "description": "Gets shown when there are no genres available for an album or artist"
     },
     "favorite": "Yêu thích",
-    "@favorite": {},
     "favorites": "Yêu thích",
-    "@favorites": {},
-    "onlineMode": "Chế độ Trực tuyến",
-    "@onlineMode": {},
     "albumArtists": "Nghệ sĩ của Album",
-    "@albumArtists": {},
     "performingArtists": "Nghệ sĩ trình diễn",
-    "@performingArtists": {},
     "performingArtist": "Nghệ sĩ trình diễn",
-    "@performingArtist": {},
     "duration": "Thời lượng",
-    "@duration": {},
     "defaultOrder": "Thứ tự mặc định",
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
     },
     "adaptive": "Thích ứng",
-    "@adaptive": {},
     "formattedRelativeTime": "{type, select, just_now{vừa mới} minutes{{value} phút trước} hours{{value} giờ trước} yesterday{hôm qua} days{{value, plural, =1{1 ngày trước} other{{value} ngày trước}}} other{value}}",
     "@formattedRelativeTime": {
         "description": "Returns a relative time string based on how long ago something happened. Used for various DateTime values such as Date Last Played and Date Added.",
@@ -711,24 +511,6 @@
             }
         }
     },
-    "deleteDownloadsPrompt": "Bạn có chắc muốn xoá {itemType, select, album{album} playlist{playlist} artist{artist} genre{genre} track{track} library{library} other{item}} '{itemName}' khỏi thiết bị?",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
-    "deleteDownloadsConfirmButtonText": "Xoá",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
     "specialDownloads": "Phần Tải về Đặc biệt",
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
@@ -741,14 +523,6 @@
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
     },
-    "shuffleCountButton": "Xáo trộn ({count,plural,=1{{count} Bài} other{{count} Bài}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "editItemTitle": "Chỉnh sửa {itemType, select, playlist{Playlist} other{}}",
     "@editItemTitle": {
         "placeholders": {
@@ -758,25 +532,14 @@
         }
     },
     "exportLogs": "Lưu bản log",
-    "@exportLogs": {},
-    "playbackReporting": "Báo cáo Phát lại",
-    "@playbackReporting": {},
     "notAvailable": "Không khả dụng",
-    "@notAvailable": {},
     "logoutButtonSubtitle": "Đăng nhập vào một máy chủ khác sẽ xoá những mục tải về có sẵn",
-    "@logoutButtonSubtitle": {},
     "none": "Không",
-    "@none": {},
     "autoSwitchItemCurationTypeTitle": "Tự động Chuyển dạng của tệp",
-    "@autoSwitchItemCurationTypeTitle": {},
     "autoSwitchItemCurationTypeSubtitle": "Khi bật, những tệp ở phần Nghệ sĩ và Thể loại sẽ tự đổng chuyển sang một dạng khác nếu không có tệp nào khả dụng (vdu: không có yêu thích cho một nghệ sĩ xác định)",
-    "@autoSwitchItemCurationTypeSubtitle": {},
     "showArtistsTracksSection": "Hiện các khoảng của bài nhạc",
-    "@showArtistsTracksSection": {},
     "hours": "Giờ",
-    "@hours": {},
     "seconds": "Giây",
-    "@seconds": {},
     "timeFractionTooltip": "{currentTime} / {totalTime}",
     "@timeFractionTooltip": {
         "placeholders": {
@@ -823,30 +586,7 @@
             }
         }
     },
-    "addToMorePlaylistsTooltip": "Thêm vào danh sách phát",
-    "@addToMorePlaylistsTooltip": {},
     "addToMorePlaylistsTitle": "Thêm vào Danh sách phát",
-    "@addToMorePlaylistsTitle": {},
-    "removeFromPlaylistNamedTooltip": "Loại bỏ khỏi danh sách phát '{playlistName}'",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "removeFromPlaylistNamedTitle": "Loại bỏ khỏi Danh sách phát '{playlistName}'",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "playlistActionsMenuButtonTooltip": "Nhấn để thêm vào danh sách phát. Giữ để thêm vào yêu thích.",
     "@playlistActionsMenuButtonTooltip": {
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
@@ -855,8 +595,6 @@
     "@browsePlaylists": {
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
     },
-    "unknownAlbum": "Album không rõ",
-    "@unknownAlbum": {},
     "playbackModeDirectPlaying": "Phát trực tiếp",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -1110,39 +848,22 @@
         "description": "Label for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
     },
     "showArtistsTracksSectionSubtitle": "Khi nào hiện một phần với lên tới 5 bài hát. Khi bật, bạn có thể chọn Phát nhiều nhất, Yêu thích, Ngẫu nhiên, Bản phát hành Mới nhất, Vừa được thêm và Các bài hát vừa được phát.",
-    "@showArtistsTracksSectionSubtitle": {},
     "playerScreen": "Màn hình phát",
     "@playerScreen": {
         "description": "Name for the expanded player"
     },
     "goToArtist": "Đi đến phần Nghệ sĩ",
-    "@goToArtist": {},
     "goToGenre": "Đi đến phần Thể loại",
-    "@goToGenre": {},
     "removeFavorite": "Loại bỏ Yêu thích",
-    "@removeFavorite": {},
     "addFavorite": "Thêm vào Yêu thích",
-    "@addFavorite": {},
-    "confirmFavoriteAdded": "Đã thêm vào Yêu thích",
-    "@confirmFavoriteAdded": {},
-    "confirmFavoriteRemoved": "Đã loại bỏ khỏi Yêu thích",
-    "@confirmFavoriteRemoved": {},
-    "insertedIntoQueue": "Đã được thêm vào hàng chờ.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
     "confirmAddedToPlaylist": "Đã được thêm vào danh sách nhạc.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
     },
     "bufferDisableSizeConstraintsTitle": "Không giới hạn kích thước buffer",
-    "@bufferDisableSizeConstraintsTitle": {},
     "bufferDisableSizeConstraintsSubtitle": "Tắt phần 'Kích thước Buffer'. Phần Buffer sẽ tải cả bài hát, kể cả những tệp rất lớn. Điều này có thể gây văng app. Cần khởi động lại.",
-    "@bufferDisableSizeConstraintsSubtitle": {},
     "bufferSizeTitle": "Kích thước Buffer",
-    "@bufferSizeTitle": {},
     "bufferSizeSubtitle": "Kích thước buffer lớn nhất theo đơn vị MB. Yêu cầu khởi động lại",
-    "@bufferSizeSubtitle": {},
     "skipToPreviousTrackButtonTooltip": "Bỏ qua đến phần đầu hoặc đến bài hát trước",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -1220,11 +941,8 @@
         "description": "Description of the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
     },
     "topTracks": "Những Bài hát Top",
-    "@topTracks": {},
     "topAlbums": "Những Album Top",
-    "@topAlbums": {},
     "topArtists": "Những Nghệ sĩ Top",
-    "@topArtists": {},
     "recentlyAddedTracks": "Bài hát vừa được thêm",
     "@recentlyAddedTracks": {
         "description": "Label for the artist section that shows tracks that were recently added to the library, sorted by the date they were added."
@@ -1238,45 +956,24 @@
         "description": "Label for the genre section that shows artists that were recently added to the library, sorted by the date they were added."
     },
     "latestTracks": "Bài hát mới nhất",
-    "@latestTracks": {},
     "latestAlbums": "Album mới nhất",
-    "@latestAlbums": {},
     "latestArtists": "Nghệ sĩ mới nhất",
-    "@latestArtists": {},
     "recentlyPlayedTracks": "Những bài hát vừa phát",
-    "@recentlyPlayedTracks": {},
     "recentlyPlayedAlbums": "Những Album vừa phát",
-    "@recentlyPlayedAlbums": {},
     "recentlyPlayedArtists": "Những Nghệ sĩ vừa phát",
-    "@recentlyPlayedArtists": {},
     "favoriteTracks": "Bài hát yêu thích",
-    "@favoriteTracks": {},
     "favoriteAlbums": "Album yêu thích",
-    "@favoriteAlbums": {},
     "favoriteArtists": "Nghệ sĩ yêu thích",
-    "@favoriteArtists": {},
     "randomTracks": "Bài hát (Chọn Ngẫu nhiên)",
-    "@randomTracks": {},
-    "randomAlbums": "Albums (Chọn Ngẫu nhiên)",
-    "@randomAlbums": {},
-    "randomArtists": "Nghệ sĩ (Chọn Ngẫu nhiên)",
-    "@randomArtists": {},
     "mostPlayed": "Được phát nhiều nhất",
-    "@mostPlayed": {},
-    "randomFavoritesFirst": "Ngẫu nhiên (Chọn Yêu thích trước)",
-    "@randomFavoritesFirst": {},
     "recentlyAdded": "Vừa được thêm",
-    "@recentlyAdded": {},
     "recentlyPlayed": "Vừa được phát",
-    "@recentlyPlayed": {},
     "latestReleases": "Những bản phát hành mới nhất",
-    "@latestReleases": {},
     "itemSectionsOrder": "Thứ tự những phần của tệp",
     "@itemSectionsOrder": {
         "description": "Label for the setting that controls the order of item sections on the screens."
     },
     "unknown": "Không rõ",
-    "@unknown": {},
     "itemSectionsOrderSubtitle": "Điều khiển thứ tự của phần tệp.",
     "@itemSectionsOrderSubtitle": {
         "description": "Description of the setting that controls the order of item sections on the screens."
@@ -1363,7 +1060,6 @@
         "description": "Description of setting controlling max concurrent downloads."
     },
     "hidePlayerBottomActionsSubtitle": "Ẩn nút hàng chờ và lời bài hát ở trong trình phát. Vuốt lên để vào hàng chờ, vuốt sang trái (dưới bìa album) để hiện lời bài hát nếu có.",
-    "@hidePlayerBottomActionsSubtitle": {},
     "serverSharingMenuConfirmationDialogText": "Bạn có muốn bật chia sẻ máy chủ kể cải khi bạn ở Chế độ Ngoại tuyến? Điều này sẽ khiến Finamp gửi dữ liệu qua mạng nội bộ.",
     "@serverSharingMenuConfirmationDialogText": {
         "description": "Dialog text shown when enabling server sharing while offline mode is enabled"
@@ -1382,7 +1078,6 @@
         }
     },
     "noMusicLibrariesBody": "Finamp không thể tìm bất kì thư viện nhạc nào. Hãy đảm bảo rằng máy chủ Jellyfin của bạn chứa ít nhất một thư viện với loại nội dung được đặt sang \"Music\".",
-    "@noMusicLibrariesBody": {},
     "runRepairWarning": "Máy chủ không thể liên lạc được để chốt lại quá trình tải về. Hãy chạy phần 'Chữa phần tải về' trong mục tải về ngay khi bạn có mạng.",
     "@runRepairWarning": {
         "description": "Message shown when an error occurs during the downloads repair step of the Isar downloads migration, which requires a server connection."
@@ -1392,7 +1087,6 @@
         "description": "Description for the setting that controls which Icon the discord RPC displays as a Fallback in case no public address is detected (it doenst matter what connection is active)."
     },
     "startInstantMixForIndividualTracksSwitchSubtitle": "Khi bật, chạm vào một bài hát trong mục bài hát sẽ tự động chạy tuyển tập của bài hát đó thay vì chỉ phát mỗi bài hát đó.",
-    "@startInstantMixForIndividualTracksSwitchSubtitle": {},
     "showFavoriteButtonOnMediaNotificationSubtitle": "Điều chỉnh nếu thông báo media có nút yêu thích. Điều này có thể cho bạn bấm yêu thích/ngưng yêu thích bài hát hiện tại mà không cần mở ứng dụng. Bị ẩn ở chế độ ngoại tuyến.",
     "@showFavoriteButtonOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a favorite button."
@@ -1423,7 +1117,5 @@
     "discordRPCSettingDescription": "Bật Discord Rich Presence để phát bài hát bạn đang nghe trên trạng thái Discord. Sẽ không kết nối Discord nếu Chế độ ngoại tuyến được bật.",
     "@discordRPCSettingDescription": {
         "description": "Description for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
-    },
-    "swipeInsertQueueNextSubtitle": "Bật để thêm một bài hát vào hàng chờ khi vuốt trong danh sách bài hát thay vì thêm vào cuối.",
-    "@swipeInsertQueueNextSubtitle": {}
+    }
 }
