@@ -126,16 +126,16 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                       Scaffold.of(context).openDrawer();
                       // showFinampMainMenu(context: context);
                     },
-                    onSecondaryTap: ref.watch(pollingDownloadsSyncingProvider)
+                    onSecondaryTap: ref.watch(isDownloadingOrSyncingPollingProvider)
                         ? () {
-                            if (ref.read(pollingDownloadsSyncingProvider)) {
+                            if (ref.read(isDownloadingOrSyncingPollingProvider)) {
                               Navigator.of(context).pushNamed(DownloadsScreen.routeName);
                             }
                           }
                         : null,
-                    onDoubleTap: ref.watch(pollingDownloadsSyncingProvider)
+                    onDoubleTap: ref.watch(isDownloadingOrSyncingPollingProvider)
                         ? () {
-                            if (ref.read(pollingDownloadsSyncingProvider)) {
+                            if (ref.read(isDownloadingOrSyncingPollingProvider)) {
                               Navigator.of(context).pushNamed(DownloadsScreen.routeName);
                             }
                           }
@@ -151,7 +151,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                               : null,
                         ),
                         Positioned(bottom: -4, right: -2, child: Icon(statusIcon, size: 16)),
-                        if (ref.watch(pollingDownloadsSyncingProvider))
+                        if (ref.watch(isDownloadingOrSyncingPollingProvider))
                           Positioned(
                             bottom: statusIcon != null ? -6 : 1,
                             right: statusIcon != null ? -4 : 3,
@@ -388,7 +388,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
   }
 }
 
-final pollingDownloadsSyncingProvider = Provider((Ref ref) {
+final isDownloadingOrSyncingPollingProvider = Provider((Ref ref) {
   final downloadsService = GetIt.instance<DownloadsService>();
   // Schedule this provider to be re-polled in 4 seconds
   Timer(Duration(seconds: 4), ref.invalidateSelf);

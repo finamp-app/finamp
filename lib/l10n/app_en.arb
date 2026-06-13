@@ -3735,5 +3735,15 @@
       }
     },
     "description": "Item type name."
+  },
+  "connectionStateInfoString": "{state, select, syncing{Syncing with Server} downloading{Downloading from Server} deleting{Deleting Old Downloads} connectedLocal{Connected via local network} syncingLocal{Syncing via local network} downloadingLocal{Downloading via local network} other{}}",
+  "@connectionStateInfoString": {
+    "description": "String describing the current connection state to the server, shown in the music screen drawer/menu.",
+    "placeholders": {
+      "state": {
+        "type": "String",
+        "example": "syncingLocal"
+      }
+    }
   }
 }
