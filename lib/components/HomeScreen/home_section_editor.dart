@@ -215,7 +215,11 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
     SortAndFilterConfiguration currentConfig;
     if (activeSortController == null) {
       // TODO allow sort config on queues section
-      currentConfig = SortAndFilterConfiguration.defaultSort;
+      currentConfig = const SortAndFilterConfiguration(
+        sortBy: SortBy.datePlayed,
+        sortOrder: SortOrder.descending,
+        filters: {},
+      );
     } else {
       currentConfig = ref.watch(resolveSortProvider(activeSortController!));
     }

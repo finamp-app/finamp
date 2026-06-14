@@ -349,7 +349,7 @@ class _GetJellyfinCollectionProviderElement
       (origin as GetJellyfinCollectionProvider).sortConfig;
 }
 
-String _$pagedContentHash() => r'b27d425efd7deedb07ac3efb969fc251795812d6';
+String _$pagedContentHash() => r'1eaefb681245bb519b05fa4c4186d5a85d7a4fbe';
 
 abstract class _$PagedContent
     extends

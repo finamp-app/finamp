@@ -169,7 +169,7 @@ class _GlobalSearchProviderElement
   bool get includeTracks => (origin as GlobalSearchProvider).includeTracks;
 }
 
-String _$resolveSectionHash() => r'a2d831d849f800b0f7b08c98f953d32193142685';
+String _$resolveSectionHash() => r'fb1ca99c7145fa70fc9bbf931029039584829f8c';
 
 /// See also [resolveSection].
 @ProviderFor(resolveSection)

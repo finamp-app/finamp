@@ -318,7 +318,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
           : Center(child: Text(context.l10n.failedToLoadSectionMissingItem, maxLines: 1));
     }
     final displayable = asyncDisplayable.value!;
-    if (displayable is FinampSortable && (displayable as FinampSortable).sortConfig != sectionInfo.sortConfig) {
+    if (displayable is UnavailableHomeSectionPlayable) {
       assert(isOffline);
       return Center(child: Text(context.l10n.notAvailableInOfflineMode, maxLines: 1));
     }
@@ -392,6 +392,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
                   return HomeScreenQueueTile(key: ValueKey(queue.queue.creation), info: queue.queue);
                 case LatestQueues():
                 case PrecalculatedPlayable():
+                case UnavailableHomeSectionPlayable():
                 case MusicScreenPlayable<FinampPlayableDto>():
                   throw UnsupportedError("Unexpected item ${items[index]} in home screen section");
               }

@@ -74,11 +74,19 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
         ),
         id: section.id,
       );
+      final resolvedSort = SortAndFilterController.resolveOfflineWithoutFallback(
+        ref,
+        tabSection.contentType,
+        section.sortConfig,
+      );
+      if (resolvedSort == null) {
+        return UnavailableHomeSectionPlayable(source: source, section: section);
+      }
       return MusicScreenPlayable(
         tab: tabSection.contentType,
         library: tabSection.libraryId,
         source: source,
-        sortConfig: SortAndFilterController.resolveOffline(ref, tabSection.contentType, section.sortConfig),
+        sortConfig: resolvedSort,
       );
     case CollectionHomeSection collectionSection:
       final item = await ref.watch(itemByIdProvider(collectionSection.itemId).future);
@@ -108,11 +116,14 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
         item: item,
         id: section.id,
       );
-      final resolvedSort = SortAndFilterController.resolveOffline(
+      final resolvedSort = SortAndFilterController.resolveOfflineWithoutFallback(
         ref,
         collectionSection.contentType,
         section.sortConfig,
       );
+      if (resolvedSort == null) {
+        return UnavailableHomeSectionPlayable(source: source, section: section);
+      }
 
       if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.artist) {
         return Artist(

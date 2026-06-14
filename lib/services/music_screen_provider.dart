@@ -34,6 +34,8 @@ class PagedContent extends _$PagedContent {
         return _buildUnpaged(request);
       case FinampPagedPlayable<FinampPlayableDto>():
         return _buildPaged(request);
+      case UnavailableHomeSectionPlayable():
+        return PagingState(pages: [], keys: [], isLoading: false, hasNextPage: false, error: null);
     }
   }
 
@@ -179,6 +181,7 @@ class PagedContent extends _$PagedContent {
           }
         case LatestQueues():
         case PrecalculatedPlayable():
+        case UnavailableHomeSectionPlayable():
           break;
       }
     });
@@ -204,6 +207,7 @@ class PagedContent extends _$PagedContent {
         }
       case LatestQueues():
       case PrecalculatedPlayable():
+      case UnavailableHomeSectionPlayable():
         break;
     }
   }

@@ -47,14 +47,16 @@ Widget _getMenuHeaderForItemType({
         customSectionTitle: item.source.name.getLocalized(context.l10n),
       ),
     ),
-    LatestQueues() => HomeSectionInfo(
+    LatestQueues(sortConfig: final sortconfig) => HomeSectionInfo(
       config: HomeScreenSectionConfiguration(
         base: QueuesHomeSection(),
-        sortConfig: SortAndFilterConfiguration.defaultSort,
+        sortConfig: sortconfig,
         customSectionTitle: item.source.name.getLocalized(context.l10n),
       ),
     ),
-    _ => throw UnsupportedError("Cannot show menu header for $item"),
+    UnavailableHomeSectionPlayable(section: final section) => HomeSectionInfo(config: section),
+    PlayableQueue() => throw UnsupportedError("Cannot show menu header for $item"),
+    PrecalculatedPlayable() => throw UnsupportedError("Cannot show menu header for $item"),
   };
 }
 
@@ -492,7 +494,7 @@ class HomeSectionInfo extends ConsumerWidget {
             config.getTitle(context.l10n),
             textAlign: TextAlign.start,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               height: 1.2,
               color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
             ),
@@ -500,6 +502,9 @@ class HomeSectionInfo extends ConsumerWidget {
             softWrap: true,
             maxLines: 2,
           ),
+          // TODO display tab type
+          //if (config.base case TabsHomeSection tab)
+          //  Text(tab.contentType.toLocalisedString(context.l10n), style: TextStyle(fontSize: 17)),
           IconAndText(
             iconData: config.sortConfig.sortOrder.getIcon(),
             textSpan: TextSpan(text: config.sortConfig.sortBy.toLocalisedString(context.l10n)),

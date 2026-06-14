@@ -211,6 +211,8 @@ mixin _NeedsEquals {
         copy = Track(track.item, source: track.source);
       case InstantMix mix:
         copy = InstantMix(mix.item);
+      case UnavailableHomeSectionPlayable item:
+        copy = UnavailableHomeSectionPlayable(source: item.source, section: item.section);
     }
     return equalsHelper(copy) && equalsHelperChain(copy) && hashCode == copy.hashCode && !identical(item, copy);
   }

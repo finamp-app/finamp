@@ -44,18 +44,28 @@ abstract class SortAndFilterController {
 
   SortAndFilterConfiguration _getValue(Ref ref);
 
-  static ResolvedSortConfig resolveOffline(Ref ref, ContentType type, SortAndFilterConfiguration config) {
+  static ResolvedSortConfig? resolveOfflineWithoutFallback(
+    Ref ref,
+    ContentType type,
+    SortAndFilterConfiguration config,
+  ) {
     // PlayCount and Last Played are not representative in Offline Mode
     // so we disable it and overwrite it with the Sort Name if it was selected
     if (ref.watch(finampSettingsProvider.isOffline) &&
         (config.sortBy == SortBy.playCount || config.sortBy == SortBy.datePlayed)) {
-      if (type == ContentType.inPlaylist) {
-        return ResolvedSortConfig._(config.copyWith(sortBy: SortBy.defaultOrder));
-      } else {
-        return ResolvedSortConfig._(config.copyWith(sortBy: SortBy.sortName));
-      }
+      return null;
     } else {
       return ResolvedSortConfig._(config);
+    }
+  }
+
+  static ResolvedSortConfig resolveOffline(Ref ref, ContentType type, SortAndFilterConfiguration config) {
+    final output = resolveOfflineWithoutFallback(ref, type, config);
+    if (output != null) return output;
+    if (type == ContentType.inPlaylist) {
+      return ResolvedSortConfig._(config.copyWith(sortBy: SortBy.defaultOrder));
+    } else {
+      return ResolvedSortConfig._(config.copyWith(sortBy: SortBy.sortName));
     }
   }
 

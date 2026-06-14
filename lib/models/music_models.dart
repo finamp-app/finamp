@@ -458,3 +458,18 @@ enum GenreChildType {
     _ => throw UnsupportedError("Invalid genre content type $type"),
   };
 }
+
+class UnavailableHomeSectionPlayable extends FinampDisplayable<FinampPlayable> {
+  UnavailableHomeSectionPlayable({required super.source, required this.section});
+
+  final HomeScreenSectionConfiguration section;
+
+  @override
+  String get id => "finamp-unavailable-playable-${section.hashCode}";
+
+  @override
+  bool equalsHelper(Object other) => other is UnavailableHomeSectionPlayable && other.section == section;
+
+  @override
+  int get hashHelper => Object.hash(UnavailableHomeSectionPlayable, section);
+}
