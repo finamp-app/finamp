@@ -175,7 +175,7 @@
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
-    "fixedGridTileSizeEnum": "{size, select, small {சிறிய} medium {நடுத்தர} large {பெரிய} veryLarge {மிகப் பெரிய} other {}}",
+    "fixedGridTileSizeEnum": "{size, select, tiny{மிகமிக சிறிய} verySmall{மிக சிறிய} small{சிறிய} medium{நடுத்தர} large{பெரிய} veryLarge{மிக பெரிய} huge{மிகமிக பெரிய} giant{ராட்சத} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
             "size": {
@@ -363,7 +363,7 @@
     "downloads": "பதிவிறக்கங்கள்",
     "settings": "அமைப்புகள்",
     "offlineMode": "இணைப்பில்லாத பயன்முறை",
-    "sortOrder": "வரிசைப்படுத்தும் முறை",
+    "sortOrder": "ஆர்டர்",
     "sortBy": "வரிசைப்படுத்தவும்",
     "title": "தலைப்பு",
     "album": "தொகுப்பு",
@@ -536,7 +536,7 @@
         "description": "Title for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
     "showTextOnGridView": "கட்டம் பார்வையில் உரையைக் காட்டு",
-    "showTextOnGridViewSubtitle": "கட்டம் இசைத் திரையில் உரையை (தலைப்பு, கலைஞர் போன்றவை) காண்பிக்கலாமா வேண்டாமா.",
+    "showTextOnGridViewSubtitle": "கிரிட் இசைத் திரையில் உரையை (தலைப்பு, கலைஞர் போன்றவை) காட்ட வேண்டுமா இல்லையா. இந்த அமைப்பைப் புறக்கணித்து, உரை எப்போதும் முகப்புத் திரையில் காட்டப்படும்.",
     "useCoverAsBackground": "மங்கலான அட்டையை பின்னணியாகப் பயன்படுத்தவும்",
     "playerScreenMinimumCoverPaddingEditorSubtitle": "திரை அகலத்தின் % இல், பிளேயர் திரையில் ஆல்பத்தை சுற்றி குறைந்தபட்ச திணிப்பு.",
     "@playerScreenMinimumCoverPaddingEditorSubtitle": {
@@ -777,7 +777,7 @@
             }
         }
     },
-    "playingFromType": "{source, select, nextUpAlbum{ஆல்பம்} nextUpPlaylist{பிளேலிஸ்ட்} nextUpArtist{டிராக் மிக்ஸ்} nextUpGenre{கலைஞர் மிக்ஸ்} remoteClient{ஆல்பம் மிக்ஸ்} radio{ஜானர் மிக்ஸ்} other{}}",
+    "playingFromType": "{source, select, album{Album} playlist{Playlist} trackMix{Track Mix} artistMix{Artist Mix} albumMix{Album Mix} genreMix{Genre Mix} favorites{Favorites} allTracks{All Tracks} filteredList{Tracks} genre{Genre} artist{Artist} track{Track} nextUpAlbum{Album in Next Up} nextUpPlaylist{Playlist in Next Up} nextUpArtist{Artist in Next Up} nextUpGenre{Genre in Next Up} remoteClient{a Remote Client} radio{Radio} homeScreenSection{} collection{Collection} collectionMix{Collection Mix} other{}} இலிருந்து இயக்கப்படுகிறது",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -2790,5 +2790,702 @@
             }
         },
         "description": "Options in multi-channel handling dropdown"
+    },
+    "amoledTheme": "AMOLED கருப்பொருள் பயன்படுத்தவும்",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "அடர் வண்ணத் திட்டத்தை தூய கருப்பு கருப்பொருள் மூலம் மாற்றுகிறது.",
+    "ascending": "ஏறுதல்",
+    "@ascending": {
+        "description": "Label for ascending order."
+    },
+    "descending": "இறங்கு",
+    "@descending": {
+        "description": "Label for descending order."
+    },
+    "volumeControlHint": "ஒலியளவைச் சரிசெய்ய {shortcut} பயன்படுத்தவும்",
+    "@volumeControlHint": {
+        "description": "Hint text displayed below the volume bar to inform users about keyboard shortcuts for volume control.",
+        "placeholders": {
+            "shortcut": {
+                "type": "String",
+                "example": "Ctrl + ↑/↓"
+            }
+        }
+    },
+    "seekControlHint": "-5வி/+30 வினாடிகளைத் தவிர்க்க {shortcut}",
+    "@seekControlHint": {
+        "description": "Shortcut hint for seeking backward 5s or forward 30s.",
+        "placeholders": {
+            "shortcut": {
+                "type": "String",
+                "example": "Ctrl + ←/→"
+            }
+        }
+    },
+    "previousTracksPersistenceModeSelectorTitle": "வரிசை பேனலில் முந்தைய தடங்களின் தெரிவுநிலை",
+    "@previousTracksPersistenceModeSelectorTitle": {
+        "description": "Title for setting that allows to override state of previous tracks header in queue list"
+    },
+    "previousTracksPersistenceModeSelectorSubtitle": "நீங்கள் வரிசை பேனலைத் திறந்தால், முந்தைய ட்ராக்குகள் பகுதி இருக்க வேண்டும்...",
+    "@previousTracksPersistenceModeSelectorSubtitle": {
+        "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
+    },
+    "previousTracksPersistenceModePersistent": "முன்பு போலவே (விரிவாக்கப்பட்ட/சரிந்ததை நினைவில் கொள்க)",
+    "@previousTracksPersistenceModePersistent": {
+        "description": "Does nothing to previous tracks header in queue list, using its saved value"
+    },
+    "previousTracksPersistenceModeCollapsed": "சுருக்கப்பட்டது (மறைக்கப்பட்ட)",
+    "@previousTracksPersistenceModeCollapsed": {
+        "description": "Overrides saved value to collapse previous tracks header on queue list open"
+    },
+    "previousTracksPersistenceModeExpanded": "விரிவாக்கப்பட்டது (தெரியும்)",
+    "@previousTracksPersistenceModeExpanded": {
+        "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "home": "வீடு",
+    "@home": {
+        "description": "Label for the home tab in the main navigation bar"
+    },
+    "homeScreenSettingsTitle": "முகப்புத் திரை",
+    "@homeScreenSettingsTitle": {
+        "description": "Title for the home screen settings"
+    },
+    "homeScreenSectionPresetPickerMenuTitle": "முன்னமைவைத் தேர்ந்தெடுக்கவும்",
+    "@homeScreenSectionPresetPickerMenuTitle": {
+        "description": "Title for the preset picker menu, which allows users to pick a preset section to add to the home screen"
+    },
+    "homeScreenSectionCustomSectionTitle": "தனிப்பயன் பிரிவு",
+    "@homeScreenSectionCustomSectionTitle": {
+        "description": "Title for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenSectionCustomSectionDescription": "உங்கள் சொந்த பகுதியை கட்டமைக்கவும்",
+    "@homeScreenSectionCustomSectionDescription": {
+        "description": "Description for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenQuickActionPickerMenuTitle": "Pick an செயல்",
+    "@homeScreenQuickActionPickerMenuTitle": {
+        "description": "Title for the quick action picker menu, which allows users to pick a quick action to add to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksTitle": "பிடித்த தடங்கள்",
+    "@homeScreenSectionPresetFavoriteTracksTitle": {
+        "description": "Title for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksDescription": "சீரற்ற வரிசையில் ட்ராக்குகள் பிடித்துள்ளன",
+    "@homeScreenSectionPresetFavoriteTracksDescription": {
+        "description": "Description for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksTitle": "மறக்கப்பட்ட பிடித்த தடங்கள்",
+    "@homeScreenSectionPresetForgottenFavoriteTracksTitle": {
+        "description": "Title for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksDescription": "நீங்கள் அண்மைக் காலத்தில் விளையாடிய டிராக்குகள் விரும்பப்பட்டன",
+    "@homeScreenSectionPresetForgottenFavoriteTracksDescription": {
+        "description": "Description for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "noExternalDirectories": "வெளிப்புற கோப்பகங்கள் இல்லை.",
+    "@noExternalDirectories": {
+        "description": "Message when the user tries to configure an Appdirectory external download directory but none are availible"
+    },
+    "nameRequired": "பெயர் (தேவை)",
+    "@nameRequired": {
+        "description": "Descriptor for the required name field when adding download locations."
+    },
+    "exteranlStorageTip": "பாதையில் \"எமுலேட்டட்\" இல்லை என்றால், அது வெளிப்புற சேமிப்பகமாக இருக்கலாம்.",
+    "@exteranlStorageTip": {
+        "description": "Helper text in Appdirectory download location config form"
+    },
+    "tooltipDisabled": "{tip} (முடக்கப்பட்டது)",
+    "@tooltipDisabled": {
+        "placeholders": {
+            "tip": {
+                "type": "String"
+            }
+        },
+        "description": "Added to tooltips on disabled buttons"
+    },
+    "noDownloadsInLocation": "இந்த இடத்தில் தற்போது பதிவிறக்கங்கள் எதுவும் இல்லை.",
+    "@noDownloadsInLocation": {
+        "description": "Message when deleting a downloads location informing the user it is empty."
+    },
+    "deleteDownloadLocation": "இருப்பிடத்தை நீக்கு",
+    "@deleteDownloadLocation": {
+        "description": "Button for confirming deletion of deownload location"
+    },
+    "cannotDeleteLocation": "இருப்பிடத்தை நீக்க முடியாது",
+    "@cannotDeleteLocation": {
+        "description": "Message that a download location cannot currently be deleted."
+    },
+    "cannotDeleteLocationEplanation": "இந்த இருப்பிடம் தற்போது பதிவிறக்கங்களைக் கொண்டுள்ளது மற்றும் நீக்க முடியாது. இந்த பதிவிறக்கங்களை முதலில் அகற்றவும்:",
+    "@cannotDeleteLocationEplanation": {
+        "description": "Explanation that the download location cannot be deleted due to not being empty."
+    },
+    "search": "தேடல்",
+    "@search": {
+        "description": "Tooltip for music screen search button"
+    },
+    "globalMenu": "பட்டியல்",
+    "@globalMenu": {
+        "description": "Tooltip for menu open button on music screen"
+    },
+    "lookingForSomethingElse": "வேறு ஏதாவது தேடுகிறீர்களா?",
+    "@lookingForSomethingElse": {
+        "description": "Header for home screen customization button"
+    },
+    "builtWithByTheFinampContributors": "Finamp பங்களிப்பாளர்களால் ♥ உடன் கட்டப்பட்டது.",
+    "@builtWithByTheFinampContributors": {
+        "description": "Message in home screen footer"
+    },
+    "showAll": "அனைத்தையும் காட்டு",
+    "@showAll": {
+        "description": "Tooltip for show all button on home screen sections"
+    },
+    "failedToLoadSection": "பிரிவை ஏற்ற முடியவில்லை.",
+    "@failedToLoadSection": {
+        "description": "Message when an error is thrown while resolving home screen section"
+    },
+    "sectionContentsNotDownloaded": "பகுதி உள்ளடக்கங்கள் பதிவிறக்கம் செய்யப்படவில்லை.",
+    "@sectionContentsNotDownloaded": {
+        "description": "Message when a home screen section has no items while offline"
+    },
+    "failedToLoadSectionMissingItem": "பிரிவை ஏற்றுவதில் தோல்வி - உருப்படியைக் காணவில்லை.",
+    "@failedToLoadSectionMissingItem": {
+        "description": "Message when the parent item of a home screen section is missing from the server"
+    },
+    "errorLoadingItems": "பொருட்களை ஏற்றுவதில் பிழை.",
+    "@errorLoadingItems": {
+        "description": "Message when an error occurs while loading home screen section contents"
+    },
+    "noItemsAvailable": "பொருட்கள் எதுவும் கிடைக்கவில்லை.",
+    "@noItemsAvailable": {
+        "description": "Message when a home screen section has no items while online"
+    },
+    "filters": "வடிப்பான்கள்",
+    "@filters": {
+        "description": "Label for filters in Sort & Filter menu"
+    },
+    "removeFilter": "இந்த வடிகட்டியை அகற்று",
+    "@removeFilter": {
+        "description": "Tooltip for removable filter chips in Sort & Filter row"
+    },
+    "removeFilters": "வடிப்பான்களை அகற்று",
+    "@removeFilters": {
+        "description": "Title for remove filters only variant of sort and filter menu"
+    },
+    "sortFilter": "வரிசைப்படுத்தி வடிகட்டவும்",
+    "@sortFilter": {
+        "description": "title for Sort & Filter menu"
+    },
+    "editSection": "பகுதியைத் திருத்தவும்",
+    "@editSection": {
+        "description": "Label for edit home section menu entry"
+    },
+    "connected": "இணைக்கப்பட்டது",
+    "@connected": {
+        "description": "Fallback for 'Connected to <server name>' message while server info is loaded"
+    },
+    "timerMinutes": "{minutes} மணித்துளி",
+    "@timerMinutes": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer duration slider"
+    },
+    "timerTracks": "{tracks} தடங்கள்",
+    "@timerTracks": {
+        "placeholders": {
+            "tracks": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer track count slider"
+    },
+    "quickActionsSubtitle": "முகப்புத் திரையில் காட்டப்படும் விரைவான செயல்களைத் தேர்ந்தெடுத்து மறுவரிசைப்படுத்தவும்.",
+    "@quickActionsSubtitle": {
+        "description": "Subtitle for quick actions edit menu"
+    },
+    "selectAnItem": "ஒரு பொருளைத் தேர்ந்தெடுக்கவும்",
+    "@selectAnItem": {
+        "description": "Title for 'play specific item' quick action edit menu"
+    },
+    "sectionsMenu": "பிரிவுகள்",
+    "@sectionsMenu": {
+        "description": "Title for home screen sections edit menu"
+    },
+    "sectionMenuSubtitle": "முகப்புத் திரையில் காட்டப்படும் பிரிவுகளைத் தேர்ந்தெடுத்து மறுவரிசைப்படுத்தவும்.",
+    "@sectionMenuSubtitle": {
+        "description": "Subtitle for home screen sections edit menu"
+    },
+    "sectionType": "பிரிவு வகை",
+    "@sectionType": {
+        "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
+    },
+    "featuredCollection": "சிறப்புத் தொகுப்பு",
+    "@featuredCollection": {
+        "description": "Title for home screen section editor collection selector"
+    },
+    "tabType": "தாவல் வகை",
+    "@tabType": {
+        "description": "Title for home screen section editor tab type dropdown (albums, artists, ect...)"
+    },
+    "library": "நூலகம்",
+    "@library": {
+        "description": "Title for home screen section editor library selector dropdown, or a general view of the entire active music library (e.g. in CarPlay)"
+    },
+    "currentLibrary": "தற்போதைய நூலகம்",
+    "@currentLibrary": {
+        "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
+    },
+    "loading": "ஏற்றுகிறது...",
+    "@loading": {
+        "description": "Message when items or libraries are loading in home screen section editor"
+    },
+    "sectionTitle": "பிரிவு தலைப்பு",
+    "@sectionTitle": {
+        "description": "Title for custom section title editor in home screen section editor"
+    },
+    "egFavoriteTracks": "எ.கா. பிடித்த தடங்கள்",
+    "@egFavoriteTracks": {
+        "description": "Placeholder text in custom section title editor in home screen section editor"
+    },
+    "customSectionTitleRequired": "தனிப்பயன் பகுதிக்கு ஒரு தலைப்பைக் கொடுங்கள்",
+    "@customSectionTitleRequired": {
+        "description": "Message when a custom section title is needed in home screen section editor"
+    },
+    "editHomeScreenSection": "முகப்புத் திரைப் பிரிவைத் திருத்து",
+    "@editHomeScreenSection": {
+        "description": "Title for home screen section editor menu"
+    },
+    "sectionConfigInvalid": "தற்போதைய கட்டமைப்பு தவறானது.",
+    "@sectionConfigInvalid": {
+        "description": "Message in home screen section edit menu preview window when a valid preview cannot be generated"
+    },
+    "searchNotAvailibleWhileOffline": "ஆஃப்லைனில் தேடல் கிடைக்காது!",
+    "@searchNotAvailibleWhileOffline": {
+        "description": "Message in home screen section editor search widget when offline"
+    },
+    "noSearchResults": "தேடல் முடிவுகள் இல்லை.",
+    "@noSearchResults": {
+        "description": "Message in home screen section editor search widget when no results are returned"
+    },
+    "collectionDropdownHint": "ஒரு தொகுப்பைத் தேர்ந்தெடுக்கவும்",
+    "@collectionDropdownHint": {
+        "description": "Hint for selector dropdown in home screen editor search widget"
+    },
+    "gridImageSizeTitle": "கட்டம் ஓடு அளவு",
+    "@gridImageSizeTitle": {
+        "description": "Title of grid tile image size setting"
+    },
+    "gridImageSizeSubtitle": "கட்டக் காட்சியில் உள்ள உருப்படிகளின் அளவைத் தேர்ந்தெடுக்கவும்",
+    "@gridImageSizeSubtitle": {
+        "description": "Subtitle of grid tile image size setting"
+    },
+    "gridImageSizeLabel": "{colCountExact, plural, =0{~} =1{} other{}}{colCount, plural, =1{1 நெடுவரிசை ({sizeDescriptor})} other{{colCount} நெடுவரிசைகள் ({sizeDescriptor})}}",
+    "@gridImageSizeLabel": {
+        "placeholders": {
+            "sizeDescriptor": {
+                "type": "String",
+                "example": "Very Small"
+            },
+            "colCount": {
+                "type": "int"
+            },
+            "colCountExact": {
+                "type": "int",
+                "description": "0 = not exact, add e.g. tilde character (~), 1 = exact, just show the number"
+            }
+        },
+        "description": "Slider label in grid tile image size setting"
+    },
+    "homeScreenImageSizeTitle": "முகப்புத் திரையின் டைல் அளவு",
+    "@homeScreenImageSizeTitle": {
+        "description": "Title of home screen tile image size setting"
+    },
+    "homeScreenImageSizeSubtitle": "முகப்புத் திரையில் உள்ள உருப்படிகளின் அளவைத் தேர்ந்தெடுக்கவும்",
+    "@homeScreenImageSizeSubtitle": {
+        "description": "Subtitle of home screen tile image size setting"
+    },
+    "noFilterActive": "வடிகட்டி செயலில் இல்லை",
+    "@noFilterActive": {
+        "description": "Message in sort & filter row when no filters are active"
+    },
+    "activeFilterCount": "{filterCount, plural, =0{வடிகட்டி இல்லை} =1{1 வடிகட்டி} other{{filterCount} வடிகட்டிகள்}} செயலில்",
+    "@activeFilterCount": {
+        "placeholders": {
+            "filterCount": {
+                "type": "int"
+            }
+        },
+        "description": "Message in sort & filter row"
+    },
+    "inPlaylist": "பிளேலிச்ட்டில்",
+    "@inPlaylist": {
+        "description": "Name of 'In Playlist' content type"
+    },
+    "inCollection": "சேகரிப்பில் உள்ளது",
+    "@inCollection": {
+        "description": "Name of jellyfin 'Collection' content type"
+    },
+    "tabView": "தாவல் காட்சி",
+    "@tabView": {
+        "description": "Name of home screen section type which uses the contents of a music screen tab"
+    },
+    "collection": "சேகரிப்பு",
+    "@collection": {
+        "description": "Name of home screen section type which uses the contents of a supplied playable item"
+    },
+    "queues": "வால்கள்",
+    "@queues": {
+        "description": "Name of home screen section type which shows the latest played queues"
+    },
+    "favoritePlaylists": "பிடித்த பிளேலிச்ட்கள்",
+    "@favoritePlaylists": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteGenres": "பிடித்த வகைகள்",
+    "@favoriteGenres": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedAlbums": "புதிதாக சேர்க்கப்பட்ட ஆல்பங்கள்",
+    "@newlyAddedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedTracks": "புதிதாக சேர்க்கப்பட்ட தடங்கள்",
+    "@newlyAddedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedAlbums": "அடிக்கடி இசைக்கப்பட்ட ஆல்பங்கள்",
+    "@frequentlyPlayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedTracks": "அடிக்கடி விளையாடிய டிராக்குகள்",
+    "@frequentlyPlayedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedArtists": "அடிக்கடி நடித்த கலைஞர்கள்",
+    "@frequentlyPlayedArtists": {
+        "description": "Name of a home screen section preset"
+    },
+    "unplayedAlbums": "இயக்கப்படாத ஆல்பங்கள்",
+    "@unplayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "recentQueues": "அண்மைக் கால வரிசைகள்",
+    "@recentQueues": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteAlbumsDescription": "சீரற்ற வரிசையில் விரும்பிய ஆல்பங்கள்",
+    "@favoriteAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteArtistsDescription": "ரேண்டம் வரிசையில் கலைஞர்களை விரும்பினார்",
+    "@favoriteArtistsDescription": {
+        "description": "Description  of a home screen section preset"
+    },
+    "favoritePlaylistsDescription": "சீரற்ற வரிசையில் விரும்பிய பிளேலிச்ட்கள்",
+    "@favoritePlaylistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteGenresDescription": "சீரற்ற வரிசையில் விரும்பப்பட்ட வகைகள்",
+    "@favoriteGenresDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedAlbumsDescription": "உங்கள் லைப்ரரியில் அண்மைக் காலத்தில் சேர்க்கப்பட்ட ஆல்பங்கள், புதியதில் தொடங்கி",
+    "@recentlyAddedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedTracksDescription": "உங்கள் லைப்ரரியில் அண்மைக் காலத்தில் சேர்க்கப்பட்ட ட்ராக்குகள், புதியதில் தொடங்கி",
+    "@recentlyAddedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedAlbumsDescription": "நீங்கள் அடிக்கடி கேட்ட ஆல்பங்கள்",
+    "@frequentlyPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedTracksDescription": "நீங்கள் அடிக்கடி கேட்ட தடங்கள்",
+    "@frequentlyPlayedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedArtistsDescription": "நீங்கள் அடிக்கடி கேட்கும் கலைஞர்கள்",
+    "@frequentlyPlayedArtistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "neverPlayedAlbumsDescription": "நீங்கள் இதுவரை கேட்காத ஆல்பங்கள் சீரற்ற வரிசையில்",
+    "@neverPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentQueuesDescription": "நீங்கள் அண்மைக் காலத்தில் உருவாக்கிய வரிசைகள், புதியதில் தொடங்கி",
+    "@recentQueuesDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "shuffleTracksActionDescription": "உங்கள் லைப்ரரியில் இருந்து சீரற்ற டிராக்குகளை கலக்கவும்",
+    "@shuffleTracksActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browseRecentQueuesActionDescription": "நீங்கள் அண்மைக் காலத்தில் விளையாடிய வரிசைகளில் இருந்து தேர்வு செய்யவும்",
+    "@browseRecentQueuesActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browsePlaybackHistoryActionDescription": "உங்கள் பின்னணி வரலாற்றை உலாவவும்",
+    "@browsePlaybackHistoryActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomAlbumActionDescription": "சீரற்ற ஆல்பத்தின் பிளேபேக்கைத் தொடங்குகிறது",
+    "@playRandomAlbumActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "surpriseMeActionDescription": "சீரற்ற பாதையில் இருந்து 'தொடர்ச்சியான' வானொலியைத் தொடங்குகிறது",
+    "@surpriseMeActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomTrackActionDescription": "ரேண்டம் டிராக்கின் பிளேபேக்கைத் தொடங்குகிறது",
+    "@playRandomTrackActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteItemActionDescription": "சீரற்ற விருப்பமான உருப்படியிலிருந்து பிளேபேக்கைத் தொடங்குகிறது",
+    "@playRandomFavoriteItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playPreviousQueueActionDescription": "உங்கள் மிகச் அண்மைக் கால காப்பகப்படுத்தப்பட்ட வரிசையை மீட்டமைத்து இயக்குகிறது",
+    "@playPreviousQueueActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "configureOutputActionDescription": "வெளியீட்டு சாதன உள்ளமைவைத் திறக்கிறது",
+    "@configureOutputActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playSpecificItemActionDescription": "ஒரு குறிப்பிட்ட உள்ளமைக்கப்பட்ட உருப்படியை இயக்குகிறது",
+    "@playSpecificItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "shuffleTracksAction": "தடங்களை கலக்கவும்",
+    "@shuffleTracksAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomAlbumAction": "சீரற்ற ஆல்பம்",
+    "@randomAlbumAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomTrackAction": "ரேண்டம் டிராக்",
+    "@randomTrackAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteAction": "ரேண்டம் பிடித்தது",
+    "@randomFavoriteAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "previousQueueAction": "முந்தைய வரிசை",
+    "@previousQueueAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "configureOutputAction": "வெளியீட்டை உள்ளமைக்கவும்",
+    "@configureOutputAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "playSpecificItemAction": "{itemName, select, finamp_placeholder{<Item>} other{{itemName}}} இயக்கு",
+    "@playSpecificItemAction": {
+        "placeholders": {
+            "itemName": {
+                "type": "String"
+            }
+        },
+        "description": "Name of a home screen quick action"
+    },
+    "surpriseMeAction": "என்னை ஆச்சரியப்படுத்துங்கள்",
+    "@surpriseMeAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "editAction": "செயலைத் திருத்தவும்",
+    "@editAction": {
+        "description": "Button to edit a quick action"
+    },
+    "swapAction": "பரிமாற்ற நடவடிக்கை",
+    "@swapAction": {
+        "description": "Button to swap the selected quick action"
+    },
+    "removeAction": "செயலை அகற்று",
+    "@removeAction": {
+        "description": "Button to remove a quick action"
+    },
+    "addNewAction": "புதிய செயலைச் சேர்க்கவும்",
+    "@addNewAction": {
+        "description": "Button to add a new quick action"
+    },
+    "removeSection": "பிரிவை அகற்று",
+    "@removeSection": {
+        "description": "Button to remove a home screen section"
+    },
+    "addNewSection": "புதிய பகுதியைச் சேர்க்கவும்",
+    "@addNewSection": {
+        "description": "Button to add a new home screen section"
+    },
+    "preview": "முன்னோட்டம்",
+    "unnamedCollection": "பெயரிடப்படாத தொகுப்பு",
+    "@unnamedCollection": {
+        "description": "Placeholder for unnamed collection in home screen section editor"
+    },
+    "noTracksFound": "சர்ப்ரைச் மீ மிக்சைத் தொடங்க தடங்கள் எதுவும் இல்லை.",
+    "@noTracksFound": {
+        "description": "Message if SurpriseMeMix creation fails"
+    },
+    "nothingFoundToPlay": "விளையாட எதுவும் கிடைக்கவில்லை.",
+    "@nothingFoundToPlay": {
+        "description": "Message if play random item fails"
+    },
+    "errorLoadingHomeSection": "முகப்புப் பகுதியை ஏற்றுவதில் பிழை",
+    "@errorLoadingHomeSection": {
+        "description": "Message if a home screen section cannot be loaded due to a missing item"
+    },
+    "noPreviousQueueFoundToPlay": "விளையாடுவதற்கு முந்தைய வரிசை எதுவும் இல்லை.",
+    "@noPreviousQueueFoundToPlay": {
+        "description": "Message if play previous queue quick action fails"
+    },
+    "unknownVersion": "தெரியாத பதிப்பு",
+    "@unknownVersion": {
+        "description": "Reported server version if request fails"
+    },
+    "isFavoriteFilter": "பிடித்தவை",
+    "@isFavoriteFilter": {
+        "description": "Name of favorite filter"
+    },
+    "isUnplayedFilter": "விளையாடாதது",
+    "@isUnplayedFilter": {
+        "description": "Name of unplayed items filter"
+    },
+    "isFullyDownloadedFilter": "முழுமையாக பதிவிறக்கம் செய்யப்பட்டது",
+    "@isFullyDownloadedFilter": {
+        "description": "Name of fully downloaded items filter"
+    },
+    "genreFilter": "வகை: {name}",
+    "@genreFilter": {
+        "description": "Name of genrefilter",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "startsWithFilter": "இதனுடன் தொடங்குகிறது: {letter}",
+    "@startsWithFilter": {
+        "description": "Name of starts with letter filter",
+        "placeholders": {
+            "letter": {
+                "type": "String"
+            }
+        }
+    },
+    "searchTermFilter": "தேடல்: {searchTerm}",
+    "@searchTermFilter": {
+        "description": "Name of search term filter",
+        "placeholders": {
+            "searchTerm": {
+                "type": "String"
+            }
+        }
+    },
+    "customizeHomeScreen": "முகப்புத் திரையைத் தனிப்பயனாக்கு",
+    "@customizeHomeScreen": {
+        "description": "Label for home screen customize button"
+    },
+    "connectedTo": "இணைக்கப்பட்டது",
+    "@connectedTo": {
+        "description": "Server info in music screen menu"
+    },
+    "performingArtistFilter": "ஆல்பங்கள் (இதில் தோன்றும்)",
+    "albumArtistFilter": "ஆல்பங்கள் (ஆல்பம் கலைஞர்)",
+    "allTypes": "அனைத்து வகைகளும்",
+    "itemTypeFilterHeader": "குழந்தை வகை",
+    "useAndroidGainEffectTitle": "ஆதாய விளைவைப் பயன்படுத்தவும்",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "அளவைக் கட்டுப்படுத்த, சொந்த ஆதாய விளைவைப் பயன்படுத்தவும். இது மிகவும் நெகிழ்வானது ஆனால் சில சாதனங்களில் பிளேயரை உடைக்கிறது. இதை நீங்கள் கைமுறையாக மாற்ற வேண்டியதில்லை. விண்ணப்பிக்க ஆப்சை மறுதொடக்கம் செய்ய வேண்டும்.",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "துவக்கப் பிழையின் காரணமாக விளைவு வீழ்ச்சியைப் பெற மாறுகிறது.",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+    },
+    "losslessNoBitrate": "FLAC டிரான்ச்கோடுகளுக்குப் பொருந்தாது",
+    "@losslessNoBitrate": {
+        "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+    },
+    "recentlyPlayedTracksDescription": "நீங்கள் அண்மைக் காலத்தில் கேட்ட டிராக்குகள், கடைசியாக விளையாடியதில் தொடங்கி",
+    "@recentlyPlayedTracksDescription": {
+        "description": "Description for a home screen section preset"
+    },
+    "homeFavoritesDownloadWarning": "பிடித்தவைகளை நிச்சயமாகப் பதிவிறக்க விரும்புகிறீர்களா? இது {sectionType} மட்டுமின்றி அனைத்து வகைகளிலும் பிடித்தவற்றைப் பதிவிறக்கும்.",
+    "@homeFavoritesDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because home sections show a specific item type, like Albums, but the download covers all.",
+        "placeholders": {
+            "sectionType": {
+                "type": "String",
+                "example": "Albums"
+            }
+        }
+    },
+    "homeAllPlaylistsWarning": "எல்லா பிளேலிச்ட்களையும் நிச்சயமாக விரும்புகிறீர்களா? இது இந்தப் பிரிவில் உள்ளவை மட்டுமல்ல, ஒவ்வொரு பிளேலிச்ட்டையும் பதிவிறக்கும்.",
+    "@homeAllPlaylistsWarning": {
+        "description": "Warning presented when pressing the download button on playlist home sections with a filter applied.  This is shown because the download will not apply the filter."
+    },
+    "homeRecentAlbumsDownloadWarning": "இது சர்வரில் உள்ள 5 அண்மைக் கால ஆல்பங்களைப் பதிவிறக்கும். எதிர்காலத்தில் சர்வரில் புதிய ஆல்பங்கள் சேர்க்கப்படும்போது இது புதுப்பிக்கப்பட்டு, அதிகப்படியான பதிவிறக்கங்கள் அகற்றப்படும்.",
+    "@homeRecentAlbumsDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because the behavior of the 5 latest albums download is not a 100% match to the home sections."
+    },
+    "alreadyRandomized": "இந்தப் பகுதி ஏற்கனவே சீரற்ற வரிசையில் வழங்கப்பட்டுள்ளது",
+    "@alreadyRandomized": {
+        "description": "Tooltip for shuffle button on home screen sections using a random sort order, where it is disabled due to being unneeded"
+    },
+    "libraryQualifierActive": "செயலில்",
+    "@libraryQualifierActive": {
+        "description": "Label shown next to the currently selected library in the Finamp menu/drawer"
+    },
+    "voiceSearch": "குரல் தேடல்",
+    "@voiceSearch": {
+        "description": "Heading for the page that prompts the user to perform a voice search."
+    },
+    "carPlaySiriHint": "\"ஏ சிரி, ஃபினாம்பில் [ட்ராக்/ஆர்ட்டிச்ட்/ஆல்பம்] பிளே செய்\"",
+    "@carPlaySiriHint": {
+        "description": "Hint text for how to use Siri to search in CarPlay."
+    },
+    "carPlayLoginPrompt": "உங்கள் செல்லிஃபின் சர்வரில் உள்நுழைய உங்கள் மொபைலில் Finamp பயன்பாட்டைத் திறக்கவும்.",
+    "@carPlayLoginPrompt": {
+        "description": "Label shown when the user is trying to use CarPlay without being logged in."
+    },
+    "offlineSortFallback": "{onlineSort} மூலம் வரிசைப்படுத்துவது ஆன்லைனில் மட்டுமே கிடைக்கும். தற்போது இயல்புநிலை வரிசைப்படுத்தலுக்குத் திரும்புகிறது",
+    "@offlineSortFallback": {
+        "description": "Warning presented in sort and filter menu when an online-only sort is chosen.",
+        "placeholders": {
+            "onlineSort": {
+                "type": "String",
+                "example": "Play Count"
+            }
+        }
+    },
+    "retry": "மீண்டும் முயற்சிக்கவும்",
+    "retryPageLoad": "சேவையகத்திலிருந்து உருப்படிகளை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்க சொடுக்கு செய்யவும்.",
+    "itemType": "{itemType, select, album{ஆல்பம்} playlist{இயக்குபட்டியல்} artist{Artist} genre{கலைஞர்} track{தடம்} library{நூலகம்} collection{சேகரிப்பு} unknown{Item} other{{itemType}}}",
+    "@itemType": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            }
+        },
+        "description": "Item type name."
+    },
+    "connectionStateInfoString": "{state, select, syncing{சேவையகத்துடன் ஒத்திசைத்தல்} downloading{சேவையகத்தில் இருந்து பதிவிறக்குதல்} deleting{பழைய பதிவிறக்கங்களை நீக்குதல்} connectedLocal{உள்ளக பிணையம் வழியாக இணைக்கப்பட்டது} syncingLocal{உள்ளக பிணையம் மூலம் ஒத்திசைத்தல்} downloadingLocal{உள்ளக பிணையத்தில் இருந்து பதிவிறக்குதல்} other{}}",
+    "@connectionStateInfoString": {
+        "description": "String describing the current connection state to the server, shown in the music screen drawer/menu.",
+        "placeholders": {
+            "state": {
+                "type": "String",
+                "example": "syncingLocal"
+            }
+        }
     }
 }
