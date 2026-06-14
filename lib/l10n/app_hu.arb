@@ -2,18 +2,7 @@
     "applicationLegalese": "A Mozilla Public License 2.0 licenc alapján.\nA forráskód elérhető a {sourceCodeLink} címen.",
     "sleepTimerTooltip": "Elalvás időzítő",
     "shuffleAllTrackCount": "Összes dal keverési listájának száma",
-    "updateButtonLabel": "Frissítés",
     "username": "Felhasználónév",
-    "gridCrossAxisCount": "Oszlopok száma {value} módban",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
     "viewTypeSubtitle": "Nézettípus a zenei képernyőhöz",
     "viewType": "Nézet típusa",
     "serverUrl": "Szerver webcíme",
@@ -27,7 +16,6 @@
     "criticRating": "Kritikusok értékelése",
     "dateAdded": "Hozzáadás dátuma",
     "datePlayed": "Utolsó lejátszás dátuma",
-    "downloadMissingImages": "Töltse le a hiányzó képeket",
     "finamp": "Finamp",
     "genres": "Műfajok",
     "logs": "Naplók",
@@ -103,10 +91,8 @@
     },
     "downloadLocations": "Letöltési helyek",
     "downloadsQueued": "Fájlok letöltése",
-    "downloadsDeleted": "Letöltések törölve.",
     "enableTranscoding": "Átkódolás engedélyezése",
     "error": "Hiba",
-    "failedToGetTrackFromDownloadId": "Nem sikerült lekérni a dalt a letöltési azonosító alapján",
     "enableTranscodingSubtitle": "Átkódolja a zenei streameket a szerver oldalon.",
     "layoutAndTheme": "Elrendezés és téma",
     "location": "Elhelyezkedés",
@@ -131,34 +117,21 @@
     },
     "addDownloadLocation": "Letöltési hely hozzáadása",
     "bitrateSubtitle": "A nagyobb bitráta jobb hangminőséget biztosít nagyobb sávszélesség mellett. Nem vonatkozik a veszteségmentes codec-ekre, pl. FLAC",
-    "gridCrossAxisCountSubtitle": "Oszlopok száma {value} rácsnézetben.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
     "shuffleAllTrackCountSubtitle": "A betöltendő dalok száma, amikor a dalok lapján vagy a műfaj képernyőn az összes keverése gombot használja.",
     "appDirectory": "Alkalmazás Könyvtára",
     "customLocation": "Egyéni hely",
     "customLocationsBuggy": "Az egyéni helyek rendkívül problémásak lehetnek, és a legtöbb esetben nem ajánlottak. A rendszer 'Music' mappán belül az operációs rendszer korlátai miatt nem teszik lehetővé az albumborítók mentését.",
-    "directoryMustBeEmpty": "A könyvtárnak üresnek kell lennie",
     "enterLowPriorityStateOnPause": "Alacsony prioritású állapotba lépés szüneteltetéskor",
     "grid": "Rács",
     "landscape": "fekvő",
     "list": "Lista",
     "pathReturnSlashErrorMessage": "A „/” karaktert használó elérési utak nem értelmezhetőek",
-    "portrait": "álló",
     "selectDirectory": "Könyvtár kiválasztása",
     "useCoverAsBackground": "Elmosódott borító megjelenítése lejátszási háttérként",
     "showTextOnGridView": "Szöveg megjelenítése rácsnézetben",
     "system": "Rendszer",
     "theme": "Téma",
     "unknownError": "Ismeretlen hiba",
-    "addedToQueue": "Hozzáadva a sorhoz.",
     "responseError": "{error} Állapotkód {statusCode}.",
     "@responseError": {
         "placeholders": {
@@ -192,10 +165,6 @@
     "errorScreenError": "Hiba történt a hibalista lekérésekor! Valószínűleg érdemes jelentenie a problémát a GitHubon, és törölnie kell az alkalmazásadatokat",
     "cancelSleepTimer": "Törlöd az elalvásidőzítőt?",
     "clear": "Törlés",
-    "couldNotFindLibraries": "Nem található könyvtár.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "dark": "Sötét",
     "goToAlbum": "Ugrás az albumra",
     "instantMix": "Instant Keverés",
@@ -203,36 +172,21 @@
     "newPlaylist": "Új lejátszási lista",
     "noButtonLabel": "Nem",
     "noAlbum": "Album nélkül",
-    "noArtist": "Nincs előadó",
     "noItem": "Nincs tárgy",
     "playlistCreated": "Lejátszási lista létrehozva.",
     "queue": "Sor",
-    "queueReplaced": "Sor cserélve.",
     "removeFromMix": "Kivétel a Mixből",
-    "replaceQueue": "Sor kicserélése",
     "startingInstantMix": "Instant mix indítása.",
     "tabs": "Lapok",
     "unknownArtist": "Ismeretlen Előadó",
     "addButtonLabel": "Hozzáadás",
     "createButtonLabel": "Létrehozás",
-    "invalidNumber": "Érvénytelen szám",
     "downloads": "Letöltések",
-    "hideTrackArtistsIfSameAsAlbumArtists": "A dal előadóinak elrejtése, ha megegyezik az album előadóival",
     "internalExternalIpExplanation": "Ha távolról szeretné elérni a Jellyfin szerverét, akkor külső IP-címet kell használnia.\n\nNem szükséges portot megadni, ha a szerver alapértelmezett HTTP (80/443) vagy Jellyfin (8096) portot használ.\n\nHa a cím helyes, akkor a beviteli mező alatt felugrik néhány információ a szerverről.",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
-    "downloadedMissingImages": "{count,plural, =0{Nem található hiányzó kép} =1{Letöltődött {count} hiányzó kép} other{Letöltött {count} hiányzó képet}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "enterLowPriorityStateOnPauseSubtitle": "Lehetővé teszi az értesítés elcsúsztatását, amikor szünetel. Azt is lehetővé teszi, hogy az Android leállítsa a szolgáltatást, amikor szünetel.",
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Megjeleníti-e a dal előadóit az album képernyőjén, ha nem különbözik az album előadóitól.",
     "yesButtonLabel": "Igen",
     "addToMix": "Hozzáadás a Mix-hez",
     "showTextOnGridViewSubtitle": "Megjelenjen-e a szöveg (cím, előadó stb.) a rácsos zenei képernyőn.",
@@ -254,14 +208,6 @@
         }
     },
     "minutes": "Percek",
-    "redownloadedItems": "{count,plural, =0{Nincs szükség újratöltésre..} =1{ {count} elem újra letöltve} other{{count} elemek újra letöltve}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "bufferDuration": "Puffer időtartama",
     "bufferDurationSubtitle": "A pufferelés időtartama másodpercben. Újraindítást igényel.",
     "disableGesture": "Gesztusok letiltása",
@@ -424,7 +370,6 @@
         "description": "Default sorting order for playlists (server order)"
     },
     "adaptive": "Adaptív",
-    "syncDownloadedPlaylists": "Letöltött lejátszási listák szinkronizálása",
     "activeDownloads": "Aktív letöltések",
     "activeDownloadsTitle": "Aktív letöltések",
     "noActiveDownloads": "Nincs aktív letöltés.",
@@ -433,10 +378,6 @@
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
     },
     "exportLogs": "Naplók mentése",
-    "deleteDownloadsConfirmButtonText": "Törlés",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
     "specialDownloads": "Speciális letöltések",
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
@@ -470,7 +411,6 @@
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
-    "onlineMode": "Online mód",
     "formattedRelativeTime": "{type, select, just_now{éppen most} minutes{{value} perce} hours{{value} órája} yesterday{tegnap} days{{value, plural, =1{1 napja} other{{value} napja}}} other{value}}",
     "@formattedRelativeTime": {
         "description": "Returns a relative time string based on how long ago something happened. Used for various DateTime values such as Date Last Played and Date Added.",
@@ -551,10 +491,6 @@
     "preferLocalNetworkEnableSwitchDescription": "Másik cím használata, ha a Jellyfin szerver belső hálózatához csatlakozik",
     "preferLocalNetworkPublicAddressSettingTitle": "Nyilvános cím",
     "preferLocalNetworkPublicAddressSettingDescription": "A Jellyfin szerverhez való csatlakozáshoz használt elsődleges cím",
-    "preferLocalNetworkInfoBox": "Ehhez a funkcióhoz engedélyezni kell a helymeghatározást, hogy a hálózati cím elérhető legyen.",
-    "@preferLocalNetworkInfoBox": {
-        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
-    },
     "networkSettingsTitle": "Hálózat",
     "@networkSettingsTitle": {
         "description": "Title for the network settings screen"
@@ -777,28 +713,6 @@
     "@discordRPCIconWhiteTransparent": {
         "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the full white Finamp logo with a Transparent Background"
     },
-    "deleteDownloadsPrompt": "Bizot, hogy törölni szeretné a(z) {itemType, select, album{albumot} playlist{lejátszási listát} artist{előadót} genre{műfajt} track{dalt} library{könyvtárat} other{elemet}} '{itemName}' erről az eszközről?",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
-    "shuffleCountButton": "Keverés ({count,plural,=1{{count} dal} other{{count} dal}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "offlineTrackCount": "{count,plural,=1{{count} dal} other{{count} dal}}, {downloads} letöltve",
     "@offlineTrackCount": {
         "placeholders": {
@@ -939,30 +853,9 @@
             }
         }
     },
-    "addToMorePlaylistsTooltip": "Hozzáadás további lejátszási listákhoz",
     "addToMorePlaylistsTitle": "Hozzáadás további lejátszási listákhoz",
     "removeFromPlaylistTooltip": "Eltávolítás a lejátszási listáról",
     "removeFromPlaylistTitle": "Eltávolítás erről a lejátszási listáról",
-    "removeFromPlaylistNamedTooltip": "Eztávolítás a(z) '{playlistName}' lejátszási listáról",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "removeFromPlaylistNamedTitle": "Eztávolítás a(z) '{playlistName}' lejátszási listáról",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "playlistActionsMenuButtonTooltip": "Érintse meg a lejátszási listához való hozzáadáshoz. Hosszan nyomja meg a kedvencekhez adáshoz.",
     "@playlistActionsMenuButtonTooltip": {
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
@@ -971,7 +864,6 @@
     "@browsePlaylists": {
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
     },
-    "unknownAlbum": "Ismeretlen album",
     "playbackModeDirectPlaying": "Közvetlen lejátszás",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -998,12 +890,6 @@
     "goToGenre": "Ugrás a műfajhoz",
     "removeFavorite": "Eltávolítás a kedvencek közül",
     "addFavorite": "Hozzáadás a kedvencekhez",
-    "confirmFavoriteAdded": "Hozzáadva a kedvencekhez",
-    "confirmFavoriteRemoved": "Eltávolítva a kedvencek közül",
-    "insertedIntoQueue": "Hozzáadva a lejátszási sorhoz.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
     "confirmAddedToPlaylist": "Hozzáadva a lejátszási listához.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
@@ -1052,10 +938,7 @@
     "favoriteAlbums": "Kedvenc albumok",
     "favoriteArtists": "Kedvenc előadók",
     "randomTracks": "Dalok (véletlenszerű)",
-    "randomAlbums": "Albumok (véletlenszerű)",
-    "randomArtists": "Előadók (véletlenszerű)",
     "mostPlayed": "Legtöbbet játszott",
-    "randomFavoritesFirst": "Véletlenszerű (kedvencek először)",
     "recentlyAdded": "Nemrég hozzáadva",
     "recentlyPlayed": "Nemrég játszott",
     "latestReleases": "Legújabb kiadások",
@@ -1107,10 +990,6 @@
     "genreListsInheritSortingSubtitle": "Ha engedélyezve van, a \"Minden megjelenítése\" listák a műfaj képernyő rendezését és szűrését öröklik. Ha letiltja, helyette a megfelelő könyvtárfül beállításait használja a rendszer. A műfaj képernyő tetején lévősSzámlálókra vagy a \"Lejátszási listák böngészése\" gombra koppintva mindig egy teljes lista fog megnyílni a könyvtár fül rendezési beállításaival.",
     "@genreListsInheritSortingSubtitle": {
         "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
-    },
-    "curatedItemsMostPlayedOfflineTooltip": "Offline módban nem elérhető.",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
     },
     "curatedItemsNotListenedYet": "Nem hallgatott meg egyetlen dalt sem{itemType, select, artistGenreFilter{ ebben a műfajban lévő előadó alapján} artist{ az előadótól} genre{ ebből a műfajból} other{}}.",
     "@curatedItemsNotListenedYet": {
@@ -1187,7 +1066,6 @@
     "confirm": "Megerősítés",
     "close": "Bezárás",
     "showUncensoredLogMessage": "Ez a napló tartalmazza a bejelentkezési adatokat. Megjelenítsem?",
-    "resetTabs": "Lapok visszaállítása",
     "resetToDefaults": "Alapértelmezettre visszaállítás",
     "noMusicLibrariesTitle": "Nincsenek zenei könyvtárak",
     "@noMusicLibrariesTitle": {
@@ -1258,8 +1136,6 @@
             }
         }
     },
-    "swipeInsertQueueNext": "Az elhúzott dal lejátszása következőként",
-    "swipeInsertQueueNextSubtitle": "Lehetővé teszi, hogy egy dalt a következő elemként illesszen be a sorba, amikor a listán elhúzza, ahelyett, hogy a végére illesztené.",
     "swipeLeftToRightAction": "Húzás jobbra művelet",
     "swipeLeftToRightActionSubtitle": "Művelet egy dal balról jobbra húzásakor.",
     "swipeRightToLeftAction": "Balra húzás művelet",
@@ -1310,7 +1186,6 @@
             }
         }
     },
-    "playbackReporting": "Lejátszási jelentés",
     "interactions": "Interakciók",
     "notAvailable": "Nem elérhető",
     "createPlaylistFromCurrentQueue": "Sor mentése lejátszási listaként",
@@ -1854,9 +1729,6 @@
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
-    "fixedGridSizeSwitchTitle": "Fix méretű rács használata",
-    "fixedGridSizeSwitchSubtitle": "A rács méretét nem befolyásolja az ablak/képernyő mérete.",
-    "fixedGridSizeTitle": "Csempe rácsméret",
     "fixedGridTileSizeEnum": "{size, select, small{Kicsi} medium{Közepes} large{Nagy} veryLarge{Nagyon nagy} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
@@ -1870,12 +1742,8 @@
     "allowSplitScreenSubtitle": "A lejátszó más elemekkel együtt jelenik meg a szélesebb kijelzőkön.",
     "enableVibration": "Rezgés engedélyezése",
     "enableVibrationSubtitle": "A rezgés ki- vagy bekapcsolása.",
-    "hideQueueButton": "Sorba állítás gomb elrejtése",
-    "hideQueueButtonSubtitle": "Rejtse el a várólista gombot a lejátszási képernyőn. Húzza felfelé az ujját a várólista eléréséhez.",
     "oneLineMarqueeTextButton": "Hosszú címek automatikus görgetése",
     "oneLineMarqueeTextButtonSubtitle": "Automatikusan görgeti a két sorban való megjelenítéshez túl hosszú dalcímeket",
-    "marqueeOrTruncateButton": "Három pont a hosszú nevekhez",
-    "marqueeOrTruncateButtonSubtitle": "'...' megjelenítése a hosszú címek végén a szöveg görgetése helyett",
     "hidePlayerBottomActions": "Alsó műveletek elrejtése",
     "hidePlayerBottomActionsSubtitle": "A lejátszó képernyőjén a várólista és a dalszöveg gombok elrejtése. A várólistához való hozzáféréshez húzd felfelé, a dalszöveg (ha rendelkezésre áll) megtekintéséhez húzd balra (az albumborító alatt).",
     "prioritizePlayerCover": "Abum borító priorizálása",
@@ -2398,10 +2266,6 @@
     "@genreScreen": {
         "description": "Name for the view/screen that shows genres"
     },
-    "emptyTopTracksList": "Még nem hallgattál meg egyetlen dalt sem ettől az előadótól.",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
-    },
     "emptyFilteredListTitle": "Nincsenek elemek",
     "@emptyFilteredListTitle": {
         "description": "Message shown when a list of items is filtered and no items match the filter"
@@ -2462,10 +2326,6 @@
         "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
     },
     "save": "Mentés",
-    "invalidColorCode": "Hibás szín kód",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
     "startRadio": "Rádió elindítása",
     "@startRadio": {
         "description": "Menu label for starting a radio from a playlist, album, etc."
@@ -2551,10 +2411,6 @@
     "@autoOfflineSettingSubtitle": {
         "description": "Subtitle for the automated offline mode setting."
     },
-    "radioModeSettingsTitle": "Rádió mód",
-    "@radioModeSettingsTitle": {
-        "description": "Title for the setting that controls the radio mode/algorithm."
-    },
     "radioModeMenuTitle": "Rádió mód kiválasztása",
     "@radioModeMenuTitle": {
         "description": "Title for menu that allows users to choose the radio mode."
@@ -2588,10 +2444,6 @@
     "radioModeDisableButtonTitle": "Rádió kikapcsolása",
     "@radioModeDisableButtonTitle": {
         "description": "Title for the option that disables radio mode."
-    },
-    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "Jelenlegi mód nem elérhető (Offline).",
-    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
-        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
     },
     "radioModeUnavailableWhileOfflineDescription": "Nem elérhető Offline módban",
     "@radioModeUnavailableWhileOfflineDescription": {

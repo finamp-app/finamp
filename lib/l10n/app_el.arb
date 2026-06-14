@@ -20,10 +20,6 @@
     "username": "Όνομα χρήστη",
     "password": "Συνθηματικό χρήστη",
     "logs": "Αρχείο καταγραφών",
-    "couldNotFindLibraries": "Δεν βρέθηκαν συλλογές.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "unknownName": "Άγνωστη όνομα",
     "genres": "Είδη",
     "startMixNoTracksArtist": "Κράτησε πατημένο έναν καλλιτέχνη, προκειμένου να προστεθεί ή να αφαιρεθεί από τον κατασκευαστή μίξεων, προ-εκκινήσεως μίξης",
@@ -65,7 +61,6 @@
     "premiereDate": "Ημερομηνία κυκλοφορίας",
     "productionYear": "Χρονολογία παραγωγής",
     "revenue": "Έσοδα",
-    "downloadMissingImages": "Λήψη ελλείποντων εικόνων",
     "name": "Όνομα",
     "downloadCount": "{count,plural, =1{{count} λήψη} other{{count} λήψεις}}",
     "@downloadCount": {
@@ -83,18 +78,8 @@
             }
         }
     },
-    "failedToGetTrackFromDownloadId": "Απέτυχε η λήψη τραγουδιού από το download ID",
     "playlistUpdated": "H Λίστα Αναπαραγωγής ενημερώθηκε.",
     "stackTrace": "Ιχνηλάτηση στοίβας",
-    "downloadedMissingImages": "{count,plural, =0{δεν βρέθηκαν ελλειπείς εικόνες} =1{ελήφθησαν {count} ελλειπής εικόνες} other{ελήφθησαν {count} ελλειπής εικόνες}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "dlEnqueued": "{count} στην σειρά",
     "@dlEnqueued": {
         "placeholders": {
@@ -137,8 +122,6 @@
             }
         }
     },
-    "downloadsDeleted": "Διαγράφτηκαν οι λήψεις.",
-    "updateButtonLabel": "Ενημέρωση",
     "transcoding": "Μετακωδικοποίηση",
     "notAvailableInOfflineMode": "Μη διαθέσιμο σε λειτουργία εκτός σύνδεσης",
     "logOut": "Αποσύνδεση",
@@ -157,21 +140,10 @@
     "customLocationsBuggy": "Οι προσαρμοσμένες τοποθεσίες μπορεί να παρουσιάζουν σοβαρά σφάλματα και δεν συνιστώνται στις περισσότερες περιπτώσεις. Τοποθεσίες κάτω από τον φάκελο 'Music' του συστήματος εμποδίζουν την αποθήκευση των εξωφύλλων άλμπουμ λόγω περιορισμών του λειτουργικού συστήματος.",
     "enterLowPriorityStateOnPause": "Είσοδος σε κατάσταση χαμηλής προτεραιότητας κατά την παύση",
     "landscape": "Οριζόντιο",
-    "gridCrossAxisCount": "{value} Πλήθος στοιχείων στον κάθετο άξονα του πλέγματος",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
     "appDirectory": "Φάκελος εφαρμογής",
     "addDownloadLocation": "Προσθήκη τοποθεσίας λήψεως",
     "selectDirectory": "Επέλεξε θέση",
     "unknownError": "Άγνωστο σφάλμα",
-    "directoryMustBeEmpty": "Η τοποθεσία πρέπει να είναι άδεια",
     "enterLowPriorityStateOnPauseSubtitle": "Επιτρέπει την απόρριψη της ειδοποίησης όταν η αναπαραγωγή είναι σε παύση. Επιτρέπει επίσης στο Android να τερματίσει την υπηρεσία κατά την παύση.",
     "shuffleAllTrackCountSubtitle": "Αριθμός κομματιών που θα φορτωθούν όταν χρησιμοποιείται το κουμπί “Τυχαία αναπαραγωγή όλων” στην καρτέλα Κομμάτια ή στην οθόνη Είδη μουσικής.",
     "viewTypeSubtitle": "Τύπος προβολής για την οθόνη μουσικής",
@@ -180,18 +152,7 @@
     "shuffleAllTrackCount": "Τυχαία αναπαραγωγή όλων των κομματιών",
     "viewType": "Τύπος προβολής",
     "grid": "Πλέγμα",
-    "portrait": "Κάθετο",
     "showTextOnGridView": "Εμφάνιση κειμένου στην προβολή πλέγματος",
-    "gridCrossAxisCountSubtitle": "Αριθμός κελιών πλέγματος ανά σειρά όταν {value}.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
     "theme": "Θέμα",
     "system": "Σύστημα",
     "light": "Φωτεινό",
@@ -207,7 +168,6 @@
     "removeFromPlaylistTooltip": "Αφαίρεση από αυτή την λίστα αναπαραγωγής",
     "removeFromPlaylistTitle": "Αφαίρεση Από Αυτή Την Λίστα Αναπαραγωγής",
     "createButtonLabel": "Δημιουργία",
-    "invalidNumber": "Μη Έγκυρος Αριθμός",
     "yesButtonLabel": "Ναί",
     "noButtonLabel": "Όχι",
     "finampTagline": "Ένα πρόγραμμα αναπαραγωγής μουσικής Jellyfin ανοιχτού κώδικα",
@@ -379,7 +339,6 @@
     },
     "favorite": "Αγαπημένο",
     "favorites": "Αγαπημένα",
-    "onlineMode": "Λειτουργία με σύνδεση",
     "title": "Τίτλος",
     "albumArtists": "Καλλιτέχνες Άλμπουμ",
     "performingArtists": "Ερμηνευτές",
@@ -404,7 +363,6 @@
             }
         }
     },
-    "syncDownloadedPlaylists": "Συγχρονισμός ληφθέντων λιστών αναπαραγωγής",
     "activeDownloads": "Ενεργές Λήψεις",
     "downloadedCountUnified": "{trackCount, plural, =1 {{trackCount} κομμάτι} other {{trackCount} κομμάτια}}, {imageCount, plural, =1 {{imageCount} εικόνα} other {{imageCount} εικόνες}}\n{syncCount, plural, =1 {{syncCount} κόμβος συγχρονίζεται} other {{syncCount} κόμβοι συγχρονίζονται}}{repairing, plural, =0 {} other {\nΔιαδικασία επιδιόρθωσης σε εξέλιξη}}",
     "@downloadedCountUnified": {
@@ -426,24 +384,6 @@
     },
     "activeDownloadsTitle": "Ενεργές Λήψεις",
     "noActiveDownloads": "Καμία ενεργή λήψη.",
-    "deleteDownloadsPrompt": "Είστε σίγουροι ότι θέλετε να διαγράψετε το {itemType, select, album {άλμπουμ} playlist {λίστα αναπαραγωγής} artist {καλλιτέχνη} genre {είδος μουσικής} track {κομμάτι} library {βιβλιοθήκη} other {στοιχείο}} '{itemName}' από αυτή τη συσκευή;",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
-    "deleteDownloadsConfirmButtonText": "Διαγραφή",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
     "specialDownloads": "Ειδικές λήψεις",
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
@@ -455,14 +395,6 @@
     "noItemsDownloaded": "Κανένα στοιχείο δεν έχει ληφθεί.",
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
-    },
-    "shuffleCountButton": "Τυχαία αναπαραγωγή ({count, plural, =1 {{count} κομμάτι} other {{count} κομμάτια}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "offlineTrackCount": "{count, plural, =1 {{count} κομμάτι} other {{count} κομμάτια}}, {downloads} ληφθέντα",
     "@offlineTrackCount": {
@@ -557,16 +489,11 @@
     "@playerScreenMinimumCoverPaddingEditorSubtitle": {
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
-    "hideTrackArtistsIfSameAsAlbumArtists": "Απόκρυψη ερμηνευτών κομματιών αν είναι ίδιοι με τους ερμηνευτές του άλμπουμ",
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Εάν θα εμφανίζονται οι ερμηνευτές κομματιών στην οθόνη άλμπουμ αν δεν διαφέρουν από τους ερμηνευτές του άλμπουμ.",
-    "playbackReporting": "Αναφορά αναπαραγωγής",
     "seconds": "Δευτερόλεπτα",
     "hours": "Ώρες",
     "noAlbum": "Κανένα Άλμουμ",
     "noItem": "Κανένα Αρχείο",
-    "noArtist": "Κανένας Καλλιτέχνης",
     "unknownArtist": "Άγνωστος Καλλιτέχνης",
-    "unknownAlbum": "Άγνωστο 'Αλπουμ",
     "playbackModeDirectPlaying": "Απευθείας αναπαραγωγή",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -594,24 +521,12 @@
     "@addToQueue": {
         "description": "Popup menu item title for adding an item to the end of the play queue."
     },
-    "replaceQueue": "Αντικατάσταση Ουράς",
     "instantMix": "Άμεσο Μίξ",
     "goToAlbum": "Μετάβαση στο άλμπουμ",
     "goToArtist": "Μετάβαση στον καλλιτέχνη",
     "goToGenre": "Μετάβαση στο είδος",
     "removeFavorite": "Αφαίρεση από τα Αγαπημένα",
     "addFavorite": "Προσθήκη στα Αγαπημένα",
-    "confirmFavoriteAdded": "Αγαπημένο Προστέθηκε",
-    "confirmFavoriteRemoved": "Αγαπημένο Αφαιρέθηκε",
-    "addedToQueue": "Προστέθηκε στην Ουρά.",
-    "@addedToQueue": {
-        "description": "Snackbar message that shows when the user successfully adds items to the end of the play queue."
-    },
-    "insertedIntoQueue": "Εισάχτηκε στην ουρά.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
-    "queueReplaced": "Η Ουρά Αντικαταστάθηκε.",
     "confirmAddedToPlaylist": "Προστέθηκε στην λίστα αναπαραγωγής.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
@@ -667,7 +582,6 @@
             }
         }
     },
-    "addToMorePlaylistsTooltip": "Πρόσθεση σε περισσότερες λίστες αναπαραγωγής",
     "addToMorePlaylistsTitle": "Πρόσθεση σε Περισσότερες Λίστες Αναπαραγωγής",
     "browsePlaylists": "Περιήγηση λιστών αναπαραγωγής",
     "@browsePlaylists": {
@@ -701,14 +615,6 @@
     },
     "removeFromMix": "Aφαίρεση Από το Μίξ",
     "addToMix": "Προσθήκη στο Μίξ",
-    "redownloadedItems": "{count,plural, =0{Δεν απαιτούνται επαναλήψεις λήψης.} =1{Επανελήφθη {count} στοιχείο} other{Επανελήφθησαν {count} στοιχεία}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "bufferDuration": "Διάρκεια Buffer",
     "bufferDurationSubtitle": "Η μέγιστη διάρκεια που πρέπει να αποθηκευτεί προσωρινά, σε δευτερόλεπτα. Απαιτείται επανεκκίνηση.",
     "bufferDisableSizeConstraintsTitle": "Μην περιορίζετε το μέγεθος του buffer",
@@ -1043,10 +949,7 @@
     "favoriteAlbums": "Αγαπημένα Άλμπουμ",
     "favoriteArtists": "Αγαπημένοι Καλλιτέχνες",
     "randomTracks": "Κομμάτια (Τυχαίες Επιλογές)",
-    "randomAlbums": "Άλμπουμ (Τυχαίες Επιλογές)",
-    "randomArtists": "Καλλιτέχνες (Τυχαίες Επιλογές)",
     "mostPlayed": "Πιο αναπαραγμένα",
-    "randomFavoritesFirst": "Τυχαία (Αγαπημένα Πρώτα)",
     "recentlyAdded": "Προστέθηκαν Πρόσφατα",
     "recentlyPlayed": "Πρόσφατα Αναπαράχτηκαν",
     "latestReleases": "Τελευταίες Κυκλοφορίες",
@@ -1087,10 +990,6 @@
     "@genreListsInheritSortingSubtitle": {
         "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
     },
-    "curatedItemsMostPlayedOfflineTooltip": "Μη διαθέσιμο στην Λειτουργία Εκτός Σύνδεσης.",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
-    },
     "albumCount": "{count,plural,=1{{count} Άλμπουμ} other{{count} Άλμπουμ}}",
     "@albumCount": {
         "placeholders": {
@@ -1111,7 +1010,6 @@
     "confirm": "Επιβεβαίωση",
     "close": "Κλείσιμο",
     "showUncensoredLogMessage": "Αυτό το αρχείο καταγραφής περιέχει τα στοιχεία σύνδεσής σας. Να εμφανιστεί;",
-    "resetTabs": "Επαναφορά Καρτελών",
     "resetToDefaults": "Επαναφορά στις προεπιλογές",
     "noMusicLibrariesTitle": "Καμία Βιβλιοθήκη Μουσικής",
     "@noMusicLibrariesTitle": {
@@ -1503,15 +1401,10 @@
         },
         "description": "Dropdown option to download original version of tracks"
     },
-    "fixedGridSizeSwitchTitle": "Χρήση πλακιδίων πλέγματος σταθερού μεγέθους",
-    "fixedGridSizeSwitchSubtitle": "Τα μεγέθη των πλακιδίων πλέγματος δεν θα προσαρμόζονται στο μέγεθος του παραθύρου/οθόνης.",
-    "fixedGridSizeTitle": "Μέγεθος Πλακιδίου Πλέγματος",
     "allowSplitScreenTitle": "Να επιτρέπεται Λειτουργία Διαχωρισμένης Οθόνης",
     "allowSplitScreenSubtitle": "Ο αναπαραγωγέας θα εμφανίζεται δίπλα σε άλλες προβολές σε ευρύτερες οθόνες.",
     "enableVibration": "Ενεργοποίηση Δόνησης",
     "enableVibrationSubtitle": "Καθορίζει αν θα ενεργοποιείται η δόνηση.",
-    "hideQueueButton": "Απόκρυψη κουμπιού ουράς",
-    "hideQueueButtonSubtitle": "Απόκρυψη του κουμπιού ουράς στην οθόνη αναπαραγωγής. Σαρώστε προς τα πάνω για να αποκτήσετε πρόσβαση στην ουρά.",
     "shuffleSome": "Ανακάτεψε μερικά",
     "playbackActionPageNewQueue": "Νέα Ουρά",
     "@playbackActionPageNewQueue": {
@@ -1552,36 +1445,12 @@
         "description": "Hint text for the color code input field"
     },
     "save": "Αποθήκευση",
-    "invalidColorCode": "Μη έγκυρος κωδικός χρώματος",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
     "sleepTimerRemainingTracks": "Ύπνος {time,plural,=1{μετά από αυτό το κομμάτι} other{σε {time} κομμάτια}}",
     "@sleepTimerRemainingTracks": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
         "placeholders": {
             "time": {
                 "type": "int"
-            }
-        }
-    },
-    "removeFromPlaylistNamedTooltip": "Αφαίρεση απο την playlist '{playlistName}'",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "removeFromPlaylistNamedTitle": "Αφαίρεση από την Playlist '{playlistName}'",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
             }
         }
     },

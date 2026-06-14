@@ -12,10 +12,6 @@
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
-    "couldNotFindLibraries": "Kunne ikke finde nogle biblioteker.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "tracks": "Sange",
     "artists": "Kunstnere",
     "genres": "Genre",
@@ -43,7 +39,6 @@
     "random": "Tilfældig",
     "revenue": "Omsætning",
     "budget": "Budget",
-    "downloadMissingImages": "Overførelse mangler billeder",
     "dlComplete": "{count} færdige",
     "@dlComplete": {
         "placeholders": {
@@ -68,7 +63,6 @@
             }
         }
     },
-    "failedToGetTrackFromDownloadId": "Fejlede under hentning af sang fra overførelse ID",
     "error": "Fejl",
     "discNumber": "Disk {number}",
     "@discNumber": {
@@ -80,7 +74,6 @@
     },
     "playButtonLabel": "Afspil",
     "required": "Påkrævet",
-    "updateButtonLabel": "Opdater",
     "playlistUpdated": "Afspilningslistens navn er opdateret.",
     "addDownloads": "Tilføj overførelser",
     "location": "Placering",
@@ -102,7 +95,6 @@
     "addDownloadLocation": "Tilføj overførelse placering",
     "selectDirectory": "Vælg katalog",
     "unknownError": "Ukendt fejl",
-    "directoryMustBeEmpty": "Katalog skal være tomt",
     "enterLowPriorityStateOnPause": "Gå i lav prioritet tilstand når musik afspilning er på pause",
     "enterLowPriorityStateOnPauseSubtitle": "Tillader notifikationer bliver strøget væk, når afspilning er sat på pause. Dette tillader også Android, at afbryde servicen når den er på pause.",
     "shuffleAllTrackCount": "Bland alle sange antal",
@@ -110,22 +102,10 @@
     "viewTypeSubtitle": "Visningstype for musik skærmen",
     "list": "Liste",
     "grid": "Gitter",
-    "portrait": "Portræt",
     "landscape": "Landskab",
-    "gridCrossAxisCountSubtitle": "Antal gitrebrikker som bruges per række {value}.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
     "showTextOnGridView": "Vis tekst i gitter visning",
     "showTextOnGridViewSubtitle": "Vælg om tekst skal vises (titel, kunstner osv.) på gitteret musik skærm.",
     "useCoverAsBackground": "Vis sløret cover som afspiller baggrund",
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Vælg om sangens kunstner skal vises på albummet, hvis den ikke er forskellig fra albummets kunstner.",
     "disableGesture": "Deaktivér bevægelser",
     "disableGestureSubtitle": "Vælg om bevægelser skal deaktiveres.",
     "theme": "Tema",
@@ -145,13 +125,9 @@
     "playlistCreated": "Afspilningsliste er oprettet.",
     "noAlbum": "Intet album",
     "noItem": "Intet objekt",
-    "invalidNumber": "Ugyldig nummer",
     "queue": "Kø",
     "addToQueue": "Tilføj til kø",
-    "replaceQueue": "Udskift køen",
     "instantMix": "Hurtig blanding",
-    "addedToQueue": "Tilføjet til kø.",
-    "queueReplaced": "Køen er udskiftet.",
     "removedFromPlaylist": "Fjernet fra afspilningslisten.",
     "startingInstantMix": "Starter hurtig blanding.",
     "downloadCount": "{count,plural, =1{{count} overført} other{{count} overførelser}}",
@@ -164,14 +140,6 @@
     },
     "removeFromMix": "Fjern fra blanding",
     "addToMix": "Tilføj til blanding",
-    "redownloadedItems": "{count,plural, =0{Ingen genoverførsel er nødvendig.} =1{Genoverførte {count} objekt} other{Genoverfører {count} objekter}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "bufferDuration": "Buffer varighed",
     "bufferDurationSubtitle": "Hvor længden der skal forudindlæses, i sekunder. En genstart er nødvendig.",
     "internalExternalIpExplanation": "Hvis du vil være i stand til at tilgå din Jellyfin server udefra, skal du bruge din eksterne IP.\n\nHvis din server er på HTTP standard porten (80/443) eller Jellyfin's standard port (8096), behøver du ikke angive en port.\n\nHvis URL 'et er korrekt, vil du se noget information om din server poppe op, under indtastnings feltet.",
@@ -188,15 +156,6 @@
     "startMixNoTracksAlbum": "Tryk (lang tid) på et album for at tilføje eller fjerne det fra blandingen for du starter en blanding",
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
-    },
-    "downloadedMissingImages": "{count,plural, =0{Ingen manglende billeder blev fundet} =1{Overførte {count} manglende billeder} other{Overførte {count} manglende billeder}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "dlRunning": "{count} er igang",
     "@dlRunning": {
@@ -216,7 +175,6 @@
             }
         }
     },
-    "downloadsDeleted": "Overførelser slettet.",
     "addButtonLabel": "Tilføj",
     "bitrate": "Bithastighed",
     "logsCopied": "Log kopieret.",
@@ -224,20 +182,8 @@
     "applicationLegalese": "Licenseret med Mozilla Public License 2.0.\nKildeteksten er tilgængelig på {sourceCodeLink}.",
     "pathReturnSlashErrorMessage": "Stier, der returnerer \"/\", kan ikke anvendes",
     "customLocationsBuggy": "Tilpassede lokationer kan være ekstremt fejlramte og er ikke anbefalet i de fleste senarier. Lokationer under system 'Music' folderen forhindre gemningen af album covers grundet OS begrænsninger.",
-    "noArtist": "Ingen kunstner",
     "unknownArtist": "Ukendt kunstner",
     "shuffleAllTrackCountSubtitle": "Mængde af sange der skal indlæses, når bland alle sange knappen bruges.",
-    "hideTrackArtistsIfSameAsAlbumArtists": "Skjul sang kunstner, hvis det er den samme som albummets kunstner",
-    "gridCrossAxisCount": "{value} Gitter tværakse antal",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
     "useCoverAsBackgroundSubtitle": "Vælg om der skal bruges sløret omslagskunst som vises som baggrund på afspiller skærmen.",
     "system": "System",
     "noButtonLabel": "Nej",
@@ -391,7 +337,6 @@
     },
     "favorite": "Favorit",
     "favorites": "Favoritter",
-    "onlineMode": "Online Tilstand",
     "title": "Titel",
     "albumArtists": "Album Kunstnere",
     "performingArtists": "Optrædende Kunstnere",
@@ -416,7 +361,6 @@
             }
         }
     },
-    "syncDownloadedPlaylists": "Synkroniser downloadede playlister",
     "activeDownloads": "Aktive Downloads",
     "downloadedCountUnified": "{trackCount,plural,=1{{trackCount} nummer} other{{trackCount} numrer}}, {imageCount,plural,=1{{imageCount} billede} other{{imageCount} billeder}}\n{syncCount,plural,=1{{syncCount} node synkroniserer} other{{syncCount} noder synkroniserer}}{repairing, plural, =0{} other{\nReparares i øjeblikket}}",
     "@downloadedCountUnified": {
@@ -438,24 +382,6 @@
     },
     "activeDownloadsTitle": "Aktive Downloads",
     "noActiveDownloads": "Ingen aktive downloads.",
-    "deleteDownloadsPrompt": "Er du sikker på du vil slette {itemType, select, album{album} playlist{playlist} artist{artist} genre{genre} track{track} library{library} other{item}} '{itemName}' fra denne enhed?",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
-    "deleteDownloadsConfirmButtonText": "Slet",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
     "specialDownloads": "Specielle downloads",
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
@@ -467,14 +393,6 @@
     "noItemsDownloaded": "Intet downloadet.",
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
-    },
-    "shuffleCountButton": "Bland ({count,plural,=1{{count} Nummer} other{{count} Numrer}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "offlineTrackCount": "{count,plural,=1{{count} Nummer} other{{count} Numrer}}, {downloads} Downloadet",
     "@offlineTrackCount": {
@@ -665,10 +583,6 @@
         "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
     },
     "save": "Gem",
-    "invalidColorCode": "Forkert farvekode",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
     "hours": "Timer",
     "seconds": "Sekunder",
     "trackCountTooltip": "Track {currentTrackIndex} af {totalTrackCount}",
@@ -685,28 +599,7 @@
             }
         }
     },
-    "addToMorePlaylistsTooltip": "Tilføj til flere playlister",
     "addToMorePlaylistsTitle": "Tilføj til Flere Playlister",
-    "removeFromPlaylistNamedTooltip": "Fjern fra afspilningsliste'{playlistName}'",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "removeFromPlaylistNamedTitle": "Fjern fra Afspilningsliste '{playlistName}'",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "playlistActionsMenuButtonTooltip": "Tryk for at tilføje til playliste. Langt tryk for at skifte favorit.",
     "@playlistActionsMenuButtonTooltip": {
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
@@ -715,7 +608,6 @@
     "@browsePlaylists": {
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
     },
-    "unknownAlbum": "Ukendt Album",
     "playbackModeDirectPlaying": "Direkte Afspilning",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -742,12 +634,6 @@
     "goToGenre": "Gå til Genre",
     "removeFavorite": "Fjern Favorit",
     "addFavorite": "Tilføj Favorit",
-    "confirmFavoriteAdded": "Tilføjet Favorit",
-    "confirmFavoriteRemoved": "Fjernet Favorit",
-    "insertedIntoQueue": "Indsat i køen.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
     "confirmAddedToPlaylist": "Tilføjet til playliste.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
@@ -1021,7 +907,6 @@
     "confirm": "Godkend",
     "close": "Luk",
     "showUncensoredLogMessage": "Denne log indeholder dine logininformationer. Vis?",
-    "resetTabs": "Nulstil faner",
     "resetToDefaults": "Nulstil til standard",
     "noMusicLibrariesTitle": "Ingen Musik Biblioteker",
     "@noMusicLibrariesTitle": {
@@ -1208,10 +1093,6 @@
     "@genreFilterPlaylistScreens": {
         "description": "Label for the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
     },
-    "curatedItemsMostPlayedOfflineTooltip": "Ikke tilgængelig i Offline Tilstand.",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
-    },
     "noMusicLibrariesBody": "Finamp kunne ikke finde flere musik biblioteker. Du bedes sikre dig at din Jellyfin server indeholder mindst et bibliotek med indholds typen sat til \"Music\".",
     "volumeNormalizationSettingsTitle": "Lyd Normalisering",
     "@volumeNormalizationSettingsTitle": {
@@ -1220,10 +1101,6 @@
     "volumeNormalizationSwitchTitle": "Aktiver Lyd Normalisering",
     "@volumeNormalizationSwitchTitle": {
         "description": "Title for the switch that toggles replay gain"
-    },
-    "radioModeSettingsSubtitle": "Sætter metoden radio funktionen bruger til at vælge sange at tilføje.",
-    "@radioModeSettingsSubtitle": {
-        "description": "Subtitle for the setting that controls the radio mode/algorithm."
     },
     "radioModeMenuTitle": "Vælg Radiotilstand",
     "@radioModeMenuTitle": {
@@ -1256,10 +1133,6 @@
     "radioModeDisabledSubtitle": "Tryk for at aktivere",
     "@radioModeDisabledSubtitle": {
         "description": "Subtitle displayed in the queue to show that radio mode is disabled."
-    },
-    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "Nuværende tilstand er ikke tilgængeligt offline.",
-    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
-        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
     },
     "radioModeUnavailableWhileOfflineSubtitle": "{modeName} utilgængelig mens offline",
     "@radioModeUnavailableWhileOfflineSubtitle": {
@@ -1385,10 +1258,6 @@
     "@testConnectionButtonLabel": {
         "description": "Button to test the public and local url inside the network settings tab"
     },
-    "radioModeSettingsTitle": "Radio Tilstand",
-    "@radioModeSettingsTitle": {
-        "description": "Title for the setting that controls the radio mode/algorithm."
-    },
     "amoledThemeSubtitle": "Erstatter det mørke farveskema med et helt sort tema.",
     "addToNextUp": "Føj til Næste Oppe",
     "@addToNextUp": {
@@ -1467,10 +1336,7 @@
         "description": "subtitle for Download Bitrate settings slider"
     },
     "randomTracks": "Spor (Tilfældige valg)",
-    "randomAlbums": "Albummer (Tilfældige valg)",
-    "randomArtists": "Kunstnere (Tilfældige Valg)",
     "mostPlayed": "Mest Spillet",
-    "randomFavoritesFirst": "Tilfældig (Favoritter Først)",
     "prioritizePlayerCover": "Prioriter album cover",
     "showProgressOnNowPlayingBarTitle": "Vis spor fremskridt på i-app miniafspiller",
     "@showProgressOnNowPlayingBarTitle": {
@@ -1595,7 +1461,6 @@
     "@allowDeleteFromServerTitle": {
         "description": "Title for the setting that controls if items can be deleted from the server"
     },
-    "hideQueueButton": "Skjul kø knap",
     "favoriteTracks": "Favorit Spor",
     "favoriteAlbums": "Favorit Albummer",
     "applyFilterOnGenreChipTapPromptButton": "Åben Genre",
@@ -1605,10 +1470,6 @@
     "genreScreen": "Genre Skærm",
     "@genreScreen": {
         "description": "Name for the view/screen that shows genres"
-    },
-    "emptyTopTracksList": "Du har ikke lyttet til nogen spor fra denne kunstner endnu.",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
     },
     "emptyAlbum": "Ingen spor.",
     "@emptyAlbum": {
@@ -1631,7 +1492,6 @@
         "description": "A differently worded Confirm button to prevent the user from instandly clicking confirm because they are about to reset all settings to their default value"
     },
     "shuffleSome": "Bland Noget",
-    "playbackReporting": "Afspilning rapportering",
     "amoledTheme": "Brug AMOLED Tema",
     "@amoledTheme": {
         "description": "Toggles the dark color scheme between dark gray and pure black."

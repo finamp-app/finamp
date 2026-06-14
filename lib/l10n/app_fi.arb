@@ -25,10 +25,6 @@
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
-    "couldNotFindLibraries": "Yhtään kirjastoa ei löytynyt.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "unknownName": "Tuntematon Nimi",
     "tracks": "Kappaleet",
     "albums": "Albumit",
@@ -46,8 +42,6 @@
     "name": "Nimi",
     "random": "Satunnainen",
     "criticRating": "Kriitikoiden arvostelu",
-    "downloadMissingImages": "Lataa puuttuvat kuvat",
-    "syncDownloadedPlaylists": "Synkronoi ladatut soittolistat",
     "dlFailed": "{count} epäonnistui",
     "@dlFailed": {
         "placeholders": {
@@ -85,8 +79,6 @@
     },
     "playlistUpdated": "Soittolistan nimi päivitetty.",
     "addDownloads": "Lisää lataukset",
-    "updateButtonLabel": "Päivitä",
-    "downloadsDeleted": "Lataukset poistettu.",
     "location": "Sijainti",
     "addButtonLabel": "Lisää",
     "logsCopied": "Lokit kopioitu.",
@@ -119,7 +111,6 @@
     "viewType": "Näkymän Tyyppi",
     "list": "Lista",
     "grid": "Ruudukko",
-    "portrait": "Pysty",
     "landscape": "Vaaka",
     "showTextOnGridView": "Näytä teksti ruudukkonäkymässä",
     "theme": "Teema",
@@ -134,10 +125,6 @@
     "removeFromPlaylistTooltip": "Poista tältä soittolistalta",
     "removeFromPlaylistTitle": "Poista Tältä Soittolistalta",
     "queue": "Jono",
-    "addedToQueue": "Lisätty jonoon.",
-    "@addedToQueue": {
-        "description": "Snackbar message that shows when the user successfully adds items to the end of the play queue."
-    },
     "anErrorHasOccured": "Tapahtui virhe.",
     "bufferDuration": "Puskurin kesto",
     "dark": "Tumma",
@@ -147,13 +134,11 @@
     "noAlbum": "Ei albumia",
     "addToPlaylistTitle": "Lisää soittolistalle",
     "playlistCreated": "Soittolista on luotu.",
-    "noArtist": "Ei Artistia",
     "unknownArtist": "Tuntematon artisti",
     "addToQueue": "Lisää jonoon",
     "@addToQueue": {
         "description": "Popup menu item title for adding an item to the end of the play queue."
     },
-    "resetTabs": "Nollaa välilehdet",
     "noMusicLibrariesTitle": "Ei musiikkikirjastoja",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
@@ -165,11 +150,6 @@
                 "type": "int"
             }
         }
-    },
-    "hideTrackArtistsIfSameAsAlbumArtists": "Piilota kappaleen artistit, jos samat kuin albumin artistit",
-    "insertedIntoQueue": "Asetettu jonoon.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
     },
     "responseError": "{error} Tilakoodi {statusCode}.",
     "@responseError": {
@@ -185,7 +165,6 @@
         }
     },
     "showUncensoredLogMessage": "Tämä loki sisältää kirjautumistietosi. Näytä?",
-    "directoryMustBeEmpty": "Hakemiston täytyy olla tyhjä",
     "selectDirectory": "Valitse hakemisto",
     "trackCount": "{count,plural,=1{{count} Kappale} other{{count} Kappaletta}}",
     "@trackCount": {
@@ -207,19 +186,14 @@
     "pathReturnSlashErrorMessage": "Polkuja jotka palauttavat \"/\" ei voi käyttää",
     "disableGesture": "Poista eleet käytöstä",
     "disableGestureSubtitle": "Poistaa eleet käytöstä.",
-    "invalidNumber": "Virheellinen numero",
     "noItem": "Ei kohdetta",
     "noMusicLibrariesBody": "Finamp ei löytänyt musiikkikirjastoja. Varmista, että Jellyfin-palvelimellasi on vähintään yksi kirjasto, jonka sisältötyypiksi on asetettu \"Musiikki\".",
     "instantMix": "Välitön sekoitus",
-    "replaceQueue": "Korvaa Jono",
-    "queueReplaced": "Jono korvattu.",
     "startingInstantMix": "Käynnistetään välitön sekoitus.",
     "addToMix": "Lisää Sekoitukseen",
     "removeFromMix": "Poista Sekoituksesta",
     "bufferDurationSubtitle": "Aika, joka soittimen pitäisi puskuroida, sekunteina. Vaatii uudelleenkäynnistyksen.",
-    "swipeInsertQueueNext": "Toista pyyhkäisty kappale seuraavaksi",
     "startMix": "Aloita sekoitus",
-    "failedToGetTrackFromDownloadId": "Kappaleen nouto lataus-ID:llä epäonnistui",
     "stackTrace": "Pinon jäljitys",
     "applicationLegalese": "Lisensoitu Mozilla Public License 2.0 -lisenssillä.\nLähdekoodi saatavilla osoitteessa: {sourceCodeLink}.",
     "customLocationsBuggy": "Mukautetut sijainnit ovat erittäin bugisia ja niiden käyttöä ei suositella useimmissa tapauksissa. Sijainnit järjestelmän Musiikki-hakemiston alla estävät albumin kansikuvien tallentamisen käyttöjärjestelmän rajoitusten vuoksi.",
@@ -232,41 +206,11 @@
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
-    "downloadedMissingImages": "{count,plural, =0{Puuttuvia kuvia ei löytynyt} =1{Ladattu {count} puuttuva kuva} other{Ladattu {count} puuttuvaa kuvaa}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "errorScreenError": "Tapahtui virhe vikalistan haussa! Tässä vaiheessa sinun kannattaa luultavasti vain luoda virheilmoitus GitHubiin ja poistaa sovelluksen data",
     "enterLowPriorityStateOnPause": "Siirtyminen matalan prioriteetin tilaan tauon aikana",
     "shuffleAllTrackCount": "Kaikkien sekoitettujen kappaleiden määrä",
     "shuffleAllTrackCountSubtitle": "Ladattavien kappaleiden määrä, kun käytät \"sekoita kaikki kappaleet\" -painiketta kappaleet-välilehdellä tai tyylilajit-näkymässä.",
-    "gridCrossAxisCount": "{value} Ruudukon poikittaisakselien lukumäärä",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
-    "gridCrossAxisCountSubtitle": "Rivikohtaisesti käytettävien ruudukkolaattojen määrä, kun {value}.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
     "showTextOnGridViewSubtitle": "Näytetäänkö teksti (nimi, artisti jne.) ruudukon musiikkinäytöllä vai ei.",
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Näytetäänkö kappaleiden artistit albumin näytöllä, jos ne eivät poikkea albumin artisteista.",
     "showFastScroller": "Näytä nopea vieritin",
     "responseError401": "{error} Tilakoodi {statusCode}. Tämä tarkoittaa todennäköisesti, että olet käyttänyt väärää käyttäjätunnusta/salasanaa tai että sovellus ei ole enää kirjautuneena sisään.",
     "@responseError401": {
@@ -281,15 +225,6 @@
             }
         }
     },
-    "redownloadedItems": "{count,plural, =0{Ei tarvitse ladata uudelleen.} =1{Uudelleenladattu {count} kohde} other{Uudelleenladattu {count} kohdetta}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
-    "swipeInsertQueueNextSubtitle": "Mahdollistaa kappaleluettelossa kappaleen lisäämisen pyyhkäisemällä jonon seuraavaksi kohteeksi sen sijaan, että se lisättäisiin johon hännille.",
     "startMixNoTracksArtist": "Paina artistin nimeä pitkään lisätäksesi tai poistaaksesi sen sekoituksesta ennen sen aloittamista",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
@@ -419,24 +354,6 @@
     "@aboutTranslations": {
         "description": "Link to the translation project, shown in the about screen."
     },
-    "deleteDownloadsPrompt": "Haluatko varmasti poistaa kohteen {itemType, select, album{album} playlist{playlist} artist{artist} genre{genre} track{track} library{library} other{item}} '{itemName}' tältä laitteelta?",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
-    "deleteDownloadsConfirmButtonText": "Poista",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
     "offlineTrackCountArtist": "{count,plural,=1{{count} Kappale} other{{count} Kappaletta}} Ladattu",
     "@offlineTrackCountArtist": {
         "placeholders": {
@@ -496,16 +413,6 @@
             }
         }
     },
-    "removeFromPlaylistNamedTooltip": "Poista soittolistalta '{playlistName}'",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "playlistActionsMenuButtonTooltip": "Napauta lisätäksesi soittolistalle. Vaihda suosikkia painamalla pitkään.",
     "@playlistActionsMenuButtonTooltip": {
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
@@ -534,8 +441,6 @@
     },
     "goToArtist": "Mene artistiin",
     "goToGenre": "Mene tyylilajiin",
-    "confirmFavoriteAdded": "Lisätty suosikiksi",
-    "confirmFavoriteRemoved": "Poistettu suosikeista",
     "confirmAddedToPlaylist": "Lisätty soittolistaan.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
@@ -709,11 +614,8 @@
     "@downloadTranscodeCodecTitle": {
         "description": "Title for Select Download Codec dropdown"
     },
-    "hideQueueButton": "Piilota jononäppäin",
-    "hideQueueButtonSubtitle": "Piilota jononäppäin soittimen näytöltä. Pyyhkäise ylös päästäksesi jonoon.",
     "oneLineMarqueeTextButton": "Vieritä pitkät otsikot automaattisesti",
     "oneLineMarqueeTextButtonSubtitle": "Vieritä automaattisesti pitkät kappalenimet, jotka eivät mahdu näytettäväksi kahdella rivillä",
-    "marqueeOrTruncateButton": "Käytä kolmea pistettä pitkille nimille",
     "hidePlayerBottomActionsSubtitle": "Piilota jono- ja lyriikkanäppäimet soittimen näytöstä. Pyyhkäise ylös päästäksesi jonoon, ja vasemmalle (albumikannen alta) päästäksesi lyriikoihin, jos saatavilla.",
     "suppressPlayerPadding": "Peitä soittimien ohjausten marginaali",
     "suppressPlayerPaddingSubtitle": "Täysin minimoi marginaalit soittimen ohjauksen ja albumin kansikuvan välillä jos kansikuva ei ole täysikokoinen.",
@@ -777,10 +679,6 @@
     "showCoversOnAlbumScreenSubtitle": "Näytä albumin kansikuva jokaiselle kappaleelle erikseen albuminäkymässä.",
     "@showCoversOnAlbumScreenSubtitle": {
         "description": "Subtitle for the setting that controls if album covers are shown for each track separately on the album screen"
-    },
-    "emptyTopTracksList": "Et ole kuunnellut vielä yhtäkään kappaletta tältä artistilta.",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
     },
     "emptyFilteredListSubtitle": "Yhtäkään suodatinta vastaavaa kohdetta ei löytynyt. Kokeile poistaa suodatin tai vaihtaa hakutermiä.",
     "@emptyFilteredListSubtitle": {
@@ -857,19 +755,7 @@
         "description": "Used for a button in the playback speed menu"
     },
     "useCoverAsBackground": "Käytä sumennettua kansikuvaa taustana",
-    "addToMorePlaylistsTooltip": "Lisää muille soittolistoille",
     "addToMorePlaylistsTitle": "Lisää muille soittolistoille",
-    "removeFromPlaylistNamedTitle": "Poista Soittolistalta '{playlistName}'",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "unknownAlbum": "Tuntematon albumi",
     "playingFrom": "Toistetaan",
     "@playingFrom": {
         "description": "Prefix shown before the name of the main queue source, like the album or playlist that was used to start playback. Example: \"Playing from {My Nice Playlist}\""
@@ -980,7 +866,6 @@
     "@showAlbumReleaseDateOnPlayerScreenSubtitle": {
         "description": "Subtitle for the setting that controls if the release date of an album is shown on the player screen"
     },
-    "marqueeOrTruncateButtonSubtitle": "Näytä ... pitkän nimen lopussa vierivän tekstin sijaan",
     "prioritizePlayerCover": "Priorisoi albumin kansikuva",
     "prioritizePlayerCoverSubtitle": "Priorisoi näyttämään isompi albumin kansikuva soittimen näytöllä. Ei-kriittiset ohjaukset piilotetaan herkemmin pienillä näyttökooilla.",
     "showFeatureChipsToggleTitle": "Näytä kappaleen lisätiedot",
@@ -1418,8 +1303,6 @@
     "@preferQuickSyncSwitchSubtitle": {
         "description": "Description of setting that skips completed albums while syncing."
     },
-    "fixedGridSizeSwitchSubtitle": "Ruudukkolaattojen koot eivät reagoi ikkunan tai näytön koon muutokseen.",
-    "fixedGridSizeTitle": "Ruudukkolaattojen koko",
     "fixedGridTileSizeEnum": "{size, select, small{Pieni} medium{Keskikokoinen} large{Iso} veryLarge{Todella iso} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
@@ -1509,7 +1392,6 @@
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
-    "fixedGridSizeSwitchTitle": "Käytä vakiokoon ruudukkolaattoja",
     "showLyricsTimestampsTitle": "Näytä aikaleimat synkronoiduissa sanoituksissa",
     "@showLyricsTimestampsTitle": {
         "description": "Title for the setting that controls if timestamps are shown for lyrics"
@@ -1759,7 +1641,6 @@
     "@libraryDownloads": {
         "description": "Title for the library downloads section on the downloads screen."
     },
-    "playbackReporting": "Toiston raportointi",
     "currentVolumeFeatureText": "{volume}% taso",
     "@currentVolumeFeatureText": {
         "description": "Label for the feature chip that is shown if the volume is not 100%",
@@ -1860,7 +1741,6 @@
     "@noGenres": {
         "description": "Gets shown when there are no genres available for an album or artist"
     },
-    "onlineMode": "Online-tila",
     "favorites": "Suosikit",
     "removeFavorite": "Poista suosikeista",
     "addFavorite": "Lisää suosikiksi",
@@ -1873,8 +1753,6 @@
         "description": "Label for the genre section that shows albums that were recently added to the library, sorted by the date they were added."
     },
     "recentlyPlayedTracks": "Viimeksi toistetut raidat",
-    "randomAlbums": "Albumit (satunnaiset valinnat)",
-    "randomArtists": "Artistit (satunnaiset valinnat)",
     "randomTracks": "Raidat (satunnaiset valinnat)",
     "genreItemSectionFilterChipOrderSubtitle": "Säätää saatavilla olevien suodattimien järjestystä kohdeosioille.",
     "@genreItemSectionFilterChipOrderSubtitle": {
@@ -2017,7 +1895,6 @@
     "latestArtists": "Viimeisimmät artistit",
     "favoriteTracks": "Suosikkiraidat",
     "mostPlayed": "Eniten toistetut",
-    "randomFavoritesFirst": "Satunnainen (suosikit ensin)",
     "recentlyAdded": "Viimeksi lisätyt",
     "latestReleases": "Viimeisimmät julkaisut",
     "itemSectionsOrder": "Kohdeosioiden järjestys",
@@ -2043,10 +1920,6 @@
     "genreListsInheritSorting": "Koko listan lajittelun periytyminen",
     "@genreListsInheritSorting": {
         "description": "Label for the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
-    },
-    "curatedItemsMostPlayedOfflineTooltip": "Ei saatavilla offline-tilassa.",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
     },
     "genreListsInheritSortingSubtitle": "Kun päällä, \"Näytä kaikki\"-listat perivät järjestys- ja suodatusasetukset tyylilajinäkymästä. Kun kytketty pois päältä, liittyvän kirjastovälilehden asetuksia sovelletaan sen sijaan. Täyden listan järjestelyasetuksineen saa näkyviin tyylilajinäkymän yläreunan laskuria näpäyttämällä, tai \"selaa soittolistoja\"-napista.",
     "@genreListsInheritSortingSubtitle": {
@@ -2184,10 +2057,6 @@
     "autoReloadQueueSubtitle": "Lataa jonon automaattisesti uudelleen kun lähde muuttuu (eli kun offline-tila kytketään päälle, tai palvelinosoite muuttuu esim verkon vaihdon takia). Jos kytketty pois päältä, Finamp kysyy tätä erikseen joka kerta.",
     "@autoReloadQueueSubtitle": {
         "description": "Subtitle for the setting that controls if the queue is automatically reloaded when the source changes"
-    },
-    "preferLocalNetworkInfoBox": "Tämä toiminto vaatii sijaintipalveluiden sallimisen (ja sijainti täytyy olla päällä), verkon nimen lukemiseksi.",
-    "@preferLocalNetworkInfoBox": {
-        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
     },
     "downloadPaused": "Lataus keskeytetty, koska laite ei ole yhteydessä WiFiin",
     "@downloadPaused": {
@@ -2348,14 +2217,6 @@
         "description": "Subtitle for the setting that controls if high contrast colors are used throughout the app"
     },
     "logoutButtonSubtitle": "Kirjautuminen eri palvelimelle aiheuttaa ladattujen tiedostojen poistamisen",
-    "shuffleCountButton": "Sekoita ({count,plural,=1{{count} kappale} other{{count} kappaletta}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "additionalBaseItemInfoTitle": "Kohteen lisätiedot",
     "@additionalBaseItemInfoTitle": {
         "description": "Title for the setting that controls the displayed additional item info."
@@ -2533,10 +2394,6 @@
     "@androidImageErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
     },
-    "addDownloadLocationsErrorButton": "Lisää silti",
-    "@addDownloadLocationsErrorButton": {
-        "description": "Label shown on button for adding a download location we suspect to be buggy"
-    },
     "syncFailedWarningShort": "Varoitus: Joidenkin latausten synkronointi palvelimen kanssa epäonnistui.",
     "@syncFailedWarningShort": {
         "description": "Simple warning message for when download sync fails due to items being deleted from the server."
@@ -2593,10 +2450,6 @@
         "description": "Hint text for the color code input field"
     },
     "save": "Tallenna",
-    "invalidColorCode": "Virheellinen värikoodi",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
     "downloadAllPlaylistsSettingWarning": "Huom: Tämä lataa kaikki kohteet kaikilta soittolistoilta, riippumatta siitä mistä kirjastosta ne ovat.",
     "autoplayRestoredQueueSubtitle": "Jonot jotka palautetaan automaattisesti käynnistyksessä tai jonon palautusnäkymässä, alkavat soimaan automaattisesti.  Jonot, joiden täydellinen palautus epäonnistuu, eivät ikinä toistu automaattisesti, tästä asetuksesta riippumatta.",
     "@autoplayRestoredQueueSubtitle": {
@@ -2696,14 +2549,6 @@
             }
         }
     },
-    "radioModeSettingsTitle": "Radiotila",
-    "@radioModeSettingsTitle": {
-        "description": "Title for the setting that controls the radio mode/algorithm."
-    },
-    "radioModeSettingsSubtitle": "Asettaa menetelmän, jota radio-ominaisuus käyttää lisättävien kappaleiden valitsemiseen.",
-    "@radioModeSettingsSubtitle": {
-        "description": "Subtitle for the setting that controls the radio mode/algorithm."
-    },
     "radioModeMenuTitle": "Valitse radiotila",
     "@radioModeMenuTitle": {
         "description": "Title for menu that allows users to choose the radio mode."
@@ -2756,16 +2601,6 @@
     "@radioModeDisableButtonSubtitle": {
         "description": "Subtitle for the option that disables radio mode."
     },
-    "radioModeOptionConfirmation": "Vaihdettu tilaan {option, select, reshuffle{uudelleensekoitustila} random{satunnaistila} similar{samankaltaiset-tila} continuous{jatkuva tila} albumMix{albumisekoitus-tila} other{{option}}}",
-    "@radioModeOptionConfirmation": {
-        "placeholders": {
-            "option": {
-                "type": "String",
-                "description": "Corresponds to RadioMode.name"
-            }
-        },
-        "description": "Confirmation displayed when the radio mode is changed."
-    },
     "radioModeEnabledSubtitle": "Napauta määrittääksesi",
     "@radioModeEnabledSubtitle": {
         "description": "Subtitle displayed in the queue to show when radio mode is enabled."
@@ -2773,10 +2608,6 @@
     "radioModeDisabledSubtitle": "Napauta kytkeäksesi päälle",
     "@radioModeDisabledSubtitle": {
         "description": "Subtitle displayed in the queue to show that radio mode is disabled."
-    },
-    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "Valittu tila ei saatavilla kun offline-tilassa.",
-    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
-        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
     },
     "radioModeDescription": "{mode, select, reshuffle{Jonoa sekoitetaan jatkuvasti uudelleen} random{Kappaleita lisätään johon hännille satunnaisesti alkuperäisen valinnan mukaan} similar{Kappaleita lisätään jonon hännille alkuperäisen jonon mukaan} continuous{Kappaleita lisätään nykyisen kappaleen perusteella} albumMix{Lisätään jonon loppuun samankaltaisia albumeita} other{}}",
     "@radioModeDescription": {
