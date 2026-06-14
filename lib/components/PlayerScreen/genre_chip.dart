@@ -85,7 +85,11 @@ class GenreChips extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: activeGenreFilter != null
-          ? SortAndFilterRow.removeOnly(controller: sortConfigController!, hideLeadingIcon: true)
+          ? SortAndFilterRow.removeOnly(
+              controller: sortConfigController!,
+              hideLeadingIcon: true,
+              allowFilters: (filter) => filter.type == ItemFilterType.genreFilter,
+            )
           : SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Wrap(

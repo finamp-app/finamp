@@ -187,8 +187,8 @@ class SortAndFilterRow extends ConsumerWidget {
   final SortAndFilterController controller;
 
   final bool removeOnly;
-  final bool hideArtistGenreFilters;
   final bool hideLeadingIcon;
+  final bool Function(ItemFilter)? allowFilters;
 
   static double get height => (Platform.isIOS || Platform.isAndroid) ? 30 : 26;
 
@@ -196,24 +196,24 @@ class SortAndFilterRow extends ConsumerWidget {
     super.key,
     required this.tabType,
     required this.controller,
-    this.hideArtistGenreFilters = false,
     this.hideLeadingIcon = false,
+    this.allowFilters,
   }) : removeOnly = false;
 
   const SortAndFilterRow.removeOnly({
     super.key,
     required this.controller,
-    this.hideArtistGenreFilters = false,
     this.hideLeadingIcon = false,
+    this.allowFilters,
   }) : tabType = ContentType.tracks,
        removeOnly = true;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentConfig = ref.watch(resolveSortProvider(controller));
-    final activeFilters = hideArtistGenreFilters
-        ? currentConfig.filters.whereNot((x) => x.type.isArtistGenre)
-        : currentConfig.filters;
+    final activeFilters = allowFilters != null
+        ? currentConfig.filters.where((x) => allowFilters!(x)).toList()
+        : currentConfig.filters.toList();
     final int activeFilterCount = activeFilters.length;
     String statusText = context.l10n.activeFilterCount(activeFilterCount);
 
@@ -222,7 +222,7 @@ class SortAndFilterRow extends ConsumerWidget {
       tabType: tabType,
       controller: controller,
       removeOnly: removeOnly,
-      hideArtistGenreFilters: hideArtistGenreFilters,
+      allowFilters: allowFilters,
     );
 
     return SafeArea(
@@ -304,6 +304,7 @@ class SortAndFilterRow extends ConsumerWidget {
                           : SortOrder.ascending,
                     ),
                   ),
+                  onPressedSecondary: showMenu,
                 ),
             ],
           ),
@@ -318,7 +319,7 @@ Future<void> showSortAndFilterMenu(
   required ContentType tabType,
   required SortAndFilterController controller,
   bool removeOnly = false,
-  bool hideArtistGenreFilters = false,
+  bool Function(ItemFilter)? allowFilters,
 }) async {
   return await showThemedBottomSheet<void>(
     context: context,
@@ -329,7 +330,7 @@ Future<void> showSortAndFilterMenu(
         tabType: tabType,
         controller: controller,
         removeOnly: removeOnly,
-        hideArtistGenreFilters: hideArtistGenreFilters,
+        allowFilters: allowFilters,
       );
     },
   );
@@ -348,7 +349,7 @@ class SortAndFilterMenu extends ConsumerStatefulWidget {
     required this.tabType,
     required this.controller,
     required this.removeOnly,
-    required this.hideArtistGenreFilters,
+    required this.allowFilters,
   });
 
   final ScrollBuilder childBuilder;
@@ -356,7 +357,7 @@ class SortAndFilterMenu extends ConsumerStatefulWidget {
   final ContentType tabType;
   final SortAndFilterController controller;
   final bool removeOnly;
-  final bool hideArtistGenreFilters;
+  final bool Function(ItemFilter)? allowFilters;
 
   @override
   ConsumerState<SortAndFilterMenu> createState() => _SortAndFilterMenuState();
@@ -375,12 +376,13 @@ mixin _SortAndFilterMenuEntriesMixin<T extends ConsumerStatefulWidget> on Consum
   ContentType get tabType;
   SortAndFilterController get controller;
   bool get removeOnly;
-  bool get hideArtistGenreFilters;
+  bool Function(ItemFilter)? get allowFilters;
   bool get applyChangesImmediately;
 
   Set<ItemFilter> get excessFilters => currentConfig.filters
       .whereNot((x) => toggalableFilterTypes.contains(x.type))
-      .whereNot((x) => hideArtistGenreFilters && x.type.isArtistGenre)
+      // .whereNot((x) => hideArtistGenreFilters && x.type.isArtistGenre)
+      .where((x) => allowFilters == null || allowFilters!(x))
       .toSet();
 
   bool get showOfflineSortWarning => ref.watch(finampSettingsProvider.isOffline) && currentConfig.sortBy.onlineOnly;
@@ -586,7 +588,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu>
   bool get removeOnly => widget.removeOnly;
 
   @override
-  bool get hideArtistGenreFilters => widget.hideArtistGenreFilters;
+  bool Function(ItemFilter)? get allowFilters => widget.allowFilters;
 
   @override
   bool get applyChangesImmediately => false;
@@ -654,13 +656,13 @@ class SortAndFilterEmbeddedMenu extends ConsumerStatefulWidget {
     required this.tabType,
     required this.controller,
     required this.removeOnly,
-    required this.hideArtistGenreFilters,
+    this.allowFilters,
   });
 
   final ContentType tabType;
   final SortAndFilterController controller;
   final bool removeOnly;
-  final bool hideArtistGenreFilters;
+  final bool Function(ItemFilter)? allowFilters;
 
   @override
   ConsumerState<SortAndFilterEmbeddedMenu> createState() => _SortAndFilterEmbeddedMenuState();
@@ -680,7 +682,7 @@ class _SortAndFilterEmbeddedMenuState extends ConsumerState<SortAndFilterEmbedde
   bool get removeOnly => widget.removeOnly;
 
   @override
-  bool get hideArtistGenreFilters => widget.hideArtistGenreFilters;
+  bool Function(ItemFilter)? get allowFilters => widget.allowFilters;
 
   @override
   bool get applyChangesImmediately => true;
