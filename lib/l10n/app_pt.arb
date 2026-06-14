@@ -46,7 +46,7 @@
     "downloads": "Descargas",
     "settings": "Definições",
     "offlineMode": "Modo Offline",
-    "sortOrder": "Ordenação",
+    "sortOrder": "Ordem",
     "sortBy": "Ordenar por",
     "album": "Álbum",
     "albumArtist": "Artista do Álbum",
@@ -141,7 +141,7 @@
     "viewType": "Tipo de Visualização",
     "grid": "Grade",
     "landscape": "Paisagem",
-    "showTextOnGridViewSubtitle": "Mostrar ou não o texto (título, artista, etc) na grelha do ecrã de música.",
+    "showTextOnGridViewSubtitle": "Mostrar ou não o texto (título, artista, etc) no ecrã de grelha de música. O texto é sempre mostrado no ecrã inicial, ignorando esta definição.",
     "useCoverAsBackgroundSubtitle": "Usar ou não capas de álbum desfocadas como fundo do ecrã em várias partes da aplicação.",
     "theme": "Tema",
     "system": "Sistema",
@@ -689,7 +689,7 @@
     "@yourLikes": {
         "description": "Title for the queue source when the user is playing their liked tracks"
     },
-    "playingFromType": "A Tocar de {source, select, album{Álbum} playlist{Lista de Reprodução} trackMix{Mix de Faixas} artistMix{Mix de Artistas} albumMix{Mix de Álbuns} genreMix{Mix de Estilos} favorites{Favoritos} allTracks{Todas as Faixas} filteredList{Faixas} genre{Estilo} artist{Artista} track{Faixa} nextUpAlbum{Álbum em A Seguir} nextUpPlaylist{Lista de Reprodução em A Seguir} nextUpArtist{Artista na lista A Seguir} nextUpGenre{Estilo em A Seguir} remoteClient{um Cliente Remoto} radio{Radio} other{}}",
+    "playingFromType": "A Tocar de {source, select, album{Álbum} playlist{Lista de Reprodução} trackMix{Mix de Faixas} artistMix{Mix de Artistas} albumMix{Mix de Álbuns} genreMix{Mix de Estilos} favorites{Favoritos} allTracks{Todas as Faixas} filteredList{Faixas} genre{Estilo} artist{Artista} track{Faixa} nextUpAlbum{Álbum em A Seguir} nextUpPlaylist{Lista de Reprodução em A Seguir} nextUpArtist{Artista na lista A Seguir} nextUpGenre{Estilo em A Seguir} remoteClient{um Cliente Remoto} radio{Radio} homeScreenSection{} collection{Coleção} collectionMix{Mistura de Coleção} other{}}",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -1705,7 +1705,7 @@
             }
         }
     },
-    "fixedGridTileSizeEnum": "{size, select, small{Pequeno} medium{Médio} large{Grande} veryLarge{Muito Grande} other{???}}",
+    "fixedGridTileSizeEnum": "{size, select, tiny{minúsculo} verySmall{muito pequeno} small{pequeno} medium{médio} large{grande} veryLarge{muito grande} huge{enorme} giant{gigante} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
             "size": {
@@ -2865,5 +2865,394 @@
     "carPlayLoginPrompt": "Abra a aplicação Finamp no seu telefone e inicie sessão no servidor Jellyfin.",
     "@carPlayLoginPrompt": {
         "description": "Label shown when the user is trying to use CarPlay without being logged in."
+    },
+    "ascending": "Ascendente",
+    "@ascending": {
+        "description": "Label for ascending order."
+    },
+    "descending": "Descendente",
+    "@descending": {
+        "description": "Label for descending order."
+    },
+    "homeScreenSettingsTitle": "Ecrã Inicial",
+    "@homeScreenSettingsTitle": {
+        "description": "Title for the home screen settings"
+    },
+    "homeScreenSectionPresetPickerMenuTitle": "Escolher uma Pré-definição",
+    "@homeScreenSectionPresetPickerMenuTitle": {
+        "description": "Title for the preset picker menu, which allows users to pick a preset section to add to the home screen"
+    },
+    "homeScreenSectionCustomSectionTitle": "Secção Personalizada",
+    "@homeScreenSectionCustomSectionTitle": {
+        "description": "Title for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenSectionCustomSectionDescription": "Configurar a sua própria secção",
+    "@homeScreenSectionCustomSectionDescription": {
+        "description": "Description for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenQuickActionPickerMenuTitle": "Escolher uma Ação",
+    "@homeScreenQuickActionPickerMenuTitle": {
+        "description": "Title for the quick action picker menu, which allows users to pick a quick action to add to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksTitle": "Faixas Favoritas",
+    "@homeScreenSectionPresetFavoriteTracksTitle": {
+        "description": "Title for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksDescription": "Faixas que gostou em ordem aleatória",
+    "@homeScreenSectionPresetFavoriteTracksDescription": {
+        "description": "Description for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksTitle": "Faixas Favoritas Esquecidas",
+    "@homeScreenSectionPresetForgottenFavoriteTracksTitle": {
+        "description": "Title for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksDescription": "Faixas que gostou que menos ouviu recentemente",
+    "@homeScreenSectionPresetForgottenFavoriteTracksDescription": {
+        "description": "Description for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "noExternalDirectories": "Nenhuns diretórios externos.",
+    "@noExternalDirectories": {
+        "description": "Message when the user tries to configure an Appdirectory external download directory but none are availible"
+    },
+    "nameRequired": "Nome (obrigatório)",
+    "@nameRequired": {
+        "description": "Descriptor for the required name field when adding download locations."
+    },
+    "exteranlStorageTip": "Se o caminho não conter \"emulated\", é provavelmente um armazenamento externo.",
+    "@exteranlStorageTip": {
+        "description": "Helper text in Appdirectory download location config form"
+    },
+    "tooltipDisabled": "{tip} (Desativado)",
+    "@tooltipDisabled": {
+        "placeholders": {
+            "tip": {
+                "type": "String"
+            }
+        },
+        "description": "Added to tooltips on disabled buttons"
+    },
+    "noDownloadsInLocation": "Não há atualmente descargas presentes nesta localização.",
+    "@noDownloadsInLocation": {
+        "description": "Message when deleting a downloads location informing the user it is empty."
+    },
+    "deleteDownloadLocation": "Apagar Localização",
+    "@deleteDownloadLocation": {
+        "description": "Button for confirming deletion of deownload location"
+    },
+    "cannotDeleteLocation": "Não pode apagar localização",
+    "@cannotDeleteLocation": {
+        "description": "Message that a download location cannot currently be deleted."
+    },
+    "cannotDeleteLocationEplanation": "Esta localização contém atualmente descargas e não pode ser apagada.  Primeiro remova estas descargas:",
+    "@cannotDeleteLocationEplanation": {
+        "description": "Explanation that the download location cannot be deleted due to not being empty."
+    },
+    "globalMenu": "Menu",
+    "@globalMenu": {
+        "description": "Tooltip for menu open button on music screen"
+    },
+    "lookingForSomethingElse": "Procura outra coisa?",
+    "@lookingForSomethingElse": {
+        "description": "Header for home screen customization button"
+    },
+    "builtWithByTheFinampContributors": "Compilado com ♥ pelos contribuidores do Finamp.",
+    "@builtWithByTheFinampContributors": {
+        "description": "Message in home screen footer"
+    },
+    "showAll": "Mostrar Tudo",
+    "@showAll": {
+        "description": "Tooltip for show all button on home screen sections"
+    },
+    "failedToLoadSection": "Falhou ao carregar secção.",
+    "@failedToLoadSection": {
+        "description": "Message when an error is thrown while resolving home screen section"
+    },
+    "sectionContentsNotDownloaded": "Conteúdo de secção não descarregado.",
+    "@sectionContentsNotDownloaded": {
+        "description": "Message when a home screen section has no items while offline"
+    },
+    "failedToLoadSectionMissingItem": "Falhou ao carregar secção - item em falta.",
+    "@failedToLoadSectionMissingItem": {
+        "description": "Message when the parent item of a home screen section is missing from the server"
+    },
+    "errorLoadingItems": "Erro ao carregar items.",
+    "@errorLoadingItems": {
+        "description": "Message when an error occurs while loading home screen section contents"
+    },
+    "noItemsAvailable": "Nenhuns items disponíveis.",
+    "@noItemsAvailable": {
+        "description": "Message when a home screen section has no items while online"
+    },
+    "filters": "Filtros",
+    "@filters": {
+        "description": "Label for filters in Sort & Filter menu"
+    },
+    "removeFilter": "Remover Este Filtro",
+    "@removeFilter": {
+        "description": "Tooltip for removable filter chips in Sort & Filter row"
+    },
+    "removeFilters": "Remover Filtros",
+    "@removeFilters": {
+        "description": "Title for remove filters only variant of sort and filter menu"
+    },
+    "sortFilter": "Ordenar & Filtrar",
+    "@sortFilter": {
+        "description": "title for Sort & Filter menu"
+    },
+    "editSection": "Editar secção",
+    "@editSection": {
+        "description": "Label for edit home section menu entry"
+    },
+    "connected": "Ligação estabelecida",
+    "@connected": {
+        "description": "Fallback for 'Connected to <server name>' message while server info is loaded"
+    },
+    "timerMinutes": "{minutes} minutos",
+    "@timerMinutes": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer duration slider"
+    },
+    "timerTracks": "{tracks} faixas",
+    "@timerTracks": {
+        "placeholders": {
+            "tracks": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer track count slider"
+    },
+    "quickActionsSubtitle": "Selecionar e reordenar as ações rápidas mostradas no ecrã inicial.",
+    "@quickActionsSubtitle": {
+        "description": "Subtitle for quick actions edit menu"
+    },
+    "selectAnItem": "Selecionar um item",
+    "@selectAnItem": {
+        "description": "Title for 'play specific item' quick action edit menu"
+    },
+    "sectionsMenu": "Secções",
+    "@sectionsMenu": {
+        "description": "Title for home screen sections edit menu"
+    },
+    "sectionMenuSubtitle": "Selecionar e reordenar as secções mostradas no ecrã inicial.",
+    "@sectionMenuSubtitle": {
+        "description": "Subtitle for home screen sections edit menu"
+    },
+    "sectionType": "Tipo de Secção",
+    "@sectionType": {
+        "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
+    },
+    "featuredCollection": "Coleção de Destaque",
+    "@featuredCollection": {
+        "description": "Title for home screen section editor collection selector"
+    },
+    "tabType": "Tipo de Separador",
+    "@tabType": {
+        "description": "Title for home screen section editor tab type dropdown (albums, artists, ect...)"
+    },
+    "currentLibrary": "Biblioteca atual",
+    "@currentLibrary": {
+        "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
+    },
+    "loading": "A carregar...",
+    "@loading": {
+        "description": "Message when items or libraries are loading in home screen section editor"
+    },
+    "sectionTitle": "Título de Secção",
+    "@sectionTitle": {
+        "description": "Title for custom section title editor in home screen section editor"
+    },
+    "egFavoriteTracks": "ex. Faixas Favoritas",
+    "@egFavoriteTracks": {
+        "description": "Placeholder text in custom section title editor in home screen section editor"
+    },
+    "customSectionTitleRequired": "Por favor dê um título à secção personalizada",
+    "@customSectionTitleRequired": {
+        "description": "Message when a custom section title is needed in home screen section editor"
+    },
+    "editHomeScreenSection": "Editar Secção de Ecrã Inicial",
+    "@editHomeScreenSection": {
+        "description": "Title for home screen section editor menu"
+    },
+    "sectionConfigInvalid": "A configuração atual não é válida.",
+    "@sectionConfigInvalid": {
+        "description": "Message in home screen section edit menu preview window when a valid preview cannot be generated"
+    },
+    "searchNotAvailibleWhileOffline": "Busca não disponível em offline!",
+    "@searchNotAvailibleWhileOffline": {
+        "description": "Message in home screen section editor search widget when offline"
+    },
+    "noSearchResults": "Nenhuns resultados de busca.",
+    "@noSearchResults": {
+        "description": "Message in home screen section editor search widget when no results are returned"
+    },
+    "collectionDropdownHint": "Escolher uma coleção",
+    "@collectionDropdownHint": {
+        "description": "Hint for selector dropdown in home screen editor search widget"
+    },
+    "gridImageSizeTitle": "Tamanho de Mosaicos de Grelha",
+    "@gridImageSizeTitle": {
+        "description": "Title of grid tile image size setting"
+    },
+    "gridImageSizeSubtitle": "Selecionar o tamanho dos items na vista de grelha",
+    "@gridImageSizeSubtitle": {
+        "description": "Subtitle of grid tile image size setting"
+    },
+    "gridImageSizeLabel": "{colCountExact, plural, =0{~} =1{} other{}}{colCount, plural, =1{1 coluna ({sizeDescriptor})} other{{colCount} colunas ({sizeDescriptor})}}",
+    "@gridImageSizeLabel": {
+        "placeholders": {
+            "sizeDescriptor": {
+                "type": "String",
+                "example": "Very Small"
+            },
+            "colCount": {
+                "type": "int"
+            },
+            "colCountExact": {
+                "type": "int",
+                "description": "0 = not exact, add e.g. tilde character (~), 1 = exact, just show the number"
+            }
+        },
+        "description": "Slider label in grid tile image size setting"
+    },
+    "homeScreenImageSizeTitle": "Tamanho de Mosaico no Ecrã Inicial",
+    "@homeScreenImageSizeTitle": {
+        "description": "Title of home screen tile image size setting"
+    },
+    "homeScreenImageSizeSubtitle": "Selecionar o tamanho dos items no ecrã inicial",
+    "@homeScreenImageSizeSubtitle": {
+        "description": "Subtitle of home screen tile image size setting"
+    },
+    "noFilterActive": "Nenhum Filtro Ativo",
+    "@noFilterActive": {
+        "description": "Message in sort & filter row when no filters are active"
+    },
+    "activeFilterCount": "{filterCount, plural, =0{No Filter} =1{1 Filtro} other{{filterCount} Filtros}} Ativo",
+    "@activeFilterCount": {
+        "placeholders": {
+            "filterCount": {
+                "type": "int"
+            }
+        },
+        "description": "Message in sort & filter row"
+    },
+    "inPlaylist": "Na lista de reprodução",
+    "@inPlaylist": {
+        "description": "Name of 'In Playlist' content type"
+    },
+    "inCollection": "Na coleção",
+    "@inCollection": {
+        "description": "Name of jellyfin 'Collection' content type"
+    },
+    "tabView": "Vista de Separadores",
+    "@tabView": {
+        "description": "Name of home screen section type which uses the contents of a music screen tab"
+    },
+    "collection": "Coleção",
+    "@collection": {
+        "description": "Name of home screen section type which uses the contents of a supplied playable item"
+    },
+    "queues": "Filas",
+    "@queues": {
+        "description": "Name of home screen section type which shows the latest played queues"
+    },
+    "favoritePlaylists": "Listas de Reprodução Favoritas",
+    "@favoritePlaylists": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteGenres": "Géneros Favoritos",
+    "@favoriteGenres": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedAlbums": "Álbuns Recém-Adicionados",
+    "@newlyAddedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedTracks": "Faixas Recém-Adicionados",
+    "@newlyAddedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedAlbums": "Álbuns Frequentemente Reproduzidos",
+    "@frequentlyPlayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedTracks": "Faixas Frequentemente Reproduzidas",
+    "@frequentlyPlayedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedArtists": "Artistas Frequentemente Reproduzidos",
+    "@frequentlyPlayedArtists": {
+        "description": "Name of a home screen section preset"
+    },
+    "unplayedAlbums": "Álbuns Não Reproduzidos",
+    "@unplayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "recentQueues": "Filas Recentes",
+    "@recentQueues": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteAlbumsDescription": "Álbuns que Gostou em ordem aleatória",
+    "@favoriteAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteArtistsDescription": "Artistas que Gostou em ordem aleatória",
+    "@favoriteArtistsDescription": {
+        "description": "Description  of a home screen section preset"
+    },
+    "favoritePlaylistsDescription": "Listas de reprodução que Gostou em ordem aleatória",
+    "@favoritePlaylistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteGenresDescription": "Géneros que Gostou em ordem aleatória",
+    "@favoriteGenresDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedAlbumsDescription": "Álbuns que foram adicionados recentemente à sua biblioteca, começando pelos mais recentes",
+    "@recentlyAddedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedTracksDescription": "Faixas que foram adicionadas recentemente à sua biblioteca, começando pelas mais recentes",
+    "@recentlyAddedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedAlbumsDescription": "Álbuns que ouviu muitas vezes, começando pelos mais frequentes",
+    "@frequentlyPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedTracksDescription": "Faixas que ouviu muitas vezes, começando pelas mais frequentes",
+    "@frequentlyPlayedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedArtistsDescription": "Artistas que ouviu muitas vezes, começando pelos mais frequentes",
+    "@frequentlyPlayedArtistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "neverPlayedAlbumsDescription": "Álbuns que ainda não ouviu, em ordem aleatória",
+    "@neverPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentQueuesDescription": "Filas que criou recentemente, começando pela mais recente",
+    "@recentQueuesDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "shuffleTracksActionDescription": "Baralhar faixas aleatórias da sua biblioteca",
+    "@shuffleTracksActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browseRecentQueuesActionDescription": "Escolher a partir das suas filas reproduzidas recentemente",
+    "@browseRecentQueuesActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browsePlaybackHistoryActionDescription": "Navegar no seu histórico de reprodução",
+    "@browsePlaybackHistoryActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomAlbumActionDescription": "Iniciar reprodução de um álbum aleatório",
+    "@playRandomAlbumActionDescription": {
+        "description": "Description of a home screen quick action"
     }
 }
