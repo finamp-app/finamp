@@ -150,7 +150,7 @@ class HomeScreenQueueTile extends ConsumerWidget {
     if (source.wantsItem) {
       // BaseItemId uses String equals, the linter is mistaken.
       // ignore: provider_parameters
-      final sourceItem = ref.watch(itemByIdProvider(BaseItemId(source.id))).value;
+      final sourceItem = ref.watch(itemByIdProvider(BaseItemId(source.id))).valueOrNull;
       if (sourceItem != null) {
         source = source.withItem(sourceItem);
       }
