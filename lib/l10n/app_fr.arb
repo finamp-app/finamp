@@ -153,7 +153,7 @@
     "list": "Liste",
     "landscape": "Paysage",
     "showTextOnGridView": "Afficher le texte dans la vue mosaïque",
-    "showTextOnGridViewSubtitle": "Afficher ou non le texte (titre, artiste, etc.) sur l'écran de la grille musicale.",
+    "showTextOnGridViewSubtitle": "Afficher ou non le texte (titre, interprète, etc.) sur l'écran de la partition. Le texte s'affiche toujours sur l'écran d'accueil, quel que soit ce paramètre.",
     "useCoverAsBackground": "Afficher la couverture floutée en arrière-plan du lecteur",
     "addToQueue": "Ajouter à la liste d'attente",
     "disableGesture": "Désactiver les gestes",
@@ -2997,7 +2997,7 @@
     "@selectAnItem": {
         "description": "Title for 'play specific item' quick action edit menu"
     },
-    "libraryQualifierActive": "Activée",
+    "libraryQualifierActive": "Actif",
     "@libraryQualifierActive": {
         "description": "Label shown next to the currently selected library in the Finamp menu/drawer"
     },
@@ -3305,7 +3305,7 @@
     "@surpriseMeActionDescription": {
         "description": "Description of a home screen quick action"
     },
-    "playRandomTrackActionDescription": "Commence la lecture d'une piste aléatoire",
+    "playRandomTrackActionDescription": "Lance la lecture d'un morceau choisi au hasard",
     "@playRandomTrackActionDescription": {
         "description": "Description of a home screen quick action"
     },
@@ -3324,5 +3324,159 @@
     "removeSection": "Retirer la Section",
     "@removeSection": {
         "description": "Button to remove a home screen section"
+    },
+    "recentQueues": "Files d'attente récentes",
+    "@recentQueues": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteAlbumsDescription": "Albums favoris, par ordre aléatoire",
+    "@favoriteAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteArtistsDescription": "Artistes favoris, par ordre aléatoire",
+    "@favoriteArtistsDescription": {
+        "description": "Description  of a home screen section preset"
+    },
+    "favoritePlaylistsDescription": "Playlists favorites, par ordre aléatoire",
+    "@favoritePlaylistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteGenresDescription": "Genres favoris, par ordre aléatoire",
+    "@favoriteGenresDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedAlbumsDescription": "Les albums récemment ajoutés à votre bibliothèque, en commençant par les plus récents",
+    "@recentlyAddedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "shuffleTracksActionDescription": "Lecture aléatoire des morceaux de votre bibliothèque",
+    "@shuffleTracksActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browseRecentQueuesActionDescription": "Faites votre choix parmi vos files d'attente récemment utilisées",
+    "@browseRecentQueuesActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playPreviousQueueActionDescription": "Récupère et lit votre file d'attente archivée la plus récente",
+    "@playPreviousQueueActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playSpecificItemActionDescription": "Lance un élément spécifique configuré",
+    "@playSpecificItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "shuffleTracksAction": "Lecture aléatoire des morceaux",
+    "@shuffleTracksAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteAction": "Favoris aléatoire",
+    "@randomFavoriteAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "swapAction": "Action d'échange",
+    "@swapAction": {
+        "description": "Button to swap the selected quick action"
+    },
+    "addNewSection": "Ajouter une nouvelle section",
+    "@addNewSection": {
+        "description": "Button to add a new home screen section"
+    },
+    "preview": "Aperçu",
+    "noTracksFound": "Aucun morceau n'a été trouvé pour lancer le « Surprise Me Mix ».",
+    "@noTracksFound": {
+        "description": "Message if SurpriseMeMix creation fails"
+    },
+    "nothingFoundToPlay": "Aucun contenu à lire n'a été trouvé.",
+    "@nothingFoundToPlay": {
+        "description": "Message if play random item fails"
+    },
+    "errorLoadingHomeSection": "Erreur lors du chargement de la rubrique « Accueil »",
+    "@errorLoadingHomeSection": {
+        "description": "Message if a home screen section cannot be loaded due to a missing item"
+    },
+    "noPreviousQueueFoundToPlay": "Aucune file d'attente précédente n'a été trouvée pour la lecture.",
+    "@noPreviousQueueFoundToPlay": {
+        "description": "Message if play previous queue quick action fails"
+    },
+    "isFavoriteFilter": "Favoris",
+    "@isFavoriteFilter": {
+        "description": "Name of favorite filter"
+    },
+    "isUnplayedFilter": "Non joué",
+    "@isUnplayedFilter": {
+        "description": "Name of unplayed items filter"
+    },
+    "startsWithFilter": "Commence par : {letter}",
+    "@startsWithFilter": {
+        "description": "Name of starts with letter filter",
+        "placeholders": {
+            "letter": {
+                "type": "String"
+            }
+        }
+    },
+    "customizeHomeScreen": "Personnaliser l'écran d'accueil",
+    "@customizeHomeScreen": {
+        "description": "Label for home screen customize button"
+    },
+    "performingArtistFilter": "Albums (figurant sur)",
+    "albumArtistFilter": "Albums (Artiste de l'album)",
+    "itemTypeFilterHeader": "Type d'enfant",
+    "recentlyPlayedTracksDescription": "Les titres que vous avez écoutés récemment, en commençant par le dernier écouté",
+    "@recentlyPlayedTracksDescription": {
+        "description": "Description for a home screen section preset"
+    },
+    "homeFavoritesDownloadWarning": "Êtes-vous sûr de vouloir télécharger vos favoris ?  Cette opération téléchargera tous les types de favoris, et pas seulement ceux de {sectionType}.",
+    "@homeFavoritesDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because home sections show a specific item type, like Albums, but the download covers all.",
+        "placeholders": {
+            "sectionType": {
+                "type": "String",
+                "example": "Albums"
+            }
+        }
+    },
+    "homeAllPlaylistsWarning": "Êtes-vous sûr de vouloir télécharger toutes les playlists ? Cela téléchargera toutes les playlists, et pas seulement celles de cette section.",
+    "@homeAllPlaylistsWarning": {
+        "description": "Warning presented when pressing the download button on playlist home sections with a filter applied.  This is shown because the download will not apply the filter."
+    },
+    "homeRecentAlbumsDownloadWarning": "Cela permettra de télécharger les 5 derniers albums disponibles sur le serveur.\t Cette liste sera mise à jour et les téléchargements en trop seront supprimés à mesure que de nouveaux albums seront ajoutés au serveur à l'avenir.",
+    "@homeRecentAlbumsDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because the behavior of the 5 latest albums download is not a 100% match to the home sections."
+    },
+    "alreadyRandomized": "Cette section est déjà présentée dans un ordre aléatoire",
+    "@alreadyRandomized": {
+        "description": "Tooltip for shuffle button on home screen sections using a random sort order, where it is disabled due to being unneeded"
+    },
+    "offlineSortFallback": "Le tri selon {onlineSort} n'est disponible qu'en ligne.  On utilise actuellement l'ordre de tri par défaut",
+    "@offlineSortFallback": {
+        "description": "Warning presented in sort and filter menu when an online-only sort is chosen.",
+        "placeholders": {
+            "onlineSort": {
+                "type": "String",
+                "example": "Play Count"
+            }
+        }
+    },
+    "retryPageLoad": "Échec du chargement des éléments depuis le serveur. Cliquez ici pour réessayer.",
+    "itemType": "{itemType, select, album{Album} playlist{Playlist} artiste{Artist} genre{Genre} titre{Track} bibliothèque{Library} collection{Collection} inconnu {Item} other{{itemType}}}",
+    "@itemType": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            }
+        },
+        "description": "Item type name."
+    },
+    "connectionStateInfoString": "{state, select, synchronisation{Syncing with Server} téléchargement{Downloading from Server} suppression{Deleting Old Downloads} connectedLocal{Connected via local network} syncingLocal{Syncing via local network} downloadingLocal{Downloading via local network} other{}}",
+    "@connectionStateInfoString": {
+        "description": "String describing the current connection state to the server, shown in the music screen drawer/menu.",
+        "placeholders": {
+            "state": {
+                "type": "String",
+                "example": "syncingLocal"
+            }
+        }
     }
 }
