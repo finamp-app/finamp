@@ -9,6 +9,7 @@ import 'package:finamp/components/PlayerScreen/player_screen_album_image.dart';
 import 'package:finamp/components/PlayerScreen/player_screen_appbar_title.dart';
 import 'package:finamp/components/PlayerScreen/player_split_screen_scaffold.dart';
 import 'package:finamp/components/PlayerScreen/queue_button.dart';
+import 'package:finamp/components/PlayerScreen/transcode_toggle_button.dart';
 import 'package:finamp/components/PlayerScreen/queue_list.dart';
 import 'package:finamp/components/PlayerScreen/track_name_content.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
@@ -370,6 +371,7 @@ class _PlayerScreenContent extends ConsumerWidget {
                 ),
               ),
               const Flexible(fit: FlexFit.tight, child: QueueButton()),
+              const Flexible(fit: FlexFit.tight, child: TranscodeToggleButton()),
               Flexible(
                 fit: FlexFit.tight,
                 child: SimpleButton(
