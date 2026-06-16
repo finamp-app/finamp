@@ -209,7 +209,7 @@
     "errorScreenError": "Tapahtui virhe vikalistan haussa! Tässä vaiheessa sinun kannattaa luultavasti vain luoda virheilmoitus GitHubiin ja poistaa sovelluksen data",
     "enterLowPriorityStateOnPause": "Siirtyminen matalan prioriteetin tilaan tauon aikana",
     "shuffleAllTrackCount": "Kaikkien sekoitettujen kappaleiden määrä",
-    "shuffleAllTrackCountSubtitle": "Ladattavien kappaleiden määrä, kun käytät \"sekoita kaikki kappaleet\" -painiketta kappaleet-välilehdellä tai tyylilajit-näkymässä.",
+    "shuffleAllTrackCountSubtitle": "Jonoon ladattavien kappaleiden määrä, kun käytät \"sekoita kaikki kappaleet\" -painiketta kappaleet-välilehdellä tai tyylilajit-näkymässä.",
     "showTextOnGridViewSubtitle": "Näytetäänkö teksti (nimi, artisti jne.) ruudukon musiikkinäytöllä vai ei. Teksti näytetään aina kotinäkymässä, tästä asetuksesta riippumatta.",
     "showFastScroller": "Näytä nopea vieritin",
     "responseError401": "{error} Tilakoodi {statusCode}. Tämä tarkoittaa todennäköisesti, että olet käyttänyt väärää käyttäjätunnusta/salasanaa tai että sovellus ei ole enää kirjautuneena sisään.",
@@ -452,11 +452,11 @@
     "@previousTracks": {
         "description": "Description in the queue panel for the list of tracks that come before the current track in the queue. The tracks might not actually have been played (e.g. if the user skipped ahead to a specific track)."
     },
-    "nextUp": "Seuraavana",
+    "nextUp": "Seuraavaksi",
     "@nextUp": {
         "description": "Description in the queue panel for the list of tracks were manually added to be played after the current track. This should be capitalized (if applicable) to be more recognizable throughout the UI"
     },
-    "addToNextUp": "Lisää Seuraavana-jonoon",
+    "addToNextUp": "Lisää Seur.-jonoon",
     "@addToNextUp": {
         "description": "Used for adding a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
@@ -922,7 +922,7 @@
     "@savedQueue": {
         "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
     },
-    "aboutContributionPrompt": "Pyyteettömien ja upeiden ihmisten vapaa-ajallaan tekemä sovellus.\nVoit myös olla yksi heistä!",
+    "aboutContributionPrompt": "Pyyteettömien ja upeiden ihmisten vapaa-ajallaan tekemä sovellus.\nMyös sinä voit olla yksi heistä!",
     "@aboutContributionPrompt": {
         "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
     },
@@ -1438,7 +1438,7 @@
     "@resetSettingsPromptLocal": {
         "description": "Prompt which gets shown when the user is about to reset all settings in the current settings window to their default values"
     },
-    "clearNextUp": "Tyhjennä Seuraavana-jono",
+    "clearNextUp": "Tyhjennä Seuraavaksi-jono",
     "@clearNextUp": {
         "description": "Label for the action that deletes all tracks added to Next Up"
     },
@@ -1466,7 +1466,7 @@
     "@periodicPlaybackSessionUpdateFrequencySubtitle": {
         "description": "Description of the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
     },
-    "shuffleAlbumsToNextUp": "Sekoita albumit seuraavaksi-jonon loppuun",
+    "shuffleAlbumsToNextUp": "Sekoita albumit Seuraavaksi-jonon loppuun",
     "@shuffleAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of Next Up"
     },
@@ -1712,12 +1712,12 @@
     "@outputMenuButtonTitle": {
         "description": "Button title for opening the output menu/panel"
     },
-    "startupErrorTitle": "Jokin meni pieleen sovelluksen käynnistyksessä!",
+    "startupErrorTitle": "Jokin meni pieleen sovelluksen käynnistyessä!",
     "@startupErrorTitle": {
         "description": "The title for the error screen that shows when startup fails."
     },
     "exportLogs": "Tallenna lokit",
-    "startupErrorCallToAction": "Ole hyvä ja luo tiketti osoitteessa github.com/jmshrv/finamp, ja liitä mukaan lokitiedot (käytä nappia alla). Liitä myös näyttökuva tästä sivusta, jotta voimme korjata vian mahdollisimman sujuvasti.",
+    "startupErrorCallToAction": "Ole hyvä ja luo tiketti osoitteessa \"github.com/jmshrv/finamp\", ja liitä mukaan lokitiedot (käytä nappia alla). Liitä myös näyttökuva tästä sivusta, jotta voimme korjata vian mahdollisimman sujuvasti.",
     "@startupErrorCallToAction": {
         "description": "The subtitle / call to action for what to do after encountering a startup error"
     },
@@ -2354,11 +2354,11 @@
     "@shuffleSomeAlbums": {
         "description": "Label for action that shuffles some albums of a genre"
     },
-    "shuffleSomeAlbumsNext": "Sekoita muutamia albumeja seuraavana",
+    "shuffleSomeAlbumsNext": "Sekoita muutamia albumeja seuraavaksi",
     "@shuffleSomeAlbumsNext": {
         "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
     },
-    "shuffleSomeAlbumsToNextUp": "Sekoita muutamia albumeja seuraavaksi-jonoon",
+    "shuffleSomeAlbumsToNextUp": "Sekoita muutamia albumeja Seuraavaksi-jonoon",
     "@shuffleSomeAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
     },
@@ -2419,7 +2419,7 @@
         "description": "Positive action button for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
     },
     "shuffleSome": "Sekoita joitakin",
-    "playbackActionPageNextUp": "Seuraavana-jonon loppuun",
+    "playbackActionPageNextUp": "Seur.-jonon loppuun",
     "@playbackActionPageNextUp": {
         "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
     },
@@ -2523,7 +2523,7 @@
     "@movePlayNext": {
         "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "moveAddToNextUp": "Siirrä Seuraavana-jonoon",
+    "moveAddToNextUp": "Siirrä Seuraavaksi-jonoon",
     "@moveAddToNextUp": {
         "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
