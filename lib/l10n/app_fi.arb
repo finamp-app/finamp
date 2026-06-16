@@ -121,7 +121,7 @@
     "yesButtonLabel": "Kyllä",
     "minutes": "Minuuttia",
     "sleepTimerTooltip": "Uniajastin",
-    "addToPlaylistTooltip": "Lisää soittolistalle",
+    "addToPlaylistTooltip": "Lisää soittolistaan",
     "removeFromPlaylistTooltip": "Poista tältä soittolistalta",
     "removeFromPlaylistTitle": "Poista Tältä Soittolistalta",
     "queue": "Jono",
@@ -132,7 +132,7 @@
     "newPlaylist": "Uusi soittolista",
     "createButtonLabel": "Luo",
     "noAlbum": "Ei albumia",
-    "addToPlaylistTitle": "Lisää soittolistalle",
+    "addToPlaylistTitle": "Lisää soittolistaan",
     "playlistCreated": "Soittolista on luotu.",
     "unknownArtist": "Tuntematon artisti",
     "addToQueue": "Lisää jonoon",
@@ -417,7 +417,7 @@
     "@playlistActionsMenuButtonTooltip": {
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
     },
-    "playbackModeDirectPlaying": "Suoratoisto",
+    "playbackModeDirectPlaying": "suoratoistaa",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
     },
@@ -452,11 +452,11 @@
     "@previousTracks": {
         "description": "Description in the queue panel for the list of tracks that come before the current track in the queue. The tracks might not actually have been played (e.g. if the user skipped ahead to a specific track)."
     },
-    "nextUp": "Seuraavaksi",
+    "nextUp": "Seuraavana",
     "@nextUp": {
         "description": "Description in the queue panel for the list of tracks were manually added to be played after the current track. This should be capitalized (if applicable) to be more recognizable throughout the UI"
     },
-    "addToNextUp": "Lisää Seuraavaksi-jonoon",
+    "addToNextUp": "Lisää Seuraavana-jonoon",
     "@addToNextUp": {
         "description": "Used for adding a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
@@ -568,11 +568,11 @@
     "@volumeNormalizationIOSBaseGainEditorTitle": {
         "description": "Title for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
-    "startInstantMixForIndividualTracksSwitchTitle": "Aloita Välitön Sekoitus yksittäisille kappaleille",
+    "startInstantMixForIndividualTracksSwitchTitle": "Aloita välitön sekoitus yksittäisistä kappaleista",
     "@startInstantMixForIndividualTracksSwitchTitle": {
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
     },
-    "startInstantMixForIndividualTracksSwitchSubtitle": "Kun käytössä, kappaleen napautus kappaleiden välilehdessä aloittaa välittömän sekoituksen napautetusta kappaleesta yksittäisen kappaleen toiston sijaan.",
+    "startInstantMixForIndividualTracksSwitchSubtitle": "Kun käytössä, kappaleen napautus kappaleiden välilehdellä aloittaa välittömän sekoituksen yksittäisen kappaleen toiston sijaan.",
     "downloadItem": "Lataa",
     "@downloadItem": {
         "description": "Option to download item in long-press menu."
@@ -642,7 +642,7 @@
     "trackOfflineFavorites": "Synkronoi kaikki suosikit",
     "downloadFavoritesSetting": "Lataa kaikki suosikit",
     "fiveLatestAlbumsSetting": "Lataa viimeisimmät viisi albumia",
-    "fiveLatestAlbumsSettingSubtitle": "Lataukset poistetaan kun ne ikääntyvät. Lukitse lataukset estääksesi albumi poistolta.",
+    "fiveLatestAlbumsSettingSubtitle": "Lataukset poistetaan kun ne ikääntyvät. Lukitse lataus, mikäli haluat estää albumin poiston.",
     "cacheLibraryImagesSettings": "Tallenna nykyisen kirjaston kuvat välimuistiin",
     "lyricsScreen": "Sanoitusnäkymä",
     "@lyricsScreen": {
@@ -845,7 +845,7 @@
     "@albumScreen": {
         "description": "Name for the view/screen that shows albums"
     },
-    "showProgressOnNowPlayingBarSubtitle": "Näytä toiston mukaan etenevä väripalkki sovelluksen sisäisen minisoittimen / musiikkinäytön alareunassa sijaitsevan tällä hetkellä toistettavan kappaleen palkissa.",
+    "showProgressOnNowPlayingBarSubtitle": "Näytä kappaleen toistokohdan mukaan etenevä väripalkki sovelluksen sisäisessä alareunan minisoittimessa.",
     "@showProgressOnNowPlayingBarSubtitle": {
         "description": "Subtitle for the setting that controls if the now playing bar / miniplayer at the bottom of the music screen functions as a progress bar"
     },
@@ -857,7 +857,7 @@
     "@sampleRate": {
         "description": "Label for the feature chips showing the sample rate of a track"
     },
-    "keepScreenOnWhilePluggedInSubtitle": "Ohita pidä näyttö päällä-asetus, jos laite on irroitettu latauksesta",
+    "keepScreenOnWhilePluggedInSubtitle": "Ohita 'pidä näyttö päällä'-asetus, jos laite on irroitettu latauksesta",
     "resetSettingsPromptGlobalConfirm": "Nollaa KAIKKI asetukset",
     "@resetSettingsPromptGlobalConfirm": {
         "description": "A differently worded Confirm button to prevent the user from instandly clicking confirm because they are about to reset all settings to their default value"
@@ -872,7 +872,7 @@
     "@showFeatureChipsToggleTitle": {
         "description": "Title for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
     },
-    "showArtistChipImageSubtitle": "Tämä vaikuttaa pienten artistin kuvien esikatseluun, kuten soittimen näytöllä.",
+    "showArtistChipImageSubtitle": "Tämä vaikuttaa pienten artistikuvien esikatseluun, mm. soitinnäkymässä artistin nimen edessä.",
     "lockDownload": "Säilytä aina laitteella",
     "@lockDownload": {
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
@@ -886,7 +886,7 @@
             }
         }
     },
-    "allPlaylistsInfoSettingSubtitle": "Synkronoi kaikkien soittolistojen metadata parantaaksesi soittolistojen kokemusta",
+    "allPlaylistsInfoSettingSubtitle": "Synkronoi kaikkien soittolistojen metadata parantaaksesi soittolistojen käyttökokemusta",
     "addRemoveFromPlaylist": "Lisää tai poista soittolistoilta",
     "@addRemoveFromPlaylist": {
         "description": "Header for add to/remove from playlist popup menu"
@@ -1132,7 +1132,7 @@
     "@showNullLibraryItemsSubtitle": {
         "description": "Description of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
     },
-    "downloadsWorkersSettingSubtitle": "Lataushallinnoijien määrä liitännäistiedostojen ja latausten poiston synkronointiin. Lisäämällä hallinnoijien määrää voit nopeuttaa latausten synkronointia, etenkin jos palvelimen latenssi on suuri. Voi aiheuttaa viivettä toiminnoissa.",
+    "downloadsWorkersSettingSubtitle": "Lataushallinnoijien määrä liitännäistiedostojen synkronointiin ja latausten poistoon. Lisäämällä hallinnoijien määrää voit nopeuttaa latausten synkronointia, etenkin jos palvelimen latenssi on suuri. Saattaa aiheuttaa viivettä toiminnoissa.",
     "@downloadsWorkersSettingSubtitle": {
         "description": "Description of setting controlling download worker count."
     },
@@ -1286,7 +1286,7 @@
     "@maxConcurrentDownloads": {
         "description": "Title of setting controlling max concurrent downloads."
     },
-    "maxConcurrentDownloadsSubtitle": "Samanaikaisten latausten lisääminen voi mahdollistaa suuremman latausmäärän taustalla, mutta voi johtaa joidenkin latausten epäonnistumiseen, jos tiedostokoot ovat suuria, tai aiheuttaa aiheetonta viivästymistä ohjelmistossa.",
+    "maxConcurrentDownloadsSubtitle": "Samanaikaisten latausten lisääminen voi mahdollistaa tehokkaamman taustalatauksen, mutta saattaa jossain tapauksissa johtaa suurien latausten epäonnistumiseen tai aiheuttaa merkittävää hitautta.",
     "@maxConcurrentDownloadsSubtitle": {
         "description": "Description of setting controlling max concurrent downloads."
     },
@@ -1438,7 +1438,7 @@
     "@resetSettingsPromptLocal": {
         "description": "Prompt which gets shown when the user is about to reset all settings in the current settings window to their default values"
     },
-    "clearNextUp": "Tyhjennä Seuraavaksi-jono",
+    "clearNextUp": "Tyhjennä Seuraavana-jono",
     "@clearNextUp": {
         "description": "Label for the action that deletes all tracks added to Next Up"
     },
@@ -1605,9 +1605,9 @@
         "description": "Title for the audio fade-in duration setting."
     },
     "swipeLeftToRightAction": "Oikealle pyyhkäisyn toiminto",
-    "swipeLeftToRightActionSubtitle": "Toiminto joka suoritetaan pyyhkäistessä kappaletta luettelossa vasemmalta oikealle.",
+    "swipeLeftToRightActionSubtitle": "Toiminto, joka suoritetaan pyyhkäistäessä kappaletta luettelossa vasemmalta oikealle.",
     "swipeRightToLeftAction": "Vasemmalle pyyhkäisyn toiminto",
-    "swipeRightToLeftActionSubtitle": "Toiminto joka suoritetaan pyyhkäistessä kappaletta luettelossa oikealta vasemmalle.",
+    "swipeRightToLeftActionSubtitle": "Toiminto, joka suoritetaan pyyhkäistäessä kappaletta luettelossa oikealta vasemmalle.",
     "transcodingStreamingFormatTitle": "Valitse transkoodauksen muoto",
     "@transcodingStreamingFormatTitle": {
         "description": "Title for the dropdown that selects the format for transcoded streams"
@@ -1753,7 +1753,7 @@
         "description": "Label for the genre section that shows albums that were recently added to the library, sorted by the date they were added."
     },
     "recentlyPlayedTracks": "Viimeksi toistetut raidat",
-    "randomTracks": "Raidat (satunnaiset valinnat)",
+    "randomTracks": "Kappaleet (satunnaiset valinnat)",
     "genreItemSectionFilterChipOrderSubtitle": "Säätää saatavilla olevien suodattimien järjestystä kohdeosioille.",
     "@genreItemSectionFilterChipOrderSubtitle": {
         "description": "Description of the setting that controls the order of item sections filter chips."
@@ -1786,7 +1786,7 @@
     "@browsePlaylists": {
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
     },
-    "recentlyAddedTracks": "Viimeksi lisätyt raidat",
+    "recentlyAddedTracks": "Viimeksi lisätyt kappaleet",
     "@recentlyAddedTracks": {
         "description": "Label for the artist section that shows tracks that were recently added to the library, sorted by the date they were added."
     },
@@ -1889,11 +1889,11 @@
     "autoSwitchItemCurationTypeSubtitle": "Kun tämä on päällä, artistien ja tyylilajien näyttöjen kohdeosiot vaihtavat automaattisesti toiseen järjestelytapaan, jos kohteita ei ole saatavilla (esim. ei suosikkeja tietylle artistille).",
     "topAlbums": "Suosituimmat albumit",
     "topArtists": "Suosituimmat artistit",
-    "latestTracks": "Viimeisimmät raidat",
+    "latestTracks": "Uusimmat kappaleet",
     "favoriteAlbums": "Suosikkialbumit",
-    "latestAlbums": "Viimeisimmät albumit",
-    "latestArtists": "Viimeisimmät artistit",
-    "favoriteTracks": "Suosikkiraidat",
+    "latestAlbums": "Uusimmat albumit",
+    "latestArtists": "Uusimmat artistit",
+    "favoriteTracks": "Suosikkikappaleet",
     "mostPlayed": "Eniten toistetut",
     "recentlyAdded": "Viimeksi lisätyt",
     "latestReleases": "Viimeisimmät julkaisut",
@@ -2374,7 +2374,7 @@
     "@preferNextUpPrependingTitle": {
         "description": "Title for the setting to prefer prepending to Next Up over appending"
     },
-    "preferNextUpPrependingSubtitle": "Kun kytketty päälle, toista seuraavana-napit näytetään, kun seuraavaksi-jono on tyhjä. Muulloin \"lisää seuraavaksi-jonoon\" näytetään oletuksena.",
+    "preferNextUpPrependingSubtitle": "Kun kytketty päälle, 'toista seuraavana'-napit näytetään, kun Seuraavana-jono on tyhjä. Muulloin 'Lisää Seuraavana-jonoon' näytetään oletuksena.",
     "@preferNextUpPrependingSubtitle": {
         "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
     },
@@ -2419,7 +2419,7 @@
         "description": "Positive action button for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
     },
     "shuffleSome": "Sekoita joitakin",
-    "playbackActionPageNextUp": "Lisää seuraavaksi-jonon loppuun",
+    "playbackActionPageNextUp": "Seuraavana-jonon loppuun",
     "@playbackActionPageNextUp": {
         "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
     },
@@ -2523,7 +2523,7 @@
     "@movePlayNext": {
         "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "moveAddToNextUp": "Siirrä seuraavaksi-jonoon",
+    "moveAddToNextUp": "Siirrä Seuraavana-jonoon",
     "@moveAddToNextUp": {
         "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
@@ -2798,7 +2798,7 @@
     "@previousTracksPersistenceModeSelectorTitle": {
         "description": "Title for setting that allows to override state of previous tracks header in queue list"
     },
-    "previousTracksPersistenceModeSelectorSubtitle": "Kun jonopaneeli avataan, aiempien kappaleiden osion pitäisi olla...",
+    "previousTracksPersistenceModeSelectorSubtitle": "Kun jono avataan, aiempien kappaleiden osion pitäisi olla...",
     "@previousTracksPersistenceModeSelectorSubtitle": {
         "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
     },
@@ -3050,7 +3050,7 @@
     "@currentLibrary": {
         "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
     },
-    "loading": "Ladataan..",
+    "loading": "Ladataan...",
     "@loading": {
         "description": "Message when items or libraries are loading in home screen section editor"
     },

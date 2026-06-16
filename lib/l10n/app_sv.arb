@@ -213,7 +213,7 @@
     "bufferDuration": "Buffertlängd",
     "showUncensoredLogMessage": "Denna logg innehåller din inloggningsinformation. Visa?",
     "removeFromPlaylistTitle": "Ta bort från den här spellistan",
-    "bufferDurationSubtitle": "Den maximala tiden som ska buffras, i sekunder. Kräver omstart.",
+    "bufferDurationSubtitle": "Den tiden som ska buffras, i sekunder. Kräver omstart.",
     "refresh": "Uppdatera",
     "confirm": "Bekräfta",
     "language": "Språk",
@@ -541,7 +541,7 @@
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
     },
-    "bufferSizeSubtitle": "Maximal storlek på bufferten i MB. Kräver en omstart",
+    "bufferSizeSubtitle": "Storlek på bufferten i MB. Kräver en omstart",
     "shareOfflineListens": "Dela offline-lyssningar",
     "@shareOfflineListens": {
         "description": "Button for exporting the JSON file containing any playback events that couldn't be submitted to the server, either because offline mode was enabled or the connection failed"
@@ -638,7 +638,7 @@
     "@previousTracks": {
         "description": "Description in the queue panel for the list of tracks that come before the current track in the queue. The tracks might not actually have been played (e.g. if the user skipped ahead to a specific track)."
     },
-    "shuffleToQueue": "Shuffla efter spelkö",
+    "shuffleToQueue": "Shuffla efter Spelkö",
     "@shuffleToQueue": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
@@ -2237,5 +2237,6 @@
     "shuffleSomeAlbumsToNextUp": "Shuffla vissa Album till Näst Upp",
     "@shuffleSomeAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
-    }
+    },
+    "none": "Ingen"
 }

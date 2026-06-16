@@ -1,6 +1,6 @@
 {
     "serverUrl": "伺服器 URL",
-    "showTextOnGridViewSubtitle": "是否在使用「網格瀏覽」時顯示文字（如曲名、藝人名稱等）。",
+    "showTextOnGridViewSubtitle": "是否在使用「網格瀏覽」時顯示文字（如曲名、藝人名稱等）。首頁一律會顯示文字，不受此設定影響。",
     "internalExternalIpExplanation": "如果您希望能夠遠程訪問您的 Jellyfin 伺服器，則需要使用您的外部 IP。\n\n如果您的伺服器位於 HTTP 端口 (80/443) 上，則不必指定端口。 如果您的伺服器位於反向代理後面，則可能會出現這種情況。\n\n如果網址正確，輸入欄位下方應該會出現一些關於你的伺服器的相關資訊。",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
@@ -727,7 +727,7 @@
     "@savedQueue": {
         "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
     },
-    "playingFromType": "現正播放自{source, select, album{專輯} playlist{播放清單} trackMix{歌曲混播} artistMix{藝人混播} albumMix{專輯混播} genreMix{類型混播} favorites{收藏} allTracks{所有歌曲} filteredList{篩選} genre{類型} artist{藝人} track{歌曲} nextUpAlbum{即將播放中的專輯} nextUpPlaylist{即將播放中的播放清單} nextUpArtist{即將播放中的藝人} nextUpGenre{即將播放中的類型} remoteClient{其他用戶端} radio{電台} other{}}",
+    "playingFromType": "現正播放自：{source, select, album{專輯} playlist{播放清單} trackMix{歌曲混播} artistMix{藝人混播} albumMix{專輯混播} genreMix{類型混播} favorites{收藏} allTracks{所有歌曲} filteredList{篩選結果} genre{類型} artist{藝人} track{歌曲} nextUpAlbum{即將播放中的專輯} nextUpPlaylist{即將播放中的播放清單} nextUpArtist{即將播放中的藝人} nextUpGenre{即將播放中的類型} remoteClient{其他用戶端} radio{電台} homeScreenSection{} collection{收藏} collectionMix{收藏的混播} other{}}",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -1310,7 +1310,7 @@
     "oneLineMarqueeTextButtonSubtitle": "自動捲動長度超過兩行的標題",
     "hidePlayerBottomActions": "隱藏底部按鈕",
     "showArtistChipImageSubtitle": "此設定會影響藝人照片的縮圖顯示，例如在播放介面上。",
-    "fixedGridTileSizeEnum": "{size, select, small{小} medium{中} large{大} veryLarge{非常大} other{???}}",
+    "fixedGridTileSizeEnum": "{size, select, tiny{極小} verySmall{很小} small{小} medium{中} large{大} veryLarge{很大} huge{超大} giant{巨大} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
             "size": {
@@ -1487,7 +1487,7 @@
     "@trackMenuButtonTooltip": {
         "description": "Tooltip for the button that opens the track menu"
     },
-    "quickActions": "快速動作",
+    "quickActions": "快速操作",
     "@quickActions": {
         "description": "Title for the short menu that can be shown when long-pressing on the menu button on the player screen. Currently only used for adding to and removing from playlists."
     },
@@ -1751,7 +1751,7 @@
             }
         }
     },
-    "allLibraries": "所有媒體",
+    "allLibraries": "所有音樂庫",
     "@allLibraries": {
         "description": "All Libraries"
     },
@@ -2856,15 +2856,15 @@
     "@carPlayLoginPrompt": {
         "description": "Label shown when the user is trying to use CarPlay without being logged in."
     },
-    "ascending": "升冪排序",
+    "ascending": "由小到大",
     "@ascending": {
         "description": "Label for ascending order."
     },
-    "descending": "降冪排序",
+    "descending": "由大到小",
     "@descending": {
         "description": "Label for descending order."
     },
-    "homeScreenSettingsTitle": "主畫面",
+    "homeScreenSettingsTitle": "首頁",
     "@homeScreenSettingsTitle": {
         "description": "Title for the home screen settings"
     },
@@ -2872,23 +2872,23 @@
     "@homeScreenSectionPresetPickerMenuTitle": {
         "description": "Title for the preset picker menu, which allows users to pick a preset section to add to the home screen"
     },
-    "homeScreenSectionCustomSectionTitle": "自訂區域",
+    "homeScreenSectionCustomSectionTitle": "自訂區塊",
     "@homeScreenSectionCustomSectionTitle": {
         "description": "Title for the custom section type, which can be added to the home screen"
     },
-    "homeScreenSectionCustomSectionDescription": "設定你自己的區域",
+    "homeScreenSectionCustomSectionDescription": "設定你自己的區塊",
     "@homeScreenSectionCustomSectionDescription": {
         "description": "Description for the custom section type, which can be added to the home screen"
     },
-    "homeScreenQuickActionPickerMenuTitle": "選擇動作",
+    "homeScreenQuickActionPickerMenuTitle": "選擇操作",
     "@homeScreenQuickActionPickerMenuTitle": {
         "description": "Title for the quick action picker menu, which allows users to pick a quick action to add to the home screen"
     },
-    "homeScreenSectionPresetFavoriteTracksTitle": "最愛的歌曲",
+    "homeScreenSectionPresetFavoriteTracksTitle": "收藏的歌曲",
     "@homeScreenSectionPresetFavoriteTracksTitle": {
         "description": "Title for the favorite tracks preset section, which can be added to the home screen"
     },
-    "homeScreenSectionPresetFavoriteTracksDescription": "隨機排序的最愛歌曲",
+    "homeScreenSectionPresetFavoriteTracksDescription": "隨機排序你收藏的歌曲",
     "@homeScreenSectionPresetFavoriteTracksDescription": {
         "description": "Description for the favorite tracks preset section, which can be added to the home screen"
     },
@@ -2928,5 +2928,544 @@
     "showAll": "顯示全部",
     "@showAll": {
         "description": "Tooltip for show all button on home screen sections"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksTitle": "未播放過的收藏",
+    "@homeScreenSectionPresetForgottenFavoriteTracksTitle": {
+        "description": "Title for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksDescription": "從未播放的收藏歌曲",
+    "@homeScreenSectionPresetForgottenFavoriteTracksDescription": {
+        "description": "Description for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "noExternalDirectories": "沒有外部目錄。",
+    "@noExternalDirectories": {
+        "description": "Message when the user tries to configure an Appdirectory external download directory but none are availible"
+    },
+    "exteranlStorageTip": "如果路徑不包含「emulated」，可能是外部儲存空間。",
+    "@exteranlStorageTip": {
+        "description": "Helper text in Appdirectory download location config form"
+    },
+    "cannotDeleteLocationEplanation": "此位置包含下載內容，無法刪除。請先刪除以下下載項目：",
+    "@cannotDeleteLocationEplanation": {
+        "description": "Explanation that the download location cannot be deleted due to not being empty."
+    },
+    "builtWithByTheFinampContributors": "由 Finamp 貢獻者以 ♥ 打造。",
+    "@builtWithByTheFinampContributors": {
+        "description": "Message in home screen footer"
+    },
+    "failedToLoadSection": "區塊載入失敗。",
+    "@failedToLoadSection": {
+        "description": "Message when an error is thrown while resolving home screen section"
+    },
+    "sectionContentsNotDownloaded": "區塊內容尚未下載。",
+    "@sectionContentsNotDownloaded": {
+        "description": "Message when a home screen section has no items while offline"
+    },
+    "errorLoadingItems": "無法載入項目。",
+    "@errorLoadingItems": {
+        "description": "Message when an error occurs while loading home screen section contents"
+    },
+    "noItemsAvailable": "沒有可顯示的項目。",
+    "@noItemsAvailable": {
+        "description": "Message when a home screen section has no items while online"
+    },
+    "filters": "篩選",
+    "@filters": {
+        "description": "Label for filters in Sort & Filter menu"
+    },
+    "removeFilter": "清除此篩選條件",
+    "@removeFilter": {
+        "description": "Tooltip for removable filter chips in Sort & Filter row"
+    },
+    "removeFilters": "清除篩選條件",
+    "@removeFilters": {
+        "description": "Title for remove filters only variant of sort and filter menu"
+    },
+    "sortFilter": "排序&篩選",
+    "@sortFilter": {
+        "description": "title for Sort & Filter menu"
+    },
+    "editSection": "編輯此區塊",
+    "@editSection": {
+        "description": "Label for edit home section menu entry"
+    },
+    "failedToLoadSectionMissingItem": "無法載入區塊，找不到項目。",
+    "@failedToLoadSectionMissingItem": {
+        "description": "Message when the parent item of a home screen section is missing from the server"
+    },
+    "connected": "已連線",
+    "@connected": {
+        "description": "Fallback for 'Connected to <server name>' message while server info is loaded"
+    },
+    "timerMinutes": "{minutes} 分",
+    "@timerMinutes": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer duration slider"
+    },
+    "timerTracks": "{tracks} 首歌曲",
+    "@timerTracks": {
+        "placeholders": {
+            "tracks": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer track count slider"
+    },
+    "quickActionsSubtitle": "選取並排序要顯示在首頁的快速操作。",
+    "@quickActionsSubtitle": {
+        "description": "Subtitle for quick actions edit menu"
+    },
+    "selectAnItem": "選擇項目",
+    "@selectAnItem": {
+        "description": "Title for 'play specific item' quick action edit menu"
+    },
+    "sectionsMenu": "區塊",
+    "@sectionsMenu": {
+        "description": "Title for home screen sections edit menu"
+    },
+    "sectionMenuSubtitle": "選取並排序要顯示在首頁的區塊。",
+    "@sectionMenuSubtitle": {
+        "description": "Subtitle for home screen sections edit menu"
+    },
+    "sectionType": "區塊類型",
+    "@sectionType": {
+        "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
+    },
+    "featuredCollection": "精選收藏",
+    "@featuredCollection": {
+        "description": "Title for home screen section editor collection selector"
+    },
+    "tabType": "分頁類型",
+    "@tabType": {
+        "description": "Title for home screen section editor tab type dropdown (albums, artists, ect...)"
+    },
+    "currentLibrary": "目前的音樂庫",
+    "@currentLibrary": {
+        "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
+    },
+    "loading": "正在載入…",
+    "@loading": {
+        "description": "Message when items or libraries are loading in home screen section editor"
+    },
+    "sectionTitle": "區塊標題",
+    "@sectionTitle": {
+        "description": "Title for custom section title editor in home screen section editor"
+    },
+    "egFavoriteTracks": "例如：收藏的歌曲",
+    "@egFavoriteTracks": {
+        "description": "Placeholder text in custom section title editor in home screen section editor"
+    },
+    "customSectionTitleRequired": "請為自訂區塊輸入標題",
+    "@customSectionTitleRequired": {
+        "description": "Message when a custom section title is needed in home screen section editor"
+    },
+    "editHomeScreenSection": "編輯首頁區塊",
+    "@editHomeScreenSection": {
+        "description": "Title for home screen section editor menu"
+    },
+    "sectionConfigInvalid": "目前的設定無效。",
+    "@sectionConfigInvalid": {
+        "description": "Message in home screen section edit menu preview window when a valid preview cannot be generated"
+    },
+    "searchNotAvailibleWhileOffline": "離線時無法使用搜尋！",
+    "@searchNotAvailibleWhileOffline": {
+        "description": "Message in home screen section editor search widget when offline"
+    },
+    "noSearchResults": "無搜尋結果。",
+    "@noSearchResults": {
+        "description": "Message in home screen section editor search widget when no results are returned"
+    },
+    "collectionDropdownHint": "選擇收藏",
+    "@collectionDropdownHint": {
+        "description": "Hint for selector dropdown in home screen editor search widget"
+    },
+    "gridImageSizeTitle": "網格大小",
+    "@gridImageSizeTitle": {
+        "description": "Title of grid tile image size setting"
+    },
+    "gridImageSizeSubtitle": "選擇網格模式下的大小",
+    "@gridImageSizeSubtitle": {
+        "description": "Subtitle of grid tile image size setting"
+    },
+    "gridImageSizeLabel": "{colCountExact, plural, =0{~ } =1{} other{}}{colCount, plural, =1{1 行（{sizeDescriptor}）} other{{colCount} 行（{sizeDescriptor}）}}",
+    "@gridImageSizeLabel": {
+        "placeholders": {
+            "sizeDescriptor": {
+                "type": "String",
+                "example": "Very Small"
+            },
+            "colCount": {
+                "type": "int"
+            },
+            "colCountExact": {
+                "type": "int",
+                "description": "0 = not exact, add e.g. tilde character (~), 1 = exact, just show the number"
+            }
+        },
+        "description": "Slider label in grid tile image size setting"
+    },
+    "homeScreenImageSizeTitle": "首頁網格大小",
+    "@homeScreenImageSizeTitle": {
+        "description": "Title of home screen tile image size setting"
+    },
+    "homeScreenImageSizeSubtitle": "調整首頁上的項目大小",
+    "@homeScreenImageSizeSubtitle": {
+        "description": "Subtitle of home screen tile image size setting"
+    },
+    "noFilterActive": "尚未套用篩選",
+    "@noFilterActive": {
+        "description": "Message in sort & filter row when no filters are active"
+    },
+    "activeFilterCount": "{filterCount, plural, =0{無篩選} other{{filterCount} 個篩選中}}",
+    "@activeFilterCount": {
+        "placeholders": {
+            "filterCount": {
+                "type": "int"
+            }
+        },
+        "description": "Message in sort & filter row"
+    },
+    "inPlaylist": "在播放清單中",
+    "@inPlaylist": {
+        "description": "Name of 'In Playlist' content type"
+    },
+    "inCollection": "在收藏中",
+    "@inCollection": {
+        "description": "Name of jellyfin 'Collection' content type"
+    },
+    "tabView": "分頁檢視",
+    "@tabView": {
+        "description": "Name of home screen section type which uses the contents of a music screen tab"
+    },
+    "collection": "合集",
+    "@collection": {
+        "description": "Name of home screen section type which uses the contents of a supplied playable item"
+    },
+    "queues": "播放佇列",
+    "@queues": {
+        "description": "Name of home screen section type which shows the latest played queues"
+    },
+    "favoritePlaylists": "收藏的播放清單",
+    "@favoritePlaylists": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteGenres": "收藏的類型",
+    "@favoriteGenres": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteAlbumsDescription": "隨機排序你收藏的專輯",
+    "@favoriteAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteArtistsDescription": "隨機排序你收藏的歌手",
+    "@favoriteArtistsDescription": {
+        "description": "Description  of a home screen section preset"
+    },
+    "favoritePlaylistsDescription": "隨機排序你收藏的播放清單",
+    "@favoritePlaylistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteGenresDescription": "隨機排序你收藏的類型",
+    "@favoriteGenresDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "playRandomFavoriteItemActionDescription": "隨機播放任一收藏",
+    "@playRandomFavoriteItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "randomFavoriteAction": "隨機播放收藏",
+    "@randomFavoriteAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "isFavoriteFilter": "我的收藏",
+    "@isFavoriteFilter": {
+        "description": "Name of favorite filter"
+    },
+    "homeFavoritesDownloadWarning": "確定要下載收藏嗎？這會下載所有類型的收藏，不只限於 {sectionType}。",
+    "@homeFavoritesDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because home sections show a specific item type, like Albums, but the download covers all.",
+        "placeholders": {
+            "sectionType": {
+                "type": "String",
+                "example": "Albums"
+            }
+        }
+    },
+    "newlyAddedAlbums": "新增的專輯",
+    "@newlyAddedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedTracks": "新增的歌曲",
+    "@newlyAddedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedAlbums": "經常播放的專輯",
+    "@frequentlyPlayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedTracks": "經常播放的歌曲",
+    "@frequentlyPlayedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedArtists": "經常播放的藝人",
+    "@frequentlyPlayedArtists": {
+        "description": "Name of a home screen section preset"
+    },
+    "unplayedAlbums": "未播放過的專輯",
+    "@unplayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "recentQueues": "最近的播放佇列",
+    "@recentQueues": {
+        "description": "Name of a home screen section preset"
+    },
+    "recentlyAddedAlbumsDescription": "你最近加入音樂庫的專輯，從最新的開始排序",
+    "@recentlyAddedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedTracksDescription": "你最近加入音樂庫的歌曲，從最新的開始排序",
+    "@recentlyAddedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedAlbumsDescription": "你經常聽的專輯，從最常播放的開始排序",
+    "@frequentlyPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedTracksDescription": "你經常聽的歌曲，從最常播放的開始排序",
+    "@frequentlyPlayedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedArtistsDescription": "你經常聽的歌手，從最常播放的開始排序",
+    "@frequentlyPlayedArtistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "neverPlayedAlbumsDescription": "隨機排列你尚未聽過的專輯",
+    "@neverPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentQueuesDescription": "你最近建立的播放佇列，從最新的開始排序",
+    "@recentQueuesDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "shuffleTracksActionDescription": "隨機播放音樂庫中的歌曲",
+    "@shuffleTracksActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browseRecentQueuesActionDescription": "從最近播放的佇列中選擇",
+    "@browseRecentQueuesActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browsePlaybackHistoryActionDescription": "瀏覽你的播放紀錄",
+    "@browsePlaybackHistoryActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomAlbumActionDescription": "隨機播放任一專輯",
+    "@playRandomAlbumActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "surpriseMeActionDescription": "隨機選擇一首歌曲，並以電台模式開始連續播放",
+    "@surpriseMeActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomTrackActionDescription": "隨機播放任一歌曲",
+    "@playRandomTrackActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playPreviousQueueActionDescription": "恢復播放你最近封存的播放佇列",
+    "@playPreviousQueueActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "configureOutputActionDescription": "開啟輸出裝置設定",
+    "@configureOutputActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playSpecificItemActionDescription": "播放自訂好的項目",
+    "@playSpecificItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "shuffleTracksAction": "隨機播放歌曲",
+    "@shuffleTracksAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomAlbumAction": "隨機播放專輯",
+    "@randomAlbumAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomTrackAction": "隨機播放歌曲",
+    "@randomTrackAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "previousQueueAction": "上次的播放佇列",
+    "@previousQueueAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "configureOutputAction": "媒體輸出",
+    "@configureOutputAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "playSpecificItemAction": "播放 {itemName, select, finamp_placeholder{<自訂>} other{{itemName}}}",
+    "@playSpecificItemAction": {
+        "placeholders": {
+            "itemName": {
+                "type": "String"
+            }
+        },
+        "description": "Name of a home screen quick action"
+    },
+    "surpriseMeAction": "驚喜播放",
+    "@surpriseMeAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "editAction": "編輯操作",
+    "@editAction": {
+        "description": "Button to edit a quick action"
+    },
+    "swapAction": "更換操作",
+    "@swapAction": {
+        "description": "Button to swap the selected quick action"
+    },
+    "removeAction": "移除操作",
+    "@removeAction": {
+        "description": "Button to remove a quick action"
+    },
+    "addNewAction": "新增操作",
+    "@addNewAction": {
+        "description": "Button to add a new quick action"
+    },
+    "removeSection": "移除區塊",
+    "@removeSection": {
+        "description": "Button to remove a home screen section"
+    },
+    "addNewSection": "新增區塊",
+    "@addNewSection": {
+        "description": "Button to add a new home screen section"
+    },
+    "preview": "預覽",
+    "unnamedCollection": "未命名的收藏",
+    "@unnamedCollection": {
+        "description": "Placeholder for unnamed collection in home screen section editor"
+    },
+    "noTracksFound": "找不到可開始「驚喜播放」混播的歌曲。",
+    "@noTracksFound": {
+        "description": "Message if SurpriseMeMix creation fails"
+    },
+    "nothingFoundToPlay": "找不到可播放的內容。",
+    "@nothingFoundToPlay": {
+        "description": "Message if play random item fails"
+    },
+    "errorLoadingHomeSection": "載入首頁區塊時發生錯誤",
+    "@errorLoadingHomeSection": {
+        "description": "Message if a home screen section cannot be loaded due to a missing item"
+    },
+    "noPreviousQueueFoundToPlay": "找不到上次可播放的播放佇列。",
+    "@noPreviousQueueFoundToPlay": {
+        "description": "Message if play previous queue quick action fails"
+    },
+    "unknownVersion": "未知版本",
+    "@unknownVersion": {
+        "description": "Reported server version if request fails"
+    },
+    "isUnplayedFilter": "未播放",
+    "@isUnplayedFilter": {
+        "description": "Name of unplayed items filter"
+    },
+    "isFullyDownloadedFilter": "已完整下載",
+    "@isFullyDownloadedFilter": {
+        "description": "Name of fully downloaded items filter"
+    },
+    "genreFilter": "類型：{name}",
+    "@genreFilter": {
+        "description": "Name of genrefilter",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "startsWithFilter": "開頭為：{letter}",
+    "@startsWithFilter": {
+        "description": "Name of starts with letter filter",
+        "placeholders": {
+            "letter": {
+                "type": "String"
+            }
+        }
+    },
+    "searchTermFilter": "搜尋：{searchTerm}",
+    "@searchTermFilter": {
+        "description": "Name of search term filter",
+        "placeholders": {
+            "searchTerm": {
+                "type": "String"
+            }
+        }
+    },
+    "customizeHomeScreen": "自訂首頁",
+    "@customizeHomeScreen": {
+        "description": "Label for home screen customize button"
+    },
+    "connectedTo": "已連線至",
+    "@connectedTo": {
+        "description": "Server info in music screen menu"
+    },
+    "performingArtistFilter": "專輯（收錄於）",
+    "albumArtistFilter": "專輯（專輯藝人）",
+    "allTypes": "所有類型",
+    "itemTypeFilterHeader": "子類型",
+    "recentlyPlayedTracksDescription": "你最近聽過的歌曲，從最近播放的開始排序",
+    "@recentlyPlayedTracksDescription": {
+        "description": "Description for a home screen section preset"
+    },
+    "homeAllPlaylistsWarning": "確定要下載所有播放清單嗎？這會下載每個播放清單，不只限於此區塊中的播放清單。",
+    "@homeAllPlaylistsWarning": {
+        "description": "Warning presented when pressing the download button on playlist home sections with a filter applied.  This is shown because the download will not apply the filter."
+    },
+    "homeRecentAlbumsDownloadWarning": "這會下載伺服器上最新的 5 張專輯。之後伺服器新增專輯時，此項目會自動更新，並移除多餘的下載內容。",
+    "@homeRecentAlbumsDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because the behavior of the 5 latest albums download is not a 100% match to the home sections."
+    },
+    "alreadyRandomized": "此區段已經是隨機排序",
+    "@alreadyRandomized": {
+        "description": "Tooltip for shuffle button on home screen sections using a random sort order, where it is disabled due to being unneeded"
+    },
+    "libraryQualifierActive": "使用中",
+    "@libraryQualifierActive": {
+        "description": "Label shown next to the currently selected library in the Finamp menu/drawer"
+    },
+    "offlineSortFallback": "只有在線上時才能依 {onlineSort} 排序。目前將改用預設排序",
+    "@offlineSortFallback": {
+        "description": "Warning presented in sort and filter menu when an online-only sort is chosen.",
+        "placeholders": {
+            "onlineSort": {
+                "type": "String",
+                "example": "Play Count"
+            }
+        }
+    },
+    "retry": "重試",
+    "retryPageLoad": "從伺服器載入項目失敗。點選即可重試。",
+    "itemType": "{itemType, select, album{專輯} playlist{播放清單} artist{藝人} genre{類型} track{歌曲} library{音樂庫} collection{收藏} unknown{項目} other{{itemType}}}",
+    "@itemType": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            }
+        },
+        "description": "Item type name."
+    },
+    "connectionStateInfoString": "{state, select, syncing{正在與伺服器同步} downloading{正在從伺服器下載} deleting{正在刪除舊下載} connectedLocal{已透過區域網路連線} syncingLocal{正在透過區域網路同步} downloadingLocal{正在透過區域網路下載} other{}}",
+    "@connectionStateInfoString": {
+        "description": "String describing the current connection state to the server, shown in the music screen drawer/menu.",
+        "placeholders": {
+            "state": {
+                "type": "String",
+                "example": "syncingLocal"
+            }
+        }
     }
 }

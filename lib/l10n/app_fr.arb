@@ -40,7 +40,7 @@
     "downloads": "Téléchargements",
     "settings": "Réglages",
     "offlineMode": "Mode hors-ligne",
-    "sortOrder": "Ordre de tri",
+    "sortOrder": "",
     "sortBy": "Trier par",
     "album": "Album",
     "albumArtist": "Artiste d'album",
@@ -2866,5 +2866,227 @@
     "carPlayLoginPrompt": "Ouvrez l'application Finamp sur votre téléphone pour vous connecter à votre serveur Jellyfin.",
     "@carPlayLoginPrompt": {
         "description": "Label shown when the user is trying to use CarPlay without being logged in."
+    },
+    "ascending": "Croissant",
+    "@ascending": {
+        "description": "Label for ascending order."
+    },
+    "descending": "Décroissant",
+    "@descending": {
+        "description": "Label for descending order."
+    },
+    "homeScreenSettingsTitle": "Écran d'accueil",
+    "@homeScreenSettingsTitle": {
+        "description": "Title for the home screen settings"
+    },
+    "homeScreenSectionPresetPickerMenuTitle": "Choisissez un préréglage",
+    "@homeScreenSectionPresetPickerMenuTitle": {
+        "description": "Title for the preset picker menu, which allows users to pick a preset section to add to the home screen"
+    },
+    "homeScreenSectionCustomSectionTitle": "Section personnalisée",
+    "@homeScreenSectionCustomSectionTitle": {
+        "description": "Title for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenSectionCustomSectionDescription": "Configurez votre propre section",
+    "@homeScreenSectionCustomSectionDescription": {
+        "description": "Description for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenQuickActionPickerMenuTitle": "Choisissez une action",
+    "@homeScreenQuickActionPickerMenuTitle": {
+        "description": "Title for the quick action picker menu, which allows users to pick a quick action to add to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksTitle": "Pistes préférées",
+    "@homeScreenSectionPresetFavoriteTracksTitle": {
+        "description": "Title for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksDescription": "Pistes aimées en aléatoire",
+    "@homeScreenSectionPresetFavoriteTracksDescription": {
+        "description": "Description for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksTitle": "Pistes préférées oubliées",
+    "@homeScreenSectionPresetForgottenFavoriteTracksTitle": {
+        "description": "Title for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksDescription": "Pistes aimés que vous avez le moins écoutés récemment",
+    "@homeScreenSectionPresetForgottenFavoriteTracksDescription": {
+        "description": "Description for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "noExternalDirectories": "Aucun répertoire externe.",
+    "@noExternalDirectories": {
+        "description": "Message when the user tries to configure an Appdirectory external download directory but none are availible"
+    },
+    "tooltipDisabled": "{tip} (Désactivé)",
+    "@tooltipDisabled": {
+        "placeholders": {
+            "tip": {
+                "type": "String"
+            }
+        },
+        "description": "Added to tooltips on disabled buttons"
+    },
+    "deleteDownloadLocation": "Supprimer l’emplacement",
+    "@deleteDownloadLocation": {
+        "description": "Button for confirming deletion of deownload location"
+    },
+    "cannotDeleteLocation": "Impossible de supprimer l’emplacement",
+    "@cannotDeleteLocation": {
+        "description": "Message that a download location cannot currently be deleted."
+    },
+    "cannotDeleteLocationEplanation": "Cet emplacement contient des téléchargements et ne peut pas être retiré.  Supprimez ces téléchargements d’abord :",
+    "@cannotDeleteLocationEplanation": {
+        "description": "Explanation that the download location cannot be deleted due to not being empty."
+    },
+    "nameRequired": "Nom (obligatoire)",
+    "@nameRequired": {
+        "description": "Descriptor for the required name field when adding download locations."
+    },
+    "noDownloadsInLocation": "Il n’y a pas de téléchargements dans cet emplacement.",
+    "@noDownloadsInLocation": {
+        "description": "Message when deleting a downloads location informing the user it is empty."
+    },
+    "globalMenu": "Menu",
+    "@globalMenu": {
+        "description": "Tooltip for menu open button on music screen"
+    },
+    "lookingForSomethingElse": "Vous cherchez quelque chose d’autre ?",
+    "@lookingForSomethingElse": {
+        "description": "Header for home screen customization button"
+    },
+    "builtWithByTheFinampContributors": "Créé avec ♥ par les contributeurs de Finamp.",
+    "@builtWithByTheFinampContributors": {
+        "description": "Message in home screen footer"
+    },
+    "timerMinutes": "{minutes} min",
+    "@timerMinutes": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer duration slider"
+    },
+    "loading": "Chargement…",
+    "@loading": {
+        "description": "Message when items or libraries are loading in home screen section editor"
+    },
+    "noSearchResults": "Pas de résultats de recherche.",
+    "@noSearchResults": {
+        "description": "Message in home screen section editor search widget when no results are returned"
+    },
+    "collectionDropdownHint": "Choisir une collection",
+    "@collectionDropdownHint": {
+        "description": "Hint for selector dropdown in home screen editor search widget"
+    },
+    "noFilterActive": "Pas de filtre activé",
+    "@noFilterActive": {
+        "description": "Message in sort & filter row when no filters are active"
+    },
+    "connected": "Connecté",
+    "@connected": {
+        "description": "Fallback for 'Connected to <server name>' message while server info is loaded"
+    },
+    "filters": "Filtres",
+    "@filters": {
+        "description": "Label for filters in Sort & Filter menu"
+    },
+    "sortFilter": "Trier & Filtrer",
+    "@sortFilter": {
+        "description": "title for Sort & Filter menu"
+    },
+    "selectAnItem": "Séléctionner un article",
+    "@selectAnItem": {
+        "description": "Title for 'play specific item' quick action edit menu"
+    },
+    "libraryQualifierActive": "Activée",
+    "@libraryQualifierActive": {
+        "description": "Label shown next to the currently selected library in the Finamp menu/drawer"
+    },
+    "retry": "Réessayer",
+    "removeFilters": "Retirer des filtres",
+    "@removeFilters": {
+        "description": "Title for remove filters only variant of sort and filter menu"
+    },
+    "editSection": "Modifier la section",
+    "@editSection": {
+        "description": "Label for edit home section menu entry"
+    },
+    "tabType": "Type d’Onglet",
+    "@tabType": {
+        "description": "Title for home screen section editor tab type dropdown (albums, artists, ect...)"
+    },
+    "currentLibrary": "Bibliothèque actuelle",
+    "@currentLibrary": {
+        "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
+    },
+    "sectionTitle": "Titre de Section",
+    "@sectionTitle": {
+        "description": "Title for custom section title editor in home screen section editor"
+    },
+    "inPlaylist": "Dans playlist",
+    "@inPlaylist": {
+        "description": "Name of 'In Playlist' content type"
+    },
+    "randomAlbumAction": "Album Aléatoire",
+    "@randomAlbumAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomTrackAction": "Piste aléatoire",
+    "@randomTrackAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "surpriseMeAction": "Surprenez-moi",
+    "@surpriseMeAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "editAction": "Modifier l’action",
+    "@editAction": {
+        "description": "Button to edit a quick action"
+    },
+    "unnamedCollection": "Collection Sans Nom",
+    "@unnamedCollection": {
+        "description": "Placeholder for unnamed collection in home screen section editor"
+    },
+    "unknownVersion": "Version inconnue",
+    "@unknownVersion": {
+        "description": "Reported server version if request fails"
+    },
+    "isFullyDownloadedFilter": "Complètement téléchargée",
+    "@isFullyDownloadedFilter": {
+        "description": "Name of fully downloaded items filter"
+    },
+    "genreFilter": "Genre : {name}",
+    "@genreFilter": {
+        "description": "Name of genrefilter",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "searchTermFilter": "Recherche : {searchTerm}",
+    "@searchTermFilter": {
+        "description": "Name of search term filter",
+        "placeholders": {
+            "searchTerm": {
+                "type": "String"
+            }
+        }
+    },
+    "connectedTo": "Connecté à",
+    "@connectedTo": {
+        "description": "Server info in music screen menu"
+    },
+    "allTypes": "Tous les Types",
+    "frequentlyPlayedAlbums": "Albums Souvent Lus",
+    "@frequentlyPlayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedTracks": "Pistes Souvent Lues",
+    "@frequentlyPlayedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedArtists": "Artistes Souvent Lus",
+    "@frequentlyPlayedArtists": {
+        "description": "Name of a home screen section preset"
     }
 }
