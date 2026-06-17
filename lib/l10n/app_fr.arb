@@ -3459,7 +3459,7 @@
         }
     },
     "retryPageLoad": "Échec du chargement des éléments depuis le serveur. Cliquez ici pour réessayer.",
-    "itemType": "{itemType, select, album{Album} playlist{Playlist} artiste{Artist} genre{Genre} titre{Track} bibliothèque{Library} collection{Collection} inconnu {Item} other{{itemType}}}",
+    "itemType": "{itemType, select, album{Album} playlist{Playlist} artist{Artiste} genre{Genre} track{Titre} library{Bibliothèque} collection{Collection} unknown{Élément} other{{itemType}}}",
     "@itemType": {
         "placeholders": {
             "itemType": {
@@ -3469,7 +3469,7 @@
         },
         "description": "Item type name."
     },
-    "connectionStateInfoString": "{state, select, synchronisation{Syncing with Server} téléchargement{Downloading from Server} suppression{Deleting Old Downloads} connectedLocal{Connected via local network} syncingLocal{Syncing via local network} downloadingLocal{Downloading via local network} other{}}",
+    "connectionStateInfoString": "{state, select, syncing{Synchronisation avec le serveur} downloading{Téléchargement depuis le serveur} deleting{Suppression des anciens téléchargements} connectedLocal{Connecté via le réseau local} syncingLocal{Synchronisation via le réseau local} downloadingLocal{Téléchargement via le réseau local} other{}}",
     "@connectionStateInfoString": {
         "description": "String describing the current connection state to the server, shown in the music screen drawer/menu.",
         "placeholders": {
