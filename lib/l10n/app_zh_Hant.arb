@@ -1596,7 +1596,7 @@
         "description": "Title for the audio fade-in duration setting."
     },
     "audioFadeInDurationSettingTitle": "音訊淡入時長",
-    "swipeLeftToRightActionSubtitle": "向右滑動音樂清單中的歌曲時觸發的操作。",
+    "swipeLeftToRightActionSubtitle": "向右滑動音樂列表中的歌曲時觸發的操作。",
     "audioFadeOutDurationSettingSubtitle": "音訊淡出的時間長度，以毫秒為單位。",
     "@audioFadeOutDurationSettingSubtitle": {
         "description": "Subtitle for the audio fade-in duration setting. Set to 0 to disable fade-in."
@@ -1613,7 +1613,7 @@
     },
     "autoOfflineSettingTitle": "自動離線模式",
     "swipeLeftToRightAction": "右滑動作",
-    "swipeRightToLeftActionSubtitle": "向左滑動音樂清單中的歌曲時觸發的操作。",
+    "swipeRightToLeftActionSubtitle": "向左滑動音樂列表中的歌曲時觸發的操作。",
     "autoOfflineOptionNetwork": "區域網路",
     "@autoOfflineOptionNetwork": {
         "description": "This is shown when the autoOffline feature is set to Network, this means offline mode will be automatically enabled when no wifi or ethernet connection is active"
@@ -3185,7 +3185,7 @@
     "@isFavoriteFilter": {
         "description": "Name of favorite filter"
     },
-    "homeFavoritesDownloadWarning": "你確定要下載所有收藏嗎？不限於此區塊中的 {sectionType}類型。",
+    "homeFavoritesDownloadWarning": "你確定要下載所有收藏嗎？不限於此區塊中的{sectionType}。",
     "@homeFavoritesDownloadWarning": {
         "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because home sections show a specific item type, like Albums, but the download covers all.",
         "placeholders": {
