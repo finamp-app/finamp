@@ -63,7 +63,7 @@
     "enterLowPriorityStateOnPause": "暂停时进入低优先级状态",
     "landscape": "横向",
     "viewType": "视图类型",
-    "viewTypeSubtitle": "音乐屏幕的视图类型",
+    "viewTypeSubtitle": "音乐列表的视图类型",
     "showTextOnGridView": "在网格视图中显示文本",
     "useCoverAsBackgroundSubtitle": "是否在播放器屏幕上使用模糊的封面作为背景。",
     "system": "系统",
@@ -204,7 +204,7 @@
     "tabs": "选项卡",
     "theme": "主题",
     "enterLowPriorityStateOnPauseSubtitle": "通知可以在暂停时滑动。 启用此功能还允许 Android 在暂停时终止服务。",
-    "showTextOnGridViewSubtitle": "是否在网格音乐屏幕上显示文本（标题、艺术家等）。主页不受该设置影响，始终显示文本。",
+    "showTextOnGridViewSubtitle": "是否在网格音乐列表上显示文本（标题、艺术家等）。主页不受该设置影响，始终显示文本。",
     "removeFromMix": "从合辑中删除",
     "addToMix": "添加到合辑",
     "minutes": "分钟",
@@ -1228,7 +1228,7 @@
         },
         "description": "Tooltip for the album artwork on the player screen"
     },
-    "showCoversOnAlbumScreenSubtitle": "在专辑屏幕上分别显示每首歌曲的专辑封面。",
+    "showCoversOnAlbumScreenSubtitle": "在专辑视图上分别显示每首歌曲的专辑封面。",
     "@showCoversOnAlbumScreenSubtitle": {
         "description": "Subtitle for the setting that controls if album covers are shown for each track separately on the album screen"
     },
@@ -1581,11 +1581,11 @@
     "@releaseDateFormatMonthDayYear": {
         "description": "Date format option for the release date of an album, showing the year and month and day/date. Example: March 2, 2022"
     },
-    "showAlbumReleaseDateOnPlayerScreenTitle": "在播放器屏幕上显示专辑发行日期",
+    "showAlbumReleaseDateOnPlayerScreenTitle": "在播放界面上显示专辑发行日期",
     "@showAlbumReleaseDateOnPlayerScreenTitle": {
         "description": "Title for the setting that controls if the release date of an album is shown on the player screen"
     },
-    "showAlbumReleaseDateOnPlayerScreenSubtitle": "在播放器屏幕上，专辑名称后面显示专辑的发行日期。",
+    "showAlbumReleaseDateOnPlayerScreenSubtitle": "在播放界面上，专辑名称后面显示专辑的发行日期。",
     "@showAlbumReleaseDateOnPlayerScreenSubtitle": {
         "description": "Subtitle for the setting that controls if the release date of an album is shown on the player screen"
     },
@@ -2857,7 +2857,7 @@
     "@homeScreenSectionPresetForgottenFavoriteTracksTitle": {
         "description": "Title for the forgotten favorite tracks preset section, which can be added to the home screen"
     },
-    "homeScreenSectionPresetForgottenFavoriteTracksDescription": "从未播放的收藏歌曲",
+    "homeScreenSectionPresetForgottenFavoriteTracksDescription": "最近从未播放的收藏歌曲",
     "@homeScreenSectionPresetForgottenFavoriteTracksDescription": {
         "description": "Description for the forgotten favorite tracks preset section, which can be added to the home screen"
     },
@@ -3262,7 +3262,7 @@
     "@configureOutputAction": {
         "description": "Name of a home screen quick action"
     },
-    "playSpecificItemAction": "播放 {itemName, select, finamp_placeholder{自定义内容} other{播放 {itemName}}}",
+    "playSpecificItemAction": "播放{itemName, select, finamp_placeholder{自定义内容} other{ {itemName}}}",
     "@playSpecificItemAction": {
         "placeholders": {
             "itemName": {
@@ -3328,11 +3328,11 @@
     "@isFavoriteFilter": {
         "description": "Name of favorite filter"
     },
-    "isUnplayedFilter": "未播放",
+    "isUnplayedFilter": "从未播放",
     "@isUnplayedFilter": {
         "description": "Name of unplayed items filter"
     },
-    "isFullyDownloadedFilter": "完整下载的",
+    "isFullyDownloadedFilter": "已下载",
     "@isFullyDownloadedFilter": {
         "description": "Name of fully downloaded items filter"
     },
