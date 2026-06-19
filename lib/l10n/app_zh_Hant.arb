@@ -1,6 +1,6 @@
 {
     "serverUrl": "伺服器 URL",
-    "showTextOnGridViewSubtitle": "是否在使用「網格瀏覽」時顯示文字（如曲名、藝人名稱等）。首頁一律會顯示文字，不受此設定影響。",
+    "showTextOnGridViewSubtitle": "是否在「網格瀏覽」中顯示文字，例如曲名、藝人名稱等。首頁的網格一律會顯示文字，不受此設定影響。",
     "internalExternalIpExplanation": "如果您希望能夠遠程訪問您的 Jellyfin 伺服器，則需要使用您的外部 IP。\n\n如果您的伺服器位於 HTTP 端口 (80/443) 上，則不必指定端口。 如果您的伺服器位於反向代理後面，則可能會出現這種情況。\n\n如果網址正確，輸入欄位下方應該會出現一些關於你的伺服器的相關資訊。",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
@@ -149,7 +149,7 @@
     "shuffleAllTrackCount": "隨機播放所有歌曲次數",
     "shuffleAllTrackCountSubtitle": "使用全部隨機播放按鈕時，要載入的歌曲數量。",
     "viewType": "瀏覽方式",
-    "viewTypeSubtitle": "調整音樂清單的瀏覽方式",
+    "viewTypeSubtitle": "調整音樂列表的瀏覽方式",
     "list": "列表",
     "grid": "網格",
     "landscape": "橫向",
@@ -1052,7 +1052,7 @@
     "@requireWifiForDownloads": {
         "description": "Description of setting for only performing downloads while on wifi"
     },
-    "downloadLibraryPrompt": "您確定要下載整個音樂庫 {libraryName} 的所有內容嗎？",
+    "downloadLibraryPrompt": "您確定要下載音樂庫「{libraryName}」的所有內容嗎？",
     "@downloadLibraryPrompt": {
         "description": "Confirmation prompt before downloading entire library, which may be large.",
         "placeholders": {
@@ -3079,7 +3079,7 @@
     "@noSearchResults": {
         "description": "Message in home screen section editor search widget when no results are returned"
     },
-    "collectionDropdownHint": "選擇收藏",
+    "collectionDropdownHint": "選擇內容種類",
     "@collectionDropdownHint": {
         "description": "Hint for selector dropdown in home screen editor search widget"
     },
@@ -3087,7 +3087,7 @@
     "@gridImageSizeTitle": {
         "description": "Title of grid tile image size setting"
     },
-    "gridImageSizeSubtitle": "選擇網格模式下的大小",
+    "gridImageSizeSubtitle": "調整網格瀏覽中的項目大小",
     "@gridImageSizeSubtitle": {
         "description": "Subtitle of grid tile image size setting"
     },
@@ -3185,7 +3185,7 @@
     "@isFavoriteFilter": {
         "description": "Name of favorite filter"
     },
-    "homeFavoritesDownloadWarning": "確定要下載收藏嗎？這會下載所有類型的收藏，不只限於{sectionType}。",
+    "homeFavoritesDownloadWarning": "你確定要下載所有收藏嗎？不限於此區塊中的 {sectionType}類型。",
     "@homeFavoritesDownloadWarning": {
         "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because home sections show a specific item type, like Albums, but the download covers all.",
         "placeholders": {
@@ -3420,7 +3420,7 @@
     "@recentlyPlayedTracksDescription": {
         "description": "Description for a home screen section preset"
     },
-    "homeAllPlaylistsWarning": "確定要下載所有播放清單嗎？這會下載每個播放清單，不只限於此區塊中的播放清單。",
+    "homeAllPlaylistsWarning": "你確定要下載所有播放清單嗎？不限於此區塊中的播放清單。",
     "@homeAllPlaylistsWarning": {
         "description": "Warning presented when pressing the download button on playlist home sections with a filter applied.  This is shown because the download will not apply the filter."
     },
