@@ -13,7 +13,7 @@
     "playlists": "播放列表",
     "startMix": "生成合辑",
     "shuffleAll": "随机播放",
-    "sortOrder": "排序",
+    "sortOrder": "顺序",
     "artist": "艺术家",
     "budget": "预算",
     "sortBy": "排序方式",
@@ -107,7 +107,7 @@
         }
     },
     "addDownloadLocation": "添加下载路径",
-    "addToQueue": "添加至队列",
+    "addToQueue": "追加至队列末尾",
     "addToPlaylistTooltip": "添加至播放列表",
     "addToPlaylistTitle": "添加至播放列表",
     "albumArtist": "专辑艺术家",
@@ -204,7 +204,7 @@
     "tabs": "选项卡",
     "theme": "主题",
     "enterLowPriorityStateOnPauseSubtitle": "通知可以在暂停时滑动。 启用此功能还允许 Android 在暂停时终止服务。",
-    "showTextOnGridViewSubtitle": "是否在网格音乐屏幕上显示文本（标题、艺术家等）。",
+    "showTextOnGridViewSubtitle": "是否在网格音乐屏幕上显示文本（标题、艺术家等）。主页不受该设置影响，始终显示文本。",
     "removeFromMix": "从合辑中删除",
     "addToMix": "添加到合辑",
     "minutes": "分钟",
@@ -219,7 +219,7 @@
     "confirm": "确认",
     "showUncensoredLogMessage": "该日志包含您的登录信息。显示？",
     "refresh": "刷新",
-    "playNext": "下一个播放",
+    "playNext": "插入至队列首位",
     "@playNext": {
         "description": "Popup menu item title for inserting an item into the play queue after the currently-playing item."
     },
@@ -447,15 +447,15 @@
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
     },
-    "clearNextUp": "清空接下来",
+    "clearNextUp": "清空接下来队列",
     "@clearNextUp": {
         "description": "Label for the action that deletes all tracks added to Next Up"
     },
-    "confirmShuffleNext": "已随机添加至下一首",
+    "confirmShuffleNext": "已乱序添加至队列首位",
     "@confirmShuffleNext": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the front of the \"Next Up\" queue"
     },
-    "confirmShuffleToNextUp": "已随机添加至接下来",
+    "confirmShuffleToNextUp": "已乱序添加至接下来播放队列末尾",
     "@confirmShuffleToNextUp": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the \"Next Up\" queue"
     },
@@ -636,7 +636,7 @@
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
     },
-    "shuffleNext": "随机播放下一首",
+    "shuffleNext": "乱序插入至队列首位",
     "@shuffleNext": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
@@ -739,19 +739,19 @@
     "@playingFrom": {
         "description": "Prefix shown before the name of the main queue source, like the album or playlist that was used to start playback. Example: \"Playing from {My Nice Playlist}\""
     },
-    "addToNextUp": "添加至接下来",
+    "addToNextUp": "追加至队列末尾",
     "@addToNextUp": {
         "description": "Used for adding a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
-    "shuffleToNextUp": "随机添加至接下来队列",
+    "shuffleToNextUp": "乱序追加至队列末尾",
     "@shuffleToNextUp": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
     },
-    "shuffleToQueue": "随机添加至队列",
+    "shuffleToQueue": "乱序追加至队列末尾",
     "@shuffleToQueue": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
-    "confirmShuffleToQueue": "已随机添加至队列",
+    "confirmShuffleToQueue": "已乱序添加至队列",
     "@confirmShuffleToQueue": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the regular queue"
     },
@@ -849,7 +849,7 @@
     "@autoloadLastQueueOnStartupSubtitle": {
         "description": "Description of the setting to restore last queue on startup"
     },
-    "reportQueueToServer": "向服务器报告当前队列",
+    "reportQueueToServer": "向服务器报告当前队列？",
     "@reportQueueToServer": {
         "description": "Label for the setting that toggles reporting of the current queue to the Jellyfin server"
     },
@@ -877,15 +877,15 @@
     "@periodicPlaybackSessionUpdateFrequencyDetails": {
         "description": "Additional details for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
     },
-    "shuffleAlbumsToNextUp": "随机选择所有专辑至接下来队列",
+    "shuffleAlbumsToNextUp": "将专辑乱序追加至队列末尾",
     "@shuffleAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of Next Up"
     },
-    "shuffleAlbumsNext": "随机选择专辑到下一首播放",
+    "shuffleAlbumsNext": "将专辑乱序插入至队列首位",
     "@shuffleAlbumsNext": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the start of Next Up"
     },
-    "shuffleAlbumsToQueue": "将专辑乱序加入队列",
+    "shuffleAlbumsToQueue": "将专辑乱序加入队列末尾",
     "@shuffleAlbumsToQueue": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of the regular queue"
     },
@@ -1111,7 +1111,7 @@
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
-    "fixedGridTileSizeEnum": "{size, select, small{小} medium{中} large{大} veryLarge{超大} other{???}}",
+    "fixedGridTileSizeEnum": "{size, select, tiny{极小} verySmall{很小} small{小} medium{中} large{大} veryLarge{很大} huge{巨大} giant{极大} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
             "size": {
@@ -1376,7 +1376,7 @@
             }
         }
     },
-    "confirmPlayNext": "{type, select, track{歌曲} album{专辑} artist{艺术家} playlist{播放列表} genre{流派} other{项目}}已添加到接下来队列队首",
+    "confirmPlayNext": "{type, select, track{歌曲} album{专辑} artist{艺术家} playlist{播放列表} genre{流派} other{项目}}已添加到接下来播放队列首位",
     "@confirmPlayNext": {
         "description": "A confirmation message that is shown after successfully adding a track to the front of the \"Next Up\" queue",
         "placeholders": {
@@ -1385,7 +1385,7 @@
             }
         }
     },
-    "confirmAddToNextUp": "{type, select, track{歌曲} album{专辑} artist{艺术家} playlist{播放列表} genre{流派}  disc{唱片} other{项目}}已添加到接下来队列队尾",
+    "confirmAddToNextUp": "{type, select, track{歌曲} album{专辑} artist{艺术家} playlist{播放列表} genre{流派} disc{唱片} other{项目}}已添加到接下来播放队列末尾",
     "@confirmAddToNextUp": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the \"Next Up\" queue",
         "placeholders": {
@@ -1466,7 +1466,7 @@
         },
         "description": "Subtitle for the type of a downloaded item, shown when syncing fails and in DownloadButton tooltip."
     },
-    "playingFromType": "播放自{source, select, album{专辑} playlist{播放列表} trackMix{歌曲合辑} artistMix{ 艺术家合辑} albumMix{专辑合辑} genreMix{流派合辑} favorites{收藏夹} allTracks{全部歌曲} filteredList{歌曲} genre{流派} artist{艺术家} track{歌曲} nextUpAlbum{接下来的专辑} nextUpPlaylist{接下来的播放列表} nextUpArtist{接下来的艺术家} nextUpGenre{接下来的流派} remoteClient{远程客户端} radio{电台} other{}}",
+    "playingFromType": "播放自{source, select, album{专辑} playlist{播放列表} trackMix{歌曲合辑} artistMix{ 艺术家合辑} albumMix{专辑合辑} genreMix{流派合辑} favorites{收藏夹} allTracks{全部歌曲} filteredList{歌曲} genre{流派} artist{艺术家} track{歌曲} nextUpAlbum{接下来的专辑} nextUpPlaylist{接下来的播放列表} nextUpArtist{接下来的艺术家} nextUpGenre{接下来的流派} remoteClient{远程客户端} radio{电台} homeScreenSection{主页} collection{精选集} collectionMix{精选集合辑} other{}}",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -1980,23 +1980,23 @@
     "@playbackActionPageNext": {
         "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
     },
-    "playbackActionPageNextUp": "下一首播放",
+    "playbackActionPageNextUp": "追加下一首",
     "@playbackActionPageNextUp": {
         "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
     },
-    "playbackActionPageAppendToQueue": "最后播放",
+    "playbackActionPageAppendToQueue": "追加队列",
     "@playbackActionPageAppendToQueue": {
         "description": "Label for the playback action page that contains all actions related to appending tracks at the end of the queue"
     },
-    "shuffleSomeNext": "随机播放下一首",
+    "shuffleSomeNext": "乱序插入至队列首位",
     "@shuffleSomeNext": {
         "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "shuffleSomeToNextUp": "随机添加到接下来播放",
+    "shuffleSomeToNextUp": "乱序追加至队列末尾",
     "@shuffleSomeToNextUp": {
         "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
     },
-    "shuffleSomeToQueue": "随机添加到播放列表末尾",
+    "shuffleSomeToQueue": "乱序追加至队列末尾",
     "@shuffleSomeToQueue": {
         "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
@@ -2008,7 +2008,7 @@
     "@shuffleSomeAlbumsNext": {
         "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
     },
-    "shuffleSomeAlbumsToNextUp": "随机添加专辑到接下来播放",
+    "shuffleSomeAlbumsToNextUp": "将专辑乱序追加到队列末尾",
     "@shuffleSomeAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
     },
@@ -2340,11 +2340,11 @@
     "@playbackActionPageMoveWithinQueue": {
         "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
     },
-    "movePlayNext": "下一个播放",
+    "movePlayNext": "插入至队列首位",
     "@movePlayNext": {
         "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "moveAddToNextUp": "移至接下来",
+    "moveAddToNextUp": "移至接下来队列末尾",
     "@moveAddToNextUp": {
         "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
@@ -2529,11 +2529,11 @@
     "@rememberLastUsedPlaybackActionRowPageTitle": {
         "description": "Title for the setting to remember the last used playback mode."
     },
-    "rememberLastUsedPlaybackActionRowPageSubtitle": "开启后，应用将记住您最后使用的播放模式（例如：下一个）。",
+    "rememberLastUsedPlaybackActionRowPageSubtitle": "开启后，应用将记住您最后使用的播放模式（例如：接下来播放）。",
     "@rememberLastUsedPlaybackActionRowPageSubtitle": {
         "description": "Subtitle for the setting to remember the last used playback mode."
     },
-    "radioModeOptionName": "{option, select, reshuffle{队列重排} random{随机推荐} similar{相似推荐} continuous{连续播放} albumMix{专辑混搭} other{{option}}}",
+    "radioModeOptionName": "{option, select, reshuffle{队列重排} random{随机推荐} similar{相似推荐} continuous{连续播放} albumMix{专辑合辑} other{{option}}}",
     "@radioModeOptionName": {
         "placeholders": {
             "option": {
@@ -2543,7 +2543,7 @@
         },
         "description": "Radio mode names in radio mode/algorithm dropdown"
     },
-    "radioModeOptionTitle": "{option, select, reshuffle{队列重排模式} random{随机推荐模式} similar{相似推荐模式} continuous{连续播放模式} albumMix{专辑混搭模式} other{{option}}}",
+    "radioModeOptionTitle": "{option, select, reshuffle{队列重排模式} random{随机推荐模式} similar{相似推荐模式} continuous{连续播放模式} albumMix{专辑合辑模式} other{{option}}}",
     "@radioModeOptionTitle": {
         "placeholders": {
             "option": {
@@ -2705,5 +2705,764 @@
     "explicit": "露骨内容",
     "@explicit": {
         "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
+    },
+    "amoledTheme": "使用 AMOLED 主题",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "将暗黑主题切换为纯黑主题。",
+    "ascending": "升序",
+    "@ascending": {
+        "description": "Label for ascending order."
+    },
+    "descending": "降序",
+    "@descending": {
+        "description": "Label for descending order."
+    },
+    "multichannelHandlingTitle": "多声道转码处理",
+    "@multichannelHandlingTitle": {
+        "description": "Title for multi-channel handling dropdown"
+    },
+    "multichannelHandlingSubtitle": "两声道以上的多声道音轨的转码策略。该设置同时适用于流式播放与下载。",
+    "@multichannelHandlingSubtitle": {
+        "description": "Subtitle for multi-channel handling dropdown"
+    },
+    "multichannelHandlingOption": "{option, select, stereoDownmixLossy{仅有损音频降混为双声道} stereoDownmixAll{所有音频降混为双声道} fixedBitrate{从不降混} other{{option}} }",
+    "@multichannelHandlingOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in multi-channel handling dropdown"
+    },
+    "preferNextUpPrependingTitle": "优先显示“下一首”选项卡",
+    "@preferNextUpPrependingTitle": {
+        "description": "Title for the setting to prefer prepending to Next Up over appending"
+    },
+    "preferNextUpPrependingSubtitle": "启用时，若接下来播放队列为空，将显示“下一首”；否则，默认显示“追加下一首”。",
+    "@preferNextUpPrependingSubtitle": {
+        "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "discOfAlbum": "[唱片 {number}] {albumName}",
+    "@discOfAlbum": {
+        "description": "Used when a single disc of album is opened, then album name is replaced with this string",
+        "placeholders": {
+            "number": {
+                "type": "int",
+                "example": "1"
+            },
+            "albumName": {
+                "type": "String"
+            }
+        }
+    },
+    "moreActionsOnAlbumDisc": "对专辑唱片的更多操作",
+    "@moreActionsOnAlbumDisc": {
+        "description": "Label for the disc header menu button."
+    },
+    "autoplayRestoredQueueTitle": "恢复队列后自动播放",
+    "@autoplayRestoredQueueTitle": {
+        "description": "Title for the setting that controls if restored queues automatically play."
+    },
+    "autoplayRestoredQueueSubtitle": "启动时自动恢复或手动恢复后的队列，将自动开始播放。  如果队列中有音轨恢复失败，则绝对不会自动播放。",
+    "@autoplayRestoredQueueSubtitle": {
+        "description": "Subtitle for the setting that controls if restored queues automatically play."
+    },
+    "missingBlurhashWarning": "警告：Jellyfin 服务器似乎配置有误，未计算 Blurhash。这会导致 Finamp 无法对下载的图片进行去重。请修正服务器配置并运行下载修复。",
+    "@missingBlurhashWarning": {
+        "description": "A warning message displayed on the downloads screen if the jellyfin server is missing blurhashes."
+    },
+    "duckOnAudioInterruptionTitle": "与其他应用同时播放时降低音量",
+    "@duckOnAudioInterruptionTitle": {
+        "description": "Title for the setting that controls ducking."
+    },
+    "duckOnAudioInterruptionSubtitle": "当其他应用短暂播放音频时降低音量。需重启 Finamp 生效。",
+    "@duckOnAudioInterruptionSubtitle": {
+        "description": "Subtitle for the setting that controls ducking."
+    },
+    "volumeControlHint": "用 {shortcut} 调节音量",
+    "@volumeControlHint": {
+        "description": "Hint text displayed below the volume bar to inform users about keyboard shortcuts for volume control.",
+        "placeholders": {
+            "shortcut": {
+                "type": "String",
+                "example": "Ctrl + ↑/↓"
+            }
+        }
+    },
+    "seekControlHint": "{shortcut} 快退 5 秒 / 快进 30 秒",
+    "@seekControlHint": {
+        "description": "Shortcut hint for seeking backward 5s or forward 30s.",
+        "placeholders": {
+            "shortcut": {
+                "type": "String",
+                "example": "Ctrl + ←/→"
+            }
+        }
+    },
+    "previousTracksPersistenceModeSelectorTitle": "显示历史曲目",
+    "@previousTracksPersistenceModeSelectorTitle": {
+        "description": "Title for setting that allows to override state of previous tracks header in queue list"
+    },
+    "previousTracksPersistenceModeSelectorSubtitle": "打开播放队列面板时，是否显示已放完的歌曲。",
+    "@previousTracksPersistenceModeSelectorSubtitle": {
+        "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
+    },
+    "previousTracksPersistenceModePersistent": "保持先前状态（记住展开或折叠）",
+    "@previousTracksPersistenceModePersistent": {
+        "description": "Does nothing to previous tracks header in queue list, using its saved value"
+    },
+    "previousTracksPersistenceModeCollapsed": "默认折叠（隐藏）",
+    "@previousTracksPersistenceModeCollapsed": {
+        "description": "Overrides saved value to collapse previous tracks header on queue list open"
+    },
+    "previousTracksPersistenceModeExpanded": "默认展开（显示）",
+    "@previousTracksPersistenceModeExpanded": {
+        "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "home": "主页",
+    "@home": {
+        "description": "Label for the home tab in the main navigation bar"
+    },
+    "homeScreenSettingsTitle": "主页",
+    "@homeScreenSettingsTitle": {
+        "description": "Title for the home screen settings"
+    },
+    "homeScreenSectionPresetPickerMenuTitle": "应用预设",
+    "@homeScreenSectionPresetPickerMenuTitle": {
+        "description": "Title for the preset picker menu, which allows users to pick a preset section to add to the home screen"
+    },
+    "homeScreenSectionCustomSectionTitle": "自定义栏目",
+    "@homeScreenSectionCustomSectionTitle": {
+        "description": "Title for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenSectionCustomSectionDescription": "打造你的专属主页栏目",
+    "@homeScreenSectionCustomSectionDescription": {
+        "description": "Description for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenQuickActionPickerMenuTitle": "选择操作",
+    "@homeScreenQuickActionPickerMenuTitle": {
+        "description": "Title for the quick action picker menu, which allows users to pick a quick action to add to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksTitle": "收藏的歌曲",
+    "@homeScreenSectionPresetFavoriteTracksTitle": {
+        "description": "Title for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksDescription": "随机排序你收藏的歌曲",
+    "@homeScreenSectionPresetFavoriteTracksDescription": {
+        "description": "Description for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksTitle": "久未聆听的收藏歌曲",
+    "@homeScreenSectionPresetForgottenFavoriteTracksTitle": {
+        "description": "Title for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksDescription": "从未播放的收藏歌曲",
+    "@homeScreenSectionPresetForgottenFavoriteTracksDescription": {
+        "description": "Description for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "noExternalDirectories": "没有外部目录。",
+    "@noExternalDirectories": {
+        "description": "Message when the user tries to configure an Appdirectory external download directory but none are availible"
+    },
+    "nameRequired": "名称（必填）",
+    "@nameRequired": {
+        "description": "Descriptor for the required name field when adding download locations."
+    },
+    "exteranlStorageTip": "如果路径中不包含 “emulated”，可能是外部存储。",
+    "@exteranlStorageTip": {
+        "description": "Helper text in Appdirectory download location config form"
+    },
+    "tooltipDisabled": "{tip} (禁用)",
+    "@tooltipDisabled": {
+        "placeholders": {
+            "tip": {
+                "type": "String"
+            }
+        },
+        "description": "Added to tooltips on disabled buttons"
+    },
+    "noDownloadsInLocation": "当前路径下无下载内容。",
+    "@noDownloadsInLocation": {
+        "description": "Message when deleting a downloads location informing the user it is empty."
+    },
+    "deleteDownloadLocation": "删除路径",
+    "@deleteDownloadLocation": {
+        "description": "Button for confirming deletion of deownload location"
+    },
+    "cannotDeleteLocation": "无法删除路径",
+    "@cannotDeleteLocation": {
+        "description": "Message that a download location cannot currently be deleted."
+    },
+    "cannotDeleteLocationEplanation": "当前路径包含已下载内容，无法删除。请先移除以下下载项：",
+    "@cannotDeleteLocationEplanation": {
+        "description": "Explanation that the download location cannot be deleted due to not being empty."
+    },
+    "search": "搜索",
+    "@search": {
+        "description": "Tooltip for music screen search button"
+    },
+    "globalMenu": "菜单",
+    "@globalMenu": {
+        "description": "Tooltip for menu open button on music screen"
+    },
+    "lookingForSomethingElse": "没找到想听的内容？",
+    "@lookingForSomethingElse": {
+        "description": "Header for home screen customization button"
+    },
+    "builtWithByTheFinampContributors": "由 Finamp 贡献者 用心 ♥ 打造。",
+    "@builtWithByTheFinampContributors": {
+        "description": "Message in home screen footer"
+    },
+    "showAll": "显示全部",
+    "@showAll": {
+        "description": "Tooltip for show all button on home screen sections"
+    },
+    "failedToLoadSection": "栏目加载失败。",
+    "@failedToLoadSection": {
+        "description": "Message when an error is thrown while resolving home screen section"
+    },
+    "sectionContentsNotDownloaded": "栏目内容尚未下载。",
+    "@sectionContentsNotDownloaded": {
+        "description": "Message when a home screen section has no items while offline"
+    },
+    "failedToLoadSectionMissingItem": "栏目加载失败：相关内容缺失。",
+    "@failedToLoadSectionMissingItem": {
+        "description": "Message when the parent item of a home screen section is missing from the server"
+    },
+    "errorLoadingItems": "内容加载失败。",
+    "@errorLoadingItems": {
+        "description": "Message when an error occurs while loading home screen section contents"
+    },
+    "noItemsAvailable": "没有可显示的内容。",
+    "@noItemsAvailable": {
+        "description": "Message when a home screen section has no items while online"
+    },
+    "filters": "筛选",
+    "@filters": {
+        "description": "Label for filters in Sort & Filter menu"
+    },
+    "removeFilter": "清除该筛选条件",
+    "@removeFilter": {
+        "description": "Tooltip for removable filter chips in Sort & Filter row"
+    },
+    "removeFilters": "清除筛选条件",
+    "@removeFilters": {
+        "description": "Title for remove filters only variant of sort and filter menu"
+    },
+    "sortFilter": "排序 & 筛选",
+    "@sortFilter": {
+        "description": "title for Sort & Filter menu"
+    },
+    "editSection": "编辑此栏目",
+    "@editSection": {
+        "description": "Label for edit home section menu entry"
+    },
+    "connected": "已连接",
+    "@connected": {
+        "description": "Fallback for 'Connected to <server name>' message while server info is loaded"
+    },
+    "timerMinutes": "{minutes} 分",
+    "@timerMinutes": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer duration slider"
+    },
+    "timerTracks": "{tracks} 首歌曲",
+    "@timerTracks": {
+        "placeholders": {
+            "tracks": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer track count slider"
+    },
+    "quickActionsSubtitle": "选择并调整主页快捷操作的顺序。",
+    "@quickActionsSubtitle": {
+        "description": "Subtitle for quick actions edit menu"
+    },
+    "selectAnItem": "选择内容",
+    "@selectAnItem": {
+        "description": "Title for 'play specific item' quick action edit menu"
+    },
+    "sectionsMenu": "栏目",
+    "@sectionsMenu": {
+        "description": "Title for home screen sections edit menu"
+    },
+    "sectionMenuSubtitle": "选择并调整主页栏目的顺序。",
+    "@sectionMenuSubtitle": {
+        "description": "Subtitle for home screen sections edit menu"
+    },
+    "sectionType": "栏目类型",
+    "@sectionType": {
+        "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
+    },
+    "featuredCollection": "推荐精选集选择",
+    "@featuredCollection": {
+        "description": "Title for home screen section editor collection selector"
+    },
+    "tabType": "展示内容",
+    "@tabType": {
+        "description": "Title for home screen section editor tab type dropdown (albums, artists, ect...)"
+    },
+    "library": "音乐库",
+    "@library": {
+        "description": "Title for home screen section editor library selector dropdown, or a general view of the entire active music library (e.g. in CarPlay)"
+    },
+    "currentLibrary": "当前音乐库",
+    "@currentLibrary": {
+        "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
+    },
+    "loading": "加载中...",
+    "@loading": {
+        "description": "Message when items or libraries are loading in home screen section editor"
+    },
+    "sectionTitle": "栏目标题",
+    "@sectionTitle": {
+        "description": "Title for custom section title editor in home screen section editor"
+    },
+    "egFavoriteTracks": "例如：收藏的歌曲",
+    "@egFavoriteTracks": {
+        "description": "Placeholder text in custom section title editor in home screen section editor"
+    },
+    "customSectionTitleRequired": "请为自定义栏目输入标题",
+    "@customSectionTitleRequired": {
+        "description": "Message when a custom section title is needed in home screen section editor"
+    },
+    "editHomeScreenSection": "编辑主页栏目",
+    "@editHomeScreenSection": {
+        "description": "Title for home screen section editor menu"
+    },
+    "sectionConfigInvalid": "当前设置无效。",
+    "@sectionConfigInvalid": {
+        "description": "Message in home screen section edit menu preview window when a valid preview cannot be generated"
+    },
+    "searchNotAvailibleWhileOffline": "离线时无法使用搜索！",
+    "@searchNotAvailibleWhileOffline": {
+        "description": "Message in home screen section editor search widget when offline"
+    },
+    "noSearchResults": "无搜索结果。",
+    "@noSearchResults": {
+        "description": "Message in home screen section editor search widget when no results are returned"
+    },
+    "collectionDropdownHint": "选择一个精选集",
+    "@collectionDropdownHint": {
+        "description": "Hint for selector dropdown in home screen editor search widget"
+    },
+    "gridImageSizeTitle": "网格大小",
+    "@gridImageSizeTitle": {
+        "description": "Title of grid tile image size setting"
+    },
+    "gridImageSizeSubtitle": "设置网格视图下的内容显示大小",
+    "@gridImageSizeSubtitle": {
+        "description": "Subtitle of grid tile image size setting"
+    },
+    "gridImageSizeLabel": "{colCountExact, plural, =0{~} =1{} other{}}{colCount, plural, =1{1 列 ({sizeDescriptor})} other{{colCount} 列 ({sizeDescriptor})}}",
+    "@gridImageSizeLabel": {
+        "placeholders": {
+            "sizeDescriptor": {
+                "type": "String",
+                "example": "Very Small"
+            },
+            "colCount": {
+                "type": "int"
+            },
+            "colCountExact": {
+                "type": "int",
+                "description": "0 = not exact, add e.g. tilde character (~), 1 = exact, just show the number"
+            }
+        },
+        "description": "Slider label in grid tile image size setting"
+    },
+    "homeScreenImageSizeTitle": "主页网格大小",
+    "@homeScreenImageSizeTitle": {
+        "description": "Title of home screen tile image size setting"
+    },
+    "homeScreenImageSizeSubtitle": "设置主页网格的内容显示大小",
+    "@homeScreenImageSizeSubtitle": {
+        "description": "Subtitle of home screen tile image size setting"
+    },
+    "noFilterActive": "未启用筛选条件",
+    "@noFilterActive": {
+        "description": "Message in sort & filter row when no filters are active"
+    },
+    "activeFilterCount": "{filterCount, plural, =0{未启用筛选条件} =1{已启用 1 项筛选条件} other{已启用 {filterCount} 项筛选条件}}",
+    "@activeFilterCount": {
+        "placeholders": {
+            "filterCount": {
+                "type": "int"
+            }
+        },
+        "description": "Message in sort & filter row"
+    },
+    "inPlaylist": "在播放列表中",
+    "@inPlaylist": {
+        "description": "Name of 'In Playlist' content type"
+    },
+    "inCollection": "在精选集中",
+    "@inCollection": {
+        "description": "Name of jellyfin 'Collection' content type"
+    },
+    "tabView": "标签视图",
+    "@tabView": {
+        "description": "Name of home screen section type which uses the contents of a music screen tab"
+    },
+    "collection": "精选集",
+    "@collection": {
+        "description": "Name of home screen section type which uses the contents of a supplied playable item"
+    },
+    "queues": "播放队列",
+    "@queues": {
+        "description": "Name of home screen section type which shows the latest played queues"
+    },
+    "favoritePlaylists": "收藏的播放列表",
+    "@favoritePlaylists": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteGenres": "收藏的流派",
+    "@favoriteGenres": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedAlbums": "最近添加的专辑",
+    "@newlyAddedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedTracks": "最近添加的歌曲",
+    "@newlyAddedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedAlbums": "经常播放的专辑",
+    "@frequentlyPlayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedTracks": "经常播放的歌曲",
+    "@frequentlyPlayedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedArtists": "经常播放的艺术家",
+    "@frequentlyPlayedArtists": {
+        "description": "Name of a home screen section preset"
+    },
+    "unplayedAlbums": "从未播放的专辑",
+    "@unplayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "recentQueues": "最近的播放队列",
+    "@recentQueues": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteAlbumsDescription": "随机排序收藏的专辑",
+    "@favoriteAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteArtistsDescription": "随机排序收藏的艺术家",
+    "@favoriteArtistsDescription": {
+        "description": "Description  of a home screen section preset"
+    },
+    "favoritePlaylistsDescription": "随机排序收藏的播放列表",
+    "@favoritePlaylistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteGenresDescription": "随机排序收藏的流派",
+    "@favoriteGenresDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedAlbumsDescription": "音乐库中最新添加的专辑，由新到旧排列",
+    "@recentlyAddedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedTracksDescription": "音乐库中最新添加的歌曲，由新到旧排列",
+    "@recentlyAddedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedAlbumsDescription": "你常听的专辑，按播放频率由高到低排列",
+    "@frequentlyPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedTracksDescription": "你常听的歌曲，按播放频率由高到低排列",
+    "@frequentlyPlayedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedArtistsDescription": "你常听的艺术家，按播放频率由高到低排列",
+    "@frequentlyPlayedArtistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "neverPlayedAlbumsDescription": "你还没听过的专辑，按随机顺序排列",
+    "@neverPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentQueuesDescription": "最近创建的播放队列，按时间倒序排列",
+    "@recentQueuesDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "shuffleTracksActionDescription": "随机播放音乐库中的歌曲",
+    "@shuffleTracksActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browseRecentQueuesActionDescription": "从你最近播放的队列中选择",
+    "@browseRecentQueuesActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browsePlaybackHistoryActionDescription": "浏览你的播放记录",
+    "@browsePlaybackHistoryActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomAlbumActionDescription": "随机播放一张专辑",
+    "@playRandomAlbumActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "surpriseMeActionDescription": "随机选择一首歌曲，并以连续播放模式开始电台",
+    "@surpriseMeActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomTrackActionDescription": "随机播放任一歌曲",
+    "@playRandomTrackActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteItemActionDescription": "从收藏中随机播放任一内容",
+    "@playRandomFavoriteItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playPreviousQueueActionDescription": "恢复并播放最近的历史队列",
+    "@playPreviousQueueActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "configureOutputActionDescription": "打开输出设备配置",
+    "@configureOutputActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playSpecificItemActionDescription": "播放特定的内容",
+    "@playSpecificItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "shuffleTracksAction": "随机播放歌曲",
+    "@shuffleTracksAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomAlbumAction": "随机播放一张专辑",
+    "@randomAlbumAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomTrackAction": "随机播放一首歌曲",
+    "@randomTrackAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteAction": "随机播放收藏",
+    "@randomFavoriteAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "previousQueueAction": "上一个播放队列",
+    "@previousQueueAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "configureOutputAction": "媒体输出",
+    "@configureOutputAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "playSpecificItemAction": "播放 {itemName, select, finamp_placeholder{自定义内容} other{播放 {itemName}}}",
+    "@playSpecificItemAction": {
+        "placeholders": {
+            "itemName": {
+                "type": "String"
+            }
+        },
+        "description": "Name of a home screen quick action"
+    },
+    "surpriseMeAction": "给我惊喜",
+    "@surpriseMeAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "editAction": "编辑此操作",
+    "@editAction": {
+        "description": "Button to edit a quick action"
+    },
+    "swapAction": "更改此操作",
+    "@swapAction": {
+        "description": "Button to swap the selected quick action"
+    },
+    "removeAction": "移除此操作",
+    "@removeAction": {
+        "description": "Button to remove a quick action"
+    },
+    "addNewAction": "添加新操作",
+    "@addNewAction": {
+        "description": "Button to add a new quick action"
+    },
+    "removeSection": "移除此栏目",
+    "@removeSection": {
+        "description": "Button to remove a home screen section"
+    },
+    "addNewSection": "添加新栏目",
+    "@addNewSection": {
+        "description": "Button to add a new home screen section"
+    },
+    "preview": "预览",
+    "unnamedCollection": "未命名的精选集",
+    "@unnamedCollection": {
+        "description": "Placeholder for unnamed collection in home screen section editor"
+    },
+    "noTracksFound": "找不到适用于“给我惊喜”的歌曲。",
+    "@noTracksFound": {
+        "description": "Message if SurpriseMeMix creation fails"
+    },
+    "nothingFoundToPlay": "找不到可播放内容。",
+    "@nothingFoundToPlay": {
+        "description": "Message if play random item fails"
+    },
+    "errorLoadingHomeSection": "加载主页栏目时出错",
+    "@errorLoadingHomeSection": {
+        "description": "Message if a home screen section cannot be loaded due to a missing item"
+    },
+    "noPreviousQueueFoundToPlay": "没有可供播放的上一个队列。",
+    "@noPreviousQueueFoundToPlay": {
+        "description": "Message if play previous queue quick action fails"
+    },
+    "unknownVersion": "未知版本",
+    "@unknownVersion": {
+        "description": "Reported server version if request fails"
+    },
+    "isFavoriteFilter": "我的收藏",
+    "@isFavoriteFilter": {
+        "description": "Name of favorite filter"
+    },
+    "isUnplayedFilter": "未播放",
+    "@isUnplayedFilter": {
+        "description": "Name of unplayed items filter"
+    },
+    "isFullyDownloadedFilter": "完整下载的",
+    "@isFullyDownloadedFilter": {
+        "description": "Name of fully downloaded items filter"
+    },
+    "genreFilter": "流派: {name}",
+    "@genreFilter": {
+        "description": "Name of genrefilter",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "startsWithFilter": "以 {letter} 开头",
+    "@startsWithFilter": {
+        "description": "Name of starts with letter filter",
+        "placeholders": {
+            "letter": {
+                "type": "String"
+            }
+        }
+    },
+    "searchTermFilter": "搜索: {searchTerm}",
+    "@searchTermFilter": {
+        "description": "Name of search term filter",
+        "placeholders": {
+            "searchTerm": {
+                "type": "String"
+            }
+        }
+    },
+    "customizeHomeScreen": "定制主页",
+    "@customizeHomeScreen": {
+        "description": "Label for home screen customize button"
+    },
+    "connectedTo": "已连接至",
+    "@connectedTo": {
+        "description": "Server info in music screen menu"
+    },
+    "performingArtistFilter": "专辑（收录于）",
+    "albumArtistFilter": "专辑（专辑艺术家）",
+    "allTypes": "所有类型",
+    "itemTypeFilterHeader": "子类型",
+    "useAndroidGainEffectTitle": "使用增益效果",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "使用原生增益效果控制音量。此方式更具灵活性，但在某些设备上可能会导致播放器崩溃。通常无需手动更改此项。需重启应用后生效。",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "由于初始化错误，已回退至增益效果备用模式。",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+    },
+    "losslessNoBitrate": "不适用于 FLAC 转码",
+    "@losslessNoBitrate": {
+        "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+    },
+    "recentlyPlayedTracksDescription": "最近播放的歌曲，按时间倒序排列",
+    "@recentlyPlayedTracksDescription": {
+        "description": "Description for a home screen section preset"
+    },
+    "homeFavoritesDownloadWarning": "确定要下载收藏吗？这将下载所有类型的收藏，而不仅仅是{sectionType}。",
+    "@homeFavoritesDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because home sections show a specific item type, like Albums, but the download covers all.",
+        "placeholders": {
+            "sectionType": {
+                "type": "String",
+                "example": "Albums"
+            }
+        }
+    },
+    "homeAllPlaylistsWarning": "确定要下载所有播放列表吗？这将下载每一个播放列表，而不仅仅是当前栏目中的列表。",
+    "@homeAllPlaylistsWarning": {
+        "description": "Warning presented when pressing the download button on playlist home sections with a filter applied.  This is shown because the download will not apply the filter."
+    },
+    "homeRecentAlbumsDownloadWarning": "这将下载服务器上最新的 5 张专辑。未来当服务器有新专辑加入时，此列表将自动更新并移除超出数量的旧下载。",
+    "@homeRecentAlbumsDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because the behavior of the 5 latest albums download is not a 100% match to the home sections."
+    },
+    "alreadyRandomized": "此栏目已采用随机顺序展示",
+    "@alreadyRandomized": {
+        "description": "Tooltip for shuffle button on home screen sections using a random sort order, where it is disabled due to being unneeded"
+    },
+    "libraryQualifierActive": "使用中",
+    "@libraryQualifierActive": {
+        "description": "Label shown next to the currently selected library in the Finamp menu/drawer"
+    },
+    "voiceSearch": "语音搜索",
+    "@voiceSearch": {
+        "description": "Heading for the page that prompts the user to perform a voice search."
+    },
+    "carPlaySiriHint": "你可以说 “Hey Siri, 在 Finamp 播放 [歌曲/艺术家/专辑]”",
+    "@carPlaySiriHint": {
+        "description": "Hint text for how to use Siri to search in CarPlay."
+    },
+    "carPlayLoginPrompt": "请在手机上打开 Finamp 应用来登录你的 Jellyfin 服务器。",
+    "@carPlayLoginPrompt": {
+        "description": "Label shown when the user is trying to use CarPlay without being logged in."
+    },
+    "offlineSortFallback": "“按 {onlineSort} 排序”仅在在线模式时可用。目前已回退至默认排序",
+    "@offlineSortFallback": {
+        "description": "Warning presented in sort and filter menu when an online-only sort is chosen.",
+        "placeholders": {
+            "onlineSort": {
+                "type": "String",
+                "example": "Play Count"
+            }
+        }
+    },
+    "retry": "重试",
+    "retryPageLoad": "从服务器加载内容失败。点击重试。",
+    "itemType": "{itemType, select, album{专辑} playlist{播放列表} artist{艺术家} genre{流派} track{歌曲} library{音乐库} collection{精选集} unknown{内容} other{{itemType}}}",
+    "@itemType": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            }
+        },
+        "description": "Item type name."
+    },
+    "connectionStateInfoString": "{state, select, syncing{正在与服务器同步} downloading{正在从服务器下载} deleting{正在删除旧下载} connectedLocal{已通过局域网连接} syncingLocal{正在通过局域网同步} downloadingLocal{正在通过局域网下载} other{}}",
+    "@connectionStateInfoString": {
+        "description": "String describing the current connection state to the server, shown in the music screen drawer/menu.",
+        "placeholders": {
+            "state": {
+                "type": "String",
+                "example": "syncingLocal"
+            }
+        }
     }
 }
