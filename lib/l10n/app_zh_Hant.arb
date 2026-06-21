@@ -1235,7 +1235,7 @@
             }
         }
     },
-    "incidentalDownloadTooltip": "此內容是 {parentName} 需要下載的。",
+    "incidentalDownloadTooltip": "此內容由 {parentName} 下載。",
     "@incidentalDownloadTooltip": {
         "placeholders": {
             "parentName": {
