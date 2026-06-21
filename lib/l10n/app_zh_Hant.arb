@@ -210,8 +210,8 @@
     "addToMix": "加入混播",
     "disableGesture": "禁用手勢",
     "disableGestureSubtitle": "是否禁用手勢功能。",
-    "removeFromPlaylistTooltip": "從播放清單中移除歌曲",
-    "removeFromPlaylistTitle": "從播放清單中移除",
+    "removeFromPlaylistTooltip": "移出播放清單",
+    "removeFromPlaylistTitle": "移出播放清單",
     "removedFromPlaylist": "已從播放清單中移除。",
     "bufferDurationSubtitle": "預先緩衝的音軌時間長度（秒）。變更後需要重新啟動應用程式。",
     "bufferDuration": "緩衝時長",
@@ -493,7 +493,7 @@
             }
         }
     },
-    "addToMorePlaylistsTitle": "加入更多播放清單",
+    "addToMorePlaylistsTitle": "加入播放清單",
     "playbackModeDirectPlaying": "原生播放",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -1336,7 +1336,7 @@
     "allowSplitScreenTitle": "允許分割畫面",
     "enableVibration": "啟用震動",
     "enableVibrationSubtitle": "是否啟用震動。",
-    "lockDownload": "永遠保留在裝置上",
+    "lockDownload": "永久保留於裝置",
     "@lockDownload": {
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
     },
@@ -2198,7 +2198,7 @@
         "description": "Description for the quick connect authorization menu, shown at the bottom"
     },
     "logoutButtonSubtitle": "登入新的伺服器時，原本下載的檔案將被刪除",
-    "createPlaylistFromCurrentQueue": "將播放佇列儲存為播放清單",
+    "createPlaylistFromCurrentQueue": "儲存播放佇列為播放清單",
     "@createPlaylistFromCurrentQueue": {
         "description": "Label for a button that creates a new playlist from the current queue."
     },
