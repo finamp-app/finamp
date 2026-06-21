@@ -944,7 +944,7 @@
     "@volumeNormalizationModeSelectorTitle": {
         "description": "Title for the dropdown that selects the replay gain mode"
     },
-    "finampCollectionNames": "{itemType, select, favorites{收藏} allPlaylists{全部播放清單} fiveLatestAlbums{最新5張專輯} allPlaylistsMetadata{清單資訊} other{{itemType}} }",
+    "finampCollectionNames": "{itemType, select,favorites{收藏}allPlaylists{所有播放清單}fiveLatestAlbums{最新五張專輯}allPlaylistsMetadata{播放清單資訊}collectionWithLibraryFilter{依音樂庫篩選的收藏}other{{itemType}}}",
     "@finampCollectionNames": {
         "placeholders": {
             "itemType": {
@@ -1044,7 +1044,7 @@
     "@syncComplete": {
         "description": "Message displayed after download sync completes."
     },
-    "repairDownloads": "修復已下載檔案或中繼資料的問題。",
+    "repairDownloads": "修復已下載檔案或資訊的問題。",
     "@repairDownloads": {
         "description": "Tooltip for downloads repair button."
     },
@@ -1119,7 +1119,7 @@
             }
         }
     },
-    "downloadsWorkersSettingSubtitle": "此設定控制中繼資料同步與下載內容刪除的任務數量。提高此數量可加快處理速度，但也可能造成延遲。",
+    "downloadsWorkersSettingSubtitle": "此設定控制資訊同步與下載內容刪除的任務數量。提高此數量可加快處理速度，但也可能造成延遲。",
     "@downloadsWorkersSettingSubtitle": {
         "description": "Description of setting controlling download worker count."
     },
@@ -1384,7 +1384,7 @@
     },
     "downloadAllPlaylistsSetting": "下載所有播放清單",
     "trackOfflineFavoritesSubtitle": "離線時也能顯示更新後的收藏狀態，不會下載額外檔案。",
-    "allPlaylistsInfoSettingSubtitle": "同步所有播放清單的中繼資料以改善播放清單使用體驗",
+    "allPlaylistsInfoSettingSubtitle": "同步所有播放清單的資訊以改善播放清單使用體驗",
     "showLyricsTimestampsSubtitle": "控制歌詞介面中是否顯示每行歌詞的時間標記。",
     "@showLyricsTimestampsSubtitle": {
         "description": "Subtitle for the setting that controls if timestamps are shown for lyrics"
@@ -1491,7 +1491,7 @@
     "@quickActions": {
         "description": "Title for the short menu that can be shown when long-pressing on the menu button on the player screen. Currently only used for adding to and removing from playlists."
     },
-    "allPlaylistsInfoSetting": "下載播放清單的中繼資料",
+    "allPlaylistsInfoSetting": "下載播放清單的資訊",
     "showSeekControlsOnMediaNotificationSubtitle": "控制媒體通知中是否顯示可拖曳的進度條，讓您無需開啟應用程式即可調整播放位置。",
     "@showSeekControlsOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a seekable progress bar."
@@ -2432,7 +2432,7 @@
     "@savingChanges": {
         "description": "Text shown while the changes to a playlist are being saved"
     },
-    "noPermissionToEditMetadata": "需具管理員權限才能編輯中繼資料圖片。",
+    "noPermissionToEditMetadata": "需具管理員權限才能編輯媒體圖片。",
     "@noPermissionToEditMetadata": {
         "description": "Error message shown when the user tries to edit metadata but doesn't have permission to do so, i.e. because they are not an admin"
     },
