@@ -1452,5 +1452,226 @@
     "logoutButtonSubtitle": "Logowanie na inny serwer usunie pobrane pliki",
     "none": "Żaden",
     "autoSwitchItemCurationTypeTitle": "Automatyczne przełączanie typu selekcji elementów",
-    "performingArtist": "Występujący Artyści"
+    "performingArtist": "Występujący Artyści",
+    "startupErrorCallToAction": "Proszę założyć issue na „github.com/jmshrv/finamp”, dołączyć pliki logów (wygenerowane za pomocą przycisku poniżej) oraz dodać zrzut ekranu z tego ekranu, abyśmy mogli pomóc jak najszybciej.",
+    "@startupErrorCallToAction": {
+        "description": "The subtitle / call to action for what to do after encountering a startup error"
+    },
+    "noGenres": "Brak gatunków",
+    "@noGenres": {
+        "description": "Gets shown when there are no genres available for an album or artist"
+    },
+    "shuffleSome": "Odtwórz losowo",
+    "albumArtists": "Wykonawcy albumu",
+    "performingArtists": "Wykonawcy",
+    "duration": "Długość",
+    "defaultOrder": "Kolejność domyślna",
+    "@defaultOrder": {
+        "description": "Default sorting order for playlists (server order)"
+    },
+    "adaptive": "Adaptacyjny",
+    "accentColorTitle": "Wybierz kolor akcentu",
+    "@accentColorTitle": {
+        "description": "Title for the accent color picker sheet"
+    },
+    "systemAccentColor": "Użyj koloru akcentu systemu",
+    "@systemAccentColor": {
+        "description": "Title of the System Accent Color setting."
+    },
+    "systemAccentColorHasPriorityInfo": "Niestandardowy kolor akcentu jest wyłączony, ponieważ używany jest systemowy kolor akcentu.",
+    "@systemAccentColorHasPriorityInfo": {
+        "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
+    },
+    "amoledTheme": "Użyj schemat AMOLED",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "Zastępuje ciemny schemat kolorów czarnym schematem.",
+    "useMonochromeIcon": "Użyj jednokolorowego logo",
+    "@useMonochromeIcon": {
+        "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
+    },
+    "useMonochromeIconSubtitle": "Zmienia to tylko ikonę w aplikacji, a nie ikonę launchera.",
+    "@useMonochromeIconSubtitle": {
+        "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
+    },
+    "defaultWord": "Domyślne",
+    "useDefaultButton": "Przywróć domyślny kolor akcentu",
+    "colorCode": "Kod koloru (Hex)",
+    "@colorCode": {
+        "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
+    },
+    "colorCodeHint": "np. #FFFFFF lub #coffee",
+    "@colorCodeHint": {
+        "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
+    },
+    "save": "Zapisz",
+    "radio": "Radio",
+    "@radio": {
+        "description": "Title for the queue source when the user is playing a track added via radio"
+    },
+    "radioForItem": "{radioSource} - Radio",
+    "@radioForItem": {
+        "description": "Suffix added to a queue source when playing a radio track. Example: \"Never Gonna Give You Up - Radio\"",
+        "placeholders": {
+            "radioSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "currentVolumeFeatureText": "{volume}% głośności",
+    "@currentVolumeFeatureText": {
+        "description": "Label for the feature chip that is shown if the volume is not 100%",
+        "placeholders": {
+            "volume": {
+                "type": "int",
+                "description": "The current volume level, in percent"
+            }
+        }
+    },
+    "playOnStaleDelay": "Limit czasu sesji \"Play On\"",
+    "@playOnStaleDelay": {
+        "description": "Label for the setting that controls how long a PlayOn remote session is considered active"
+    },
+    "playOnStaleDelaySubtitle": "Jak długo zdalna sesja „Play On” jest uznawana za aktywną po otrzymaniu polecenia. Gdy sesja jest aktywna, odtwarzanie jest raportowane częściej, co może prowadzić do zwiększonego zużycia transferu danych.",
+    "@playOnStaleDelaySubtitle": {
+        "description": "Description of the setting that controls how long a PlayOn remote session is considered active"
+    },
+    "enablePlayonTitle": "Włącz wsparcie dla \"Play On\"",
+    "@enablePlayonTitle": {
+        "description": "Label for the setting to enable Jellyfin's 'Play On' feature (remote control)"
+    },
+    "enablePlayonSubtitle": "Włącza funkcję \"Play On\" Jellyfina (zdalne sterowanie Finampa z innego klienta). Wyłącz tę opcję, jeśli Twój serwer lub reverse proxy nie obsługuje WebSocketów.",
+    "@enablePlayonSubtitle": {
+        "description": "Description of the setting to enable Jellyfin's 'Play On' feature (remote control)"
+    },
+    "playOnReconnectionDelay": "Opóźnienie ponownego łączenia sesji \"Play On\"",
+    "@playOnReconnectionDelay": {
+        "description": "Label for the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
+    },
+    "playOnReconnectionDelaySubtitle": "Kontroluje opóźnienie między próbami ponownego połączenia z WebSocketem “Play On” po jego rozłączeniu (w sekundach). Mniejsze opóźnienie zwiększa zużycie transferu danych.",
+    "@playOnReconnectionDelaySubtitle": {
+        "description": "Description of the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
+    },
+    "topAlbums": "Najlepsi albumy",
+    "topArtists": "Najlepsi artyści",
+    "recentlyAddedTracks": "Ostatnio dodane utwory",
+    "@recentlyAddedTracks": {
+        "description": "Label for the artist section that shows tracks that were recently added to the library, sorted by the date they were added."
+    },
+    "recentlyAddedAlbums": "Ostatnio dodane albumy",
+    "@recentlyAddedAlbums": {
+        "description": "Label for the genre section that shows albums that were recently added to the library, sorted by the date they were added."
+    },
+    "recentlyAddedArtists": "Ostatnio dodane artyści",
+    "@recentlyAddedArtists": {
+        "description": "Label for the genre section that shows artists that were recently added to the library, sorted by the date they were added."
+    },
+    "latestTracks": "Najnowsze utwory",
+    "latestAlbums": "Najnowsze albumy",
+    "latestArtists": "Najnowsze artyści",
+    "recentlyPlayedTracks": "Ostatnio odtwarzane utwory",
+    "recentlyPlayedAlbums": "Ostatnio odtwarzane albumy",
+    "recentlyPlayedArtists": "Ostatnio odtwarzane artyści",
+    "favoriteTracks": "Ulubione utwory",
+    "randomTracks": "Utwory (losowy wybór)",
+    "mostPlayed": "Najczęściej odtwarzane",
+    "recentlyAdded": "Ostatnio dodane",
+    "recentlyPlayed": "Ostatnio odtwarzane",
+    "latestReleases": "Najnowsze wydania",
+    "ascending": "Rosnąco",
+    "@ascending": {
+        "description": "Label for ascending order."
+    },
+    "descending": "Malejąco",
+    "@descending": {
+        "description": "Label for descending order."
+    },
+    "itemSectionsOrder": "Kolejność sekcji elementów",
+    "@itemSectionsOrder": {
+        "description": "Label for the setting that controls the order of item sections on the screens."
+    },
+    "unknown": "Nieznane",
+    "itemSectionsOrderSubtitle": "Kontroluje kolejność sekcji elementów.",
+    "@itemSectionsOrderSubtitle": {
+        "description": "Description of the setting that controls the order of item sections on the screens."
+    },
+    "genreItemSectionFilterChipOrderTitle": "Kolejność filtrów sekcji elementów",
+    "@genreItemSectionFilterChipOrderTitle": {
+        "description": "Label for the setting that controls the order of item sections filter chips."
+    },
+    "genreItemSectionFilterChipOrderSubtitle": "Kontroluje kolejność dostępnych filtrów sekcji elementów.",
+    "@genreItemSectionFilterChipOrderSubtitle": {
+        "description": "Description of the setting that controls the order of item sections filter chips."
+    },
+    "transcodeHint": "Transkodować?",
+    "@transcodeHint": {
+        "description": "Initial text in downloads dropdown when 'Enable Transcoded Downloads' is set to ask."
+    },
+    "doTranscode": "Pobierz jako {codec} @ {bitrate}{size, select, null{} other{ - ~{size}}}",
+    "@doTranscode": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "123kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "OPUS"
+            },
+            "size": {
+                "type": "String",
+                "example": "167 MB"
+            }
+        },
+        "description": "Dropdown option to download transcoded version of tracks"
+    },
+    "redownloadTitle": "Automatycznie ponownie pobieraj transkodowane pliki",
+    "@redownloadTitle": {
+        "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
+    },
+    "redownloadSubtitle": "Automatyczne ponowne pobieranie utworów, których jakość może się różnić z powodu zmian w kolekcji nadrzędnej.",
+    "@redownloadSubtitle": {
+        "description": "subtitle for download transcode setting which redownloads tracks with higher allowed qualities"
+    },
+    "sleepTimerProjectedDuration": "Odtwarzanie zostanie wstrzymane za ~{duration}",
+    "@sleepTimerProjectedDuration": {
+        "description": "Displays duration until playback is expected to be ended by the sleep timer (unless the queue is modified before). {duration} is a pre-formatted string.",
+        "placeholders": {
+            "duration": {
+                "type": "String",
+                "example": "36:23"
+            }
+        }
+    },
+    "downloadAllPlaylistsSettingWarning": "Uwaga: Spowoduje to pobranie wszystkich elementów ze wszystkich playlist, niezależnie od tego, z której biblioteki pochodzą.",
+    "lyricsScreenButtonTitle": "Tekst",
+    "@lyricsScreenButtonTitle": {
+        "description": "Label for the button for opening the lyrics screen"
+    },
+    "showShuffleButtonOnMediaNotificationTitle": "Wyświetl przycisk losowania w powiadomieniu multimedialnym",
+    "@showShuffleButtonOnMediaNotificationTitle": {
+        "description": "Title for the setting that controls if the media notification has a shuffle button."
+    },
+    "lyricsEmptyStateNoLyrics": "Brak tekstu",
+    "@lyricsEmptyStateNoLyrics": {
+        "description": "Message shown when no lyrics are available for the current track"
+    },
+    "lyricsMissingLyricLinePlaceholder": "Brakujący wiersz tekstu",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "seeAll": "Zobacz wszystko",
+    "@seeAll": {
+        "description": ""
+    },
+    "artistScreen": "Ekran artysty",
+    "@artistScreen": {
+        "description": "Name for the view/screen that shows artists"
+    },
+    "applyFilterOnGenreChipTapTitle": "Zastosuj filtr przy karty gatunku",
+    "@applyFilterOnGenreChipTapTitle": {
+        "description": "Title for the setting that controls if taps on genre chips should apply a genre filter to the current screen or should redirect to the GenreScreen."
+    }
 }
