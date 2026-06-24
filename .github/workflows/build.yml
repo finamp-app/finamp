@@ -18,6 +18,8 @@ on:
 env:
   if_condition: &integration_if github.event_name == 'workflow_dispatch' ||
     (github.event_name == 'push' && github.repository == 'UnicornsOnLSD/finamp' )
+  # Work around issue with permission plugin dependency and latest compiler
+  _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS: true
 
 # Due to a flutter bug, flutter build is not generating localizations
 # workaround by always running flutter pub get immediately before building,

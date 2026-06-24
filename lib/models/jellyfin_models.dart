@@ -2446,7 +2446,7 @@ class MediaSourceInfo with RunTimeTickDuration {
   /// an issue as they are not counted in the size. Attachments are also not
   /// counted, as [mediaStreams] doesn't seem to note their size.
   int transcodedSize(int Function(int channels) bitrateChannels) {
-    final channels = mediaStreams.firstWhere((element) => element.type == "Audio").channels ?? 2;
+    final channels = mediaStreams.firstWhereOrNull((element) => element.type == "Audio")?.channels ?? 2;
     final bitrate = bitrateChannels(channels);
 
     // Divide by 8 to get bytes/sec

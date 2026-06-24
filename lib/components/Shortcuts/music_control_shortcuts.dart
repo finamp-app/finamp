@@ -45,6 +45,10 @@ class TogglePlaybackOrderIntent extends Intent {
   const TogglePlaybackOrderIntent();
 }
 
+class BackIntent extends Intent {
+  const BackIntent();
+}
+
 Map<Type, Action<Intent>> getMusicControlActions() {
   final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
   final queueService = GetIt.instance<QueueService>();
@@ -129,6 +133,12 @@ Map<Type, Action<Intent>> getMusicControlActions() {
           }
         });
 
+        return null;
+      },
+    ),
+    BackIntent: CallbackAction<BackIntent>(
+      onInvoke: (BackIntent intent) {
+        GlobalSnackbar.navigatorState?.maybePop();
         return null;
       },
     ),

@@ -797,12 +797,12 @@ class _FinampState extends State<Finamp> with WindowListener {
       container: GetIt.instance<ProviderContainer>(),
       child: GestureDetector(
         onTap: () {
-          // Never rebuild FinampApp context, it breaks ProviderScope
-          FocusScopeNode currentFocus = FocusScope.of(context, createDependency: false);
-
-          if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
-            FocusManager.instance.primaryFocus?.unfocus();
-          }
+          // This code resets focus and removes the focus highlight whenever we tap/click on the background
+          // TODO is this actually needed?
+          final navigatorContext = GlobalSnackbar.navigatorState?.context;
+          if (navigatorContext == null) return;
+          FocusScopeNode navigatorFocus = FocusScope.of(navigatorContext, createDependency: false);
+          navigatorFocus.requestScopeFocus();
         },
         child: FinampProviderBuilder(child: FinampApp()),
       ),
@@ -900,9 +900,7 @@ class FinampApp extends ConsumerWidget {
       },
       initialRoute: SplashScreen.routeName,
       navigatorObservers: [SplitScreenNavigatorObserver(), KeepScreenOnObserver()],
-      builder: (BuildContext context, Widget? widget) {
-        return GlobalShortcutManager(child: buildPlayerSplitScreenScaffold(context, widget));
-      },
+      builder: buildPlayerSplitScreenScaffold,
       theme: ThemeData(
         brightness: Brightness.light,
         colorScheme: getColorScheme(accentColor, Brightness.light, amoledTheme),
@@ -960,6 +958,8 @@ class FinampApp extends ConsumerWidget {
       locale: locale,
       scaffoldMessengerKey: GlobalSnackbar.rawMaterialAppScaffoldKey,
       navigatorKey: GlobalSnackbar.rawMaterialAppNavigatorKey,
+      shortcuts: GlobalShortcuts.shortcutMap,
+      actions: GlobalShortcuts.actionMap,
     );
   }
 }

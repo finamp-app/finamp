@@ -1,55 +1,65 @@
+import 'package:collection/collection.dart';
 import 'package:finamp/components/Shortcuts/music_control_shortcuts.dart';
+import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:finamp/utils/platform_helper.dart';
 import 'package:logging/logging.dart';
 
 final shortcutLogger = Logger("KeyboardShortcut");
 
 class GlobalShortcuts {
-  static final Map<Intent, List<LogicalKeySet>> _raw = {
-    const TogglePlaybackIntent(): [LogicalKeySet(LogicalKeyboardKey.space)],
-    const SkipToNextIntent(): [LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyN)],
-    const SkipToPreviousIntent(): [LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyP)],
-    const SeekForwardIntent(): [LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.arrowRight)],
-    const SeekBackwardIntent(): [LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.arrowLeft)],
-    const VolumeUpIntent(): [LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.arrowUp)],
-    const VolumeDownIntent(): [LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.arrowDown)],
-    const ToggleLoopModeIntent(): [LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyL)],
-    const TogglePlaybackOrderIntent(): [LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyS)],
+  static final Map<Intent, SingleActivator> _raw = {
+    const TogglePlaybackIntent(): SingleActivator(LogicalKeyboardKey.space),
+    const SkipToNextIntent(): SingleActivator(LogicalKeyboardKey.keyN, control: true),
+    const SkipToPreviousIntent(): SingleActivator(LogicalKeyboardKey.keyP, control: true),
+    const SeekForwardIntent(): SingleActivator(LogicalKeyboardKey.arrowRight, control: true),
+    const SeekBackwardIntent(): SingleActivator(LogicalKeyboardKey.arrowLeft, control: true),
+    const VolumeUpIntent(): SingleActivator(LogicalKeyboardKey.arrowUp, control: true),
+    const VolumeDownIntent(): SingleActivator(LogicalKeyboardKey.arrowDown, control: true),
+    const ToggleLoopModeIntent(): SingleActivator(LogicalKeyboardKey.keyL, control: true),
+    const TogglePlaybackOrderIntent(): SingleActivator(LogicalKeyboardKey.keyS, control: true),
+    const BackIntent(): SingleActivator(LogicalKeyboardKey.escape),
   };
 
-  static Map<LogicalKeySet, Intent> get shortcutMap {
-    final Map<LogicalKeySet, Intent> map = {};
+  static Map<ShortcutActivator, Intent> get shortcutMap {
+    final Map<ShortcutActivator, Intent> map = {};
+    map.addAll(WidgetsApp.defaultShortcuts);
     for (final entry in _raw.entries) {
-      for (final keySet in entry.value) {
-        map[keySet] = entry.key;
-      }
+      final keys = entry.value;
+      // Remove default bindings that conflict with the one we're adding
+      map.removeWhere(
+        (x, _) =>
+            x is SingleActivator &&
+            x.trigger == keys.trigger &&
+            x.alt == keys.alt &&
+            x.shift == keys.shift &&
+            x.control == keys.control &&
+            x.meta == keys.meta,
+      );
+      map[keys] = entry.key;
     }
     return map;
   }
 
+  static Map<Type, Action<Intent>> get actionMap {
+    final Map<Type, Action<Intent>> map = {};
+    map.addAll(WidgetsApp.defaultActions);
+    map.addAll(getMusicControlActions());
+    return map;
+  }
+
   static String getDisplay(Type intentType) {
-    final entry = _raw.entries.firstWhere((e) => e.key.runtimeType == intentType);
-    final keys = entry.value.first.keys;
+    final entry = _raw.entries.firstWhereOrNull((e) => e.key.runtimeType == intentType);
+    if (entry == null) return "";
+    final action = entry.value;
     final parts = <String>[];
 
     // Modifiers
-    if (keys.contains(LogicalKeyboardKey.control)) parts.add(ShortcutKeyDisplay.primaryModifier);
-    if (keys.contains(LogicalKeyboardKey.shift)) parts.add(ShortcutKeyDisplay.shift);
-    if (keys.contains(LogicalKeyboardKey.alt)) parts.add(ShortcutKeyDisplay.alt);
+    if (action.control) parts.add(ShortcutKeyDisplay.primaryModifier);
+    if (action.shift) parts.add(ShortcutKeyDisplay.shift);
+    if (action.alt) parts.add(ShortcutKeyDisplay.alt);
 
-    // Trigger Key
-    final trigger = keys.firstWhere(
-      (k) => !{
-        LogicalKeyboardKey.control,
-        LogicalKeyboardKey.meta,
-        LogicalKeyboardKey.shift,
-        LogicalKeyboardKey.alt,
-      }.contains(k),
-    );
-
-    parts.add(_formatKey(trigger));
+    parts.add(_formatKey(action.trigger));
     return parts.join('+');
   }
 
@@ -60,26 +70,5 @@ class GlobalShortcuts {
     if (k == LogicalKeyboardKey.arrowRight) return "→";
     if (k == LogicalKeyboardKey.space) return "⎵";
     return k.keyLabel.toUpperCase();
-  }
-}
-
-class GlobalShortcutManager extends StatelessWidget {
-  final Widget child;
-
-  const GlobalShortcutManager({super.key, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Shortcuts(
-      shortcuts: GlobalShortcuts.shortcutMap,
-      child: Actions(
-        actions: {
-          ...getMusicControlActions(),
-          // Other actions can be added here
-        },
-        //!!! without this FocusScope, focus can get lost (clicking into a different window), and then it's hard to get back the focus, since most parts of the UI are not focusable by default. And without focus, no actions will be dispatched
-        child: FocusScope(autofocus: true, child: child),
-      ),
-    );
   }
 }

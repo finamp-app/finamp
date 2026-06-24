@@ -104,6 +104,7 @@ class _ItemCollectionCardText extends ConsumerWidget {
       height: calculateTextHeight(
         style: TextTheme.of(context).bodySmall!,
         lines: calculateItemCollectionTextLines(BaseItemDtoType.fromItem(item)),
+        scaling: MediaQuery.textScalerOf(context),
       ),
       child: Align(
         alignment: onImage ? Alignment.center : Alignment.topLeft,
@@ -249,7 +250,7 @@ double calculateItemCollectionCardHeight({
   final BaseItemDtoType resolvedItemType;
   switch (sectionInfo?.base) {
     case QueuesHomeSection():
-      return queuesHomeSectionHeight;
+      return queuesHomeSectionHeight * MediaQuery.textScalerOf(ref.context).scale(16.0) / 16.0;
     case null:
       resolvedItemType = itemType!;
     case TabsHomeSection base:
@@ -264,10 +265,11 @@ double calculateItemCollectionCardHeight({
                 calculateTextHeight(
                   style: TextTheme.of(ref.context).bodySmall!,
                   lines: calculateItemCollectionTextLines(resolvedItemType),
+                  scaling: MediaQuery.textScalerOf(ref.context),
                 )
           : 0);
 }
 
-double calculateTextHeight({required TextStyle style, required int lines}) {
-  return (style.height ?? 1.0) * (style.fontSize ?? 16) * lines;
+double calculateTextHeight({required TextStyle style, required int lines, required TextScaler scaling}) {
+  return (style.height ?? 1.0) * scaling.scale(style.fontSize ?? 16) * lines;
 }
