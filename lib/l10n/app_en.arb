@@ -3528,5 +3528,9 @@
                 "example": "syncingLocal"
             }
         }
+    },
+    "cancelChanges": "Cancel changes",
+    "@cancelChanges": {
+        "description": "Button on sort and filter menu that cancels any changes and exits the menu."
     }
 }
