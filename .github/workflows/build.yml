@@ -18,8 +18,6 @@ on:
 env:
   if_condition: &integration_if github.event_name == 'workflow_dispatch' ||
     (github.event_name == 'push' && github.repository == 'UnicornsOnLSD/finamp' )
-  # Work around issue with permission plugin dependency and latest compiler
-  _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS: true
 
 # Due to a flutter bug, flutter build is not generating localizations
 # workaround by always running flutter pub get immediately before building,
@@ -364,7 +362,10 @@ jobs:
         key: ${{ runner.os }}-dart-build-${{ hashFiles('**/pubspec.yaml') }}
         restore-keys: ${{ runner.os }}-dart-build-
 
-    - run: flutter build windows
+    - run: |
+        # Work around issue with permission plugin dependency and latest compiler
+        export _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
+        flutter build windows
 
     - name: Set archive and msix base name
       shell: bash
@@ -385,6 +386,8 @@ jobs:
         path: build/windows/x64/runner/Release/
 
     - run: |
+        # Work around issue with permission plugin dependency and latest compiler
+        export _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
         dart run msix:create --install-certificate false
         # move msix file with correct naming
         mv build/windows/x64/runner/Release/finamp.msix ./${{ env.BASE_NAME }}.msix
@@ -401,6 +404,8 @@ jobs:
       shell: bash
       run: |
         set +e
+        # Work around issue with permission plugin dependency and latest compiler
+        export _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
         flutter test integration_test/test_cases.dart -d windows
         exitcode=$?
         if [[ $exitcode == 79 ]]; then
