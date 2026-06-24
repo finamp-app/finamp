@@ -199,7 +199,16 @@ class _PlayerScreenContent extends ConsumerWidget {
             centerTitle: true,
             toolbarHeight: toolbarHeight,
             title: PlayerScreenAppBarTitle(maxLines: maxToolbarLines),
-            leading: usingPlayerSplitScreen ? null : FinampAppBarBackButton(dismissDirection: AxisDirection.down),
+            leading: FinampAppBarBackButton(
+              dismissDirection: AxisDirection.down,
+              onPressed: () {
+                if (usingPlayerSplitScreen) {
+                  minimizeSplitScreen.value = true;
+                } else {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
             actions: [],
           ),
           // Required for sleep timer input

@@ -15,6 +15,8 @@ import '../../services/queue_service.dart';
 
 bool _inSplitScreen = false;
 
+final ValueNotifier<bool> minimizeSplitScreen = ValueNotifier(false);
+
 bool get usingPlayerSplitScreen => _inSplitScreen;
 
 double _weight = 0.0;
@@ -39,92 +41,98 @@ Widget buildPlayerSplitScreenScaffold(BuildContext context, Widget? widget) {
         limits: [WeightLimit(min: 400 / constraints.maxWidth, max: 1.0 - (275 / constraints.maxWidth))],
       );
 
-      return Consumer(
-        builder: (context, ref, child) {
-          bool allowSplitScreen = ref.watch(finampSettingsProvider.allowSplitScreen);
+      return ValueListenableBuilder(
+        valueListenable: minimizeSplitScreen,
+        builder: (context, minimizeValue, child) {
+          return Consumer(
+            builder: (context, ref, child) {
+              bool allowSplitScreen = ref.watch(finampSettingsProvider.allowSplitScreen);
 
-          return StreamBuilder<FinampQueueInfo?>(
-            stream: queueService.getQueueStream(),
-            initialData: queueService.getQueue(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData &&
-                  (snapshot.data!.saveState == SavedQueueState.loading ||
-                      snapshot.data!.saveState == SavedQueueState.failed ||
-                      snapshot.data!.currentTrack != null) &&
-                  allowSplitScreen) {
-                _inSplitScreen = true;
-                SplitScreenNavigatorObserver.queuePop();
-                var size = MediaQuery.sizeOf(context);
-                var padding = MediaQuery.paddingOf(context);
-                // When resizing window, update weights to keep player width consistent
-                _weight =
-                    (1.0 -
-                            (_playerWidth ?? FinampSettingsHelper.finampSettings.splitScreenPlayerWidth) /
-                                constraints.maxWidth)
-                        .clamp(_controller.limits[0]!.min!, _controller.limits[0]!.max!);
-                _controller.weights = [_weight];
-                return SplitView(
-                  key: const ValueKey("PlayerSplitView"),
-                  resizingAreaSize: 20,
-                  gripSize: 0,
-                  viewMode: SplitViewMode.Horizontal,
-                  controller: _controller,
-                  onWeightChanged: (weights) {
-                    if (weights[0]! == _weight) {
-                      // Weight is changing due to window resize, not drag action.
-                      // Do not update setting.
-                      return;
-                    }
-                    _playerWidth = (1.0 - weights[0]!) * constraints.maxWidth;
-                    _timer?.cancel();
-                    // Do not spam settings updates while resizing
-                    _timer = Timer(const Duration(seconds: 1), () {
-                      FinampSetters.setSplitScreenPlayerWidth(_playerWidth!);
-                    });
-                  },
-                  children: [
-                    ListenableBuilder(
-                      listenable: _controller,
-                      builder: (context, child) => MediaQuery(
-                        data: MediaQuery.of(context).copyWith(
-                          size: Size(size.width * (_controller.weights[0] ?? 1.0), size.height),
-                          padding: padding.copyWith(right: padding.right + 10),
-                        ),
-                        child: child!,
-                      ),
-                      child: widget,
-                    ),
-                    ListenableBuilder(
-                      listenable: _controller,
-                      builder: (context, child) {
-                        return MediaQuery(
-                          data: MediaQuery.of(
-                            context,
-                          ).copyWith(size: Size(size.width * (1.0 - (_controller.weights[0] ?? 1.0)), size.height)),
-                          child: child!,
-                        );
+              return StreamBuilder<FinampQueueInfo?>(
+                stream: queueService.getQueueStream(),
+                initialData: queueService.getQueue(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData &&
+                      (snapshot.data!.saveState == SavedQueueState.loading ||
+                          snapshot.data!.saveState == SavedQueueState.failed ||
+                          snapshot.data!.currentTrack != null) &&
+                      allowSplitScreen &&
+                      !minimizeValue) {
+                    _inSplitScreen = true;
+                    SplitScreenNavigatorObserver.queuePop();
+                    var size = MediaQuery.sizeOf(context);
+                    var padding = MediaQuery.paddingOf(context);
+                    // When resizing window, update weights to keep player width consistent
+                    _weight =
+                        (1.0 -
+                                (_playerWidth ?? FinampSettingsHelper.finampSettings.splitScreenPlayerWidth) /
+                                    constraints.maxWidth)
+                            .clamp(_controller.limits[0]!.min!, _controller.limits[0]!.max!);
+                    _controller.weights = [_weight];
+                    return SplitView(
+                      key: const ValueKey("PlayerSplitView"),
+                      resizingAreaSize: 20,
+                      gripSize: 0,
+                      viewMode: SplitViewMode.Horizontal,
+                      controller: _controller,
+                      onWeightChanged: (weights) {
+                        if (weights[0]! == _weight) {
+                          // Weight is changing due to window resize, not drag action.
+                          // Do not update setting.
+                          return;
+                        }
+                        _playerWidth = (1.0 - weights[0]!) * constraints.maxWidth;
+                        _timer?.cancel();
+                        // Do not spam settings updates while resizing
+                        _timer = Timer(const Duration(seconds: 1), () {
+                          FinampSetters.setSplitScreenPlayerWidth(_playerWidth!);
+                        });
                       },
-                      child: HeroControllerScope(
-                        controller: HeroController(),
-                        child: ScaffoldMessenger(
-                          child: Navigator(
-                            pages: const [MaterialPage(child: PlayerScreen())],
-                            onPopPage: (_, __) => false,
-                            onGenerateRoute: (x) {
-                              GlobalSnackbar.navigatorState!.pushNamed(x.name!, arguments: x.arguments);
-                              return EmptyRoute();
-                            },
-                            observers: [KeepScreenOnObserver()],
+                      children: [
+                        ListenableBuilder(
+                          listenable: _controller,
+                          builder: (context, child) => MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                              size: Size(size.width * (_controller.weights[0] ?? 1.0), size.height),
+                              padding: padding.copyWith(right: padding.right + 10),
+                            ),
+                            child: child!,
+                          ),
+                          child: widget,
+                        ),
+                        ListenableBuilder(
+                          listenable: _controller,
+                          builder: (context, child) {
+                            return MediaQuery(
+                              data: MediaQuery.of(
+                                context,
+                              ).copyWith(size: Size(size.width * (1.0 - (_controller.weights[0] ?? 1.0)), size.height)),
+                              child: child!,
+                            );
+                          },
+                          child: HeroControllerScope(
+                            controller: HeroController(),
+                            child: ScaffoldMessenger(
+                              child: Navigator(
+                                pages: const [MaterialPage(child: PlayerScreen())],
+                                onPopPage: (_, __) => false,
+                                onGenerateRoute: (x) {
+                                  GlobalSnackbar.navigatorState!.pushNamed(x.name!, arguments: x.arguments);
+                                  return EmptyRoute();
+                                },
+                                observers: [KeepScreenOnObserver()],
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ],
-                );
-              } else {
-                _inSplitScreen = false;
-                return widget!;
-              }
+                      ],
+                    );
+                  } else {
+                    _inSplitScreen = false;
+                    return widget!;
+                  }
+                },
+              );
             },
           );
         },
@@ -133,7 +141,7 @@ Widget buildPlayerSplitScreenScaffold(BuildContext context, Widget? widget) {
   );
 }
 
-class EmptyRoute extends Route {
+class EmptyRoute<T> extends Route<T> {
   @override
   List<OverlayEntry> get overlayEntries => [OverlayEntry(builder: (_) => const SizedBox.shrink())];
   @override
@@ -160,7 +168,7 @@ class SplitScreenNavigatorObserver extends NavigatorObserver {
     });
   }
 
-  static bool shouldNotPop(Route route) {
+  static bool shouldNotPop(Route<dynamic> route) {
     return !_playerCheck(route) && !_lyricsCheck(route);
   }
 }

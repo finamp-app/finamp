@@ -135,6 +135,7 @@ class NowPlayingBar extends ConsumerWidget {
   }
 
   static Future<void> openPlayerScreen() async {
+    minimizeSplitScreen.value = false;
     await GlobalSnackbar.navigatorState?.push(
       PageRouteBuilder<void>(
         pageBuilder: (context, animation, secondaryAnimation) => const PlayerScreen(),
