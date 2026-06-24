@@ -508,7 +508,6 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
                   : tabContent,
               controller: activeSortController!,
               removeOnly: false,
-              hideArtistGenreFilters: false,
             ),
           ],
         ),

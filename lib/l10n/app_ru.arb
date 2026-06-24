@@ -1,6 +1,5 @@
 {
     "serverUrl": "URL сервера",
-    "@serverUrl": {},
     "emptyServerUrl": "URL сервера не может быть пустым",
     "@emptyServerUrl": {
         "description": "Error message that shows when the user submits a login without a server URL"
@@ -9,40 +8,21 @@
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
-    "couldNotFindLibraries": "Библиотеки не найдены.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "unknownName": "Неизвестное имя",
-    "@unknownName": {},
     "tracks": "Композиции",
-    "@tracks": {},
     "music": "Музыка",
-    "@music": {},
     "finamp": "Finamp",
-    "@finamp": {},
     "albumArtist": "Исполнитель Альбома",
-    "@albumArtist": {},
     "artist": "Исполнитель",
-    "@artist": {},
     "budget": "Бюджет",
-    "@budget": {},
     "communityRating": "Оценка Сообщества",
-    "@communityRating": {},
     "criticRating": "Оценка Критиков",
-    "@criticRating": {},
     "dateAdded": "Дата Добавления",
-    "@dateAdded": {},
     "datePlayed": "Дата Последнего Проигрывания",
-    "@datePlayed": {},
     "playCount": "Всего Проигрываний",
-    "@playCount": {},
     "premiereDate": "Дата Выпуска",
-    "@premiereDate": {},
     "name": "Имя",
-    "@name": {},
     "random": "Случайно",
-    "@random": {},
     "dlComplete": "{count} завершено",
     "@dlComplete": {
         "placeholders": {
@@ -51,10 +31,7 @@
             }
         }
     },
-    "failedToGetTrackFromDownloadId": "Не удалось получить композицию по идентификатору загрузки",
-    "@failedToGetTrackFromDownloadId": {},
     "error": "Ошибка",
-    "@error": {},
     "discNumber": "Диск {number}",
     "@discNumber": {
         "placeholders": {
@@ -64,9 +41,7 @@
         }
     },
     "playButtonLabel": "Играть",
-    "@playButtonLabel": {},
     "shuffleButtonLabel": "Перемешать",
-    "@shuffleButtonLabel": {},
     "trackCount": "{count,plural,=1{{count} Композиция} few{{count} Композиции} other{{count} Композиций}}",
     "@trackCount": {
         "placeholders": {
@@ -76,119 +51,53 @@
         }
     },
     "required": "Необходимо",
-    "@required": {},
-    "updateButtonLabel": "Обновить",
-    "@updateButtonLabel": {},
     "playlistUpdated": "Название плейлиста обновлено.",
-    "@playlistUpdated": {},
-    "downloadsDeleted": "Загрузки удалены.",
-    "@downloadsDeleted": {},
     "downloadsQueued": "Загружаем файлы",
-    "@downloadsQueued": {},
     "shareLogs": "Поделиться журналом",
-    "@shareLogs": {},
     "logsCopied": "Журнал скопирован.",
-    "@logsCopied": {},
     "message": "Сообщение",
-    "@message": {},
     "stackTrace": "Трассировка стека",
-    "@stackTrace": {},
     "applicationLegalese": "Лицензия Mozilla Public License 2.0.\nИсходный код доступен по адресу {sourceCodeLink}.",
-    "@applicationLegalese": {},
     "transcoding": "Транскодирование",
-    "@transcoding": {},
     "downloadLocations": "Расположение загрузок",
-    "@downloadLocations": {},
     "audioService": "Аудиосервис",
-    "@audioService": {},
     "layoutAndTheme": "Компоновка и тема",
-    "@layoutAndTheme": {},
     "logOut": "Выйти",
-    "@logOut": {},
     "areYouSure": "Вы уверены?",
-    "@areYouSure": {},
     "enableTranscoding": "Включить транскодирование",
-    "@enableTranscoding": {},
     "bitrate": "Битрейт",
-    "@bitrate": {},
     "appDirectory": "Папка приложения",
-    "@appDirectory": {},
     "selectDirectory": "Выбрать папку",
-    "@selectDirectory": {},
     "unknownError": "Неизвестная ошибка",
-    "@unknownError": {},
     "pathReturnSlashErrorMessage": "Пути ведущие к «/» нельзя использовать",
-    "@pathReturnSlashErrorMessage": {},
-    "directoryMustBeEmpty": "Папка должна быть пустой",
-    "@directoryMustBeEmpty": {},
     "customLocation": "Пользовательские папки",
-    "@customLocation": {},
     "addDownloadLocation": "Добавить папку для загрузок",
-    "@addDownloadLocation": {},
     "customLocationsBuggy": "Пользовательские папки могут быть крайне нестабильны и не рекомендуются к использованию в подавляющем большинстве случаев. Расположение в пределах системной папки «Музыка» не позволяет сохранять обложки альбомов из-за ограничений операционной системы.",
-    "@customLocationsBuggy": {},
     "enterLowPriorityStateOnPauseSubtitle": "Позволяет смахнуть уведомление на паузе. Также позволяет Android остановить сервис на паузе.",
-    "@enterLowPriorityStateOnPauseSubtitle": {},
     "shuffleAllTrackCountSubtitle": "Количество композиций для загрузки по нажатии на кнопку \"перемешать все\" в разделе композиций или жанров.",
-    "@shuffleAllTrackCountSubtitle": {},
     "viewType": "Способ отображения",
-    "@viewType": {},
     "viewTypeSubtitle": "Способ отображения для экрана музыки",
-    "@viewTypeSubtitle": {},
     "list": "Список",
-    "@list": {},
     "grid": "Сетка",
-    "@grid": {},
-    "portrait": "Портретный",
-    "@portrait": {},
     "landscape": "Альбомный",
-    "@landscape": {},
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Показывать ли исполнителей композиций на экране альбома, если они не отличаются от исполнителей альбома.",
-    "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
     "theme": "Тема",
-    "@theme": {},
     "system": "Системная",
-    "@system": {},
     "light": "Светлая",
-    "@light": {},
     "dark": "Тёмная",
-    "@dark": {},
     "tabs": "Вкладки",
-    "@tabs": {},
     "cancelSleepTimer": "Сбросить таймер сна?",
-    "@cancelSleepTimer": {},
     "yesButtonLabel": "Да",
-    "@yesButtonLabel": {},
     "noButtonLabel": "Нет",
-    "@noButtonLabel": {},
     "sleepTimerTooltip": "Таймер сна",
-    "@sleepTimerTooltip": {},
     "createButtonLabel": "Создать",
-    "@createButtonLabel": {},
     "playlistCreated": "Плейлист создан.",
-    "@playlistCreated": {},
     "noItem": "Нет элемента",
-    "@noItem": {},
-    "noArtist": "Нет исполнителя",
-    "@noArtist": {},
     "unknownArtist": "Неизвестный исполнитель",
-    "@unknownArtist": {},
     "queue": "Очередь",
-    "@queue": {},
     "addToQueue": "Добавить в очередь",
-    "@addToQueue": {},
-    "replaceQueue": "Заменить очередь",
-    "@replaceQueue": {},
     "instantMix": "Мгновенный микс",
-    "@instantMix": {},
     "goToAlbum": "Перейти к альбому",
-    "@goToAlbum": {},
-    "addedToQueue": "Добавлено в очередь.",
-    "@addedToQueue": {},
-    "queueReplaced": "Очередь заменена.",
-    "@queueReplaced": {},
     "startingInstantMix": "Запуск мгновенного микса.",
-    "@startingInstantMix": {},
     "responseError": "{error} Код состояния {statusCode}.",
     "@responseError": {
         "placeholders": {
@@ -216,55 +125,30 @@
         }
     },
     "removeFromMix": "Удалить из микса",
-    "@removeFromMix": {},
-    "invalidNumber": "Недопустимое число",
-    "@invalidNumber": {},
     "addToPlaylistTooltip": "Добавить в плейлист",
-    "@addToPlaylistTooltip": {},
     "addToPlaylistTitle": "Добавить в плейлист",
-    "@addToPlaylistTitle": {},
     "newPlaylist": "Новый плейлист",
-    "@newPlaylist": {},
     "noAlbum": "Нет альбома",
-    "@noAlbum": {},
     "anErrorHasOccured": "Произошла ошибка.",
-    "@anErrorHasOccured": {},
     "clear": "Очистить",
-    "@clear": {},
     "settings": "Настройки",
-    "@settings": {},
     "addToMix": "Добавить в микс",
-    "@addToMix": {},
-    "downloadMissingImages": "Загрузить отсутствующие изображения",
-    "@downloadMissingImages": {},
     "offlineMode": "Автономный режим",
-    "@offlineMode": {},
     "startMix": "Начать микс",
-    "@startMix": {},
     "internalExternalIpExplanation": "Если вы хотите иметь возможность удалённого доступа к вашему серверу Jellyfin, необходимо использовать внешний IP-адрес.\n\nЕсли ваш сервер работает на стандартных портах HTTP (80 или 443), или на стандартном порту Jellyfin (8096), вам не нужно указывать порт.\n\nЕсли URL-адрес указан верно, вы должны увидеть информацию о вашем сервере под полем ввода.",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
     "password": "Пароль",
-    "@password": {},
     "username": "Имя пользователя",
-    "@username": {},
     "logs": "Журнал",
-    "@logs": {},
     "albums": "Альбомы",
-    "@albums": {},
     "artists": "Исполнители",
-    "@artists": {},
     "sortOrder": "Порядок сортировки",
-    "@sortOrder": {},
     "genres": "Жанры",
-    "@genres": {},
     "playlists": "Плейлисты",
-    "@playlists": {},
     "sortBy": "Критерий сортировки",
-    "@sortBy": {},
     "next": "Далее",
-    "@next": {},
     "startMixNoTracksArtist": "Чтобы добавить или удалить исполнителя из микса, нажмите и удерживайте его имя",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
@@ -274,24 +158,10 @@
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
     "shuffleAll": "Перемешать всё",
-    "@shuffleAll": {},
     "downloads": "Загрузки",
-    "@downloads": {},
     "album": "Альбом",
-    "@album": {},
     "productionYear": "Год Создания",
-    "@productionYear": {},
     "revenue": "Доход",
-    "@revenue": {},
-    "downloadedMissingImages": "{count,plural, =0{Не найдено отсутствующих изображений} =1{Загружено {count} отсутствующее изображение} few{Загружено {count} отсутствующих изображения} other{Загружено {count} отсутствующих изображений}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "downloadCount": "{count,plural, =1{{count} загрузка} few{{count} загрузки} other{{count} загрузок}}",
     "@downloadCount": {
         "placeholders": {
@@ -325,111 +195,41 @@
         }
     },
     "addDownloads": "Добавить в загрузки",
-    "@addDownloads": {},
     "errorScreenError": "Ошибка при получении списка ошибок! На данном этапе, вероятно, стоит создать сообщение об ошибке на GitHub и удалить данные приложения",
-    "@errorScreenError": {},
     "location": "Расположение",
-    "@location": {},
     "addButtonLabel": "Добавить",
-    "@addButtonLabel": {},
     "enableTranscodingSubtitle": "Транскодирует музыкальные потоки на стороне сервера.",
-    "@enableTranscodingSubtitle": {},
     "notAvailableInOfflineMode": "Недоступно в автономном режиме",
-    "@notAvailableInOfflineMode": {},
-    "gridCrossAxisCountSubtitle": "Количество отображаемых элементов сетки в строке, когда {value}.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
     "enterLowPriorityStateOnPause": "Использовать режим низкого приоритета на паузе",
-    "@enterLowPriorityStateOnPause": {},
     "bitrateSubtitle": "Высокий битрейт обеспечивает лучшее качество звука за счет большего потребления трафика. Не распространяется на форматы без потерь, например FLAC",
-    "@bitrateSubtitle": {},
     "shuffleAllTrackCount": "Количество композиций случайного проигрывания",
-    "@shuffleAllTrackCount": {},
-    "gridCrossAxisCount": "{value}, количество элементов сетки",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
     "showTextOnGridView": "Показывать текст в режиме отображения сеткой",
-    "@showTextOnGridView": {},
     "showTextOnGridViewSubtitle": "Показывать ли текст (название, исполнитель и т.д.) на экране музыки в режиме отображения сеткой.",
-    "@showTextOnGridViewSubtitle": {},
     "useCoverAsBackground": "Показывать размытую обложку на фоне",
-    "@useCoverAsBackground": {},
     "useCoverAsBackgroundSubtitle": "Использовать ли размытую обложку альбома в качестве фона в различных частях приложения.",
-    "@useCoverAsBackgroundSubtitle": {},
-    "hideTrackArtistsIfSameAsAlbumArtists": "Скрывать исполнителей композиций, если они совпадают с исполнителями альбома",
-    "@hideTrackArtistsIfSameAsAlbumArtists": {},
     "minutes": "Минуты",
-    "@minutes": {},
-    "redownloadedItems": "{count,plural, =0{Не требуется повторная загрузка.} =1{Повторно загружен {count} элемент} few{Повторно загружены {count} элемента} other{Повторно загружено {count} элементов}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "disableGesture": "Отключить жесты",
-    "@disableGesture": {},
     "disableGestureSubtitle": "Стоит ли отключать жесты.",
-    "@disableGestureSubtitle": {},
     "bufferDuration": "Длительность буфера",
-    "@bufferDuration": {},
     "bufferDurationSubtitle": "Длительность, которая должна быть буферизована, в секундах. Требует перезапуска.",
-    "@bufferDurationSubtitle": {},
     "removedFromPlaylist": "Удалено из плейлиста.",
-    "@removedFromPlaylist": {},
     "removeFromPlaylistTooltip": "Удалить из плейлиста",
-    "@removeFromPlaylistTooltip": {},
     "removeFromPlaylistTitle": "Удалить из плейлиста",
-    "@removeFromPlaylistTitle": {},
     "language": "Язык",
-    "@language": {},
     "confirm": "Подтвердить",
-    "@confirm": {},
     "showUncensoredLogMessage": "Этот журнал содержит ваши данные для входа. Показать?",
-    "@showUncensoredLogMessage": {},
-    "resetTabs": "Сбросить вкладки",
-    "@resetTabs": {},
-    "insertedIntoQueue": "Вставлено в очередь.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
     "refresh": "Обновить",
-    "@refresh": {},
     "playNext": "Воспроизвести следующим",
     "@playNext": {
         "description": "Popup menu item title for inserting an item into the play queue after the currently-playing item."
     },
     "noMusicLibrariesBody": "Finamp не обнаружил музыкальных библиотек. Убедитесь, что на вашем сервере Jellyfin есть хотя бы одна библиотека с типом контента «Музыка».",
-    "@noMusicLibrariesBody": {},
     "noMusicLibrariesTitle": "Нет музыкальных библиотек",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
-    "syncDownloadedPlaylists": "Синхронизировать загруженные плейлисты",
-    "@syncDownloadedPlaylists": {},
-    "swipeInsertQueueNextSubtitle": "Включите чтобы вставлять композицию следующей в очереди при смахивании в списке композиций вместо того чтобы добавлять ее в конец.",
-    "@swipeInsertQueueNextSubtitle": {},
     "interactions": "Взаимодействие",
-    "@interactions": {},
-    "swipeInsertQueueNext": "Воспроизвести смахнутую композицию следующей",
-    "@swipeInsertQueueNext": {},
     "showFastScroller": "Показать быструю прокрутку",
-    "@showFastScroller": {},
     "about": "О Finamp",
     "@about": {
         "description": "Label for the about/info button on the settings screen"
@@ -581,7 +381,6 @@
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
     "activeDownloads": "Активные загрузки",
-    "@activeDownloads": {},
     "confirmDownloadStarted": "Загрузка началась",
     "@confirmDownloadStarted": {
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
@@ -631,9 +430,7 @@
         "description": "Name for the expanded player"
     },
     "hours": "Часов",
-    "@hours": {},
     "seconds": "Секунд",
-    "@seconds": {},
     "playerScreenMinimumCoverPaddingEditorSubtitle": "Минимальный отступ вокруг обложки альбома на экране плеера, в % от ширины экрана.",
     "@playerScreenMinimumCoverPaddingEditorSubtitle": {
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
@@ -643,9 +440,7 @@
         "description": "Font size option for things like the lyrics view. Large means a larger font size."
     },
     "activeDownloadsTitle": "Активные Загрузки",
-    "@activeDownloadsTitle": {},
     "noActiveDownloads": "Активных загрузок нет.",
-    "@noActiveDownloads": {},
     "sleepTimerRemainingTime": "Заснет через {time,plural,=1{<1 Минуту} few{{time} минуты} other{{time} минут}}",
     "@sleepTimerRemainingTime": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
@@ -655,12 +450,7 @@
             }
         }
     },
-    "addToMorePlaylistsTooltip": "Добавить в другие плейлисты",
-    "@addToMorePlaylistsTooltip": {},
     "addToMorePlaylistsTitle": "Добавить в другие плейлисты",
-    "@addToMorePlaylistsTitle": {},
-    "unknownAlbum": "Неизвестный альбом",
-    "@unknownAlbum": {},
     "playbackModeTranscoding": "Транскодирование",
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
@@ -676,13 +466,7 @@
         }
     },
     "goToArtist": "Перейти к исполнителю",
-    "@goToArtist": {},
     "goToGenre": "Перейти к жанру",
-    "@goToGenre": {},
-    "confirmFavoriteAdded": "Добавлено в избранное",
-    "@confirmFavoriteAdded": {},
-    "confirmFavoriteRemoved": "Удалено из избранного",
-    "@confirmFavoriteRemoved": {},
     "alignmentOptionStart": "Слева",
     "@alignmentOptionStart": {
         "description": "Alignment option for things like the lyrics view. Start means left-aligned in LTR languages and right-aligned in RTL languages."
@@ -714,26 +498,6 @@
     "timeFractionTooltip": "{currentTime} из {totalTime}",
     "@timeFractionTooltip": {
         "description": "Tooltip and accessibility label for the track progress. {currentTime} is the current position within the track, as a translated string like '2 minutes 40 seconds', and {totalTime} is the total duration of the track, also a translated string."
-    },
-    "removeFromPlaylistNamedTooltip": "Удалить из плейлиста '{playlistName}'",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "removeFromPlaylistNamedTitle": "Удалить из плейлиста '{playlistName}'",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
     },
     "playlistActionsMenuButtonTooltip": "Нажмите, чтобы добавить в плейлист. Нажмите и удерживайте, чтобы добавить/убрать из избранного.",
     "@playlistActionsMenuButtonTooltip": {
@@ -828,7 +592,6 @@
         "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
     },
     "trackOfflineFavoritesSubtitle": "Это позволяет отображать более актуальные статусы избранного в автономном режиме.  Не загружает никаких дополнительных файлов.",
-    "@trackOfflineFavoritesSubtitle": {},
     "volumeNormalizationModeTrackBased": "На основе композиции",
     "@volumeNormalizationModeTrackBased": {
         "description": "'Track-based' option for the replay gain mode dropdown. In track-based mode, the track gain is always used, regardless of whether an album is playing or not."
@@ -872,15 +635,11 @@
         "description": "Localized names of special downloadable collections like favorites."
     },
     "hidePlayerBottomActions": "Скрыть действия снизу",
-    "@hidePlayerBottomActions": {},
     "redownloadcomplete": "Перезагрузка транскодируемых дорожек добавлена в очередь.",
     "@redownloadcomplete": {
         "description": "Mesage when Automatically Redownload Transcodes transcode setting completes operations."
     },
-    "fixedGridSizeSwitchSubtitle": "Размеры плиток в сетке не будут изменяться в зависимости от размера окна/экрана.",
-    "@fixedGridSizeSwitchSubtitle": {},
     "hidePlayerBottomActionsSubtitle": "Скрыть кнопки очереди и текста песен на экране плеера. Проведите вверх, чтобы получить доступ к очереди, проведите влево (под обложкой альбома), чтобы просмотреть текст песни, если он доступен.",
-    "@hidePlayerBottomActionsSubtitle": {},
     "doTranscode": "Загрузить как {codec} @ {bitrate}{size, select, null{} other{ - ~{size}}}",
     "@doTranscode": {
         "placeholders": {
@@ -900,7 +659,6 @@
         "description": "Dropdown option to download transcoded version of tracks"
     },
     "suppressPlayerPaddingSubtitle": "Полностью минимизирует отступы между элементами управления на экране плеера, когда обложка альбома не занимает весь экран.",
-    "@suppressPlayerPaddingSubtitle": {},
     "removeFromPlaylistPrompt": "Убрать '{itemName}' из плейлиста '{playlistName}'?",
     "@removeFromPlaylistPrompt": {
         "placeholders": {
@@ -918,15 +676,12 @@
         "description": "Title for the short menu that can be shown when long-pressing on the menu button on the player screen. Currently only used for adding to and removing from playlists."
     },
     "downloadAllPlaylistsSetting": "Загрузить все плейлисты",
-    "@downloadAllPlaylistsSetting": {},
     "fiveLatestAlbumsSetting": "Загрузить 5 последних альбомов",
-    "@fiveLatestAlbumsSetting": {},
     "showLyricsTimestampsTitle": "Показывать метки времени для синхронизированных текстов песен",
     "@showLyricsTimestampsTitle": {
         "description": "Title for the setting that controls if timestamps are shown for lyrics"
     },
     "cacheLibraryImagesSettings": "Кэшировать текущие изображения библиотеки",
-    "@cacheLibraryImagesSettings": {},
     "showStopButtonOnMediaNotificationSubtitle": "Управляет тем, будет ли в медиа-уведомлении присутствовать кнопка остановки. Это позволяет вам останавливать воспроизведение, не открывая приложение.",
     "@showStopButtonOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a stop button in addition to the pause button."
@@ -958,7 +713,6 @@
         "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
     },
     "title": "Заголовок",
-    "@title": {},
     "offlineTrackCountArtist": "{count,plural,=1{{count} Композиция загружена} few{{count} Композиции загружено} other{{count} Композиций загружено}}",
     "@offlineTrackCountArtist": {
         "placeholders": {
@@ -1157,9 +911,7 @@
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of the regular queue"
     },
     "resetToDefaults": "Сброс к настойкам по умолчанию",
-    "@resetToDefaults": {},
     "moreInfo": "Больше информации",
-    "@moreInfo": {},
     "volumeNormalizationSettingsTitle": "Нормализация громкости",
     "@volumeNormalizationSettingsTitle": {
         "description": "Title for the replay gain settings screen"
@@ -1181,7 +933,6 @@
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
     },
     "startInstantMixForIndividualTracksSwitchSubtitle": "Если включено, нажатие на композицию во вкладке «Композиции» запустит мгновенный микс этой композиции, вместо того, чтобы просто воспроизвести одну композицию.",
-    "@startInstantMixForIndividualTracksSwitchSubtitle": {},
     "downloadItem": "Загрузить",
     "@downloadItem": {
         "description": "Option to download item in long-press menu."
@@ -1237,7 +988,6 @@
         "description": "Message shown for download size while item is being deleted but is not fully removed"
     },
     "downloadSettings": "Загрузки",
-    "@downloadSettings": {},
     "downloadsWorkersSetting": "Количество потоков-загрузчиков",
     "@downloadsWorkersSetting": {
         "description": "Title of setting controlling download worker count."
@@ -1266,7 +1016,6 @@
         }
     },
     "removeFromPlaylistConfirm": "Убрать",
-    "@removeFromPlaylistConfirm": {},
     "lyricsScreen": "Просмотр текста песни",
     "@lyricsScreen": {
         "description": "Name for the view/screen that shows lyrics for the currently playing track"
@@ -1291,12 +1040,7 @@
     "@showCoversOnAlbumScreenSubtitle": {
         "description": "Subtitle for the setting that controls if album covers are shown for each track separately on the album screen"
     },
-    "emptyTopTracksList": "Вы еще не прослушали ни одной композиции этого исполнителя.",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
-    },
     "topTracks": "Лучшие композиции",
-    "@topTracks": {},
     "volumeNormalizationModeAlbumBased": "На основе альбома",
     "@volumeNormalizationModeAlbumBased": {
         "description": "'Album-based' option for the replay gain mode dropdown. In album-based mode, the album gain is always used, regardless of whether an album is playing or not."
@@ -1326,22 +1070,13 @@
     "@downloadTranscodeCodecTitle": {
         "description": "Title for Select Download Codec dropdown"
     },
-    "fixedGridSizeTitle": "Размер плитки в сетке",
-    "@fixedGridSizeTitle": {},
     "allowSplitScreenTitle": "Разрешить режим разделения экрана",
-    "@allowSplitScreenTitle": {},
     "showArtistChipImage": "Показывать изображения исполнителя с именем исполнителя",
-    "@showArtistChipImage": {},
     "showArtistChipImageSubtitle": "Это влияет на превью небольших изображений исполнителя, например, на экране плеера.",
-    "@showArtistChipImageSubtitle": {},
     "bufferDisableSizeConstraintsTitle": "Не ограничивать размер буфера",
-    "@bufferDisableSizeConstraintsTitle": {},
     "bufferDisableSizeConstraintsSubtitle": "Отключает ограничения размера буфера («Размер буфера»). Буфер всегда будет загружаться до заданной длительности («Длительность буфера»), даже для очень больших файлов. Может вызывать сбои. Требует перезапуска.",
-    "@bufferDisableSizeConstraintsSubtitle": {},
     "bufferSizeTitle": "Размер буфера",
-    "@bufferSizeTitle": {},
     "bufferSizeSubtitle": "­Размер буфера в МБ. Требует перезапуска",
-    "@bufferSizeSubtitle": {},
     "togglePlaybackButtonTooltip": "Начать/Остановить воспроизведение",
     "@togglePlaybackButtonTooltip": {
         "description": "Tooltip for the button that toggles playback"
@@ -1431,7 +1166,6 @@
         }
     },
     "close": "Закрыть",
-    "@close": {},
     "volumeNormalizationModeSelectorTitle": "Режим нормализации громкости",
     "@volumeNormalizationModeSelectorTitle": {
         "description": "Title for the dropdown that selects the replay gain mode"
@@ -1585,8 +1319,6 @@
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
-    "fixedGridSizeSwitchTitle": "Использовать плитки фиксированного размера",
-    "@fixedGridSizeSwitchTitle": {},
     "fixedGridTileSizeEnum": "{size, select, small{Маленький} medium{Средний} large{Большой} veryLarge{Очень большой} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
@@ -1597,11 +1329,8 @@
         "description": "Localized names of fixed size grid tile sizes."
     },
     "allowSplitScreenSubtitle": "Плеер будет отображаться рядом с другими элементами на широких экранах.",
-    "@allowSplitScreenSubtitle": {},
     "enableVibration": "Включить вибрацию",
-    "@enableVibration": {},
     "enableVibrationSubtitle": "Включать ли вибрацию.",
-    "@enableVibrationSubtitle": {},
     "scrollToCurrentTrack": "Вернуться к текущей композиции",
     "@scrollToCurrentTrack": {
         "description": "Tooltip for button that scrolls the queue list back to the current track"
@@ -1611,13 +1340,9 @@
         "description": "Tooltip for the button that opens the track menu"
     },
     "trackOfflineFavorites": "Синхронизировать все статусы избранного",
-    "@trackOfflineFavorites": {},
     "prioritizePlayerCover": "Приоритет обложки альбома",
-    "@prioritizePlayerCover": {},
     "prioritizePlayerCoverSubtitle": "Приоритизировать отображение большей обложки альбома на экране плеера. Некритические элементы управления будут скрываться более агрессивно на экранах меньшего размера.",
-    "@prioritizePlayerCoverSubtitle": {},
     "suppressPlayerPadding": "Минимизировать отступы элементов управления плеером",
-    "@suppressPlayerPadding": {},
     "enableAutoScroll": "Включить автоматическое прокручивание",
     "@enableAutoScroll": {
         "description": "Tooltip for button that can be used to re-enable auto scroll on the lyrics view after the user manually scrolled"
@@ -1646,15 +1371,10 @@
         "description": "Header for add to/remove from playlist popup menu"
     },
     "allPlaylistsInfoSettingSubtitle": "Синхронизируйте метаданные для всех плейлистов, чтобы улучшить работу с плейлистами",
-    "@allPlaylistsInfoSettingSubtitle": {},
     "allPlaylistsInfoSetting": "Загрузить метаданные плейлистов",
-    "@allPlaylistsInfoSetting": {},
     "downloadFavoritesSetting": "Загрузить все избранные",
-    "@downloadFavoritesSetting": {},
     "fiveLatestAlbumsSettingSubtitle": "Загруженные файлы будут удаляться со временем.  Заблокируйте загрузку, чтобы предотвратить удаление альбома.",
-    "@fiveLatestAlbumsSettingSubtitle": {},
     "cacheLibraryImagesSettingsSubtitle": "Все обложки альбомов, исполнителей, жанров и плейлистов в текущей активной библиотеке будут загружены.",
-    "@cacheLibraryImagesSettingsSubtitle": {},
     "showProgressOnNowPlayingBarTitle": "Показывать прогресс воспроизведения композиции в мини-плеере приложения",
     "@showProgressOnNowPlayingBarTitle": {
         "description": "Title for the setting that controls if the in-app miniplayer / now playing bar at the botton of the music screen functions as a progress bar"
@@ -1696,11 +1416,8 @@
         "description": "Option to keep the screen on while using the app"
     },
     "keepScreenOnSubtitle": "Когда держать экран включенным",
-    "@keepScreenOnSubtitle": {},
     "keepScreenOnWhileLyrics": "Пока отображаются тексты песен",
-    "@keepScreenOnWhileLyrics": {},
     "keepScreenOnWhilePluggedIn": "Не отключать экран только на зарядке",
-    "@keepScreenOnWhilePluggedIn": {},
     "artworkTooltip": "Обложка для {title}",
     "@artworkTooltip": {
         "placeholders": {
@@ -1752,7 +1469,6 @@
         "description": "Title for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
     },
     "keepScreenOnAlwaysOn": "Всегда включен",
-    "@keepScreenOnAlwaysOn": {},
     "nowPlayingBarTooltip": "Открыть экран плеера",
     "@nowPlayingBarTooltip": {
         "description": "Tooltip for the now playing bar at the bottom of the screen"
@@ -1770,17 +1486,13 @@
         "description": "Title for the setting that controls the font size of lyrics in the lyrics view"
     },
     "keepScreenOnDisabled": "Отключено",
-    "@keepScreenOnDisabled": {},
     "keepScreenOnWhilePlaying": "Пока играет музыка",
-    "@keepScreenOnWhilePlaying": {},
     "keepScreenOnWhilePluggedInSubtitle": "Игнорировать настройку «Не отключать экран», если устройство не подключено к сети",
-    "@keepScreenOnWhilePluggedInSubtitle": {},
     "genericToggleButtonTooltip": "Нажмите, чтобы переключить.",
     "@genericToggleButtonTooltip": {
         "description": "Tooltip for toggle buttons that can be tapped to toggle their state"
     },
     "artwork": "Обложка",
-    "@artwork": {},
     "bitRate": "Битрейт",
     "@bitRate": {
         "description": "Label for the feature chips showing the bit rate of a track"
@@ -1801,28 +1513,7 @@
     "@showLyricsScreenAlbumPreludeSubtitle": {
         "description": "Subtitle for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
     },
-    "deleteDownloadsPrompt": "Вы уверены что хотите удалить {itemType, select, album{альбом} playlist{плейлист} artist{исполнителя} genre{жанр} track{композицию} library{библиотеку} other{элемент}} '{itemName}' с этого устройства?",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
-    "hideQueueButtonSubtitle": "Спрячьте кнопку очереди на экране проигрывателя. Проведите вверх, чтобы открыть очередь.",
-    "@hideQueueButtonSubtitle": {},
-    "hideQueueButton": "Спрятать кнопку очереди",
-    "@hideQueueButton": {},
     "oneLineMarqueeTextButton": "Автопрокрутка длинных заголовков",
-    "@oneLineMarqueeTextButton": {},
-    "marqueeOrTruncateButton": "Использовать многоточие в длинных заголовках",
-    "@marqueeOrTruncateButton": {},
     "deleteFromTargetConfirmButton": "Удалить{target, select, device{ с устройства} server{ с сервера} other{}}",
     "@deleteFromTargetConfirmButton": {
         "description": "(Important: Note the space in front of some cases) The button the user needs to press to execute the delete action. If no target is set, the text should just be a generic 'delete' text. This button is both visible before and after the delete confirm prompt."
@@ -1836,7 +1527,6 @@
         "description": "Toggle for playlist creation where true means the playlist is publicly visible, false means only the creator can see it."
     },
     "oneLineMarqueeTextButtonSubtitle": "Автоматическая прокрутка названий композиций, которые не помещаются в две строки",
-    "@oneLineMarqueeTextButtonSubtitle": {},
     "allowDeleteFromServerTitle": "Разрешить удалять с сервера",
     "@allowDeleteFromServerTitle": {
         "description": "Title for the setting that controls if items can be deleted from the server"
@@ -1864,12 +1554,6 @@
     "releaseDateFormatSubtitle": "Определяет формат всех дат выхода, отображаемых в приложении.",
     "@releaseDateFormatSubtitle": {
         "description": "Title for the setting that controls the format release dates throughout the app."
-    },
-    "marqueeOrTruncateButtonSubtitle": "Показывать «…» в конце длинных заголовков вместо прокрутки текста",
-    "@marqueeOrTruncateButtonSubtitle": {},
-    "deleteDownloadsConfirmButtonText": "Удалить",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
     },
     "showAlbumReleaseDateOnPlayerScreenTitle": "Отображать дату выхода альбома на экране проигрывателя",
     "@showAlbumReleaseDateOnPlayerScreenTitle": {
@@ -1904,8 +1588,6 @@
     "@downloadSizeWarningCutoffSubtitle": {
         "description": "Subtitle for the setting controlling when to warn about a large download"
     },
-    "playbackReporting": "Отчет о воспроизведении",
-    "@playbackReporting": {},
     "playbackReportingSettingsTitle": "Отчет о воспроизведении & Play On",
     "@playbackReportingSettingsTitle": {
         "description": "Title for the playback reporting settings screen"
@@ -1915,7 +1597,6 @@
         "description": "Title for the library downloads section on the downloads screen."
     },
     "swipeLeftToRightAction": "Действие при смахе вправо",
-    "@swipeLeftToRightAction": {},
     "transcodingStreamingFormatTitle": "Выберите Формат Транскодирования",
     "@transcodingStreamingFormatTitle": {
         "description": "Title for the dropdown that selects the format for transcoded streams"
@@ -1947,7 +1628,6 @@
         "description": "Title for the special downloads section on the downloads screen."
     },
     "exportLogs": "Сохранить логи",
-    "@exportLogs": {},
     "playOnStaleDelay": "Время Работы Сессии «Play on»",
     "@playOnStaleDelay": {
         "description": "Label for the setting that controls how long a PlayOn remote session is considered active"
@@ -1969,17 +1649,13 @@
         "description": "Description of the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
     },
     "swipeLeftToRightActionSubtitle": "Действие, выполняемое при смахе трека из списка слева направо.",
-    "@swipeLeftToRightActionSubtitle": {},
     "albumArtists": "Исполнители Альбома",
-    "@albumArtists": {},
     "swipeRightToLeftActionSubtitle": "Действие, выполняемое при смахе трека из списка справа налево.",
-    "@swipeRightToLeftActionSubtitle": {},
     "enablePlayonSubtitle": "Включает функцию «Play On» (удаленное управление Finamp с другого клиента). Отключите это если ваш reverse proxy или сервер не поддерживает websockets.",
     "@enablePlayonSubtitle": {
         "description": "Description of the setting to enable Jellyfin's 'Play On' feature (remote control)"
     },
     "swipeRightToLeftAction": "Действие при смахе влево",
-    "@swipeRightToLeftAction": {},
     "audioFadeInDurationSettingSubtitle": "Длительность нарастания звука в миллисекундах. Установите на 0 чтобы отключить нарастание звука.",
     "@audioFadeInDurationSettingSubtitle": {
         "description": "Subtitle for the audio fade-in duration setting. Set to 0 to disable fade-in."
@@ -2092,7 +1768,6 @@
         "description": "This is shown when the autoOffline feature is set to Disconnected, this means offline mode will be automatically enabled when either wifi, ethernet or cellular is active"
     },
     "autoOfflineSettingTitle": "Автоматический Автономный Режим",
-    "@autoOfflineSettingTitle": {},
     "autoOfflineNotification": "Automatically {state, select, enabled{включать} disabled{выключать} other{установить в квантовую позицию}} Автономный Режим",
     "@autoOfflineNotification": {
         "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
@@ -2102,13 +1777,11 @@
         "description": "Subtitle for the audio fade-out duration setting. Set to 0 to disable fade-out."
     },
     "appearsOnAlbums": "Исполняет",
-    "@appearsOnAlbums": {},
     "startupErrorWorkaround": "В качестве запасного варианта вы можете очистить данные приложения, чтобы сбросить его настройки. Имейте в виду, что в этом случае все ваши настройки и загрузки будут удалены.",
     "@startupErrorWorkaround": {
         "description": "The subtitle for how to manually recover from a startup error"
     },
     "transcodingStreamingFormatSubtitle": "Выберите формат для прослушивания потоковго транскодированного аудио. Треки в очереди не будут затронуты.",
-    "@transcodingStreamingFormatSubtitle": {},
     "autoOfflineOptionNetwork": "Локальная сеть",
     "@autoOfflineOptionNetwork": {
         "description": "This is shown when the autoOffline feature is set to \"local Network\", this means offline mode will be automatically enabled when no wifi or ethernet connection is active"
@@ -2134,7 +1807,6 @@
         "description": "Title for the setting that controls if the media notification has a favorite button."
     },
     "favorite": "Любимые",
-    "@favorite": {},
     "allLibraries": "Все Библиотеки",
     "@allLibraries": {
         "description": "All Libraries"
@@ -2143,12 +1815,8 @@
     "@noGenres": {
         "description": "Gets shown when there are no genres available for an album or artist"
     },
-    "onlineMode": "Онлайн-Режим",
-    "@onlineMode": {},
     "favorites": "Избранное",
-    "@favorites": {},
     "duration": "Продолжительность",
-    "@duration": {},
     "defaultOrder": "Стандартный Порядок",
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
@@ -2176,11 +1844,8 @@
         }
     },
     "notAvailable": "Недоступно",
-    "@notAvailable": {},
     "showArtistsTracksSection": "Показывать Раздел Треков",
-    "@showArtistsTracksSection": {},
     "showArtistsTracksSectionSubtitle": "Показывать раздел с пятью треками. Вы можете выбрать между Самыми Прослушиваемыми, Любимыми, Случайными, Последними Выпусками, Недавно Добавленными и Недавно Воспроизведенными треками.",
-    "@showArtistsTracksSectionSubtitle": {},
     "sleepTimerRemainingTracks": "Заснет {time,plural,=1{после этого трека} other{через {time} треков}}",
     "@sleepTimerRemainingTracks": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
@@ -2195,13 +1860,9 @@
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
     },
     "removeFavorite": "Удалить Из Любымих",
-    "@removeFavorite": {},
     "addFavorite": "Добавить В Любимые",
-    "@addFavorite": {},
     "topAlbums": "Топ Альбомов",
-    "@topAlbums": {},
     "topArtists": "Топ Исполнителей",
-    "@topArtists": {},
     "recentlyAddedTracks": "Недавно Добавленные Треки",
     "@recentlyAddedTracks": {
         "description": "Label for the artist section that shows tracks that were recently added to the library, sorted by the date they were added."
@@ -2215,45 +1876,24 @@
         "description": "Label for the genre section that shows artists that were recently added to the library, sorted by the date they were added."
     },
     "latestTracks": "Последние Треки",
-    "@latestTracks": {},
     "latestAlbums": "Последние Альбомы",
-    "@latestAlbums": {},
     "latestArtists": "Последние Исполнители",
-    "@latestArtists": {},
     "recentlyPlayedTracks": "Недавно Прослушанные Треки",
-    "@recentlyPlayedTracks": {},
     "recentlyPlayedAlbums": "Недавно Прослушанные Альбомы",
-    "@recentlyPlayedAlbums": {},
     "recentlyPlayedArtists": "Недавно Прослушанные Исполнители",
-    "@recentlyPlayedArtists": {},
     "favoriteTracks": "Любимые Треки",
-    "@favoriteTracks": {},
     "favoriteAlbums": "Любимые Альбомы",
-    "@favoriteAlbums": {},
     "favoriteArtists": "Любимые Исполнители",
-    "@favoriteArtists": {},
     "randomTracks": "Треки (Случайный Выбор)",
-    "@randomTracks": {},
-    "randomAlbums": "Альбомы (Случайный Выбор)",
-    "@randomAlbums": {},
-    "randomArtists": "Исполнители (Случайный Выбор)",
-    "@randomArtists": {},
     "mostPlayed": "Самые Прослушиваемые",
-    "@mostPlayed": {},
-    "randomFavoritesFirst": "Случайно (Сначала Любимые)",
-    "@randomFavoritesFirst": {},
     "recentlyAdded": "Недавно Добавленные",
-    "@recentlyAdded": {},
     "recentlyPlayed": "Недавно Прослушанные",
-    "@recentlyPlayed": {},
     "latestReleases": "Последние Выпуски",
-    "@latestReleases": {},
     "itemSectionsOrder": "Порядок Выбора",
     "@itemSectionsOrder": {
         "description": "Label for the setting that controls the order of item sections on the screens."
     },
     "unknown": "Неизвестно",
-    "@unknown": {},
     "itemSectionsOrderSubtitle": "Управляет порядком объектов в разделах.",
     "@itemSectionsOrderSubtitle": {
         "description": "Description of the setting that controls the order of item sections on the screens."
@@ -2297,10 +1937,6 @@
     "genreListsInheritSortingSubtitle": "Когда включено, страницы \"показать все\" будут наследовать сортировку и фильтры, выбранные на Экране Жанров. Если выключено, будут использоваться настройки соотвествующего раздела. Нажав на счетчик сверху Экрана Жанров всегда будет открывать полный список с настройками сортировки из библиотеки.",
     "@genreListsInheritSortingSubtitle": {
         "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
-    },
-    "curatedItemsMostPlayedOfflineTooltip": "Недоступно в Автономном Режиме.",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
     },
     "curatedItemsNotListenedYet": "Вы не слушали ни одного трека{itemType, select, artistGenreFilter{ от этого исполнителя в этом жанре} artist{ от этого исполнителя} genre{ в этом жанре} other{}}.",
     "@curatedItemsNotListenedYet": {
@@ -2438,21 +2074,11 @@
         "description": "Shows the active address inside the network settings screen so the user can see if this feature works"
     },
     "preferLocalNetworkTargetAddressLocalSettingTitle": "Адрес локальной сети",
-    "@preferLocalNetworkTargetAddressLocalSettingTitle": {},
     "preferLocalNetworkTargetAddressLocalSettingDescription": "Целевой адрес сервера Jellyfin в вашей локальной сети",
-    "@preferLocalNetworkTargetAddressLocalSettingDescription": {},
     "preferLocalNetworkEnableSwitchTitle": "Предпочитать Локальную Сеть",
-    "@preferLocalNetworkEnableSwitchTitle": {},
     "preferLocalNetworkEnableSwitchDescription": "Использовать или нет другой адрес, когда вы находитесь в локальной сети вашего Jellyfin сервера",
-    "@preferLocalNetworkEnableSwitchDescription": {},
     "preferLocalNetworkPublicAddressSettingTitle": "Внешний Адрес",
-    "@preferLocalNetworkPublicAddressSettingTitle": {},
     "preferLocalNetworkPublicAddressSettingDescription": "Основной адрес, используемый для подключения к вашему Jellyfin серверу",
-    "@preferLocalNetworkPublicAddressSettingDescription": {},
-    "preferLocalNetworkInfoBox": "Эта Функция требует разрешениие на Местоположение (оно также должно быть включено) чтобы прочесть название сети.",
-    "@preferLocalNetworkInfoBox": {
-        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
-    },
     "clearQueueOnStopEventTitle": "Очищать Очередь При Внешней Остановке",
     "@clearQueueOnStopEventTitle": {
         "description": "Title for the setting that controls if OS stop commands clear the queue."
@@ -2574,13 +2200,9 @@
         "description": "Description for the quick connect authorization menu, shown at the bottom"
     },
     "autoSwitchItemCurationTypeSubtitle": "Если эта функция включена, разделы объектов в разделах \"Исполнитель\" и \"Жанр\" автоматически переключаются на другой тип фильтрации, если нет доступных элементов (например, нет избранных для определенного исполнителя).",
-    "@autoSwitchItemCurationTypeSubtitle": {},
     "autoSwitchItemCurationTypeTitle": "Автоматически Переключать Фильтр Объектов",
-    "@autoSwitchItemCurationTypeTitle": {},
     "performingArtists": "Участвующие Исполнители",
-    "@performingArtists": {},
     "performingArtist": "Участвующий Исполнитель",
-    "@performingArtist": {},
     "createPlaylistFromCurrentQueue": "Сохранить Очередь в Плейлист",
     "@createPlaylistFromCurrentQueue": {
         "description": "Label for a button that creates a new playlist from the current queue."
@@ -2598,7 +2220,6 @@
         "description": "Subtitle for the setting that controls if high contrast colors are used throughout the app"
     },
     "logoutButtonSubtitle": "Вход в аккаунт другого сервера удалит скачанные файлы",
-    "@logoutButtonSubtitle": {},
     "additionalBaseItemInfoTitle": "Дополнительная информация",
     "@additionalBaseItemInfoTitle": {
         "description": "Title for the setting that controls the displayed additional item info."
@@ -2608,17 +2229,7 @@
         "description": "Subtitle for the setting that controls the displayed additional item info."
     },
     "adaptive": "Адаптивный",
-    "@adaptive": {},
-    "shuffleCountButton": "Пермешать ({count,plural,=1{{count} Трек} few{{count} Трека} other{{count} Треков}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "none": "Ничего",
-    "@none": {},
     "discordRPCSettingTitle": "Активность Discord",
     "@discordRPCSettingTitle": {
         "description": "Title for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
@@ -2719,7 +2330,6 @@
         "description": "Label shown on drag handles of track list  tiles in the queue list"
     },
     "shuffleSome": "Перемешать некоторые",
-    "@shuffleSome": {},
     "playbackActionPageNewQueue": "Новая Очередь Воспроизведения",
     "@playbackActionPageNewQueue": {
         "description": "Label for the playback action page that contains all actions related to starting a new queue"
@@ -2775,10 +2385,6 @@
     "androidImageErrorPrompt": "Мы не можем записать картинки в папку Музыки на Android из-за ограничений ОС. Выберите другую папку.",
     "@androidImageErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
-    },
-    "addDownloadLocationsErrorButton": "Добавить в любом случае",
-    "@addDownloadLocationsErrorButton": {
-        "description": "Label shown on button for adding a download location we suspect to be buggy"
     },
     "syncFailedWarningShort": "Внимание: Не удалось синхронизировать некоторые загрузки с сервером.",
     "@syncFailedWarningShort": {
@@ -2849,9 +2455,7 @@
         "description": "Title for the accent color picker sheet"
     },
     "defaultWord": "По умолчанию",
-    "@defaultWord": {},
     "useDefaultButton": "Сбросить дополнительный цвет",
-    "@useDefaultButton": {},
     "colorCode": "Hex-код цвета",
     "@colorCode": {
         "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
@@ -2861,11 +2465,6 @@
         "description": "Hint text for the color code input field"
     },
     "save": "Сохранить",
-    "@save": {},
-    "invalidColorCode": "Неверный код цвета",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
     "playbackActionPageMoveWithinQueue": "Переместить внутри очереди",
     "@playbackActionPageMoveWithinQueue": {
         "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
@@ -2909,7 +2508,6 @@
         }
     },
     "downloadAllPlaylistsSettingWarning": "Примечание: Это скачает все элементы во всех плейлистах, независимо от того, в какой они библиотеке",
-    "@downloadAllPlaylistsSettingWarning": {},
     "lyricsEmptyStateLoading": "Загрузка текста...",
     "@lyricsEmptyStateLoading": {
         "description": "Message shown while lyrics are being loaded"
@@ -2925,14 +2523,6 @@
     "lyricsMissingLyricLinePlaceholder": "Пропущенная строка",
     "@lyricsMissingLyricLinePlaceholder": {
         "description": "Placeholder text for missing lyric lines in synchronized lyrics"
-    },
-    "radioModeSettingsTitle": "Режим Радио",
-    "@radioModeSettingsTitle": {
-        "description": "Title for the setting that controls the radio mode/algorithm."
-    },
-    "radioModeSettingsSubtitle": "Настраивает метод, по которому радио выбирает песни.",
-    "@radioModeSettingsSubtitle": {
-        "description": "Subtitle for the setting that controls the radio mode/algorithm."
     },
     "radioModeMenuTitle": "Выберите Режим Радио",
     "@radioModeMenuTitle": {
@@ -3018,16 +2608,6 @@
     "@autoOfflineSettingSubtitle": {
         "description": "Subtitle for the automated offline mode setting."
     },
-    "radioModeOptionConfirmation": "Переключено на {option, select, reshuffle{режим перемешки} random{случайный режим} similar{режим похожих} continuous{продолжительный режим} albumMix{Альбомный микс} other{{option}}}",
-    "@radioModeOptionConfirmation": {
-        "placeholders": {
-            "option": {
-                "type": "String",
-                "description": "Corresponds to RadioMode.name"
-            }
-        },
-        "description": "Confirmation displayed when the radio mode is changed."
-    },
     "radioModeEnabledSubtitle": "Нажмите для настройки",
     "@radioModeEnabledSubtitle": {
         "description": "Subtitle displayed in the queue to show when radio mode is enabled."
@@ -3035,10 +2615,6 @@
     "radioModeDisabledSubtitle": "Нажмите, чтобы включить",
     "@radioModeDisabledSubtitle": {
         "description": "Subtitle displayed in the queue to show that radio mode is disabled."
-    },
-    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "Текущий режим недоступен в автономном режиме.",
-    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
-        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
     },
     "radioModeDescription": "{mode, select, reshuffle{Бесконечно перемешивать очередь} random{Добавлять треки из первичного выбора случайно} similar{Добавлять треки на основании оригинальной очереди} continuous{Добавлять треки на основании текущего трека} albumMix{Добавлять похожие альбомы} other{}}",
     "@radioModeDescription": {

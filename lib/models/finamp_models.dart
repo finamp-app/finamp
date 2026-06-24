@@ -4454,6 +4454,19 @@ class ItemFilter {
     }
   }
 
+  String getPlainName(AppLocalizations l10n) {
+    switch (type) {
+      case ItemFilterType.genreFilter:
+        return extraBaseItem.name ?? "";
+      case ItemFilterType.startsWithCharacter:
+        return extraString.toUpperCase();
+      case ItemFilterType.searchTerm:
+        return extraString;
+      case _:
+        return getName(l10n);
+    }
+  }
+
   @override
   bool operator ==(Object other) {
     return other is ItemFilter && other.type == type && other.extras == extras;

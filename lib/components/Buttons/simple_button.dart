@@ -129,7 +129,9 @@ class SimpleButton extends StatelessWidget {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-              EdgeInsets.only(left: 2, top: 0, bottom: 0, right: backgroundColor != null ? 6 : 2),
+              iconPosition == IconPosition.start
+                  ? EdgeInsets.only(left: 2, top: 0, bottom: 0, right: backgroundColor != null ? 6 : 2)
+                  : EdgeInsets.only(left: backgroundColor != null ? 6 : 2, top: 0, bottom: 0, right: 2),
             ),
             backgroundColor: WidgetStateProperty.all<Color>(backgroundColor ?? Colors.transparent),
             visualDensity: const VisualDensity(horizontal: -4, vertical: -4),

@@ -84,26 +84,32 @@ class GenreChips extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: activeGenreFilter != null
-          ? SortAndFilterRow.removeOnly(controller: sortConfigController!, hideLeadingIcon: true)
-          : SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Wrap(
-                spacing: 4.0,
-                runSpacing: 4.0,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: genres.map((genre) {
-                  return GenreChip(
-                    key: ValueKey(genre.id),
-                    backgroundColor: backgroundColor,
-                    color: color,
-                    parentType: parentType,
-                    genre: genre,
-                    sortConfigController: sortConfigController,
-                  );
-                }).toList(),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Wrap(
+          spacing: 4.0,
+          runSpacing: 4.0,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            if (activeGenreFilter != null)
+              ActiveFilterChip(
+                filter: activeGenreFilter,
+                onRemove: () => sortConfigController!.updateGenreFilter(null),
+                showPlainName: true,
               ),
-            ),
+            ...genres.where((g) => g.id != activeGenreFilter?.extraBaseItem.id).map((genre) {
+              return GenreChip(
+                key: ValueKey(genre.id),
+                backgroundColor: backgroundColor,
+                color: color,
+                parentType: parentType,
+                genre: genre,
+                sortConfigController: sortConfigController,
+              );
+            }),
+          ],
+        ),
+      ),
     );
   }
 }

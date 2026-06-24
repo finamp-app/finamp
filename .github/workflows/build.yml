@@ -225,19 +225,20 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev libmpv-dev
 
-    - name: Determine Flutter stable version
-      uses: subosito/flutter-action@v2
-      id: flutter-version
-      with:
-        architecture: 'x64'
-        channel: 'stable'
-        dry-run: true
+    # - name: Determine Flutter stable version
+    #   uses: subosito/flutter-action@v2
+    #   id: flutter-version
+    #   with:
+    #     architecture: 'x64'
+    #     channel: 'stable'
+    #     dry-run: true
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         # Prebuilt ARM linux builds are not provided, so build flutter from source
         channel: master
-        flutter-version: "${{ steps.flutter-version.outputs.VERSION }}"
+        # flutter-version: "${{ steps.flutter-version.outputs.VERSION }}"
+        flutter-version: "3.41.9"
         cache: false
         pub-cache: true
         # Include arch as linux aarch64 include isar overriding
@@ -308,6 +309,14 @@ jobs:
         path: ${{ env.SHA_NAME }}
         compression-level: 0 # no compression
 
+    - name: Upload release archive
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      uses: alexellis/upload-assets@0.4.1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        asset_paths: '["./${{ env.TAR_NAME }}", "./${{ env.SHA_NAME }}"]'
+
     - name: Run Integration Tests
       if: *integration_if
       run: |
@@ -319,14 +328,6 @@ jobs:
           timeout 2m xvfb-run flutter run -d linux
         fi
         exit $exitcode
-
-    - name: Upload release archive
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-      uses: alexellis/upload-assets@0.4.1
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-      with:
-        asset_paths: '["./${{ env.TAR_NAME }}", "./${{ env.SHA_NAME }}"]'
 
   build-windows:
     name: Build for Windows
@@ -399,21 +400,6 @@ jobs:
         path: ./${{ env.BASE_NAME }}.msix
         compression-level: 0 # no compression
 
-    - name: Run Integration Tests
-      if: *integration_if
-      shell: bash
-      run: |
-        set +e
-        # Work around issue with permission plugin dependency and latest compiler
-        export _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
-        flutter test integration_test/test_cases.dart -d windows
-        exitcode=$?
-        if [[ $exitcode == 79 ]]; then
-          echo "Potential native crash - attempting to display"
-          timeout 2m flutter run -d windows
-        fi
-        exit $exitcode
-
     - name: Prepare release archive
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
       run: |
@@ -428,6 +414,21 @@ jobs:
       with:
         # upload zip archive here, uploading the raw directory fails
         asset_paths: '["./${{ env.BASE_NAME }}.msix", "./${{ env.BASE_NAME }}.zip"]'
+
+    - name: Run Integration Tests
+      if: *integration_if
+      shell: bash
+      run: |
+        set +e
+        # Work around issue with permission plugin dependency and latest compiler
+        export _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
+        flutter test integration_test/test_cases.dart -d windows
+        exitcode=$?
+        if [[ $exitcode == 79 ]]; then
+          echo "Potential native crash - attempting to display"
+          timeout 2m flutter run -d windows
+        fi
+        exit $exitcode
 
   # build-macos:
   #   name: Build for macOS

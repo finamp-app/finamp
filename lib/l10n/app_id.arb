@@ -170,10 +170,6 @@
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
-    "couldNotFindLibraries": "Tidak dapat menemukan pustaka apa pun.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "allLibraries": "Semua Pustaka",
     "@allLibraries": {
         "description": "All Libraries"
@@ -210,7 +206,6 @@
     "downloads": "Unduhan",
     "settings": "Pengaturan",
     "offlineMode": "Mode Offline",
-    "onlineMode": "Mode Online",
     "sortOrder": "Urutan pengurutan",
     "sortBy": "Urutkan berdasarkan",
     "title": "Judul",
@@ -253,17 +248,6 @@
             "value": {
                 "type": "int",
                 "example": "5"
-            }
-        }
-    },
-    "syncDownloadedPlaylists": "Sinkronkan playlist yang diunduh",
-    "downloadMissingImages": "Unduh gambar yang hilang",
-    "downloadedMissingImages": "{count,plural, =0{Tidak ada gambar hilang yang ditemukan} =1{Mengunduh {count} gambar hilang} other{Mengunduh {count} gambar hilang}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
             }
         }
     },
@@ -329,25 +313,6 @@
     "activeDownloadsTitle": "Unduhan aktif",
     "noActiveDownloads": "Tidak ada unduhan aktif.",
     "errorScreenError": "Terjadi kesalahan saat mengambil daftar kesalahan! Pada titik ini, Anda mungkin sebaiknya membuat issue di GitHub dan menghapus data aplikasi",
-    "failedToGetTrackFromDownloadId": "Gagal mendapatkan trek dari ID unduhan",
-    "deleteDownloadsPrompt": "Apakah Anda yakin ingin menghapus {itemType, select, album{album} playlist{playlist} artist{artis} genre{genre} track{trek} library{pustaka} other{item}} '{itemName}' dari perangkat ini?",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
-    "deleteDownloadsConfirmButtonText": "Hapus",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
     "specialDownloads": "Unduhan khusus",
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
@@ -371,14 +336,6 @@
     },
     "playButtonLabel": "Putar",
     "shuffleButtonLabel": "Acak",
-    "shuffleCountButton": "Acak ({count,plural,=1{{count} Trek} other{{count} Trek}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "playbackActionPageMoveWithinQueue": "Pindahkan dalam antrean",
     "@playbackActionPageMoveWithinQueue": {
         "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
@@ -439,7 +396,6 @@
         }
     },
     "required": "Wajib",
-    "updateButtonLabel": "Perbarui",
     "updatePlaylistButtonLabel": "Perbarui playlist",
     "@updatePlaylistButtonLabel": {
         "description": "Label for the button that updates the playlist on the edit playlist screen"
@@ -449,7 +405,6 @@
         "description": "Text shown while the changes to a playlist are being saved"
     },
     "playlistUpdated": "Playlist diperbarui.",
-    "downloadsDeleted": "Unduhan dihapus.",
     "addDownloads": "Tambahkan unduhan",
     "location": "Lokasi",
     "confirmDownloadStarted": "Unduhan dimulai",
@@ -475,7 +430,6 @@
     "transcoding": "Transcoding",
     "downloadLocations": "Lokasi Unduhan",
     "audioService": "Layanan Audio",
-    "playbackReporting": "Pelaporan Pemutaran",
     "interactions": "Interaksi",
     "layoutAndTheme": "Tata letak & Tema",
     "notAvailable": "Tidak tersedia",
@@ -493,7 +447,6 @@
     "selectDirectory": "Pilih direktori",
     "unknownError": "Kesalahan tidak dikenal",
     "pathReturnSlashErrorMessage": "Path yang mengembalikan \\\"/\\\" tidak dapat digunakan",
-    "directoryMustBeEmpty": "Direktori harus kosong",
     "customLocationsBuggy": "Lokasi kustom bisa sangat penuh bug dan tidak direkomendasikan dalam kebanyakan kasus. Lokasi di bawah folder sistem 'Music' mencegah penyimpanan sampul album karena keterbatasan OS.",
     "enterLowPriorityStateOnPause": "Masuk ke status prioritas rendah saat dijeda",
     "enterLowPriorityStateOnPauseSubtitle": "Memungkinkan notifikasi diswipe saat dijeda. Juga memungkinkan Android mematikan layanan saat dijeda.",
@@ -558,28 +511,7 @@
     "@apply": {
         "description": "Used for a button in the playback speed menu"
     },
-    "portrait": "Potret",
     "landscape": "Lanskap",
-    "gridCrossAxisCount": "Jumlah kolom kisi {value} (sumbu silang)",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
-    "gridCrossAxisCountSubtitle": "Jumlah ubin kisi per baris saat {value}.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
     "showTextOnGridView": "Tampilkan teks pada tampilan kisi",
     "showTextOnGridViewSubtitle": "Apakah teks (judul, artis, dll.) ditampilkan pada layar musik tampilan kisi.",
     "useCoverAsBackground": "Gunakan sampul buram sebagai latar belakang",
@@ -592,8 +524,6 @@
     "@playerScreenMinimumCoverPaddingEditorSubtitle": {
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
-    "hideTrackArtistsIfSameAsAlbumArtists": "Sembunyikan artis trek jika sama dengan artis album",
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Apakah artis trek ditampilkan di layar album jika tidak berbeda dari artis album.",
     "autoSwitchItemCurationTypeTitle": "Otomatis ganti jenis kurasi item",
     "autoSwitchItemCurationTypeSubtitle": "Saat diaktifkan, Bagian Item di layar Artis dan Genre secara otomatis beralih ke jenis kurasi lain jika tidak ada item yang tersedia (misalnya, tidak ada favorit untuk artis tertentu).",
     "showArtistsTracksSection": "Tampilkan bagian trek",
@@ -640,10 +570,6 @@
         "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
     },
     "save": "Simpan",
-    "invalidColorCode": "Kode warna tidak valid",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
     "tabs": "Tab",
     "playerScreen": "Layar pemutar",
     "@playerScreen": {
@@ -683,7 +609,6 @@
             }
         }
     },
-    "invalidNumber": "Angka tidak valid",
     "sleepTimerTooltip": "Timer tidur",
     "sleepTimerRemainingTime": "Tidur dalam {time,plural,=1{<1 menit} other{{time} menit}}",
     "@sleepTimerRemainingTime": {
@@ -705,30 +630,9 @@
     },
     "addToPlaylistTooltip": "Tambahkan ke playlist",
     "addToPlaylistTitle": "Tambahkan ke Playlist",
-    "addToMorePlaylistsTooltip": "Tambahkan ke lebih banyak playlist",
     "addToMorePlaylistsTitle": "Tambahkan ke Lebih Banyak Playlist",
     "removeFromPlaylistTooltip": "Hapus dari playlist ini",
     "removeFromPlaylistTitle": "Hapus dari Playlist Ini",
-    "removeFromPlaylistNamedTooltip": "Hapus dari playlist '{playlistName}'",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "removeFromPlaylistNamedTitle": "Hapus dari Playlist '{playlistName}'",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "newPlaylist": "Playlist Baru",
     "createButtonLabel": "Buat",
     "playlistCreated": "Playlist dibuat.",
@@ -742,9 +646,7 @@
     },
     "noAlbum": "Tanpa album",
     "noItem": "Tidak ada item",
-    "noArtist": "Tidak ada artis",
     "unknownArtist": "Artis tidak dikenal",
-    "unknownAlbum": "Album tidak dikenal",
     "playbackModeDirectPlaying": "Pemutaran langsung",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -772,24 +674,12 @@
     "@addToQueue": {
         "description": "Popup menu item title for adding an item to the end of the play queue."
     },
-    "replaceQueue": "Ganti antrean",
     "instantMix": "Mix instan",
     "goToAlbum": "Buka album",
     "goToArtist": "Buka artis",
     "goToGenre": "Buka genre",
     "removeFavorite": "Hapus favorit",
     "addFavorite": "Tambahkan favorit",
-    "confirmFavoriteAdded": "Favorit ditambahkan",
-    "confirmFavoriteRemoved": "Favorit dihapus",
-    "addedToQueue": "Ditambahkan ke antrean.",
-    "@addedToQueue": {
-        "description": "Snackbar message that shows when the user successfully adds items to the end of the play queue."
-    },
-    "insertedIntoQueue": "Disisipkan ke antrean.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
-    "queueReplaced": "Antrean diganti.",
     "confirmAddedToPlaylist": "Ditambahkan ke playlist.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
@@ -828,14 +718,6 @@
     "startRadio": "Mulai Radio",
     "@startRadio": {
         "description": "Menu label for starting a radio from a playlist, album, etc."
-    },
-    "redownloadedItems": "{count,plural, =0{Tidak perlu mengunduh ulang.} =1{Mengunduh ulang {count} item} other{Mengunduh ulang {count} item}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "bufferDuration": "Durasi buffer",
     "bufferDurationSubtitle": "Durasi yang harus dibuffer, dalam detik. Memerlukan mulai ulang.",
@@ -1213,10 +1095,7 @@
     "favoriteAlbums": "Album Favorit",
     "favoriteArtists": "Artis Favorit",
     "randomTracks": "Trek (Pilihan Acak)",
-    "randomAlbums": "Album (Pilihan Acak)",
-    "randomArtists": "Artis (Pilihan Acak)",
     "mostPlayed": "Paling Sering Diputar",
-    "randomFavoritesFirst": "Acak (Favorit Diutamakan)",
     "recentlyAdded": "Baru Ditambahkan",
     "recentlyPlayed": "Baru Diputar",
     "latestReleases": "Rilis Terbaru",
@@ -1268,10 +1147,6 @@
     "genreListsInheritSortingSubtitle": "Jika diaktifkan, daftar \\\"Lihat Semua\\\" akan mewarisi pengurutan dan pemfilteran dari Layar Genre. Jika dinonaktifkan, pengaturan dari tab pustaka yang sesuai akan digunakan sebagai gantinya. Mengetuk jumlah di bagian atas Layar Genre atau tombol \\\"Telusuri Playlist\\\" akan selalu membuka daftar penuh dengan pengaturan pengurutan dari tab pustaka.",
     "@genreListsInheritSortingSubtitle": {
         "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
-    },
-    "curatedItemsMostPlayedOfflineTooltip": "Tidak tersedia dalam Mode Offline.",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
     },
     "curatedItemsNotListenedYet": "Anda belum mendengarkan trek apa pun{itemType, select, artistGenreFilter{ oleh artis ini dalam genre ini} artist{ oleh artis ini} genre{ dalam genre ini} other{}}.",
     "@curatedItemsNotListenedYet": {
@@ -1364,7 +1239,6 @@
     "confirm": "Konfirmasi",
     "close": "Tutup",
     "showUncensoredLogMessage": "Log ini berisi informasi login Anda. Tampilkan?",
-    "resetTabs": "Reset tab",
     "resetToDefaults": "Reset ke default",
     "noMusicLibrariesTitle": "Tidak ada pustaka musik",
     "@noMusicLibrariesTitle": {
@@ -1439,8 +1313,6 @@
             }
         }
     },
-    "swipeInsertQueueNext": "Putar trek yang di-swipe sebagai berikutnya",
-    "swipeInsertQueueNextSubtitle": "Aktifkan untuk menyisipkan sebuah trek sebagai item berikutnya dalam antrean saat di-swipe di daftar trek, alih-alih menambahkannya ke bagian akhir.",
     "swipeLeftToRightAction": "Aksi swipe ke kanan",
     "swipeLeftToRightActionSubtitle": "Aksi yang dipicu saat men-swipe trek dalam daftar dari kiri ke kanan.",
     "swipeRightToLeftAction": "Aksi swipe ke kiri",
@@ -1774,9 +1646,6 @@
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
-    "fixedGridSizeSwitchTitle": "Gunakan ubin kisi berukuran tetap",
-    "fixedGridSizeSwitchSubtitle": "Ukuran ubin kisi tidak akan menyesuaikan ukuran jendela/layar.",
-    "fixedGridSizeTitle": "Ukuran ubin kisi",
     "fixedGridTileSizeEnum": "{size, select, small{Kecil} medium{Sedang} large{Besar} veryLarge{Sangat besar} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
@@ -1790,12 +1659,8 @@
     "allowSplitScreenSubtitle": "Pemutar akan ditampilkan berdampingan dengan tampilan lain pada layar yang lebih lebar.",
     "enableVibration": "Aktifkan getaran",
     "enableVibrationSubtitle": "Apakah getaran diaktifkan.",
-    "hideQueueButton": "Sembunyikan tombol antrean",
-    "hideQueueButtonSubtitle": "Sembunyikan tombol antrean pada layar pemutar. Swipe ke atas untuk mengakses antrean.",
     "oneLineMarqueeTextButton": "Gulir otomatis judul panjang",
     "oneLineMarqueeTextButtonSubtitle": "Gulir otomatis judul trek yang terlalu panjang untuk ditampilkan dalam dua baris",
-    "marqueeOrTruncateButton": "Gunakan elipsis untuk judul panjang",
-    "marqueeOrTruncateButtonSubtitle": "Tampilkan … di akhir judul panjang alih-alih menggulir teks",
     "hidePlayerBottomActions": "Sembunyikan aksi bawah",
     "hidePlayerBottomActionsSubtitle": "Sembunyikan tombol antrean dan lirik pada layar pemutar. Swipe ke atas untuk mengakses antrean, swipe ke kiri (di bawah sampul album) untuk melihat lirik jika tersedia.",
     "prioritizePlayerCover": "Prioritaskan sampul album",
@@ -2134,10 +1999,6 @@
     "@genreScreen": {
         "description": "Name for the view/screen that shows genres"
     },
-    "emptyTopTracksList": "Anda belum mendengarkan trek apa pun oleh artis ini.",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
-    },
     "emptyAlbum": "Tidak ada trek.",
     "@emptyAlbum": {
         "description": "Message shown as a placeholder when an album or playlist is empty."
@@ -2416,10 +2277,6 @@
     "preferLocalNetworkEnableSwitchDescription": "Whether or not to use a different address when you are in the local network of your jellyfin server",
     "preferLocalNetworkPublicAddressSettingTitle": "Public Address",
     "preferLocalNetworkPublicAddressSettingDescription": "The primary address used to connect to your Jellyfin server",
-    "preferLocalNetworkInfoBox": "This Feature requires Location permissions (and location needs to be enabled) to read the network name.",
-    "@preferLocalNetworkInfoBox": {
-        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
-    },
     "networkSettingsTitle": "Network",
     "@networkSettingsTitle": {
         "description": "Title for the network settings screen"
@@ -2455,14 +2312,6 @@
     "clearQueueOnStopEventSubtitle": "Clear the queue and close the player if a 'stop' command is received from the OS. In-app stop actions will always close the player and clear the queue.",
     "@clearQueueOnStopEventSubtitle": {
         "description": "Subtitle for the setting that controls if OS stop commands clear the queue."
-    },
-    "radioModeSettingsTitle": "Radio Mode",
-    "@radioModeSettingsTitle": {
-        "description": "Title for the setting that controls the radio mode/algorithm."
-    },
-    "radioModeSettingsSubtitle": "Sets the method that the radio feature uses to pick songs to add.",
-    "@radioModeSettingsSubtitle": {
-        "description": "Subtitle for the setting that controls the radio mode/algorithm."
     },
     "radioModeMenuTitle": "Choose Radio Mode",
     "@radioModeMenuTitle": {
@@ -2520,16 +2369,6 @@
     "@radioModeDisableButtonSubtitle": {
         "description": "Subtitle for the option that disables radio mode."
     },
-    "radioModeOptionConfirmation": "Switched to {option, select, reshuffle{reshuffle mode} random{random mode} similar{similar mode} continuous{continuous mode} albumMix{album mix} other{{option}}}",
-    "@radioModeOptionConfirmation": {
-        "placeholders": {
-            "option": {
-                "type": "String",
-                "description": "Corresponds to RadioMode.name"
-            }
-        },
-        "description": "Confirmation displayed when the radio mode is changed."
-    },
     "radioModeEnabledSubtitle": "Tap to configure",
     "@radioModeEnabledSubtitle": {
         "description": "Subtitle displayed in the queue to show when radio mode is enabled."
@@ -2537,10 +2376,6 @@
     "radioModeDisabledSubtitle": "Tap to enable",
     "@radioModeDisabledSubtitle": {
         "description": "Subtitle displayed in the queue to show that radio mode is disabled."
-    },
-    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "Current mode not available offline.",
-    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
-        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
     },
     "radioModeDescription": "{mode, select, reshuffle{Continuously reshuffle queue} random{Append tracks randomly from the initial selection} similar{Append based on the original queue} continuous{Append based on the current track} albumMix{Append similar albums} other{}}",
     "@radioModeDescription": {
@@ -2888,10 +2723,6 @@
     "androidImageErrorPrompt": "Kami tidak dapat menulis gambar ke folder Music Android karena pembatasan OS. Anda harus memilih lokasi lain.",
     "@androidImageErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
-    },
-    "addDownloadLocationsErrorButton": "Tetap tambahkan",
-    "@addDownloadLocationsErrorButton": {
-        "description": "Label shown on button for adding a download location we suspect to be buggy"
     },
     "syncFailedWarningShort": "Peringatan: Gagal menyinkronkan beberapa unduhan dengan server.",
     "@syncFailedWarningShort": {
