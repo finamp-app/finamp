@@ -3190,7 +3190,7 @@
     "@favoriteGenres": {
         "description": "Name of a home screen section preset"
     },
-    "newlyAddedAlbums": "Newly Added Albums",
+    "newlyAddedAlbums": "Newly Added Albums (All Libraries)",
     "@newlyAddedAlbums": {
         "description": "Name of a home screen section preset"
     },
@@ -3531,6 +3531,10 @@
     },
     "cancelChanges": "Cancel changes",
     "@cancelChanges": {
-        "description": "Button on sort and filter menu that cancels any changes and exits the menu."
+        "description": "Button on sort and filter menu that clears any pending changes."
+    },
+    "applyChangesOnClose": "Changes will apply automatically upon menu close.",
+    "@applyChangesOnClose": {
+        "description": "Notification on sort and filter menu that currently pending changes will be automatically applied on close."
     }
 }

@@ -365,7 +365,7 @@ jobs:
 
     - run: |
         # Work around issue with permission plugin dependency and latest compiler
-        export _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
+        set _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
         flutter build windows
 
     - name: Set archive and msix base name
@@ -388,7 +388,7 @@ jobs:
 
     - run: |
         # Work around issue with permission plugin dependency and latest compiler
-        export _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
+        set _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
         dart run msix:create --install-certificate false
         # move msix file with correct naming
         mv build/windows/x64/runner/Release/finamp.msix ./${{ env.BASE_NAME }}.msix
@@ -421,7 +421,7 @@ jobs:
       run: |
         set +e
         # Work around issue with permission plugin dependency and latest compiler
-        export _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
+        set _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
         flutter test integration_test/test_cases.dart -d windows
         exitcode=$?
         if [[ $exitcode == 79 ]]; then

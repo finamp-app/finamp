@@ -638,10 +638,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu>
       SizedBox(
         height: 40.0,
         child: currentConfig != controller._config
-            ? Align(
-                alignment: AlignmentGeometry.directional(0.0, 0.7),
-                child: Text("Changes will apply automatically upon menu close."),
-              )
+            ? Align(alignment: AlignmentGeometry.directional(0.0, 0.7), child: Text(context.l10n.applyChangesOnClose))
             : null,
       ),
       CTAMedium(
