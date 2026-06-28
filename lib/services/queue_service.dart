@@ -643,7 +643,7 @@ class QueueService {
       skipRadioCacheInvalidation: skipRadioCacheInvalidation,
     );
     _queueServiceLogger.info(
-      "Started playing '${source.name.getLocalized2(GlobalSnackbar.requireL10n)}' (${source.type}) in order $order from index $startingIndex",
+      "Started playing '${source.name.getLocalized(GlobalSnackbar.requireL10n)}' (${source.type}) in order $order from index $startingIndex",
     );
     _queueServiceLogger.info("Items for queue: [${items.map((e) => e.name).join(", ")}]");
   }
@@ -669,7 +669,7 @@ class QueueService {
           beginPlaying: beginPlaying,
         );
         _queueServiceLogger.info(
-          "Started playing '${base.source.name.getLocalized2(GlobalSnackbar.requireL10n)}' (${base.source.type}) in order $order from index ${base.startingIndex}",
+          "Started playing '${base.source.name.getLocalized(GlobalSnackbar.requireL10n)}' (${base.source.type}) in order $order from index ${base.startingIndex}",
         );
         _queueServiceLogger.info("Items for queue: [${base.items.map((e) => e.name).join(", ")}]");
       // TODO also do pre-cache work in other queue add methods?
@@ -683,7 +683,7 @@ class QueueService {
           beginPlaying: beginPlaying,
         );
         _queueServiceLogger.info(
-          "Started playing '${slice.source.name.getLocalized2(GlobalSnackbar.requireL10n)}' (${slice.source.type}), pending additional tracks",
+          "Started playing '${slice.source.name.getLocalized(GlobalSnackbar.requireL10n)}' (${slice.source.type}), pending additional tracks",
         );
         _queueServiceLogger.info("Items for queue: [${slice.cachedTracks.map((e) => e.name).join(", ")}]");
         final additionalTracks = List.of(await slice.fetchTracks);

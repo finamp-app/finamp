@@ -236,7 +236,7 @@ class _QueueListState extends ConsumerState<QueueList> {
                 ),
                 Flexible(
                   child: Text(
-                    _source?.name.getLocalized(context) ?? AppLocalizations.of(context)!.unknownName,
+                    _source?.name.getLocalized(context.l10n) ?? AppLocalizations.of(context)!.unknownName,
                     style: const TextStyle(fontWeight: FontWeight.w500),
                     overflow: TextOverflow.ellipsis,
                   ),

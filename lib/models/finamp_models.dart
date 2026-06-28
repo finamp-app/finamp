@@ -1485,12 +1485,6 @@ class DownloadStub {
 
   factory DownloadStub.fromFinampCollection(FinampCollection collection) {
     String id = collection.id;
-    // Fetch localized name from default global context.
-    String? name;
-    var loc = GlobalSnackbar.localizations;
-    if (loc != null) {
-      name = collection.getName2(loc);
-    }
 
     return DownloadStub._build(
       id: id,
@@ -2283,9 +2277,7 @@ class QueueItemSourceName {
   @HiveField(2)
   final String? localizationParameter;
 
-  String getLocalized(BuildContext context) => getLocalized2(AppLocalizations.of(context)!);
-
-  String getLocalized2(AppLocalizations localizations) {
+  String getLocalized(AppLocalizations localizations) {
     switch (type) {
       case QueueItemSourceNameType.preTranslated:
         return pretranslatedName ?? "";

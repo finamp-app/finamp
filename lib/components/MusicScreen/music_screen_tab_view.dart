@@ -132,7 +132,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
               break;
           }
         case FinampPlayable playable:
-          sortName = playable.source.name.getLocalized(context);
+          sortName = playable.source.name.getLocalized(context.l10n);
         case LatestQueues queue:
         case UnavailableHomeSectionPlayable():
           // TODO: Handle this case.

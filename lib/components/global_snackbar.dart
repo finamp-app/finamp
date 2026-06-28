@@ -50,14 +50,6 @@ class GlobalSnackbar {
 
   static AppLocalizations get requireL10n => _contextL10n ?? _localizationsCache ?? englishL10n;
 
-  static AppLocalizations? get localizations {
-    final context = rawMaterialAppNavigatorKey.currentContext;
-    if (context != null && context.mounted) {
-      return AppLocalizations.of(context);
-    }
-    return null;
-  }
-
   static final _logger = Logger("GlobalSnackbar");
 
   static final List<_QueueFunction> _queue = [];

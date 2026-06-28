@@ -13,6 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../extensions/localizations.dart';
+
 class QueueRestoreTile extends ConsumerWidget {
   const QueueRestoreTile({super.key, required this.info});
 
@@ -43,7 +45,7 @@ class QueueRestoreTile extends ConsumerWidget {
       child: ListTile(
         // Prevent undersized album images on desktop
         visualDensity: VisualDensity.standard,
-        title: Text(source.name.getLocalized(context)),
+        title: Text(source.name.getLocalized(context.l10n)),
         titleAlignment: ListTileTitleAlignment.center,
         leading: Padding(
           padding: const EdgeInsets.only(right: 16),

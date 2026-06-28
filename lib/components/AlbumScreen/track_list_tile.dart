@@ -184,7 +184,7 @@ Future<bool> onConfirmPlayableDismiss({required ItemSwipeActions followUpAction,
   final sourceItemType = switch (item) {
     AlbumDisc() => "disc",
     FinampPlayableDto itemPlayable => BaseItemDtoType.fromItem(itemPlayable.item).name,
-    _ => item.source.name.getLocalized2(GlobalSnackbar.requireL10n),
+    _ => item.source.name.getLocalized(GlobalSnackbar.requireL10n),
   };
 
   final slice = await GetIt.instance<ProviderContainer>().read(

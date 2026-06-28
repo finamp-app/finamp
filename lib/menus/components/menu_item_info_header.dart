@@ -44,14 +44,14 @@ Widget _getMenuHeaderForItemType({
       config: HomeScreenSectionConfiguration(
         base: TabsHomeSection(libraryId: library, contentType: content),
         sortConfig: config,
-        customSectionTitle: item.source.name.getLocalized(context),
+        customSectionTitle: item.source.name.getLocalized(context.l10n),
       ),
     ),
     LatestQueues(sortConfig: final sortconfig) => HomeSectionInfo(
       config: HomeScreenSectionConfiguration(
         base: QueuesHomeSection(),
         sortConfig: sortconfig,
-        customSectionTitle: item.source.name.getLocalized(context),
+        customSectionTitle: item.source.name.getLocalized(context.l10n),
       ),
     ),
     UnavailableHomeSectionPlayable(section: final section) => HomeSectionInfo(config: section),

@@ -55,7 +55,7 @@ class _PlayerScreenAppBarTitleState extends State<PlayerScreenAppBarTitle> {
                 ),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 1)),
                 BalancedText(
-                  queueItem.source.name.getLocalized(context),
+                  queueItem.source.name.getLocalized(context.l10n),
                   style: TextStyle(
                     fontSize: 14,
                     color: Theme.brightnessOf(context) == Brightness.dark
