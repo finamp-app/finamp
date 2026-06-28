@@ -81,6 +81,7 @@ class _ClientCertificateMenuContentState extends ConsumerState<_ClientCertificat
       await _clientCertificateInstaller.defaultInstallClientCertificate();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.clientCertificateImportSuccess)));
+        Navigator.of(context).pop();
       }
     } catch (_) {
       if (mounted) {
