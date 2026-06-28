@@ -145,7 +145,15 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
                             CTAMedium(
                               text: AppLocalizations.of(context)!.importClientCertificate,
                               icon: TablerIcons.certificate,
-                              onPressed: () => showClientCertificateMenu(context: context),
+                              onPressed: () => showClientCertificateMenu(
+                                context: context,
+                                onImported: () {
+                                  final baseUrl = widget.serverState.baseUrl;
+                                  if (baseUrl != null) {
+                                    widget.serverState.onBaseUrlChanged(baseUrl);
+                                  }
+                                },
+                              ),
                               minWidth: 0,
                             ),
                           ],

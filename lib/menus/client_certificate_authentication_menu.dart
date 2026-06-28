@@ -14,7 +14,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 const clientCertificateAuthenticationRouteName = "/client-certificate-authentication-menu";
 
-Future<void> showClientCertificateMenu({required BuildContext context}) async {
+Future<void> showClientCertificateMenu({required BuildContext context, VoidCallback? onImported}) async {
   await showThemedBottomSheet(
     context: context,
     routeName: clientCertificateAuthenticationRouteName,
@@ -26,7 +26,7 @@ Future<void> showClientCertificateMenu({required BuildContext context}) async {
           header: const _ClientCertificateMenuHeader(),
           sliver: MenuMask(
             height: const MenuMaskHeight(44.0),
-            child: SliverToBoxAdapter(child: _ClientCertificateMenuContent()),
+            child: SliverToBoxAdapter(child: _ClientCertificateMenuContent(onImported: onImported)),
           ),
         ),
       ];
@@ -54,6 +54,10 @@ class _ClientCertificateMenuHeader extends StatelessWidget {
 }
 
 class _ClientCertificateMenuContent extends ConsumerStatefulWidget {
+  const _ClientCertificateMenuContent({this.onImported});
+
+  final VoidCallback? onImported;
+
   @override
   ConsumerState<_ClientCertificateMenuContent> createState() => _ClientCertificateMenuContentState();
 }
@@ -81,6 +85,7 @@ class _ClientCertificateMenuContentState extends ConsumerState<_ClientCertificat
       await _clientCertificateInstaller.defaultInstallClientCertificate();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.clientCertificateImportSuccess)));
+        widget.onImported?.call();
         Navigator.of(context).pop();
       }
     } catch (_) {
