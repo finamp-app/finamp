@@ -19,6 +19,7 @@ Future<void> showClientCertificateMenu({required BuildContext context}) async {
     context: context,
     routeName: clientCertificateAuthenticationRouteName,
     minDraggableHeight: 0.3,
+    useRootNavigator: true,
     buildSlivers: (context) {
       var menu = [
         SliverStickyHeader(

@@ -29,6 +29,7 @@ Future<T?> showThemedBottomSheet<T>({
   WrapperBuilder? buildWrapper,
   double minDraggableHeight = 0.6,
   bool showDragHandle = true,
+  bool useRootNavigator = false,
 }) async {
   FeedbackHelper.feedback(FeedbackType.selection);
   bool useDefaultTheme = false;
@@ -47,6 +48,7 @@ Future<T?> showThemedBottomSheet<T>({
     constraints: BoxConstraints(
       maxWidth: (Platform.isIOS || Platform.isAndroid) ? 500 : min(500, MediaQuery.widthOf(context) * 0.9),
     ),
+    useRootNavigator: useRootNavigator,
     isDismissible: true,
     enableDrag: true,
     useSafeArea: true,
