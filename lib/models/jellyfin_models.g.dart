@@ -1315,7 +1315,6 @@ class BaseItemDtoAdapter extends TypeAdapter<BaseItemDto> {
       albumArtist: fields[77] as String?,
       albumArtists: (fields[78] as List?)?.cast<NameIdPair>(),
       seasonName: fields[79] as String?,
-      mediaStreams: (fields[80] as List?)?.cast<MediaStream>(),
       partCount: (fields[81] as num?)?.toInt(),
       imageTags: (fields[82] as Map?)?.cast<dynamic, String>(),
       backdropImageTags: (fields[83] as List?)?.cast<String>(),
@@ -1394,7 +1393,7 @@ class BaseItemDtoAdapter extends TypeAdapter<BaseItemDto> {
   @override
   void write(BinaryWriter writer, BaseItemDto obj) {
     writer
-      ..writeByte(153)
+      ..writeByte(152)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -1555,8 +1554,6 @@ class BaseItemDtoAdapter extends TypeAdapter<BaseItemDto> {
       ..write(obj.albumArtists)
       ..writeByte(79)
       ..write(obj.seasonName)
-      ..writeByte(80)
-      ..write(obj.mediaStreams)
       ..writeByte(81)
       ..write(obj.partCount)
       ..writeByte(82)
@@ -3840,9 +3837,6 @@ BaseItemDto _$BaseItemDtoFromJson(Map json) => BaseItemDto(
       ?.map((e) => NameIdPair.fromJson(Map<String, dynamic>.from(e as Map)))
       .toList(),
   seasonName: json['SeasonName'] as String?,
-  mediaStreams: (json['MediaStreams'] as List<dynamic>?)
-      ?.map((e) => MediaStream.fromJson(Map<String, dynamic>.from(e as Map)))
-      .toList(),
   partCount: (json['PartCount'] as num?)?.toInt(),
   imageTags: (json['ImageTags'] as Map?)?.map(
     (k, e) => MapEntry(k, e as String),
@@ -4047,8 +4041,6 @@ Map<String, dynamic> _$BaseItemDtoToJson(
   if (instance.albumArtists?.map((e) => e.toJson()).toList() case final value?)
     'AlbumArtists': value,
   if (instance.seasonName case final value?) 'SeasonName': value,
-  if (instance.mediaStreams?.map((e) => e.toJson()).toList() case final value?)
-    'MediaStreams': value,
   if (instance.partCount case final value?) 'PartCount': value,
   if (instance.imageTags case final value?) 'ImageTags': value,
   if (instance.backdropImageTags case final value?) 'BackdropImageTags': value,

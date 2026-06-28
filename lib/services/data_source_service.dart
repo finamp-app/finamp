@@ -47,7 +47,7 @@ class DataSourceService {
       _onDataSourceChange(shouldTranscode ? SourceChangeType.toTranscoding : SourceChangeType.toDirectPlay);
     });
 
-    ref.listen(FinampUserHelper.finampCurrentUserProvider.select((user) => user.value?.baseURL), (_, newUrl) {
+    ref.listen(FinampUserHelper.finampCurrentUserProvider.select((user) => user?.baseURL), (_, newUrl) {
       _dataSourceServiceLogger.info("Base URL Changed: $newUrl");
       bool isLocalUrl = finampUserHelper.currentUser?.isLocal ?? false;
       _onDataSourceChange(isLocalUrl ? SourceChangeType.toLocalUrl : SourceChangeType.toRemoteUrl);
@@ -145,7 +145,7 @@ class DataSourceService {
       return watch(finampSettingsProvider.forcedTranscodeConfig) ?? StreamingTranscodingPreset.losslessPreset;
     }
     final validPresets = [watch(finampSettingsProvider.defaultTranscodeConfig)];
-    final user = ref.watch(FinampUserHelper.finampCurrentUserProvider).value;
+    final user = ref.watch(FinampUserHelper.finampCurrentUserProvider);
     if (user != null && user.preferLocalNetwork && !user.isLocal) {
       validPresets.add(watch(finampSettingsProvider.remoteTranscodeConfig));
     }

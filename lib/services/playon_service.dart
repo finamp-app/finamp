@@ -5,6 +5,7 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/favorite_provider.dart';
+import 'package:finamp/services/jellyfin_api.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +16,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../services/finamp_settings_helper.dart';
 import '../../services/jellyfin_api_helper.dart';
 import '../../services/music_player_background_task.dart';
+import '../models/music_slices.dart';
 import 'finamp_user_helper.dart';
 
 final _playOnServiceLogger = Logger("PlayOnService");
@@ -207,8 +209,12 @@ class PlayOnService {
 
   Future<void> _connectWebsocket() async {
     assert(socketState == SocketState.connecting);
+    final deviceInfo = await getDeviceInfo();
+    //FIXME the websocket connection doesn't work on 10.11 with legacy auth disabled (https://gist.github.com/nielsvanvelzen/ea047d9028f676185832e51ffaf12a6f#disabling-deprecated-authorization-methods)
+    // the [api_key] parameter is deprecated, but there's no way to set HTTP headers for our websocket client
+    // apparently this is because it's not possible to do on the web, which would mean that Jellyfin Web (which is also broken as of 10.11.5) would also need an alternative to authenticate, for example sending the auth token in the first message after connecting
     final url =
-        "${_finampUserHelper.currentUser!.baseURL}/socket?api_key=${_finampUserHelper.currentUser!.accessToken}";
+        "${_finampUserHelper.currentUser!.baseURL}/socket?api_key=${_finampUserHelper.currentUser!.accessToken}&deviceId=${deviceInfo.id}";
     final parsedUrl = Uri.parse(url);
     final wsUrl = parsedUrl.replace(scheme: parsedUrl.scheme == "https" ? "wss" : "ws");
     _channel = WebSocketChannel.connect(wsUrl);
@@ -384,7 +390,19 @@ class PlayOnService {
                       includeItemTypes: "Audio",
                       itemIds: List<BaseItemId>.from(request['Data']['ItemIds'] as List<dynamic>),
                     );
-                    unawaited(_queueService.addToNextUp(items: items!));
+                    unawaited(
+                      _queueService.addToNextUp(
+                        PlayableSlice.simple(
+                          items!,
+                          QueueItemSource(
+                            name: QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
+                            type: QueueItemSourceType.remoteClient,
+                            id: items[0].id,
+                            item: items[0],
+                          ),
+                        ),
+                      ),
+                    );
                     break;
                   case 'PlayLast':
                     var items = await _jellyfinApiHelper.getItems(
@@ -392,7 +410,19 @@ class PlayOnService {
                       includeItemTypes: "Audio",
                       itemIds: List<BaseItemId>.from(request['Data']['ItemIds'] as List<dynamic>),
                     );
-                    unawaited(_queueService.addToQueue(items: items!));
+                    unawaited(
+                      _queueService.addToQueue(
+                        PlayableSlice.simple(
+                          items!,
+                          QueueItemSource(
+                            name: QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
+                            type: QueueItemSourceType.remoteClient,
+                            id: items[0].id,
+                            item: items[0],
+                          ),
+                        ),
+                      ),
+                    );
                     break;
                 }
             }

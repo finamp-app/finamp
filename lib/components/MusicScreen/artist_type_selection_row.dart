@@ -1,15 +1,14 @@
 import 'dart:io';
 
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/finamp_models.dart';
-import '../../services/finamp_settings_helper.dart';
-
 class ArtistTypeSelectionRow extends StatelessWidget {
-  final TabContentType tabType;
+  final ContentType tabType;
   final ArtistType defaultArtistType;
-  final void Function(TabContentType) refreshTab;
+  final void Function(ContentType) refreshTab;
 
   const ArtistTypeSelectionRow({
     super.key,
@@ -20,7 +19,7 @@ class ArtistTypeSelectionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (tabType == TabContentType.artists) {
+    if (tabType == ContentType.genericArtists) {
       double screenWidth = MediaQuery.widthOf(context);
       bool alignLeft = screenWidth > 600;
 

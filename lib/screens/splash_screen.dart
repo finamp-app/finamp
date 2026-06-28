@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-
-import '../services/finamp_user_helper.dart';
-import 'login_screen.dart';
-import 'music_screen.dart';
-import 'view_selector.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/screens/login_screen.dart';
+import 'package:finamp/screens/music_screen.dart';
+import 'package:finamp/screens/view_selector.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});

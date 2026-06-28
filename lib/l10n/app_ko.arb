@@ -4,81 +4,45 @@
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
     "next": "다음",
-    "@next": {},
     "selectMusicLibraries": "음악 라이브러리 선택",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
     "genres": "장르",
-    "@genres": {},
     "startMix": "믹스 시작하기",
-    "@startMix": {},
     "serverUrl": "서버 URL",
-    "@serverUrl": {},
     "emptyServerUrl": "서버 URL은 필수값 입니다",
     "@emptyServerUrl": {
         "description": "Error message that shows when the user submits a login without a server URL"
     },
     "username": "사용자 이름(아이디)",
-    "@username": {},
     "password": "암호",
-    "@password": {},
     "logs": "로그(사용기록)",
-    "@logs": {},
-    "couldNotFindLibraries": "라이브러리를 찾을 수 없습니다.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "unknownName": "알 수 없는 이름",
-    "@unknownName": {},
     "tracks": "노래",
-    "@tracks": {},
     "albums": "앨범",
-    "@albums": {},
     "artists": "아티스트",
-    "@artists": {},
     "playlists": "플레이리스트",
-    "@playlists": {},
     "startMixNoTracksAlbum": "믹스를 시작하기 전에 '앨범'을 길게 탭하여 앨범을 믹스 빌더에 추가하거나 빼세요",
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
     "music": "음악",
-    "@music": {},
     "clear": "삭제(비우기)",
-    "@clear": {},
     "shuffleAll": "임의 재생(모두)",
-    "@shuffleAll": {},
     "finamp": "핀앰프(Finamp)",
-    "@finamp": {},
     "sortOrder": "정렬 순서",
-    "@sortOrder": {},
     "sortBy": "정렬 기준",
-    "@sortBy": {},
     "budget": "예산",
-    "@budget": {},
     "communityRating": "커뮤니티 평점",
-    "@communityRating": {},
     "criticRating": "비평가 평점",
-    "@criticRating": {},
     "dateAdded": "추가된 날짜",
-    "@dateAdded": {},
     "datePlayed": "최근 재생 날짜",
-    "@datePlayed": {},
     "premiereDate": "발매일",
-    "@premiereDate": {},
     "productionYear": "제작년도",
-    "@productionYear": {},
     "name": "이름",
-    "@name": {},
     "random": "랜덤",
-    "@random": {},
     "revenue": "수익",
-    "@revenue": {},
-    "syncDownloadedPlaylists": "다운로드한 플레이리스트 동기화",
-    "@syncDownloadedPlaylists": {},
-    "downloadMissingImages": "누락된 이미지 다운로드",
-    "@downloadMissingImages": {},
     "downloadCount": "{count,plural, =1{{count}건 다운로드} other{{count}건 다운로드}}",
     "@downloadCount": {
         "placeholders": {
@@ -119,12 +83,8 @@
             }
         }
     },
-    "failedToGetTrackFromDownloadId": "다운로드 ID에서 곡을 가져오지 못했습니다",
-    "@failedToGetTrackFromDownloadId": {},
     "playButtonLabel": "재생",
-    "@playButtonLabel": {},
     "shuffleButtonLabel": "임의 재생",
-    "@shuffleButtonLabel": {},
     "trackCount": "{count,plural,=1{{count} 곡} other{{count} 곡(들)}}",
     "@trackCount": {
         "placeholders": {
@@ -134,137 +94,58 @@
         }
     },
     "required": "필수 항목",
-    "@required": {},
-    "updateButtonLabel": "업데이트",
-    "@updateButtonLabel": {},
     "addDownloads": "다운로드 추가",
-    "@addDownloads": {},
     "location": "위치",
-    "@location": {},
     "shareLogs": "로그(사용기록) 공유",
-    "@shareLogs": {},
     "logsCopied": "로그(사용기록) 복사함.",
-    "@logsCopied": {},
     "message": "메시지",
-    "@message": {},
     "stackTrace": "스택 추적",
-    "@stackTrace": {},
     "applicationLegalese": "Mozilla Public License 2.0에 따라 라이선스가 부여됐습니다.\n소스 코드는 {sourceCodeLink}에서 확인할 수 있습니다.",
-    "@applicationLegalese": {},
     "transcoding": "트랜스코딩",
-    "@transcoding": {},
     "downloadLocations": "다운로드 위치",
-    "@downloadLocations": {},
     "interactions": "상호작용",
-    "@interactions": {},
     "layoutAndTheme": "레이아웃 & 테마",
-    "@layoutAndTheme": {},
     "areYouSure": "확실한가요?",
-    "@areYouSure": {},
     "enableTranscoding": "트랜스코딩 활성화",
-    "@enableTranscoding": {},
     "enableTranscodingSubtitle": "서버 측에서 음악 스트리밍을 트랜스코딩 합니다.",
-    "@enableTranscodingSubtitle": {},
     "bitrate": "비트레이트",
-    "@bitrate": {},
     "customLocation": "사용자 지정 위치",
-    "@customLocation": {},
     "unknownError": "알수 없는 오류",
-    "@unknownError": {},
-    "directoryMustBeEmpty": "디렉토리는 비어 있어야 합니다",
-    "@directoryMustBeEmpty": {},
     "shuffleAllTrackCount": "전곡 임의 재생시 곡 수",
-    "@shuffleAllTrackCount": {},
     "shuffleAllTrackCountSubtitle": "노래 또는 장르 탭에서 '전곡 임의 재생' 버튼을 사용할 때 불러올 곡(들)의 개수입니다.",
-    "@shuffleAllTrackCountSubtitle": {},
     "viewTypeSubtitle": "음악 화면 보기 유형",
-    "@viewTypeSubtitle": {},
     "list": "목록",
-    "@list": {},
     "grid": "그리드(격자)",
-    "@grid": {},
-    "portrait": "세로 보기",
-    "@portrait": {},
     "landscape": "가로 보기",
-    "@landscape": {},
-    "gridCrossAxisCount": "{value} 그리드 열 갯수",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
     "showTextOnGridView": "그리드 보기에서 텍스트를 보여줌",
-    "@showTextOnGridView": {},
-    "hideTrackArtistsIfSameAsAlbumArtists": "앨범 아티스트와 동일한 경우, 곡 아티스트를 숨김",
-    "@hideTrackArtistsIfSameAsAlbumArtists": {},
     "showTextOnGridViewSubtitle": "그리드 음악 화면에서 '텍스트(곡목, 아티스트 등)' 표시 여부를 설정합니다.",
-    "@showTextOnGridViewSubtitle": {},
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "앨범 화면에서 앨범 아티스트와 동일한 '곡 아티스트' 표시 여부를 설정합니다.",
-    "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
     "disableGesture": "제스처 비활성화",
-    "@disableGesture": {},
     "disableGestureSubtitle": "제스처 비활성화 여부를 설정합니다.",
-    "@disableGestureSubtitle": {},
     "showFastScroller": "빠른 스크롤 표시",
-    "@showFastScroller": {},
     "theme": "테마",
-    "@theme": {},
     "system": "시스템",
-    "@system": {},
     "light": "밝은 테마",
-    "@light": {},
     "tabs": "탭",
-    "@tabs": {},
     "yesButtonLabel": "네",
-    "@yesButtonLabel": {},
     "noButtonLabel": "아니오",
-    "@noButtonLabel": {},
     "minutes": "분",
-    "@minutes": {},
-    "invalidNumber": "잘못된 숫자",
-    "@invalidNumber": {},
     "addToPlaylistTooltip": "플레이리스트에 추가",
-    "@addToPlaylistTooltip": {},
     "addToPlaylistTitle": "플레이리스트에 추가",
-    "@addToPlaylistTitle": {},
     "removeFromPlaylistTooltip": "이 플레이리스트에서 삭제",
-    "@removeFromPlaylistTooltip": {},
     "newPlaylist": "새 플레이리스트",
-    "@newPlaylist": {},
     "createButtonLabel": "만들기",
-    "@createButtonLabel": {},
     "noAlbum": "앨범 없음",
-    "@noAlbum": {},
     "noItem": "곡 없음",
-    "@noItem": {},
-    "noArtist": "아티스트 없음",
-    "@noArtist": {},
     "unknownArtist": "알 수 없는 아티스트",
-    "@unknownArtist": {},
     "queue": "대기열",
-    "@queue": {},
     "addToQueue": "대기열에 추가",
     "@addToQueue": {
         "description": "Popup menu item title for adding an item to the end of the play queue."
     },
     "instantMix": "인스턴트 믹스",
-    "@instantMix": {},
     "goToAlbum": "앨범으로 이동",
-    "@goToAlbum": {},
-    "insertedIntoQueue": "대기열 사이에 추가됨.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
-    "queueReplaced": "대기열이 교체됨.",
-    "@queueReplaced": {},
     "startingInstantMix": "인스턴트 믹스 시작.",
-    "@startingInstantMix": {},
     "anErrorHasOccured": "오류가 발생했습니다.",
-    "@anErrorHasOccured": {},
     "responseError": "{error} 상태 코드 {statusCode}.",
     "@responseError": {
         "placeholders": {
@@ -292,66 +173,30 @@
         }
     },
     "removeFromMix": "믹스에서 삭제",
-    "@removeFromMix": {},
     "addToMix": "믹스에 추가",
-    "@addToMix": {},
-    "redownloadedItems": "{count,plural, =0{다시 다운로드할 필요가 없습니다.} =1{{count} 아이템 다시 다운로드함} other{{count} 아이템 다시 다운로드함}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "bufferDuration": "버퍼 시간",
-    "@bufferDuration": {},
     "bufferDurationSubtitle": "버퍼링 해야 하는 시간(초) 입니다. 변경시 다시 시작해야 합니다.",
-    "@bufferDurationSubtitle": {},
     "language": "언어",
-    "@language": {},
     "showUncensoredLogMessage": "이 로그(사용기록)는 귀하의 로그인 정보를 포함합니다. 표시할까요?",
-    "@showUncensoredLogMessage": {},
-    "resetTabs": "탭 초기화",
-    "@resetTabs": {},
     "noMusicLibrariesTitle": "음악 라이브러리 없음",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
     "noMusicLibrariesBody": "핀앰프 Finamp가 음악 라이브러리를 찾을 수 없습니다. 귀하의 젤리핀 Jellyfin 서버에 콘텐츠 유형이 \"음악\"으로 설정된 라이브러리가 하나 이상 있는지 확인하세요.",
-    "@noMusicLibrariesBody": {},
     "startMixNoTracksArtist": "믹스를 시작하기 전에 '아티스트'를 길게 탭하여 아티스트를 믹스 빌더에 추가하거나 빼세요",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
     },
     "playCount": "재생 횟수",
-    "@playCount": {},
-    "downloadedMissingImages": "{count,plural, =0{누락된 이미지 없음} =1{누락된 이미지 {count}건 다운로드} other{누락된 이미지 {count}건 다운로드}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "album": "앨범",
-    "@album": {},
     "downloads": "다운로드",
-    "@downloads": {},
     "settings": "설정",
-    "@settings": {},
     "offlineMode": "오프라인 모드",
-    "@offlineMode": {},
     "albumArtist": "앨범 아티스트",
-    "@albumArtist": {},
     "artist": "아티스트",
-    "@artist": {},
     "refresh": "새로고침",
-    "@refresh": {},
     "errorScreenError": "오류 목록을 가져오지 못했습니다! 이 시점에서는 GitHub에 문제를 등록하고 앱 데이터를 삭제해야 합니다",
-    "@errorScreenError": {},
     "error": "오류",
-    "@error": {},
     "discNumber": "디스크 {number}",
     "@discNumber": {
         "placeholders": {
@@ -360,76 +205,32 @@
             }
         }
     },
-    "downloadsDeleted": "다운로드 항목을 삭제했습니다.",
-    "@downloadsDeleted": {},
     "playlistUpdated": "플레이리스트 이름을 갱신했습니다.",
-    "@playlistUpdated": {},
     "addButtonLabel": "추가",
-    "@addButtonLabel": {},
     "audioService": "오디오 서비스",
-    "@audioService": {},
     "notAvailableInOfflineMode": "오프라인 모드에서는 사용할 수 없습니다",
-    "@notAvailableInOfflineMode": {},
     "logOut": "로그아웃",
-    "@logOut": {},
     "bitrateSubtitle": "비트레이트가 높으면 고품질의 음악을 들을 수 있습니다. 데이터 사용량도 증가합니다. FLAC 등 무손실 코덱에는 적용되지 않습니다",
-    "@bitrateSubtitle": {},
     "appDirectory": "앱 디렉토리",
-    "@appDirectory": {},
     "addDownloadLocation": "다운로드 위치 추가",
-    "@addDownloadLocation": {},
     "selectDirectory": "디렉토리 선택",
-    "@selectDirectory": {},
     "pathReturnSlashErrorMessage": "\"/\"로 끝나는 경로는 사용할 수 없습니다",
-    "@pathReturnSlashErrorMessage": {},
-    "gridCrossAxisCountSubtitle": "{value} 일때 한 행당 그리드 타일의 개수.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
     "customLocationsBuggy": "사용자 지정 위치는 대부분의 상황에서 권장하지 않습니다(버그가 매우 많이 발생할 수 있습니다). 운영체제 '음악'폴더 위치의 경우 시스템 제한 때문에 앨범 커버를 저장할 수 없습니다.",
-    "@customLocationsBuggy": {},
     "enterLowPriorityStateOnPause": "일시 중지시 낮은 우선순위 상태로 전환합니다",
-    "@enterLowPriorityStateOnPause": {},
     "enterLowPriorityStateOnPauseSubtitle": "일시 중지시 알림창을 밀어서 사라지게 합니다. 안드로이드(OS)에서는 일시 중지시 서비스를 강제 종료할 수 있게 합니다.",
-    "@enterLowPriorityStateOnPauseSubtitle": {},
     "viewType": "보기 유형",
-    "@viewType": {},
     "dark": "어두운 테마",
-    "@dark": {},
     "sleepTimerTooltip": "취침 타이머",
-    "@sleepTimerTooltip": {},
     "cancelSleepTimer": "취침 타이머를 취소할까요?",
-    "@cancelSleepTimer": {},
     "removeFromPlaylistTitle": "이 플레이리스트에서 삭제",
-    "@removeFromPlaylistTitle": {},
     "playlistCreated": "플레이리스트 생성됨.",
-    "@playlistCreated": {},
-    "replaceQueue": "대기열 교체",
-    "@replaceQueue": {},
-    "addedToQueue": "대기열 끝에 추가됨.",
-    "@addedToQueue": {
-        "description": "Snackbar message that shows when the user successfully adds items to the end of the play queue."
-    },
     "removedFromPlaylist": "플레이리스트에서 삭제됨.",
-    "@removedFromPlaylist": {},
     "playNext": "다음 곡 재생",
     "@playNext": {
         "description": "Popup menu item title for inserting an item into the play queue after the currently-playing item."
     },
     "confirm": "확인",
-    "@confirm": {},
-    "swipeInsertQueueNext": "스와이프한 곡 다음 재생",
-    "@swipeInsertQueueNext": {},
-    "swipeInsertQueueNextSubtitle": "곡 목록에서 스와이프 했을 때, 곡을 대기열 끝에 추가하는 대신 바로 다음 곡으로 삽입할 수 있습니다.",
-    "@swipeInsertQueueNextSubtitle": {},
     "about": "Finamp(핀앰프) 소개",
-    "@about": {},
     "changeLanguage": "언어 변경",
     "@changeLanguage": {
         "description": "Label for button shown during the login process that allows the user to change the app language"
@@ -495,7 +296,6 @@
         "description": "Label for the back button."
     },
     "downloadSettings": "다운로드",
-    "@downloadSettings": {},
     "showNullLibraryItemsTitle": "알 수 없는 라이브러리의 미디어 보여주기.",
     "@showNullLibraryItemsTitle": {
         "description": "Title of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
@@ -562,17 +362,13 @@
         "description": "Hint text for the password input field."
     },
     "activeDownloads": "진행중인 다운로드",
-    "@activeDownloads": {},
     "activeDownloadsTitle": "진행중인 다운로드",
-    "@activeDownloadsTitle": {},
     "noActiveDownloads": "진행중인 다운로드가 없음.",
-    "@noActiveDownloads": {},
     "confirmDownloadStarted": "다운로드 시작함",
     "@confirmDownloadStarted": {
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
     },
     "downloadsQueued": "파일을 다운로드 합니다",
-    "@downloadsQueued": {},
     "offlineTrackCountArtist": "{count,plural,=1{{count} 곡} other{{count} 곡(들)}} 다운로드 됨",
     "@offlineTrackCountArtist": {
         "placeholders": {
@@ -590,13 +386,11 @@
         "description": "Used for a button in the playback speed menu"
     },
     "useCoverAsBackground": "흐릿한 앨범 커버를 배경화면으로 사용하기",
-    "@useCoverAsBackground": {},
     "playerScreenMinimumCoverPaddingEditorTitle": "앨범 커버 여백 최소값",
     "@playerScreenMinimumCoverPaddingEditorTitle": {
         "description": "Title for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
     "hours": "시간",
-    "@hours": {},
     "trackCountTooltip": "{currentTrackIndex} / {totalTrackCount} 곡",
     "@trackCountTooltip": {
         "description": "Tooltip and accessibility label for the queue progress. {currentTrackIndex} and {totalTrackCount} are both numbers",
@@ -620,12 +414,7 @@
             }
         }
     },
-    "addToMorePlaylistsTooltip": "더 많은 플레이리스트에 추가하기",
-    "@addToMorePlaylistsTooltip": {},
     "addToMorePlaylistsTitle": "더 많은 플레이리스트에 추가하기",
-    "@addToMorePlaylistsTitle": {},
-    "unknownAlbum": "알 수 없는 앨범",
-    "@unknownAlbum": {},
     "playbackModeDirectPlaying": "직접 재생",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -640,8 +429,6 @@
             }
         }
     },
-    "confirmFavoriteRemoved": "즐겨찾기에서 삭제됨",
-    "@confirmFavoriteRemoved": {},
     "skipToPreviousTrackButtonTooltip": "곡의 처음 또는 이전 곡으로 넘기기",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -719,7 +506,6 @@
         "description": "Description of the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
     },
     "topTracks": "최고 인기곡들",
-    "@topTracks": {},
     "albumCount": "{count,plural,=1{{count} 앨범} other{{count} 앨범}}",
     "@albumCount": {
         "placeholders": {
@@ -749,7 +535,6 @@
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
     "title": "제목",
-    "@title": {},
     "customizationSettingsTitle": "사용자 정의",
     "@customizationSettingsTitle": {
         "description": "Title for the customization settings screen"
@@ -824,26 +609,14 @@
         "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
     },
     "seconds": "초",
-    "@seconds": {},
     "loginFlowAuthenticationHeading": "계정 로그인하기",
     "@loginFlowAuthenticationHeading": {
         "description": "Heading for the authentication step during the login flow."
     },
     "useCoverAsBackgroundSubtitle": "앱 배경화면으로 흐릿한 앨범 커버를 사용할지 여부를 설정.",
-    "@useCoverAsBackgroundSubtitle": {},
     "playerScreenMinimumCoverPaddingEditorSubtitle": "재생 화면에서 앨범 커버 가장자리의 최소 여백 값을 설정 (화면 너비 기준 %단위).",
     "@playerScreenMinimumCoverPaddingEditorSubtitle": {
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
-    },
-    "removeFromPlaylistNamedTooltip": "'{playlistName}' 플레이리스트에서 삭제",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
     },
     "timeFractionTooltip": "{currentTime} / {totalTime}",
     "@timeFractionTooltip": {
@@ -857,18 +630,7 @@
     "@playerScreen": {
         "description": "Name for the expanded player"
     },
-    "removeFromPlaylistNamedTitle": "'{playlistName}' 플레이리스트에서 삭제",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "goToArtist": "아티스트로 가기",
-    "@goToArtist": {},
     "playbackModeTranscoding": "트랜스코딩",
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
@@ -877,8 +639,6 @@
     "@playbackModeLocal": {
         "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
     },
-    "confirmFavoriteAdded": "즐겨찾기에 추가됨",
-    "@confirmFavoriteAdded": {},
     "togglePlaybackButtonTooltip": "재생 또는 일시정지",
     "@togglePlaybackButtonTooltip": {
         "description": "Tooltip for the button that toggles playback"
@@ -938,7 +698,6 @@
         "description": "Heading for the account selection step during the login flow."
     },
     "goToGenre": "장르로 가기",
-    "@goToGenre": {},
     "nextUp": "넥스트 업",
     "@nextUp": {
         "description": "Description in the queue panel for the list of tracks were manually added to be played after the current track. This should be capitalized (if applicable) to be more recognizable throughout the UI"
@@ -978,7 +737,6 @@
         }
     },
     "bufferSizeTitle": "버퍼 크기",
-    "@bufferSizeTitle": {},
     "confirmAddToQueue": "대기열에 {type, select, track{곡} album{앨범} artist{아티스트} playlist{플레이리스트} genre{장르} disc{디스크} other{아이템}} 추가됨",
     "@confirmAddToQueue": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the regular queue",
@@ -989,9 +747,7 @@
         }
     },
     "bufferDisableSizeConstraintsTitle": "버퍼 크기를 제한하지 않습니다",
-    "@bufferDisableSizeConstraintsTitle": {},
     "bufferSizeSubtitle": "버퍼의 크기(MB단위). 변경시 재시작이 필요합니다",
-    "@bufferSizeSubtitle": {},
     "placeholderSource": "출처 미상",
     "@placeholderSource": {
         "description": "Placeholder text used when the source of the current track/queue is unknown"
@@ -1031,14 +787,9 @@
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the front of the \"Next Up\" queue"
     },
     "bufferDisableSizeConstraintsSubtitle": "버퍼 크기 제한을 비활성화 합니다(버퍼 크기). 버퍼는 항상 설정한 시간만큼 로드되며(버퍼 시간), 용량이 아주 큰 파일에서는 충돌을 일으킬 수 있습니다. 옵션 적용을 위해 재시작이 필요합니다.",
-    "@bufferDisableSizeConstraintsSubtitle": {},
     "tracksFormerNextUp": "Next Up으로 추가된 곡(들)",
     "@tracksFormerNextUp": {
         "description": "Title for the queue source for tracks that were once added to the queue via the \"Next Up\" feature, but have since been played"
-    },
-    "deleteDownloadsConfirmButtonText": "삭제",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
     },
     "playbackOrderShuffledButtonLabel": "셔플 재생",
     "@playbackOrderShuffledButtonLabel": {
@@ -1078,7 +829,6 @@
         "description": "Label for the button in the speed menu that decreases the playback speed."
     },
     "resetToDefaults": "초기화",
-    "@resetToDefaults": {},
     "savedQueue": "저장된 재생목록",
     "@savedQueue": {
         "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
@@ -1105,7 +855,6 @@
         }
     },
     "close": "닫기",
-    "@close": {},
     "couldNotLoad": "{source, select, album{앨범} playlist{플레이리스트} trackMix{트랙 믹스} artistMix{아티스트 믹스} albumMix{앨범 믹스} genreMix{장르 믹스} favorites{즐겨찾기} allTracks{전체 트랙} filteredList{트랙 목록} genre{장르} artist{아티스트} track{트랙} nextUpAlbum{Next Up 앨범} nextUpPlaylist{Next Up 플레이리스트 } nextUpArtist{Next Up 아티스트 } nextUpGenre{Next Up 장르} other{}} 로딩에 실패하였습니다",
     "@couldNotLoad": {
         "placeholders": {
@@ -1121,20 +870,6 @@
     "shuffleAlbums": "앨범 셔플",
     "@shuffleAlbums": {
         "description": "Label for action that shuffles all albums of an artist or genre"
-    },
-    "deleteDownloadsPrompt": "이 기기에서 {itemType, select, album{앨범 } playlist{플레이리스트 } artist{아티스트 } genre{장르 } track{트랙 } library{라이브러리 } other{item}} '{itemName}'을/를 삭제하시겠습니까?",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
     },
     "playbackSpeedFeatureText": "x{speed}배속",
     "@playbackSpeedFeatureText": {
@@ -1216,7 +951,6 @@
         }
     },
     "moreInfo": "상세정보",
-    "@moreInfo": {},
     "volumeNormalizationSettingsTitle": "볼륨 표준화",
     "@volumeNormalizationSettingsTitle": {
         "description": "Title for the replay gain settings screen"
@@ -1256,7 +990,6 @@
         }
     },
     "startInstantMixForIndividualTracksSwitchSubtitle": "활성화하면 (노래 탭에서) 곡을 탭했을 때 단일 곡 재생 대신 해당 곡으로 인스턴트 믹스를 시작합니다.",
-    "@startInstantMixForIndividualTracksSwitchSubtitle": {},
     "downloadItem": "다운로드",
     "@downloadItem": {
         "description": "Option to download item in long-press menu."
@@ -1402,7 +1135,6 @@
         "description": "Title for Download Bitrate settings slider"
     },
     "swipeRightToLeftActionSubtitle": "리스트에 있는 트랙을 오른쪽에서 왼쪽으로 밀었을 때 실행할 동작.",
-    "@swipeRightToLeftActionSubtitle": {},
     "transcodingStreamingFormatTitle": "트랜스코딩 형식 선택",
     "@transcodingStreamingFormatTitle": {
         "description": "Title for the dropdown that selects the format for transcoded streams"
@@ -1430,7 +1162,6 @@
         "description": "Track info line in downloads screen lists"
     },
     "swipeLeftToRightActionSubtitle": "리스트에 있는 트랙을 왼쪽에서 오른쪽으로 밀었을 때 실행할 동작.",
-    "@swipeLeftToRightActionSubtitle": {},
     "collectionDownloadInfo": "{size}{codec, select, ORIGINAL{} other{ {codec} @ {bitrate}로/으로}}{location, select, null{} other{ ({location})}}",
     "@collectionDownloadInfo": {
         "placeholders": {
@@ -1450,11 +1181,8 @@
         "description": "Collection info line in downloads screen lists"
     },
     "swipeRightToLeftAction": "왼쪽 스와이프 동작",
-    "@swipeRightToLeftAction": {},
     "transcodingStreamingFormatSubtitle": "트랜스코딩한 오디오를 스트리밍할 때 사용할 형식을 지정하십시오. 이미 대기열에 있는 곡들은 영향받지 않습니다.",
-    "@transcodingStreamingFormatSubtitle": {},
     "swipeLeftToRightAction": "오른쪽 스와이프 동작",
-    "@swipeLeftToRightAction": {},
     "doTranscode": "{codec} @ {bitrate}{size, select, null{} other{ - ~{size}}}로 다운로드",
     "@doTranscode": {
         "placeholders": {
@@ -1494,16 +1222,10 @@
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
     },
-    "playbackReporting": "재생 보고",
-    "@playbackReporting": {},
     "favorite": "즐겨찾기",
-    "@favorite": {},
     "albumArtists": "앨범 아티스트",
-    "@albumArtists": {},
     "performingArtist": "공연 아티스트",
-    "@performingArtist": {},
     "duration": "노래 길이",
-    "@duration": {},
     "formattedRelativeTime": "{type, select, just_now{지금} minutes{{value} 분 전} hours{{value} 시간 전} yesterday{어제} days{{value, plural, =1{하루 전} other{{value} 일 전}}} other{value}}",
     "@formattedRelativeTime": {
         "description": "Returns a relative time string based on how long ago something happened. Used for various DateTime values such as Date Last Played and Date Added.",
@@ -1531,9 +1253,7 @@
         }
     },
     "appearsOnAlbums": "참여 앨범",
-    "@appearsOnAlbums": {},
     "performingArtists": "공연 아티스트",
-    "@performingArtists": {},
     "startupErrorTitle": "앱 시작중에 (원인불명의) 오류가 발생했습니다!",
     "@startupErrorTitle": {
         "description": "The title for the error screen that shows when startup fails."
@@ -1546,12 +1266,8 @@
     "@noGenres": {
         "description": "Gets shown when there are no genres available for an album or artist"
     },
-    "onlineMode": "온라인 모드",
-    "@onlineMode": {},
     "favorites": "즐겨찾기",
-    "@favorites": {},
     "exportLogs": "로그 저장",
-    "@exportLogs": {},
     "startupErrorCallToAction": "\"github.com/jmshrv/finamp\"에 문제점을 등록해주세요. 로그와 스크린샷을 함께 등록하시면 우리가 최대한 빠르게 조치할 수 있습니다.",
     "@startupErrorCallToAction": {
         "description": "The subtitle / call to action for what to do after encountering a startup error"
@@ -1561,15 +1277,10 @@
         "description": "The subtitle for how to manually recover from a startup error"
     },
     "notAvailable": "사용 불가",
-    "@notAvailable": {},
     "autoSwitchItemCurationTypeTitle": "큐레이션 유형 자동 전환",
-    "@autoSwitchItemCurationTypeTitle": {},
     "autoSwitchItemCurationTypeSubtitle": "활성화했을 경우, 아티스트와 장르 섹션에서 사용 가능한 항목이 없을 때 자동으로 다른 큐레이션 유형으로 전환됩니다 (예를 들어 특정 아티스트에 대한 즐겨찾기가 없을 때).",
-    "@autoSwitchItemCurationTypeSubtitle": {},
     "showArtistsTracksSection": "노래 섹션 보이기",
-    "@showArtistsTracksSection": {},
     "showArtistsTracksSectionSubtitle": "활성화 했을 경우 섹션에서 최다 재생, 즐겨찾기, 랜덤, 최신 발매, 최근 추가 중 하나의 범주로 최대 5곡까지 보여줍니다.",
-    "@showArtistsTracksSectionSubtitle": {},
     "sleepTimerRemainingTracks": "{time,plural,=1{이 곡이 끝나면} other{{time} 분 분량의 곡(들) 재생후}} 취침",
     "@sleepTimerRemainingTracks": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
@@ -1584,9 +1295,7 @@
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
     },
     "removeFavorite": "즐겨찾기 삭제",
-    "@removeFavorite": {},
     "addFavorite": "즐겨찾기 추가",
-    "@addFavorite": {},
     "stopAndClearQueue": "정지 후 대기열 삭제",
     "@stopAndClearQueue": {
         "description": "Label for a button that stops playback and removes all tracks from the queue."
@@ -1606,11 +1315,8 @@
         "description": "Label for the setting that controls how long a PlayOn remote session is considered active"
     },
     "latestAlbums": "최신 앨범(들)",
-    "@latestAlbums": {},
     "latestArtists": "최신 아티스트(들)",
-    "@latestArtists": {},
     "recentlyPlayedTracks": "최근 재생곡들",
-    "@recentlyPlayedTracks": {},
     "playOnStaleDelaySubtitle": "명령을 수신한 후 'Play On'세션을 활성 상태로 간주하는 시간입니다. 활성 상태에서는 재생 정보를 더 자주 보고하며 데이터 사용량이 증가할 수 잇씁니다.",
     "@playOnStaleDelaySubtitle": {
         "description": "Description of the setting that controls how long a PlayOn remote session is considered active"
@@ -1632,9 +1338,7 @@
         "description": "Description of the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
     },
     "topAlbums": "최고 인기 앨범",
-    "@topAlbums": {},
     "topArtists": "최고 인기 아티스트",
-    "@topArtists": {},
     "recentlyAddedTracks": "최근 추가된 곡(들)",
     "@recentlyAddedTracks": {
         "description": "Label for the artist section that shows tracks that were recently added to the library, sorted by the date they were added."
@@ -1648,33 +1352,16 @@
         "description": "Label for the genre section that shows artists that were recently added to the library, sorted by the date they were added."
     },
     "latestTracks": "최신곡들",
-    "@latestTracks": {},
     "recentlyPlayedAlbums": "최근 재생 앨범(들)",
-    "@recentlyPlayedAlbums": {},
     "recentlyPlayedArtists": "최근 재생 아티스트(들)",
-    "@recentlyPlayedArtists": {},
     "favoriteTracks": "즐겨찾기 곡들",
-    "@favoriteTracks": {},
     "favoriteAlbums": "즐겨찾기 앨범(들)",
-    "@favoriteAlbums": {},
     "favoriteArtists": "즐겨찾기 아티스트(들)",
-    "@favoriteArtists": {},
     "randomTracks": "노래 (랜덤 선택)",
-    "@randomTracks": {},
-    "randomAlbums": "앨범(들) (랜덤 선택)",
-    "@randomAlbums": {},
-    "randomArtists": "아티스트(들) (랜덤 선택)",
-    "@randomArtists": {},
     "mostPlayed": "최다 재생",
-    "@mostPlayed": {},
-    "randomFavoritesFirst": "랜덤 (즐겨찾기 우선)",
-    "@randomFavoritesFirst": {},
     "recentlyAdded": "최근 추가됨",
-    "@recentlyAdded": {},
     "recentlyPlayed": "최근 재생",
-    "@recentlyPlayed": {},
     "latestReleases": "최신 발매",
-    "@latestReleases": {},
     "releaseDateFormatYear": "연도",
     "@releaseDateFormatYear": {
         "description": "Date format option for the release date of an album, showing only the year"
@@ -1765,10 +1452,6 @@
     "@showCoversOnAlbumScreenTitle": {
         "description": "Title for the setting that controls if album covers are shown for each track separately on the album screen"
     },
-    "emptyTopTracksList": "아직 이 아티스트의 곡을 듣지 않았습니다.",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
-    },
     "largeDownloadWarning": "경고: {count} 곡을 다운로드 하려고 합니다.",
     "@largeDownloadWarning": {
         "description": "A line of warning text on the download dialog when large numbers of tracks are downloaded at once.",
@@ -1783,19 +1466,8 @@
         "description": "Subtitle for the setting controlling when to warn about a large download"
     },
     "adaptive": "적응형",
-    "@adaptive": {},
-    "shuffleCountButton": "({count,plural,=1{{count} 곡} other{{count} 곡(들)}}) 임의 재생",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "logoutButtonSubtitle": "이미 다운로드 한 곡들은 다른 서버로 로그인 할 경우 삭제됩니다",
-    "@logoutButtonSubtitle": {},
     "none": "없음",
-    "@none": {},
     "createPlaylistFromCurrentQueue": "대기열을 플레이리스트로 저장",
     "@createPlaylistFromCurrentQueue": {
         "description": "Label for a button that creates a new playlist from the current queue."
@@ -1805,7 +1477,6 @@
         "description": "Label for the setting that controls the order of item sections on the screens."
     },
     "unknown": "알 수 없음",
-    "@unknown": {},
     "itemSectionsOrderSubtitle": "아이템 섹션의 정렬을 설정합니다.",
     "@itemSectionsOrderSubtitle": {
         "description": "Description of the setting that controls the order of item sections on the screens."
@@ -1833,10 +1504,6 @@
     "genreListsInheritSortingSubtitle": "활성화하면 \"전체 보기\" 리스트가 장르 화면의 정렬과 필터링 설정을 상속받습니다(따릅니다). 비활성화하면 해당 라이브러리 탭의 설정을 대신 사용합니다. 장르 화면 상단의 카운팅이나 \"플레이리스트 탐색\" 버튼을 탭하면 항상 라이브러리 탭의 정렬 설정을 사용합니다.",
     "@genreListsInheritSortingSubtitle": {
         "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
-    },
-    "curatedItemsMostPlayedOfflineTooltip": "오프라인 모드에서 사용 불가.",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
     },
     "curatedItemsNoFavorites": "{itemType, select, artistGenreFilter{ 이 장르의 해당 아티스트의} artist{ 이 아트스트의} genre{ 이 장르의} other{}} 즐겨찾기가 없습니다.",
     "@curatedItemsNoFavorites": {
@@ -1874,12 +1541,6 @@
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
-    "fixedGridSizeSwitchTitle": "고정 사이즈의 그리드 타일 사용",
-    "@fixedGridSizeSwitchTitle": {},
-    "fixedGridSizeSwitchSubtitle": "그리드 타일 사이즈가 창 및 화면 크기에 반응하지 않습니다.",
-    "@fixedGridSizeSwitchSubtitle": {},
-    "fixedGridSizeTitle": "그리드 타일 사이즈",
-    "@fixedGridSizeTitle": {},
     "useHighContrastColorsSubtitle": "가독성을 높이기 위해 고대비 동적 색상을 사용합니다.",
     "@useHighContrastColorsSubtitle": {
         "description": "Subtitle for the setting that controls if high contrast colors are used throughout the app"
@@ -1894,47 +1555,24 @@
         "description": "Localized names of fixed size grid tile sizes."
     },
     "allowSplitScreenTitle": "분할 화면 모드 허용",
-    "@allowSplitScreenTitle": {},
     "allowSplitScreenSubtitle": "더 큰 디스플레이어에서 재생화면은 다른 보기화면과 함께 표시됩니다.",
-    "@allowSplitScreenSubtitle": {},
     "enableVibration": "진동 활성화",
-    "@enableVibration": {},
     "enableVibrationSubtitle": "진동을 활성화 할지 설정함.",
-    "@enableVibrationSubtitle": {},
-    "hideQueueButton": "대기열 버튼 숨기기",
-    "@hideQueueButton": {},
-    "hideQueueButtonSubtitle": "재생화면에서 대기열 버튼을 숨깁니다. 위로 스와이프하여 대기열에 접근합니다.",
-    "@hideQueueButtonSubtitle": {},
     "oneLineMarqueeTextButton": "긴 제목 자동 스크롤",
-    "@oneLineMarqueeTextButton": {},
     "oneLineMarqueeTextButtonSubtitle": "곡 제목이 너무 길어서 두 줄로 표시할 수 없을 경우, 자동으로 스크롤합니다",
-    "@oneLineMarqueeTextButtonSubtitle": {},
-    "marqueeOrTruncateButton": "긴 곡 제목에 줄임표 사용",
-    "@marqueeOrTruncateButton": {},
-    "marqueeOrTruncateButtonSubtitle": "곡 제목이 긴 경우 스크롤 하는 대신 끝부분에 줄임표(...)를 보여줍니다",
-    "@marqueeOrTruncateButtonSubtitle": {},
     "hidePlayerBottomActionsSubtitle": "재생화면에서 대기열과 가사 버튼을 숨깁니다. 위로 스와이프하여 대기열에 접근하며, 가사가 존재할 경우 (앨범 커버 아래쪽에서) 좌로 스와이프하여 가사를 봅니다.",
-    "@hidePlayerBottomActionsSubtitle": {},
     "hidePlayerBottomActions": "아래쪽 기능 버튼 숨기기",
-    "@hidePlayerBottomActions": {},
     "prioritizePlayerCover": "앨범 커버 표시 우선",
-    "@prioritizePlayerCover": {},
     "prioritizePlayerCoverSubtitle": "재생 화면에서 앨범 커버를 큰 사이즈로 보여주는 것에 우선순위를 줍니다. 이를 위해 작은 디스플레이 화면의 경우 중요하지 않은 기능들을 숨깁니다.",
-    "@prioritizePlayerCoverSubtitle": {},
     "suppressPlayerPadding": "재생 컨트롤의 여백 억제",
-    "@suppressPlayerPadding": {},
     "suppressPlayerPaddingSubtitle": "앨범 커버가 본래 사이즈보다 작은 경우 재생화면(각 버튼, 기능들)의 여백을 최소화 합니다.",
-    "@suppressPlayerPaddingSubtitle": {},
     "allPlaylistsInfoSetting": "플레이리스트 메타데이터 다운로드",
-    "@allPlaylistsInfoSetting": {},
     "lockDownload": "기기에 다운로드 데이터를 항상 유지함",
     "@lockDownload": {
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
     },
     "showArtistChipImage": "아티스트 이미지와 이름을 표시함",
-    "@showArtistChipImage": {},
     "showArtistChipImageSubtitle": "이 설정은 재생 화면과 같이 작은 아티스트 이미지 미리보기에 영향을 줍니다.",
-    "@showArtistChipImageSubtitle": {},
     "scrollToCurrentTrack": "현재 곡으로 스크롤하기",
     "@scrollToCurrentTrack": {
         "description": "Tooltip for button that scrolls the queue list back to the current track"
@@ -1982,7 +1620,6 @@
         }
     },
     "removeFromPlaylistConfirm": "삭제",
-    "@removeFromPlaylistConfirm": {},
     "removeFromPlaylistPrompt": "'{playlistName}' 플레이리스트의 '{itemName}'을 삭제하시겠습니까?",
     "@removeFromPlaylistPrompt": {
         "placeholders": {
@@ -2012,23 +1649,14 @@
         "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
     },
     "trackOfflineFavorites": "모든 즐겨찾기 상태 동기화",
-    "@trackOfflineFavorites": {},
     "trackOfflineFavoritesSubtitle": "이 설정은 오프라인 모드에서 가장 최신의 즐겨찾기 상태를 보여줄 수 있게 합니다.  파일을 추가로 다운로드 받지는 않습니다.",
-    "@trackOfflineFavoritesSubtitle": {},
     "allPlaylistsInfoSettingSubtitle": "플레이리스트의 모든 메타 데이터를 동기화하여 사용자의 플레이리스트 경험을 개선합니다",
-    "@allPlaylistsInfoSettingSubtitle": {},
     "downloadFavoritesSetting": "모든 즐겨찾기 다운로드",
-    "@downloadFavoritesSetting": {},
     "downloadAllPlaylistsSetting": "모든 플레이리스트 다운로드",
-    "@downloadAllPlaylistsSetting": {},
     "fiveLatestAlbumsSetting": "최신 5개 앨범 다운로드",
-    "@fiveLatestAlbumsSetting": {},
     "fiveLatestAlbumsSettingSubtitle": "다운로드한 곡들은 시간이 지나면 삭제됩니다. 앨범이 제거되지 않도록 다운로드 잠금을 설정하십시오.",
-    "@fiveLatestAlbumsSettingSubtitle": {},
     "cacheLibraryImagesSettings": "현재 라이브러리 이미지 캐시하기",
-    "@cacheLibraryImagesSettings": {},
     "cacheLibraryImagesSettingsSubtitle": "현재 활성화된 라이브리의 모든 앨범, 아티스트, 장르, 플레이리스트의 커버 이미지들을 다운로드 합니다.",
-    "@cacheLibraryImagesSettingsSubtitle": {},
     "showProgressOnNowPlayingBarTitle": "인앱 미니 플레이어에 곡 진행률을 표시함",
     "@showProgressOnNowPlayingBarTitle": {
         "description": "Title for the setting that controls if the in-app miniplayer / now playing bar at the bottom of the music screen functions as a progress bar"
@@ -2058,7 +1686,6 @@
         "description": "Title for the setting that controls if the media notification has a stop button."
     },
     "shuffleSome": "임의 재생",
-    "@shuffleSome": {},
     "playbackActionPageNewQueue": "새 대기열",
     "@playbackActionPageNewQueue": {
         "description": "Label for the playback action page that contains all actions related to starting a new queue"
@@ -2092,9 +1719,7 @@
         "description": "Title for the accent color picker sheet"
     },
     "defaultWord": "기본값",
-    "@defaultWord": {},
     "useDefaultButton": "강조 색상 초기화",
-    "@useDefaultButton": {},
     "colorCode": "색상 코드 (Hex)",
     "@colorCode": {
         "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
@@ -2104,11 +1729,6 @@
         "description": "Hint text for the color code input field"
     },
     "save": "저장",
-    "@save": {},
-    "invalidColorCode": "잘못된 색상 코드",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
     "showStopButtonOnMediaNotificationSubtitle": "미디어 알림에 정지 버튼을 표시할지 결정합니다. 앱을 열지 않고 음악 재생을 멈출 수 있습니다.",
     "@showStopButtonOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a stop button."
@@ -2190,21 +1810,15 @@
         "description": "Option to keep the screen on while using the app"
     },
     "keepScreenOnSubtitle": "어떤 상황에서 화면을 꺼지지 않게 할지 선택",
-    "@keepScreenOnSubtitle": {},
     "keepScreenOnDisabled": "비활성",
-    "@keepScreenOnDisabled": {},
     "keepScreenOnAlwaysOn": "항상 켜놓기",
-    "@keepScreenOnAlwaysOn": {},
     "keepScreenOnWhilePlaying": "음악이 재생중일 때",
-    "@keepScreenOnWhilePlaying": {},
     "keepScreenOnWhileLyrics": "가사가 표시될 때",
-    "@keepScreenOnWhileLyrics": {},
     "genericToggleButtonTooltip": "탭하여 토글하기.",
     "@genericToggleButtonTooltip": {
         "description": "Tooltip for toggle buttons that can be tapped to toggle their state"
     },
     "artwork": "앨범아트",
-    "@artwork": {},
     "artworkTooltip": "{title}의 앨범아트",
     "@artworkTooltip": {
         "placeholders": {
@@ -2312,5 +1926,9 @@
     "playbackActionPageMoveWithinQueue": "대기열로 이동",
     "@playbackActionPageMoveWithinQueue": {
         "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
+    },
+    "playbackActionPageRegularTrackOptions": "재생",
+    "@playbackActionPageRegularTrackOptions": {
+        "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
     }
 }

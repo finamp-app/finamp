@@ -12,16 +12,6 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
@@ -29,7 +19,8 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 36
+    compileSdkVersion flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -43,13 +34,12 @@ android {
         jvmTarget = 17
     }
 
-
     defaultConfig {
         applicationId "com.unicornsonlsd.finamp"
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion 35
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode flutter.versionCode
+        versionName flutter.versionName
     }
     signingConfigs {
         release {
@@ -76,9 +66,11 @@ android {
             // minifyEnabled false
         }
         profile {
-            // https://github.com/flutter/flutter/issues/169215
-            // applicationIdSuffix '.profile'
-            minifyEnabled true // avoid dexing issues
+            if (signingConfigs.hasProperty('profile')) {
+                signingConfig signingConfigs.profile
+            }
+            applicationIdSuffix '.profile'
+            // minifyEnabled true // avoid dexing issues
             resValue "string", "app_name", "Finamp Profile"
         }
         debug {
@@ -86,7 +78,7 @@ android {
                 signingConfig signingConfigs.debug
             }
             applicationIdSuffix '.debug'
-            minifyEnabled true // avoid dexing issues
+            // minifyEnabled true // avoid dexing issues
             resValue "string", "app_name", "Finamp Debug"
         }
     }
@@ -101,8 +93,8 @@ flutter {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.mediarouter:mediarouter:1.7.0'
-    implementation "androidx.core:core-splashscreen:1.0.0"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.mediarouter:mediarouter:1.8.1'
+    implementation "androidx.core:core-splashscreen:1.2.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
 }

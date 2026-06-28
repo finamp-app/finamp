@@ -190,7 +190,7 @@ final setOfflineModeProvider = AutoDisposeProvider<bool?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SetOfflineModeRef = AutoDisposeProviderRef<bool?>;
-String _$setLocalUrlHash() => r'9aa25aea4f32ac5b3fcb0d7f989fd8df8d48c9bb';
+String _$setLocalUrlHash() => r'03ec7ee7080c5b61922f6f58de2fba8bb17a10a0';
 
 /// See also [setLocalUrl].
 @ProviderFor(setLocalUrl)

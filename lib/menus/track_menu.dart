@@ -1,11 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:get_it/get_it.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:finamp/components/PlayerScreen/queue_list.dart';
 import 'package:finamp/components/PlayerScreen/sleep_timer_cancel_dialog.dart';
 import 'package:finamp/components/themed_bottom_sheet.dart';
@@ -24,7 +18,6 @@ import 'package:finamp/menus/components/menuEntries/toggle_favorite_menu_entry.d
 import 'package:finamp/menus/components/menu_item_info_header.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
-import 'package:finamp/menus/components/playbackActions/playback_actions.dart';
 import 'package:finamp/menus/components/radio_mode_menu.dart';
 import 'package:finamp/menus/components/speed_menu.dart';
 import 'package:finamp/menus/sleep_timer_menu.dart';
@@ -44,6 +37,8 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../models/music_models.dart';
+
 const Duration trackMenuDefaultAnimationDuration = Duration(milliseconds: 500);
 const Curve trackMenuDefaultInCurve = Curves.easeOutCubic;
 const Curve trackMenuDefaultOutCurve = Curves.easeInCubic;
@@ -52,16 +47,14 @@ Future<void> showModalTrackMenu({
   required BuildContext context,
   required BaseItemDto item,
   bool showPlaybackControls = false,
-  bool isInPlaylist = false,
   BaseItemDto? parentItem,
   VoidCallback? onRemoveFromList,
   bool confirmPlaylistRemoval = true,
   bool showQueueActions = false,
   FinampStorableQueueInfo? queueInfo,
   FinampQueueItem? queueItem,
+  QueueItemSource? source,
 }) async {
-  final isOffline = FinampSettingsHelper.finampSettings.isOffline;
-
   await showThemedBottomSheet(
     context: context,
     item: item,
@@ -71,9 +64,7 @@ Future<void> showModalTrackMenu({
         key: ValueKey(item.id),
         item: item,
         parentItem: parentItem,
-        isOffline: isOffline,
         showPlaybackControls: showPlaybackControls,
-        isInPlaylist: isInPlaylist,
         onRemoveFromList: onRemoveFromList,
         confirmPlaylistRemoval: confirmPlaylistRemoval,
         showQueueActions: showQueueActions,
@@ -81,6 +72,7 @@ Future<void> showModalTrackMenu({
         dragController: dragController,
         queueInfo: queueInfo,
         queueItem: queueItem,
+        source: source,
       );
     },
   );
@@ -94,9 +86,7 @@ class TrackMenu extends ConsumerStatefulWidget {
   const TrackMenu({
     super.key,
     required this.item,
-    required this.isOffline,
     required this.showPlaybackControls,
-    required this.isInPlaylist,
     required this.onRemoveFromList,
     required this.confirmPlaylistRemoval,
     required this.showQueueActions,
@@ -105,13 +95,12 @@ class TrackMenu extends ConsumerStatefulWidget {
     required this.dragController,
     this.queueInfo,
     this.queueItem,
+    this.source,
   });
 
   final BaseItemDto item;
   final BaseItemDto? parentItem;
-  final bool isOffline;
   final bool showPlaybackControls;
-  final bool isInPlaylist;
   final VoidCallback? onRemoveFromList;
   final bool confirmPlaylistRemoval;
   final bool showQueueActions;
@@ -119,6 +108,7 @@ class TrackMenu extends ConsumerStatefulWidget {
   final DraggableScrollableController dragController;
   final FinampStorableQueueInfo? queueInfo;
   final FinampQueueItem? queueItem;
+  final QueueItemSource? source;
 
   @override
   ConsumerState<TrackMenu> createState() => _TrackMenuState();
@@ -141,6 +131,8 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
   double closedHeight = 0;
   double speedMenuHeight = 140;
   double sleepTimerMenuHeight = 265;
+
+  Track get playableItem => Track(widget.item, source: widget.source ?? QueueItemSource.fromBaseItem(widget.item));
 
   @override
   void initState() {
@@ -167,8 +159,8 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
 
   bool isBaseItemInQueueItem(BaseItemDto baseItem, FinampQueueItem? queueItem) {
     if (queueItem != null) {
-      final baseItem = BaseItemDto.fromJson(queueItem.item.extras!["itemJson"] as Map<String, dynamic>);
-      return baseItem.id == queueItem.id;
+      final queueBaseItem = BaseItemDto.fromJson(queueItem.item.extras!["itemJson"] as Map<String, dynamic>);
+      return baseItem.id == queueBaseItem.id;
     }
     return false;
   }
@@ -232,12 +224,8 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
       includePlaybackRowPageIndicator: widget.queueItem != null,
     );
 
-    return Consumer(
-      builder: (context, ref, child) {
-        final metadata = ref.watch(currentTrackMetadataProvider).unwrapPrevious();
-        return widget.childBuilder(stackHeight, menu(context, menuEntries, metadata.value));
-      },
-    );
+    final metadata = ref.watch(currentTrackMetadataProvider).unwrapPrevious();
+    return widget.childBuilder(stackHeight, menu(context, menuEntries, metadata.value));
   }
 
   // Normal track menu entries, excluding headers
@@ -250,12 +238,13 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
 
     return [
       if (widget.queueInfo != null) RestoreQueueMenuEntry(queueInfo: widget.queueInfo!),
-      AddToPlaylistMenuEntry(item: widget.item, queueItem: queueItem),
+      AddToPlaylistMenuEntry(item: playableItem, queueItem: queueItem),
       RemoveFromCurrentPlaylistMenuEntry(
         baseItem: widget.item,
         parentItem: widget.parentItem,
         confirmRemoval: widget.confirmPlaylistRemoval,
-        onRemove: widget.onRemoveFromList,
+        // Do not trigger on remove for playlist removal if we are in the queue
+        onRemove: widget.queueItem == null ? widget.onRemoveFromList : null,
       ),
       InstantMixMenuEntry(baseItem: widget.item),
       StartRadioMenuEntry(baseItem: widget.item),
@@ -515,11 +504,11 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
           ),
         ),
       ],
-      SliverPersistentHeader(delegate: MenuItemInfoSliverHeader(item: widget.item), pinned: true),
+      SliverPersistentHeader(delegate: MenuItemInfoSliverHeader(item: playableItem), pinned: true),
       MenuMask(
         height: MenuItemInfoSliverHeader.defaultHeight,
         child: SliverToBoxAdapter(
-          child: PlaybackActionRow(item: widget.item, queueItem: widget.queueItem),
+          child: PlaybackActionRow(item: playableItem, queueItem: widget.queueItem),
         ),
       ),
       MenuMask(

@@ -9,10 +9,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../components/confirmation_prompt_dialog.dart';
+
 class DownloadMenuEntry extends ConsumerWidget implements HideableMenuEntry {
   final DownloadStub downloadStub;
+  final String? warningMessage;
 
-  const DownloadMenuEntry({super.key, required this.downloadStub});
+  const DownloadMenuEntry({super.key, required this.downloadStub, this.warningMessage});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,7 +29,20 @@ class DownloadMenuEntry extends ConsumerWidget implements HideableMenuEntry {
         icon: TablerIcons.download,
         title: AppLocalizations.of(context)!.downloadItem,
         onTap: () async {
-          await DownloadDialog.show(context, downloadStub, null);
+          if (warningMessage != null) {
+            final confirmed = await showDialog<bool?>(
+              context: context,
+              builder: (context) => ConfirmationPromptDialog(
+                promptText: warningMessage!,
+                confirmButtonText: AppLocalizations.of(context)!.addButtonLabel,
+              ),
+            );
+            if ((confirmed ?? false) && context.mounted) {
+              await DownloadDialog.show(context, downloadStub, null);
+            }
+          } else {
+            await DownloadDialog.show(context, downloadStub, null);
+          }
           if (context.mounted) {
             Navigator.pop(context);
           }

@@ -18,6 +18,8 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		D7E03F9A2ED4FFB100EEBE11 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E03F982ED4FFAE00EEBE11 /* SceneDelegate.swift */; };
+		D7E03F9B2ED4FFB200EEBE11 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E03F9C2ED4FFAF00EEBE11 /* CarPlaySceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,6 +70,12 @@
 		1A3D4FC429E71B4B00C17E1B /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		1A5F1B1929F734E500E6F504 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
 		1A5F1B1A29F734E500E6F504 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		1A6BFACB2FE1D41100A0CAD5 /* fil */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = fil.lproj/Main.strings; sourceTree = "<group>"; };
+		1A6BFACC2FE1D41100A0CAD5 /* fil */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = fil.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		1A6BFACD2FE1D42300A0CAD5 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Main.strings; sourceTree = "<group>"; };
+		1A6BFACE2FE1D42500A0CAD5 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		1A6BFACF2FE1D42F00A0CAD5 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Main.strings; sourceTree = "<group>"; };
+		1A6BFAD02FE1D43000A0CAD5 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		1A7A01C725617F74005D4731 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		1A9072D528AEB75800DB7A21 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
 		1A9072D628AEB75800DB7A21 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -121,6 +129,9 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CF84AA0DC653871661EC5D9F /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
+		D71BDC432ED54E31006D7BB7 /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
+		D7E03F982ED4FFAE00EEBE11 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		D7E03F9C2ED4FFAF00EEBE11 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
 		D9AB2228B850BB2B1B359973 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		E0FC81896D87FAC6F1E1B2C8 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		FB7427A67C90F0206B85CCB6 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -192,7 +203,10 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				D71BDC432ED54E31006D7BB7 /* RunnerDebug.entitlements */,
+				D7E03F9C2ED4FFAF00EEBE11 /* CarPlaySceneDelegate.swift */,
 				FBA6030E2DB170CE0055CBBC /* Runner.entitlements */,
+				D7E03F982ED4FFAE00EEBE11 /* SceneDelegate.swift */,
 				1AB3434728AEB3BA00B8C792 /* Info-Debug.plist */,
 				1AB3434828AEB3BA00B8C792 /* Info-Profile.plist */,
 				1AB3434928AEB3BA00B8C792 /* Info-Release.plist */,
@@ -290,6 +304,9 @@
 				sr,
 				sl,
 				ta,
+				fil,
+				he,
+				id,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
@@ -327,9 +344,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -397,9 +418,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -414,7 +439,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				D7E03F9B2ED4FFB200EEBE11 /* CarPlaySceneDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+				D7E03F9A2ED4FFB100EEBE11 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -460,6 +487,9 @@
 				1A1A25672DB297CF00F8BEE4 /* sr */,
 				1A1A25692DB297D700F8BEE4 /* sl */,
 				1A1A256B2DB297E400F8BEE4 /* ta */,
+				1A6BFACB2FE1D41100A0CAD5 /* fil */,
+				1A6BFACD2FE1D42300A0CAD5 /* he */,
+				1A6BFACF2FE1D42F00A0CAD5 /* id */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -503,6 +533,9 @@
 				1A1A25682DB297CF00F8BEE4 /* sr */,
 				1A1A256A2DB297D700F8BEE4 /* sl */,
 				1A1A256C2DB297E400F8BEE4 /* ta */,
+				1A6BFACC2FE1D41100A0CAD5 /* fil */,
+				1A6BFACE2FE1D42500A0CAD5 /* he */,
+				1A6BFAD02FE1D43000A0CAD5 /* id */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";

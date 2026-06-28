@@ -1,4 +1,5 @@
 import 'package:finamp/components/LogsScreen/export_logs_button.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 
@@ -15,6 +16,7 @@ class LogsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.logs),
+        leading: FinampAppBarBackButton(),
         actions: const [
           ExportLogsButton(),
           ShareLogsButton(),

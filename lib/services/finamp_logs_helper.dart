@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:archive/archive_io.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:finamp/services/censored_log.dart';
@@ -92,27 +93,40 @@ class FinampLogsHelper {
   /// Write logs to a file and share the file
   Future<void> shareLogs() async {
     final tempDir = await getTemporaryDirectory();
-    final tempFile = File(path_helper.join(tempDir.path, _logExportName));
+    final (zipName, internalName) = _logExportName();
+    final tempFile = File(path_helper.join(tempDir.path, zipName));
     tempFile.createSync();
 
-    tempFile.writeAsStringSync(await getFullLogs());
+    await tempFile.writeAsBytes(await _getLogsArchive(internalName));
 
-    final xFile = XFile(tempFile.path, mimeType: "text/plain");
-    await Share.shareXFiles([xFile]);
+    final xFile = XFile(tempFile.path, mimeType: "application/zip");
+    await SharePlus.instance.share(ShareParams(files: [xFile]));
 
     await tempFile.delete();
   }
 
   /// Write logs to a file and save to user-picked directory
   Future<void> exportLogs() async {
-    await FilePicker.platform.saveFile(
-      fileName: _logExportName,
+    final (zipName, internalName) = _logExportName();
+
+    await FilePicker.saveFile(
+      fileName: zipName,
       // initialDirectory is ignored on mobile
-      initialDirectory: (await getApplicationDocumentsDirectory()).path,
-      bytes: utf8.encode(await getFullLogs()),
+      // initialDirectory only seems to work with a trailing separator for some reason
+      initialDirectory: (await getApplicationDocumentsDirectory()).path + path_helper.separator,
+      bytes: await _getLogsArchive(internalName),
     );
   }
 
-  String? get _logExportName =>
-      "finamp-logs-${DateTime.now().toIso8601String().replaceAll(RegExp(r'[/?<>:*|.\\"]'), "-")}.txt";
+  Future<Uint8List> _getLogsArchive(String name) async {
+    final logBytes = utf8.encode(await getFullLogs());
+    final archive = Archive();
+    archive.add(ArchiveFile.bytes(name, logBytes));
+    return ZipEncoder().encodeBytes(archive, level: DeflateLevel.defaultCompression);
+  }
+
+  (String, String) _logExportName() {
+    final baseName = "finamp-logs-${DateTime.now().toIso8601String().replaceAll(RegExp(r'[/?<>:*|.\\"]'), "-")}";
+    return ("$baseName.zip", "$baseName.txt");
+  }
 }

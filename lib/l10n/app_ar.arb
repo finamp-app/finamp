@@ -7,10 +7,6 @@
     "logs": "السجلات",
     "username": "اسم المستخدم",
     "unknownName": "إسم غير معروف",
-    "couldNotFindLibraries": "لم يتم العثور على أي مكتبات.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "selectMusicLibraries": "اختيار مكتبات الموسيقى",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
@@ -50,7 +46,6 @@
     "budget": "الميزانية",
     "random": "عشوائي",
     "name": "الاسم",
-    "downloadMissingImages": "تنزيل الصور المفقودة",
     "revenue": "الإيرادات",
     "downloadCount": "{count,plural, =1{{count} تنزيل} other{{count} تنزيلات}}",
     "@downloadCount": {
@@ -102,7 +97,7 @@
         }
     },
     "playButtonLabel": "تشغيل",
-    "shuffleButtonLabel": "تشغيل عشوائي",
+    "shuffleButtonLabel": "شغّل عشوائياً",
     "trackCount": "{count,plural,=1{{count} أغنية} other{{count} أغاني}}",
     "@trackCount": {
         "placeholders": {
@@ -111,7 +106,6 @@
             }
         }
     },
-    "updateButtonLabel": "تحديث",
     "playlistUpdated": "تم تحديث قائمة التشغيل.",
     "required": "مطلوب",
     "addButtonLabel": "إضافة",
@@ -133,30 +127,17 @@
     "customLocation": "موقع مخصص",
     "appDirectory": "مجلّد التطبيق",
     "unknownError": "خطأ غير معروف",
-    "directoryMustBeEmpty": "يجب أن يكون المجلد فارغاً",
     "enterLowPriorityStateOnPause": "الدخول في حالة الأولوية المنخفضة عند الإيقاف المؤقت",
     "shuffleAllTrackCountSubtitle": "عدد الأغاني المراد تشغيلها عند استخدام زر \"تشغيل الكل عشوائياً\" في علامة تبويب الأغاني أو شاشة النوع.",
-    "shuffleAllTrackCount": "تشغيل عشوائي لعدد الأغاني",
+    "shuffleAllTrackCount": "عدد أغاني التشغيل العشوائي",
     "grid": "شبكة",
-    "portrait": "عمودي",
     "landscape": "أفقي",
     "list": "قائمة",
     "viewType": "نوع العرض",
     "viewTypeSubtitle": "نوع عرض شاشة الموسيقى",
     "showTextOnGridView": "عرض النص في عرض الشبكة",
-    "gridCrossAxisCount": "عدد أعمدة الشبكة في الوضع {value}",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
     "showTextOnGridViewSubtitle": "إظهار أو إخفاء النص (العنوان، الفنان، إلخ) في شاشة العرض الشبكي للموسيقى.",
     "useCoverAsBackgroundSubtitle": "ما إذا كان سيتم استخدام غلاف الأغنية المموّه كخلفية في أجزاء مختلفة من التطبيق.",
-    "hideTrackArtistsIfSameAsAlbumArtists": "إخفاء فناني الأغنية إذا كانوا نفس فناني الألبوم",
     "theme": "المظهر",
     "light": "الفاتح",
     "cancelSleepTimer": "إلغاء مؤقت النوم؟",
@@ -169,7 +150,6 @@
     "createButtonLabel": "إنشاء",
     "sleepTimerTooltip": "مؤقت النوم",
     "newPlaylist": "قائمة تشغيل جديدة",
-    "invalidNumber": "رقم غير صالح",
     "unknownArtist": "فنان غير معروف",
     "playlistCreated": "تم إنشاء قائمة التشغيل.",
     "noAlbum": "لايوجد ألبوم",
@@ -178,8 +158,6 @@
     "addToQueue": "إضافة إلى قائمة الانتظار",
     "queue": "قائمة الانتظار",
     "instantMix": "مزيج فوري",
-    "addedToQueue": "تَمَّت الإضافة إلى قائمة الانتظار.",
-    "queueReplaced": "تم تبديل قائمة الانتظار.",
     "startingInstantMix": "جارٍ بدء المزيج الفوري.",
     "addDownloadLocation": "إضافة موقع تنزيل",
     "errorScreenError": "حدث خطأ أثناء جلب قائمة الأخطاء! في هذه الحالة، يُنصح بإنشاء تقرير على GitHub وحذف بيانات التطبيق",
@@ -214,13 +192,9 @@
     "bitrateSubtitle": "معدل بت أعلى ينتج جودة صوت أفضل على حساب زيادة في استخدام البيانات. لا ينطبق على أنواع الترميز اللتي لا تفقد الجودة أثناء الضغط، مثل FLAC",
     "dateAdded": "تاريخ الإضافة",
     "productionYear": "سنة الإنتاج",
-    "replaceQueue": "استبدال قائمة الانتظار",
     "system": "النظام",
-    "noArtist": "لا يوجد فنان",
     "password": "كلمة السر",
     "selectDirectory": "تحديد المجلد",
-    "downloadsDeleted": "تم حذف التنزيلات.",
-    "failedToGetTrackFromDownloadId": "فشل الحصول على الأغنية من معرف التنزيل",
     "internalExternalIpExplanation": "إذا كنت ترغب في الوصول إلى خادم Jellyfin الخاص بك عن بُعد، فأنت بحاجة إلى استخدام عنوان IP الخارجي الخاص بك.\n\nإذا كان خادمك يعمل على منفذ HTTP الافتراضي (80 أو 443) أو منفذ Jellyfin الافتراضي (8096)، فلا يتعين عليك تحديد المنفذ.\n\nإذا كان عنوان URL صحيحاً، فمن المفترض أن تظهر لك بعض المعلومات حول خادمك أسفل حقل الإدخال.",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
@@ -228,27 +202,7 @@
     "pathReturnSlashErrorMessage": "لا يمكن استخدام المسارات التي تعود بـ \"/\"",
     "useCoverAsBackground": "استخدام غلاف الأغنية المموّه كخلفية",
     "enterLowPriorityStateOnPauseSubtitle": "يسمح بإخفاء الإشعار عند الإيقاف المؤقت. كما يسمح لنظام أندرويد بإيقاف الخدمة عند الإيقاف المؤقت.",
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "ما إذا كان سيتم إظهار فناني الأغنية في شاشة الألبوم إذا لم يختلفوا عن فناني الألبوم.",
     "applicationLegalese": "مرخص بموجب رخصة موزيلا العامة 2.0.\nكود المصدر متاح على {sourceCodeLink}.",
-    "gridCrossAxisCountSubtitle": "عدد مربعات الشبكة في كل صف في الوضع {value}.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
-    "downloadedMissingImages": "{count,plural, =0{لا يوجد صور مفقودة} =1{تم تنزيل {count} صورة مفقودة} other{ تم تنزيل {count} صور مفقودة}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "anErrorHasOccured": "حدث خطأ.",
     "customLocationsBuggy": "اختيار مجلد حفظ مخصص قد يؤدي إلى كثيراً من المشاكل، ولا يُنصح به في معظم الحالات. المجلدات الموجودة ضمن مجلد \"الموسيقى\" في النظام تمنع من حفظ صور الألبومات بسبب قيود نظام التشغيل.",
     "addToMix": "إضافة إلى المزيج",
@@ -261,7 +215,6 @@
     "favorite": "مفضل",
     "favorites": "مفضلات",
     "shuffleSome": "تشغيل بعض الأغاني عشوائيًا",
-    "onlineMode": "وضع الإتصال",
     "title": "عنوان",
     "albumArtists": "فنانو الألبوم",
     "performingArtists": "الفنانون المؤدون",
@@ -272,7 +225,6 @@
         "description": "Default sorting order for playlists (server order)"
     },
     "adaptive": "متكيف",
-    "syncDownloadedPlaylists": "مزامنة قوائم التشغيل المنزلة",
     "activeDownloads": "التنزيلات النشطة",
     "startupErrorTitle": "حدث خطأ ما أثناء بدء تشغيل التطبيق!",
     "@startupErrorTitle": {
@@ -362,20 +314,6 @@
     },
     "activeDownloadsTitle": "التنزيلات النشطة",
     "noActiveDownloads": "لا توجد تنزيلات نشطة.",
-    "deleteDownloadsPrompt": "هل أنت متأكد أنك تريد حذف {itemType, select, album{الألبوم} playlist{قائمة التشغيل} artist{الفنان} genre{النوع الموسيقي} track{الأغنية} library{المكتبة} other{العنصر}} '{itemName}' من هذا الجهاز؟",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
     "serverUrlHint": "مثال: demo.jellyfin.org/stable",
     "@serverUrlHint": {
         "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
@@ -472,10 +410,6 @@
             }
         }
     },
-    "deleteDownloadsConfirmButtonText": "حذف",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
     "specialDownloads": "تنزيلات خاصة",
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
@@ -500,7 +434,7 @@
     "@playbackActionPageNewQueue": {
         "description": "Label for the playback action page that contains all actions related to starting a new queue"
     },
-    "playbackActionPageNext": "تشغيل بعد الأغنية الحالية",
+    "playbackActionPageNext": "تشغيل تالياً",
     "@playbackActionPageNext": {
         "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
     },
@@ -521,7 +455,6 @@
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
     },
     "exportLogs": "حفظ السجلات",
-    "playbackReporting": "تقارير التشغيل",
     "interactions": "التفاعلات",
     "notAvailable": "غير متوفر",
     "logoutButtonSubtitle": "تسجيل الدخول إلى خادم مختلف سيؤدي إلى حذف التنزيلات الحالية",
@@ -629,10 +562,6 @@
         "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
     },
     "save": "حفظ",
-    "invalidColorCode": "رمز لون غير صالح",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
     "playerScreen": "شاشة المشغل",
     "@playerScreen": {
         "description": "Name for the expanded player"
@@ -667,7 +596,6 @@
             }
         }
     },
-    "addToMorePlaylistsTooltip": "أضف إلى المزيد من قوائم التشغيل",
     "addToMorePlaylistsTitle": "أضف إلى المزيد من قوائم التشغيل",
     "sleepTimerRemainingTime": "النوم في {time,plural,=1{<1 minute} other{{time} minutes}}",
     "@sleepTimerRemainingTime": {
@@ -687,26 +615,6 @@
             }
         }
     },
-    "removeFromPlaylistNamedTooltip": "إزالة من قائمة التشغيل '{playlistName}'",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "removeFromPlaylistNamedTitle": "إزالة من قائمة التشغيل '{playlistName}'",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "playlistActionsMenuButtonTooltip": "انقر للإضافة إلى قائمة التشغيل. اضغط مطولاً للإضافة أو الإزالة من المفضلة.",
     "@playlistActionsMenuButtonTooltip": {
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
@@ -715,7 +623,6 @@
     "@browsePlaylists": {
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
     },
-    "unknownAlbum": "ألبوم غير معروف",
     "playbackModeDirectPlaying": "تشغيل مباشر",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -742,12 +649,6 @@
     "goToGenre": "انتقل إلى النوع الموسيقي",
     "removeFavorite": "إزالة من المفضلات",
     "addFavorite": "إضافة إلى المفضلات",
-    "confirmFavoriteAdded": "تمت الإضافة للمفضلات",
-    "confirmFavoriteRemoved": "تمت الإزالة من المفضلات",
-    "insertedIntoQueue": "تم الإدخال في قائمة المحتوى.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
     "confirmAddedToPlaylist": "أُضيف إلى قائمة التشغيل.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
@@ -755,14 +656,6 @@
     "startRadio": "تشغيل الراديو",
     "@startRadio": {
         "description": "Menu label for starting a radio from a playlist, album, etc."
-    },
-    "redownloadedItems": "{count,plural, =0{لا حاجة لإعادة التنزيل.} =1{تمت إعادة تنزيل {count} عنصر} other{تمت إعادة تنزيل {count} عناصر}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
     },
     "bufferDuration": "مدة التخزين المؤقت",
     "bufferDurationSubtitle": "المدة التي يجب تخزينها مؤقتًا، بالثواني. يتطلب إعادة تشغيل.",
@@ -794,11 +687,11 @@
     "@clearNextUp": {
         "description": "Label for the action that deletes all tracks added to Next Up"
     },
-    "stopAndClearQueue": "أوقف التشغيل وامسح قائمة المحتوى",
+    "stopAndClearQueue": "أوقف التشغيل وامسح قائمة الانتظار",
     "@stopAndClearQueue": {
         "description": "Label for a button that stops playback and removes all tracks from the queue."
     },
-    "createPlaylistFromCurrentQueue": "حفظ قائمة المحتوى إلى قائمة تشغيل",
+    "createPlaylistFromCurrentQueue": "حفظ قائمة الانتظار في قائمة تشغيل",
     "@createPlaylistFromCurrentQueue": {
         "description": "Label for a button that adds the current queue to an existing or new playlist."
     },
@@ -830,11 +723,11 @@
     "@shuffleSomeToNextUp": {
         "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
     },
-    "shuffleToQueue": "شغّل عشوائياً في قائمة المحتوى",
+    "shuffleToQueue": "شغّل عشوائياً في قائمة الانتظار",
     "@shuffleToQueue": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
-    "shuffleSomeToQueue": "شغّل عشوائياً البعض في قائمة المحتوى",
+    "shuffleSomeToQueue": "شغّل عشوائياً البعض في قائمة الانتظار",
     "@shuffleSomeToQueue": {
         "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
@@ -941,10 +834,7 @@
     "favoriteAlbums": "الألبومات المفضلة",
     "favoriteArtists": "الفنانون المفضلون",
     "randomTracks": "أغاني (اختيارات عشوائية)",
-    "randomAlbums": "ألبومات (اختيارات عشوائية)",
-    "randomArtists": "فنانون (اختيارات عشوائية)",
     "mostPlayed": "الأكثر تشغيلاً",
-    "randomFavoritesFirst": "عشوائي (المفضلة أولاً)",
     "recentlyAdded": "أضيف مؤخراً",
     "recentlyPlayed": "تم تشغيله مؤخراً",
     "latestReleases": "أحدث الإصدارات",
@@ -985,7 +875,7 @@
     "@genreFilterPlaylistScreens": {
         "description": "Label for the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
     },
-    "shuffleAllQueueSource": "تشغيل عشوائي للكل",
+    "shuffleAllQueueSource": "شغّل عشوائياً الكل",
     "@shuffleAllQueueSource": {
         "description": "Title for the queue source when the user is shuffling all tracks. Should be capitalized (if applicable) to be more recognizable throughout the UI"
     },
@@ -1186,10 +1076,6 @@
     "@genreListsInheritSortingSubtitle": {
         "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
     },
-    "curatedItemsMostPlayedOfflineTooltip": "غير متوفر في وضع عدم الاتصال بالإنترنت.",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
-    },
     "curatedItemsNotListenedYet": "لم تستمع إلى أي مسارات {itemType, select, artistGenreFilter{ لهذا الفنان في هذا النوع} artist{ لهذا الفنان} genre{ في هذا النوع} other{}}.",
     "@curatedItemsNotListenedYet": {
         "description": "Tooltip for Most Played and Recently Played on Curated Items in Online Mode when not yet listened to any tracks.",
@@ -1229,35 +1115,35 @@
             }
         }
     },
-    "shuffleAlbums": "تشغيل عشوائي للألبومات",
+    "shuffleAlbums": "شغّل عشوائياً الألبومات",
     "@shuffleAlbums": {
         "description": "Label for action that shuffles all albums of an artist"
     },
-    "shuffleSomeAlbums": "تشغيل عشوائي لبعض الألبومات",
+    "shuffleSomeAlbums": "شغّل عشوائياً بعض الألبومات",
     "@shuffleSomeAlbums": {
         "description": "Label for action that shuffles some albums of a genre"
     },
-    "shuffleAlbumsNext": "تشغيل عشوائي للألبومات بعد الأغنية الحالية",
+    "shuffleAlbumsNext": "شغّل عشوائياً الألبومات تالياً",
     "@shuffleAlbumsNext": {
         "description": "Label for action that shuffles all albums of an artist and adds them at the start of Next Up"
     },
-    "shuffleSomeAlbumsNext": "تشغيل عشوائي لبعض الألبومات بعد الأغنية الحالية",
+    "shuffleSomeAlbumsNext": "شغّل عشوائياً لبعض الألبومات تالياً",
     "@shuffleSomeAlbumsNext": {
         "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
     },
-    "shuffleAlbumsToNextUp": "تشغيل عشوائي للألبومات في آخر قائمة التالي",
+    "shuffleAlbumsToNextUp": "شغّل عشوائياً الألبومات في قائمة التالي",
     "@shuffleAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of an artist and adds them at the end of Next Up"
     },
-    "shuffleSomeAlbumsToNextUp": "تشغيل عشوائي لبعض الألبومات في آخر قائمة التالي",
+    "shuffleSomeAlbumsToNextUp": "شغّل عشوائياً لبعض الألبومات في قائمة التالي",
     "@shuffleSomeAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
     },
-    "shuffleAlbumsToQueue": "تشغيل عشوائي للألبومات في نهاية قائمة المحتوى",
+    "shuffleAlbumsToQueue": "شغّل عشوائياً الألبومات في قائمة الانتظار",
     "@shuffleAlbumsToQueue": {
         "description": "Label for action that shuffles all albums of an artist and adds them at the end of the regular queue"
     },
-    "shuffleSomeAlbumsToQueue": "تشغيل عشوائي لبعض الألبومات في نهاية قائمة المحتوى",
+    "shuffleSomeAlbumsToQueue": "شغّل عشوائياً بعض الألبومات في قائمة الانتظار",
     "@shuffleSomeAlbumsToQueue": {
         "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
     },
@@ -1281,7 +1167,6 @@
     "confirm": "تأكيد",
     "close": "إغلاق",
     "showUncensoredLogMessage": "يحتوي هذا السجل على معلومات تسجيل دخولك. هل تريد عرضها؟",
-    "resetTabs": "إعادة ضبط التبويبات",
     "resetToDefaults": "إعادة الضبط للافتراضي",
     "noMusicLibrariesTitle": "لا توجد مكتبات موسيقى",
     "@noMusicLibrariesTitle": {
@@ -1324,14 +1209,6 @@
                 "type": "int"
             },
             "repairing": {
-                "type": "int"
-            }
-        }
-    },
-    "shuffleCountButton": "شغّل عشوائياً ({count,plural,=1{{count} أغنية} other{{count} أغاني}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
                 "type": "int"
             }
         }
@@ -1422,8 +1299,6 @@
             }
         }
     },
-    "swipeInsertQueueNext": "تشغيل الأغنية المسحوبة تالياً",
-    "swipeInsertQueueNextSubtitle": "تفعيل إدراج الأغنية كعنصر تالٍ في قائمة الانتظار عند سحبها من قائمة الأغاني، بدلاً من إضافتها إلى نهايتها.",
     "swipeLeftToRightAction": "إجراء السحب لليمين",
     "swipeLeftToRightActionSubtitle": "الإجراء الذي يتم تفعيله عند سحب أغنية في القائمة من اليسار إلى اليمين.",
     "swipeRightToLeftAction": "إجراء السحب لليسار",
@@ -1461,16 +1336,6 @@
             }
         },
         "description": "Title displayed in the queue, showing which radio mode/algorithm is currently being used."
-    },
-    "radioModeOptionConfirmation": "تم التبديل إلى {option, select, reshuffle{نمط إعادة الترتيب العشوائي} random{النمط العشوائي} similar{النمط المشابه} continuous{النمط المستمر} albumMix{مزيج الألبوم} other{{option}}}",
-    "@radioModeOptionConfirmation": {
-        "placeholders": {
-            "option": {
-                "type": "String",
-                "description": "Corresponds to RadioMode.name"
-            }
-        },
-        "description": "Confirmation displayed when the radio mode is changed."
     },
     "radioModeDescription": "{mode, select, reshuffle{إعادة الترتيب العشوائي لقائمة الانتظار باستمرار} random{إلحاق أغانٍ عشوائياً من الاختيار الأولي} similar{إلحاق بناءً على قائمة الانتظار الأصلية} continuous{إلحاق بناءً على الأغنية الحالية} albumMix{إلحاق ألبومات مشابهة} other{}}",
     "@radioModeDescription": {
@@ -1814,9 +1679,6 @@
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
-    "fixedGridSizeSwitchTitle": "استخدام مربعات شبكية ثابتة الحجم",
-    "fixedGridSizeSwitchSubtitle": "لن يتغير حجم المربعات الشبكية بتغير حجم النافذة أو الشاشة.",
-    "fixedGridSizeTitle": "حجم المربعات الشبكية",
     "fixedGridTileSizeEnum": "{size, select, small{صغير} medium{متوسط} large{كبير} veryLarge{كبير جدًا} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
@@ -1830,12 +1692,8 @@
     "allowSplitScreenSubtitle": "سيظهر المشغل بجانب طرق العرض الأخرى على الشاشات الواسعة.",
     "enableVibration": "تفعيل الاهتزاز",
     "enableVibrationSubtitle": "ما إذا كان سيتم تفعيل الاهتزاز.",
-    "hideQueueButton": "إخفاء زر قائمة الانتظار",
-    "hideQueueButtonSubtitle": "إخفاء زر قائمة الانتظار في شاشة المشغل. اسحب للأعلى للوصول إلى قائمة الانتظار.",
     "oneLineMarqueeTextButton": "تمرير العناوين الطويلة تلقائيًا",
     "oneLineMarqueeTextButtonSubtitle": "تمرير عناوين الأغاني تلقائيًا عندما تكون أطول من أن تُعرض في سطرين",
-    "marqueeOrTruncateButton": "استخدام علامة الحذف للعناوين الطويلة",
-    "marqueeOrTruncateButtonSubtitle": "إظهار … في نهاية العناوين الطويلة بدلاً من تمرير النص",
     "hidePlayerBottomActions": "إخفاء الإجراءات السفلية",
     "hidePlayerBottomActionsSubtitle": "إخفاء زري قائمة الانتظار والكلمات في شاشة المشغل. اسحب للأعلى للوصول إلى قائمة الانتظار، واسحب لليسار (أسفل غلاف الألبوم) لعرض كلمات الأغنية إذا كانت متوفرة.",
     "prioritizePlayerCover": "إعطاء الأولوية لغلاف الألبوم",
@@ -2174,10 +2032,6 @@
     "@genreScreen": {
         "description": "Name for the view/screen that shows genres"
     },
-    "emptyTopTracksList": "لم تستمع إلى أي أغنية لهذا الفنان بعد.",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
-    },
     "emptyAlbum": "لا توجد أغاني.",
     "@emptyAlbum": {
         "description": "Message shown as a placeholder when an album or playlist is empty."
@@ -2456,10 +2310,6 @@
     "preferLocalNetworkEnableSwitchDescription": "ما إذا كان سيتم استخدام عنوان مختلف عند تواجدك داخل الشبكة المحلية لخادم Jellyfin الخاص بك",
     "preferLocalNetworkPublicAddressSettingTitle": "العنوان العام",
     "preferLocalNetworkPublicAddressSettingDescription": "العنوان الرئيسي المستخدم للاتصال بخادم Jellyfin الخاص بك",
-    "preferLocalNetworkInfoBox": "تتطلب هذه الميزة أذونات الموقع الجغرافي (ويجب تفعيل الموقع) لقراءة اسم الشبكة.",
-    "@preferLocalNetworkInfoBox": {
-        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
-    },
     "networkSettingsTitle": "الشبكة",
     "@networkSettingsTitle": {
         "description": "Title for the network settings screen"
@@ -2495,14 +2345,6 @@
     "clearQueueOnStopEventSubtitle": "مسح قائمة الانتظار وإغلاق المشغل في حال استلام أمر \"إيقاف\" من نظام التشغيل. ستؤدي إجراءات الإيقاف داخل التطبيق دائمًا إلى إغلاق المشغل ومسح قائمة الانتظار.",
     "@clearQueueOnStopEventSubtitle": {
         "description": "Subtitle for the setting that controls if OS stop commands clear the queue."
-    },
-    "radioModeSettingsTitle": "وضع الراديو",
-    "@radioModeSettingsTitle": {
-        "description": "Title for the setting that controls the radio mode/algorithm."
-    },
-    "radioModeSettingsSubtitle": "يضبط الطريقة التي تعتمد عليها ميزة الراديو لاختيار الأغنيات لإضافتها.",
-    "@radioModeSettingsSubtitle": {
-        "description": "Subtitle for the setting that controls the radio mode/algorithm."
     },
     "radioModeMenuTitle": "اختيار وضع الراديو",
     "@radioModeMenuTitle": {
@@ -2547,10 +2389,6 @@
     "radioModeDisabledSubtitle": "انقر للتفعيل",
     "@radioModeDisabledSubtitle": {
         "description": "Subtitle displayed in the queue to show that radio mode is disabled."
-    },
-    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "الوضع الحالي غير متاح دون اتصال.",
-    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
-        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
     },
     "radioModeUnavailableWhileOfflineDescription": "غير متاح دون اتصال",
     "@radioModeUnavailableWhileOfflineDescription": {
@@ -2888,10 +2726,6 @@
     "androidImageErrorPrompt": "تعذر حفظ الصور في مجلد الموسيقى الخاص بنظام أندرويد بسبب قيود نظام التشغيل. يجب عليك اختيار موقع آخر.",
     "@androidImageErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
-    },
-    "addDownloadLocationsErrorButton": "الإضافة على أي حال",
-    "@addDownloadLocationsErrorButton": {
-        "description": "Label shown on button for adding a download location we suspect to be buggy"
     },
     "syncFailedWarningShort": "تحذير: فشلت مزامنة بعض التنزيلات مع الخادم.",
     "@syncFailedWarningShort": {

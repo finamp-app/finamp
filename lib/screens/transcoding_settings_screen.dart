@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -22,6 +23,7 @@ class _TranscodingSettingsScreenState extends State<TranscodingSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.transcoding),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(
             context,
@@ -82,7 +84,8 @@ class DownloadBitrateSelector extends ConsumerWidget {
               autofocus: false,
               focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
             ),
-            Text(transcodeProfile.bitrateKbps, style: Theme.of(context).textTheme.titleLarge),
+            Text(transcodeProfile.bitrateKbps, style: Theme.of(context).textTheme.titleMedium),
+            SizedBox(height: 12),
           ],
         ),
       ],
@@ -253,7 +256,7 @@ class RemoteTranscodeConfigDropdownListTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(FinampUserHelper.finampCurrentUserProvider).valueOrNull;
+    final user = ref.watch(FinampUserHelper.finampCurrentUserProvider);
     bool enabled = user != null && user.preferLocalNetwork;
 
     return ListTile(

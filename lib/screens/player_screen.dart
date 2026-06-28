@@ -11,7 +11,7 @@ import 'package:finamp/components/PlayerScreen/player_split_screen_scaffold.dart
 import 'package:finamp/components/PlayerScreen/queue_button.dart';
 import 'package:finamp/components/PlayerScreen/queue_list.dart';
 import 'package:finamp/components/PlayerScreen/track_name_content.dart';
-import 'package:finamp/components/finamp_app_bar_button.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/output_menu.dart';
 import 'package:finamp/menus/playlist_actions_menu.dart';
@@ -199,7 +199,7 @@ class _PlayerScreenContent extends ConsumerWidget {
             centerTitle: true,
             toolbarHeight: toolbarHeight,
             title: PlayerScreenAppBarTitle(maxLines: maxToolbarLines),
-            leading: usingPlayerSplitScreen ? null : FinampAppBarButton(onPressed: () => Navigator.of(context).pop()),
+            leading: usingPlayerSplitScreen ? null : FinampAppBarBackButton(dismissDirection: AxisDirection.down),
             actions: [],
           ),
           // Required for sleep timer input

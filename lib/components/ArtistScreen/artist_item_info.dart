@@ -1,5 +1,7 @@
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/PlayerScreen/genre_chip.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,15 +16,15 @@ class ArtistItemInfo extends ConsumerWidget {
     required this.item,
     required this.itemTracks,
     required this.itemAlbums,
-    this.genreFilter,
-    this.updateGenreFilter,
+    required this.sortConfig,
+    this.sortConfigController,
   });
 
   final BaseItemDto item;
   final int itemTracks;
   final int itemAlbums;
-  final BaseItemDto? genreFilter;
-  final void Function(BaseItemDto?)? updateGenreFilter;
+  final SortAndFilterConfiguration sortConfig;
+  final SortAndFilterController? sortConfigController;
 
   // TODO: see if there's a way to expand this column to the row that it's in
   @override
@@ -43,8 +45,8 @@ class ArtistItemInfo extends ConsumerWidget {
           iconData: TablerIcons.disc,
           textSpan: TextSpan(text: AppLocalizations.of(context)!.albumCount(itemAlbums)),
         ),
-        if (item.type != "MusicGenre" && updateGenreFilter != null && item.genreItems != null)
-          GenreIconAndText(parent: item, genreFilter: genreFilter, updateGenreFilter: updateGenreFilter!),
+        if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.genre && item.genreItems != null)
+          GenreIconAndText(parent: item, sortConfig: sortConfig, sortConfigController: sortConfigController),
       ],
     );
   }

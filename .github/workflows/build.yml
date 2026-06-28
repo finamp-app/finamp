@@ -1,6 +1,10 @@
 name: Build
 
 on:
+  # Integration tests are slow, so we don't trigger on forks or pull
+  # requests.  To run against one of those, you can trigger manually by
+  # installing github-cli and running
+  # gh workflow run .github/workflows/build.yml --ref <branch name>
   workflow_dispatch:
   pull_request:
   push:
@@ -10,6 +14,10 @@ on:
     branches:
       - main
       - redesign
+
+env:
+  if_condition: &integration_if github.event_name == 'workflow_dispatch' ||
+    (github.event_name == 'push' && github.repository == 'UnicornsOnLSD/finamp' )
 
 # Due to a flutter bug, flutter build is not generating localizations
 # workaround by always running flutter pub get immediately before building,
@@ -94,11 +102,59 @@ jobs:
 
     - run: flutter build appbundle --debug --no-pub
 
+    - name: Enable KVM group perms
+      if: *integration_if
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    - name: Run Integration tests on api 36
+      if: *integration_if
+      timeout-minutes: 20
+      # android emulator is flaky so we retry once
+      uses: Wandalen/wretry.action@v3.8.0
+      with:
+        action: reactivecircus/android-emulator-runner@v2
+        # Use the newest supported version of android
+        with: |
+          api-level: 36
+          arch: x86_64
+          profile: pixel
+          disk-size: 5120M
+          script: |
+            adb logcat -c
+            adb logcat &
+            timeout 13m flutter test integration_test/test_cases.dart -d emulator
+
+    - name: Run Integration tests on api 25
+      if: *integration_if
+      timeout-minutes: 20
+      # android emulator is flaky so we retry once
+      uses: Wandalen/wretry.action@v3.8.0
+      with:
+        action: reactivecircus/android-emulator-runner@v2
+        # We can't use the oldest supported version api 24 because it doesn't recognize the certificates
+        # used by the demo server, so we use the second-oldest api 25.
+        with: |
+          api-level: 25
+          arch: x86_64
+          profile: pixel
+          disk-size: 5120M
+          script: |
+            adb logcat -c
+            adb logcat &
+            timeout 13m flutter test integration_test/test_cases.dart -d emulator
+
   build-ios:
     name: Build for iOS
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v6
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
@@ -125,11 +181,24 @@ jobs:
         key: ${{ runner.os }}-dart-build-${{ hashFiles('pubspec.lock') }}
         restore-keys: ${{ runner.os }}-dart-build-
 
-
     - run: flutter doctor
     - run: flutter pub get
 
     - run: flutter build ios --release --no-pub --no-codesign
+
+    - name: Start simulator
+      if: *integration_if
+      uses: futureware-tech/simulator-action@v5
+      with:
+        model: 'iPhone 16'
+        os_version: '>= 26.0'
+        wait_for_boot: true
+        erase_before_boot: true
+        boot_timeout_seconds: 360
+
+    - name: Run Integration Tests
+      if: *integration_if
+      run: flutter test integration_test/test_cases.dart -d 'iPhone 16'
 
   build-linux:
     name: Build for Linux
@@ -154,21 +223,22 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev
+        sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev libmpv-dev
 
-    - name: Determine Flutter stable version
-      uses: subosito/flutter-action@v2
-      id: flutter-version
-      with:
-        architecture: 'x64'
-        channel: 'stable'
-        dry-run: true
+    # - name: Determine Flutter stable version
+    #   uses: subosito/flutter-action@v2
+    #   id: flutter-version
+    #   with:
+    #     architecture: 'x64'
+    #     channel: 'stable'
+    #     dry-run: true
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         # Prebuilt ARM linux builds are not provided, so build flutter from source
         channel: master
-        flutter-version: "${{ steps.flutter-version.outputs.VERSION }}"
+        # flutter-version: "${{ steps.flutter-version.outputs.VERSION }}"
+        flutter-version: "3.41.9"
         cache: false
         pub-cache: true
         # Include arch as linux aarch64 include isar overriding
@@ -247,6 +317,18 @@ jobs:
       with:
         asset_paths: '["./${{ env.TAR_NAME }}", "./${{ env.SHA_NAME }}"]'
 
+    - name: Run Integration Tests
+      if: *integration_if
+      run: |
+        set +e
+        xvfb-run flutter test integration_test/test_cases.dart -d linux
+        exitcode=$?
+        if [[ $exitcode == 79 ]]; then
+          echo "Potential native crash - attempting to display"
+          timeout 2m xvfb-run flutter run -d linux
+        fi
+        exit $exitcode
+
   build-windows:
     name: Build for Windows
     runs-on: windows-latest
@@ -311,7 +393,7 @@ jobs:
       with:
         name: ${{ env.BASE_NAME }}.msix
         path: ./${{ env.BASE_NAME }}.msix
-        compression-level: 0 # no compression       
+        compression-level: 0 # no compression
 
     - name: Prepare release archive
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
@@ -327,6 +409,19 @@ jobs:
       with:
         # upload zip archive here, uploading the raw directory fails
         asset_paths: '["./${{ env.BASE_NAME }}.msix", "./${{ env.BASE_NAME }}.zip"]'
+
+    - name: Run Integration Tests
+      if: *integration_if
+      shell: bash
+      run: |
+        set +e
+        flutter test integration_test/test_cases.dart -d windows
+        exitcode=$?
+        if [[ $exitcode == 79 ]]; then
+          echo "Potential native crash - attempting to display"
+          timeout 2m flutter run -d windows
+        fi
+        exit $exitcode
 
   # build-macos:
   #   name: Build for macOS

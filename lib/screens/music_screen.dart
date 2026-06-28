@@ -1,8 +1,22 @@
-import 'dart:async';
 import 'dart:io';
 
+import 'package:finamp/components/HomeScreen/finamp_music_screen_header.dart';
+import 'package:finamp/components/HomeScreen/home_screen_content.dart';
+import 'package:finamp/components/MusicScreen/artist_type_selection_row.dart';
+import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
+import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/components/now_playing_bar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
-import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/menus/music_screen_drawer.dart';
+import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/models/music_models.dart';
+import 'package:finamp/services/audio_service_helper.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/item_by_id_provider.dart';
+import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/music_providers.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,39 +24,23 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 
-import '../components/MusicScreen/artist_type_selection_row.dart';
-import '../components/MusicScreen/music_screen_tab_view.dart';
-import '../components/MusicScreen/sort_by_menu_button.dart';
-import '../components/MusicScreen/sort_order_button.dart';
-import '../components/global_snackbar.dart';
-import '../components/now_playing_bar.dart';
-import '../menus/music_screen_drawer.dart';
-import '../models/finamp_models.dart';
-import '../services/audio_service_helper.dart';
-import '../services/finamp_settings_helper.dart';
-import '../services/finamp_user_helper.dart';
-import '../services/jellyfin_api_helper.dart';
+import '../models/jellyfin_models.dart';
 
 final _musicScreenLogger = Logger("MusicScreen");
 
 class MusicScreen extends ConsumerStatefulWidget {
-  const MusicScreen({
-    super.key,
-    this.genreFilter,
-    this.tabTypeFilter,
-    this.sortByOverrideInit,
-    this.sortOrderOverrideInit,
-    this.isFavoriteOverrideInit,
-  });
+  const MusicScreen({super.key, this.singleTabConfig, this.initialTab, this.allowFilters});
+
+  /// The initial tab type to show. Can also be provided as an argument in a named route
+  final ContentType? initialTab;
+  final bool Function(ItemFilter)? allowFilters;
 
   static const routeName = "/music";
 
   // Optional parameters for genre and tab filtering
-  final BaseItemDto? genreFilter;
-  final TabContentType? tabTypeFilter;
-  final SortBy? sortByOverrideInit;
-  final SortOrder? sortOrderOverrideInit;
-  final bool? isFavoriteOverrideInit;
+  final HomeScreenSectionConfiguration? singleTabConfig;
+
+  bool get showHeader => singleTabConfig == null;
 
   @override
   ConsumerState<MusicScreen> createState() => _MusicScreenState();
@@ -52,16 +50,25 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
   bool isSearching = false;
   TextEditingController textEditingController = TextEditingController();
   String? searchQuery;
-  final Map<TabContentType, MusicRefreshCallback> refreshMap = {};
-  SortBy? sortByOverride;
-  SortOrder? sortOrderOverride;
-  bool? isFavoriteOverride;
+  final Map<ContentType, MusicRefreshCallback> refreshMap = {};
+  final Map<ContentType, SortAndFilterController> sortAndFilterControllerMap = {};
 
   TabController? _tabController;
 
   final _audioServiceHelper = GetIt.instance<AudioServiceHelper>();
-  final _finampUserHelper = GetIt.instance<FinampUserHelper>();
   final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+
+  QueueItemSource get musicScreenSource => QueueItemSource.rawId(
+    type: ref.watch(finampSettingsProvider.onlyShowFavorites)
+        ? QueueItemSourceType.favorites
+        : QueueItemSourceType.allTracks,
+    name: QueueItemSourceName(
+      type: ref.watch(finampSettingsProvider.onlyShowFavorites)
+          ? QueueItemSourceNameType.yourLikes
+          : QueueItemSourceNameType.shuffleAll,
+    ),
+    id: "shuffleAll",
+  );
 
   void _stopSearching() {
     setState(() {
@@ -79,14 +86,22 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
 
   void _buildTabController() {
     _tabController?.removeListener(_tabIndexCallback);
+    _tabController?.dispose();
 
-    final tabs = widget.tabTypeFilter != null
-        ? [widget.tabTypeFilter!]
-        : ref
-              .watch(finampSettingsProvider.tabOrder)
-              .where((e) => ref.watch(finampSettingsProvider.select((value) => value.value?.showTabs[e])) ?? false);
+    if (widget.singleTabConfig != null) {
+      _tabController = TabController(length: 1, vsync: this, initialIndex: 0);
+    } else {
+      final tabs = ref
+          .watch(finampSettingsProvider.tabOrder)
+          .where((x) => x.isTab)
+          .where((e) => ref.watch(finampSettingsProvider.select((value) => value.value?.showTabs[e])) ?? false);
 
-    _tabController = TabController(length: tabs.length, vsync: this, initialIndex: 0);
+      _tabController = TabController(
+        length: tabs.length,
+        vsync: this,
+        initialIndex: widget.initialTab == null ? 0 : tabs.toList().indexOf(widget.initialTab!),
+      );
+    }
 
     _tabController!.addListener(_tabIndexCallback);
   }
@@ -94,29 +109,31 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
   @override
   void initState() {
     super.initState();
-    sortByOverride = widget.sortByOverrideInit;
-    sortOrderOverride = widget.sortOrderOverrideInit;
-    isFavoriteOverride = widget.isFavoriteOverrideInit;
   }
 
   @override
   void dispose() {
     _tabController?.dispose();
+    textEditingController.dispose();
     super.dispose();
   }
 
-  FloatingActionButton? getFloatingActionButton(List<TabContentType> sortedTabs) {
+  FloatingActionButton? getFloatingActionButton(List<ContentType> sortedTabs) {
+    final currentTab = sortedTabs.elementAt(_tabController!.index);
     // Show the floating action button only on the albums, artists, generes and tracks tab.
-    if (_tabController!.index == sortedTabs.indexOf(TabContentType.tracks)) {
+    if (_tabController!.index == sortedTabs.indexOf(ContentType.tracks)) {
       return FloatingActionButton(
         tooltip: AppLocalizations.of(context)!.shuffleAll,
         onPressed: () async {
           try {
+            final config = sortAndFilterControllerMap[currentTab]!.resolveConfig();
+            BaseItemDto? genreFilter;
+            if (config.genreFilter != null) {
+              genreFilter = await ref.read(itemByIdProvider(config.genreFilter!.id).future);
+            }
             await _audioServiceHelper.shuffleAll(
-              onlyShowFavorites:
-                  (isFavoriteOverride == true ||
-                  (isFavoriteOverride == null && ref.read(finampSettingsProvider.onlyShowFavorites))),
-              genreFilter: widget.genreFilter,
+              onlyShowFavorites: config.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
+              genreFilter: genreFilter,
             );
           } catch (e) {
             GlobalSnackbar.error(e);
@@ -124,17 +141,14 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
         },
         child: const Icon(TablerIcons.arrows_shuffle),
       );
-    } else if ([
-      TabContentType.artists,
-      TabContentType.albums,
-      TabContentType.genres,
-    ].contains(sortedTabs.elementAt(_tabController!.index))) {
+    } else if ([ContentType.genericArtists, ContentType.albums, ContentType.genres].contains(currentTab)) {
       return FloatingActionButton(
         tooltip: AppLocalizations.of(context)!.startMix,
         onPressed: () async {
           try {
-            switch (sortedTabs.elementAt(_tabController!.index)) {
-              case TabContentType.artists:
+            switch (currentTab) {
+              // TODO should this distinguish between artist types somehow?
+              case _ when currentTab.isArtist:
                 if (_jellyfinApiHelper.selectedMixArtists.isEmpty) {
                   GlobalSnackbar.message((scaffold) => AppLocalizations.of(context)!.startMixNoTracksArtist);
                 } else {
@@ -142,14 +156,14 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                   _jellyfinApiHelper.clearArtistMixBuilderList();
                 }
                 break;
-              case TabContentType.albums:
+              case ContentType.albums:
                 if (_jellyfinApiHelper.selectedMixAlbums.isEmpty) {
                   GlobalSnackbar.message((scaffold) => AppLocalizations.of(context)!.startMixNoTracksAlbum);
                 } else {
                   await _audioServiceHelper.startInstantMixForAlbums(_jellyfinApiHelper.selectedMixAlbums);
                 }
                 break;
-              case TabContentType.genres:
+              case ContentType.genres:
                 if (_jellyfinApiHelper.selectedMixGenres.isEmpty) {
                   GlobalSnackbar.message((scaffold) => AppLocalizations.of(context)!.startMixNoTracksGenre);
                 } else {
@@ -169,7 +183,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     }
   }
 
-  void refreshTab(TabContentType tabType) {
+  void refreshTab(ContentType tabType) {
     refreshMap[tabType]?.call();
   }
 
@@ -181,8 +195,14 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     ref.watch(FinampUserHelper.finampCurrentUserProvider);
     // Get the filtered tab or the tabs from the user's tab order,
     // and filter them to only include enabled tabs
-    final sortedTabs = widget.tabTypeFilter != null
-        ? [widget.tabTypeFilter!]
+    final sortedTabs = widget.singleTabConfig != null
+        ? [
+            switch (widget.singleTabConfig!.base) {
+              QueuesHomeSection() => ContentType.home,
+              TabsHomeSection tabSection => tabSection.contentType,
+              CollectionHomeSection() => ContentType.mixed,
+            },
+          ]
         : ref
               .watch(finampSettingsProvider.tabOrder)
               .where((e) => ref.watch(finampSettingsProvider.showTabs(e)) ?? false);
@@ -195,14 +215,12 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     }
 
     if (sortedTabs.isEmpty) {
-      // TODO fallback to the home screen once implemented
-      FinampSetters.setShowTabs(TabContentType.albums, true);
+      FinampSetters.setShowTabs(ContentType.home, true);
       // This widget should rebuild with an enabled tab on the next frame, just return empty for now.
       return SizedBox.shrink();
     }
-    refreshMap[sortedTabs.elementAt(_tabController!.index)] = MusicRefreshCallback();
 
-    Timer? debounce;
+    refreshMap[sortedTabs.elementAt(_tabController!.index)] = MusicRefreshCallback();
 
     return PopScope(
       canPop: !isSearching,
@@ -213,154 +231,34 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
       },
       child: Scaffold(
         extendBody: true,
-        appBar: AppBar(
-          titleSpacing: 0, // The surrounding iconButtons provide enough padding
-          title: isSearching
-              ? TextField(
-                  controller: textEditingController,
-                  autocorrect: false, // avoid autocorrect
-                  enableSuggestions: true, // keep suggestions which can be manually selected
-                  autofocus: true,
-                  keyboardType: TextInputType.text,
-                  textInputAction: TextInputAction.search,
-                  onChanged: (value) {
-                    if (debounce?.isActive ?? false) debounce!.cancel();
-                    debounce = Timer(const Duration(milliseconds: 400), () {
-                      setState(() {
-                        searchQuery = value;
-                      });
-                    });
-                  },
-                  onSubmitted: (value) => setState(() {
-                    searchQuery = value;
-                  }),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: MaterialLocalizations.of(context).searchFieldLabel,
-                  ),
-                )
-              : Text(
-                  widget.tabTypeFilter?.toLocalisedString(context) ??
-                      _finampUserHelper.currentUser?.currentView?.name ??
-                      AppLocalizations.of(context)!.music,
-                ),
-          bottom: widget.genreFilter == null
-              ? TabBar(
-                  controller: _tabController,
-                  tabs: sortedTabs
-                      .map(
-                        (tabType) => Tab(
-                          child: Container(
-                            constraints: const BoxConstraints(minWidth: 50),
-                            alignment: Alignment.center,
-                            child: Text(tabType.toLocalisedString(context).toUpperCase()),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                )
-              : PreferredSize(
-                  preferredSize: const Size.fromHeight(36),
-                  child: Container(
-                    alignment: Alignment.centerLeft,
-                    width: double.infinity,
-                    height: 36.0,
-                    padding: EdgeInsets.only(left: 12, right: 12),
-                    color: Theme.of(context).colorScheme.primary,
-                    child: Text(
-                      widget.genreFilter?.name ?? "",
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-          leading: isSearching
-              ? BackButton(onPressed: () => _stopSearching())
-              : (widget.genreFilter != null ? BackButton(onPressed: () => Navigator.of(context).pop()) : null),
-          actions: isSearching
-              ? [
-                  GestureDetector(
-                    onDoubleTap: () => _stopSearching(),
-                    child: IconButton(
-                      icon: Icon(Icons.cancel, color: Theme.of(context).colorScheme.onSurface),
-                      onPressed: () => setState(() {
-                        textEditingController.clear();
-                        searchQuery = null;
-                      }),
-                      tooltip: AppLocalizations.of(context)!.clear,
-                    ),
-                  ),
-                ]
-              : [
-                  if (!Platform.isIOS && !Platform.isAndroid)
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () {
-                        refreshMap[sortedTabs.elementAt(_tabController!.index)]!();
-                      },
-                    ),
-                  SortOrderButton(
-                    tabType: sortedTabs.elementAt(_tabController!.index),
-                    sortOrderOverride: sortOrderOverride,
-                    onOverrideChanged: (newOrder) => setState(() {
-                      sortOrderOverride = newOrder;
-                    }),
-                  ),
-                  SortByMenuButton(
-                    tabType: sortedTabs.elementAt(_tabController!.index),
-                    sortByOverride: sortByOverride,
-                    onOverrideChanged: (newSortBy) => setState(() {
-                      sortByOverride = newSortBy;
-                    }),
-                  ),
-                  if (ref.watch(finampSettingsProvider.isOffline) &&
-                      sortedTabs.elementAt(_tabController!.index) != TabContentType.tracks)
-                    IconButton(
-                      icon: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded)
-                          ? const Icon(Icons.download)
-                          : const Icon(Icons.download_outlined),
-                      onPressed: ref.read(finampSettingsProvider.isOffline)
-                          ? () => FinampSetters.setOnlyShowFullyDownloaded(
-                              !ref.read(finampSettingsProvider.onlyShowFullyDownloaded),
-                            )
-                          : null,
-                      tooltip: AppLocalizations.of(context)!.onlyShowFullyDownloaded,
-                    ),
-                  if (!ref.watch(finampSettingsProvider.isOffline) ||
-                      ref.watch(finampSettingsProvider.trackOfflineFavorites))
-                    IconButton(
-                      icon:
-                          (isFavoriteOverride == true ||
-                              (isFavoriteOverride == null && ref.watch(finampSettingsProvider.onlyShowFavorites)))
-                          ? const Icon(Icons.favorite)
-                          : const Icon(Icons.favorite_outline),
-                      onPressed: () {
-                        if (isFavoriteOverride != null) {
-                          setState(() {
-                            isFavoriteOverride = !isFavoriteOverride!;
-                          });
-                        } else {
-                          FinampSetters.setOnlyShowFavorites(!ref.watch(finampSettingsProvider.onlyShowFavorites));
-                        }
-                      },
-                      tooltip: AppLocalizations.of(context)!.favorites,
-                    ),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () => setState(() {
-                      isSearching = true;
-                    }),
-                    tooltip: MaterialLocalizations.of(context).searchFieldLabel,
-                  ),
-                ],
+        appBar: FinampMusicScreenHeader(
+          singleTabConfig: widget.singleTabConfig,
+          sortedTabs: sortedTabs.toList(),
+          tabController: _tabController,
+          onSearch: () => setState(() {
+            isSearching = true;
+            if (_tabController != null &&
+                !_tabController!.indexIsChanging &&
+                sortedTabs.elementAt(_tabController!.index) == ContentType.home) {
+              // we can't search on the home tab yet
+              _tabController!.index = sortedTabs.toList().indexWhere(
+                (ContentType tabType) => tabType != ContentType.home,
+              );
+            }
+          }),
+          onStopSearch: _stopSearching,
+          onUpdateSearchQuery: (value) {
+            setState(() {
+              searchQuery = value;
+            });
+          },
+          refreshTab: () => refreshTab(sortedTabs.elementAt(_tabController!.index)),
+          textEditingController: textEditingController,
+          isSearching: isSearching,
         ),
-        bottomNavigationBar: const NowPlayingBar(),
-        drawerEnableOpenDragGesture: widget.genreFilter == null,
-        drawer: widget.genreFilter == null ? const MusicScreenDrawer() : null,
+        bottomNavigationBar: NowPlayingBar(),
+        drawerEnableOpenDragGesture: widget.showHeader,
+        drawer: widget.showHeader ? const MusicScreenDrawer() : null,
         floatingActionButton: Padding(
           padding: EdgeInsets.only(right: ref.watch(finampSettingsProvider.showFastScroller) ? 24.0 : 8.0),
           child: getFloatingActionButton(sortedTabs.toList()),
@@ -371,36 +269,70 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
               controller: _tabController,
               physics: ref.watch(finampSettingsProvider.disableGesture) || MediaQuery.disableAnimationsOf(context)
                   ? const NeverScrollableScrollPhysics()
-                  : widget.tabTypeFilter != null
+                  : widget.singleTabConfig != null
                   ? NeverScrollableScrollPhysics()
                   : AlwaysScrollableScrollPhysics(),
               dragStartBehavior: DragStartBehavior.down,
               children: sortedTabs.map((tabType) {
+                if (tabType == ContentType.home && widget.singleTabConfig == null) {
+                  return HomeScreenContent(refresh: refreshMap[tabType]);
+                }
+                final contentTabType = tabType == ContentType.genericArtists
+                    ? ref.watch(finampSettingsProvider.defaultArtistType).tabType
+                    : tabType;
+                sortAndFilterControllerMap[contentTabType] ??= widget.singleTabConfig != null
+                    ? SortAndFilterController(
+                        startingConfig: widget.singleTabConfig!.sortConfig,
+                        contentType: contentTabType,
+                      )
+                    : SortAndFilterController.trackSettings(contentTabType);
+
+                FinampDisplayable? displayable;
+                if (widget.singleTabConfig != null) {
+                  displayable = ref.watch(resolveSectionProvider(widget.singleTabConfig!)).value;
+                  // TODO precache resolved sections?  Or remove baked in item somehow?  Or save items into home screen settings?
+                  if (displayable == null) {
+                    return SizedBox.shrink();
+                  }
+                  if (displayable is FinampSortable) {
+                    displayable = displayable.copyWith(
+                      ref
+                          .watch(resolveSortProvider(sortAndFilterControllerMap[contentTabType]!))
+                          .copyWithSearch(searchQuery),
+                    );
+                  }
+                } else {
+                  displayable = MusicScreenPlayable(
+                    tab: contentTabType,
+                    library: currentLibraryPlaceholder,
+                    source: musicScreenSource,
+                    sortConfig: ref
+                        .watch(resolveSortProvider(sortAndFilterControllerMap[contentTabType]!))
+                        .copyWithSearch(searchQuery),
+                  );
+                }
+
                 return Column(
                   children: [
+                    if (displayable is FinampSortable)
+                      SortAndFilterRow(
+                        tabType: contentTabType,
+                        controller: sortAndFilterControllerMap[contentTabType]!,
+                        allowFilters: widget.allowFilters,
+                      ),
                     ArtistTypeSelectionRow(
                       tabType: tabType,
                       defaultArtistType: ref.watch(finampSettingsProvider.defaultArtistType),
                       refreshTab: refreshTab,
                     ),
                     Expanded(
-                      child: MusicScreenTabView(
-                        tabContentType: tabType,
-                        searchTerm: searchQuery,
-                        view: _finampUserHelper.currentUser?.currentView,
-                        refresh: refreshMap[tabType],
-                        genreFilter:
-                            (widget.genreFilter != null &&
-                                (tabType.itemType == BaseItemDtoType.track ||
-                                    tabType.itemType == BaseItemDtoType.album ||
-                                    tabType.itemType == BaseItemDtoType.artist ||
-                                    tabType.itemType == BaseItemDtoType.playlist))
-                            ? widget.genreFilter
-                            : null,
-                        tabBarFiltered: (widget.tabTypeFilter != null),
-                        sortByOverride: sortByOverride,
-                        sortOrderOverride: sortOrderOverride,
-                        isFavoriteOverride: isFavoriteOverride,
+                      // Prevent track highlight background from showing on header
+                      child: Material(
+                        child: MusicScreenTabView(
+                          refresh: refreshMap[tabType],
+                          allowTrackGestures: widget.singleTabConfig != null,
+                          displayable: displayable,
+                        ),
                       ),
                     ),
                   ],
@@ -408,14 +340,34 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
               }).toList(),
             );
 
+            // This tracks whether the latest scroll was the tabbar or a child widget.
+            // The drawer open gesture ignores the gesture arena because it always looses to the tab view, and instead
+            // uses this variable and a check of the tab index to determine when to fire.
+            bool tabbarScrolling = false;
+
             if (Platform.isAndroid) {
               return TransparentRightSwipeDetector(
-                action: () {
-                  if (_tabController?.index == 0 && !ref.watch(finampSettingsProvider.disableGesture)) {
+                action: (wonArena) {
+                  if (_tabController?.index == 0 &&
+                      (wonArena || tabbarScrolling) &&
+                      !ref.watch(finampSettingsProvider.disableGesture)) {
                     Scaffold.of(context).openDrawer();
+                    // showFinampMainMenu(context: context);
                   }
                 },
-                child: child,
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (notification) {
+                    if (notification is ScrollStartNotification) {
+                      if (notification.depth == 0) {
+                        tabbarScrolling = true;
+                      } else {
+                        tabbarScrolling = false;
+                      }
+                    }
+                    return false;
+                  },
+                  child: child,
+                ),
               );
             }
 
@@ -432,9 +384,18 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
 class _TransparentSwipeRecognizer extends HorizontalDragGestureRecognizer {
   _TransparentSwipeRecognizer({super.debugOwner, super.supportedDevices});
 
+  bool wonArena = false;
+
   @override
   void rejectGesture(int pointer) {
-    acceptGesture(pointer);
+    wonArena = false;
+    super.acceptGesture(pointer);
+  }
+
+  @override
+  void acceptGesture(int pointer) {
+    wonArena = true;
+    super.acceptGesture(pointer);
   }
 }
 
@@ -446,13 +407,15 @@ class TransparentRightSwipeDetector extends StatefulWidget {
 
   final Widget? child;
 
-  final void Function() action;
+  final void Function(bool wonArena) action;
 
   @override
   State<TransparentRightSwipeDetector> createState() => _TransparentRightSwipeDetectorState();
 }
 
 class _TransparentRightSwipeDetectorState extends State<TransparentRightSwipeDetector> {
+  late double _devicePixelRatio;
+
   @override
   Widget build(BuildContext context) {
     /// Device types that scrollables should accept drag gestures from by default.
@@ -465,14 +428,17 @@ class _TransparentRightSwipeDetectorState extends State<TransparentRightSwipeDet
       // scrollables.
       PointerDeviceKind.unknown,
     };
+
+    _devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
+
     final Map<Type, GestureRecognizerFactory> gestures = <Type, GestureRecognizerFactory>{};
     gestures[_TransparentSwipeRecognizer] = GestureRecognizerFactoryWithHandlers<_TransparentSwipeRecognizer>(
       () => _TransparentSwipeRecognizer(debugOwner: this, supportedDevices: supportedDevices),
       (_TransparentSwipeRecognizer instance) {
         instance
-          ..onStart = _onHorizontalDragStart
-          ..onUpdate = _onHorizontalDragUpdate
-          ..onEnd = _onHorizontalDragEnd
+          ..onStart = ((details) => _onHorizontalDragStart(details, instance))
+          ..onUpdate = ((details) => _onHorizontalDragUpdate(details, instance))
+          ..onEnd = ((details) => _onHorizontalDragEnd(details, instance))
           ..supportedDevices = supportedDevices;
       },
     );
@@ -482,25 +448,41 @@ class _TransparentRightSwipeDetectorState extends State<TransparentRightSwipeDet
 
   Offset? _initialSwipeOffset;
 
-  void _onHorizontalDragStart(DragStartDetails details) {
+  void _onHorizontalDragStart(DragStartDetails details, _TransparentSwipeRecognizer instance) {
     _initialSwipeOffset = details.globalPosition;
   }
 
-  void _onHorizontalDragUpdate(DragUpdateDetails details) {
-    final finalOffset = details.globalPosition;
+  bool _isRightHorizontal(Offset finalOffset, double minValue) {
+    assert(minValue <= 0);
     final initialOffset = _initialSwipeOffset;
     if (initialOffset != null) {
       final horizontalOffset = initialOffset.dx - finalOffset.dx;
       final verticalOffset = initialOffset.dy - finalOffset.dy;
       // Only trigger if swipe angle primarily horizontal
-      if (horizontalOffset < -100.0 && horizontalOffset.abs() > verticalOffset.abs() * 1.5) {
-        _initialSwipeOffset = null;
-        widget.action();
+      if (horizontalOffset <= minValue && horizontalOffset.abs() > verticalOffset.abs() * 1.5) {
+        return true;
       }
+    }
+    return false;
+  }
+
+  void _onHorizontalDragUpdate(DragUpdateDetails details, _TransparentSwipeRecognizer instance) {
+    if (_isRightHorizontal(details.globalPosition, -100)) {
+      _initialSwipeOffset = null;
+      widget.action(instance.wonArena);
     }
   }
 
-  void _onHorizontalDragEnd(DragEndDetails details) {
+  void _onHorizontalDragEnd(DragEndDetails details, _TransparentSwipeRecognizer instance) {
+    if (details.primaryVelocity != null && _isRightHorizontal(details.globalPosition, -10.0)) {
+      final horizontalVelocity = details.velocity.pixelsPerSecond.dx;
+      final verticalVelocity = details.velocity.pixelsPerSecond.dy;
+      // This minimum velocity is copied from ScrollPhysics
+      if (horizontalVelocity > 1.0 / (0.050 * _devicePixelRatio) &&
+          horizontalVelocity.abs() > verticalVelocity.abs() * 1.5) {
+        widget.action(instance.wonArena);
+      }
+    }
     _initialSwipeOffset = null;
   }
 }

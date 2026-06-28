@@ -1,8 +1,9 @@
+import 'package:finamp/menus/components/icon_button_with_semantics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
-class FinampAppBarButton extends StatelessWidget {
-  const FinampAppBarButton({super.key, this.onPressed, this.dismissDirection = AxisDirection.down});
+class FinampAppBarBackButton extends StatelessWidget {
+  const FinampAppBarBackButton({super.key, this.onPressed, this.dismissDirection = AxisDirection.left});
 
   final VoidCallback? onPressed;
 
@@ -24,16 +25,13 @@ class FinampAppBarButton extends StatelessWidget {
       }
     }
 
-    return IconButton(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-      onPressed: onPressed,
-      tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-      icon: Icon(getIcon(), color: Theme.of(context).iconTheme.color ?? Colors.white, weight: 2.0),
-      // Needed because otherwise the splash goes over the container
-
-      // It may be like a pixel over now but I've spent way too long on this
-      // button by now.
-      splashRadius: Material.defaultSplashRadius - 8,
+    return IconButtonWithSemantics(
+      // padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      label: MaterialLocalizations.of(context).backButtonTooltip,
+      onPressed: onPressed ?? () => Navigator.of(context).pop(),
+      icon: getIcon(),
+      strokeWidth: 1.5,
+      visualDensity: VisualDensity(horizontal: 0, vertical: -4),
     );
   }
 }

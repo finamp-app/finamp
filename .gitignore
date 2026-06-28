@@ -10,6 +10,7 @@
 .history
 .svn/
 .swiftpm/
+.vs/
 migrate_working_dir/
 
 # IntelliJ related
@@ -132,3 +133,6 @@ app.*.map.json
 
 # generated localization files
 **/lib/l10n/*.dart
+
+# Integration testing artifacts
+integration_test/testing

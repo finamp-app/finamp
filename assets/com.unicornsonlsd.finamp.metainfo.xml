@@ -58,6 +58,37 @@
   </screenshots>
   <launchable type="desktop-id">com.unicornsonlsd.finamp.desktop</launchable>
   <releases>
+  <!-- TODO mention Finamp now officially supporting Linux mobile -->
+    <release version="0.9.24-beta" date="2026-06-15">
+      <url
+        type="details"
+      >https://github.com/jmshrv/finamp/releases/tag/0.9.24-beta</url>
+      <description>
+        <p>
+          New Features
+        </p>
+        <ul>
+          <li>New customizable "Home" tab for quick access to your music</li>
+          <li>CarPlay support (iOS only)</li>
+          <li>Siri voice commands</li>
+          <li>AMOLED theme</li>
+          <li>Officially mark linux mobile devices to be supported</li>
+        </ul>
+        <p>
+          Bug Fixes
+        </p>
+        <ul>
+          <li>Fixed skipping tracks and play/pause on Pixel Buds and others</li>
+          <li>Fixed broken playback on some devices</li>
+          <li>Properly discover server addresses using custom paths (e.g. `/jellyfin`)</li>
+          <li>Fixed scroll-to-letter for album artist</li>
+          <li>Fixed startup failures on older Android devices</li>
+        </ul>
+        <p>
+          <em>Thank you for using Finamp!</em>
+        </p>
+      </description>
+    </release>
     <release version="0.9.23-beta" date="2026-03-18">
       <url
         type="details"

@@ -1,10 +1,5 @@
-import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
 
-import 'package:finamp/components/PlayerScreen/player_split_screen_scaffold.dart';
-import 'package:finamp/models/finamp_models.dart';
-import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +22,7 @@ class AlbumImage extends ConsumerStatefulWidget {
     super.key,
     this.item,
     this.imageListenable,
+    this.sizePreset,
     this.borderRadius,
     this.placeholderBuilder,
     this.disabled = false,
@@ -40,6 +36,8 @@ class AlbumImage extends ConsumerStatefulWidget {
   final BaseItemDto? item;
 
   final ProviderListenable<FinampImage>? imageListenable;
+
+  final int? sizePreset;
 
   final BorderRadius? borderRadius;
 
@@ -67,6 +65,18 @@ class AlbumImage extends ConsumerStatefulWidget {
 
 class _AlbumImageState extends ConsumerState<AlbumImage> {
   final String zoomID = UuidV4().generate();
+  int? currentPhysicalWidth;
+  int? currentPhysicalHeight;
+
+  @override
+  void didUpdateWidget(AlbumImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // reset cached image size
+    if (widget.sizePreset != oldWidget.sizePreset) {
+      currentPhysicalWidth = null;
+      currentPhysicalHeight = null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,15 +122,11 @@ class _AlbumImageState extends ConsumerState<AlbumImage> {
               // If we use logical pixels for the image request, we'll get a smaller image than we want.
               // Because of this, we convert the logical pixels to physical pixels by multiplying by the device's DPI.
               final pixelRatio = MediaQuery.devicePixelRatioOf(context);
-              int physicalWidth = (constraints.maxWidth * pixelRatio).toInt();
-              int physicalHeight = (constraints.maxHeight * pixelRatio).toInt();
-              // If using grid music screen view without fixed size tiles, and if the view is resizable due
-              // to being on desktop and using split screen, then clamp album size to reduce server requests when resizing.
-              if ((!(Platform.isIOS || Platform.isAndroid) || usingPlayerSplitScreen) &&
-                  !FinampSettingsHelper.finampSettings.useFixedSizeGridTiles &&
-                  FinampSettingsHelper.finampSettings.contentViewType == ContentViewType.grid) {
-                physicalWidth = exp((log(physicalWidth) * 3).ceil() / 3).toInt();
-                physicalHeight = exp((log(physicalHeight) * 3).ceil() / 3).toInt();
+              int physicalWidth = currentPhysicalWidth ?? (constraints.maxWidth * pixelRatio).toInt();
+              int physicalHeight = currentPhysicalHeight ?? (constraints.maxHeight * pixelRatio).toInt();
+              if (widget.sizePreset != null) {
+                currentPhysicalHeight = physicalHeight;
+                currentPhysicalWidth = physicalWidth;
               }
               return _buildFromListenable(
                 true,

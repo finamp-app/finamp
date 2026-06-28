@@ -6,6 +6,8 @@ import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../extensions/localizations.dart';
+
 class PlayerScreenAppBarTitle extends StatefulWidget {
   const PlayerScreenAppBarTitle({super.key, required this.maxLines});
 

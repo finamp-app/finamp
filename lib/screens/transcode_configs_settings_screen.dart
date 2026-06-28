@@ -13,7 +13,7 @@ class _BitrateSelectorState extends ConsumerState<BitrateSelector> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(finampSettingsProvider.transcodeBitrate);
+    bool enabled = ref.watch(finampSettingsProvider.transcodingStreamingFormat).codec != "flac";
     return Column(
       children: [
         ListTile(
@@ -30,11 +30,13 @@ class _BitrateSelectorState extends ConsumerState<BitrateSelector> {
               value: (currentBitrate / 1000).clamp(64, 320),
               divisions: 8,
               label: AppLocalizations.of(context)!.kiloBitsPerSecondLabel(currentBitrate ~/ 1000),
-              onChanged: (value) {
-                setState(() {
-                  currentBitrate = (value * 1000).toInt();
-                });
-              },
+              onChanged: enabled
+                  ? (value) {
+                      setState(() {
+                        currentBitrate = (value * 1000).toInt();
+                      });
+                    }
+                  : null,
               onChangeEnd: (value) {
                 FinampSetters.setTranscodeBitrate((value * 1000).toInt());
               },
@@ -42,9 +44,12 @@ class _BitrateSelectorState extends ConsumerState<BitrateSelector> {
               focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
             ),
             Text(
-              AppLocalizations.of(context)!.kiloBitsPerSecondLabel(currentBitrate ~/ 1000),
-              style: Theme.of(context).textTheme.titleLarge,
+              enabled
+                  ? AppLocalizations.of(context)!.kiloBitsPerSecondLabel(currentBitrate ~/ 1000)
+                  : AppLocalizations.of(context)!.losslessNoBitrate,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
+            SizedBox(height: 12),
           ],
         ),
       ],

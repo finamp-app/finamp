@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:finamp/components/curated_item_filter_row.dart';
-import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -11,6 +10,7 @@ import '../models/jellyfin_models.dart';
 import 'downloads_service.dart';
 import 'finamp_settings_helper.dart';
 import 'jellyfin_api_helper.dart';
+import 'music_screen_provider.dart';
 
 part 'genre_screen_provider.g.dart';
 
@@ -113,16 +113,16 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOnline({
 }) async {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final sortBy = genreCuratedItemSelectionType.getSortBy();
-  TabContentType tabType = switch (baseItemType) {
-    BaseItemDtoType.album => TabContentType.albums,
-    BaseItemDtoType.artist => TabContentType.artists,
-    _ => TabContentType.tracks,
+  ContentType tabType = switch (baseItemType) {
+    BaseItemDtoType.album => ContentType.albums,
+    BaseItemDtoType.artist => ContentType.performingArtists,
+    _ => ContentType.tracks,
   };
   int itemCount;
 
   final fetchedItems = await jellyfinApiHelper.getItemsWithTotalRecordCount(
     parentItem: library,
-    genreFilter: parent,
+    genreFilter: parent.id,
     sortBy: sortBy.jellyfinName(tabType),
     sortOrder: "Descending",
     isFavorite: (genreCuratedItemSelectionType == CuratedItemSelectionType.favorites) ? true : null,
@@ -136,7 +136,7 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOnline({
     // otherwise we would only get the totalRecordCount of Favorites of that genre
     final fetchedItemCountWithoutFavorites = await jellyfinApiHelper.getItemsWithTotalRecordCount(
       parentItem: library,
-      genreFilter: parent,
+      genreFilter: parent.id,
       limit: 1,
       includeItemTypes: baseItemType.jellyfinName,
       artistType: (baseItemType == BaseItemDtoType.artist) ? artistType : null,
@@ -172,10 +172,10 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOffline({
           onlyFavorites: (genreCuratedItemSelectionType == CuratedItemSelectionType.favorites)
               ? ref.watch(finampSettingsProvider.trackOfflineFavorites)
               : false,
-          genreFilter: parent,
+          genreFilter: parent.id,
         )
       : await downloadsService.getAllCollections(
-          baseTypeFilter: baseItemType,
+          includeItemTypes: [baseItemType],
           fullyDownloaded: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
           viewFilter: (baseItemType == BaseItemDtoType.album) ? library?.id : null,
           childViewFilter: (baseItemType != BaseItemDtoType.album && baseItemType != BaseItemDtoType.playlist)
@@ -188,7 +188,7 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOffline({
               ? ref.watch(finampSettingsProvider.trackOfflineFavorites)
               : false,
           infoForType: (baseItemType == BaseItemDtoType.artist) ? artistInfoForType : null,
-          genreFilter: parent,
+          genreFilter: parent.id,
         );
   var items = fetchedItems.map((e) => e.baseItem).nonNulls.toList();
   var itemCount = items.length;
@@ -200,13 +200,13 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOffline({
     final List<DownloadStub> allFetchedItems = (baseItemType == BaseItemDtoType.track)
         ? await downloadsService.getAllTracks(
             nullableViewFilters: ref.read(finampSettingsProvider.showDownloadsWithUnknownLibrary),
-            genreFilter: parent,
+            genreFilter: parent.id,
           )
         : await downloadsService.getAllCollections(
-            baseTypeFilter: baseItemType,
+            includeItemTypes: [baseItemType],
             fullyDownloaded: ref.read(finampSettingsProvider.onlyShowFullyDownloaded),
             infoForType: (baseItemType == BaseItemDtoType.artist) ? artistInfoForType : null,
-            genreFilter: parent,
+            genreFilter: parent.id,
           );
     var allItems = allFetchedItems.map((e) => e.baseItem).nonNulls.toList();
     itemCount = allItems.length;

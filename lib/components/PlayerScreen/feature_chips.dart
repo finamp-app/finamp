@@ -67,8 +67,8 @@ class FeatureState {
           bitRate: _transcodedBitrate,
           sampleRate: null,
           channels: null,
-          bitDepth: metadata?.mediaSourceInfo.mediaStreams.first.bitDepth != null
-              ? min(metadata!.mediaSourceInfo.mediaStreams.first.bitDepth!, 16)
+          bitDepth: settings.transcodingStreamingFormat.lossless
+              ? metadata?.mediaSourceInfo.mediaStreams.firstOrNull?.bitDepth
               : null,
           isInterlaced: false,
           isDefault: true,

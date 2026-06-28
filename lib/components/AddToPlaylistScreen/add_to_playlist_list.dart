@@ -16,6 +16,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../menus/playlist_actions_menu.dart';
 import '../../models/jellyfin_models.dart';
+import '../../services/album_screen_provider.dart';
 import '../confirmation_prompt_dialog.dart';
 import '../global_snackbar.dart';
 import 'new_playlist_dialog.dart';
@@ -89,10 +90,23 @@ class _AddToPlaylistListState extends State<AddToPlaylistList> {
             icon: TablerIcons.plus,
             //accentColor: Theme.of(context).colorScheme.primary,
             onPressed: () async {
+              var itemsToAdd = widget.itemsToAdd;
+              // Albums and playlists do not seem to add in the correct order, so manually fetch and add all children instead of
+              // relying on server to do that.
+              if (itemsToAdd.length == 1 &&
+                  [
+                    BaseItemDtoType.album,
+                    BaseItemDtoType.playlist,
+                  ].contains(BaseItemDtoType.fromItem(itemsToAdd.first))) {
+                final children = await GetIt.instance<ProviderContainer>().read(
+                  getAlbumOrPlaylistTracksProvider(itemsToAdd.first).future,
+                );
+                itemsToAdd = children.$1;
+              }
               var dialogResult = await showDialog<(Future<BaseItemId>, String?)?>(
                 context: context,
                 builder: (context) => NewPlaylistDialog(
-                  itemsToAdd: widget.itemsToAdd.map((item) {
+                  itemsToAdd: itemsToAdd.map((item) {
                     return item.id;
                   }).toList(),
                 ),

@@ -143,7 +143,7 @@ class _TracksSectionState extends ConsumerState<TracksSection> {
                       Expanded(
                         child: Text(
                           widget.tracksText,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                         ),
                       ),
                     ],
@@ -192,8 +192,6 @@ class _TracksSectionState extends ConsumerState<TracksSection> {
                     childrenForQueue: widget.childrenForQueue!,
                     adaptiveAdditionalInfoSortBy: widget.selectedFilter?.getSortBy(),
                     parent: widget.parent,
-                    isOnArtistScreen: widget.isOnArtistScreen,
-                    isOnGenreScreen: widget.isOnGenreScreen,
                   )
                 else
                   SliverToBoxAdapter(
@@ -344,7 +342,7 @@ class _ItemsSectionState extends ConsumerState<CollectionsSection> {
                       Expanded(
                         child: Text(
                           widget.itemsText,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                         ),
                       ),
                     ],

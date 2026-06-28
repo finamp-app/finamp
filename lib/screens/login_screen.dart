@@ -21,6 +21,7 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
       child: const Scaffold(
+        resizeToAvoidBottomInset: true,
         body: SafeArea(child: LoginFlow()),
         bottomNavigationBar: _LoginAuxillaryOptions(),
       ),

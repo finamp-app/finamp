@@ -1,10 +1,22 @@
+import 'package:finamp/components/SettingsScreen/logout_list_tile.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/quick_connect_authorization_menu.dart';
 import 'package:finamp/menus/server_sharing_menu.dart';
 import 'package:finamp/screens/accessibility_settings_screen.dart';
+import 'package:finamp/screens/audio_service_settings_screen.dart';
+import 'package:finamp/screens/downloads_settings_screen.dart';
+import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/screens/interaction_settings_screen.dart';
+import 'package:finamp/screens/language_selection_screen.dart';
+import 'package:finamp/screens/layout_settings_screen.dart';
 import 'package:finamp/screens/network_settings_screen.dart';
-import 'package:finamp/components/finamp_icon.dart';
+import 'package:finamp/screens/playback_reporting_settings_screen.dart';
+import 'package:finamp/screens/transcoding_settings_screen.dart';
+import 'package:finamp/screens/view_selector.dart';
+import 'package:finamp/screens/volume_normalization_settings_screen.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -13,17 +25,6 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:locale_names/locale_names.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../components/SettingsScreen/logout_list_tile.dart';
-import '../services/finamp_settings_helper.dart';
-import 'audio_service_settings_screen.dart';
-import 'downloads_settings_screen.dart';
-import 'language_selection_screen.dart';
-import 'layout_settings_screen.dart';
-import 'transcoding_settings_screen.dart';
-import 'view_selector.dart';
-import 'volume_normalization_settings_screen.dart';
-import 'playback_reporting_settings_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -42,6 +43,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.settings),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(
             context,
@@ -114,7 +116,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const TextSpan(text: '\n\n\n'),
                           TextSpan(
                             text: localizations.aboutThanks,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
@@ -129,6 +131,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.only(bottom: 200.0),
         children: [
+          ListTile(
+            leading: const Icon(TablerIcons.home),
+            title: Text(AppLocalizations.of(context)!.homeScreenSettingsTitle),
+            onTap: () => Navigator.of(context).pushNamed(HomeScreenSettingsScreen.routeName),
+          ),
           ListTile(
             leading: const Icon(Icons.compress),
             title: Text(AppLocalizations.of(context)!.transcoding),

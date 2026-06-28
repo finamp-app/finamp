@@ -1,8 +1,6 @@
 {
     "message": "Meddelande",
-    "@message": {},
     "noButtonLabel": "Nej",
-    "@noButtonLabel": {},
     "responseError401": "{error} Statuskod {statusCode}. Detta betyder troligtvis att du använt fel användarnamn/lösenord, eller att din klientapp inte längre är inloggad.",
     "@responseError401": {
         "placeholders": {
@@ -17,45 +15,29 @@
         }
     },
     "serverUrl": "Server-URL",
-    "@serverUrl": {},
     "emptyServerUrl": "Server-URL får inte vara tom",
     "@emptyServerUrl": {
         "description": "Error message that shows when the user submits a login without a server URL"
     },
     "albums": "Album",
-    "@albums": {},
     "tracks": "Spår",
-    "@tracks": {},
     "unknownName": "Okänt namn",
-    "@unknownName": {},
     "clear": "Rensa",
-    "@clear": {},
     "selectMusicLibraries": "Välj musikbibliotek",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
     "playlists": "Spellistor",
-    "@playlists": {},
     "album": "Album",
-    "@album": {},
     "budget": "Budget",
-    "@budget": {},
     "criticRating": "Kritikerbetyg",
-    "@criticRating": {},
     "premiereDate": "Releasedatum",
-    "@premiereDate": {},
     "artist": "Artist",
-    "@artist": {},
     "settings": "Inställningar",
-    "@settings": {},
     "dateAdded": "Tillagd datum",
-    "@dateAdded": {},
     "name": "Namn",
-    "@name": {},
     "productionYear": "Produktionsår",
-    "@productionYear": {},
     "revenue": "Intäkter",
-    "@revenue": {},
     "dlComplete": "{count} slutfördes",
     "@dlComplete": {
         "placeholders": {
@@ -97,11 +79,6 @@
         }
     },
     "error": "Fel",
-    "@error": {},
-    "failedToGetTrackFromDownloadId": "Kunde inte hämta spåret utifrån nedladdnings-ID",
-    "@failedToGetTrackFromDownloadId": {},
-    "updateButtonLabel": "Uppdatera",
-    "@updateButtonLabel": {},
     "trackCount": "{count,plural,=1{{count} spår} other{{count} spår}}",
     "@trackCount": {
         "placeholders": {
@@ -111,75 +88,36 @@
         }
     },
     "required": "Obligatoriskt",
-    "@required": {},
     "playlistUpdated": "Spellistans namn uppdaterades.",
-    "@playlistUpdated": {},
     "addButtonLabel": "Lägg till",
-    "@addButtonLabel": {},
     "logOut": "Logga Ut",
-    "@logOut": {},
     "transcoding": "Transkodning",
-    "@transcoding": {},
     "addDownloads": "Lägg till nedladdningar",
-    "@addDownloads": {},
     "layoutAndTheme": "Layout & Tema",
-    "@layoutAndTheme": {},
     "applicationLegalese": "Licensierad med Mozilla Public License 2.0.\nKällkoden finns tillgänglig på {sourceCodeLink}.",
-    "@applicationLegalese": {},
     "location": "Plats",
-    "@location": {},
-    "downloadsDeleted": "Nedladdningar raderades.",
-    "@downloadsDeleted": {},
     "areYouSure": "Är du säker?",
-    "@areYouSure": {},
     "unknownError": "Okänt fel",
-    "@unknownError": {},
     "addDownloadLocation": "Lägg till nedladdningsplats",
-    "@addDownloadLocation": {},
     "bitrateSubtitle": "En högre bithastighet ger bättre ljudkvalitet, men förbrukar också mer data. Gäller ej förlustfria codecs, t.ex. FLAC",
-    "@bitrateSubtitle": {},
     "selectDirectory": "Välj filmapp",
-    "@selectDirectory": {},
     "appDirectory": "Filmapp för App",
-    "@appDirectory": {},
-    "directoryMustBeEmpty": "Filmappen måste vara tom",
-    "@directoryMustBeEmpty": {},
-    "portrait": "Porträttläge",
-    "@portrait": {},
     "landscape": "Liggande läge",
-    "@landscape": {},
     "list": "Lista",
-    "@list": {},
     "theme": "Tema",
-    "@theme": {},
     "light": "Ljust",
-    "@light": {},
     "system": "System",
-    "@system": {},
     "noAlbum": "Inget Album",
-    "@noAlbum": {},
     "addToPlaylistTooltip": "Lägg till i spellista",
-    "@addToPlaylistTooltip": {},
     "addToPlaylistTitle": "Lägg till i Spellista",
-    "@addToPlaylistTitle": {},
     "createButtonLabel": "Skapa",
-    "@createButtonLabel": {},
     "cancelSleepTimer": "Avbryt Sovtimer?",
-    "@cancelSleepTimer": {},
     "dark": "Mörkt",
-    "@dark": {},
     "yesButtonLabel": "Ja",
-    "@yesButtonLabel": {},
     "unknownArtist": "Okänd Artist",
-    "@unknownArtist": {},
     "addToQueue": "Lägg till i spelkö",
-    "@addToQueue": {},
     "goToAlbum": "Gå till Album",
-    "@goToAlbum": {},
-    "addedToQueue": "Tillagd i spelkön.",
-    "@addedToQueue": {},
     "anErrorHasOccured": "Ett fel har inträffat.",
-    "@anErrorHasOccured": {},
     "responseError": "{error} Statuskod {statusCode}.",
     "@responseError": {
         "placeholders": {
@@ -194,120 +132,47 @@
         }
     },
     "newPlaylist": "Ny Spellista",
-    "@newPlaylist": {},
     "music": "Musik",
-    "@music": {},
     "next": "Nästa",
-    "@next": {},
-    "noArtist": "Ingen Artist",
-    "@noArtist": {},
     "notAvailableInOfflineMode": "Inte tillgänglig i offlineläge",
-    "@notAvailableInOfflineMode": {},
     "playButtonLabel": "Spela upp",
-    "@playButtonLabel": {},
     "artists": "Artister",
-    "@artists": {},
     "genres": "Genrer",
-    "@genres": {},
     "offlineMode": "Offlineläge",
-    "@offlineMode": {},
     "finamp": "Finamp",
-    "@finamp": {},
     "password": "Lösenord",
-    "@password": {},
     "pathReturnSlashErrorMessage": "Sökvägar som returnerar ett \"/\" kan inte användas",
-    "@pathReturnSlashErrorMessage": {},
     "internalExternalIpExplanation": "Om du vill kunna komma åt din Jellyfin-server utanför hemmet så måste du använda din externa IP-adress.\n\nOm din server är på en HTTP-standardport (80 eller 443) eller Jellyfins standardport (8096) så behöver du inte ange porten.\n\nOm webbadressen är korrekt bör du se viss information om din server dyka upp under inmatningsfältet.",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
     },
     "grid": "Rutnät",
-    "@grid": {},
     "enableTranscodingSubtitle": "Transkodar musikströmmar på serversidan.",
-    "@enableTranscodingSubtitle": {},
-    "hideTrackArtistsIfSameAsAlbumArtists": "Dölj spårets artister ifall samma som albumartister",
-    "@hideTrackArtistsIfSameAsAlbumArtists": {},
     "enableTranscoding": "Aktivera Transkodning",
-    "@enableTranscoding": {},
     "albumArtist": "Albumartist",
-    "@albumArtist": {},
-    "gridCrossAxisCountSubtitle": "Antal rutor som visas per rad i {value}.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
-    "downloadedMissingImages": "{count,plural, =0{Inga saknade bilder hittades} =1{Laddade ned {count} saknad bild} other{Laddade ned {count} saknade bilder}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "queue": "Spelkö",
-    "@queue": {},
     "bitrate": "Bithastighet",
-    "@bitrate": {},
-    "couldNotFindLibraries": "Kunde inte hitta några bibliotek.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "downloadsQueued": "Laddar ned filer",
-    "@downloadsQueued": {},
-    "invalidNumber": "Ogiltigt Nummer",
-    "@invalidNumber": {},
     "datePlayed": "Senast uppspelad datum",
-    "@datePlayed": {},
     "downloads": "Nedladdningar",
-    "@downloads": {},
     "errorScreenError": "Ett fel uppstod när listan över fel skulle hämtas! Vid det här laget bör du förmodligen bara skapa ett problem på GitHub och radera appdata",
-    "@errorScreenError": {},
     "shuffleAllTrackCountSubtitle": "Antal ljudspår att ladda vid användning av Shuffle-knappen.",
-    "@shuffleAllTrackCountSubtitle": {},
     "shuffleAll": "Shuffla alla",
-    "@shuffleAll": {},
     "shuffleButtonLabel": "Shuffla",
-    "@shuffleButtonLabel": {},
     "audioService": "Ljudtjänst",
-    "@audioService": {},
     "username": "Användarnamn",
-    "@username": {},
     "logs": "Loggar",
-    "@logs": {},
     "random": "Slumpmässig",
-    "@random": {},
     "shareLogs": "Dela loggar",
-    "@shareLogs": {},
     "logsCopied": "Loggar kopierade.",
-    "@logsCopied": {},
     "showTextOnGridView": "Visa text i rutnätsvy",
-    "@showTextOnGridView": {},
     "showTextOnGridViewSubtitle": "Huruvida text (titel, artist etc.) ska visas på rutnäts-musikskärmen.",
-    "@showTextOnGridViewSubtitle": {},
     "tabs": "Flikar",
-    "@tabs": {},
     "sleepTimerTooltip": "Sovtimer",
-    "@sleepTimerTooltip": {},
     "playlistCreated": "Spellista skapad.",
-    "@playlistCreated": {},
-    "replaceQueue": "Ersätt spelkö",
-    "@replaceQueue": {},
-    "queueReplaced": "Spelkön ersattes.",
-    "@queueReplaced": {},
     "sortBy": "Sortera efter",
-    "@sortBy": {},
     "sortOrder": "Sorteringsordning",
-    "@sortOrder": {},
     "communityRating": "Gemenskapsbetyg",
-    "@communityRating": {},
-    "downloadMissingImages": "Ladda ned saknade bilder",
-    "@downloadMissingImages": {},
     "dlRunning": "{count} pågående",
     "@dlRunning": {
         "placeholders": {
@@ -317,13 +182,9 @@
         }
     },
     "downloadLocations": "Nedladdningsplatser",
-    "@downloadLocations": {},
     "customLocation": "Anpassad plats",
-    "@customLocation": {},
     "customLocationsBuggy": "Anpassade platser kan vara extremt buggade och rekommenderas inte i de flesta fall. Platser under systemets 'Musik'-mapp förhindrar sparandet av albumomslag på grund av begränsningar i operativsystemet.",
-    "@customLocationsBuggy": {},
     "startMix": "Starta mix",
-    "@startMix": {},
     "startMixNoTracksArtist": "Tryck länge på en artist för att lägga till eller ta bort den från mix-byggaren innan du startar en mix",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
@@ -333,97 +194,41 @@
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
     "playCount": "Antal uppspelningar",
-    "@playCount": {},
     "stackTrace": "Stack-trace",
-    "@stackTrace": {},
     "enterLowPriorityStateOnPause": "Gå in i lågprioritetstillstånd vid paus",
-    "@enterLowPriorityStateOnPause": {},
     "enterLowPriorityStateOnPauseSubtitle": "Tillåter att aviseringen sveps bort vid paus. Tillåter även Android att döda tjänsten vid paus.",
-    "@enterLowPriorityStateOnPauseSubtitle": {},
     "minutes": "Minuter",
-    "@minutes": {},
     "startingInstantMix": "Startar snabbmix.",
-    "@startingInstantMix": {},
     "removeFromMix": "Ta bort från Mix",
-    "@removeFromMix": {},
     "addToMix": "Lägg till i Mix",
-    "@addToMix": {},
     "shuffleAllTrackCount": "Antal spår i Shufflingen",
-    "@shuffleAllTrackCount": {},
     "viewTypeSubtitle": "Visningstyp för musikskärmen",
-    "@viewTypeSubtitle": {},
     "useCoverAsBackground": "Visa suddigt omslag som spelarbakgrund",
-    "@useCoverAsBackground": {},
     "useCoverAsBackgroundSubtitle": "Huruvida du vill använda en suddig omslagsbild som bakgrund i vissa delar av appen eller inte.",
-    "@useCoverAsBackgroundSubtitle": {},
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Huruvida spårets artister ska visas på albumskärmen om de inte skiljer sig från albumartister.",
-    "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
     "instantMix": "Snabbmix",
-    "@instantMix": {},
     "noItem": "Ingen artikel",
-    "@noItem": {},
     "removedFromPlaylist": "Borttagen från spellista.",
-    "@removedFromPlaylist": {},
     "viewType": "Visningstyp",
-    "@viewType": {},
     "removeFromPlaylistTooltip": "Ta bort från den här spellistan",
-    "@removeFromPlaylistTooltip": {},
     "bufferDuration": "Buffertlängd",
-    "@bufferDuration": {},
     "showUncensoredLogMessage": "Denna logg innehåller din inloggningsinformation. Visa?",
-    "@showUncensoredLogMessage": {},
-    "gridCrossAxisCount": "Rutor per rad i {value}",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
     "removeFromPlaylistTitle": "Ta bort från den här spellistan",
-    "@removeFromPlaylistTitle": {},
-    "bufferDurationSubtitle": "Den maximala tiden som ska buffras, i sekunder. Kräver omstart.",
-    "@bufferDurationSubtitle": {},
-    "insertedIntoQueue": "Tillagd i kön.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
+    "bufferDurationSubtitle": "Den tiden som ska buffras, i sekunder. Kräver omstart.",
     "refresh": "Uppdatera",
-    "@refresh": {},
     "confirm": "Bekräfta",
-    "@confirm": {},
     "language": "Språk",
-    "@language": {},
     "playNext": "Spela nästa",
     "@playNext": {
         "description": "Popup menu item title for inserting an item into the play queue after the currently-playing item."
     },
-    "redownloadedItems": "{count,plural, =0{Inga omnedladdningar behövs.} =1{En artikel laddades ned igen} other{{count} artiklar laddades ned igen}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
-    "resetTabs": "Återställ flikar",
-    "@resetTabs": {},
     "noMusicLibrariesBody": "Finamp kunde inte hitta några musikbibliotek. Se till att din Jellyfin-server innehåller minst ett bibliotek med innehållstypen inställd på \"Musik\".",
-    "@noMusicLibrariesBody": {},
     "disableGesture": "Inaktivera gester",
-    "@disableGesture": {},
     "noMusicLibrariesTitle": "Inga musikbibliotek",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
     "disableGestureSubtitle": "Huruvida gester ska inaktiveras.",
-    "@disableGestureSubtitle": {},
-    "syncDownloadedPlaylists": "Synkronisera nedladdade spellistor",
-    "@syncDownloadedPlaylists": {},
     "interactions": "Interaktioner",
-    "@interactions": {},
     "about": "Om Finamp",
     "@about": {
         "description": "Label for the about/info button on the settings screen"
@@ -529,37 +334,26 @@
         "description": "Error message that shows when the user submits a login without a username"
     },
     "title": "Titel",
-    "@title": {},
     "activeDownloadsTitle": "Aktiva nedladdningar",
-    "@activeDownloadsTitle": {},
     "noActiveDownloads": "Inga aktiva nedladdningar.",
-    "@noActiveDownloads": {},
     "activeDownloads": "Aktiva nedladdningar",
-    "@activeDownloads": {},
     "confirmDownloadStarted": "Nedladdning startad",
     "@confirmDownloadStarted": {
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
     },
     "hours": "Timmar",
-    "@hours": {},
     "seconds": "Sekunder",
-    "@seconds": {},
     "timeFractionTooltip": "{currentTime} av {totalTime}",
     "@timeFractionTooltip": {
         "description": "Tooltip and accessibility label for the track progress. {currentTime} is the current position within the track, as a translated string like '2 minutes 40 seconds', and {totalTime} is the total duration of the track, also a translated string."
     },
-    "addToMorePlaylistsTooltip": "Lägg till i flera spellistor",
-    "@addToMorePlaylistsTooltip": {},
     "confirmAddedToPlaylist": "Tillagd i spellista.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
     },
     "addToMorePlaylistsTitle": "Lägg till i flera spellistor",
-    "@addToMorePlaylistsTitle": {},
     "bufferDisableSizeConstraintsTitle": "Begränsa inte buffertstorlek",
-    "@bufferDisableSizeConstraintsTitle": {},
     "bufferSizeTitle": "Buffertstorlek",
-    "@bufferSizeTitle": {},
     "playbackHistory": "Uppspelningshistorik",
     "@playbackHistory": {
         "description": "Title for the playback history screen, where the user can see a list of recently played tracks, sorted by "
@@ -579,10 +373,6 @@
     "loginFlowCustomUser": "Anpassad användare",
     "@loginFlowCustomUser": {
         "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
-    },
-    "deleteDownloadsConfirmButtonText": "Radera",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
     },
     "offlineTrackCountArtist": "{count,plural,=1{{count} spår} other{{count} spår}} nedladdade",
     "@offlineTrackCountArtist": {
@@ -719,20 +509,6 @@
             }
         }
     },
-    "deleteDownloadsPrompt": "Är du säker på att du vill radera {itemType, select, album{albumet} playlist{spellistan} artist{artisten} genre{genren} track{spåret} library{biblioteket} other{artikeln}} '{itemName}' från denna enhet?",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
     "playbackModeLocal": "Spelas Lokalt",
     "@playbackModeLocal": {
         "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
@@ -751,7 +527,6 @@
         }
     },
     "showFastScroller": "Visa snabb scroller",
-    "@showFastScroller": {},
     "kiloBitsPerSecondLabel": "{bitrate} kbps",
     "@kiloBitsPerSecondLabel": {
         "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
@@ -766,8 +541,7 @@
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
     },
-    "bufferSizeSubtitle": "Maximal storlek på bufferten i MB. Kräver en omstart",
-    "@bufferSizeSubtitle": {},
+    "bufferSizeSubtitle": "Storlek på bufferten i MB. Kräver en omstart",
     "shareOfflineListens": "Dela offline-lyssningar",
     "@shareOfflineListens": {
         "description": "Button for exporting the JSON file containing any playback events that couldn't be submitted to the server, either because offline mode was enabled or the connection failed"
@@ -776,7 +550,7 @@
     "@playerScreen": {
         "description": "Name for the expanded player"
     },
-    "sleepTimerRemainingTime": "Sover om {time,plural,=1{en minut} other{{time} minuter}}",
+    "sleepTimerRemainingTime": "Sover om {time,plural,=1{<1 minut} other{{time} minuter}}",
     "@sleepTimerRemainingTime": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
         "placeholders": {
@@ -785,26 +559,11 @@
             }
         }
     },
-    "removeFromPlaylistNamedTitle": "Ta bort från Spellista '{playlistName}'",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "playlistActionsMenuButtonTooltip": "Tryck lätt för att lägga till i spellista. Tryck länge för att aktivera/avaktivera favorit.",
     "@playlistActionsMenuButtonTooltip": {
         "description": "Tooltip for the (currently heart) button that opens the playlist actions menu / playlist picker by default and can toggle the favorite status on long press"
     },
     "goToGenre": "Gå till Genre",
-    "@goToGenre": {},
-    "confirmFavoriteAdded": "Lade till Favorit",
-    "@confirmFavoriteAdded": {},
-    "confirmFavoriteRemoved": "Tog bort Favorit",
-    "@confirmFavoriteRemoved": {},
     "skipToPreviousTrackButtonTooltip": "Hoppa till början eller till föregående spår",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -856,7 +615,6 @@
         "description": "Title for the queue source when the user is playing their liked tracks"
     },
     "goToArtist": "Gå till Artist",
-    "@goToArtist": {},
     "trackCountTooltip": "Spår {currentTrackIndex} av {totalTrackCount}",
     "@trackCountTooltip": {
         "description": "Tooltip and accessibility label for the queue progress. {currentTrackIndex} and {totalTrackCount} are both numbers",
@@ -871,29 +629,16 @@
             }
         }
     },
-    "removeFromPlaylistNamedTooltip": "Ta bort från spellista '{playlistName}'",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "unknownAlbum": "Okänt Album",
-    "@unknownAlbum": {},
     "playbackModeDirectPlaying": "Direkt Uppspelning",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
     },
     "bufferDisableSizeConstraintsSubtitle": "Avlägsnar buffertstorlekens begränsningar ('Buffertstorlek'). Bufferten laddas alltid till den angivna längden ('Buffertlängd'), även för väldigt stora filer. Kan orsaka krascher. Kräver en omstart.",
-    "@bufferDisableSizeConstraintsSubtitle": {},
     "previousTracks": "Föregående spår",
     "@previousTracks": {
         "description": "Description in the queue panel for the list of tracks that come before the current track in the queue. The tracks might not actually have been played (e.g. if the user skipped ahead to a specific track)."
     },
-    "shuffleToQueue": "Shuffla efter spelkö",
+    "shuffleToQueue": "Shuffla efter Spelkö",
     "@shuffleToQueue": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
@@ -1059,7 +804,6 @@
         "description": "Message shown for download size while item is still syncing."
     },
     "resetToDefaults": "Återställ till standard",
-    "@resetToDefaults": {},
     "periodicPlaybackSessionUpdateFrequencyDetails": "Om Jellyfin-servern inte har mottagit några uppdateringar från en klient inom de senaste 5 minuterna, antar den att uppspelningen har avslutats. Det innebär att för spår som är längre än 5 minuter, så kan uppspelningen felaktigt rapporteras att ha avslutats, vilket försämrar kvaliteten på datan i uppspelningsrapporten.",
     "@periodicPlaybackSessionUpdateFrequencyDetails": {
         "description": "Additional details for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
@@ -1084,10 +828,7 @@
     "@requireWifiForDownloads": {
         "description": "Description of setting for only performing downloads while on wifi"
     },
-    "swipeInsertQueueNext": "Spela svept ljudspår nästa",
-    "@swipeInsertQueueNext": {},
     "topTracks": "Mest populära",
-    "@topTracks": {},
     "repairDownloads": "Reparera problem med nedladdade filer eller metadata.",
     "@repairDownloads": {
         "description": "Tooltip for downloads repair button."
@@ -1167,14 +908,11 @@
             }
         }
     },
-    "swipeInsertQueueNextSubtitle": "Aktivera för att lägga in ett spår som nästa artikel i spelkön när det sveps i spårlistan i stället för att lägga till det på slutet.",
-    "@swipeInsertQueueNextSubtitle": {},
     "startInstantMixForIndividualTracksSwitchTitle": "Starta snabbmixar för enstaka spår",
     "@startInstantMixForIndividualTracksSwitchTitle": {
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
     },
     "startInstantMixForIndividualTracksSwitchSubtitle": "Om du trycker på ett spår i spårfliken när funktionen är aktiv, så startas en snabbmix för spåret i stället för att bara spela upp ett enstaka spår.",
-    "@startInstantMixForIndividualTracksSwitchSubtitle": {},
     "downloadItem": "Ladda ned",
     "@downloadItem": {
         "description": "Option to download item in long-press menu."
@@ -1217,7 +955,6 @@
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of the regular queue"
     },
     "moreInfo": "Mer info",
-    "@moreInfo": {},
     "volumeNormalizationModeSelectorSubtitle": "När och hur volymnormalisering ska tillämpas",
     "@volumeNormalizationModeSelectorSubtitle": {
         "description": "Subtitle for the dropdown that selects the replay gain mode"
@@ -1252,7 +989,6 @@
         "description": "Message shown for download size while item is being deleted but is not fully removed"
     },
     "downloadSettings": "Nedladdningar",
-    "@downloadSettings": {},
     "showNullLibraryItemsTitle": "Visa media med okänt bibliotek.",
     "@showNullLibraryItemsTitle": {
         "description": "Title of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
@@ -1270,7 +1006,6 @@
         "description": "Label for action that shuffles all albums of an artist or genre"
     },
     "close": "Stäng",
-    "@close": {},
     "volumeNormalizationModeSelectorTitle": "Volymnormaliseringsläge",
     "@volumeNormalizationModeSelectorTitle": {
         "description": "Title for the dropdown that selects the replay gain mode"
@@ -1302,9 +1037,7 @@
         "description": "Description of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
     },
     "hidePlayerBottomActionsSubtitle": "Dölj knapparna för spelkö och sångexter på spelarskärmen. Svep upp för att komma åt spelkön, och svep vänster (under skivomslaget) för att visa sångtexter ifall de finns tillgängliga.",
-    "@hidePlayerBottomActionsSubtitle": {},
     "prioritizePlayerCoverSubtitle": "Priorisera visning av ett större albumomslag på spelarskärmen. Mindre viktiga kontroller döljs mer aggressivt vid små skärmstorlekar.",
-    "@prioritizePlayerCoverSubtitle": {},
     "numberAsBit": "{bit} bit",
     "@numberAsBit": {
         "description": "Value for the bit depth of a track, as amount of bit used",
@@ -1327,7 +1060,6 @@
         "description": "Prompt on dialog to confirm a removal from playlist"
     },
     "downloadAllPlaylistsSetting": "Ladda ned alla spellistor",
-    "@downloadAllPlaylistsSetting": {},
     "artworkTooltip": "Konstverk för {title}",
     "@artworkTooltip": {
         "placeholders": {
@@ -1400,7 +1132,6 @@
         "description": "subtitle for download transcode setting which redownloads tracks with higher allowed qualities"
     },
     "cacheLibraryImagesSettingsSubtitle": "Alla omslag för album, artister, genrer samt spellistor i det aktiva biblioteket kommer att laddas ned.",
-    "@cacheLibraryImagesSettingsSubtitle": {},
     "showProgressOnNowPlayingBarTitle": "Visa spårets förlopp i appens minispelare",
     "@showProgressOnNowPlayingBarTitle": {
         "description": "Title for the setting that controls if the in-app miniplayer / now playing bar at the bottom of the music screen functions as a progress bar"
@@ -1413,14 +1144,10 @@
     "@downloadSizeWarningCutoff": {
         "description": "Title for the setting controlling when to warn about a large download"
     },
-    "fixedGridSizeSwitchSubtitle": "Rutnätsblockens storlek påverkas inte av fönstrets/skärmens storlek.",
-    "@fixedGridSizeSwitchSubtitle": {},
     "itemDeletedSnackbar": "{itemType, select, album{Albumet} playlist{Spellistan} artist{Artisten} genre{Genren} track{Spåret} library{Biblioteket} other{Artikeln}} raderades från {deviceType, select, device{enheten} server{servern} other{okänd plats}}",
     "@itemDeletedSnackbar": {
         "description": "Used whenever item gets deleted from the device or server, message in snackbar"
     },
-    "marqueeOrTruncateButtonSubtitle": "Visa … i slutet av långa titlar istället för att rulla texten",
-    "@marqueeOrTruncateButtonSubtitle": {},
     "maxConcurrentDownloadsSubtitle": "En ökning av antalet samtidiga nedladdningar kan medföra snabbare nedladdning i bakgrunden, men kan orsaka att vissa nedladdningar misslyckas ifall de är väldigt stora, och kan i vissa fall orsaka stora fördröjningar.",
     "@maxConcurrentDownloadsSubtitle": {
         "description": "Description of setting controlling max concurrent downloads."
@@ -1548,28 +1275,16 @@
     "@redownloadTitle": {
         "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
     },
-    "hideQueueButton": "Dölj knapp för spelkö",
-    "@hideQueueButton": {},
-    "hideQueueButtonSubtitle": "Dölj knappen för spelkön på spelarskärmen. Svep upp för att komma åt spelkön.",
-    "@hideQueueButtonSubtitle": {},
     "oneLineMarqueeTextButton": "Rulla automatiskt långa titlar",
-    "@oneLineMarqueeTextButton": {},
     "oneLineMarqueeTextButtonSubtitle": "Rulla automatiskt titlar som är för långa för att visas på två rader",
-    "@oneLineMarqueeTextButtonSubtitle": {},
-    "marqueeOrTruncateButton": "Använd ellips för långa titlar",
-    "@marqueeOrTruncateButton": {},
     "removeFromPlaylistConfirm": "Ta bort",
-    "@removeFromPlaylistConfirm": {},
     "trackMenuButtonTooltip": "Spårmeny",
     "@trackMenuButtonTooltip": {
         "description": "Tooltip for the button that opens the track menu"
     },
     "trackOfflineFavoritesSubtitle": "Detta tillåter visning av mer aktuella favoritstatusar i offlineläge.  Laddar inte ned några ytterligare filer.",
-    "@trackOfflineFavoritesSubtitle": {},
     "cacheLibraryImagesSettings": "Spara nuvarande biblioteksbilder i cachen",
-    "@cacheLibraryImagesSettings": {},
     "fiveLatestAlbumsSettingSubtitle": "Nedladdnigar tas bort när de åldras ut.  Lås nedladdningen för att förhindra att albumet tas bort.",
-    "@fiveLatestAlbumsSettingSubtitle": {},
     "showLyricsTimestampsTitle": "Visa tidsstämplar för synkroniserade sångtexter",
     "@showLyricsTimestampsTitle": {
         "description": "Title for the setting that controls if timestamps are shown for lyrics"
@@ -1595,7 +1310,6 @@
         "description": "Title for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
     },
     "keepScreenOnWhilePluggedIn": "Håll endast skärmen påslagen vid laddning",
-    "@keepScreenOnWhilePluggedIn": {},
     "genericToggleButtonTooltip": "Tryck för att växla.",
     "@genericToggleButtonTooltip": {
         "description": "Tooltip for toggle buttons that can be tapped to toggle their state"
@@ -1689,7 +1403,6 @@
         "description": "Subtitle for the setting that controls if the album cover is shown before the lyrics in the lyrics view"
     },
     "keepScreenOnSubtitle": "När skärmen ska hållas påslagen",
-    "@keepScreenOnSubtitle": {},
     "codec": "Codec",
     "@codec": {
         "description": "Label for the feature chips showing the codec of a track"
@@ -1710,12 +1423,7 @@
     "@redownloadcomplete": {
         "description": "Mesage when Automatically Redownload Transcodes transcode setting completes operations."
     },
-    "fixedGridSizeSwitchTitle": "Använd fast storlek på rutnätsblock",
-    "@fixedGridSizeSwitchTitle": {},
-    "fixedGridSizeTitle": "Storlek på rutnätsblock",
-    "@fixedGridSizeTitle": {},
     "suppressPlayerPadding": "Undertryck spelarkontrollernas utfyllnad",
-    "@suppressPlayerPadding": {},
     "scrollToCurrentTrack": "Återgå till nuvarande spår",
     "@scrollToCurrentTrack": {
         "description": "Tooltip for button that scrolls the queue list back to the current track"
@@ -1738,15 +1446,12 @@
         "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
     },
     "trackOfflineFavorites": "Synka alla favoritstatusar",
-    "@trackOfflineFavorites": {},
     "addRemoveFromPlaylist": "Lägg till / ta bort från spellistor",
     "@addRemoveFromPlaylist": {
         "description": "Header for add to/remove from playlist popup menu"
     },
     "allPlaylistsInfoSettingSubtitle": "Synka metadata för alla spellistor för att förbättra din upplevelse med spellistor",
-    "@allPlaylistsInfoSettingSubtitle": {},
     "keepScreenOnDisabled": "Inaktiverat",
-    "@keepScreenOnDisabled": {},
     "size": "Storlek",
     "@size": {
         "description": "Label for the feature chips showing the size (original file size or transcoded size, if available) of a track"
@@ -1781,7 +1486,6 @@
         "description": "Title for Enable Transcoded Downloads dropdown"
     },
     "hidePlayerBottomActions": "Dölj åtgärder längst ned",
-    "@hidePlayerBottomActions": {},
     "defaultDownloadLocationButton": "Välj som standardplats för nedladdning.  Stäng av för att välja per nedladdning.",
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
@@ -1791,7 +1495,6 @@
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
     },
     "suppressPlayerPaddingSubtitle": "Minimerar fullt utfyllnaden mellan spelarskärmens kontroller när albumets omslag inte är i full storlek.",
-    "@suppressPlayerPaddingSubtitle": {},
     "showLyricsTimestampsSubtitle": "Styr ifall tidsstämplar visas för varje textrad i sångtextvyn, ifall de finns tillgängliga.",
     "@showLyricsTimestampsSubtitle": {
         "description": "Subtitle for the setting that controls if timestamps are shown for lyrics"
@@ -1813,10 +1516,6 @@
     "bitRate": "Bithastighet",
     "@bitRate": {
         "description": "Label for the feature chips showing the bit rate of a track"
-    },
-    "emptyTopTracksList": "Du har inte lyssnat på några spår från denna artist ännu.",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
     },
     "emptyFilteredListSubtitle": "Inga artiklar matchade filtret. Försök att stänga av filtret eller ändra sökbeteckningen.",
     "@emptyFilteredListSubtitle": {
@@ -1849,17 +1548,11 @@
         "description": "Localized names of fixed size grid tile sizes."
     },
     "enableVibration": "Aktivera vibration",
-    "@enableVibration": {},
     "allowSplitScreenTitle": "Tillåt delad skärmvy",
-    "@allowSplitScreenTitle": {},
     "allowSplitScreenSubtitle": "Spelaren visas vid sidan av andra vyer på bredare skärmar.",
-    "@allowSplitScreenSubtitle": {},
     "enableVibrationSubtitle": "Huruvida vibration ska aktiveras.",
-    "@enableVibrationSubtitle": {},
     "prioritizePlayerCover": "Prioritera albumomslag",
-    "@prioritizePlayerCover": {},
     "showArtistChipImage": "Visa artistbilder med artistnamn",
-    "@showArtistChipImage": {},
     "remainingDuration": "{duration} återstår",
     "@remainingDuration": {
         "description": "Displays duration of unplayed tracks. {duration} is a pre-formatted string.",
@@ -1871,17 +1564,13 @@
         }
     },
     "showArtistChipImageSubtitle": "Detta påverkar små förhandsvisningar av artistbilder, såsom på spelarskärmen.",
-    "@showArtistChipImageSubtitle": {},
     "quickActions": "Snabbåtgärder",
     "@quickActions": {
         "description": "Title for the short menu that can be shown when long-pressing on the menu button on the player screen. Currently only used for adding to and removing from playlists."
     },
     "allPlaylistsInfoSetting": "Ladda ned metadata för spellista",
-    "@allPlaylistsInfoSetting": {},
     "downloadFavoritesSetting": "Ladda ned alla favoriter",
-    "@downloadFavoritesSetting": {},
     "fiveLatestAlbumsSetting": "Ladda ned de senaste 5 albumen",
-    "@fiveLatestAlbumsSetting": {},
     "showSeekControlsOnMediaNotificationSubtitle": "Styr ifall medianotisen har en sökbar förloppsindikator. Detta låter dig ändra uppspelningspositionen utan att öppna appen.",
     "@showSeekControlsOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a seekable progress bar."
@@ -1903,37 +1592,25 @@
         "description": "Title for the setting that controls the font size of lyrics in the lyrics view"
     },
     "keepScreenOnAlwaysOn": "Alltid på",
-    "@keepScreenOnAlwaysOn": {},
     "keepScreenOnWhilePlaying": "Medan musik spelas",
-    "@keepScreenOnWhilePlaying": {},
     "keepScreenOnWhileLyrics": "Medan sångtexter visas",
-    "@keepScreenOnWhileLyrics": {},
     "keepScreenOnWhilePluggedInSubtitle": "Ignorera inställningen Håll skärmen påslagen ifall enheten inte laddas",
-    "@keepScreenOnWhilePluggedInSubtitle": {},
     "artwork": "Konstverk",
-    "@artwork": {},
     "normalizationGain": "Förstärkning",
     "@normalizationGain": {
         "description": "Label for the feature chips showing the normalization gain / LUFS offset of a track"
     },
     "swipeLeftToRightAction": "Åtgärd högersvepning",
-    "@swipeLeftToRightAction": {},
     "swipeRightToLeftAction": "Åtgärd vänstersvepning",
-    "@swipeRightToLeftAction": {},
     "swipeRightToLeftActionSubtitle": "Åtgärd som utförs när du sveper ett spår i listan från höger till vänster.",
-    "@swipeRightToLeftActionSubtitle": {},
     "albumArtists": "Albumartister",
-    "@albumArtists": {},
     "transcodingStreamingFormatTitle": "Välj transkodningsformat",
     "@transcodingStreamingFormatTitle": {
         "description": "Title for the dropdown that selects the format for transcoded streams"
     },
     "performingArtists": "Medverkande artister",
-    "@performingArtists": {},
     "appearsOnAlbums": "Medverkar på",
-    "@appearsOnAlbums": {},
     "swipeLeftToRightActionSubtitle": "Åtgärd som utförs när du sveper ett spår i listan från vänster till höger.",
-    "@swipeLeftToRightActionSubtitle": {},
     "audioFadeOutDurationSettingSubtitle": "Varaktigheten på uttoningen av ljudet, i millisekunder.",
     "@audioFadeOutDurationSettingSubtitle": {
         "description": "Subtitle for the audio fade-in duration setting. Set to 0 to disable fade-in."
@@ -1943,15 +1620,12 @@
         "description": "Title for the audio fade-in duration setting."
     },
     "audioFadeInDurationSettingTitle": "Varaktighet på intoning av ljud",
-    "@audioFadeInDurationSettingTitle": {},
     "autoOfflineSettingTitle": "Automatiserat offlineläge",
-    "@autoOfflineSettingTitle": {},
     "autoOfflineOptionDisconnected": "Frånkopplad",
     "@autoOfflineOptionDisconnected": {
         "description": "This is shown when the autoOffline feature is set to Disconnected, this means offline mode will be automatically enabled when either wifi, ethernet or cellular is active"
     },
     "audioFadeInDurationSettingSubtitle": "Varaktigheten på intoningen av ljudet, i millisekunder. Ställ till 0 för att avaktivera intoning.",
-    "@audioFadeInDurationSettingSubtitle": {},
     "autoOfflineNotification": "Offlineläget {state, select, enabled{aktiverades} disabled{avaktiverades} other{parallalaxkompensationsmarkeringscentrerades}} automatiskt",
     "@autoOfflineNotification": {
         "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
@@ -1969,7 +1643,6 @@
         "description": "Setting description. Make sure the Mode names match the translations."
     },
     "transcodingStreamingFormatSubtitle": "Välj format som ska användas när du strömmar transkodat ljud. Redan kölagda spår kommer inte att påverkas.",
-    "@transcodingStreamingFormatSubtitle": {},
     "playOnStaleDelay": "Varaktighet 'Spela på'-session",
     "@playOnStaleDelay": {
         "description": "Label for the setting that controls how long a PlayOn remote session is considered active"
@@ -1984,8 +1657,6 @@
             }
         }
     },
-    "playbackReporting": "Uppspelningsrapportering",
-    "@playbackReporting": {},
     "libraryDownloads": "Biblioteksnedladdningar",
     "@libraryDownloads": {
         "description": "Title for the library downloads section on the downloads screen."
@@ -2130,27 +1801,16 @@
         "description": "Gets shown in the Snackbar when using the Test Connection Button inside the Network Settings. true means reachable, false means unreachable. the first value is for the public address, the second value is fot the home address."
     },
     "exportLogs": "Spara loggar",
-    "@exportLogs": {},
     "defaultOrder": "Standardordning",
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
     },
     "favorite": "Favorit",
-    "@favorite": {},
-    "onlineMode": "Onlineläge",
-    "@onlineMode": {},
     "performingArtist": "Framförande artist",
-    "@performingArtist": {},
     "duration": "Längd",
-    "@duration": {},
     "favoriteAlbums": "Favoritalbum",
-    "@favoriteAlbums": {},
     "favoriteArtists": "Favoritartister",
-    "@favoriteArtists": {},
-    "randomFavoritesFirst": "Slumpmässigt (Favoriter först)",
-    "@randomFavoritesFirst": {},
     "recentlyAdded": "Nyligen tillagt",
-    "@recentlyAdded": {},
     "genreFilterPlaylistScreensSubtitle": "Spellistor (vid navigering genom genre) kommer endast att visa spår som matchar genren som du bläddrar igenom. (Det är alltid möjligt att manuellt avlägsna genrefiltret för att visa alla spår.)",
     "@genreFilterPlaylistScreensSubtitle": {
         "description": "Description of the setting that controls if a genreFilter should get applied to PlaylistScreens when accessing the PlaylistScreens through a Genre."
@@ -2180,39 +1840,24 @@
         }
     },
     "notAvailable": "Ej tillgängligt",
-    "@notAvailable": {},
     "autoSwitchItemCurationTypeTitle": "Byt automatiskt artikelkureringstyp",
-    "@autoSwitchItemCurationTypeTitle": {},
     "browsePlaylists": "Bläddra bland spellistor",
     "@browsePlaylists": {
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
     },
     "removeFavorite": "Ta bort favorit",
-    "@removeFavorite": {},
     "addFavorite": "Lägg till favorit",
-    "@addFavorite": {},
     "recentlyAddedTracks": "Nyligen tillagda spår",
     "@recentlyAddedTracks": {
         "description": "Label for the artist section that shows tracks that were recently added to the library, sorted by the date they were added."
     },
     "recentlyPlayedArtists": "Nyligen spelade artister",
-    "@recentlyPlayedArtists": {},
     "recentlyPlayedAlbums": "Nyligen spelade album",
-    "@recentlyPlayedAlbums": {},
     "recentlyPlayedTracks": "Nyligen spelade spår",
-    "@recentlyPlayedTracks": {},
     "randomTracks": "Spår (slumpmässiga val)",
-    "@randomTracks": {},
-    "randomAlbums": "Album (slumpmässiga val)",
-    "@randomAlbums": {},
-    "randomArtists": "Artister (slumpmässiga val)",
-    "@randomArtists": {},
     "recentlyPlayed": "Nyligen spelat",
-    "@recentlyPlayed": {},
     "latestReleases": "Senast utgivet",
-    "@latestReleases": {},
     "unknown": "Okänt",
-    "@unknown": {},
     "artistItemSectionFilterChipOrderTitle": "Filterordning på spårsektion",
     "@artistItemSectionFilterChipOrderTitle": {
         "description": "Label for the setting that controls the order of the tracks sections filter chips."
@@ -2246,13 +1891,7 @@
         "description": "Tooltip shown when a download button is disabled because of an active genre filter."
     },
     "preferLocalNetworkPublicAddressSettingTitle": "Extern adress",
-    "@preferLocalNetworkPublicAddressSettingTitle": {},
     "preferLocalNetworkPublicAddressSettingDescription": "Den primära adressen som används för att koppla upp sig mot din Jellyfin-server",
-    "@preferLocalNetworkPublicAddressSettingDescription": {},
-    "preferLocalNetworkInfoBox": "Den här funkionen kräver tillstånd för Plats (och plats måste vara aktiverat) för att läsa av nätverksnamnet.",
-    "@preferLocalNetworkInfoBox": {
-        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
-    },
     "menuButtonLabel": "Fler åtgärder",
     "@menuButtonLabel": {
         "description": "Generic label for menu buttons shown throughout the app. Used for the album, artist, playlist, etc. menus"
@@ -2274,7 +1913,6 @@
         "description": "Label for the button that starts the sleep timer"
     },
     "preferLocalNetworkTargetAddressLocalSettingTitle": "Lokal nätverksadress",
-    "@preferLocalNetworkTargetAddressLocalSettingTitle": {},
     "formattedRelativeTime": "{type, select, just_now{alldeles nyss} minutes{{value}m sedan} hours{{value}h sedan} yesterday{igår} days{{value, plural, =1{en dag sedan} other{{value} dagar sedan}}} other{value}}",
     "@formattedRelativeTime": {
         "description": "Returns a relative time string based on how long ago something happened. Used for various DateTime values such as Date Last Played and Date Added.",
@@ -2290,7 +1928,6 @@
         }
     },
     "showArtistsTracksSectionSubtitle": "Huruvida en sektion med upp till fem spår skall visas. Om det aktiveras kan du välja mellan mest spelade, favoriter, slumpmässigt, senaste releaser, nyligen tillagda samt nyligen uppspelade spår.",
-    "@showArtistsTracksSectionSubtitle": {},
     "itemCount": "{childType, select, track{{amount, plural, =1{Ett spår} other{{amount} spår}}} album{{amount, plural, =1{Ett album} other{{amount} album}}} other{{amount, plural, =1{En artikel} other{{amount} artiklar}}}}",
     "@itemCount": {
         "description": "Amount of various child item, like artist albums, performing artist tracks, or genre albums. Shown for example in the menu headers.",
@@ -2314,9 +1951,7 @@
         "description": "Label for the genre section that shows albums that were recently added to the library, sorted by the date they were added."
     },
     "favoriteTracks": "Favoritspår",
-    "@favoriteTracks": {},
     "preferLocalNetworkEnableSwitchDescription": "Huruvida en annan adress skall användas när du är på din Jellyfin-servers lokala nätverk",
-    "@preferLocalNetworkEnableSwitchDescription": {},
     "preferLocalNetworkActiveAddressInfoText": "Aktiv adress",
     "@preferLocalNetworkActiveAddressInfoText": {
         "description": "Shows the active address inside the network settings screen so the user can see if this feature works"
@@ -2383,9 +2018,7 @@
         "description": "Shown to screen readers while the item count is being calculated."
     },
     "preferLocalNetworkTargetAddressLocalSettingDescription": "Måladress för Jellyfin-servern i ditt lokala nätverk",
-    "@preferLocalNetworkTargetAddressLocalSettingDescription": {},
     "preferLocalNetworkEnableSwitchTitle": "Föredra lokalt nätverk",
-    "@preferLocalNetworkEnableSwitchTitle": {},
     "allLibraries": "Alla bibliotek",
     "@allLibraries": {
         "description": "All Libraries"
@@ -2395,21 +2028,13 @@
         "description": "Gets shown when there are no genres available for an album or artist"
     },
     "showArtistsTracksSection": "Visa spårsektion",
-    "@showArtistsTracksSection": {},
     "latestArtists": "Senaste artisterna",
-    "@latestArtists": {},
     "topAlbums": "Toppalbum",
-    "@topAlbums": {},
     "topArtists": "Toppartister",
-    "@topArtists": {},
     "latestTracks": "Senaste spåren",
-    "@latestTracks": {},
     "latestAlbums": "Senaste albumen",
-    "@latestAlbums": {},
     "favorites": "Favoriter",
-    "@favorites": {},
     "mostPlayed": "Mest spelade",
-    "@mostPlayed": {},
     "artistItemSectionFilterChipOrderSubtitle": "Styr över ordningen på tillgängliga filter av spårsektionen.",
     "@artistItemSectionFilterChipOrderSubtitle": {
         "description": "Description of the setting that controls the order of the tracks sections filter chips."
@@ -2421,10 +2046,6 @@
     "genreFilterArtistScreens": "Filtrera artister",
     "@genreFilterArtistScreens": {
         "description": "Label for the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
-    },
-    "curatedItemsMostPlayedOfflineTooltip": "Ej tillgängligt i offlineläge.",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
     },
     "seeAll": "Se alla",
     "@seeAll": {
@@ -2467,7 +2088,6 @@
         "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
     },
     "autoSwitchItemCurationTypeSubtitle": "När funktionen är aktiverad kommer Artikelsektioner på Artist- och Genreskärmarna automatiskt byta till en annan kureringstyp om inga artiklar finns tillgängliga (t.ex. inga favoriter för en särskild artist).",
-    "@autoSwitchItemCurationTypeSubtitle": {},
     "applyFilterOnGenreChipTapSubtitle": "Som standard så öppnas en genre om du trycker lätt på den, medan ett långt tryck filtrerar artisten eller spellistan av den genren. När funktionen är aktiv inverteras detta.",
     "@applyFilterOnGenreChipTapSubtitle": {
         "description": "Subtitle for the setting that controls if taps on genres should apply a genre filter to the current screen or should redirect to the GenreScreen."
@@ -2500,5 +2120,123 @@
     "movePlayNext": "Spela nästa",
     "@movePlayNext": {
         "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
-    }
+    },
+    "shuffleSome": "Shuffla vissa",
+    "playbackActionPageRegularTrackOptions": "Spela",
+    "@playbackActionPageRegularTrackOptions": {
+        "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "adaptive": "Adaptiv",
+    "playbackActionPageMoveWithinQueue": "Flytta Inom Kön",
+    "@playbackActionPageMoveWithinQueue": {
+        "description": "Label for the playback action page that contains all actions related to moving tracks within the queue"
+    },
+    "savingChanges": "Sparar ändringar…",
+    "@savingChanges": {
+        "description": "Text shown while the changes to a playlist are being saved"
+    },
+    "playbackActionPageNext": "Spela Näst",
+    "@playbackActionPageNext": {
+        "description": "Label for the playback action page that contains all actions related to playing tracks directly after the current one"
+    },
+    "playbackActionPageNewQueue": "Ny Spelkö",
+    "@playbackActionPageNewQueue": {
+        "description": "Label for the playback action page that contains all actions related to starting a new queue"
+    },
+    "updatePlaylistButtonLabel": "Uppdatera Spellista",
+    "@updatePlaylistButtonLabel": {
+        "description": "Label for the button that updates the playlist on the edit playlist screen"
+    },
+    "playbackActionPageAppendToQueue": "Spela Sist",
+    "@playbackActionPageAppendToQueue": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks at the end of the queue"
+    },
+    "logoutButtonSubtitle": "Att logga in på en annan server kommer ta bort alla nedladdningar som redan finns",
+    "amoledTheme": "Använd AMOLED Tema",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "accentColorTitle": "Välj en Accentfärg",
+    "@accentColorTitle": {
+        "description": "Title for the accent color picker sheet"
+    },
+    "accentColor": "Accentfärg",
+    "@accentColor": {
+        "description": "Title of the accent color setting"
+    },
+    "systemAccentColor": "Använd System Accenten",
+    "@systemAccentColor": {
+        "description": "Title of the System Accent Color setting."
+    },
+    "colorCode": "Färg Kod (Hex)",
+    "@colorCode": {
+        "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
+    },
+    "defaultWord": "Förval",
+    "save": "Spara",
+    "colorCodeHint": "t.ex. #FFFFFF eller #coffee",
+    "@colorCodeHint": {
+        "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
+    },
+    "playbackActionPageNextUp": "Lägg till Näst",
+    "@playbackActionPageNextUp": {
+        "description": "Label for the playback action page that contains all actions related to appending tracks to Next Up"
+    },
+    "amoledThemeSubtitle": "Ersätta det mörka temat med ett kolsvart tema.",
+    "useMonochromeIcon": "Använd Monokrom Loga",
+    "@useMonochromeIcon": {
+        "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
+    },
+    "useMonochromeIconSubtitle": "Detta påverkar endast ikonen i appen, inte ikonen i appstartaren.",
+    "@useMonochromeIconSubtitle": {
+        "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
+    },
+    "useDefaultButton": "Återställ till Förvalsaccentfärgen",
+    "startRadio": "Starta Radio",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
+    },
+    "shuffleSomeNext": "Shuffla vissa näst",
+    "@shuffleSomeNext": {
+        "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "shuffleSomeToNextUp": "Shuffla vissa till Näst Upp",
+    "@shuffleSomeToNextUp": {
+        "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
+    },
+    "shuffleSomeToQueue": "Shuffla vissa till Spelkön",
+    "@shuffleSomeToQueue": {
+        "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "moveAddToNextUp": "Flytta till Näst Upp",
+    "@moveAddToNextUp": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
+    },
+    "radio": "Radio",
+    "@radio": {
+        "description": "Title for the queue source when the user is playing a track added via radio"
+    },
+    "radioForItem": "{radioSource} - Radio",
+    "@radioForItem": {
+        "description": "Suffix added to a queue source when playing a radio track. Example: \"Never Gonna Give You Up - Radio\"",
+        "placeholders": {
+            "radioSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "shuffleSomeAlbums": "Shuffla vissa Album",
+    "@shuffleSomeAlbums": {
+        "description": "Label for action that shuffles some albums of a genre"
+    },
+    "shuffleSomeAlbumsNext": "Shuffla vissa Album Näst",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "shuffleSomeAlbumsToNextUp": "Shuffla vissa Album till Näst Upp",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
+    },
+    "none": "Ingen"
 }

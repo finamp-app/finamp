@@ -1,14 +1,14 @@
-import 'package:finamp/screens/splash_screen.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/screens/music_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
-
+import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/screens/splash_screen.dart';
 import '../components/ViewSelector/no_music_libraries_message.dart';
 import '../components/global_snackbar.dart';
 import '../models/jellyfin_models.dart';
 import '../services/finamp_user_helper.dart';
 import '../services/jellyfin_api_helper.dart';
-import 'music_screen.dart';
 
 class ViewSelector extends StatefulWidget {
   const ViewSelector({super.key});
@@ -35,7 +35,10 @@ class _ViewSelectorState extends State<ViewSelector> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.selectMusicLibraries)),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.selectMusicLibraries),
+        leading: FinampAppBarBackButton(),
+      ),
       floatingActionButton: isSubmitButtonEnabled
           ? FloatingActionButton(onPressed: _submitChoice, child: const Icon(Icons.check))
           : null,

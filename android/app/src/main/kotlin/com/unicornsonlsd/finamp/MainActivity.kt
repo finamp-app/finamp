@@ -1,8 +1,8 @@
 package com.unicornsonlsd.finamp
 
 import android.app.UiModeManager
-import android.content.Context
 import android.content.Intent
+import android.content.Intent.CATEGORY_APP_MUSIC
 import android.os.Bundle
 import android.provider.Settings
 import android.system.ErrnoException
@@ -19,12 +19,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import android.os.Build
+import android.provider.MediaStore.INTENT_ACTION_MUSIC_PLAYER
+import androidx.core.net.toUri
 
 
 class MainActivity : AudioServiceActivity() {
     companion object {
         private const val DOWNLOADS_SERVICE_CHANNEL = "com.unicornsonlsd.finamp/downloads_service"
         private const val DOWNLOADS_SERVICE_CHANNEL_LOG_TAG = "DownloadsServiceChannel"
+        private const val INTENT_CHANNEL_LOG_TAG = "intentChannel"
 
         private const val OUTPUT_SWITCHER_CHANNEL = "com.unicornsonlsd.finamp/output_switcher"
         private const val OUTPUT_SWITCHER_CHANNEL_LOG_TAG = "OutputSwitcherChannel"
@@ -36,9 +40,22 @@ class MainActivity : AudioServiceActivity() {
     private lateinit var mediaRouter: MediaRouter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        updateIntent(intent)
         super.onCreate(savedInstanceState)
 
         mediaRouter = MediaRouter.getInstance(this)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        updateIntent(intent)
+        super.onNewIntent(intent)
+    }
+
+    private fun updateIntent(intent: Intent){
+        if((intent.action==INTENT_ACTION_MUSIC_PLAYER || intent.action==CATEGORY_APP_MUSIC)
+            &&intent.data==null){
+            intent.data = "finamp://play/surprisemix".toUri()
+        }
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -70,7 +87,15 @@ class MainActivity : AudioServiceActivity() {
             when (call.method) {
                 "setNativeThemeMode" -> {
                     val uiManager: UiModeManager =
-                        getApplicationContext().getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+                        applicationContext.getSystemService(UI_MODE_SERVICE) as UiModeManager
+
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                        // Only api >= 31 supports uiManager.setApplicationNightMode
+                        // There might be a way to set this on older versions of android, but
+                        // I don't feel like debugging that at the moment
+                        result.success(null)
+                        return@setMethodCallHandler
+                    }
                     val targetMode = call.argument<Int?>("targetMode")
                     when (targetMode) {
                         0 -> {

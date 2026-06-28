@@ -4,11 +4,11 @@ import 'package:finamp/components/AlbumScreen/album_screen_content_flexible_spac
 import 'package:finamp/components/AlbumScreen/download_button.dart';
 import 'package:finamp/components/AlbumScreen/playlist_edit_button.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
-import 'package:finamp/components/MusicScreen/item_collection_wrapper.dart';
+import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
-import 'package:finamp/components/MusicScreen/sort_by_menu_button.dart';
-import 'package:finamp/components/MusicScreen/sort_order_button.dart';
 import 'package:finamp/components/favorite_button.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/components/finamp_section_header.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/album_menu.dart';
@@ -22,9 +22,11 @@ import 'package:finamp/services/permission_providers.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
+
+import '../../models/music_models.dart';
+import '../MusicScreen/sort_and_filter_row.dart';
 
 typedef BaseItemDtoCallback = void Function(BaseItemDto item);
 
@@ -38,44 +40,41 @@ class AlbumScreenContent extends ConsumerStatefulWidget {
   ConsumerState<AlbumScreenContent> createState() => _AlbumScreenContentState();
 }
 
-StreamSubscription<void>? _listener;
-
 class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
-  BaseItemDto? currentGenreFilter;
+  SortAndFilterController sortAndFilterController = SortAndFilterController.trackSettings(ContentType.inPlaylist);
+
+  //bool get disableDownloads => sortAndFilterController.value.filters.isNotEmpty;
+
+  StreamSubscription<void>? _listener;
 
   @override
   void initState() {
-    currentGenreFilter = widget.genreFilter;
-    super.initState();
-  }
-
-  // Function to update the genre filter
-  // Pass null in order to reset the filter
-  void updateGenreFilter(BaseItemDto? genre) {
-    setState(() {
-      currentGenreFilter = genre;
+    if (widget.genreFilter != null) {
+      sortAndFilterController.updateGenreFilter(widget.genreFilter);
+    }
+    _listener = musicScreenRefreshStream.stream.listen((_) {
+      setState(() {});
     });
+    super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
     _listener?.cancel();
-    _listener = null;
   }
 
   @override
   Widget build(BuildContext context) {
     final downloadStub = DownloadStub.fromItem(type: DownloadItemType.collection, item: widget.parent);
-    final bool isOffline = ref.watch(finampSettingsProvider.isOffline);
-    SortBy playlistSortBySetting = ref.watch(finampSettingsProvider.playlistTracksSortBy);
-    final playlistSortBy =
-        (isOffline && (playlistSortBySetting == SortBy.datePlayed || playlistSortBySetting == SortBy.playCount))
-        ? SortBy.defaultOrder
-        : playlistSortBySetting;
 
-    final tracksAsync = (widget.parent.type == "Playlist")
-        ? ref.watch(getSortedPlaylistTracksProvider(widget.parent, genreFilter: currentGenreFilter))
+    final parentIsPlaylist = BaseItemDtoType.fromItem(widget.parent) == BaseItemDtoType.playlist;
+
+    final sortSetting = ref.watch(resolveSortProvider(sortAndFilterController));
+    final disableDownloads = sortSetting.filters.isNotEmpty && parentIsPlaylist;
+
+    final tracksAsync = parentIsPlaylist
+        ? ref.watch(getSortedPlaylistTracksProvider(widget.parent, sortSetting))
         : ref.watch(getAlbumOrPlaylistTracksProvider(widget.parent));
     final (allTracks, playableTracks) = tracksAsync.valueOrNull ?? (null, null);
     final isLoading = allTracks == null;
@@ -94,17 +93,10 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
       });
     }
 
-    _listener?.cancel();
-    _listener = musicScreenRefreshStream.stream.listen((_) {
-      setState(() {});
-    });
-
     List<List<BaseItemDto>> childrenPerDisc = [];
     // if not in playlist, try splitting up tracks by disc numbers
     // if first track has a disc number, let's assume the rest has it too
-    if (widget.parent.type != "Playlist" &&
-        displayChildren.isNotEmpty &&
-        displayChildren[0].parentIndexNumber != null) {
+    if (!parentIsPlaylist && displayChildren.isNotEmpty && displayChildren[0].parentIndexNumber != null) {
       int? lastDiscNumber;
       for (var child in displayChildren) {
         if (child.parentIndexNumber != null && child.parentIndexNumber != lastDiscNumber) {
@@ -122,21 +114,17 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
             final maxActions = constraints.crossAxisExtent ~/ 48.0;
             final actions = [
               if (maxActions >= 9 &&
-                  widget.parent.type == "Playlist" &&
+                  parentIsPlaylist &&
                   !ref.watch(finampSettingsProvider.isOffline) &&
                   ref.watch(canEditPlaylistProvider(widget.parent)))
                 PlaylistEditButton(playlist: widget.parent),
-              if (widget.parent.type == "Playlist") ...[
-                SortOrderButton(tabType: TabContentType.tracks, forPlaylistTracks: true),
-                SortByMenuButton(tabType: TabContentType.tracks, forPlaylistTracks: true),
-              ],
               FavoriteButton(item: widget.parent, visualDensity: VisualDensity.standard),
               if (maxActions >= 8 && !isLoading)
                 DownloadButton(
                   item: downloadStub,
                   children: displayChildren,
-                  downloadDisabled: (currentGenreFilter != null),
-                  customTooltip: (currentGenreFilter != null)
+                  downloadDisabled: disableDownloads,
+                  customTooltip: disableDownloads
                       ? AppLocalizations.of(context)!.downloadButtonDisabledGenreFilterTooltip
                       : null,
                 ),
@@ -149,20 +137,17 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
             ];
 
             return SliverAppBar(
-              title: (widget.parent.type != "Playlist")
-                  ? Text(widget.parent.name ?? AppLocalizations.of(context)!.unknownName)
-                  : null,
-              expandedHeight: kToolbarHeight + 125 + 18 + 100,
+              title: (!parentIsPlaylist) ? Text(widget.parent.name ?? AppLocalizations.of(context)!.unknownName) : null,
+              expandedHeight: kToolbarHeight + 125 + 18 + 100 + (parentIsPlaylist ? SortAndFilterRow.height + 10 : 0),
               // collapsedHeight: kToolbarHeight + 125 + 80,
+              leading: FinampAppBarBackButton(),
               pinned: true,
               centerTitle: false,
               titleSpacing: 0,
               flexibleSpace: AlbumScreenContentFlexibleSpaceBar(
                 parentItem: widget.parent,
-                isPlaylist: widget.parent.type == "Playlist",
-                items: queueChildren,
-                genreFilter: currentGenreFilter,
-                updateGenreFilter: updateGenreFilter,
+                items: isLoading ? null : queueChildren,
+                controller: sortAndFilterController,
               ),
               actions: actions,
             );
@@ -172,99 +157,51 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
             displayChildren.length > 1 &&
             childrenPerDisc.length > 1) // show headers only for multi disc albums
           for (var childrenOfThisDisc in childrenPerDisc) ...[
-            SliverStickyHeader(
-              header: Material(
-                color: Theme.of(context).colorScheme.surface,
-                child: InkWell(
-                  onLongPress: () => showModalAlbumMenu(
-                    context: context,
-                    item: AlbumDisc(parent: widget.parent, tracks: childrenOfThisDisc),
+            FinampSectionHeader(
+              key: Key("${childrenOfThisDisc[0].id}-${childrenOfThisDisc[0].parentIndexNumber}"),
+              title: AppLocalizations.of(context)!.discNumber(childrenOfThisDisc[0].parentIndexNumber!),
+              actions: [
+                IconButtonWithSemantics(
+                  onPressed: () async => await GetIt.instance<QueueService>().startPlayback(
+                    items: childrenOfThisDisc,
+                    source: QueueItemSource.fromBaseItem(widget.parent),
+                    order: FinampPlaybackOrder.linear,
                   ),
-                  onSecondaryTap: () => showModalAlbumMenu(
-                    context: context,
-                    item: AlbumDisc(parent: widget.parent, tracks: childrenOfThisDisc),
-                  ),
-                  onTap: () => showModalAlbumMenu(
-                    context: context,
-                    item: AlbumDisc(parent: widget.parent, tracks: childrenOfThisDisc),
-                  ),
-                  child: Dismissible(
-                    key: Key("${childrenOfThisDisc[0].id}-${childrenOfThisDisc[0].parentIndexNumber}"),
-                    direction: ref.watch(finampSettingsProvider.disableGesture)
-                        ? DismissDirection.none
-                        : getAllowedDismissDirection(
-                            swipeLeftEnabled:
-                                ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight) !=
-                                ItemSwipeActions.nothing,
-                            swipeRightEnabled:
-                                ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft) !=
-                                ItemSwipeActions.nothing,
-                          ),
-                    dismissThresholds: const {DismissDirection.startToEnd: 0.65, DismissDirection.endToStart: 0.65},
-                    confirmDismiss: (direction) => onConfirmPlayableDismiss(
-                      context: context,
-                      direction: direction,
-                      sourceItem: AlbumDisc(parent: widget.parent, tracks: childrenOfThisDisc),
-                      tracks: childrenOfThisDisc,
-                    ),
-                    background: buildSwipeActionBackground(
-                      context: context,
-                      direction: DismissDirection.startToEnd,
-                      action: ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight),
-                    ),
-                    secondaryBackground: buildSwipeActionBackground(
-                      context: context,
-                      direction: DismissDirection.endToStart,
-                      action: ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context)!.discNumber(childrenOfThisDisc[0].parentIndexNumber!),
-                            style: TextTheme.of(context).titleMedium,
-                          ),
-                          Spacer(),
-                          IconButtonWithSemantics(
-                            onPressed: () async => await GetIt.instance<QueueService>().startPlayback(
-                              items: childrenOfThisDisc,
-                              source: QueueItemSource.fromBaseItem(widget.parent),
-                              order: FinampPlaybackOrder.linear,
-                            ),
-                            label: AppLocalizations.of(context)!.playButtonLabel,
-                            icon: TablerIcons.player_play,
-                          ),
-                          IconButtonWithSemantics(
-                            onPressed: () async => await GetIt.instance<QueueService>().startPlayback(
-                              items: childrenOfThisDisc,
-                              source: QueueItemSource.fromBaseItem(widget.parent),
-                              order: FinampPlaybackOrder.shuffled,
-                            ),
-                            label: AppLocalizations.of(context)!.shuffleButtonLabel,
-                            icon: TablerIcons.arrows_shuffle,
-                          ),
-                          OverflowMenuButton(
-                            onPressed: () => showModalAlbumMenu(
-                              context: context,
-                              item: AlbumDisc(parent: widget.parent, tracks: childrenOfThisDisc),
-                            ),
-                            label: AppLocalizations.of(context)!.moreActionsOnAlbumDisc,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  label: AppLocalizations.of(context)!.playButtonLabel,
+                  icon: TablerIcons.player_play,
                 ),
+                IconButtonWithSemantics(
+                  onPressed: () async => await GetIt.instance<QueueService>().startPlayback(
+                    items: childrenOfThisDisc,
+                    source: QueueItemSource.fromBaseItem(widget.parent),
+                    order: FinampPlaybackOrder.shuffled,
+                  ),
+                  label: AppLocalizations.of(context)!.shuffleButtonLabel,
+                  icon: TablerIcons.arrows_shuffle,
+                ),
+                OverflowMenuButton(
+                  onPressed: () => showModalAlbumMenu(
+                    context: context,
+                    album: AlbumDisc(widget.parent, tracks: childrenOfThisDisc),
+                  ),
+                  label: AppLocalizations.of(context)!.moreActionsOnAlbumDisc,
+                ),
+              ],
+              onTap: () => showModalAlbumMenu(
+                context: context,
+                album: AlbumDisc(widget.parent, tracks: childrenOfThisDisc),
               ),
-              sliver: TracksSliverList(
+              onDismiss: (followUpAction) => onConfirmPlayableDismiss(
+                followUpAction: followUpAction,
+                item: AlbumDisc(widget.parent, tracks: childrenOfThisDisc),
+              ),
+              sectionContentSliver: TracksSliverList(
                 childrenForList: childrenOfThisDisc,
                 childrenForQueue: queueChildren,
                 parent: widget.parent,
                 onRemoveFromList: onDelete,
-                adaptiveAdditionalInfoSortBy: (widget.parent.type == "Playlist") ? playlistSortBy : null,
-                forceAlbumArtists: (widget.parent.type == "Playlist" && playlistSortBy == SortBy.albumArtist),
+                adaptiveAdditionalInfoSortBy: (parentIsPlaylist) ? sortSetting.sortBy : null,
+                forceAlbumArtists: (parentIsPlaylist && sortSetting.sortBy == SortBy.albumArtist),
               ),
             ),
             SliverToBoxAdapter(child: SizedBox(height: 16.0)),
@@ -275,8 +212,8 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
             childrenForQueue: queueChildren,
             parent: widget.parent,
             onRemoveFromList: onDelete,
-            adaptiveAdditionalInfoSortBy: (widget.parent.type == "Playlist") ? playlistSortBy : null,
-            forceAlbumArtists: (widget.parent.type == "Playlist" && playlistSortBy == SortBy.albumArtist),
+            adaptiveAdditionalInfoSortBy: (parentIsPlaylist) ? sortSetting.sortBy : null,
+            forceAlbumArtists: (parentIsPlaylist && sortSetting.sortBy == SortBy.albumArtist),
           )
         else
           SliverFillRemaining(child: Center(child: CircularProgressIndicator.adaptive())),
@@ -294,18 +231,15 @@ class TracksSliverList extends ConsumerStatefulWidget {
     this.onRemoveFromList,
     this.forceAlbumArtists = false,
     this.adaptiveAdditionalInfoSortBy,
-    this.isOnArtistScreen = false,
-    this.isOnGenreScreen = false,
   });
 
   final List<BaseItemDto> childrenForList;
   final List<BaseItemDto> childrenForQueue;
+  // TODO switch this to a playable
   final BaseItemDto parent;
   final BaseItemDtoCallback? onRemoveFromList;
   final bool forceAlbumArtists;
   final SortBy? adaptiveAdditionalInfoSortBy;
-  final bool isOnArtistScreen;
-  final bool isOnGenreScreen;
 
   @override
   ConsumerState<TracksSliverList> createState() => _TracksSliverListState();
@@ -361,7 +295,6 @@ class _TracksSliverListState extends ConsumerState<TracksSliverList> {
         return TrackListTile(
           key: ValueKey(item.id),
           item: item,
-          children: widget.childrenForQueue,
           index: indexOffset,
           showIndex: item.albumId == widget.parent.id,
           showCover: item.albumId != widget.parent.id || ref.watch(finampSettingsProvider.showCoversOnAlbumScreen),
@@ -372,11 +305,13 @@ class _TracksSliverListState extends ConsumerState<TracksSliverList> {
               widget.onRemoveFromList!(item);
             }
           },
-          isInPlaylist: widget.parent.type == "Playlist",
-          isOnArtistScreen: widget.isOnArtistScreen,
-          isOnGenreScreen: widget.isOnGenreScreen,
           forceAlbumArtists: widget.forceAlbumArtists,
           adaptiveAdditionalInfoSortBy: widget.adaptiveAdditionalInfoSortBy,
+          // TODO should we be passing and leveraging a proper parent playable?
+          parentPlayable: PrecalculatedPlayable(
+            source: QueueItemSource.fromBaseItem(widget.parent),
+            tracks: widget.childrenForQueue,
+          ),
         );
       }, childCount: widget.childrenForList.length),
     );

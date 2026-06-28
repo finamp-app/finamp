@@ -128,7 +128,7 @@ bool? setOfflineMode(Ref ref) {
 
 @riverpod
 bool? setLocalUrl(Ref ref) {
-  final user = ref.watch(FinampUserHelper.finampCurrentUserProvider).value;
+  final user = ref.watch(FinampUserHelper.finampCurrentUserProvider);
   if (user == null) return null;
   if (!user.preferLocalNetwork) return false;
   return ref.watch(serverReachabilityProvider(ServerPingType.local)).value;

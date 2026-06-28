@@ -20,7 +20,6 @@
         "description": "Heading for the account selection step during the login flow."
     },
     "genres": "ژانرها",
-    "@genres": {},
     "aboutThanks": "از این‌که از فین‌امپ استفاده می‌کنید، سپاسگزاریم!",
     "@aboutThanks": {
         "description": "Thank you message shown in the about screen."
@@ -42,7 +41,6 @@
         "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
     },
     "password": "رمزعبور",
-    "@password": {},
     "backToAccountSelection": "برگشت به گزینش حساب کاربری",
     "@backToAccountSelection": {
         "description": "Label for the button that takes the user back to the account selection step during the login flow."
@@ -58,10 +56,6 @@
     "selectMusicLibraries": "کتابخانه‌های موسیقی را انتخاب کنید",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
-    },
-    "couldNotFindLibraries": "کتابخانه‌ای یافت نشد.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
     },
     "finamp": "فین‌امپ",
     "@finamp": {
@@ -108,7 +102,6 @@
         "description": "Label for the back button."
     },
     "serverUrl": "آدرس سرور",
-    "@serverUrl": {},
     "serverUrlHint": "برای نمونه demo.jellyfin.org/stable",
     "@serverUrlHint": {
         "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
@@ -154,7 +147,6 @@
         "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
     },
     "username": "نام کاربری",
-    "@username": {},
     "usernameValidationMissingUsername": "لطفاً یک نام کاربری انتخاب کنید",
     "@usernameValidationMissingUsername": {
         "description": "Error message that shows when the user submits a login without a username"
@@ -164,55 +156,29 @@
         "description": "Hint text for the password input field."
     },
     "logs": "رخدادها",
-    "@logs": {},
     "next": "بعدی",
-    "@next": {},
     "unknownName": "نام ناشناخته",
-    "@unknownName": {},
     "tracks": "قطعه‌ها",
-    "@tracks": {},
     "albums": "آلبوم‌ها",
-    "@albums": {},
     "artists": "هنرمندان",
-    "@artists": {},
     "playlists": "فهرست‌های پخش",
-    "@playlists": {},
     "startMix": "آغاز میکس",
-    "@startMix": {},
     "music": "آهنگ",
-    "@music": {},
     "clear": "پاک کردن",
-    "@clear": {},
     "shuffleAll": "بُر زدن همه",
-    "@shuffleAll": {},
     "settings": "پیکربندی",
-    "@settings": {},
     "offlineMode": "حالت آفلاین",
-    "@offlineMode": {},
     "sortOrder": "ترتیب مرتب سازی",
-    "@sortOrder": {},
     "sortBy": "مرتب سازی بر اساس",
-    "@sortBy": {},
     "title": "عنوان",
-    "@title": {},
     "albumArtist": "هنرمند آلبوم",
-    "@albumArtist": {},
     "communityRating": "امتیاز جامعه",
-    "@communityRating": {},
     "criticRating": "امتیاز منتقدین",
-    "@criticRating": {},
     "datePlayed": "تاریخ آخرین پخش",
-    "@datePlayed": {},
     "premiereDate": "تاریخ پخش",
-    "@premiereDate": {},
     "productionYear": "تاریخ تولید",
-    "@productionYear": {},
     "random": "تصادفی",
-    "@random": {},
-    "syncDownloadedPlaylists": "همگام‌سازی فهرست پخش بارگیری شده",
-    "@syncDownloadedPlaylists": {},
     "activeDownloads": "بارگیری‌های فعال",
-    "@activeDownloads": {},
     "downloadCount": "{count,plural, =1{{count} بارگیری} other{{count} بارگیری‌ها}}",
     "@downloadCount": {
         "placeholders": {
@@ -222,63 +188,33 @@
         }
     },
     "playButtonLabel": "پخش",
-    "@playButtonLabel": {},
     "shuffleButtonLabel": "بُر زدن",
-    "@shuffleButtonLabel": {},
     "shareLogs": "اشتراک گذاری رخدادها",
-    "@shareLogs": {},
     "logsCopied": "رخدادها کپی شدند.",
-    "@logsCopied": {},
     "message": "پیام",
-    "@message": {},
     "addDownloads": "افزودن بارگیری‌ها",
-    "@addDownloads": {},
     "location": "مکان",
-    "@location": {},
     "downloadsQueued": "در حال بارگیری فایل‌ها",
-    "@downloadsQueued": {},
     "playlistUpdated": "نام فهرست پخش بروزرسانی شد.",
-    "@playlistUpdated": {},
     "interactions": "برهم کنش",
-    "@interactions": {},
     "layoutAndTheme": "طرح‌بندی و تم",
-    "@layoutAndTheme": {},
     "logOut": "خروج",
-    "@logOut": {},
     "areYouSure": "آیا مطمئن هستید؟",
-    "@areYouSure": {},
     "transcoding": "رمزگردانی (transcoding)",
-    "@transcoding": {},
     "audioService": "سرویس صدا",
-    "@audioService": {},
     "enableTranscoding": "فعال‌سازی رمزگردانی (transcoding)",
-    "@enableTranscoding": {},
     "enableTranscodingSubtitle": "آهنگ را سمت سرور رمزگردانی می‌کند.",
-    "@enableTranscodingSubtitle": {},
     "bitrate": "نرخ انتقال",
-    "@bitrate": {},
     "bitrateSubtitle": "نرخ انتقال بالاتر کیفیت صدای بهتری در قبال پهنای باند بیشتر می‌دهد. روی کدک‌های بدون افت کیفیت تأثیری ندارد، مانند FLAC",
-    "@bitrateSubtitle": {},
     "appDirectory": "پوشه نرم‌افزار",
-    "@appDirectory": {},
     "addDownloadLocation": "افزودن مکان بارگیری",
-    "@addDownloadLocation": {},
     "selectDirectory": "پوشه را انتخاب کنید",
-    "@selectDirectory": {},
     "pathReturnSlashErrorMessage": "آدرس‌هایی که \"/\" را برمی‌گردانند قابل استفاده نیستند",
-    "@pathReturnSlashErrorMessage": {},
-    "directoryMustBeEmpty": "پوشه باید خالی باشد",
-    "@directoryMustBeEmpty": {},
     "shuffleAllTrackCount": "بُر زدن همه‌ی تعداد قطعه",
-    "@shuffleAllTrackCount": {},
     "viewType": "نوع نما",
-    "@viewType": {},
     "viewTypeSubtitle": "نوع نما برای صفحه‌ی آهنگ",
-    "@viewTypeSubtitle": {},
     "list": "فهرست",
-    "@list": {},
     "grid": "جدول",
-    "@grid": {},
     "playbackSpeedControlSetting": "نمایش تندی پخش",
     "@playbackSpeedControlSetting": {
         "description": "Title of the visibility setting of the playback speed controls"
@@ -295,16 +231,10 @@
     "@apply": {
         "description": "Used for a button in the playback speed menu"
     },
-    "portrait": "عمودی",
-    "@portrait": {},
     "landscape": "افقی",
-    "@landscape": {},
     "downloadFavoritesSetting": "بارگیری همه‌ی مورد علاقه‌ها",
-    "@downloadFavoritesSetting": {},
     "downloadAllPlaylistsSetting": "بارگیری همه‌ی فهرست‌های پخش",
-    "@downloadAllPlaylistsSetting": {},
     "fiveLatestAlbumsSetting": "بارگیری ۵ آلبوم واپسین",
-    "@fiveLatestAlbumsSetting": {},
     "aboutContributionPrompt": "ساخته‌ی افراد خفن و باحال در اوقات فراغتشان.\nشما هم می‌توانید یکی از آن‌ها باشید!",
     "@aboutContributionPrompt": {
         "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
@@ -314,66 +244,32 @@
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
     "budget": "بودجه",
-    "@budget": {},
-    "updateButtonLabel": "بروزرسانی",
-    "@updateButtonLabel": {},
     "downloadLocations": "مکان‌های بارگیری",
-    "@downloadLocations": {},
     "startMixNoTracksAlbum": "روی یک آلبوم لمس خود را نگه دارید تا از میکس‌ساز قبل از آغاز کردن میکس اضافه یا حذف شود",
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
     },
     "dateAdded": "تاریخ اضافه شدن",
-    "@dateAdded": {},
     "downloads": "بارگیری‌ها",
-    "@downloads": {},
     "album": "آلبوم",
-    "@album": {},
     "artist": "هنرمند",
-    "@artist": {},
-    "downloadMissingImages": "بارگیری نگاره‌های از قلم افتاده",
-    "@downloadMissingImages": {},
-    "downloadedMissingImages": "{count,plural, =0{نگاره‌ی مفقودی پیدا نشد} =1{{count} نگاره‌ی از قلم افتاده بارگیری شد} other{{count} نگاره‌های از قلم افتاده بارگیری شد}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "playCount": "تعداد پخش",
-    "@playCount": {},
     "name": "نام",
-    "@name": {},
     "revenue": "درآمد",
-    "@revenue": {},
     "addButtonLabel": "افزودن",
-    "@addButtonLabel": {},
     "unknownError": "مشکل ناشناخته",
-    "@unknownError": {},
     "allPlaylistsInfoSetting": "بارگیری فراداده‌ی فهرست پخش",
-    "@allPlaylistsInfoSetting": {},
     "notAvailableInOfflineMode": "در حالت آفلاین در دسترس نیست",
-    "@notAvailableInOfflineMode": {},
     "customLocation": "مکان سفارشی",
-    "@customLocation": {},
     "customLocationsBuggy": "مکان‌های سفارشی ممکن است بسیار مشکل آفرین باشند و در اکثر مواقع پیشنهاد نمی‌شوند. مکان‌های زیر پوشه‌ی \"موسیقی\" سیستم از ذخیره کردن نگاره‌های آلبوم به دلیل محدودیت‌های سیستم‌عامل جلوگیری می‌کند.",
-    "@customLocationsBuggy": {},
     "enterLowPriorityStateOnPause": "ورود به حالت کم اهمیت به هنگام توقف",
-    "@enterLowPriorityStateOnPause": {},
     "enterLowPriorityStateOnPauseSubtitle": "در توقف پخش به اعلان اجازه‌ی رد شدن می‌دهد. همچنین به اندروید اجازه می‌دهد تا در توقف پخش به سرویس پایان دهد.",
-    "@enterLowPriorityStateOnPauseSubtitle": {},
     "shuffleAllTrackCountSubtitle": "تعداد قطعه‌ها برای بارگذاری، زمانی که دکمه‌ی بُر زدن همه در برگ قطعه‌ها یا صفحه‌ی ژانر استفاده می‌شود.",
-    "@shuffleAllTrackCountSubtitle": {},
-    "downloadsDeleted": "بارگیری‌ها پاک شدند.",
-    "@downloadsDeleted": {},
     "confirmDownloadStarted": "بارگیری آغاز شد",
     "@confirmDownloadStarted": {
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
     },
     "allPlaylistsInfoSettingSubtitle": "همگام‌سازی فراداده برای همه‌ی فهرست‌های پخش تا تجربه‌ی فهرست پخش شما بهبود یابد",
-    "@allPlaylistsInfoSettingSubtitle": {},
     "customizationSettingsTitle": "شخصی‌سازی",
     "@customizationSettingsTitle": {
         "description": "Title for the customization settings screen"
@@ -391,13 +287,8 @@
         }
     },
     "activeDownloadsTitle": "بارگیری‌های فعال",
-    "@activeDownloadsTitle": {},
     "noActiveDownloads": "هیچ بارگیری‌ای فعال نیست.",
-    "@noActiveDownloads": {},
-    "failedToGetTrackFromDownloadId": "در گرفتن قطعه از ID بارگیری ناکام ماندیم",
-    "@failedToGetTrackFromDownloadId": {},
     "error": "خطا",
-    "@error": {},
     "discNumber": "دیسک {number}",
     "@discNumber": {
         "placeholders": {
@@ -434,9 +325,7 @@
         }
     },
     "required": "الزامی",
-    "@required": {},
     "stackTrace": "ردیابی پشته (Stack Trace)",
-    "@stackTrace": {},
     "shown": "نشان داده شده",
     "@shown": {
         "description": "Used as an option in the playback speed visibility settings"
@@ -446,23 +335,14 @@
         "description": "Used as an option in the playback speed visibility settings"
     },
     "showTextOnGridView": "نشان دادن متن در نمایش جدولی",
-    "@showTextOnGridView": {},
     "showTextOnGridViewSubtitle": "اینکه متن (عنوان، هنرمند و ...) روی صفحه‌ی جدولی آهنگ نمایش داده شود یا نه.",
-    "@showTextOnGridViewSubtitle": {},
     "showFastScroller": "نشان دادن اسکرول کننده سریع",
-    "@showFastScroller": {},
     "theme": "تم",
-    "@theme": {},
     "noButtonLabel": "نه",
-    "@noButtonLabel": {},
     "yesButtonLabel": "آره",
-    "@yesButtonLabel": {},
     "hours": "ساعت",
-    "@hours": {},
     "seconds": "ثانیه",
-    "@seconds": {},
     "minutes": "دقیقه",
-    "@minutes": {},
     "trackCountTooltip": "قطعه‌ی {currentTrackIndex} از {totalTrackCount}",
     "@trackCountTooltip": {
         "description": "Tooltip and accessibility label for the queue progress. {currentTrackIndex} and {totalTrackCount} are both numbers",
@@ -478,37 +358,13 @@
         }
     },
     "addToPlaylistTooltip": "افزودن به فهرست پخش",
-    "@addToPlaylistTooltip": {},
     "addToPlaylistTitle": "افزودن به فهرست پخش",
-    "@addToPlaylistTitle": {},
-    "addToMorePlaylistsTooltip": "افزودن به فهرست‌های پخش بیشتر",
-    "@addToMorePlaylistsTooltip": {},
     "removeFromPlaylistTooltip": "حذف از این فهرست پخش",
-    "@removeFromPlaylistTooltip": {},
-    "removeFromPlaylistNamedTitle": "حذف از فهرست پخش '{playlistName}'",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "newPlaylist": "فهرست پخش جدید",
-    "@newPlaylist": {},
     "createButtonLabel": "ساختن",
-    "@createButtonLabel": {},
     "noAlbum": "هیچ آلبومی نیست",
-    "@noAlbum": {},
     "noItem": "هیچ آیتمی نیست",
-    "@noItem": {},
-    "noArtist": "هیچ هنرمندی نیست",
-    "@noArtist": {},
     "unknownArtist": "هنرمند ناشناخته",
-    "@unknownArtist": {},
-    "unknownAlbum": "آلبوم ناشناخته",
-    "@unknownAlbum": {},
     "playbackModeTranscoding": "درحال رمزگردانی",
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
@@ -518,33 +374,18 @@
         "description": "Popup menu item title for adding an item to the end of the play queue."
     },
     "goToAlbum": "رفتن به آلبوم",
-    "@goToAlbum": {},
     "goToArtist": "رفتن به صفحه‌ی هنرمند",
-    "@goToArtist": {},
     "goToGenre": "رفتن به ژانر",
-    "@goToGenre": {},
-    "confirmFavoriteRemoved": "مورد علاقه حذف شد",
-    "@confirmFavoriteRemoved": {},
-    "insertedIntoQueue": "در صف قرار گرفت.",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
     "confirmAddedToPlaylist": "به فهرست پخش اضافه شد.",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
     },
     "removedFromPlaylist": "از فهرست پخش حذف شد.",
-    "@removedFromPlaylist": {},
     "startingInstantMix": "در حال آغاز میکس آنی.",
-    "@startingInstantMix": {},
     "removeFromMix": "حذف از میکس",
-    "@removeFromMix": {},
     "addToMix": "افزودن به میکس",
-    "@addToMix": {},
     "bufferDuration": "مدت زمان بافر",
-    "@bufferDuration": {},
     "language": "زبان",
-    "@language": {},
     "skipToNextTrackButtonTooltip": "پرش به قطعه‌ی بعدی",
     "@skipToNextTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the next track"
@@ -574,15 +415,12 @@
         "description": "Used for shuffling a list (album, playlist, etc.) to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
     "light": "روز",
-    "@light": {},
     "playerScreenMinimumCoverPaddingEditorSubtitle": "حداقل فاصله‌ی درونی دور جلد آلبوم روی صفحه‌ی پخش، درصد عرض صفحه.",
     "@playerScreenMinimumCoverPaddingEditorSubtitle": {
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
     "disableGesture": "غیرفعال کردن حرکات لمسی",
-    "@disableGesture": {},
     "dark": "شب",
-    "@dark": {},
     "dlRunning": "{count} جاری",
     "@dlRunning": {
         "placeholders": {
@@ -596,7 +434,6 @@
         "description": "Used as an option in the playback speed visibility settings"
     },
     "addToMorePlaylistsTitle": "افزودن به فهرست پخش‌های بیشتر",
-    "@addToMorePlaylistsTitle": {},
     "applicationLegalese": "پروانه شده با پروانه‌ی عمومی موزیلا 2.0.\nکد منبع در {sourceCodeLink} در دسترس است.",
     "@applicationLegalese": {
         "placeholders": {
@@ -606,12 +443,8 @@
             }
         }
     },
-    "queueReplaced": "صف جایگزین شد.",
-    "@queueReplaced": {},
     "disableGestureSubtitle": "اینکه حرکت لمسی غیرفعال باشند یا نه.",
-    "@disableGestureSubtitle": {},
     "anErrorHasOccured": "خطایی رخ داد.",
-    "@anErrorHasOccured": {},
     "downloadedCountUnified": "{trackCount,plural,=1{{trackCount} قطعه} other{{trackCount} قطعه}}, {imageCount,plural,=1{{imageCount} نگاره} other{{imageCount} نگاره}}\n{syncCount,plural,=1{{syncCount} گره در حال همگام شدن} other{{syncCount} گره در حال همگام شدن}}{repairing, plural, =0{} other{\nهم‌اکنون در حال تعمیر}}",
     "@downloadedCountUnified": {
         "description": "Display of downloaded track and image count on downloads screen.",
@@ -651,7 +484,6 @@
         "description": "Tooltip and accessibility label for the track progress. {currentTime} is the current position within the track, as a translated string like '2 minutes 40 seconds', and {totalTime} is the total duration of the track, also a translated string."
     },
     "errorScreenError": "یک مشکل به هنگام دریافت فهرست مشکلات رخ داد! در این وضعیت، شاید که ساخت مسأله‌ای در گیت‌هاب و پاک کردن داده‌ی نرم‌افزار به صلاح باشد",
-    "@errorScreenError": {},
     "skipToPreviousTrackButtonTooltip": "پرش به آغاز یا به قطعه‌ی قبلی",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -674,60 +506,20 @@
             }
         }
     },
-    "gridCrossAxisCountSubtitle": "اندازه‌ای از کاشی‌های جدول که به ازای هر ردیف استفاده می‌شوند زمانی که {value} باشد.",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
-    "gridCrossAxisCount": "{value} تعداد محور افقی جدول",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
     "playerScreen": "صفحه‌ی پخش",
     "@playerScreen": {
         "description": "Name for the expanded player"
     },
     "useCoverAsBackgroundSubtitle": "اینکه از جلد آلبوم مبهم شده به عنوان پس‌زمینه در بخش های مختلف نرم‌افزار استفاده شود یا نه.",
-    "@useCoverAsBackgroundSubtitle": {},
     "useCoverAsBackground": "از جلد مبهم شده به عنوان پس‌زمینه استفاده شود",
-    "@useCoverAsBackground": {},
     "playerScreenMinimumCoverPaddingEditorTitle": "حداقل فاصله‌ی درونی جلد آلبوم",
     "@playerScreenMinimumCoverPaddingEditorTitle": {
         "description": "Title for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
-    "hideTrackArtistsIfSameAsAlbumArtists": "پنهان کردن هنرمندان قطعه اگر با هنرمندان آلبوم یکی بودند",
-    "@hideTrackArtistsIfSameAsAlbumArtists": {},
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "اینکه هنرمندان قطعه روی صفحه‌ی آلبوم اگر با هنرمندان آلبوم تفاوتی نداشتند نمایش داده شوند یا نه.",
-    "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
     "cancelSleepTimer": "لغو زمان‌سنج خواب؟",
-    "@cancelSleepTimer": {},
-    "removeFromPlaylistNamedTooltip": "حذف از فهرست پخش '{playlistName}'",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
     "system": "سیستم",
-    "@system": {},
     "tabs": "سربرگ‌ها",
-    "@tabs": {},
     "sleepTimerTooltip": "زمان‌سنج خواب",
-    "@sleepTimerTooltip": {},
     "sleepTimerRemainingTime": "خوابیدن در {time} دقیقه",
     "@sleepTimerRemainingTime": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
@@ -750,16 +542,7 @@
             }
         }
     },
-    "redownloadedItems": "{count,plural, =0{.بارگیری مجددی نیاز نیست} =1{{count} آیتم مجدد بارگیری شد} other{{count} آیتم مجدد بارگیری شد}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "bufferDurationSubtitle": "بیشینه‌ی زمانی که باید بافر شود، به ثانیه. راه‌اندازی مجدد نیاز دارد.",
-    "@bufferDurationSubtitle": {},
     "previousTracks": "قطعه‌های قبلی",
     "@previousTracks": {
         "description": "Description in the queue panel for the list of tracks that come before the current track in the queue. The tracks might not actually have been played (e.g. if the user skipped ahead to a specific track)."
@@ -768,12 +551,8 @@
     "@playingFrom": {
         "description": "Prefix shown before the name of the main queue source, like the album or playlist that was used to start playback. Example: \"Playing from {My Nice Playlist}\""
     },
-    "invalidNumber": "شماره‌ی غیر قابل قبول",
-    "@invalidNumber": {},
     "removeFromPlaylistTitle": "حذف از این فهرست پخش",
-    "@removeFromPlaylistTitle": {},
     "playlistCreated": "فهرست پخش ساخته شد.",
-    "@playlistCreated": {},
     "responseError401": "{error} کد وضعیت {statusCode}. احتمالاً بدان معناست که شما نام کاربری/رمزعبور اشتباهی را وارد کرده‌اید یا سرویس گیرنده دیگر وارد نیست.",
     "@responseError401": {
         "placeholders": {
@@ -800,17 +579,7 @@
         "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
     },
     "queue": "صف",
-    "@queue": {},
-    "replaceQueue": "جایگزینی صف",
-    "@replaceQueue": {},
     "instantMix": "میکس آنی",
-    "@instantMix": {},
-    "confirmFavoriteAdded": "مورد علاقه افزوده شد",
-    "@confirmFavoriteAdded": {},
-    "addedToQueue": "به صف افزوده شد.",
-    "@addedToQueue": {
-        "description": "Snackbar message that shows when the user successfully adds items to the end of the play queue."
-    },
     "kiloBitsPerSecondLabel": "{bitrate} ک.بیت بر ثانیه",
     "@kiloBitsPerSecondLabel": {
         "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
@@ -937,7 +706,6 @@
         "description": "Label for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
     },
     "topTracks": "قطعه‌های برتر",
-    "@topTracks": {},
     "shuffleAlbums": "بُر زدن آلبوم‌ها",
     "@shuffleAlbums": {
         "description": "Label for action that shuffles all albums of an artist or genre"
@@ -955,18 +723,13 @@
             }
         }
     },
-    "resetTabs": "بازنشانی سربرگ‌ها",
-    "@resetTabs": {},
     "resetToDefaults": "بازنشانی به پیش‌فرض‌ها",
-    "@resetToDefaults": {},
     "noMusicLibrariesTitle": "هیچ کتاب‌خانه‌ی آهنگی نیست",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
     "confirm": "پذیرش",
-    "@confirm": {},
     "refresh": "دوباره سازی",
-    "@refresh": {},
     "volumeNormalizationModeSelectorTitle": "حالت عادی‌سازی حجم صدا",
     "@volumeNormalizationModeSelectorTitle": {
         "description": "Title for the dropdown that selects the replay gain mode"
@@ -976,7 +739,6 @@
         "description": "Subtitle for the dropdown that selects the replay gain mode"
     },
     "moreInfo": "اطلاعات بیشتر",
-    "@moreInfo": {},
     "volumeNormalizationSettingsTitle": "عادی‌سازی حجم صدا",
     "@volumeNormalizationSettingsTitle": {
         "description": "Title for the replay gain settings screen"
@@ -1112,15 +874,12 @@
         }
     },
     "showUncensoredLogMessage": "این رخداد شامل اطلاعات ورود شماست. نمایش داده شود؟",
-    "@showUncensoredLogMessage": {},
     "reportQueueToServerSubtitle": "اگر فعال شود، فین‌امپ صف کنونی را به سرور می‌فرستد. این می‌تواند کنترل از راه دور را بهبود بخشد و امکان بازیابی صف در سمت سرور را فراهم کند. اگر ویژگی «پخش روی» فعال باشد، این گزینه همیشه فعال است.",
     "@reportQueueToServerSubtitle": {
         "description": "Description of the setting that toggles reporting of the current queue to the Jellyfin server"
     },
     "close": "بستن",
-    "@close": {},
     "noMusicLibrariesBody": "فین‌امپ هیچ کتاب‌خانه‌ی آهنگی پیدا نکرد. لطفاً مطمئن شوید که سرور Jellyfin شما دست کم یک کتاب‌خانه با نوع محتوای \"Music\" دارا باشد.",
-    "@noMusicLibrariesBody": {},
     "periodicPlaybackSessionUpdateFrequencySubtitle": "هر چند وقت وضعیت پخش کنونی به سرور فرستاده شود، به ثانیه. به خاطر اینکه از خروج نشست جلوگیری شود، این باید کمتر از ۵ دقیقه (۳۰۰ ثانیه) باشد.",
     "@periodicPlaybackSessionUpdateFrequencySubtitle": {
         "description": "Description of the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
@@ -1220,16 +979,11 @@
             }
         }
     },
-    "swipeInsertQueueNext": "پخش کردن قطعه‌ی کشیده شده (سوآیپ) به عنوان بعدی",
-    "@swipeInsertQueueNext": {},
-    "swipeInsertQueueNextSubtitle": "برای نشاندن یک قطعه به عنوان آیتم بعدی در صف زمانی که در لیست قطعه‌ها کشیده می‌شود به جای این‌که به آخر افزوده شود.",
-    "@swipeInsertQueueNextSubtitle": {},
     "startInstantMixForIndividualTracksSwitchTitle": "آغاز میکس آنی برای قطعه‌های منفرد",
     "@startInstantMixForIndividualTracksSwitchTitle": {
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
     },
     "startInstantMixForIndividualTracksSwitchSubtitle": "زمانی که فعال است، میکس آنی آن قطعه به هنگام لمس پخش می‌شود به جای این‌که تنها یک قطعه تکی پخش شود.",
-    "@startInstantMixForIndividualTracksSwitchSubtitle": {},
     "downloadItem": "بارگیری",
     "@downloadItem": {
         "description": "Option to download item in long-press menu."
@@ -1243,7 +997,6 @@
         "description": "Message shown when an error occurs during the downloads repair step of the Isar downloads migration, which requires a server connection."
     },
     "downloadSettings": "بارگیری‌ها",
-    "@downloadSettings": {},
     "showNullLibraryItemsTitle": "نمایش رسانه‌های دارای کتاب‌خانه‌ی ناشناخته.",
     "@showNullLibraryItemsTitle": {
         "description": "Title of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
@@ -1347,12 +1100,6 @@
     "@redownloadTitle": {
         "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
     },
-    "fixedGridSizeSwitchTitle": "استفاده از کاشی‌های جدول با اندازه‌های ثابت",
-    "@fixedGridSizeSwitchTitle": {},
-    "fixedGridSizeSwitchSubtitle": "اندازه‌ی کاشی‌های جدول تحت تاثیر اندازه‌ی پنجره/صفحه قرار نمی‌گیرند.",
-    "@fixedGridSizeSwitchSubtitle": {},
-    "fixedGridSizeTitle": "اندازه‌ی کاشی‌های جدول",
-    "@fixedGridSizeTitle": {},
     "fixedGridTileSizeEnum": "{size, select, small{کوچک} medium{میانه} large{بزرگ} veryLarge{بسیار بزرگ} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
@@ -1363,25 +1110,17 @@
         "description": "Localized names of fixed size grid tile sizes."
     },
     "allowSplitScreenSubtitle": "پخش‌کننده کنار نماهای دیگر روی نمایشگرهای عریض نمایش داده می‌شود.",
-    "@allowSplitScreenSubtitle": {},
     "enableVibrationSubtitle": "این‌که لرزش فعال شود یا نه.",
-    "@enableVibrationSubtitle": {},
     "hidePlayerBottomActions": "پنهان کردن عملیات‌های پایین",
-    "@hidePlayerBottomActions": {},
     "prioritizePlayerCover": "در اولویت قرار دادن نگاره‌ی آلبوم",
-    "@prioritizePlayerCover": {},
     "suppressPlayerPadding": "سرکوب کردن فاصله‌ی واپایش‌های پخش‌کننده",
-    "@suppressPlayerPadding": {},
     "suppressPlayerPaddingSubtitle": "زمانی که نگاره‌ی آلبوم در اندازه‌ی کامل نباشد، فاصله‌ی بین واپایش‌های صفحه پخش را به حداقل می‌رساند.",
-    "@suppressPlayerPaddingSubtitle": {},
     "showArtistChipImage": "نمایش نگاره‌ی هنرمند به همراه نام هنرمند",
-    "@showArtistChipImage": {},
     "scrollToCurrentTrack": "اسکرول کردن به قطعه کنونی",
     "@scrollToCurrentTrack": {
         "description": "Tooltip for button that scrolls the queue list back to the current track"
     },
     "removeFromPlaylistConfirm": "حذف",
-    "@removeFromPlaylistConfirm": {},
     "removeFromPlaylistPrompt": "'{itemName}' از فهرست پخش '{playlistName}' حذف شود؟",
     "@removeFromPlaylistPrompt": {
         "placeholders": {
@@ -1423,7 +1162,6 @@
         }
     },
     "showArtistChipImageSubtitle": "این پیش‌نمایش کوچک نگاره‌ی هنرمند را تحت تاثیر قرار می‌دهد،‌ مانند روی صفحه‌ی پخش.",
-    "@showArtistChipImageSubtitle": {},
     "volumeNormalizationIOSBaseGainEditorSubtitle": "در حال حاضر، عادی‌سازی بلندی صدا روی iOS نیاز دارد که بلندی پخش را تغییر دهد تا تغییر گین (gain) را شبیه‌سازی کند. از آن‌جا که نمی‌توانیم صدا را بلندتر از ۱۰۰٪ کنیم، باید بلندی را به صورت پیش‌فرض کم کنیم تا بتوانیم صدای قطعه‌های ساکت را بلندتر کنیم. مقدار به دسی‌بل (dB) است که منفی ۱۰ دسی‌بل تقریباً ۳۰٪، منفی ۴.۵ دسی‌بل تقریباً ۶۰٪ و منفی ۲ دسی‌بل تقریباً ۸۰٪ است.",
     "@volumeNormalizationIOSBaseGainEditorSubtitle": {
         "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
@@ -1525,7 +1263,6 @@
         "description": "Tooltip for button that sets a download location as the default."
     },
     "hidePlayerBottomActionsSubtitle": "دکمه‌های صف و متن شعر روی صفحه‌ی پخش‌کننده را پنهان می‌کند. برای دسترسی به صف به بالا بکشید، برای دیدن متن شعر اگر در دسترس باشد به چپ بکشید (زیر نگاره‌ی آلبوم).",
-    "@hidePlayerBottomActionsSubtitle": {},
     "lockDownload": "همیشه روی دستگاه نگهش دار",
     "@lockDownload": {
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
@@ -1549,9 +1286,7 @@
         "description": "Collection info line in downloads screen lists"
     },
     "allowSplitScreenTitle": "مجاز بودن حالت صفحه نمایش دو بخشی (SplitScreen)",
-    "@allowSplitScreenTitle": {},
     "enableVibration": "فعال کردن لرزش",
-    "@enableVibration": {},
     "numberAsKiloHertz": "{kiloHertz} کیلوهرتز",
     "@numberAsKiloHertz": {
         "description": "Value for the sample rate of a track, in kilohertz",
@@ -1562,7 +1297,6 @@
         }
     },
     "prioritizePlayerCoverSubtitle": "نمایش نگاره‌ی آلبوم بزرگ‌تر روی صفحه‌ی پخش را در اولویت قرار می‌دهد. واپایش‌های غیر ضروری در صفحه‌های کوجک سهمگین‌تر پنهان می‌شوند.",
-    "@prioritizePlayerCoverSubtitle": {},
     "enableAutoScroll": "فعال کردن اسکرول خودکار",
     "@enableAutoScroll": {
         "description": "Tooltip for button that can be used to re-enable auto scroll on the lyrics view after the user manually scrolled"
@@ -1581,15 +1315,10 @@
         }
     },
     "trackOfflineFavorites": "همگام‌سازی وضعیت علایق",
-    "@trackOfflineFavorites": {},
     "trackOfflineFavoritesSubtitle": "اجازه می‌دهد وضعیت علایق بروزتری در حالت آفلاین نشان داده شود.  هیچ فایل اضافه‌ای بارگیری نمی‌کند.",
-    "@trackOfflineFavoritesSubtitle": {},
     "fiveLatestAlbumsSettingSubtitle": "بارگیری‌ها زمانی که کهنه شوند پاک خواهند شد.  برای اینکه از پاک شدن یک آلبوم جلوگیری کنید، آن را قفل کنید.",
-    "@fiveLatestAlbumsSettingSubtitle": {},
     "cacheLibraryImagesSettings": "کَش کردن نگاره‌های کتاب‌خانه‌ی کنونی",
-    "@cacheLibraryImagesSettings": {},
     "cacheLibraryImagesSettingsSubtitle": "همه‌ی نگاره‌های آلبوم، هنرمند، ژانر و فهرست پخش که در کتاب‌خانه‌ی فعال کنونی هستند، بارگیری خواهد شد.",
-    "@cacheLibraryImagesSettingsSubtitle": {},
     "lyricsScreen": "نمای متن شعر",
     "@lyricsScreen": {
         "description": "Name for the view/screen that shows lyrics for the currently playing track"
@@ -1635,15 +1364,10 @@
         "description": "Option to keep the screen on while using the app"
     },
     "keepScreenOnSubtitle": "زمانی که صفحه روشن نگه داشته شود",
-    "@keepScreenOnSubtitle": {},
     "keepScreenOnWhilePlaying": "زمانی که آهنگ پخش می‌شود",
-    "@keepScreenOnWhilePlaying": {},
     "keepScreenOnWhilePluggedInSubtitle": "از روشن نگهداشتن صفحه چشم پوشی شود اگر دستگاه در حال شارژ نیست",
-    "@keepScreenOnWhilePluggedInSubtitle": {},
     "keepScreenOnWhilePluggedIn": "فقط در حال شارژ صفحه را روشن نگه‌داشته شود",
-    "@keepScreenOnWhilePluggedIn": {},
     "artwork": "نگاره",
-    "@artwork": {},
     "artworkTooltip": "نگاره برای {title}",
     "@artworkTooltip": {
         "placeholders": {
@@ -1721,13 +1445,11 @@
         "description": "Subtitle for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
     },
     "keepScreenOnWhileLyrics": "زمانی که متن شعر نمایش داده می‌شود",
-    "@keepScreenOnWhileLyrics": {},
     "showProgressOnNowPlayingBarSubtitle": "این‌که پخش‌کننده‌ی کوچک/میله‌ی پخش کنونی در پایین صفحه‌ی آهنگ مانند یک میله‌ی پیشروری رفتار کند را واپایش می‌کند.",
     "@showProgressOnNowPlayingBarSubtitle": {
         "description": "Subtitle for the setting that controls if the now playing bar / miniplayer at the botton of the music screen functions as a progress bar"
     },
     "keepScreenOnAlwaysOn": "همیشه روشن",
-    "@keepScreenOnAlwaysOn": {},
     "alignmentOptionEnd": "پایان",
     "@alignmentOptionEnd": {
         "description": "Alignment option for things like the lyrics view. End means right-aligned in LTR languages and left-aligned in RTL languages."
@@ -1777,7 +1499,6 @@
         "description": "Label for the feature chips showing additional people in the credits of a track or album"
     },
     "keepScreenOnDisabled": "غیرفعال",
-    "@keepScreenOnDisabled": {},
     "bitRate": "نرخ انتقال",
     "@bitRate": {
         "description": "Label for the feature chips showing the bit rate of a track"
@@ -1785,10 +1506,6 @@
     "showFeatureChipsToggleTitle": "نمایش داده‌های پیشرفته قطعه",
     "@showFeatureChipsToggleTitle": {
         "description": "Title for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
-    },
-    "emptyTopTracksList": "شما به هیچ‌کدام از قطعه‌های این هنرمند گوش نداده‌اید.",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
     },
     "emptyFilteredListSubtitle": "هیج آیتمی که با پالایش شما همخوانی داشته باشد یافت نشد. پالایش‌گر را خاموش کنید یا شرایط جست‌وجو را تغییر دهید.",
     "@emptyFilteredListSubtitle": {
@@ -1807,19 +1524,9 @@
         "description": "Used when the user stops an action from taking place inside a popup dialog window"
     },
     "bufferSizeTitle": "اندازه‌ی بافر",
-    "@bufferSizeTitle": {},
     "bufferSizeSubtitle": "بیشینه‌ی اندازه‌ی بافر به مگابایت. نیازمند راه‌اندازی مجدد است",
-    "@bufferSizeSubtitle": {},
     "bufferDisableSizeConstraintsTitle": "اندازه‌ی بافر را محدود نکن",
-    "@bufferDisableSizeConstraintsTitle": {},
     "bufferDisableSizeConstraintsSubtitle": "ثابت‌های اندازه‌ی بافر (\"‌اندازه‌ی بافر\") را غیرفعال می‌کند. بافر همیشه به اندازه‌ی بافر پیکربندی شده ('اندازه‌ی بافر') بارگذاری خواهد شد، حتی برای پرونده‌های بسیار بزرگ. می‌تواند موجب خرابی شود. نیازمند راه‌اندازی مجدد است.",
-    "@bufferDisableSizeConstraintsSubtitle": {},
-    "deleteDownloadsConfirmButtonText": "حذف",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
-    "hideQueueButton": "دکمه‌ی پنهان کردن صف",
-    "@hideQueueButton": {},
     "startupErrorTitle": "خطایی در راه اندازی برنامه رخ داد!",
     "@startupErrorTitle": {
         "description": "The title for the error screen that shows when startup fails."
@@ -1837,31 +1544,21 @@
         "description": "All Libraries"
     },
     "appearsOnAlbums": "دیده می‌شود در",
-    "@appearsOnAlbums": {},
     "noGenres": "هیچ ژانری وجود ندارد",
     "@noGenres": {
         "description": "Gets shown when there are no genres available for an album or artist"
     },
     "favorite": "مورد علاقه",
-    "@favorite": {},
     "favorites": "مورد علاقه‌ها",
-    "@favorites": {},
-    "onlineMode": "حالت آنلاین",
-    "@onlineMode": {},
     "albumArtists": "هنرمندان آلبوم",
-    "@albumArtists": {},
     "performingArtists": "هنرمندان مجری",
-    "@performingArtists": {},
     "performingArtist": "هنرمند مجری",
-    "@performingArtist": {},
     "duration": "زمان",
-    "@duration": {},
     "defaultOrder": "ترتیب پیش‌فرض",
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
     },
     "adaptive": "سازگار",
-    "@adaptive": {},
     "formattedRelativeTime": "{type, select, just_now{همین الآن} minutes{{value} دقیقه پیش} hours{{value} ساعت پیش} yesterday{دیروز} days{{value, plural, =1{1 روز پیش} other{{value} روز پیش}}} other{value}}",
     "@formattedRelativeTime": {
         "description": "Returns a relative time string based on how long ago something happened. Used for various DateTime values such as Date Last Played and Date Added.",
@@ -1876,20 +1573,6 @@
             }
         }
     },
-    "deleteDownloadsPrompt": "آیا مطمئنید که می‌خواهید {itemType, select, album{آلبوم} playlist{فهرست پخش} artist{هنرمند} genre{ژانر} track{قطعه} library{کتاب‌خانه} other{آیتم}} '{itemName}' را از روی دستگاه پاک کنید؟",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
     "specialDownloads": "بارگیری‌های ویژه",
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
@@ -1902,14 +1585,6 @@
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
     },
-    "shuffleCountButton": "تصادفی پخش کردن ({count,plural,=1{{count} قطعه} other{{count} قطعه}})",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "editItemTitle": "ویرایش {itemType, select, playlist{فهرست پخش} other{}}",
     "@editItemTitle": {
         "placeholders": {
@@ -1919,23 +1594,13 @@
         }
     },
     "exportLogs": "ذخیره کردن رخدادها",
-    "@exportLogs": {},
-    "playbackReporting": "گزارش پخش",
-    "@playbackReporting": {},
     "notAvailable": "در دسترس نیست",
-    "@notAvailable": {},
     "logoutButtonSubtitle": "وارد شدن به سرور دیگر بارگیری‌های کنونی را پاک می‌کند",
-    "@logoutButtonSubtitle": {},
     "none": "هیچ",
-    "@none": {},
     "autoSwitchItemCurationTypeTitle": "تعویض خودکار نوع مرتب سازی آیتم",
-    "@autoSwitchItemCurationTypeTitle": {},
     "autoSwitchItemCurationTypeSubtitle": "وقتی فعال باشد، بخش‌های آیتم در صفحه‌های هنرمند و ژانر به‌طور خودکار به نوع دیگری از دسته‌بندی تغییر می‌کنند اگر هیچ آیتمی موجود نباشد (برای مثال، در صورتی که هیچ مورد علاقه‌ای برای یک هنرمند خاص وجود نداشته باشد).",
-    "@autoSwitchItemCurationTypeSubtitle": {},
     "showArtistsTracksSection": "نمایش بخش قطعه‌ها",
-    "@showArtistsTracksSection": {},
     "showArtistsTracksSectionSubtitle": "اینکه یک قسمت با بیشینه‌ی پنج قطعه نمایش داده شود. وقتی فعال باشد، می‌توانید بین بیشترین پخش شده، مورد علاقه، تصادفی، واپسین عرضه‌ها، اخیراً افزوده شده و قطعه‌های اخیراً پخش شده انتخاب کنید.",
-    "@showArtistsTracksSectionSubtitle": {},
     "sleepTimerRemainingTracks": "به خواب رفتن {time,plural,=1{بعد از این قطعه} other{در {time} قطعه}}",
     "@sleepTimerRemainingTracks": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
@@ -1950,9 +1615,7 @@
         "description": "Label for a button on the genre screen that brings you to a list of genre-filtered playlists."
     },
     "removeFavorite": "حذف مورد علاقه",
-    "@removeFavorite": {},
     "addFavorite": "افزودن مورد علاقه",
-    "@addFavorite": {},
     "stopAndClearQueue": "توقف پخش و خالی کردن صف",
     "@stopAndClearQueue": {
         "description": "Label for a button that stops playback and removes all tracks from the queue."

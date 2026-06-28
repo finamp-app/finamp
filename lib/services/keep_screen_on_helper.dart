@@ -83,7 +83,20 @@ class KeepScreenOnHelper {
   void setCondition({bool? isPlaying, bool? isLyricsShowing, BatteryState? batteryState}) {
     if (isPlaying != null) _isPlaying = isPlaying;
     if (isLyricsShowing != null) _isLyricsShowing = isLyricsShowing;
-    if (batteryState != null) _isPluggedIn = batteryState.isPluggedIn;
+    if (batteryState != null) {
+      _keepScreenOnLogger.fine("reported battery state: $batteryState");
+      switch (batteryState) {
+        case BatteryState.charging:
+        case BatteryState.connectedNotCharging:
+        case BatteryState.full:
+          _isPluggedIn = true;
+          break;
+        case BatteryState.discharging:
+        case BatteryState.unknown:
+          _isPluggedIn = false;
+          break;
+      }
+    }
 
     setKeepScreenOn();
   }
