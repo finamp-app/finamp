@@ -92,28 +92,9 @@ class _ClientCertificateMenuContentState extends ConsumerState<_ClientCertificat
   }
 
   Future<String?> _showPasswordDialog(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController();
-    final result = await showDialog<String?>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.clientCertificatePasswordTitle),
-        content: TextField(
-          controller: controller,
-          obscureText: true,
-          autofocus: true,
-          keyboardType: TextInputType.visiblePassword,
-          decoration: InputDecoration(hintText: l10n.clientCertificatePasswordHint),
-          onSubmitted: (value) => Navigator.of(context).pop(value),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(null), child: Text(l10n.genericCancel)),
-          TextButton(onPressed: () => Navigator.of(context).pop(controller.text), child: Text(l10n.confirm)),
-        ],
-      ),
-    );
-    controller.dispose();
-    return result;
+    // Use root navigator context to avoid cross-overlay InheritedWidget dependency issues.
+    final dialogContext = Navigator.of(context, rootNavigator: true).context;
+    return await showDialog<String?>(context: dialogContext, builder: (context) => const _PasswordDialog());
   }
 
   Future<void> _removeCertificate() async {
@@ -193,6 +174,43 @@ class _ClientCertificateMenuContentState extends ConsumerState<_ClientCertificat
           ),
         ],
       ),
+    );
+  }
+}
+
+class _PasswordDialog extends StatefulWidget {
+  const _PasswordDialog();
+
+  @override
+  State<_PasswordDialog> createState() => _PasswordDialogState();
+}
+
+class _PasswordDialogState extends State<_PasswordDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return AlertDialog(
+      title: Text(l10n.clientCertificatePasswordTitle),
+      content: TextField(
+        controller: _controller,
+        obscureText: true,
+        autofocus: true,
+        keyboardType: TextInputType.visiblePassword,
+        decoration: InputDecoration(hintText: l10n.clientCertificatePasswordHint),
+        onSubmitted: (value) => Navigator.of(context).pop(value),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(context).pop(null), child: Text(l10n.genericCancel)),
+        TextButton(onPressed: () => Navigator.of(context).pop(_controller.text), child: Text(l10n.confirm)),
+      ],
     );
   }
 }
