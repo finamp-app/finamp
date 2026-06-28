@@ -267,6 +267,8 @@ class ServerState {
             error is ClientException &&
             error.message.contains("TLSV1_ALERT_CERTIFICATE_REQUIRED")) {
           clientCertificateRequired = true;
+          // Found server requiring mTLS certificate, no need to try other protocols/ports.
+          return;
         } else {
           serverStateLogger.severe("Error loading server info: $error");
         }
