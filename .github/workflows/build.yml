@@ -363,10 +363,7 @@ jobs:
         key: ${{ runner.os }}-dart-build-${{ hashFiles('**/pubspec.yaml') }}
         restore-keys: ${{ runner.os }}-dart-build-
 
-    - run: |
-        # Work around issue with permission plugin dependency and latest compiler
-        set _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
-        flutter build windows
+    - run: flutter build windows
 
     - name: Set archive and msix base name
       shell: bash
@@ -387,8 +384,6 @@ jobs:
         path: build/windows/x64/runner/Release/
 
     - run: |
-        # Work around issue with permission plugin dependency and latest compiler
-        set _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
         dart run msix:create --install-certificate false
         # move msix file with correct naming
         mv build/windows/x64/runner/Release/finamp.msix ./${{ env.BASE_NAME }}.msix
@@ -420,8 +415,6 @@ jobs:
       shell: bash
       run: |
         set +e
-        # Work around issue with permission plugin dependency and latest compiler
-        set _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS=true
         flutter test integration_test/test_cases.dart -d windows
         exitcode=$?
         if [[ $exitcode == 79 ]]; then
