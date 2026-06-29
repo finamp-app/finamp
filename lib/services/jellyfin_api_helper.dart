@@ -1275,7 +1275,9 @@ class JellyfinApiHelper {
     // Jellyfin 10.10 and 10.11 use the [isFavorite] boolean filter instead of the list-based [filters] parameter for genres, so add that here
     // I guess part of the reason for this is that it's not possible to favorite a genre through the Jellyfin Web UI at all...
     if ([finamp_models.ContentType.genres, finamp_models.ContentType.mixed].contains(contentType)) {
-      return filters.any((filter) => filter.type == ItemFilterType.isFavorite);
+      // Only send isFavorite when the filter is actually active. Passing isFavorite=false makes
+      // Jellyfin 10.10/10.11 return HTTP 500 on the /Genres endpoint, leaving the Genres tab empty (#1653).
+      return filters.any((filter) => filter.type == ItemFilterType.isFavorite) ? true : null;
     }
     return null;
   }
