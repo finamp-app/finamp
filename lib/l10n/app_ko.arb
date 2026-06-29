@@ -118,7 +118,7 @@
     "grid": "그리드(격자)",
     "landscape": "가로 보기",
     "showTextOnGridView": "그리드 보기에서 텍스트를 보여줌",
-    "showTextOnGridViewSubtitle": "그리드 음악 화면에서 '텍스트(곡목, 아티스트 등)' 표시 여부를 설정합니다.",
+    "showTextOnGridViewSubtitle": "그리드 음악 화면에서 '텍스트(곡목, 아티스트 등)' 표시 여부를 설정합니다. 홈스크린은 이 설정과 무관하게 '텍스트'가 표시됩니다.",
     "disableGesture": "제스처 비활성화",
     "disableGestureSubtitle": "제스처 비활성화 여부를 설정합니다.",
     "showFastScroller": "빠른 스크롤 표시",
@@ -1930,5 +1930,30 @@
     "playbackActionPageRegularTrackOptions": "재생",
     "@playbackActionPageRegularTrackOptions": {
         "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
+    },
+    "systemAccentColor": "시스템 강조(색상) 설정을 사용합니다",
+    "@systemAccentColor": {
+        "description": "Title of the System Accent Color setting."
+    },
+    "systemAccentColorHasPriorityInfo": "현재 시스템 강조(색상) 설정을 사용중이므로 사용자 설정 강조 색상은 비활성화 됩니다",
+    "@systemAccentColorHasPriorityInfo": {
+        "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
+    },
+    "amoledTheme": "AMOLED 테마 사용",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "검정 색상 구성을 순수한 검정 테마로 교체합니다.",
+    "useMonochromeIcon": "흑백 로고를 사용합니다",
+    "@useMonochromeIcon": {
+        "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
+    },
+    "useMonochromeIconSubtitle": "이것은 앱 내의 아이콘에만 영향을 줍니다. 런처 아이콘은 바뀌지 않습니다.",
+    "@useMonochromeIconSubtitle": {
+        "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
+    },
+    "startRadio": "라디오를 시작합니다",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
     }
 }
