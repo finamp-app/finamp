@@ -80,6 +80,11 @@ class AudioServiceHelper {
   Future<void> startInstantMixForItem(jellyfin_models.BaseItemDto item) async {
     List<jellyfin_models.BaseItemDto>? items;
 
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      GlobalSnackbar.message((scaffold) => scaffold.l10n.notAvailableInOfflineMode);
+      return;
+    }
+
     try {
       items = await _jellyfinApiHelper.getInstantMix(item);
       if (items != null) {

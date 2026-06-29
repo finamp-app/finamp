@@ -381,6 +381,9 @@ Future<List<BaseItemDto>> generateRadioTracks(
     if (actualSeed == null) {
       throw Exception("No seed item available for radio generation. Aborting.");
     }
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      throw Exception("Not available offline.");
+    }
     // extra tracks to randomly choose from to introduce non-determinism
     final randomnessExtraTracks = 8 + (minNumTracks * 0.5).ceil();
     return await _getSimilarTracks(
@@ -401,6 +404,9 @@ Future<List<BaseItemDto>> generateRadioTracks(
   Future<List<BaseItemDto>> continuousMode() async {
     if (actualSeed == null) {
       throw Exception("No seed item available for radio generation. Aborting.");
+    }
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      throw Exception("Not available offline.");
     }
     // extra tracks to randomly choose from to introduce non-determinism
     final randomnessExtraTracks = 5 + (minNumTracks * 1.5).ceil();
