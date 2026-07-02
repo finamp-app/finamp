@@ -1103,7 +1103,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       switch (action) {
         case CustomPlaybackActions.shuffle:
           final queueService = GetIt.instance<QueueService>();
-          return queueService.togglePlaybackOrder();
+          await queueService.togglePlaybackOrder();
+          return refreshPlaybackStateAndMediaNotification();
         case CustomPlaybackActions.radio:
           RadioServiceHelper.toggleRadio();
         case CustomPlaybackActions.toggleFavorite:
