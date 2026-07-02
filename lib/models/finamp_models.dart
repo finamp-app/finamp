@@ -4084,7 +4084,7 @@ class HomeScreenSectionConfiguration {
       presetType: presetType,
     ),
     HomeScreenSectionPresetType.recentlyAddedAlbums => HomeScreenSectionConfiguration(
-      base: TabsHomeSection(libraryId: allLibraryPlaceholder, contentType: ContentType.albums),
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.albums),
       sortConfig: SortAndFilterConfiguration(sortBy: SortBy.dateCreated, sortOrder: SortOrder.descending, filters: {}),
       customSectionTitle: null,
       presetType: presetType,

@@ -533,6 +533,19 @@ void _migrateHomescreen() {
     changed = true;
   }
 
+  for (int i = 0; i < finampSettings.homeScreenConfiguration.sections.length; i++) {
+    final section = finampSettings.homeScreenConfiguration.sections[i];
+    if (section.presetType == HomeScreenSectionPresetType.recentlyAddedAlbums) {
+      if (section.base case TabsHomeSection base when base.libraryId == allLibraryPlaceholder) {
+        // We do not preserve the preset value on modified configs, so this section is still default and can be reset.
+        finampSettings.homeScreenConfiguration.sections[i] = HomeScreenSectionConfiguration.fromPreset(
+          HomeScreenSectionPresetType.recentlyAddedAlbums,
+        );
+        changed = true;
+      }
+    }
+  }
+
   if (changed) {
     FinampSettingsHelper.overwriteFinampSettings(finampSettings);
   }

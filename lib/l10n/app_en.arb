@@ -3190,7 +3190,7 @@
     "@favoriteGenres": {
         "description": "Name of a home screen section preset"
     },
-    "newlyAddedAlbums": "Newly Added Albums (All Libraries)",
+    "newlyAddedAlbums": "Newly Added Albums",
     "@newlyAddedAlbums": {
         "description": "Name of a home screen section preset"
     },
@@ -3536,5 +3536,6 @@
     "applyChangesOnClose": "Changes will apply automatically upon menu close.",
     "@applyChangesOnClose": {
         "description": "Notification on sort and filter menu that currently pending changes will be automatically applied on close."
-    }
+    },
+    "removeFromQueue": "Remove From Queue"
 }

@@ -6,14 +6,22 @@ class MenuEntry extends ConsumerWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool enabled;
+  final String? disabledTooltip;
 
-  const MenuEntry({super.key, required this.title, required this.icon, required this.onTap, this.enabled = true});
+  const MenuEntry({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.onTap,
+    this.enabled = true,
+    this.disabledTooltip,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var iconColor = Theme.of(context).colorScheme.primary;
 
-    return Material(
+    final entry = Material(
       color: Colors.transparent,
       child: ListTile(
         enabled: enabled,
@@ -22,6 +30,12 @@ class MenuEntry extends ConsumerWidget {
         onTap: onTap,
       ),
     );
+
+    if (!enabled && disabledTooltip != null) {
+      return Tooltip(message: disabledTooltip, child: entry);
+    } else {
+      return entry;
+    }
   }
 }
 

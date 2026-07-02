@@ -654,8 +654,9 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu>
       ),
     ];
 
-    // Actual height was 490, bump to 520 for extra bottom padding and wiggle room on element sizes
-    final stackHeight = 520.0 + 56.0 * excessFilters.length + (showOfflineSortWarning ? 60.0 : 0.0);
+    // TODO make this properly calculated somehow?
+    // Actual height was 508, bump to 540 for extra bottom padding and wiggle room on element sizes
+    final stackHeight = 540.0 + 56.0 * excessFilters.length + (showOfflineSortWarning ? 60.0 : 0.0);
 
     return PopScope(
       onPopInvokedWithResult: (_, _) {
