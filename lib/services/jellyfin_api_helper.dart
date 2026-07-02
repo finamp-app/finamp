@@ -1276,7 +1276,9 @@ class JellyfinApiHelper {
     // I guess part of the reason for this is that it's not possible to favorite a genre through the Jellyfin Web UI at all...
     if ([finamp_models.ContentType.genres, finamp_models.ContentType.mixed].contains(contentType)) {
       // Only send isFavorite when the filter is actually active. Passing isFavorite=false makes
-      // Jellyfin 10.10/10.11 return HTTP 500 on the /Genres endpoint, leaving the Genres tab empty (#1653).
+      // Jellyfin 10.11 return HTTP 500 on the /Genres endpoint, leaving the Genres tab empty (#1653).
+      // On Jellyfin 10.10 and 12.0, isFavorite=false returns only items that are *not* favorites,
+      // which is also not what we want here (we want all genres to be shown, unfiltered)
       return filters.any((filter) => filter.type == ItemFilterType.isFavorite) ? true : null;
     }
     return null;
