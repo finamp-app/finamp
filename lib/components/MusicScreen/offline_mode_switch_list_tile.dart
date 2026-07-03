@@ -16,7 +16,7 @@ class OfflineModeSwitchListTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     AutoOfflineOption automation = ref.watch(finampSettingsProvider.autoOffline);
     bool overrideActive = !ref.watch(finampSettingsProvider.autoOfflineListenerActive);
-    bool reevaluating = ref.watch(autoOfflineStatusProvider) > 0;
+    bool reevaluating = ref.watch(networkConnectivityProvider).isLoading;
 
     IconData getCurrentIcon() {
       if (automation == AutoOfflineOption.disabled) {

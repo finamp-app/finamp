@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
+import '../extensions/localizations.dart';
 import '../models/jellyfin_models.dart';
 
 const Duration albumMenuDefaultAnimationDuration = Duration(milliseconds: 750);
@@ -66,7 +67,7 @@ Future<void> showQueueRestoreMenu({required BuildContext context, required Finam
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    queueInfo.source.name.getLocalized(AppLocalizations.of(context)!),
+                    queueInfo.source.name.getLocalized(context.l10n),
                     textAlign: TextAlign.start,
                     style: TextStyle(
                       fontSize: 18,

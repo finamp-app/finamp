@@ -85,7 +85,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
     };
     return FinampSettings(
         isOffline: fields[0] == null ? false : fields[0] as bool,
-        shouldTranscode: fields[1] == null ? false : fields[1] as bool,
+        forceTranscode: fields[1] == null ? false : fields[1] as bool,
         transcodeBitrate: fields[2] == null
             ? 320000
             : (fields[2] as num).toInt(),
@@ -448,6 +448,55 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? 90
             : (fields[150] as num).toInt(),
         useAndroidGainEffect: fields[149] == null ? true : fields[149] as bool,
+        streamingTranscodeConfigs: fields[151] == null
+            ? {
+                'original': const StreamingTranscodingConfig(
+                  StreamingTranscodingPreset.original,
+                  null,
+                  FinampTranscodingStreamingFormat.original,
+                  null,
+                ),
+                'lossless': const StreamingTranscodingConfig(
+                  StreamingTranscodingPreset.lossless,
+                  null,
+                  FinampTranscodingStreamingFormat.flacFragmentedMp4,
+                  null,
+                ),
+                'efficient': const StreamingTranscodingConfig(
+                  StreamingTranscodingPreset.efficient,
+                  null,
+                  FinampTranscodingStreamingFormat.opusFragmentedMp4,
+                  180000,
+                ),
+                'compatible': const StreamingTranscodingConfig(
+                  StreamingTranscodingPreset.compatible,
+                  null,
+                  FinampTranscodingStreamingFormat.aacFragmentedMp4,
+                  320000,
+                ),
+              }
+            : (fields[151] as Map).cast<String, StreamingTranscodingConfig>(),
+        hasCompletedTranscodeSettingsMigration: fields[152] == null
+            ? false
+            : fields[152] as bool,
+        forcedTranscodeConfig: fields[153] == null
+            ? 'compatible'
+            : fields[153] as String,
+        defaultTranscodeConfig: fields[154] == null
+            ? 'original'
+            : fields[154] as String,
+        cellularTranscodeConfig: fields[155] == null
+            ? 'original'
+            : fields[155] as String,
+        remoteTranscodeConfig: fields[156] == null
+            ? 'original'
+            : fields[156] as String,
+        flacTranscodeConfig: fields[157] == null
+            ? 'original'
+            : fields[157] as String,
+        incompatibleTranscodeConfig: fields[158] == null
+            ? 'lossless'
+            : fields[158] as String,
       )
       ..sortBy = fields[7] as SortBy?
       ..sortOrder = fields[8] as SortOrder?
@@ -470,11 +519,11 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(144)
+      ..writeByte(152)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
-      ..write(obj.shouldTranscode)
+      ..write(obj.forceTranscode)
       ..writeByte(2)
       ..write(obj.transcodeBitrate)
       ..writeByte(3)
@@ -758,7 +807,23 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(149)
       ..write(obj.useAndroidGainEffect)
       ..writeByte(150)
-      ..write(obj.homeScreenImageSize);
+      ..write(obj.homeScreenImageSize)
+      ..writeByte(151)
+      ..write(obj.streamingTranscodeConfigs)
+      ..writeByte(152)
+      ..write(obj.hasCompletedTranscodeSettingsMigration)
+      ..writeByte(153)
+      ..write(obj.forcedTranscodeConfig)
+      ..writeByte(154)
+      ..write(obj.defaultTranscodeConfig)
+      ..writeByte(155)
+      ..write(obj.cellularTranscodeConfig)
+      ..writeByte(156)
+      ..write(obj.remoteTranscodeConfig)
+      ..writeByte(157)
+      ..write(obj.flacTranscodeConfig)
+      ..writeByte(158)
+      ..write(obj.incompatibleTranscodeConfig);
   }
 
   @override
@@ -1884,6 +1949,50 @@ class QuickActionConfigAdapter extends TypeAdapter<QuickActionConfig> {
           typeId == other.typeId;
 }
 
+class StreamingTranscodingConfigAdapter
+    extends TypeAdapter<StreamingTranscodingConfig> {
+  @override
+  final typeId = 127;
+
+  @override
+  StreamingTranscodingConfig read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return StreamingTranscodingConfig(
+      fields[0] as StreamingTranscodingPreset,
+      fields[1] as String?,
+      fields[2] as FinampTranscodingStreamingFormat,
+      (fields[3] as num?)?.toInt(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, StreamingTranscodingConfig obj) {
+    writer
+      ..writeByte(4)
+      ..writeByte(0)
+      ..write(obj.preset)
+      ..writeByte(1)
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.format)
+      ..writeByte(3)
+      ..write(obj.bitrate);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StreamingTranscodingConfigAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class ContentTypeAdapter extends TypeAdapter<ContentType> {
   @override
   final typeId = 36;
@@ -2806,6 +2915,8 @@ class FinampTranscodingStreamingFormatAdapter
         return FinampTranscodingStreamingFormat.vorbisMpegTS;
       case 5:
         return FinampTranscodingStreamingFormat.vorbisFragmentedMp4;
+      case 6:
+        return FinampTranscodingStreamingFormat.original;
       default:
         return FinampTranscodingStreamingFormat.aacMpegTS;
     }
@@ -2826,6 +2937,8 @@ class FinampTranscodingStreamingFormatAdapter
         writer.writeByte(4);
       case FinampTranscodingStreamingFormat.vorbisFragmentedMp4:
         writer.writeByte(5);
+      case FinampTranscodingStreamingFormat.original:
+        writer.writeByte(6);
     }
   }
 
@@ -3755,6 +3868,56 @@ class ItemFilterTypeAdapter extends TypeAdapter<ItemFilterType> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ItemFilterTypeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class StreamingTranscodingPresetAdapter
+    extends TypeAdapter<StreamingTranscodingPreset> {
+  @override
+  final typeId = 128;
+
+  @override
+  StreamingTranscodingPreset read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return StreamingTranscodingPreset.original;
+      case 1:
+        return StreamingTranscodingPreset.lossless;
+      case 2:
+        return StreamingTranscodingPreset.efficient;
+      case 3:
+        return StreamingTranscodingPreset.compatible;
+      case 4:
+        return StreamingTranscodingPreset.custom;
+      default:
+        return StreamingTranscodingPreset.original;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, StreamingTranscodingPreset obj) {
+    switch (obj) {
+      case StreamingTranscodingPreset.original:
+        writer.writeByte(0);
+      case StreamingTranscodingPreset.lossless:
+        writer.writeByte(1);
+      case StreamingTranscodingPreset.efficient:
+        writer.writeByte(2);
+      case StreamingTranscodingPreset.compatible:
+        writer.writeByte(3);
+      case StreamingTranscodingPreset.custom:
+        writer.writeByte(4);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StreamingTranscodingPresetAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
@@ -9788,4 +9951,40 @@ const _$FinampQuickActionsEnumMap = {
   FinampQuickActions.configureOutput: 'configureOutput',
   FinampQuickActions.surpriseMe: 'surpriseMe',
   FinampQuickActions.playSpecificItem: 'playSpecificItem',
+};
+
+StreamingTranscodingConfig _$StreamingTranscodingConfigFromJson(
+  Map<String, dynamic> json,
+) => StreamingTranscodingConfig(
+  $enumDecode(_$StreamingTranscodingPresetEnumMap, json['preset']),
+  json['name'] as String?,
+  $enumDecode(_$FinampTranscodingStreamingFormatEnumMap, json['format']),
+  (json['bitrate'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$StreamingTranscodingConfigToJson(
+  StreamingTranscodingConfig instance,
+) => <String, dynamic>{
+  'preset': _$StreamingTranscodingPresetEnumMap[instance.preset]!,
+  if (instance.name case final value?) 'name': value,
+  'format': _$FinampTranscodingStreamingFormatEnumMap[instance.format]!,
+  if (instance.bitrate case final value?) 'bitrate': value,
+};
+
+const _$StreamingTranscodingPresetEnumMap = {
+  StreamingTranscodingPreset.original: 'original',
+  StreamingTranscodingPreset.lossless: 'lossless',
+  StreamingTranscodingPreset.efficient: 'efficient',
+  StreamingTranscodingPreset.compatible: 'compatible',
+  StreamingTranscodingPreset.custom: 'custom',
+};
+
+const _$FinampTranscodingStreamingFormatEnumMap = {
+  FinampTranscodingStreamingFormat.aacMpegTS: 'aacMpegTS',
+  FinampTranscodingStreamingFormat.aacFragmentedMp4: 'aacFragmentedMp4',
+  FinampTranscodingStreamingFormat.opusFragmentedMp4: 'opusFragmentedMp4',
+  FinampTranscodingStreamingFormat.flacFragmentedMp4: 'flacFragmentedMp4',
+  FinampTranscodingStreamingFormat.vorbisMpegTS: 'vorbisMpegTS',
+  FinampTranscodingStreamingFormat.vorbisFragmentedMp4: 'vorbisFragmentedMp4',
+  FinampTranscodingStreamingFormat.original: 'original',
 };

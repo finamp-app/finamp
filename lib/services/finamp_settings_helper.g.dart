@@ -25,17 +25,9 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setShouldTranscode(bool newShouldTranscode) {
+  static void setForceTranscode(bool newForceTranscode) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.shouldTranscode = newShouldTranscode;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setTranscodeBitrate(int newTranscodeBitrate) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.transcodeBitrate = newTranscodeBitrate;
+    finampSettingsTemp.forceTranscode = newForceTranscode;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -568,17 +560,6 @@ extension FinampSetters on FinampSettingsHelper {
   static void setHasDownloadedPlaylistInfo(bool newHasDownloadedPlaylistInfo) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.hasDownloadedPlaylistInfo = newHasDownloadedPlaylistInfo;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setTranscodingStreamingFormat(
-    FinampTranscodingStreamingFormat newTranscodingStreamingFormat,
-  ) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.transcodingStreamingFormat =
-        newTranscodingStreamingFormat;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -1274,6 +1255,87 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setStreamingTranscodeConfigs(
+    String transcodeConfig,
+    StreamingTranscodingConfig newValue,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    try {
+      finampSettingsTemp.streamingTranscodeConfigs[transcodeConfig] = newValue;
+    } on UnsupportedError {
+      // We were using the default const map directly.  Clone to allow modifications.
+      finampSettingsTemp.streamingTranscodeConfigs = Map.from(
+        finampSettingsTemp.streamingTranscodeConfigs,
+      );
+      finampSettingsTemp.streamingTranscodeConfigs[transcodeConfig] = newValue;
+    }
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setHasCompletedTranscodeSettingsMigration(
+    bool newHasCompletedTranscodeSettingsMigration,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.hasCompletedTranscodeSettingsMigration =
+        newHasCompletedTranscodeSettingsMigration;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setForcedTranscodeConfig(String newForcedTranscodeConfig) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.forcedTranscodeConfig = newForcedTranscodeConfig;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setDefaultTranscodeConfig(String newDefaultTranscodeConfig) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.defaultTranscodeConfig = newDefaultTranscodeConfig;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setCellularTranscodeConfig(String newCellularTranscodeConfig) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.cellularTranscodeConfig = newCellularTranscodeConfig;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setRemoteTranscodeConfig(String newRemoteTranscodeConfig) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.remoteTranscodeConfig = newRemoteTranscodeConfig;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setFlacTranscodeConfig(String newFlacTranscodeConfig) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.flacTranscodeConfig = newFlacTranscodeConfig;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setIncompatibleTranscodeConfig(
+    String newIncompatibleTranscodeConfig,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.incompatibleTranscodeConfig =
+        newIncompatibleTranscodeConfig;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1287,11 +1349,8 @@ extension FinampSetters on FinampSettingsHelper {
 extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ProviderListenable<bool> get isOffline =>
       finampSettingsProvider.select((value) => value.requireValue.isOffline);
-  ProviderListenable<bool> get shouldTranscode => finampSettingsProvider.select(
-    (value) => value.requireValue.shouldTranscode,
-  );
-  ProviderListenable<int> get transcodeBitrate => finampSettingsProvider.select(
-    (value) => value.requireValue.transcodeBitrate,
+  ProviderListenable<bool> get forceTranscode => finampSettingsProvider.select(
+    (value) => value.requireValue.forceTranscode,
   );
   ProviderListenable<bool> get androidStopForegroundOnPause =>
       finampSettingsProvider.select(
@@ -1477,10 +1536,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.hasDownloadedPlaylistInfo,
       );
-  ProviderListenable<FinampTranscodingStreamingFormat>
-  get transcodingStreamingFormat => finampSettingsProvider.select(
-    (value) => value.requireValue.transcodingStreamingFormat,
-  );
   ProviderListenable<FinampFeatureChipsConfiguration>
   get featureChipsConfiguration => finampSettingsProvider.select(
     (value) => value.requireValue.featureChipsConfiguration,
@@ -1708,6 +1763,33 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       .select((value) => value.requireValue.useAndroidGainEffect);
   ProviderListenable<int> get homeScreenImageSize => finampSettingsProvider
       .select((value) => value.requireValue.homeScreenImageSize);
+  ProviderListenable<StreamingTranscodingConfig?> streamingTranscodeConfigs(
+    String transcodeConfig,
+  ) => finampSettingsProvider.select(
+    (value) => value.requireValue.streamingTranscodeConfigs[transcodeConfig],
+  );
+  ProviderListenable<bool> get hasCompletedTranscodeSettingsMigration =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.hasCompletedTranscodeSettingsMigration,
+      );
+  ProviderListenable<String> get forcedTranscodeConfig => finampSettingsProvider
+      .select((value) => value.requireValue.forcedTranscodeConfig);
+  ProviderListenable<String> get defaultTranscodeConfig =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.defaultTranscodeConfig,
+      );
+  ProviderListenable<String> get cellularTranscodeConfig =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.cellularTranscodeConfig,
+      );
+  ProviderListenable<String> get remoteTranscodeConfig => finampSettingsProvider
+      .select((value) => value.requireValue.remoteTranscodeConfig);
+  ProviderListenable<String> get flacTranscodeConfig => finampSettingsProvider
+      .select((value) => value.requireValue.flacTranscodeConfig);
+  ProviderListenable<String> get incompatibleTranscodeConfig =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.incompatibleTranscodeConfig,
+      );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

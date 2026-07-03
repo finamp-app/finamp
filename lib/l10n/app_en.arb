@@ -3528,5 +3528,21 @@
                 "example": "syncingLocal"
             }
         }
-    }
+    },
+    "originalTranscode": "Original",
+    "losslessTranscode": "Lossless",
+    "efficientTranscode": "Efficient",
+    "compatibleTranscode": "Compatible",
+    "customTranscode": "Custom",
+    "forcedTranscodeConfigTitle": "Manual Transcoding Config",
+    "forcedTranscodeConfigSubtitle": "Overrides all other configs when manually enabled in player menu or settings.",
+    "defaultTranscodeConfigTitle": "Default Transcoding Config",
+    "defaultTranscodeConfigSubtitle": "Always applied",
+    "cellularTranscodeConfigTitle": "Cellular Transcoding Config",
+    "cellularTranscodeConfigSubtitle": "Applied when using cellular data",
+    "remoteTranscodeConfigTitle": "Remote Transcoding Config",
+    "remoteTranscodeConfigSubtitle": "Applied when using remote URL",
+    "remoteTranscodeConfigDisabledSubtitle": "Setting is only available if local server URL configured",
+    "flacTranscodeConfigTitle": "Flac Transcoding Config",
+    "flacTranscodeConfigSubtitle": "Applied when streaming flac files"
 }

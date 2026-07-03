@@ -1193,9 +1193,10 @@ class JellyfinApiHelper {
 
       if (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
               MultichannelHandlingSetting.stereoDownmixAll ||
-          (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
-                  MultichannelHandlingSetting.stereoDownmixLossy &&
-              FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec != "flac")) {
+          // We do not currently support lossless download transcoding
+          // TODO add this?  will be eventually needed for incompatible codec auto-transcode
+          FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+              MultichannelHandlingSetting.stereoDownmixLossy) {
         queryParameters.addAll({"maxAudioChannels": "2"});
       }
 
@@ -1261,6 +1262,9 @@ class JellyfinApiHelper {
     if (stack.contains('ProviderElementBase.buildState') ||
         stack.contains('initState ') ||
         stack.contains('didUpdateWidget') ||
+        // These involve network requests in provider listeners, so they need unique exceptions
+        // TODO should we be allowing provider listeners in a more principled way?
+        stack.contains('DataSourceService._onDataSourceChange') ||
         stack.contains('new QueueService') ||
         stack.contains('PagingController.notifyPageRequestListeners')) {
       return true;

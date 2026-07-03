@@ -111,7 +111,7 @@ class DefaultSettings {
   static const amoledTheme = false;
   static const Locale? locale = null;
   static const Color? accentColor = null;
-  static const shouldTranscode = false;
+  static const forceTranscode = false;
   static const transcodeBitrate = 320000;
   static const androidStopForegroundOnPause = true;
   static const onlyShowFavorites = false;
@@ -298,13 +298,36 @@ class DefaultSettings {
   static const homeScreenImageSizeDesktop = 120;
   static int get gridImageSize => isDesktop ? gridImageSizeDesktop : gridImageSizeMobile;
   static const useAndroidGainEffect = true;
+  static const streamingTranscodeConfigs = {
+    // We need to directly use strings here instead of enum names or something to allow this to be const
+    "original": StreamingTranscodingPreset.originalPreset,
+    "lossless": StreamingTranscodingPreset.losslessPreset,
+    "efficient": StreamingTranscodingConfig(
+      StreamingTranscodingPreset.efficient,
+      null,
+      FinampTranscodingStreamingFormat.opusFragmentedMp4,
+      180000,
+    ),
+    "compatible": StreamingTranscodingConfig(
+      StreamingTranscodingPreset.compatible,
+      null,
+      FinampTranscodingStreamingFormat.aacFragmentedMp4,
+      320000,
+    ),
+  };
+  static const forcedTranscodeConfig = "compatible";
+  static const defaultTranscodeConfig = "original";
+  static const cellularTranscodeConfig = "original";
+  static const remoteTranscodeConfig = "original";
+  static const flacTranscodeConfig = "original";
+  static const incompatibleTranscodeConfig = "lossless";
 }
 
 @HiveType(typeId: 28)
 class FinampSettings {
   FinampSettings({
     this.isOffline = DefaultSettings.isOffline,
-    this.shouldTranscode = DefaultSettings.shouldTranscode,
+    this.forceTranscode = DefaultSettings.forceTranscode,
     this.transcodeBitrate = DefaultSettings.transcodeBitrate,
     // downloadLocations is required since the other values can be created with
     // default values. create() is used to return a FinampSettings with
@@ -442,12 +465,24 @@ class FinampSettings {
     required this.gridImageSize,
     required this.homeScreenImageSize,
     this.useAndroidGainEffect = DefaultSettings.useAndroidGainEffect,
+    this.streamingTranscodeConfigs = DefaultSettings.streamingTranscodeConfigs,
+    // !!! Don't touch this default value, it's supposed to be hard coded to run the migration only once
+    this.hasCompletedTranscodeSettingsMigration = true,
+    this.forcedTranscodeConfig = DefaultSettings.forcedTranscodeConfig,
+    this.defaultTranscodeConfig = DefaultSettings.defaultTranscodeConfig,
+    this.cellularTranscodeConfig = DefaultSettings.cellularTranscodeConfig,
+    this.remoteTranscodeConfig = DefaultSettings.remoteTranscodeConfig,
+    this.flacTranscodeConfig = DefaultSettings.flacTranscodeConfig,
+    this.incompatibleTranscodeConfig = DefaultSettings.incompatibleTranscodeConfig,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
   bool isOffline;
-  @HiveField(1, defaultValue: DefaultSettings.shouldTranscode)
-  bool shouldTranscode;
+
+  @HiveField(1, defaultValue: DefaultSettings.forceTranscode)
+  bool forceTranscode;
+
+  @Deprecated("Use transcode profile map instead")
   @HiveField(2, defaultValue: DefaultSettings.transcodeBitrate)
   int transcodeBitrate;
 
@@ -677,6 +712,7 @@ class FinampSettings {
   @HiveField(74, defaultValue: DefaultSettings.hasDownloadedPlaylistInfo)
   bool hasDownloadedPlaylistInfo;
 
+  @Deprecated("Use transcode profile map instead")
   @HiveField(75, defaultValue: DefaultSettings.transcodingStreamingFormat)
   FinampTranscodingStreamingFormat transcodingStreamingFormat;
 
@@ -919,6 +955,28 @@ class FinampSettings {
 
   @HiveField(150, defaultValue: DefaultSettings.homeScreenImageSizeMobile)
   int homeScreenImageSize;
+
+  @HiveField(151, defaultValue: DefaultSettings.streamingTranscodeConfigs)
+  @SettingsHelperMap("transcodeConfig")
+  Map<String, StreamingTranscodingConfig> streamingTranscodeConfigs;
+
+  // !!! don't touch this default value, it's supposed to be hard coded to run the migration only once
+  @HiveField(152, defaultValue: false)
+  bool hasCompletedTranscodeSettingsMigration;
+
+  @HiveField(153, defaultValue: DefaultSettings.forcedTranscodeConfig)
+  String forcedTranscodeConfig;
+  @HiveField(154, defaultValue: DefaultSettings.defaultTranscodeConfig)
+  String defaultTranscodeConfig;
+  @HiveField(155, defaultValue: DefaultSettings.cellularTranscodeConfig)
+  String cellularTranscodeConfig;
+  @HiveField(156, defaultValue: DefaultSettings.remoteTranscodeConfig)
+  String remoteTranscodeConfig;
+  @HiveField(157, defaultValue: DefaultSettings.flacTranscodeConfig)
+  String flacTranscodeConfig;
+  @HiveField(158, defaultValue: DefaultSettings.incompatibleTranscodeConfig)
+  // TODO figure out supported codecs somehow?
+  String incompatibleTranscodeConfig;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
@@ -1434,7 +1492,7 @@ class DownloadStub {
       jsonItem: jsonEncode(collection.toJson()),
       type: DownloadItemType.finampCollection,
       // Fetch localized name from default global context.
-      name: collection.getName(GlobalSnackbar.requireL10n),
+      name: collection.getName2(GlobalSnackbar.requireL10n),
       baseItemType: BaseItemDtoType.noItem,
     );
   }
@@ -2302,6 +2360,15 @@ class FinampQueueItem {
   }
 
   BaseItemId get baseItemId => item.extras!["itemJson"]["Id"] as BaseItemId;
+
+  StreamingTranscodingConfig? get streamingTranscodeProfile {
+    final json = item.extras!["transcodeProfile"] as Map<String, dynamic>?;
+    return json == null ? null : StreamingTranscodingConfig.fromJson(json);
+  }
+
+  bool get isTranscodedStream =>
+      streamingTranscodeProfile != null &&
+      streamingTranscodeProfile?.format != FinampTranscodingStreamingFormat.original;
 }
 
 @HiveType(typeId: 58)
@@ -2736,7 +2803,9 @@ class FinampCollection {
     FinampCollectionType.collectionWithLibraryFilter => "Collection with Library Filter:${library!.id}:${item!.id}",
   };
 
-  String getName(AppLocalizations localizations) => switch (type) {
+  String getName(BuildContext context) => getName2(AppLocalizations.of(context)!);
+
+  String getName2(AppLocalizations localizations) => switch (type) {
     FinampCollectionType.favorites => localizations.finampCollectionNames("favorites"),
     FinampCollectionType.allPlaylists => localizations.finampCollectionNames("allPlaylists"),
     FinampCollectionType.latest5Albums => localizations.finampCollectionNames("fiveLatestAlbums"),
@@ -2883,7 +2952,9 @@ enum FinampTranscodingStreamingFormat {
   @HiveField(4)
   vorbisMpegTS("vorbis", "ts"),
   @HiveField(5)
-  vorbisFragmentedMp4("vorbis", "mp4");
+  vorbisFragmentedMp4("vorbis", "mp4"),
+  @HiveField(6)
+  original("original", "direct");
 
   const FinampTranscodingStreamingFormat(this.codec, this.container);
 
@@ -2900,6 +2971,7 @@ enum FinampTranscodingStreamingFormat {
 
   bool get lossless => switch (this) {
     FinampTranscodingStreamingFormat.flacFragmentedMp4 => true,
+    FinampTranscodingStreamingFormat.original => true,
     _ => false,
   };
 }
@@ -4011,7 +4083,7 @@ class CollectionHomeSection extends HomeScreenSectionBase {
   Map<String, dynamic> toJson() => _$CollectionHomeSectionToJson(this);
 }
 
-// hive type 116-118 reserved for fusture home sections
+//!!! hive type 116-118 RESERVED for future home sections
 
 @JsonSerializable(includeIfNull: false, createFactory: false)
 @HiveType(typeId: 119)
@@ -4624,4 +4696,95 @@ class QuickActionConfig {
   String toString() {
     return jsonEncode(toJson());
   }
+}
+
+@HiveType(typeId: 127)
+@JsonSerializable(includeIfNull: false)
+class StreamingTranscodingConfig {
+  const StreamingTranscodingConfig(this.preset, this.name, this.format, this.bitrate);
+
+  @HiveField(0)
+  final StreamingTranscodingPreset preset;
+  @HiveField(1)
+  final String? name;
+  @HiveField(2)
+  final FinampTranscodingStreamingFormat format;
+  @HiveField(3)
+  final int? bitrate;
+
+  String localizeName(AppLocalizations localizations) => name ?? preset.localizeName(localizations);
+
+  int get effectiveBitrate => switch (format) {
+    FinampTranscodingStreamingFormat.flacFragmentedMp4 => 888888000,
+    FinampTranscodingStreamingFormat.original => 999999000,
+    _ => bitrate!,
+  };
+
+  @override
+  bool operator ==(Object other) {
+    return other is StreamingTranscodingConfig &&
+        other.format == format &&
+        (format.lossless || other.bitrate == bitrate);
+  }
+
+  @override
+  @ignore
+  int get hashCode => Object.hash(format, format.lossless ? null : bitrate);
+
+  factory StreamingTranscodingConfig.fromJson(Map<String, dynamic> json) {
+    return _$StreamingTranscodingConfigFromJson(json);
+  }
+
+  Map<String, dynamic> toJson() {
+    return _$StreamingTranscodingConfigToJson(this);
+  }
+}
+
+@HiveType(typeId: 128)
+enum StreamingTranscodingPreset {
+  @HiveField(0)
+  original,
+  @HiveField(1)
+  lossless,
+  @HiveField(2)
+  efficient,
+  @HiveField(3)
+  compatible,
+  @HiveField(4)
+  custom;
+
+  String localizeName(AppLocalizations localizations) {
+    switch (this) {
+      case StreamingTranscodingPreset.original:
+        return localizations.originalTranscode;
+      case StreamingTranscodingPreset.lossless:
+        return localizations.losslessTranscode;
+      case StreamingTranscodingPreset.efficient:
+        return localizations.efficientTranscode;
+      case StreamingTranscodingPreset.compatible:
+        return localizations.compatibleTranscode;
+      case StreamingTranscodingPreset.custom:
+        return localizations.customTranscode;
+    }
+  }
+
+  bool get locked => switch (this) {
+    StreamingTranscodingPreset.original => true,
+    StreamingTranscodingPreset.lossless => true,
+    _ => false,
+  };
+
+  static const originalPreset = StreamingTranscodingConfig(
+    StreamingTranscodingPreset.original,
+    null,
+    FinampTranscodingStreamingFormat.original,
+    null,
+  );
+
+  static const losslessPreset = StreamingTranscodingConfig(
+    StreamingTranscodingPreset.lossless,
+    null,
+    FinampTranscodingStreamingFormat.flacFragmentedMp4,
+    null,
+  );
 }

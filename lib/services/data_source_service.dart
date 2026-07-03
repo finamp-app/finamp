@@ -1,8 +1,11 @@
 import 'dart:core';
+import 'dart:io';
 
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/network_manager.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,27 +34,17 @@ class DataSourceService {
       _onDataSourceChange(isOffline ? SourceChangeType.toOffline : SourceChangeType.toOnline);
     });
 
-    ref.listen(finampSettingsProvider.shouldTranscode, (_, shouldTranscode) {
+    // We only have track codec info as playing approaches, so without android just-in-time uris
+    // we just watch the generic transcode profile without codec considered.
+    ref.listen(activeTranscodingProfile(null), (_, profile) {
+      // TODO clean all this up
+      bool shouldTranscode = profile.format != FinampTranscodingStreamingFormat.original;
       if (shouldTranscode) {
         _dataSourceServiceLogger.info("Transcoding Enabled");
       } else {
         _dataSourceServiceLogger.info("Transcoding Disabled");
       }
       _onDataSourceChange(shouldTranscode ? SourceChangeType.toTranscoding : SourceChangeType.toDirectPlay);
-    });
-
-    ref.listen(finampSettingsProvider.transcodingStreamingFormat, (_, transcodingStreamingFormat) {
-      if (FinampSettingsHelper.finampSettings.shouldTranscode) {
-        _dataSourceServiceLogger.info("Transcoding Streaming Format Changed: $transcodingStreamingFormat");
-        _onDataSourceChange(SourceChangeType.toTranscoding);
-      }
-    });
-
-    ref.listen(finampSettingsProvider.transcodeBitrate, (_, transcodeBitrate) {
-      if (FinampSettingsHelper.finampSettings.shouldTranscode) {
-        _dataSourceServiceLogger.info("Transcoding Bitrate Changed: $transcodeBitrate");
-        _onDataSourceChange(SourceChangeType.toTranscoding);
-      }
     });
 
     ref.listen(FinampUserHelper.finampCurrentUserProvider.select((user) => user?.baseURL), (_, newUrl) {
@@ -63,6 +56,8 @@ class DataSourceService {
 
   static Future<void> _onDataSourceChange(SourceChangeType event) async {
     if (!GetIt.instance.isRegistered<QueueService>()) return;
+    // Android should auto-update queue items as they play
+    if (Platform.isAndroid && event != SourceChangeType.toOffline) return;
     final QueueService queueService = GetIt.instance<QueueService>();
     _dataSourceServiceLogger.finest("Connectivity Change Triggered, event is '$event'");
 
@@ -111,8 +106,10 @@ class DataSourceService {
           break;
         case SourceChangeType.toDirectPlay:
         case SourceChangeType.toTranscoding:
+          // Transcoding profile changes have no effect while offline
+          if (FinampSettingsHelper.finampSettings.isOffline) break;
           final queueInfo = queueService.getQueue();
-          final transcodingItemsExist = queueInfo.fullQueue.any((item) => item.item.extras?["shouldTranscode"] == true);
+          final transcodingItemsExist = queueInfo.fullQueue.any((item) => item.isTranscodedStream);
           if (event == SourceChangeType.toTranscoding || transcodingItemsExist) {
             if (FinampSettingsHelper.finampSettings.autoReloadQueue) {
               await queueService.reloadQueue();
@@ -134,4 +131,40 @@ class DataSourceService {
       }
     }
   }
+
+  static final activeTranscodingProfile = Provider.family<StreamingTranscodingConfig, String?>((
+    Ref ref,
+    String? codec,
+  ) {
+    StreamingTranscodingConfig? watch(ProviderListenable<String> configNameProvider) {
+      final configName = ref.watch(configNameProvider);
+      return ref.watch(finampSettingsProvider.streamingTranscodeConfigs(configName));
+    }
+
+    if (ref.watch(finampSettingsProvider.forceTranscode)) {
+      return watch(finampSettingsProvider.forcedTranscodeConfig) ?? StreamingTranscodingPreset.losslessPreset;
+    }
+    final validPresets = [watch(finampSettingsProvider.defaultTranscodeConfig)];
+    final user = ref.watch(FinampUserHelper.finampCurrentUserProvider);
+    if (user != null && user.preferLocalNetwork && !user.isLocal) {
+      validPresets.add(watch(finampSettingsProvider.remoteTranscodeConfig));
+    }
+    if (ref.watch(networkConnectivityProvider).value == FinampConnectivityState.cellular) {
+      validPresets.add(watch(finampSettingsProvider.cellularTranscodeConfig));
+    }
+    // TODO should we just be checking bitrate?
+    // IF so, would it make sense to allow configuring bitrate cutoff?
+    if (codec == "flac") {
+      validPresets.add(watch(finampSettingsProvider.flacTranscodeConfig));
+    }
+    // TODO can we validate codecs are readable somehow?
+    // Use transcode config with lowest effective bitrate
+    var output = StreamingTranscodingPreset.originalPreset;
+    for (final config in validPresets) {
+      if (config != null && config.effectiveBitrate < output.effectiveBitrate) {
+        output = config;
+      }
+    }
+    return output;
+  });
 }

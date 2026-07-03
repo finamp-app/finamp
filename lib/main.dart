@@ -136,6 +136,7 @@ Future<void> main({bool integrationTesting = false, bool loginTesting = false}) 
     await setupHive();
     _mainLog.info("Setup hive and isar");
     _migrateDownloadLocations();
+    _migrateTranscodeSettings();
     _migrateSortOptions();
     _migrateGridSize();
     _migrateHomescreen();
@@ -344,8 +345,10 @@ Future<void> _setupProviders() async {
   await initImageCache();
 
   DataSourceService.create();
-  AutoOffline.startWatching();
+  await startNetworkAutomation();
 
+  // Make sure that providers keep rebuilding when app is in the background
+  // This kkeps track metadata and similar reported to the OS correct
   unawaited(
     Stream<void>.periodic(Duration(seconds: 1)).forEach((_) {
       if (!SchedulerBinding.instance.framesEnabled) {
@@ -636,6 +639,10 @@ int _calculateGridImageSize(FinampSettings settings) {
   }
 }
 
+void _migrateTranscodeSettings() {
+  // TODO add migration
+}
+
 Future<void> _migrateDownloadsFileOwner() async {
   if (!Platform.isAndroid) {
     // Only Android needs this migration
@@ -712,7 +719,6 @@ class _FinampState extends State<Finamp> with WindowListener {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _uriLinkSubscription = AppLinks().uriLinkStream.listen((uri) async {
         linkHandlingLogger.info("Received link: $uri");
-
         var state = GlobalSnackbar.navigatorState;
         if (state != null) {
           _handleAppLink(uri, state);

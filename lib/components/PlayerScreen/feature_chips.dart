@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
@@ -47,22 +48,24 @@ class FeatureState {
   FinampFeatureChipsConfiguration get configuration => settings.featureChipsConfiguration;
 
   bool get isDownloaded => metadata?.isDownloaded ?? false;
-  bool get isTranscodingAndStreaming =>
-      !isDownloaded && (currentTrack?.item.extras?["shouldTranscode"] as bool? ?? false);
+  bool get isTranscodingAndStreaming => currentTrack?.isTranscodedStream ?? false;
   String get container => isTranscodingAndStreaming
-      ? settings.transcodingStreamingFormat.container
+      ? currentTrack!.streamingTranscodeProfile!.format.container
       : metadata?.mediaSourceInfo.container ?? AppLocalizations.of(context)!.unknown;
   String get codec => isTranscodingAndStreaming
-      ? settings.transcodingStreamingFormat.codec
+      ? currentTrack!.streamingTranscodeProfile!.format.codec
       : audioStream?.codec ?? AppLocalizations.of(context)!.unknown;
   int? get size => isTranscodingAndStreaming ? null : metadata?.mediaSourceInfo.size;
+  int? get _transcodedBitrate => currentTrack!.streamingTranscodeProfile!.format.lossless
+      ? null
+      : currentTrack!.streamingTranscodeProfile!.bitrate;
   MediaStream? get audioStream => isTranscodingAndStreaming
       ? MediaStream(
           index: 0,
           type: "Audio",
-          codec: settings.transcodingStreamingFormat.codec,
-          bitRate: settings.transcodeBitrate,
-          sampleRate: settings.transcodingStreamingFormat.sampleRate,
+          codec: codec,
+          bitRate: _transcodedBitrate,
+          sampleRate: null,
           channels: null,
           bitDepth: settings.transcodingStreamingFormat.lossless
               ? metadata?.mediaSourceInfo.mediaStreams.firstOrNull?.bitDepth
@@ -80,11 +83,8 @@ class FeatureState {
   // the target transcode bitrate set for the mediasource bitrate.  Other items
   // should have a valid mediaStream, so use that audio-only bitrate instead of the
   // whole-file bitrate.
-  int? get bitrate => isTranscodingAndStreaming
-      ? (settings.transcodingStreamingFormat == FinampTranscodingStreamingFormat.flacFragmentedMp4
-            ? null
-            : settings.transcodeBitrate)
-      : audioStream?.bitRate ?? metadata?.mediaSourceInfo.bitrate;
+  int? get bitrate =>
+      isTranscodingAndStreaming ? _transcodedBitrate : audioStream?.bitRate ?? metadata?.mediaSourceInfo.bitrate;
   int? get sampleRate => audioStream?.sampleRate;
   int? get bitDepth => audioStream?.bitDepth;
 

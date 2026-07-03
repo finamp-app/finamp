@@ -7,6 +7,7 @@ class FinampSettingsDropdown<T> extends StatelessWidget {
     required this.dropdownItems,
     required this.selectedValue,
     required this.onSelected,
+    this.enabled = true,
     this.selectedIcon,
   });
 
@@ -14,6 +15,7 @@ class FinampSettingsDropdown<T> extends StatelessWidget {
   final T? selectedValue;
   final IconData? selectedIcon;
   final void Function(T?) onSelected;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,7 @@ class FinampSettingsDropdown<T> extends StatelessWidget {
       builder: (context, constraints) {
         return DropdownMenu<T>(
           width: constraints.maxWidth,
+          enabled: enabled,
           dropdownMenuEntries: dropdownItems
               .map(
                 (e) => DropdownMenuEntry<T>(

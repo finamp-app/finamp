@@ -1,14 +1,14 @@
 import 'dart:io';
 
 import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
-import 'package:finamp/components/TranscodingSettingsScreen/bitrate_selector.dart';
-import 'package:finamp/components/TranscodingSettingsScreen/transcode_switch.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../services/finamp_user_helper.dart';
 
 class TranscodingSettingsScreen extends StatefulWidget {
   const TranscodingSettingsScreen({super.key});
@@ -34,9 +34,17 @@ class _TranscodingSettingsScreenState extends State<TranscodingSettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.only(bottom: 200.0),
         children: [
+          // TODO some sort of header saying lowest applicable bitrate chosen
+          // Also mention buffer cleared on reload?
+          // TODO add config edit screen.
+          const DefaultTranscodeConfigDropdownListTile(),
+          const CellularTranscodeConfigDropdownListTile(),
+          const RemoteTranscodeConfigDropdownListTile(),
+          if (Platform.isAndroid) const FlacTranscodeConfigDropdownListTile(),
+          // TODO add incompatible codec setting once available
+          Divider(),
           const TranscodeSwitch(),
-          const StreamingTranscodingFormatDropdownListTile(),
-          const BitrateSelector(),
+          const ForcedTranscodeConfigDropdownListTile(),
           Divider(),
           const DownloadTranscodeEnableDropdownListTile(),
           const DownloadTranscodeCodecDropdownListTile(),
@@ -128,36 +136,6 @@ class DownloadTranscodeCodecDropdownListTile extends ConsumerWidget {
   }
 }
 
-class StreamingTranscodingFormatDropdownListTile extends ConsumerWidget {
-  const StreamingTranscodingFormatDropdownListTile({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      title: Text(AppLocalizations.of(context)!.transcodingStreamingFormatTitle),
-      subtitle: Column(
-        spacing: 4.0,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocalizations.of(context)!.transcodingStreamingFormatSubtitle),
-          FinampSettingsDropdown<FinampTranscodingStreamingFormat>(
-            dropdownItems: FinampTranscodingStreamingFormat.values
-                .map(
-                  (e) => DropdownMenuEntry<FinampTranscodingStreamingFormat>(
-                    value: e,
-                    label: "${e.codec}+${e.container}".toUpperCase(),
-                  ),
-                )
-                .toList(),
-            selectedValue: ref.watch(finampSettingsProvider.transcodingStreamingFormat),
-            onSelected: FinampSetters.setTranscodingStreamingFormat.ifNonNull,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class MultichannelHandlingSelector extends ConsumerWidget {
   const MultichannelHandlingSelector({super.key});
 
@@ -187,3 +165,172 @@ class MultichannelHandlingSelector extends ConsumerWidget {
     );
   }
 }
+
+class TranscodeSwitch extends ConsumerWidget {
+  const TranscodeSwitch({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SwitchListTile.adaptive(
+      title: Text(AppLocalizations.of(context)!.enableTranscoding),
+      // TODO update text
+      subtitle: Text(AppLocalizations.of(context)!.enableTranscodingSubtitle),
+      value: ref.watch(finampSettingsProvider.forceTranscode),
+      onChanged: FinampSetters.setForceTranscode,
+    );
+  }
+}
+
+class ForcedTranscodeConfigDropdownListTile extends ConsumerWidget {
+  const ForcedTranscodeConfigDropdownListTile({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // TODO is it better if this forcibly overrides automatic mode, or just joins the automatic bitrate resolution?
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.forcedTranscodeConfigTitle),
+      subtitle: Column(
+        spacing: 4.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.forcedTranscodeConfigSubtitle),
+          FinampSettingsDropdown<String>(
+            dropdownItems: ref.watch(transcodeConfigDropdownProvider(AppLocalizations.of(context)!)),
+            selectedValue: ref.watch(finampSettingsProvider.forcedTranscodeConfig),
+            onSelected: FinampSetters.setForcedTranscodeConfig.ifNonNull,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DefaultTranscodeConfigDropdownListTile extends ConsumerWidget {
+  const DefaultTranscodeConfigDropdownListTile({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.defaultTranscodeConfigTitle),
+      subtitle: Column(
+        spacing: 4.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.defaultTranscodeConfigSubtitle),
+          FinampSettingsDropdown<String>(
+            dropdownItems: ref.watch(transcodeConfigDropdownProvider(AppLocalizations.of(context)!)),
+            selectedValue: ref.watch(finampSettingsProvider.defaultTranscodeConfig),
+            onSelected: FinampSetters.setDefaultTranscodeConfig.ifNonNull,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CellularTranscodeConfigDropdownListTile extends ConsumerWidget {
+  const CellularTranscodeConfigDropdownListTile({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.cellularTranscodeConfigTitle),
+      subtitle: Column(
+        spacing: 4.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.cellularTranscodeConfigSubtitle),
+          FinampSettingsDropdown<String>(
+            dropdownItems: ref.watch(transcodeConfigDropdownProvider(AppLocalizations.of(context)!)),
+            selectedValue: ref.watch(finampSettingsProvider.cellularTranscodeConfig),
+            onSelected: FinampSetters.setCellularTranscodeConfig.ifNonNull,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class RemoteTranscodeConfigDropdownListTile extends ConsumerWidget {
+  const RemoteTranscodeConfigDropdownListTile({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(FinampUserHelper.finampCurrentUserProvider);
+    bool enabled = user != null && user.preferLocalNetwork;
+
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.remoteTranscodeConfigTitle),
+      subtitle: Column(
+        spacing: 4.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            enabled
+                ? AppLocalizations.of(context)!.remoteTranscodeConfigSubtitle
+                : AppLocalizations.of(context)!.remoteTranscodeConfigDisabledSubtitle,
+          ),
+          FinampSettingsDropdown<String>(
+            enabled: enabled,
+            dropdownItems: ref.watch(transcodeConfigDropdownProvider(AppLocalizations.of(context)!)),
+            selectedValue: ref.watch(finampSettingsProvider.remoteTranscodeConfig),
+            onSelected: FinampSetters.setRemoteTranscodeConfig.ifNonNull,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FlacTranscodeConfigDropdownListTile extends ConsumerWidget {
+  const FlacTranscodeConfigDropdownListTile({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.flacTranscodeConfigTitle),
+      subtitle: Column(
+        spacing: 4.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.flacTranscodeConfigSubtitle),
+          FinampSettingsDropdown<String>(
+            dropdownItems: ref.watch(transcodeConfigDropdownProvider(AppLocalizations.of(context)!)),
+            selectedValue: ref.watch(finampSettingsProvider.flacTranscodeConfig),
+            onSelected: FinampSetters.setFlacTranscodeConfig.ifNonNull,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+final transcodeConfigDropdownProvider = Provider.autoDispose.family((Ref ref, AppLocalizations localizations) {
+  // Joining the IDs is the easiest way to get something with deep equality
+  final configIds = ref.watch(
+    finampSettingsProvider.select((x) => x.requireValue.streamingTranscodeConfigs.keys.join("|")),
+  );
+  return configIds
+      .split("|")
+      .map((e) {
+        final config = ref.watch(finampSettingsProvider.streamingTranscodeConfigs(e))!;
+        final name = config.localizeName(localizations);
+        // TODO localize
+        final format = "${config.format.codec}+${config.format.container}".toUpperCase();
+        var bitrate = "";
+        if (!config.format.lossless) {
+          bitrate = " ${((config.bitrate ?? -1) / 1000).round()}kbps";
+        }
+        var details = "";
+        if (config.format != FinampTranscodingStreamingFormat.original) {
+          details = " ($format $bitrate)";
+        }
+        return DropdownMenuEntry(
+          value: e,
+          // TODO allow format localization?
+          label: "$name$details",
+        );
+      })
+      // Outputs will never be considered equal
+      .toList();
+});

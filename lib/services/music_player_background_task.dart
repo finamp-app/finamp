@@ -5,11 +5,13 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:collection/collection.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/services/current_track_metadata_provider.dart';
+import 'package:finamp/services/data_source_service.dart';
 import 'package:finamp/services/favorite_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
@@ -31,6 +33,8 @@ import 'ios_helpers.dart';
 import 'metadata_provider.dart';
 
 enum FadeDirection { fadeIn, fadeOut, none }
+
+const dummyHost = "dummyhost";
 
 class FadeState {
   // current fade volume
@@ -1335,13 +1339,40 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       if (queueItem.item.extras!["isOffline"] as bool) {
         return Future.error("Offline mode enabled but downloaded track not found.");
       } else {
-        final trackUri = await _trackUri(queueItem.item);
-        return AudioSource.uri(trackUri, tag: queueItem);
-        // if (queueItem.item.extras!["shouldTranscode"] == true) {
-        //   return HlsAudioSource(trackUri, tag: queueItem);
-        // } else {
-        //   return AudioSource.uri(trackUri, tag: queueItem);
-        // }
+        // Android-only audiosource that delays resolution until buffering starts.
+        if (Platform.isAndroid) {
+          // TODO make sure we aren't capturing extra junk in the lambda.
+          // Probably should actually use a meaningful identifier and a fixed function.
+          return MappingAudioSource(null, (_) async {
+            final container = GetIt.instance<ProviderContainer>();
+            // TODO stick a timeout on this and just fallback to null codec?
+            final metadata = await container.read(metadataProvider(queueItem.baseItem).future);
+            final audioStream = metadata?.mediaSourceInfo.mediaStreams.firstWhereOrNull((s) => s.type == "Audio");
+            // TODO add this back into metadataProvider and/or queueItem?
+            // TODO prevent this from being disposed if we outrun the metadata precache?
+            final transcodeConfig = container.read(DataSourceService.activeTranscodingProfile(audioStream?.codec));
+            return AudioSource.uri(
+              _dummyTrackUri(queueItem.item, transcodeConfig),
+              tag: queueItem,
+              // Android only last-minute URL resolving
+              // This is used for individual data chunks, so it must always point to the same resource
+              resolver: (oldUri) {
+                // HLS streams will resolve the main index file, and then try to resolve all the internal chunk urls.
+                // They will all be based off the resolved url of the index.
+                // TODO handle this better - write better uri merging?  Might need to save off initial uri
+                // Will it eventually reload the main index and update all the chunk urls that way?
+                if (oldUri.host == dummyHost) {
+                  return _mergeTrackUri(oldUri);
+                } else {
+                  return oldUri;
+                }
+              },
+            );
+          }, tag: queueItem);
+        } else {
+          final trackUri = _trackUri(queueItem.item, null);
+          return AudioSource.uri(trackUri, tag: queueItem);
+        }
       }
     } else {
       // We have to deserialise this because Dart is stupid and can't handle
@@ -1355,16 +1386,15 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     }
   }
 
-  Future<Uri> _trackUri(MediaItem mediaItem) async {
+  /// Returns the full track Uri.
+  Uri _trackUri(MediaItem mediaItem, StreamingTranscodingConfig? justInTimeTranscodeConfig) =>
+      _mergeTrackUri(_dummyTrackUri(mediaItem, justInTimeTranscodeConfig));
+
+  /// Merges a dummy track Uri to apply relative to the current active server URL
+  Uri _mergeTrackUri(Uri dummyTrackUri) {
+    assert(dummyTrackUri.host == dummyHost, "_mergeTrackUri received unexpected uri $dummyTrackUri");
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
-    // When creating the MediaItem (usually in AudioServiceHelper), we specify
-    // whether or not to transcode. We used to pull from FinampSettings here,
-    // but since audio_service runs in an isolate (or at least, it does until
-    // 0.18), the value would be wrong if changed while a track was playing since
-    // Hive is bad at multi-isolate stuff.
-
     final parsedBaseUrl = Uri.parse(finampUserHelper.currentUser!.baseURL);
-
     List<String> builtPath = List.from(parsedBaseUrl.pathSegments);
 
     Map<String, String> queryParameters = Map.from(parsedBaseUrl.queryParameters);
@@ -1372,38 +1402,11 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     // We include the user token as a query parameter because just_audio used to
     // have issues with headers in HLS, and this solution still works fine
     queryParameters["ApiKey"] = finampUserHelper.currentUser!.accessToken;
-    // // indicate which play session this stream belongs to, this will be referenced when reporting playback progress
-    // queryParameters["PlaySessionId"] = _order.id; //!!! this currently breaks transcoding for some reason
 
-    if (mediaItem.extras!["shouldTranscode"] as bool) {
-      builtPath.addAll(["Audio", mediaItem.extras!["itemJson"]["Id"] as String, "main.m3u8"]);
+    builtPath.addAll(dummyTrackUri.pathSegments);
+    queryParameters.addAll(dummyTrackUri.queryParameters);
 
-      queryParameters.addAll({
-        "audioCodec": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec,
-        "playSessionId": mediaItem.extras!["playSessionId"] as String? ?? "",
-        // Ideally we'd switch between 44.1/48kHz depending on the source is,
-        // realistically it doesn't matter too much
-        // default to 44100, only use 48000 for opus because opus doesn't support 44100
-        "audioSampleRate": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.sampleRate.toString(),
-        "segmentContainer": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.container,
-      });
-
-      if (!FinampSettingsHelper.finampSettings.transcodingStreamingFormat.lossless) {
-        queryParameters.addAll({"audioBitRate": FinampSettingsHelper.finampSettings.transcodeBitrate.toString()});
-      }
-
-      if (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
-              MultichannelHandlingSetting.stereoDownmixAll ||
-          (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
-                  MultichannelHandlingSetting.stereoDownmixLossy &&
-              FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec != "flac")) {
-        queryParameters.addAll({"maxAudioChannels": "2"});
-      }
-    } else {
-      builtPath.addAll(["Items", mediaItem.extras!["itemJson"]["Id"] as String, "File"]);
-    }
-
-    return Uri(
+    final out = Uri(
       host: parsedBaseUrl.host,
       port: parsedBaseUrl.port,
       scheme: parsedBaseUrl.scheme,
@@ -1411,6 +1414,56 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       pathSegments: builtPath,
       queryParameters: queryParameters,
     );
+    return out;
+  }
+
+  /// Fetches the track-specific path segments and query parameters
+  Uri _dummyTrackUri(MediaItem mediaItem, StreamingTranscodingConfig? justInTimeTranscodeConfig) {
+    // TODO This comment is outdated?  Maybe we should pull data out of mediaItem.
+    // When creating the MediaItem (usually in AudioServiceHelper), we specify
+    // whether or not to transcode. We used to pull from FinampSettings here,
+    // but since audio_service runs in an isolate (or at least, it does until
+    // 0.18), the value would be wrong if changed while a track was playing since
+    // Hive is bad at multi-isolate stuff.
+
+    List<String> builtPath = [];
+
+    Map<String, String> queryParameters = {};
+
+    // // indicate which play session this stream belongs to, this will be referenced when reporting playback progress
+    // queryParameters["PlaySessionId"] = _order.id; //!!! this currently breaks transcoding for some reason
+
+    assert(!(mediaItem.extras!["isDownloaded"] as bool));
+    final transcodeProfile =
+        justInTimeTranscodeConfig ??
+        StreamingTranscodingConfig.fromJson(mediaItem.extras!["transcodeProfile"] as Map<String, dynamic>);
+    if (transcodeProfile.format != FinampTranscodingStreamingFormat.original) {
+      builtPath.addAll(["Audio", mediaItem.extras!["itemJson"]["Id"] as String, "main.m3u8"]);
+
+      queryParameters.addAll({
+        "audioCodec": transcodeProfile.format.codec,
+        // Ideally we'd switch between 44.1/48kHz depending on the source is,
+        // realistically it doesn't matter too much
+        // default to 44100, only use 48000 for opus because opus doesn't support 44100
+        "playSessionId": mediaItem.extras!["playSessionId"] as String? ?? "",
+        "audioSampleRate": transcodeProfile.format.codec == 'opus' ? '48000' : '44100',
+        "maxAudioBitDepth": "16",
+        if (!transcodeProfile.format.lossless) "audioBitRate": transcodeProfile.bitrate.toString(),
+        "segmentContainer": transcodeProfile.format.container,
+      });
+
+      if (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+              MultichannelHandlingSetting.stereoDownmixAll ||
+          (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
+                  MultichannelHandlingSetting.stereoDownmixLossy &&
+              !transcodeProfile.format.lossless)) {
+        queryParameters.addAll({"maxAudioChannels": "2"});
+      }
+    } else {
+      builtPath.addAll(["Items", mediaItem.extras!["itemJson"]["Id"] as String, "File"]);
+    }
+
+    return Uri(host: dummyHost, scheme: "http", pathSegments: builtPath, queryParameters: queryParameters);
   }
 
   @override

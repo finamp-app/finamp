@@ -2,7 +2,6 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
-import 'package:finamp/services/network_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -36,21 +35,20 @@ class LocalNetworkAddressSelectorState extends ConsumerState<LocalNetworkAddress
     });
   }
 
-  Future<void> _updateUrl(String url) async {
+  void _updateUrl(String url) {
     if (url.isEmpty) return; // Ignore empty
     if (!url.startsWith('http')) {
       GlobalSnackbar.message((context) => AppLocalizations.of(context)!.missingSchemaError);
       return;
     }
     GetIt.instance<FinampUserHelper>().currentUser?.update(newLocalAddress: url);
-    await changeTargetUrl();
   }
 
-  Future<void> commitIfChanged() async {
+  void commitIfChanged() {
     final current = _controller?.text.trim() ?? '';
     if (current == _lastCommittedValue) return;
     _lastCommittedValue = current;
-    await _updateUrl(current);
+    _updateUrl(current);
   }
 
   @override

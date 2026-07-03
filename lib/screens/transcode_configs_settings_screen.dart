@@ -1,9 +1,4 @@
-import 'package:finamp/l10n/app_localizations.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../services/finamp_settings_helper.dart';
-
+/*
 class BitrateSelector extends ConsumerStatefulWidget {
   const BitrateSelector({super.key});
 
@@ -61,3 +56,34 @@ class _BitrateSelectorState extends ConsumerState<BitrateSelector> {
     );
   }
 }
+
+class StreamingTranscodingFormatDropdownListTile extends ConsumerWidget {
+  const StreamingTranscodingFormatDropdownListTile({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.transcodingStreamingFormatTitle),
+      subtitle: Column(
+        spacing: 4.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.transcodingStreamingFormatSubtitle),
+          FinampSettingsDropdown<FinampTranscodingStreamingFormat>(
+            dropdownItems: FinampTranscodingStreamingFormat.values
+                .map(
+                  (e) => DropdownMenuEntry<FinampTranscodingStreamingFormat>(
+                    value: e,
+                    label: "${e.codec}+${e.container}".toUpperCase(),
+                  ),
+                )
+                .toList(),
+            selectedValue: ref.watch(finampSettingsProvider.transcodingStreamingFormat),
+            onSelected: FinampSetters.setTranscodingStreamingFormat.ifNonNull,
+          ),
+        ],
+      ),
+    );
+  }
+}
+ */
