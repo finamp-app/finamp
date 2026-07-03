@@ -3053,5 +3053,29 @@
             }
         },
         "description": "Label for sleep timer track count slider"
+    },
+    "quickActionsSubtitle": "Selecciona i reordena les accions ràpides que es mostren a la pantalla d'inici.",
+    "@quickActionsSubtitle": {
+        "description": "Subtitle for quick actions edit menu"
+    },
+    "selectAnItem": "Selecciona un element",
+    "@selectAnItem": {
+        "description": "Title for 'play specific item' quick action edit menu"
+    },
+    "sectionsMenu": "Seccions",
+    "@sectionsMenu": {
+        "description": "Title for home screen sections edit menu"
+    },
+    "sectionMenuSubtitle": "Selecciona i reordena les seccions que es mostren a la pantalla d'inici.",
+    "@sectionMenuSubtitle": {
+        "description": "Subtitle for home screen sections edit menu"
+    },
+    "sectionType": "Tipus de secció",
+    "@sectionType": {
+        "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
+    },
+    "featuredCollection": "Col·lecció destacada",
+    "@featuredCollection": {
+        "description": "Title for home screen section editor collection selector"
     }
 }
