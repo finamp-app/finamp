@@ -4,12 +4,15 @@ import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/client_certificate_authentication_menu.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/services/client_certificate_installer.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/server_client_discovery_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' show ClientException;
 import 'package:logging/logging.dart';
 
 import 'login_flow.dart';
@@ -42,12 +45,37 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
       }
     };
 
+    _startDiscovery();
+  }
+
+  void _startDiscovery() {
     widget.serverState.clientDiscoveryHandler.discoverServers((ClientDiscoveryResponse response) async {
-      _loginServerSelectionPageLogger.finer("Found server: ${response.name} at ${response.address}");
+      _loginServerSelectionPageLogger.fine("Found server '${response.name}' at ${response.address}");
 
       final serverUrl = Uri.parse(response.address!);
-      PublicSystemInfoResult? serverInfo = await jellyfinApiHelper.loadCustomServerPublicInfo(serverUrl);
-      _loginServerSelectionPageLogger.finer("Server info: ${serverInfo?.toJson()}");
+      final PublicSystemInfoResult? serverInfo;
+      try {
+        serverInfo = await jellyfinApiHelper.loadCustomServerPublicInfo(serverUrl);
+      } catch (error) {
+        if (ClientCertificateInstaller.isSupported &&
+            error is ClientException &&
+            error.message.contains("TLSV1_ALERT_CERTIFICATE_REQUIRED")) {
+          _loginServerSelectionPageLogger.info(
+            "Discovered server '${response.name}' at ${response.address} requires an mTLS client certificate",
+          );
+          if (mounted && !widget.serverState.clientCertificateRequired) {
+            setState(() {
+              widget.serverState.clientCertificateRequired = true;
+            });
+          }
+        } else {
+          _loginServerSelectionPageLogger.severe(
+            "Failed to load public server info for discovered server '${response.name}' at ${response.address}: $error",
+          );
+        }
+        return;
+      }
+      _loginServerSelectionPageLogger.fine("Server info from ${response.address}: ${serverInfo?.toJson()}");
       if (serverInfo != null && mounted) {
         if (serverInfo.serverName == null) {
           serverInfo.serverName = response.name;
@@ -57,10 +85,19 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
         }
         // no need to filter duplicates, we're using a map
         setState(() {
-          widget.serverState.discoveredServers[serverUrl] = serverInfo;
+          widget.serverState.discoveredServers[serverUrl] = serverInfo!;
         });
       }
     });
+  }
+
+  /// Discards the current discovery handler and starts over with a fresh socket.
+  /// The old socket can end up in a broken state after the app was backgrounded, e.g. while picking a certificate file,
+  /// and servers that responded before a certificate was installed need to be probed again either way.
+  void _restartDiscovery() {
+    widget.serverState.clientDiscoveryHandler.dispose();
+    widget.serverState.clientDiscoveryHandler = JellyfinServerClientDiscovery();
+    _startDiscovery();
   }
 
   @override
@@ -148,6 +185,7 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
                               onPressed: () => showClientCertificateMenu(
                                 context: context,
                                 onImported: () {
+                                  _restartDiscovery();
                                   final baseUrl = widget.serverState.baseUrl;
                                   if (baseUrl != null) {
                                     widget.serverState.onBaseUrlChanged(baseUrl);
