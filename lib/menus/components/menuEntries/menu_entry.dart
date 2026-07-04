@@ -6,7 +6,7 @@ class MenuEntry extends ConsumerWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool enabled;
-  final String? disabledTooltip;
+  final String? tooltip;
 
   const MenuEntry({
     super.key,
@@ -14,7 +14,7 @@ class MenuEntry extends ConsumerWidget {
     required this.icon,
     required this.onTap,
     this.enabled = true,
-    this.disabledTooltip,
+    this.tooltip,
   });
 
   @override
@@ -31,8 +31,8 @@ class MenuEntry extends ConsumerWidget {
       ),
     );
 
-    if (!enabled && disabledTooltip != null) {
-      return Tooltip(message: disabledTooltip, child: entry);
+    if (tooltip != null) {
+      return Tooltip(message: tooltip, child: entry);
     } else {
       return entry;
     }

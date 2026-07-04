@@ -3547,5 +3547,7 @@
             }
         },
         "description": "Titles for settings controlling which pieces of advanced track info are displayed."
-    }
+    },
+    "maximizePlayer": "Maximize player",
+    "collapsePlayer": "Collapse player to sidebar"
 }

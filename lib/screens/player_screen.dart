@@ -32,6 +32,9 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
+import '../extensions/localizations.dart';
+import '../menus/components/icon_button_with_semantics.dart';
+
 const double _defaultToolbarHeight = 53.0;
 const int _defaultMaxToolbarLines = 2;
 
@@ -186,35 +189,55 @@ class _PlayerScreenContent extends ConsumerWidget {
         },
         child: ValueListenableBuilder(
           valueListenable: splitScreenAvailable,
-          builder: (context, value, _) {
+          builder: (context, allowSplitscreen, _) {
             final appbarActions = [
-              if (!usingPlayerSplitScreen) FinampAppBarBackButton(dismissDirection: AxisDirection.down),
-              if (value)
-                FinampAppBarBackButton(
-                  dismissDirection: usingPlayerSplitScreen ? AxisDirection.left : AxisDirection.right,
+              FinampAppBarBackButton(
+                dismissDirection: AxisDirection.down,
+                onPressed: () {
+                  if (usingPlayerSplitScreen) {
+                    FinampSetters.setAllowSplitScreen(false);
+                  } else {
+                    assert(GlobalSnackbar.navigatorState == Navigator.of(context));
+                    GlobalSnackbar.navigatorState?.pop();
+                  }
+                },
+              ),
+              if (allowSplitscreen && usingPlayerSplitScreen)
+                IconButtonWithSemantics(
+                  // padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                  label: context.l10n.maximizePlayer,
                   onPressed: () {
                     // This delays the transition one frame so that the sidebar is removed on the same frame as the
                     // new player screen is built during maximization
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      FinampSetters.setAllowSplitScreen(!usingPlayerSplitScreen);
+                      FinampSetters.setAllowSplitScreen(false);
                     });
-                    if (usingPlayerSplitScreen) {
-                      // If we are currently in splitscreen and want to maximize, push a copy of the player screen directly
-                      // onto the main navigator.
-                      GlobalSnackbar.navigatorState?.pushNamed(PlayerScreen.routeName);
-                    } else {
-                      // If we are not in splitscreen, immediately pop the player off the main navigator in the
-                      // same frame we enable splitscreen, without waiting for queuePop().
-                      assert(GlobalSnackbar.navigatorState == Navigator.of(context));
-                      GlobalSnackbar.navigatorState?.pop();
-                    }
+                    // If we are currently in splitscreen and want to maximize, push a copy of the player screen directly
+                    // onto the main navigator.
+                    GlobalSnackbar.navigatorState?.pushNamed(PlayerScreen.routeName);
                   },
+                  icon: TablerIcons.arrows_diagonal_2,
+                  strokeWidth: 1.5,
+                  visualDensity: VisualDensity(horizontal: 0, vertical: -2),
                 ),
-              if (usingPlayerSplitScreen)
-                FinampAppBarBackButton(
-                  dismissDirection: AxisDirection.down,
-                  onPressed: () =>
-                      FinampSetters.setAllowSplitScreen(!FinampSettingsHelper.finampSettings.allowSplitScreen),
+              if (allowSplitscreen && !usingPlayerSplitScreen)
+                IconButtonWithSemantics(
+                  // padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                  label: context.l10n.collapsePlayer,
+                  onPressed: () {
+                    // This delays the transition one frame so that the sidebar is removed on the same frame as the
+                    // new player screen is built during maximization
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      FinampSetters.setAllowSplitScreen(true);
+                    });
+                    // If we are not in splitscreen, immediately pop the player off the main navigator in the
+                    // same frame we enable splitscreen, without waiting for queuePop().
+                    assert(GlobalSnackbar.navigatorState == Navigator.of(context));
+                    GlobalSnackbar.navigatorState?.pop();
+                  },
+                  icon: TablerIcons.layout_sidebar_right_collapse,
+                  strokeWidth: 1.5,
+                  visualDensity: VisualDensity(horizontal: 0, vertical: -2),
                 ),
             ];
             return Scaffold(
@@ -233,9 +256,10 @@ class _PlayerScreenContent extends ConsumerWidget {
                 centerTitle: true,
                 toolbarHeight: toolbarHeight,
                 title: PlayerScreenAppBarTitle(maxLines: maxToolbarLines),
-                leadingWidth: 56.0 * appbarActions.length,
+                leadingWidth: 40.0 * appbarActions.length,
                 leading: Row(children: appbarActions),
                 actions: [],
+                titleSpacing: 0.0,
               ),
               // Required for sleep timer input
               resizeToAvoidBottomInset: false,

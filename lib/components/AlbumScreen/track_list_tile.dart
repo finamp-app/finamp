@@ -160,7 +160,7 @@ class TrackListTile extends ConsumerWidget {
         showCover ? TrackListItemFeatures.cover : null,
         TrackListItemFeatures.duration,
         TrackListItemFeatures.addToPlaylistOrFavorite,
-        playable && allowDismiss ? TrackListItemFeatures.swipeable : null,
+        playable && allowDismiss ? TrackListItemFeatures.swipeableInTrackList : null,
       ].nonNulls.toList(),
     );
   }
@@ -303,8 +303,8 @@ class QueueListTile extends StatelessWidget {
         TrackListItemFeatures.cover,
         TrackListItemFeatures.duration,
         TrackListItemFeatures.addToPlaylistOrFavorite,
-        TrackListItemFeatures.swipeable,
-        TrackListItemFeatures.queueSwipe,
+        TrackListItemFeatures.swipeableInTrackList,
+        TrackListItemFeatures.swipeableInQueue,
         allowReorder ? TrackListItemFeatures.dragHandle : null,
       ].nonNulls.toList(),
     );
@@ -347,7 +347,7 @@ class EditListTile extends StatelessWidget {
         TrackListItemFeatures.cover,
         TrackListItemFeatures.dragHandle,
         TrackListItemFeatures.fullyDraggable,
-        TrackListItemFeatures.swipeable,
+        TrackListItemFeatures.swipeableInTrackList,
         restoreInsteadOfRemove ? TrackListItemFeatures.restoreButton : TrackListItemFeatures.removeFromListButton,
       ].nonNulls.toList(),
     );
@@ -462,10 +462,13 @@ class TrackListItem extends ConsumerWidget {
           onSecondaryTapDown: features.contains(TrackListItemFeatures.fullyDraggable)
               ? null
               : (details) => menuCallback(),
-          child: features.contains(TrackListItemFeatures.swipeable) && !ref.watch(finampSettingsProvider.disableGesture)
+          child:
+              (features.contains(TrackListItemFeatures.swipeableInTrackList) ||
+                      features.contains(TrackListItemFeatures.swipeableInQueue)) &&
+                  !ref.watch(finampSettingsProvider.disableGesture)
               ? Dismissible(
                   key: Key(listIndex.toString()),
-                  direction: features.contains(TrackListItemFeatures.queueSwipe)
+                  direction: features.contains(TrackListItemFeatures.swipeableInQueue)
                       ? DismissDirection.endToStart
                       : getAllowedDismissDirection(
                           swipeLeftEnabled:
@@ -527,10 +530,10 @@ enum TrackListItemFeatures {
   addToPlaylistOrFavorite,
   dragHandle,
   fullyDraggable,
-  swipeable,
+  swipeableInTrackList,
   removeFromListButton,
   restoreButton,
-  queueSwipe,
+  swipeableInQueue,
 }
 
 class TrackListItemTile extends ConsumerWidget {

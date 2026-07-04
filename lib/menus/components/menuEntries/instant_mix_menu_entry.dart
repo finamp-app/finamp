@@ -24,7 +24,7 @@ class InstantMixMenuEntry extends ConsumerWidget implements HideableMenuEntry {
       icon: TablerIcons.compass,
       title: context.l10n.instantMix,
       enabled: !ref.watch(finampSettingsProvider.isOffline),
-      disabledTooltip: context.l10n.notAvailableInOfflineMode,
+      tooltip: ref.watch(finampSettingsProvider.isOffline) ? context.l10n.notAvailableInOfflineMode : null,
       onTap: () async {
         Navigator.pop(context); // close menu
         await audioServiceHelper.startInstantMixForItem(baseItem);

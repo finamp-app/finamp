@@ -43,7 +43,7 @@ void main() async {
           // Login testing flag redirects file accesses to testing folder and clears it on startup.
           // Download base directories are not redirected, so loginTesting flag should be avoided on mobile.
           // Note that this means mobile integration test runs will require manual file clearing outside of CI
-          await app.main(integrationTesting: true, loginTesting: !(Platform.isAndroid || Platform.isIOS));
+          await app.main([], integrationTesting: true, loginTesting: !(Platform.isAndroid || Platform.isIOS));
           mainCompleted = true;
         },
         (e, stack) {
