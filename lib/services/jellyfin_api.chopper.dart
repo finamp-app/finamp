@@ -57,7 +57,7 @@ final class _$JellyfinApi extends JellyfinApi {
   @override
   Future<dynamic> initiateQuickConnect() async {
     final Uri $url = Uri.parse('/QuickConnect/Initiate');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request('POST', $url, client.baseUrl);
     final Response $response = await client.send<dynamic, dynamic>(
       $request,
       requestConverter: JsonConverter.requestFactory,
