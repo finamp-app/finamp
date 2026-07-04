@@ -19,6 +19,7 @@ class GlobalShortcuts {
     const ToggleLoopModeIntent(): SingleActivator(LogicalKeyboardKey.keyL, control: true),
     const TogglePlaybackOrderIntent(): SingleActivator(LogicalKeyboardKey.keyS, control: true),
     const BackIntent(): SingleActivator(LogicalKeyboardKey.escape),
+    const FullscreenIntent(): SingleActivator(LogicalKeyboardKey.f11),
   };
 
   static Map<ShortcutActivator, Intent> get shortcutMap {

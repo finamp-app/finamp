@@ -203,15 +203,12 @@ class DefaultSettings {
     features: [
       FinampFeatureChipType.explicit,
       FinampFeatureChipType.playCount,
-      FinampFeatureChipType.additionalPeople,
       FinampFeatureChipType.playbackMode,
       FinampFeatureChipType.codec,
       FinampFeatureChipType.bitRate,
-      FinampFeatureChipType.bitDepth,
-      FinampFeatureChipType.sampleRate,
-      FinampFeatureChipType.size,
       FinampFeatureChipType.normalizationGain,
     ],
+    migrated: true,
   );
   static const showCoversOnAlbumScreen = false;
   static const allowSplitScreen = true;
@@ -2927,6 +2924,19 @@ enum FinampFeatureChipType {
   @HiveField(9)
   explicit;
 
+  static const List<FinampFeatureChipType> defaultOrder = [
+    FinampFeatureChipType.explicit,
+    FinampFeatureChipType.playCount,
+    FinampFeatureChipType.additionalPeople,
+    FinampFeatureChipType.playbackMode,
+    FinampFeatureChipType.codec,
+    FinampFeatureChipType.bitRate,
+    FinampFeatureChipType.bitDepth,
+    FinampFeatureChipType.sampleRate,
+    FinampFeatureChipType.size,
+    FinampFeatureChipType.normalizationGain,
+  ];
+
   /// Human-readable version of the [FinampFeatureChipType]
   @override
   @Deprecated("Use toLocalisedString when possible")
@@ -2961,13 +2971,16 @@ enum FinampFeatureChipType {
 @JsonSerializable()
 @HiveType(typeId: 75)
 class FinampFeatureChipsConfiguration {
-  const FinampFeatureChipsConfiguration({required this.enabled, required this.features});
+  const FinampFeatureChipsConfiguration({required this.enabled, required this.features, required this.migrated});
 
   @HiveField(0)
   final bool enabled;
 
   @HiveField(1)
   final List<FinampFeatureChipType> features;
+
+  @HiveField(2, defaultValue: false)
+  final bool migrated;
 
   factory FinampFeatureChipsConfiguration.fromJson(Map<String, dynamic> json) =>
       _$FinampFeatureChipsConfigurationFromJson(json);
@@ -2981,7 +2994,11 @@ class FinampFeatureChipsConfiguration {
 
   // implement copyWith
   FinampFeatureChipsConfiguration copyWith({bool? enabled, List<FinampFeatureChipType>? features}) {
-    return FinampFeatureChipsConfiguration(enabled: enabled ?? this.enabled, features: features ?? this.features);
+    return FinampFeatureChipsConfiguration(
+      enabled: enabled ?? this.enabled,
+      features: features ?? this.features,
+      migrated: migrated,
+    );
   }
 }
 

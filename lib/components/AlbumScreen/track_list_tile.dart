@@ -304,6 +304,7 @@ class QueueListTile extends StatelessWidget {
         TrackListItemFeatures.duration,
         TrackListItemFeatures.addToPlaylistOrFavorite,
         TrackListItemFeatures.swipeable,
+        TrackListItemFeatures.queueSwipe,
         allowReorder ? TrackListItemFeatures.dragHandle : null,
       ].nonNulls.toList(),
     );
@@ -464,12 +465,14 @@ class TrackListItem extends ConsumerWidget {
           child: features.contains(TrackListItemFeatures.swipeable) && !ref.watch(finampSettingsProvider.disableGesture)
               ? Dismissible(
                   key: Key(listIndex.toString()),
-                  direction: getAllowedDismissDirection(
-                    swipeLeftEnabled:
-                        ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight) != ItemSwipeActions.nothing,
-                    swipeRightEnabled:
-                        ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft) != ItemSwipeActions.nothing,
-                  ),
+                  direction: features.contains(TrackListItemFeatures.queueSwipe)
+                      ? DismissDirection.endToStart
+                      : getAllowedDismissDirection(
+                          swipeLeftEnabled:
+                              ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight) != ItemSwipeActions.nothing,
+                          swipeRightEnabled:
+                              ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft) != ItemSwipeActions.nothing,
+                        ),
                   dismissThresholds: const {DismissDirection.startToEnd: 0.65, DismissDirection.endToStart: 0.65},
                   // no background, dismissing really dismisses here
                   confirmDismiss: confirmDismiss,
@@ -527,6 +530,7 @@ enum TrackListItemFeatures {
   swipeable,
   removeFromListButton,
   restoreButton,
+  queueSwipe,
 }
 
 class TrackListItemTile extends ConsumerWidget {
@@ -679,7 +683,10 @@ class TrackListItemTile extends ConsumerWidget {
                 height: 1.1,
               ),
               overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+              // It would be better to increase tile height instead of clamping titles to one line and hoping things
+              // now fit, but getting the tile height scaling correct across all widgets is difficult.
+              // TODO properly scale track list tile height
+              maxLines: MediaQuery.textScalerOf(context).scale(15.5) > 15.5 * 1.11 ? 1 : 2,
             ),
           ),
           Flexible(

@@ -1349,17 +1349,20 @@ class FinampFeatureChipsConfigurationAdapter
     return FinampFeatureChipsConfiguration(
       enabled: fields[0] as bool,
       features: (fields[1] as List).cast<FinampFeatureChipType>(),
+      migrated: fields[2] == null ? false : fields[2] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, FinampFeatureChipsConfiguration obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.enabled)
       ..writeByte(1)
-      ..write(obj.features);
+      ..write(obj.features)
+      ..writeByte(2)
+      ..write(obj.migrated);
   }
 
   @override
@@ -9559,6 +9562,7 @@ FinampFeatureChipsConfiguration _$FinampFeatureChipsConfigurationFromJson(
   features: (json['features'] as List<dynamic>)
       .map((e) => $enumDecode(_$FinampFeatureChipTypeEnumMap, e))
       .toList(),
+  migrated: json['migrated'] as bool,
 );
 
 Map<String, dynamic> _$FinampFeatureChipsConfigurationToJson(
@@ -9568,6 +9572,7 @@ Map<String, dynamic> _$FinampFeatureChipsConfigurationToJson(
   'features': instance.features
       .map((e) => _$FinampFeatureChipTypeEnumMap[e]!)
       .toList(),
+  'migrated': instance.migrated,
 };
 
 const _$FinampFeatureChipTypeEnumMap = {

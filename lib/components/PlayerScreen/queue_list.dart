@@ -772,8 +772,16 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
                               _audioHandler.togglePlayback();
                             },
                             icon: mediaState!.playbackState.playing
-                                ? const Icon(TablerIcons.player_pause, size: 32)
-                                : const Icon(TablerIcons.player_play, size: 32),
+                                ? const Icon(
+                                    TablerIcons.player_pause,
+                                    size: 32,
+                                    shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)],
+                                  )
+                                : const Icon(
+                                    TablerIcons.player_play,
+                                    size: 32,
+                                    shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)],
+                                  ),
                             color: Colors.white,
                           ),
                         ),
@@ -826,19 +834,16 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(
-                                        height: 20,
-                                        child: OneLineMarqueeHelper(
-                                          key: ValueKey(currentTrack?.item.id),
-                                          text: currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            height: 26 / 20,
-                                            color: primaryTextColor,
-                                            fontWeight: Theme.brightnessOf(context) == Brightness.light
-                                                ? FontWeight.w500
-                                                : FontWeight.w600,
-                                          ),
+                                      OneLineMarqueeHelper(
+                                        key: ValueKey(currentTrack?.item.id),
+                                        text: currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          height: 26 / 20,
+                                          color: primaryTextColor,
+                                          fontWeight: Theme.brightnessOf(context) == Brightness.light
+                                              ? FontWeight.w500
+                                              : FontWeight.w600,
                                         ),
                                       ),
                                       const SizedBox(height: 4),

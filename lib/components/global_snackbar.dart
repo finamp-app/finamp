@@ -69,7 +69,7 @@ class GlobalSnackbar {
     if (scaffoldState != null && (enqueueContext?.mounted ?? false)) {
       // Schedule snackbar creation for as soon as possible outside of build()
       SchedulerBinding.instance.scheduleTask(() {
-        if (scaffoldState == null || !(enqueueContext?.mounted ?? false)) {
+        if (scaffoldState == null || !scaffoldState!.mounted || !(enqueueContext?.mounted ?? false)) {
           _logger.warning("Global Snackbar context unmounted during async gap.");
           _enqueue(func);
         } else {

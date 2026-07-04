@@ -117,7 +117,7 @@ late DateTime startTime;
 
 final providerScopeKey = GlobalKey();
 
-Future<void> main({bool integrationTesting = false, bool loginTesting = false}) async {
+Future<void> main(List<String> args, {bool integrationTesting = false, bool loginTesting = false}) async {
   if (loginTesting) {
     // Note that download baseDirectories cannot be redirected, so use of this flag
     // causes errors in downloader on mobile platforms
@@ -139,6 +139,7 @@ Future<void> main({bool integrationTesting = false, bool loginTesting = false}) 
     _migrateSortOptions();
     _migrateGridSize();
     _migrateHomescreen();
+    _migrateFeatureChips();
     await _migrateThemeModeLocale();
     _mainLog.info("Completed applicable migrations");
     await _trustAndroidUserCerts();
@@ -153,7 +154,7 @@ Future<void> main({bool integrationTesting = false, bool loginTesting = false}) 
     _mainLog.info("Setup downloads service");
     await _setupProviders();
     _mainLog.info("Setup providers");
-    await _setupOSIntegration();
+    await _setupOSIntegration(args);
     _mainLog.info("Setup os integrations");
     await _setupPlayOnService();
     _mainLog.info("Setup PlayOnService");
@@ -355,7 +356,7 @@ Future<void> _setupProviders() async {
   );
 }
 
-Future<void> _setupOSIntegration() async {
+Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
   // set up window manager on desktop, mainly to restrict minimum size
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     final screenSize = FinampSettingsHelper.finampSettings.screenSize;
@@ -377,6 +378,9 @@ Future<void> _setupOSIntegration() async {
         GetIt.instance<ProviderContainer>().listen(brightnessProvider, fireImmediately: true, (_, brightness) {
           windowManager.setBrightness(brightness);
         });
+        if (commandLineArgs.contains("--fullscreen")) {
+          await windowManager.setFullScreen(true);
+        }
         await windowManager.show();
         await windowManager.focus();
       }),
@@ -548,6 +552,18 @@ void _migrateHomescreen() {
 
   if (changed) {
     FinampSettingsHelper.overwriteFinampSettings(finampSettings);
+  }
+}
+
+void _migrateFeatureChips() {
+  if (!FinampSettingsHelper.finampSettings.featureChipsConfiguration.migrated) {
+    FinampSetters.setFeatureChipsConfiguration(
+      FinampFeatureChipsConfiguration(
+        enabled: FinampSettingsHelper.finampSettings.featureChipsConfiguration.enabled,
+        features: DefaultSettings.featureChipsConfiguration.features,
+        migrated: true,
+      ),
+    );
   }
 }
 

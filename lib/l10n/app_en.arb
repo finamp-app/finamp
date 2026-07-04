@@ -3537,5 +3537,15 @@
     "@applyChangesOnClose": {
         "description": "Notification on sort and filter menu that currently pending changes will be automatically applied on close."
     },
-    "removeFromQueue": "Remove From Queue"
+    "removeFromQueue": "Remove From Queue",
+    "featureChipName": "{chipName, select, explicit{Explicit} playCount{Play Count} additionalPeople{Additional People} playbackMode{Playback Mode} codec{Codec} bitRate{Bitrate} bitDepth{Bit Depth}sampleRate{Sample Rate} size{Size} normalizationGain{Normalization Gain} other{{chipName}}}",
+    "@featureChipName": {
+        "placeholders": {
+            "chipName": {
+                "type": "String",
+                "example": "playCount"
+            }
+        },
+        "description": "Titles for settings controlling which pieces of advanced track info are displayed."
+    }
 }

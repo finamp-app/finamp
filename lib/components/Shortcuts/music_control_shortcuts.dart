@@ -8,6 +8,7 @@ import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:window_manager/window_manager.dart';
 
 class TogglePlaybackIntent extends Intent {
   const TogglePlaybackIntent();
@@ -47,6 +48,10 @@ class TogglePlaybackOrderIntent extends Intent {
 
 class BackIntent extends Intent {
   const BackIntent();
+}
+
+class FullscreenIntent extends Intent {
+  const FullscreenIntent();
 }
 
 Map<Type, Action<Intent>> getMusicControlActions() {
@@ -139,6 +144,12 @@ Map<Type, Action<Intent>> getMusicControlActions() {
     BackIntent: CallbackAction<BackIntent>(
       onInvoke: (BackIntent intent) {
         GlobalSnackbar.navigatorState?.maybePop();
+        return null;
+      },
+    ),
+    FullscreenIntent: CallbackAction<FullscreenIntent>(
+      onInvoke: (FullscreenIntent intent) async {
+        await WindowManager.instance.setFullScreen(!await WindowManager.instance.isFullScreen());
         return null;
       },
     ),
