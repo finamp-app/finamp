@@ -2851,52 +2851,52 @@ class FinampFeatureChipTypeAdapter extends TypeAdapter<FinampFeatureChipType> {
   FinampFeatureChipType read(BinaryReader reader) {
     switch (reader.readByte()) {
       case 0:
-        return FinampFeatureChipType.playCount;
-      case 1:
-        return FinampFeatureChipType.additionalPeople;
-      case 2:
-        return FinampFeatureChipType.playbackMode;
-      case 3:
-        return FinampFeatureChipType.codec;
-      case 4:
-        return FinampFeatureChipType.bitRate;
-      case 5:
-        return FinampFeatureChipType.bitDepth;
-      case 6:
-        return FinampFeatureChipType.size;
-      case 7:
-        return FinampFeatureChipType.normalizationGain;
-      case 8:
-        return FinampFeatureChipType.sampleRate;
-      case 9:
         return FinampFeatureChipType.explicit;
-      default:
+      case 1:
         return FinampFeatureChipType.playCount;
+      case 2:
+        return FinampFeatureChipType.additionalPeople;
+      case 3:
+        return FinampFeatureChipType.playbackMode;
+      case 4:
+        return FinampFeatureChipType.codec;
+      case 5:
+        return FinampFeatureChipType.bitRate;
+      case 6:
+        return FinampFeatureChipType.bitDepth;
+      case 7:
+        return FinampFeatureChipType.sampleRate;
+      case 8:
+        return FinampFeatureChipType.size;
+      case 9:
+        return FinampFeatureChipType.normalizationGain;
+      default:
+        return FinampFeatureChipType.explicit;
     }
   }
 
   @override
   void write(BinaryWriter writer, FinampFeatureChipType obj) {
     switch (obj) {
-      case FinampFeatureChipType.playCount:
-        writer.writeByte(0);
-      case FinampFeatureChipType.additionalPeople:
-        writer.writeByte(1);
-      case FinampFeatureChipType.playbackMode:
-        writer.writeByte(2);
-      case FinampFeatureChipType.codec:
-        writer.writeByte(3);
-      case FinampFeatureChipType.bitRate:
-        writer.writeByte(4);
-      case FinampFeatureChipType.bitDepth:
-        writer.writeByte(5);
-      case FinampFeatureChipType.size:
-        writer.writeByte(6);
-      case FinampFeatureChipType.normalizationGain:
-        writer.writeByte(7);
-      case FinampFeatureChipType.sampleRate:
-        writer.writeByte(8);
       case FinampFeatureChipType.explicit:
+        writer.writeByte(0);
+      case FinampFeatureChipType.playCount:
+        writer.writeByte(1);
+      case FinampFeatureChipType.additionalPeople:
+        writer.writeByte(2);
+      case FinampFeatureChipType.playbackMode:
+        writer.writeByte(3);
+      case FinampFeatureChipType.codec:
+        writer.writeByte(4);
+      case FinampFeatureChipType.bitRate:
+        writer.writeByte(5);
+      case FinampFeatureChipType.bitDepth:
+        writer.writeByte(6);
+      case FinampFeatureChipType.sampleRate:
+        writer.writeByte(7);
+      case FinampFeatureChipType.size:
+        writer.writeByte(8);
+      case FinampFeatureChipType.normalizationGain:
         writer.writeByte(9);
     }
   }
@@ -9576,16 +9576,16 @@ Map<String, dynamic> _$FinampFeatureChipsConfigurationToJson(
 };
 
 const _$FinampFeatureChipTypeEnumMap = {
+  FinampFeatureChipType.explicit: 'explicit',
   FinampFeatureChipType.playCount: 'playCount',
   FinampFeatureChipType.additionalPeople: 'additionalPeople',
   FinampFeatureChipType.playbackMode: 'playbackMode',
   FinampFeatureChipType.codec: 'codec',
   FinampFeatureChipType.bitRate: 'bitRate',
   FinampFeatureChipType.bitDepth: 'bitDepth',
+  FinampFeatureChipType.sampleRate: 'sampleRate',
   FinampFeatureChipType.size: 'size',
   FinampFeatureChipType.normalizationGain: 'normalizationGain',
-  FinampFeatureChipType.sampleRate: 'sampleRate',
-  FinampFeatureChipType.explicit: 'explicit',
 };
 
 FinampOutputRoute _$FinampOutputRouteFromJson(Map<String, dynamic> json) =>

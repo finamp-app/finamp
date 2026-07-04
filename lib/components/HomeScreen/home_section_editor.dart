@@ -588,7 +588,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
 
 const sectionPresetPickerMenuRouteName = "/section-preset-picker-menu";
 
-Future<HomeScreenSectionPresetType?> showSectionPresetPickerMenu(
+Future<(HomeScreenSectionPresetType?,)?> showSectionPresetPickerMenu(
   BuildContext context, {
   int? editingSectionIndex,
 }) async {
@@ -619,7 +619,7 @@ Future<HomeScreenSectionPresetType?> showSectionPresetPickerMenu(
                 // Navigator.of(context).pop(preset);
                 if (context.mounted) {
                   FeedbackHelper.feedback(FeedbackType.selection);
-                  Navigator.of(context).pop(presetType);
+                  Navigator.of(context).pop((presetType,));
                 }
               },
             );
@@ -646,7 +646,7 @@ Future<HomeScreenSectionPresetType?> showSectionPresetPickerMenu(
                 // }
                 if (context.mounted) {
                   FeedbackHelper.feedback(FeedbackType.selection);
-                  Navigator.of(context).pop(null);
+                  Navigator.of(context).pop((null,));
                 }
               },
             );
@@ -655,7 +655,7 @@ Future<HomeScreenSectionPresetType?> showSectionPresetPickerMenu(
       ])
       .toList();
 
-  return await showThemedBottomSheet<HomeScreenSectionPresetType?>(
+  return await showThemedBottomSheet<(HomeScreenSectionPresetType?,)?>(
     context: context,
     routeName: sectionPresetPickerMenuRouteName,
     minDraggableHeight: 0.25,

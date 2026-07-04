@@ -31,7 +31,7 @@ class PlayerSettingsScreen extends ConsumerWidget {
         children: [
           ShowFeatureChipsToggle(),
           if (ref.watch(finampSettingsProvider.featureChipsConfiguration).enabled) ...[
-            for (var feature in FinampFeatureChipType.defaultOrder) FeatureChipToggle(feature: feature),
+            for (var feature in FinampFeatureChipType.values) FeatureChipToggle(feature: feature),
           ],
           ShowAlbumReleaseDateOnPlayerScreenToggle(),
           PlayerScreenMinimumCoverPaddingEditor(),
@@ -125,7 +125,7 @@ class FeatureChipToggle extends ConsumerWidget {
             feat.remove(feature);
           }
           FinampSetters.setFeatureChipsConfiguration(
-            config.copyWith(features: FinampFeatureChipType.defaultOrder.where((x) => feat.contains(x)).toList()),
+            config.copyWith(features: FinampFeatureChipType.values.where((x) => feat.contains(x)).toList()),
           );
         },
       ),

@@ -1192,6 +1192,7 @@ enum ContentType {
     ContentType.inAlbumArtistAlbums => false,
   };
 
+  // This is basically whether we expect music_screen_tab_view to be able to display this type.
   bool get directlyDisplayable => switch (this) {
     ContentType.albums => true,
     ContentType.genericArtists => false,
@@ -2903,39 +2904,27 @@ enum FinampTranscodingStreamingFormat {
 
 @HiveType(typeId: 74)
 enum FinampFeatureChipType {
+  // Feature chips on the player screen will be displayed in the same order as this enum.
   @HiveField(0)
-  playCount,
+  explicit,
   @HiveField(1)
-  additionalPeople,
+  playCount,
   @HiveField(2)
-  playbackMode,
+  additionalPeople,
   @HiveField(3)
-  codec,
+  playbackMode,
   @HiveField(4)
-  bitRate,
+  codec,
   @HiveField(5)
-  bitDepth,
+  bitRate,
   @HiveField(6)
-  size,
+  bitDepth,
   @HiveField(7)
-  normalizationGain,
-  @HiveField(8)
   sampleRate,
+  @HiveField(8)
+  size,
   @HiveField(9)
-  explicit;
-
-  static const List<FinampFeatureChipType> defaultOrder = [
-    FinampFeatureChipType.explicit,
-    FinampFeatureChipType.playCount,
-    FinampFeatureChipType.additionalPeople,
-    FinampFeatureChipType.playbackMode,
-    FinampFeatureChipType.codec,
-    FinampFeatureChipType.bitRate,
-    FinampFeatureChipType.bitDepth,
-    FinampFeatureChipType.sampleRate,
-    FinampFeatureChipType.size,
-    FinampFeatureChipType.normalizationGain,
-  ];
+  normalizationGain;
 
   /// Human-readable version of the [FinampFeatureChipType]
   @override
@@ -2979,6 +2968,7 @@ class FinampFeatureChipsConfiguration {
   @HiveField(1)
   final List<FinampFeatureChipType> features;
 
+  /// Flag for initial migration to user-configurable features
   @HiveField(2, defaultValue: false)
   final bool migrated;
 
