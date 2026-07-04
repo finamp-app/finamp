@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/screens/music_screen.dart';
+import 'package:finamp/screens/settings_screen.dart';
 import 'package:finamp/services/favorite_provider.dart';
 import 'package:finamp/services/jellyfin_api.dart';
 import 'package:finamp/services/queue_service.dart';
@@ -209,11 +211,13 @@ class PlayOnService {
   Future<void> _connectWebsocket() async {
     assert(socketState == SocketState.connecting);
     final deviceInfo = await getDeviceInfo();
-    //FIXME the websocket connection doesn't work on 10.11 with legacy auth disabled (https://gist.github.com/nielsvanvelzen/ea047d9028f676185832e51ffaf12a6f#disabling-deprecated-authorization-methods)
-    // the [api_key] parameter is deprecated, but there's no way to set HTTP headers for our websocket client
-    // apparently this is because it's not possible to do on the web, which would mean that Jellyfin Web (which is also broken as of 10.11.5) would also need an alternative to authenticate, for example sending the auth token in the first message after connecting
+    // the [api_key] query parameter is deprecated, and has apparently been replaced with the [ApiKey] parameter (at least that's what the Jellyfin TypeScript SDK uses, which has the same Websocket restrictions)
+    // it also seems to work on earlier Jellyfin versions (tested with 10.10.7)
+    // For reference:
+    // https://github.com/jellyfin/jellyfin-sdk-typescript/blob/368a89c5f09a2b6a102f388f68a50e146b80d583/src/constants.ts#L10-L11
+    // https://github.com/jellyfin/jellyfin-sdk-typescript/blob/368a89c5f09a2b6a102f388f68a50e146b80d583/src/api.ts#L159-L164
     final url =
-        "${_finampUserHelper.currentUser!.baseURL}/socket?api_key=${_finampUserHelper.currentUser!.accessToken}&deviceId=${deviceInfo.id}";
+        "${_finampUserHelper.currentUser!.baseURL}/socket?ApiKey=${_finampUserHelper.currentUser!.accessToken}&deviceId=${deviceInfo.id}";
     final parsedUrl = Uri.parse(url);
     final wsUrl = parsedUrl.replace(scheme: parsedUrl.scheme == "https" ? "wss" : "ws");
     _channel = WebSocketChannel.connect(wsUrl);
@@ -291,6 +295,25 @@ class PlayOnService {
 
                 final desiredVolume = request['Data']['Arguments']['Volume'] as String;
                 _audioHandler.setVolume(double.parse(desiredVolume) / 100.0);
+                break;
+              case "GoToSettings":
+                _playOnServiceLogger.fine("Server requested to open settings");
+                unawaited(Navigator.of(GlobalSnackbar.navigatorState!.context).pushNamed(SettingsScreen.routeName));
+                break;
+              case "GoHome":
+                _playOnServiceLogger.fine("Server requested to open home");
+                Navigator.of(GlobalSnackbar.navigatorState!.context).popUntil((route) {
+                  return MusicScreen.routeName == route.settings.name;
+                });
+                break;
+              case "GoToSearch":
+                _playOnServiceLogger.fine("Server requested to open search");
+                //TODO implement once global search exists
+                break;
+              case "Back":
+                _playOnServiceLogger.fine("Server requested to go back");
+                unawaited(Navigator.of(GlobalSnackbar.navigatorState!.context).maybePop());
+                break;
             }
             break;
           case "UserDataChanged":
