@@ -249,7 +249,7 @@
     },
     "audioService": "Servei d'Àudio",
     "customLocation": "Ubicació Personalitzada",
-    "showTextOnGridViewSubtitle": "Mostrar el text (títol, artista, etc.) a la pantalla de música en graella.",
+    "showTextOnGridViewSubtitle": "Mostrar el text (títol, artista, etc.) a la pantalla de música en graella. El text sempre es mostra a la pantalla d'inici, ignorant aquesta configuració.",
     "dark": "Fosc",
     "specialDownloads": "Descàrregues especials",
     "@specialDownloads": {
@@ -632,7 +632,7 @@
     "@yourLikes": {
         "description": "Title for the queue source when the user is playing their liked tracks"
     },
-    "playingFromType": "Reproduint des de {source, select, album{l'Àlbum} playlist{la llista de reproducció} trackMix{la barreja de cançons} artistMix{la barreja d'artistes} albumMix{la barreja d'àlbums} genreMix{la barreja de gèneres} favorites{els preferits} allTracks{totes les cançons} filteredList{les cançons} genre{el gènere} artist{l'artista} track{la cançó} nextUpAlbum{l'àlbum a continuació} nextUpPlaylist{la llista de reproducció a continuació} nextUpArtist{l'artista a continuació} nextUpGenre{el gènere a continuació} remoteClient{el client remot} radio{la ràdio} other{}}",
+    "playingFromType": "Reproduint des de {source, select, album{l'Àlbum} playlist{la llista de reproducció} trackMix{la barreja de cançons} artistMix{la barreja d'artistes} albumMix{la barreja d'àlbums} genreMix{la barreja de gèneres} favorites{els preferits} allTracks{totes les cançons} filteredList{les cançons} genre{el gènere} artist{l'artista} track{la cançó} nextUpAlbum{l'àlbum a continuació} nextUpPlaylist{la llista de reproducció a continuació} nextUpArtist{l'artista a continuació} nextUpGenre{el gènere a continuació} remoteClient{el client remot} radio{la ràdio} homeScreenSection{} collection{Col·lecció} collectionMix{Mix de col·lecció} other{}}",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -2320,7 +2320,7 @@
     "@defaultDownloadLocationButton": {
         "description": "Tooltip for button that sets a download location as the default."
     },
-    "fixedGridTileSizeEnum": "{size, select, small{Petita} medium{Mitjana} large{Gran} veryLarge{Molt gran} other{???}}",
+    "fixedGridTileSizeEnum": "{size, select, tiny{minúscula} verySmall{molt petita} small{petita} medium{mitjana} large{gran} veryLarge{molt gran} huge{enorme} giant{gegant} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
             "size": {
@@ -3077,5 +3077,223 @@
     "featuredCollection": "Col·lecció destacada",
     "@featuredCollection": {
         "description": "Title for home screen section editor collection selector"
+    },
+    "tabType": "Tipus de pestanya",
+    "@tabType": {
+        "description": "Title for home screen section editor tab type dropdown (albums, artists, ect...)"
+    },
+    "currentLibrary": "Biblioteca actual",
+    "@currentLibrary": {
+        "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
+    },
+    "loading": "Carregant...",
+    "@loading": {
+        "description": "Message when items or libraries are loading in home screen section editor"
+    },
+    "sectionTitle": "Títol de la secció",
+    "@sectionTitle": {
+        "description": "Title for custom section title editor in home screen section editor"
+    },
+    "egFavoriteTracks": "p. ex. cançons preferides",
+    "@egFavoriteTracks": {
+        "description": "Placeholder text in custom section title editor in home screen section editor"
+    },
+    "customSectionTitleRequired": "Posa un títol a la secció personalitzada",
+    "@customSectionTitleRequired": {
+        "description": "Message when a custom section title is needed in home screen section editor"
+    },
+    "editHomeScreenSection": "Edita la secció de la pantalla d'inici",
+    "@editHomeScreenSection": {
+        "description": "Title for home screen section editor menu"
+    },
+    "sectionConfigInvalid": "La configuració actual no és vàlida.",
+    "@sectionConfigInvalid": {
+        "description": "Message in home screen section edit menu preview window when a valid preview cannot be generated"
+    },
+    "searchNotAvailibleWhileOffline": "La cerca no està disponible fora de línia!",
+    "@searchNotAvailibleWhileOffline": {
+        "description": "Message in home screen section editor search widget when offline"
+    },
+    "noSearchResults": "Sense resultats.",
+    "@noSearchResults": {
+        "description": "Message in home screen section editor search widget when no results are returned"
+    },
+    "collectionDropdownHint": "Tria una col·lecció",
+    "@collectionDropdownHint": {
+        "description": "Hint for selector dropdown in home screen editor search widget"
+    },
+    "gridImageSizeTitle": "Mida de la graella",
+    "@gridImageSizeTitle": {
+        "description": "Title of grid tile image size setting"
+    },
+    "gridImageSizeSubtitle": "Selecciona la mida dels elements a la vista de quadrícula",
+    "@gridImageSizeSubtitle": {
+        "description": "Subtitle of grid tile image size setting"
+    },
+    "gridImageSizeLabel": "{colCountExact, plural, =0{~} =1{} other{}}{colCount, plural, =1{1 columna ({sizeDescriptor})} other{{colCount} columnes ({sizeDescriptor})}}",
+    "@gridImageSizeLabel": {
+        "placeholders": {
+            "sizeDescriptor": {
+                "type": "String",
+                "example": "Very Small"
+            },
+            "colCount": {
+                "type": "int"
+            },
+            "colCountExact": {
+                "type": "int",
+                "description": "0 = not exact, add e.g. tilde character (~), 1 = exact, just show the number"
+            }
+        },
+        "description": "Slider label in grid tile image size setting"
+    },
+    "homeScreenImageSizeTitle": "Mida de les caselles de la pantalla d’inici",
+    "@homeScreenImageSizeTitle": {
+        "description": "Title of home screen tile image size setting"
+    },
+    "homeScreenImageSizeSubtitle": "Selecciona la mida dels elements a la pantalla d'inici",
+    "@homeScreenImageSizeSubtitle": {
+        "description": "Subtitle of home screen tile image size setting"
+    },
+    "noFilterActive": "Cap filtre actiu",
+    "@noFilterActive": {
+        "description": "Message in sort & filter row when no filters are active"
+    },
+    "activeFilterCount": "{filterCount, plural, =0{Cap filtre} =1{1 filtre actiu} other{{filterCount} filtres actius}}",
+    "@activeFilterCount": {
+        "placeholders": {
+            "filterCount": {
+                "type": "int"
+            }
+        },
+        "description": "Message in sort & filter row"
+    },
+    "inPlaylist": "A la llista de reproducció",
+    "@inPlaylist": {
+        "description": "Name of 'In Playlist' content type"
+    },
+    "inCollection": "A la col·lecció",
+    "@inCollection": {
+        "description": "Name of jellyfin 'Collection' content type"
+    },
+    "tabView": "Vista de pestanya",
+    "@tabView": {
+        "description": "Name of home screen section type which uses the contents of a music screen tab"
+    },
+    "collection": "Col·lecció",
+    "@collection": {
+        "description": "Name of home screen section type which uses the contents of a supplied playable item"
+    },
+    "queues": "Cues",
+    "@queues": {
+        "description": "Name of home screen section type which shows the latest played queues"
+    },
+    "favoritePlaylists": "Llistes de reproducció preferides",
+    "@favoritePlaylists": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteGenres": "Gèneres preferits",
+    "@favoriteGenres": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedAlbums": "Àlbums afegits recentment",
+    "@newlyAddedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedTracks": "Cançons afegides recentment",
+    "@newlyAddedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedAlbums": "Àlbums reproduïts sovint",
+    "@frequentlyPlayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedTracks": "Cançons reproduïdes sovint",
+    "@frequentlyPlayedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedArtists": "Artistes reproduïts sovint",
+    "@frequentlyPlayedArtists": {
+        "description": "Name of a home screen section preset"
+    },
+    "unplayedAlbums": "Àlbums no reproduïts",
+    "@unplayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "recentQueues": "Cues recents",
+    "@recentQueues": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteAlbumsDescription": "Àlbums preferits en ordre aleatori",
+    "@favoriteAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteArtistsDescription": "Artistes preferits en ordre aleatori",
+    "@favoriteArtistsDescription": {
+        "description": "Description  of a home screen section preset"
+    },
+    "favoritePlaylistsDescription": "Llistes de reproducció preferides en ordre aleatori",
+    "@favoritePlaylistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteGenresDescription": "Gèneres preferits en ordre aleatori",
+    "@favoriteGenresDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedAlbumsDescription": "Àlbums que s'han afegit recentment a la teva biblioteca, començant pel més recent",
+    "@recentlyAddedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedTracksDescription": "Cançons que s'han afegit recentment a la teva biblioteca, començant per la més recent",
+    "@recentlyAddedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedAlbumsDescription": "Àlbums que has escoltat molt, començant pel més freqüent",
+    "@frequentlyPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedTracksDescription": "Cançons que has escoltat molt, començant per les més freqüents",
+    "@frequentlyPlayedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedArtistsDescription": "Artistes que has escoltat molt, començant pels més freqüents",
+    "@frequentlyPlayedArtistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "neverPlayedAlbumsDescription": "Àlbums que encara no has escoltat, en ordre aleatori",
+    "@neverPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentQueuesDescription": "Cues que has creat recentment, començant per la més nova",
+    "@recentQueuesDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "shuffleTracksActionDescription": "Barreja cançons aleatòries de la teva biblioteca",
+    "@shuffleTracksActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browseRecentQueuesActionDescription": "Tria entre les cues reproduïdes recentment",
+    "@browseRecentQueuesActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browsePlaybackHistoryActionDescription": "Navega pel teu historial de reproducció",
+    "@browsePlaybackHistoryActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomAlbumActionDescription": "Inicia la reproducció d'un àlbum aleatori",
+    "@playRandomAlbumActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "surpriseMeActionDescription": "Inicia la ràdio 'contínua' a partir d'una cançó aleatòria",
+    "@surpriseMeActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomTrackActionDescription": "Inicia la reproducció d'una cançó aleatòria",
+    "@playRandomTrackActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteItemActionDescription": "Inicia la reproducció des d'un element preferit aleatori",
+    "@playRandomFavoriteItemActionDescription": {
+        "description": "Description of a home screen quick action"
     }
 }
