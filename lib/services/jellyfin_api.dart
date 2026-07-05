@@ -347,6 +347,13 @@ abstract class JellyfinApi extends ChopperService {
     @Query() int? seekPositionTicks,
   });
 
+  @FactoryConverter(request: JsonConverter.requestFactory)
+  @Post(path: "/Sessions/{sessionId}/Command")
+  Future<dynamic> sendGeneralCommand({
+    @Path() required String sessionId,
+    @Body() required Map<String, dynamic> command,
+  });
+
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
   @Get(path: "/Playlists/{playlistId}/Items")
   Future<dynamic> getPlaylistItems({

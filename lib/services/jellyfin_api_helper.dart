@@ -826,6 +826,20 @@ class JellyfinApiHelper {
     );
   }
 
+  /// Sends a general command (e.g. SetVolume, SetRepeatMode) to another
+  /// Jellyfin session (Play On / Connect).
+  Future<void> sendGeneralCommandToSession({
+    required String sessionId,
+    required String name,
+    Map<String, String>? arguments,
+  }) async {
+    assert(_verifyCallable());
+    await jellyfinApi.sendGeneralCommand(
+      sessionId: sessionId,
+      command: {"Name": name, "Arguments": arguments ?? <String, String>{}},
+    );
+  }
+
   /// Gets an item from a user's library.
   Future<BaseItemDto> getItemById(BaseItemId itemId) async {
     assert(_verifyCallable());

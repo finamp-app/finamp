@@ -630,6 +630,26 @@ final class _$JellyfinApi extends JellyfinApi {
   }
 
   @override
+  Future<dynamic> sendGeneralCommand({
+    required String sessionId,
+    required Map<String, dynamic> command,
+  }) async {
+    final Uri $url = Uri.parse('/Sessions/${sessionId}/Command');
+    final $body = command;
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
+    final Response $response = await client.send<dynamic, dynamic>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+    );
+    return $response.bodyOrThrow;
+  }
+
+  @override
   Future<dynamic> getPlaylistItems({
     required BaseItemId playlistId,
     required String userId,
