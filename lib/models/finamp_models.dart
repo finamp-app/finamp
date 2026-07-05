@@ -25,6 +25,7 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path_helper;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../builders/annotations.dart';
 import '../components/MusicScreen/sort_and_filter_row.dart';
@@ -3179,15 +3180,30 @@ class FinampOutputRoute {
 class ScreenSize {
   ScreenSize(this.sizeX, this.sizeY, this.locationX, this.locationY);
 
-  ScreenSize.from(Size size, Offset location)
-    : sizeX = size.width,
-      sizeY = size.height,
-      locationX = location.dx,
-      locationY = location.dy;
+  factory ScreenSize.from(Rect bounds) {
+    final double scaling;
+    // If the main and target monitor have different scaling, the position will be scaled up by the target when saving
+    // but down by the main when applying, leading to an offset.  We undo the scaling and save physical pixel values to
+    // prevent this.  Window size does not need this for some reason, only location.
+    if (Platform.isWindows) {
+      scaling = WindowManager.instance.getDevicePixelRatio();
+    } else {
+      scaling = 1.0;
+    }
+    return ScreenSize(bounds.size.width, bounds.size.height, bounds.topLeft.dx * scaling, bounds.topLeft.dy * scaling);
+  }
 
   Size get size => Size(sizeX, sizeY);
 
-  Offset get location => Offset(locationX, locationY);
+  Offset get location {
+    final double scaling;
+    if (Platform.isWindows) {
+      scaling = WindowManager.instance.getDevicePixelRatio();
+    } else {
+      scaling = 1.0;
+    }
+    return Offset(locationX / scaling, locationY / scaling);
+  }
 
   @HiveField(1)
   double sizeX;

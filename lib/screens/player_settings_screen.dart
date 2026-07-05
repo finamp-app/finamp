@@ -111,10 +111,12 @@ class FeatureChipToggle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final subtitle = context.l10n.featureChipDescription(feature.name);
     return Padding(
       padding: const EdgeInsets.only(left: 40.0),
       child: SwitchListTile.adaptive(
         title: Text(context.l10n.featureChipName(feature.name)),
+        subtitle: subtitle == "null" ? null : Text(subtitle),
         value: ref.watch(finampSettingsProvider.featureChipsConfiguration).features.contains(feature),
         onChanged: (value) {
           final config = FinampSettingsHelper.finampSettings.featureChipsConfiguration;

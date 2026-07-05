@@ -272,7 +272,9 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
 }) async {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
-  if (ref.watch(finampSettingsProvider.isOffline)) {
+  // If the fully downloaded filter is active, just use the offline items.
+  if (ref.watch(finampSettingsProvider.isOffline) ||
+      request.sortConfig.filters.where((x) => x.type == ItemFilterType.isFullyDownloaded).isNotEmpty) {
     return loadHomeSectionItemsOffline(ref: ref, request: request, startIndex: startIndex, limit: limit);
   }
 

@@ -543,10 +543,6 @@ mixin _SortAndFilterMenuEntriesMixin<T extends ConsumerStatefulWidget> on Consum
       title: ItemFilter(type: option).getName(context.l10n),
       leading: Padding(padding: const EdgeInsets.only(left: 16.0), child: Icon(option.icon)),
       trailing: SizedBox.shrink(),
-      enabled: switch (option) {
-        ItemFilterType.isFullyDownloaded => ref.watch(finampSettingsProvider.isOffline),
-        _ => true,
-      },
       state: switch (option) {
         ItemFilterType.isFavorite => currentConfig.filters.contains(ItemFilter(type: ItemFilterType.isFavorite)),
         ItemFilterType.isFullyDownloaded => currentConfig.filters.contains(

@@ -3548,6 +3548,16 @@
         },
         "description": "Titles for settings controlling which pieces of advanced track info are displayed."
     },
+    "featureChipDescription": "{chipName, select, additionalPeople{TODO ?????} playbackMode{Streaming and transcoding status information} bitDepth{Bits per audio sample.  Only applicable to lossless codecs, generally 16 bits.} sampleRate{Audio samples per second.  Generally 44.1 kHz.} normalizationGain{Currently active ReplayGain level} other{null}}",
+    "@featureChipDescription": {
+        "placeholders": {
+            "chipName": {
+                "type": "String",
+                "example": "playCount"
+            }
+        },
+        "description": "Descriptions of different pieces of advanced track info."
+    },
     "maximizePlayer": "Maximize player",
     "collapsePlayer": "Collapse player to sidebar"
 }

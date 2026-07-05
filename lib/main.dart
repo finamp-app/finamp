@@ -845,7 +845,8 @@ class _FinampState extends State<Finamp> with WindowListener {
     windowManagerLogger.finer("[WindowManager] onWindowEvent: $eventName");
 
     if (eventName == "moved" || eventName == "resized") {
-      FinampSetters.setScreenSize(ScreenSize.from(await windowManager.getSize(), await windowManager.getPosition()));
+      FinampSetters.setScreenSize(ScreenSize.from(await windowManager.getBounds()));
+
       windowManagerLogger.finer("Saved window size and position");
     }
   }
