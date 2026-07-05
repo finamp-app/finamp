@@ -322,12 +322,10 @@ abstract class JellyfinApi extends ChopperService {
   @FactoryConverter(request: JsonConverter.requestFactory)
   @Post(path: "/Sessions/Playing/Stopped")
   Future<dynamic> playbackStatusStopped(@Body() PlaybackProgressInfo playbackProgressInfo);
-  
+
   @FactoryConverter(response: JsonConverter.responseFactory)
   @Get(path: "/Sessions")
-  Future<dynamic> getSessions({
-    @Query() String? controllableByUserId,
-  });
+  Future<dynamic> getSessions({@Query() String? controllableByUserId});
 
   @FactoryConverter(request: JsonConverter.requestFactory)
   @Post(path: "/Sessions/{sessionId}/Playing", optionalBody: true)

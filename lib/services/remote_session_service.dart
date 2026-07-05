@@ -20,11 +20,7 @@ class RemotePlaybackState {
   final Duration? duration;
   final bool playing;
 
-  const RemotePlaybackState({
-    required this.position,
-    required this.duration,
-    required this.playing,
-  });
+  const RemotePlaybackState({required this.position, required this.duration, required this.playing});
 }
 
 /// Drives playback on another Jellyfin session ("Play On" / Connect controller
@@ -276,10 +272,7 @@ class RemoteSessionService {
     try {
       // No controllableByUserId filter: it can hide linux/mpv-shim when other
       // sessions are present. We fetch all sessions and match by id instead.
-      final sessions = await _jellyfinApiHelper.getSessions(
-        logSessions: false,
-        controllableByCurrentUserOnly: false,
-      );
+      final sessions = await _jellyfinApiHelper.getSessions(logSessions: false, controllableByCurrentUserOnly: false);
       _handleSessions(sessions);
     } catch (e, stack) {
       // Never let a transient error kill the polling timer.

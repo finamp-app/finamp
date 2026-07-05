@@ -343,12 +343,11 @@ class _RemoteSessionListState extends State<RemoteSessionList> {
     _sessionsFuture = _loadSessions();
     // Rebuild when the connected session changes so selection state stays
     // accurate (e.g. auto-disconnect while the menu is open).
-    _remoteStateSubscription = _remoteSessionService
-        .getRemoteStateStream()
-        .distinct((a, b) => a?.id == b?.id)
-        .listen((_) {
-          if (mounted) setState(() {});
-        });
+    _remoteStateSubscription = _remoteSessionService.getRemoteStateStream().distinct((a, b) => a?.id == b?.id).listen((
+      _,
+    ) {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -487,7 +486,9 @@ class _RemoteSessionListState extends State<RemoteSessionList> {
           return SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Center(child: Text(AppLocalizations.of(context)!.playOnDeviceListError(snapshot.error.toString()))),
+              child: Center(
+                child: Text(AppLocalizations.of(context)!.playOnDeviceListError(snapshot.error.toString())),
+              ),
             ),
           );
         }
