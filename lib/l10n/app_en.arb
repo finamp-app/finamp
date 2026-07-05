@@ -3648,5 +3648,31 @@
     "playOnRemoteDeviceDisconnected": "Remote device disconnected",
     "@playOnRemoteDeviceDisconnected": {
         "description": "Snackbar message shown when the connection to the remote device was lost and Finamp automatically returned to local playback."
+    },
+    "playOnThisDevice": "This device",
+    "@playOnThisDevice": {
+        "description": "Entry in the output menu's remote device list representing local playback on this device."
+    },
+    "playOnSessionActivePromptTitle": "Device is already playing",
+    "@playOnSessionActivePromptTitle": {
+        "description": "Title of the dialog shown when connecting to a remote device that is already playing something."
+    },
+    "playOnSessionActivePromptBody": "{deviceName} is already playing something. You can control its current playback, or replace its queue with the queue on this device.",
+    "@playOnSessionActivePromptBody": {
+        "description": "Body of the dialog shown when connecting to a remote device that is already playing something.",
+        "placeholders": {
+            "deviceName": {
+                "type": "String",
+                "example": "Living Room"
+            }
+        }
+    },
+    "playOnAttachAction": "Control playback",
+    "@playOnAttachAction": {
+        "description": "Dialog action that connects to the remote device while keeping its current playback and queue."
+    },
+    "playOnMigrateAction": "Play my queue",
+    "@playOnMigrateAction": {
+        "description": "Dialog action that connects to the remote device and replaces its queue with this device's queue."
     }
 }
