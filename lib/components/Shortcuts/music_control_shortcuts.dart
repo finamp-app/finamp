@@ -6,7 +6,6 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/queue_service.dart';
-import 'package:finamp/services/remote_session_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -49,68 +48,42 @@ class TogglePlaybackOrderIntent extends Intent {
 Map<Type, Action<Intent>> getMusicControlActions() {
   final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
   final queueService = GetIt.instance<QueueService>();
-  final remoteSession = GetIt.instance<RemoteSessionService>();
 
   return {
     TogglePlaybackIntent: _MusicControlTextFieldSafeAction<TogglePlaybackIntent>(
       onInvoke: (_) {
-        if (remoteSession.isRemote) {
-          unawaited(remoteSession.playPause());
-        } else {
-          unawaited(audioHandler.togglePlayback());
-        }
+        unawaited(audioHandler.togglePlayback());
         return null;
       },
     ),
     SkipToNextIntent: _MusicControlAction<SkipToNextIntent>(
       onInvoke: (_) {
-        if (remoteSession.isRemote) {
-          remoteSession.next();
-        } else {
-          audioHandler.skipToNext();
-        }
+        audioHandler.skipToNext();
         GlobalSnackbar.message((context) => AppLocalizations.of(context)!.skipToNextTrackButtonTooltip);
         return null;
       },
     ),
     SkipToPreviousIntent: _MusicControlAction<SkipToPreviousIntent>(
       onInvoke: (_) {
-        if (remoteSession.isRemote) {
-          remoteSession.previous();
-        } else {
-          audioHandler.skipToPrevious();
-        }
+        audioHandler.skipToPrevious();
         GlobalSnackbar.message((context) => AppLocalizations.of(context)!.skipToPreviousTrackButtonTooltip);
         return null;
       },
     ),
     SeekForwardIntent: _MusicControlTextFieldSafeAction<SeekForwardIntent>(
       onInvoke: (_) {
-        if (remoteSession.isRemote) {
-          final base = remoteSession.remotePlaybackState?.position ?? Duration.zero;
-          remoteSession.seek(base + const Duration(seconds: 30));
-        } else {
-          audioHandler.seek(audioHandler.playbackPosition + const Duration(seconds: 30));
-        }
+        audioHandler.seek(audioHandler.playbackPosition + const Duration(seconds: 30));
         return null;
       },
     ),
     SeekBackwardIntent: _MusicControlTextFieldSafeAction<SeekBackwardIntent>(
       onInvoke: (_) {
-        final current = remoteSession.isRemote
-            ? (remoteSession.remotePlaybackState?.position ?? Duration.zero)
-            : audioHandler.playbackPosition;
+        final current = audioHandler.playbackPosition;
         final target = current < const Duration(seconds: 5) ? Duration.zero : current - const Duration(seconds: 5);
-        if (remoteSession.isRemote) {
-          remoteSession.seek(target);
-        } else {
-          audioHandler.seek(target);
-        }
+        audioHandler.seek(target);
         return null;
       },
     ),
-    // Volume, loop mode and playback order have no remote equivalent in the
-    // Play On command set, so they always act on local playback (Slice D5c).
     VolumeUpIntent: _MusicControlTextFieldSafeAction<VolumeUpIntent>(
       onInvoke: (_) {
         final newVolume = (audioHandler.volume + 0.05).clamp(0.0, 1.0);

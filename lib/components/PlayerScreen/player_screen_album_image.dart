@@ -32,14 +32,11 @@ class PlayerScreenAlbumImage extends ConsumerWidget {
           return const Center(child: CircularProgressIndicator());
         }
         final currentTrack = snapshot.data!.currentTrack;
-        // The displayed item (and the artwork below, via currentAlbumImageProvider)
-        // follows the remote session's track while one is connected (Slice D3b).
-        final displayItem = ref.watch(currentDisplayItemProvider);
 
         return Semantics(
           label: AppLocalizations.of(
             context,
-          )!.playerAlbumArtworkTooltip(displayItem?.name ?? currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName),
+          )!.playerAlbumArtworkTooltip(currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName),
           excludeSemantics: true, // replace child semantics with custom semantics
           container: true,
           child: GestureDetector(

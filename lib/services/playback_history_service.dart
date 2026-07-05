@@ -6,6 +6,7 @@ import 'package:finamp/services/discord_rpc.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/playon_service.dart';
 import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/services/remote_session_service.dart';
 import 'package:finamp/utils/platform_helper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -38,6 +39,13 @@ class PlaybackHistoryService {
   FinampQueueItem?
   _lastReportedTrackStarted; // used to check if playback has already reported as "started" at some point for the current track
   FinampQueueItem? _lastReportedTrackStopped; // used to prevent reporting a track as stopped multiple times
+
+  /// While controlling a remote session (Play On / Connect), the local
+  /// playback state mirrors the remote session, which reports its own playback
+  /// to the server. Reporting the mirrored state as our own session would
+  /// produce bogus play activity, so all server reporting is suspended.
+  bool get _isMirroringRemoteSession =>
+      GetIt.instance.isRegistered<RemoteSessionService>() && GetIt.instance<RemoteSessionService>().isRemote;
 
   final _historyStream = BehaviorSubject<List<FinampHistoryItem>>.seeded(List.empty(growable: true));
 
@@ -351,6 +359,9 @@ class PlaybackHistoryService {
     FinampQueueItem? previousItem,
     PlaybackState? previousState,
   ) async {
+    if (_isMirroringRemoteSession) {
+      return;
+    }
     final shouldReportPreviousTrack =
         previousItem != null &&
         previousState != null &&
@@ -414,7 +425,7 @@ class PlaybackHistoryService {
     PlaybackState currentState,
     PlaybackState? previousState,
   ) async {
-    if (FinampSettingsHelper.finampSettings.isOffline) {
+    if (FinampSettingsHelper.finampSettings.isOffline || _isMirroringRemoteSession) {
       return;
     }
 
@@ -460,6 +471,9 @@ class PlaybackHistoryService {
   }
 
   Future<void> reportPlaybackStopped() async {
+    if (_isMirroringRemoteSession) {
+      return;
+    }
     final playbackInfo = generateGenericPlaybackProgressInfo();
     if (playbackInfo != null) {
       final playbackStopTime = DateTime.now();
@@ -482,7 +496,7 @@ class PlaybackHistoryService {
   }
 
   Future<void> _updatePlaybackInfo({jellyfin_models.PlaybackProgressInfo? playbackData}) async {
-    if (FinampSettingsHelper.finampSettings.isOffline) {
+    if (FinampSettingsHelper.finampSettings.isOffline || _isMirroringRemoteSession) {
       return;
     }
     final playbackInfo = playbackData ?? generateGenericPlaybackProgressInfo();
@@ -504,7 +518,7 @@ class PlaybackHistoryService {
   }
 
   Future<void> _updateQueueInfo() async {
-    if (FinampSettingsHelper.finampSettings.isOffline) {
+    if (FinampSettingsHelper.finampSettings.isOffline || _isMirroringRemoteSession) {
       return;
     }
     final playbackInfo = generateGenericPlaybackProgressInfo(includeNowPlayingQueue: true, force: true);

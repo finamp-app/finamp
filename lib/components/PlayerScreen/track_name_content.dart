@@ -5,7 +5,6 @@ import 'package:finamp/components/PlayerScreen/player_buttons_more.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/screens/player_screen.dart';
-import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/scrolling_text_helper.dart';
@@ -27,13 +26,7 @@ class TrackNameContent extends ConsumerWidget {
     }
     final currentTrack = queue!.currentTrack!;
 
-    // While controlling a remote session, mirror its now-playing item instead
-    // of the local queue's track (Play On, Slice D3b). Queue-bound actions get
-    // a null queueItem then: the remote track has no local queue item.
-    final remoteItem = ref.watch(remoteNowPlayingItemProvider).valueOrNull;
-    final jellyfin_models.BaseItemDto trackBaseItemDto = remoteItem ?? currentTrack.baseItem;
-    final queueItem = remoteItem == null ? currentTrack : null;
-    final title = remoteItem == null ? currentTrack.item.title : remoteItem.name ?? currentTrack.item.title;
+    final jellyfin_models.BaseItemDto trackBaseItemDto = currentTrack.baseItem;
 
     Widget getContent(BoxConstraints constraints, double padding) => Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -43,13 +36,13 @@ class TrackNameContent extends ConsumerWidget {
           constraints: BoxConstraints(maxWidth: constraints.maxWidth - padding),
           child: Semantics.fromProperties(
             properties: SemanticsProperties(
-              label: "$title (${AppLocalizations.of(context)!.title})",
+              label: "${currentTrack.item.title} (${AppLocalizations.of(context)!.title})",
             ),
             excludeSemantics: true,
             container: true,
             child: Consumer(
               builder: (context, ref, _) {
-                final text = title;
+                final text = currentTrack.item.title;
                 final isTwoLineMode = controller.shouldShow(PlayerHideable.twoLineTitle);
 
                 final textStyle = TextStyle(
@@ -79,7 +72,7 @@ class TrackNameContent extends ConsumerWidget {
                       width: 280,
                       height: 30,
                       child: ScrollingTextHelper(
-                        id: ValueKey(remoteItem?.id.raw ?? currentTrack.item.id),
+                        id: ValueKey(currentTrack.item.id),
                         text: text,
                         style: textStyle,
                         alignment: TextAlign.center,
@@ -108,14 +101,14 @@ class TrackNameContent extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            PlayerButtonsMore(item: trackBaseItemDto, queueItem: queueItem),
+            PlayerButtonsMore(item: trackBaseItemDto, queueItem: currentTrack),
             Flexible(
               child: ArtistChips(
                 baseItem: trackBaseItemDto,
                 backgroundColor: IconTheme.of(context).color!.withOpacity(0.1),
               ),
             ),
-            AddToPlaylistButton(item: trackBaseItemDto, queueItem: queueItem),
+            AddToPlaylistButton(item: trackBaseItemDto, queueItem: currentTrack),
           ],
         ),
         Center(

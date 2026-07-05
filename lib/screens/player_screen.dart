@@ -8,7 +8,6 @@ import 'package:finamp/components/PlayerScreen/control_area.dart';
 import 'package:finamp/components/PlayerScreen/player_screen_album_image.dart';
 import 'package:finamp/components/PlayerScreen/player_screen_appbar_title.dart';
 import 'package:finamp/components/PlayerScreen/player_split_screen_scaffold.dart';
-import 'package:finamp/components/PlayerScreen/connect_device_sheet.dart';
 import 'package:finamp/components/PlayerScreen/queue_button.dart';
 import 'package:finamp/components/PlayerScreen/queue_list.dart';
 import 'package:finamp/components/PlayerScreen/track_name_content.dart';
@@ -24,7 +23,6 @@ import 'package:finamp/services/current_track_metadata_provider.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/queue_service.dart';
-import 'package:finamp/services/remote_session_service.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -202,24 +200,7 @@ class _PlayerScreenContent extends ConsumerWidget {
             toolbarHeight: toolbarHeight,
             title: PlayerScreenAppBarTitle(maxLines: maxToolbarLines),
             leading: usingPlayerSplitScreen ? null : FinampAppBarBackButton(dismissDirection: AxisDirection.down),
-            actions: [
-              // Play On / Connect entry point. The StreamBuilder rebuilds the
-              // icon on connect/disconnect so it reflects remote state.
-              StreamBuilder<RemotePlaybackState?>(
-                stream: GetIt.instance<RemoteSessionService>().getRemotePlaybackStateStream(),
-                builder: (context, _) {
-                  final isRemote = GetIt.instance<RemoteSessionService>().isRemote;
-                  return IconButton(
-                    onPressed: () => showConnectDeviceSheet(context),
-                    tooltip: AppLocalizations.of(context)!.playOnDeviceTitle,
-                    icon: Icon(
-                      isRemote ? Icons.cast_connected : Icons.cast,
-                      color: Theme.of(context).iconTheme.color ?? Colors.white,
-                    ),
-                  );
-                },
-              ),
-            ],
+            actions: [],
           ),
           // Required for sleep timer input
           resizeToAvoidBottomInset: false,
