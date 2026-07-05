@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../services/finamp_settings_helper.dart';
@@ -39,6 +41,39 @@ class PlayOnService {
   bool abortConnect = false;
   // If the connection retry loop is currently running
   bool retryActive = false;
+
+  // Sessions updates pushed by the server (used by RemoteSessionService to
+  // monitor the remote session it controls, instead of polling GET /Sessions).
+  final _sessionsStream = PublishSubject<List<SessionInfo>>();
+  bool _sessionUpdatesRequested = false;
+
+  /// How often the server should push Sessions updates while subscribed
+  /// (initial delay, interval), in milliseconds.
+  static const String _sessionUpdateInterval = "0,1500";
+
+  /// Subscribes to Sessions messages over the established websocket and
+  /// returns the resulting stream, or null if the socket isn't connected
+  /// (the caller should fall back to polling).
+  Stream<List<SessionInfo>>? startSessionUpdates() {
+    if (socketState != SocketState.connected) {
+      _playOnServiceLogger.warning("Cannot start Sessions updates, websocket is not connected");
+      return null;
+    }
+    _playOnServiceLogger.info("Subscribing to Sessions updates over websocket");
+    _sessionUpdatesRequested = true;
+    _channel.sink.add('{"MessageType":"SessionsStart","Data":"$_sessionUpdateInterval"}');
+    return _sessionsStream.stream;
+  }
+
+  /// Stops the server-side Sessions subscription started by
+  /// [startSessionUpdates].
+  void stopSessionUpdates() {
+    _sessionUpdatesRequested = false;
+    if (socketState == SocketState.connected) {
+      _playOnServiceLogger.info("Unsubscribing from Sessions updates");
+      _channel.sink.add('{"MessageType":"SessionsStop"}');
+    }
+  }
 
   Future<void> initialize() async {
     _playOnServiceLogger.info("Initializing PlayOn service");
@@ -209,14 +244,20 @@ class PlayOnService {
   Future<void> _connectWebsocket() async {
     assert(socketState == SocketState.connecting);
     final deviceInfo = await getDeviceInfo();
-    //FIXME the websocket connection doesn't work on 10.11 with legacy auth disabled (https://gist.github.com/nielsvanvelzen/ea047d9028f676185832e51ffaf12a6f#disabling-deprecated-authorization-methods)
-    // the [api_key] parameter is deprecated, but there's no way to set HTTP headers for our websocket client
-    // apparently this is because it's not possible to do on the web, which would mean that Jellyfin Web (which is also broken as of 10.11.5) would also need an alternative to authenticate, for example sending the auth token in the first message after connecting
+    // The [api_key] query parameter is deprecated and disabled by default on
+    // Jellyfin 10.11 (https://gist.github.com/nielsvanvelzen/ea047d9028f676185832e51ffaf12a6f#disabling-deprecated-authorization-methods),
+    // so additionally authenticate via the Authorization header. Headers can't
+    // be set on web platforms, but Finamp only targets native platforms, so we
+    // can use the dart:io-based channel. The query parameter is kept for
+    // compatibility with older servers.
     final url =
         "${_finampUserHelper.currentUser!.baseURL}/socket?api_key=${_finampUserHelper.currentUser!.accessToken}&deviceId=${deviceInfo.id}";
     final parsedUrl = Uri.parse(url);
     final wsUrl = parsedUrl.replace(scheme: parsedUrl.scheme == "https" ? "wss" : "ws");
-    _channel = WebSocketChannel.connect(wsUrl);
+    _channel = IOWebSocketChannel.connect(
+      wsUrl,
+      headers: {'Authorization': 'MediaBrowser Token="${_finampUserHelper.currentUser!.accessToken}"'},
+    );
 
     await _channel.ready;
     _playOnServiceLogger.info("WebSocket connection to server established");
@@ -227,6 +268,11 @@ class PlayOnService {
     }
 
     _channel.sink.add('{"MessageType":"KeepAlive"}');
+
+    // Restore the Sessions subscription after a reconnect.
+    if (_sessionUpdatesRequested) {
+      _channel.sink.add('{"MessageType":"SessionsStart","Data":"$_sessionUpdateInterval"}');
+    }
 
     _channel.stream.listen(
       _handleMessage,
@@ -277,6 +323,15 @@ class PlayOnService {
 
       if (request['MessageType'] != 'ForceKeepAlive' && request['MessageType'] != 'KeepAlive') {
         switch (request['MessageType']) {
+          case "Sessions":
+            // Server-pushed session list (requested via SessionsStart), used
+            // to monitor a remote session we control. Not a remote-control
+            // command, so it must not mark this session as controlled.
+            final sessions = (request['Data'] as List<dynamic>)
+                .map((e) => SessionInfo.fromJson(e as Map<String, dynamic>))
+                .toList();
+            _sessionsStream.add(sessions);
+            return;
           case "GeneralCommand":
             switch (request['Data']['Name']) {
               case "DisplayMessage":
@@ -291,6 +346,25 @@ class PlayOnService {
 
                 final desiredVolume = request['Data']['Arguments']['Volume'] as String;
                 _audioHandler.setVolume(double.parse(desiredVolume) / 100.0);
+                break;
+              case "SetRepeatMode":
+                _playOnServiceLogger.info("Server requested a repeat mode change");
+                _queueService.loopMode = switch (request['Data']['Arguments']['RepeatMode'] as String?) {
+                  "RepeatAll" => FinampLoopMode.all,
+                  "RepeatOne" => FinampLoopMode.one,
+                  _ => FinampLoopMode.none,
+                };
+                break;
+              case "SetShuffleQueue":
+                _playOnServiceLogger.info("Server requested a shuffle mode change");
+                unawaited(
+                  _queueService.setPlaybackOrder(
+                    request['Data']['Arguments']['ShuffleMode'] == "Shuffle"
+                        ? FinampPlaybackOrder.shuffled
+                        : FinampPlaybackOrder.linear,
+                  ),
+                );
+                break;
             }
             break;
           case "UserDataChanged":
@@ -367,17 +441,26 @@ class PlayOnService {
                     if (items!.isNotEmpty) {
                       //TODO check if all tracks in the request are in the upcoming queue (peekQueue). If they are, we should try to only reorder the upcoming queue instead of treating it as a new queue, and then skip to the correct index.
                       unawaited(
-                        _queueService.startPlayback(
-                          items: items,
-                          source: QueueItemSource(
-                            name: QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
-                            type: QueueItemSourceType.remoteClient,
-                            id: items[0].id,
-                            item: items[0],
-                          ),
-                          // seems like Jellyfin isn't always sending the correct index
-                          startingIndex: request['Data']['StartIndex'] as int,
-                        ),
+                        _queueService
+                            .startPlayback(
+                              items: items,
+                              source: QueueItemSource(
+                                name: QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
+                                type: QueueItemSourceType.remoteClient,
+                                id: items[0].id,
+                                item: items[0],
+                              ),
+                              // seems like Jellyfin isn't always sending the correct index
+                              startingIndex: request['Data']['StartIndex'] as int,
+                            )
+                            .then((_) async {
+                              // Resume from the requested position instead of 0
+                              // (e.g. when a controller hands its queue off to us).
+                              final startPositionTicks = request['Data']['StartPositionTicks'] as int?;
+                              if (startPositionTicks != null && startPositionTicks > 0) {
+                                await _audioHandler.seek(Duration(microseconds: startPositionTicks ~/ 10));
+                              }
+                            }),
                       );
                     } else {
                       _playOnServiceLogger.severe("Server asked to start an unplayable item");
