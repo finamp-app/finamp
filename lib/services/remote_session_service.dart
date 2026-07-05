@@ -480,6 +480,22 @@ class RemoteSessionService {
 
       // Re-use items we already have locally, fetch only the missing ones.
       final queueInfo = _queueService.getQueue();
+
+      // The adoption was scheduled on a stale mismatch (e.g. an own push that
+      // has since been applied by the remote); re-check against the latest
+      // state before replacing the local queue.
+      final remoteIdsNormalized = remoteIds.map(_normalizeId).toList();
+      if (_isContiguousSublist(
+        remoteIdsNormalized,
+        queueInfo.fullQueue.map((e) => _normalizeId(e.baseItemId.raw)).toList(),
+      )) {
+        _log.fine("Remote queue is in sync again; skipping adoption");
+        return;
+      }
+      if (DateTime.now().isBefore(_suppressAdoptUntil) && _isOwnPushEcho(remoteIdsNormalized)) {
+        _log.fine("Own queue push still propagating; skipping adoption");
+        return;
+      }
       final idMap = <String, BaseItemDto>{
         for (final item in queueInfo.fullQueue) _normalizeId(item.baseItemId.raw): item.baseItem,
       };
