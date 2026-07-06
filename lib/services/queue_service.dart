@@ -944,6 +944,11 @@ class QueueService {
   Future<void> stopAndClearQueue() async {
     queueServiceLogger.info("Stopping playback");
 
+    // If we're controlling a remote session, stop it and leave remote mode
+    // first (before clearing local state, so nothing gets echoed to the
+    // remote and the commands below hit the local player).
+    await _remoteSessionIfConnected?.stopAndDisconnect();
+
     archiveSavedQueue();
     if (_savedQueueState == SavedQueueState.pendingSave) {
       _savedQueueState = SavedQueueState.saving;

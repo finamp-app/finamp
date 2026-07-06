@@ -122,11 +122,17 @@ class RemoteSessionService {
   /// first update.
   RemotePlaybackState? get remotePlaybackState => _toPlaybackState(_sessionStream.valueOrNull);
 
-  /// The remote session's volume (0.0 - 1.0), if it reports one.
+  /// The remote session's volume (0.0 - 1.0), if it reports one. Falls back
+  /// to the volume observed when connecting, so the value is available
+  /// immediately instead of only after the first monitoring update.
   double? get remoteVolume {
-    final level = _sessionStream.valueOrNull?.playState?.volumeLevel;
+    final level = _sessionStream.valueOrNull?.playState?.volumeLevel ?? _seededVolumeLevel;
     return level == null ? null : level / 100.0;
   }
+
+  /// Volume level (0-100) taken from the SessionInfo passed to [connect],
+  /// used until monitoring reports a live value.
+  int? _seededVolumeLevel;
 
   RemotePlaybackState? _toPlaybackState(SessionInfo? session) {
     if (session == null) return null;
@@ -168,6 +174,9 @@ class RemoteSessionService {
     _lastKnownItemId = null;
     _consecutiveMisses = 0;
     _pausePending = false;
+    // The session list the user connected from already contains the remote's
+    // volume; seed it so the volume slider is correct right away.
+    _seededVolumeLevel = session.playState?.volumeLevel;
     // Drop any retained state from a previous session: the BehaviorSubject
     // would otherwise replay the old SessionInfo.
     _sessionStream.add(null);
@@ -220,6 +229,22 @@ class RemoteSessionService {
     unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
   }
 
+  /// Stops the remote session's playback entirely and returns control to
+  /// local playback, without migrating the remote position back. Used when
+  /// the queue is being discarded (e.g. stop-and-clear), where [disconnect]'s
+  /// pause-and-continue-locally behavior would be wrong.
+  Future<void> stopAndDisconnect() async {
+    if (!isRemote) return;
+    _log.info("Stopping remote session $_activeSessionId and disconnecting");
+    try {
+      await stop();
+    } catch (e) {
+      _log.warning("Failed to stop remote before disconnecting: $e");
+    }
+    _teardown();
+    unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
+  }
+
   void _teardown() {
     _stopMonitoring();
     _activeSessionId = null;
@@ -229,6 +254,7 @@ class RemoteSessionService {
     _pausePending = false;
     _adoptScheduled = false;
     _lastPushedQueueIds = [];
+    _seededVolumeLevel = null;
     _sessionStream.add(null);
   }
 
@@ -715,6 +741,7 @@ class RemoteSessionService {
     // Optimistically update the mirrored state so the slider doesn't snap back
     // while waiting for the next session update.
     _sessionStream.valueOrNull?.playState?.volumeLevel = level;
+    _seededVolumeLevel = level;
     await _sendGeneralCommand("SetVolume", arguments: {"Volume": level.toString()});
   }
 
