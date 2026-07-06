@@ -178,6 +178,10 @@
     "@allLibraries": {
         "description": "All Libraries"
     },
+    "activeLibraries": "Active Libraries",
+    "@activeLibraries": {
+        "description": "Active Libraries"
+    },
     "unknownName": "Unknown Name",
     "tracks": "Tracks",
     "albums": "Albums",

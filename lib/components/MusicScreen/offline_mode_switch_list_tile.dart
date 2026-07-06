@@ -45,10 +45,11 @@ class OfflineModeSwitchListTile extends ConsumerWidget {
 
     return ToggleableListTile(
       leading: Padding(
-        padding: const EdgeInsets.only(left: 8.0, top: 8.0, bottom: 8.0),
-        child: Icon(getCurrentIcon(), size: 36.0),
+        padding: const EdgeInsets.only(left: 10.0, right: 8.0, top: 8.0, bottom: 8.0),
+        child: Icon(getCurrentIcon(), size: 26.0),
       ),
       title: isOffline ? AppLocalizations.of(context)!.offlineMode : AppLocalizations.of(context)!.offlineMode,
+      titleStyle: TextStyle(fontSize: 15.0),
       trailing: Switch.adaptive(
         value: isOffline,
         onChanged: onChanged,

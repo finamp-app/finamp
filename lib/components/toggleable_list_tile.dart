@@ -18,6 +18,9 @@ class ToggleableListTile extends ConsumerWidget {
     this.enabled = true,
     this.confirmationFeedback = true,
     this.condensed = false,
+    this.titleStyle,
+    this.subtitleStyle,
+    this.iconSize = 36.0,
     this.lowContrast = false,
   });
 
@@ -34,6 +37,9 @@ class ToggleableListTile extends ConsumerWidget {
   final bool? divider;
   final bool condensed;
   final bool lowContrast;
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,7 +71,7 @@ class ToggleableListTile extends ConsumerWidget {
             enableFeedback: true,
             enabled: enabled,
             leading: leading,
-            title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
+            title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis, style: titleStyle),
             trailing: Wrap(
               alignment: WrapAlignment.end,
               crossAxisAlignment: WrapCrossAlignment.center,
@@ -75,7 +81,7 @@ class ToggleableListTile extends ConsumerWidget {
                     subtitle!,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: subtitleStyle ?? Theme.of(context).textTheme.bodySmall,
                   ),
                 if (showDivider)
                   SizedBox(
@@ -96,7 +102,7 @@ class ToggleableListTile extends ConsumerWidget {
                   padding: EdgeInsets.only(left: showDivider ? 8.0 : 16.0, right: 12.0),
                   child: isLoading
                       ? const CircularProgressIndicator()
-                      : trailing ?? Icon(icon, size: 36.0, color: themeColor),
+                      : trailing ?? Icon(icon, size: iconSize, color: themeColor),
                 ),
               ],
             ),
