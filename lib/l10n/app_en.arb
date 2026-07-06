@@ -3290,6 +3290,38 @@
     "@playRandomFavoriteItemActionDescription": {
         "description": "Description of a home screen quick action"
     },
+    "playRandomPlaylistActionDescription": "Starts playback of a random playlist",
+    "@playRandomPlaylistActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomArtistActionDescription": "Starts playback of a random artist",
+    "@playRandomArtistActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomGenreActionDescription": "Starts playback of a random genre",
+    "@playRandomGenreActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteAlbumActionDescription": "Starts playback of a random favorite album",
+    "@playRandomFavoriteAlbumActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteTrackActionDescription": "Starts playback of a random favorite track",
+    "@playRandomFavoriteTrackActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoritePlaylistActionDescription": "Starts playback of a random favorite playlist",
+    "@playRandomFavoritePlaylistActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteArtistActionDescription": "Starts playback of a random favorite artist",
+    "@playRandomFavoriteArtistActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteGenreActionDescription": "Starts playback of a random favorite genre",
+    "@playRandomFavoriteGenreActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
     "playPreviousQueueActionDescription": "Restores and plays your most recent archived queue",
     "@playPreviousQueueActionDescription": {
         "description": "Description of a home screen quick action"
@@ -3337,6 +3369,38 @@
     },
     "surpriseMeAction": "Surprise Me",
     "@surpriseMeAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomPlaylistAction": "Random Playlist",
+    "@randomPlaylistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomArtistAction": "Random Artist",
+    "@randomArtistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomGenreAction": "Random Genre",
+    "@randomGenreAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteAlbumAction": "Random Favorite Album",
+    "@randomFavoriteAlbumAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteTrackAction": "Random Favorite Track",
+    "@randomFavoriteTrackAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoritePlaylistAction": "Random Favorite Playlist",
+    "@randomFavoritePlaylistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteArtistAction": "Random Favorite Artist",
+    "@randomFavoriteArtistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteGenreAction": "Random Favorite Genre",
+    "@randomFavoriteGenreAction": {
         "description": "Name of a home screen quick action"
     },
     "editAction": "Edit Action",

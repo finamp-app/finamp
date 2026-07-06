@@ -4311,8 +4311,24 @@ enum FinampQuickActions {
   playRandomAlbum,
   @HiveField(4)
   playRandomTrack,
+  @HiveField(10)
+  playRandomPlaylist,
+  @HiveField(11)
+  playRandomArtist,
+  @HiveField(12)
+  playRandomGenre,
   @HiveField(5)
   playRandomFavoriteItem,
+  @HiveField(13)
+  playRandomFavoriteAlbum,
+  @HiveField(14)
+  playRandomFavoriteTrack,
+  @HiveField(15)
+  playRandomFavoritePlaylist,
+  @HiveField(16)
+  playRandomFavoriteArtist,
+  @HiveField(17)
+  playRandomFavoriteGenre,
   @HiveField(6)
   playPreviousQueue,
   @HiveField(7)
@@ -4355,6 +4371,22 @@ enum FinampQuickActions {
         return AppLocalizations.of(context)!.playSpecificItemActionDescription;
       case FinampQuickActions.surpriseMe:
         return AppLocalizations.of(context)!.surpriseMeActionDescription;
+      case FinampQuickActions.playRandomPlaylist:
+        return AppLocalizations.of(context)!.playRandomPlaylistActionDescription;
+      case FinampQuickActions.playRandomArtist:
+        return AppLocalizations.of(context)!.playRandomArtistActionDescription;
+      case FinampQuickActions.playRandomGenre:
+        return AppLocalizations.of(context)!.playRandomGenreActionDescription;
+      case FinampQuickActions.playRandomFavoriteAlbum:
+        return AppLocalizations.of(context)!.playRandomFavoriteAlbumActionDescription;
+      case FinampQuickActions.playRandomFavoriteTrack:
+        return AppLocalizations.of(context)!.playRandomFavoriteTrackActionDescription;
+      case FinampQuickActions.playRandomFavoritePlaylist:
+        return AppLocalizations.of(context)!.playRandomFavoritePlaylistActionDescription;
+      case FinampQuickActions.playRandomFavoriteArtist:
+        return AppLocalizations.of(context)!.playRandomFavoriteArtistActionDescription;
+      case FinampQuickActions.playRandomFavoriteGenre:
+        return AppLocalizations.of(context)!.playRandomFavoriteGenreActionDescription;
     }
   }
 
@@ -4365,7 +4397,15 @@ enum FinampQuickActions {
       FinampQuickActions.browsePlaybackHistory => TablerIcons.clock,
       FinampQuickActions.playRandomAlbum => TablerIcons.album,
       FinampQuickActions.playRandomTrack => TablerIcons.music,
+      FinampQuickActions.playRandomPlaylist => TablerIcons.playlist,
+      FinampQuickActions.playRandomArtist => TablerIcons.user,
+      FinampQuickActions.playRandomGenre => TablerIcons.category,
       FinampQuickActions.playRandomFavoriteItem => TablerIcons.heart_question,
+      FinampQuickActions.playRandomFavoriteAlbum => TablerIcons.album,
+      FinampQuickActions.playRandomFavoriteTrack => TablerIcons.music_heart,
+      FinampQuickActions.playRandomFavoritePlaylist => TablerIcons.playlist,
+      FinampQuickActions.playRandomFavoriteArtist => TablerIcons.user_heart,
+      FinampQuickActions.playRandomFavoriteGenre => TablerIcons.category,
       FinampQuickActions.playPreviousQueue => TablerIcons.restore,
       FinampQuickActions.configureOutput => TablerIcons.device_speaker,
       FinampQuickActions.playSpecificItem => TablerIcons.music_pin,
@@ -4636,6 +4676,22 @@ class QuickActionConfig {
         return l10n.playSpecificItemAction(itemName ?? "finamp_placeholder");
       case FinampQuickActions.surpriseMe:
         return l10n.surpriseMeAction;
+      case FinampQuickActions.playRandomPlaylist:
+        return l10n.randomPlaylistAction;
+      case FinampQuickActions.playRandomArtist:
+        return l10n.randomArtistAction;
+      case FinampQuickActions.playRandomGenre:
+        return l10n.randomGenreAction;
+      case FinampQuickActions.playRandomFavoriteAlbum:
+        return l10n.randomFavoriteAlbumAction;
+      case FinampQuickActions.playRandomFavoriteTrack:
+        return l10n.randomFavoriteTrackAction;
+      case FinampQuickActions.playRandomFavoritePlaylist:
+        return l10n.randomFavoritePlaylistAction;
+      case FinampQuickActions.playRandomFavoriteArtist:
+        return l10n.randomFavoriteArtistAction;
+      case FinampQuickActions.playRandomFavoriteGenre:
+        return l10n.randomFavoriteGenreAction;
     }
   }
 

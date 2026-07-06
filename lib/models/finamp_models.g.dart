@@ -3667,6 +3667,22 @@ class FinampQuickActionsAdapter extends TypeAdapter<FinampQuickActions> {
         return FinampQuickActions.surpriseMe;
       case 9:
         return FinampQuickActions.playSpecificItem;
+      case 10:
+        return FinampQuickActions.playRandomPlaylist;
+      case 11:
+        return FinampQuickActions.playRandomArtist;
+      case 12:
+        return FinampQuickActions.playRandomGenre;
+      case 13:
+        return FinampQuickActions.playRandomFavoriteAlbum;
+      case 14:
+        return FinampQuickActions.playRandomFavoriteTrack;
+      case 15:
+        return FinampQuickActions.playRandomFavoritePlaylist;
+      case 16:
+        return FinampQuickActions.playRandomFavoriteArtist;
+      case 17:
+        return FinampQuickActions.playRandomFavoriteGenre;
       default:
         return FinampQuickActions.shuffleTracks;
     }
@@ -3695,6 +3711,22 @@ class FinampQuickActionsAdapter extends TypeAdapter<FinampQuickActions> {
         writer.writeByte(8);
       case FinampQuickActions.playSpecificItem:
         writer.writeByte(9);
+      case FinampQuickActions.playRandomPlaylist:
+        writer.writeByte(10);
+      case FinampQuickActions.playRandomArtist:
+        writer.writeByte(11);
+      case FinampQuickActions.playRandomGenre:
+        writer.writeByte(12);
+      case FinampQuickActions.playRandomFavoriteAlbum:
+        writer.writeByte(13);
+      case FinampQuickActions.playRandomFavoriteTrack:
+        writer.writeByte(14);
+      case FinampQuickActions.playRandomFavoritePlaylist:
+        writer.writeByte(15);
+      case FinampQuickActions.playRandomFavoriteArtist:
+        writer.writeByte(16);
+      case FinampQuickActions.playRandomFavoriteGenre:
+        writer.writeByte(17);
     }
   }
 
@@ -9788,7 +9820,15 @@ const _$FinampQuickActionsEnumMap = {
   FinampQuickActions.browsePlaybackHistory: 'browsePlaybackHistory',
   FinampQuickActions.playRandomAlbum: 'playRandomAlbum',
   FinampQuickActions.playRandomTrack: 'playRandomTrack',
+  FinampQuickActions.playRandomPlaylist: 'playRandomPlaylist',
+  FinampQuickActions.playRandomArtist: 'playRandomArtist',
+  FinampQuickActions.playRandomGenre: 'playRandomGenre',
   FinampQuickActions.playRandomFavoriteItem: 'playRandomFavoriteItem',
+  FinampQuickActions.playRandomFavoriteAlbum: 'playRandomFavoriteAlbum',
+  FinampQuickActions.playRandomFavoriteTrack: 'playRandomFavoriteTrack',
+  FinampQuickActions.playRandomFavoritePlaylist: 'playRandomFavoritePlaylist',
+  FinampQuickActions.playRandomFavoriteArtist: 'playRandomFavoriteArtist',
+  FinampQuickActions.playRandomFavoriteGenre: 'playRandomFavoriteGenre',
   FinampQuickActions.playPreviousQueue: 'playPreviousQueue',
   FinampQuickActions.configureOutput: 'configureOutput',
   FinampQuickActions.surpriseMe: 'surpriseMe',
