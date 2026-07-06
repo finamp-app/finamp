@@ -72,6 +72,12 @@ class RemoteSessionService {
   int? _lastKnownPositionTicks;
   String? _lastKnownItemId;
 
+  // Name of the local output route (Android output switcher) that was active
+  // when the remote session was connected. Local outputs and remote control
+  // are mutually exclusive in the output menu, so the route is restored when
+  // playback migrates back. Null off Android (no routes) or when local.
+  String? _previousOutputRouteName;
+
   // Server-pushed Sessions messages are event-driven (SessionEnded, playback
   // progress, ...), not periodic: if the remote dies without a clean websocket
   // close, no push ever reports it gone. After this long without a Sessions
@@ -164,6 +170,13 @@ class RemoteSessionService {
     final wasPlaying = !_audioHandler.paused;
     final localPosition = _audioHandler.playbackPosition;
 
+    // Remember the active local output route so it can be restored when
+    // playback migrates back. Skipped when switching remote-to-remote, which
+    // must keep the route from before the first connect.
+    if (!isRemote) {
+      _previousOutputRouteName = (await _audioHandler.getRoutes()).firstWhereOrNull((r) => r.isSelected)?.name;
+    }
+
     // Pause local playback first so audio never plays on both ends.
     if (wasPlaying) {
       await _audioHandler.pause(disableFade: true, localOnly: true);
@@ -208,6 +221,7 @@ class RemoteSessionService {
     // last-known track and position before tearing down state.
     final lastItemId = _lastKnownItemId;
     final lastPosition = remotePlaybackState?.position;
+    final previousOutputRoute = _previousOutputRouteName;
 
     if (pauseRemote) {
       try {
@@ -218,6 +232,7 @@ class RemoteSessionService {
     }
 
     _teardown();
+    await _restoreOutputRoute(previousOutputRoute);
 
     // Sync local playback to where the remote left off. Local stays paused;
     // the user taps play to resume from here. Must run after _teardown so the
@@ -235,13 +250,30 @@ class RemoteSessionService {
   Future<void> stopAndDisconnect() async {
     if (!isRemote) return;
     _log.info("Stopping remote session $_activeSessionId and disconnecting");
+    final previousOutputRoute = _previousOutputRouteName;
     try {
       await stop();
     } catch (e) {
       _log.warning("Failed to stop remote before disconnecting: $e");
     }
     _teardown();
+    await _restoreOutputRoute(previousOutputRoute);
     unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
+  }
+
+  /// Restores the local output route that was active before connecting, if it
+  /// is still available and not already selected. No-op off Android (no
+  /// routes) or when nothing was captured.
+  Future<void> _restoreOutputRoute(String? routeName) async {
+    if (routeName == null) return;
+    try {
+      final route = (await _audioHandler.getRoutes()).firstWhereOrNull((r) => r.name == routeName);
+      if (route == null || route.isSelected) return;
+      _log.info('Restoring previous output route "$routeName"');
+      await _audioHandler.setOutputToRoute(route);
+    } catch (e) {
+      _log.warning('Failed to restore previous output route "$routeName": $e');
+    }
   }
 
   void _teardown() {
@@ -249,6 +281,7 @@ class RemoteSessionService {
     _activeSessionId = null;
     _lastKnownPositionTicks = null;
     _lastKnownItemId = null;
+    _previousOutputRouteName = null;
     _pausePending = false;
     _adoptScheduled = false;
     _lastPushedQueueIds = [];

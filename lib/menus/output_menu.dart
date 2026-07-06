@@ -100,33 +100,19 @@ Future<void> showOutputMenu({required BuildContext context, bool usePlayerTheme 
             child: SliverList(delegate: SliverChildListDelegate.fixed(menuEntries)),
           ),
         ),
-        if (Platform.isAndroid)
+        // One combined device list: native audio outputs (Android) and remote
+        // Jellyfin sessions this device can cast to / control (Play On /
+        // Connect; not available in offline mode).
+        if (Platform.isAndroid || !FinampSettingsHelper.finampSettings.isOffline)
           SliverStickyHeader(
             header: Padding(
               padding: const EdgeInsets.only(top: 10.0, bottom: 8.0, left: 16.0, right: 16.0),
               child: Text(
                 AppLocalizations.of(context)!.outputMenuDevicesSectionTitle,
-                // AppLocalizations.of(context)!.outputMenuDevicesSectionTitle,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
-            sliver: MenuMask(
-              height: OutputMenuHeader.defaultHeight,
-              child: OutputTargetList(), // Pass the outputRoutes
-            ),
-          ),
-        // Remote Jellyfin sessions this device can cast to / control
-        // (Play On / Connect). Not available in offline mode.
-        if (!FinampSettingsHelper.finampSettings.isOffline)
-          SliverStickyHeader(
-            header: Padding(
-              padding: const EdgeInsets.only(top: 10.0, bottom: 8.0, left: 16.0, right: 16.0),
-              child: Text(
-                AppLocalizations.of(context)!.playOnDeviceTitle,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            sliver: MenuMask(height: OutputMenuHeader.defaultHeight, child: RemoteSessionList()),
+            sliver: MenuMask(height: OutputMenuHeader.defaultHeight, child: OutputTargetList()),
           ),
       ];
       // TODO better estimate, how to deal with lag getting playlists?
@@ -199,6 +185,14 @@ class OutputMenuHeader extends ConsumerWidget {
   }
 }
 
+/// One combined list of playback targets: the device's native audio outputs
+/// (Android output switcher routes) and the remote Jellyfin sessions this
+/// device can hand playback off to / control (Play On / Connect), the latter
+/// distinguished only by their cast icon. Local outputs and remote control
+/// are mutually exclusive: while connected to a remote session the native
+/// routes are replaced by a single synthetic "this device" tile that migrates
+/// playback back (restoring the previously active route); that tile also
+/// stands in on platforms without native routes.
 class OutputTargetList extends StatefulWidget {
   const OutputTargetList({super.key});
 
@@ -208,48 +202,110 @@ class OutputTargetList extends StatefulWidget {
 
 class _OutputTargetListState extends State<OutputTargetList> {
   final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+  final _remoteSessionService = GetIt.instance<RemoteSessionService>();
+
+  late Future<(List<FinampOutputRoute>, List<SessionInfo>)> _targetsFuture;
   String? switchingToRoute;
+  String? _connectingToSessionId;
+  bool _disconnecting = false;
+  StreamSubscription<SessionInfo?>? _remoteStateSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _targetsFuture = _loadTargets();
+    // Reload when the connected session changes (e.g. auto-disconnect while
+    // the menu is open): the list content depends on remote state (native
+    // routes are hidden while remote), and after migrating back the restored
+    // output route should show as selected.
+    _remoteStateSubscription = _remoteSessionService.getRemoteStateStream().distinct((a, b) => a?.id == b?.id).listen((
+      _,
+    ) {
+      if (mounted) {
+        setState(() {
+          _targetsFuture = _loadTargets();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _remoteStateSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<(List<FinampOutputRoute>, List<SessionInfo>)> _loadTargets() async {
+    final routes = await audioHandler.getRoutes(); // empty off-Android
+    // Remote sessions are unavailable offline, and a session load failure
+    // shouldn't take the native outputs down with it.
+    var sessions = <SessionInfo>[];
+    if (!FinampSettingsHelper.finampSettings.isOffline) {
+      try {
+        final myDeviceId = (await jellyfin_api.getDeviceInfo()).id;
+        sessions = (await GetIt.instance<JellyfinApiHelper>().getSessions())
+            .where((s) => s.supportsRemoteControl && s.deviceId != myDeviceId)
+            .toList();
+      } catch (e) {
+        GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnDeviceListError(e.toString()));
+      }
+    }
+    return (routes, sessions);
+  }
+
+  Future<void> _selectRoute(FinampOutputRoute route) async {
+    setState(() {
+      switchingToRoute = route.name;
+    });
+    try {
+      await audioHandler.setOutputToRoute(route);
+    } finally {
+      if (mounted) {
+        setState(() {
+          switchingToRoute = null;
+          _targetsFuture = _loadTargets();
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    Future<List<FinampOutputRoute>> outputRoutes = audioHandler.getRoutes();
     return FutureBuilder(
-      future: outputRoutes,
+      future: _targetsFuture,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              if (index == snapshot.data!.length) {
-                return openOsOutputOptionsButton(context);
-              }
-              final route = snapshot.data![index];
-              if (route.isSelected) {
-                switchingToRoute = null; // Reset switching state if route is selected
-              }
-              return OutputSelectorTile(
-                routeInfo: route,
-                isLoading: switchingToRoute == route.name,
-                onSelect: ({bool loading = false, bool value = false}) {
-                  setState(() {
-                    switchingToRoute = loading ? route.name : null;
-                    outputRoutes = audioHandler.getRoutes();
-                  });
-                },
-              );
-            }, childCount: snapshot.data!.length + 1),
-          );
+          final (routes, sessions) = snapshot.data!;
+          // Local output routes and remote control are mutually exclusive:
+          // while a remote session is connected, the synthetic "this device"
+          // tile is the single local option (tapping it migrates playback
+          // back and restores the previous output route). It also stands in
+          // when there are no native routes (non-Android).
+          final showRoutes = !_remoteSessionService.isRemote && routes.isNotEmpty;
+          final targets = <Widget>[
+            if (!showRoutes) _thisDeviceTile(context),
+            if (showRoutes)
+              ...routes.map(
+                (route) => OutputSelectorTile(
+                  routeInfo: route,
+                  isSelected: route.isSelected,
+                  isLoading: switchingToRoute == route.name,
+                  onSelect: () => _selectRoute(route),
+                ),
+              ),
+            ...sessions.map((session) => _sessionTile(context, session)),
+            if (Platform.isAndroid && !_remoteSessionService.isRemote) openOsOutputOptionsButton(context),
+          ];
+          return SliverList(delegate: SliverChildListDelegate.fixed(targets));
         } else if (snapshot.hasError) {
           GlobalSnackbar.error(snapshot.error);
           return const SliverToBoxAdapter(child: Center(heightFactor: 3.0, child: Icon(Icons.error, size: 64)));
         } else {
           return SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              if (index == 1) {
-                return openOsOutputOptionsButton(context);
-              } else {
-                return const Center(child: CircularProgressIndicator.adaptive());
-              }
-            }, childCount: 2),
+            delegate: SliverChildListDelegate.fixed([
+              const Center(child: CircularProgressIndicator.adaptive()),
+              if (Platform.isAndroid) openOsOutputOptionsButton(context),
+            ]),
           );
         }
       },
@@ -275,92 +331,6 @@ class _OutputTargetListState extends State<OutputTargetList> {
         ],
       ),
     );
-  }
-}
-
-class OutputSelectorTile extends StatelessWidget {
-  const OutputSelectorTile({super.key, required this.routeInfo, this.isLoading = false, this.onSelect});
-
-  final FinampOutputRoute routeInfo;
-  final bool isLoading;
-  final void Function({bool loading, bool value})? onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    return ToggleableListTile(
-      isLoading: isLoading,
-      title: routeInfo.name,
-      subtitle: (routeInfo.isDeviceSpeaker
-          ? AppLocalizations.of(context)!.deviceType("speaker")
-          : switch (routeInfo.deviceType) {
-              1 => AppLocalizations.of(context)!.deviceType("tv"),
-              3 => AppLocalizations.of(context)!.deviceType("bluetooth"),
-              _ => AppLocalizations.of(context)!.deviceType("unknown"),
-            }),
-      // subtitle: AppLocalizations.of(context)!.songCount(childCount ?? 0),
-      leading: Container(
-        padding: const EdgeInsets.all(16.0),
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-        child: Icon(switch (routeInfo.deviceType) {
-          1 => TablerIcons.device_tv,
-          3 => TablerIcons.bluetooth,
-          _ => TablerIcons.volume,
-        }),
-      ),
-      icon: routeInfo.isSelected ? TablerIcons.device_speaker_filled : TablerIcons.device_speaker,
-      state: routeInfo.isSelected,
-      onToggle: (bool currentState) async {
-        final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
-        onSelect?.call(loading: true, value: currentState);
-        await audioHandler.setOutputToRoute(routeInfo);
-        onSelect?.call(loading: false, value: true);
-      },
-      confirmationFeedback: false,
-      enabled: true,
-    );
-  }
-}
-
-/// Lists the remote Jellyfin sessions this device can hand playback off to /
-/// control (Play On / Connect), plus a "this device" entry representing local
-/// playback.
-class RemoteSessionList extends StatefulWidget {
-  const RemoteSessionList({super.key});
-
-  @override
-  State<RemoteSessionList> createState() => _RemoteSessionListState();
-}
-
-class _RemoteSessionListState extends State<RemoteSessionList> {
-  final _remoteSessionService = GetIt.instance<RemoteSessionService>();
-  late Future<List<SessionInfo>> _sessionsFuture;
-  String? _connectingToSessionId;
-  bool _disconnecting = false;
-  StreamSubscription<SessionInfo?>? _remoteStateSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    _sessionsFuture = _loadSessions();
-    // Rebuild when the connected session changes so selection state stays
-    // accurate (e.g. auto-disconnect while the menu is open).
-    _remoteStateSubscription = _remoteSessionService.getRemoteStateStream().distinct((a, b) => a?.id == b?.id).listen((
-      _,
-    ) {
-      if (mounted) setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _remoteStateSubscription?.cancel();
-    super.dispose();
-  }
-
-  Future<List<SessionInfo>> _loadSessions() async {
-    final myDeviceId = (await jellyfin_api.getDeviceInfo()).id;
-    final sessions = await GetIt.instance<JellyfinApiHelper>().getSessions();
-    return sessions.where((s) => s.supportsRemoteControl && s.deviceId != myDeviceId).toList();
   }
 
   String _sessionDisplayName(SessionInfo session) =>
@@ -437,6 +407,10 @@ class _RemoteSessionListState extends State<RemoteSessionList> {
       if (mounted) {
         setState(() {
           _disconnecting = false;
+          // disconnect() has restored the previous output route by now;
+          // reload so it shows as selected (the remote-state listener fired
+          // before the restore completed).
+          _targetsFuture = _loadTargets();
         });
       }
     }
@@ -498,40 +472,49 @@ class _RemoteSessionListState extends State<RemoteSessionList> {
       enabled: true,
     );
   }
+}
+
+class OutputSelectorTile extends StatelessWidget {
+  const OutputSelectorTile({
+    super.key,
+    required this.routeInfo,
+    required this.isSelected,
+    this.isLoading = false,
+    required this.onSelect,
+  });
+
+  final FinampOutputRoute routeInfo;
+  final bool isSelected;
+  final bool isLoading;
+  final Future<void> Function() onSelect;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<SessionInfo>>(
-      future: _sessionsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Text(AppLocalizations.of(context)!.playOnDeviceListError(snapshot.error.toString())),
-              ),
-            ),
-          );
-        }
-        if (!snapshot.hasData) {
-          return const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Center(child: CircularProgressIndicator.adaptive()),
-            ),
-          );
-        }
-        final sessions = snapshot.data!;
-        return SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
-            if (index == 0) {
-              return _thisDeviceTile(context);
-            }
-            return _sessionTile(context, sessions[index - 1]);
-          }, childCount: sessions.length + 1),
-        );
-      },
+    return ToggleableListTile(
+      isLoading: isLoading,
+      title: routeInfo.name,
+      subtitle: (routeInfo.isDeviceSpeaker
+          ? AppLocalizations.of(context)!.deviceType("speaker")
+          : switch (routeInfo.deviceType) {
+              1 => AppLocalizations.of(context)!.deviceType("tv"),
+              3 => AppLocalizations.of(context)!.deviceType("bluetooth"),
+              _ => AppLocalizations.of(context)!.deviceType("unknown"),
+            }),
+      // subtitle: AppLocalizations.of(context)!.songCount(childCount ?? 0),
+      leading: Container(
+        padding: const EdgeInsets.all(16.0),
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+        child: Icon(switch (routeInfo.deviceType) {
+          1 => TablerIcons.device_tv,
+          3 => TablerIcons.bluetooth,
+          _ => TablerIcons.volume,
+        }),
+      ),
+      icon: isSelected ? TablerIcons.device_speaker_filled : TablerIcons.device_speaker,
+      state: isSelected,
+      onToggle: (bool currentState) => onSelect(),
+      confirmationFeedback: false,
+      enabled: true,
     );
   }
 }
