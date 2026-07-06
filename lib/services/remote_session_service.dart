@@ -81,7 +81,6 @@ class RemoteSessionService {
   // to local, so a momentary gap doesn't bounce us out of remote mode.
   int _consecutiveMisses = 0;
   static const int _maxConsecutiveMisses = 3;
-  DateTime _lastConfirmationPoll = DateTime.fromMillisecondsSinceEpoch(0);
 
   /// Pause the remote as soon as it reports playing: used when connecting (or
   /// pushing a new queue) while local playback was paused, since the PlayTo
@@ -235,36 +234,15 @@ class RemoteSessionService {
 
   // ---- monitoring ----
 
-  StreamSubscription<List<SessionInfo>>? _socketSessionsSubscription;
-
   void _startMonitoring() {
     _stopMonitoring();
-    final playOnService = GetIt.instance<PlayOnService>();
-    final socketSessions = playOnService.startSessionUpdates();
-    if (socketSessions != null) {
-      _log.info("Monitoring remote session via websocket");
-      _socketSessionsSubscription = socketSessions.listen(
-        (sessions) => _handleSessions(sessions, authoritative: false),
-      );
-      // The socket can drop (e.g. Jellyfin 10.11 auth issues, network blips);
-      // keep a slow safety-net poll running so we notice even if no Sessions
-      // messages arrive anymore.
-      _pollTimer = Timer.periodic(_pollInterval * 10, (_) => _poll());
-    } else {
-      _log.info("Websocket unavailable, monitoring remote session via polling");
-      unawaited(_poll());
-      _pollTimer = Timer.periodic(_pollInterval, (_) => _poll());
-    }
+    unawaited(_poll());
+    _pollTimer = Timer.periodic(_pollInterval, (_) => _poll());
   }
 
   void _stopMonitoring() {
     _pollTimer?.cancel();
     _pollTimer = null;
-    _socketSessionsSubscription?.cancel();
-    _socketSessionsSubscription = null;
-    if (isRemote) {
-      GetIt.instance<PlayOnService>().stopSessionUpdates();
-    }
   }
 
   Future<void> _poll() async {
@@ -280,22 +258,11 @@ class RemoteSessionService {
     }
   }
 
-  /// Shared entry point for both websocket Sessions messages and poll results.
-  /// Only [authoritative] results (polls of GET /Sessions) count towards the
-  /// auto-disconnect miss threshold: the server-pushed Sessions messages may
-  /// omit idle sessions, so a miss there only triggers a confirmation poll.
-  void _handleSessions(List<SessionInfo> sessions, {bool authoritative = true}) {
+  void _handleSessions(List<SessionInfo> sessions) {
     final sessionId = _activeSessionId;
     if (sessionId == null) return;
     final session = sessions.where((s) => s.id == sessionId).firstOrNull;
     if (session == null) {
-      if (!authoritative) {
-        if (DateTime.now().difference(_lastConfirmationPoll) > const Duration(seconds: 2)) {
-          _lastConfirmationPoll = DateTime.now();
-          unawaited(_poll());
-        }
-        return;
-      }
       // Session ended or vanished (e.g. DAC stopped). Tolerate a few transient
       // misses before falling back, and keep the last-known state on screen
       // during the window rather than flickering to local.
