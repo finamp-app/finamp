@@ -48,8 +48,8 @@ const _carPlayOfflineLimit = 1000;
 /// and transfers much faster than 200x200.
 const _carPlayImageSize = 100;
 
-/// Albums shown in the CarPlay home Recently Added row.
-const _carPlayRecentlyAddedLimit = 3;
+/// Albums shown in the CarPlay home Recently Added art row.
+const _carPlayRecentlyAddedLimit = 6;
 
 /// Tracks shown in the CarPlay home Recently Played row.
 const _carPlayRecentlyPlayedLimit = 5;
@@ -459,6 +459,42 @@ class CarPlayHelper {
     return children.map((child) => (child as PlayableQueue).queue).toList();
   }
 
+  /// Pushes the full recently-added albums list, so tapping the Recently
+  /// Added art row itself leads to more than the handful shown as art.
+  Future<void> _showRecentlyAddedTemplate() async {
+    if (_isPushingPageUpdate) {
+      _carPlayLogger.warning("Navigation dropped: already pushing page update");
+      return;
+    }
+    _isPushingPageUpdate = true;
+    try {
+      final albums = await _loadHomeSectionItems(HomeScreenSectionPresetType.recentlyAddedAlbums, 24);
+      final section = CPListSection(
+        items: albums.map((album) {
+          return CPListItem(
+            text: album.name ?? GlobalSnackbar.requireL10n.unknownName,
+            detailText: album.albumArtist,
+            image: _getCarPlayImageUri(album),
+            onPress: (complete, self) async {
+              await showCollectionTracksTemplate(album);
+              complete();
+            },
+          );
+        }).toList(),
+      );
+
+      await FlutterCarplay.push(
+        template: CPListTemplate(
+          sections: [section],
+          title: GlobalSnackbar.requireL10n.recentlyAdded,
+          systemIcon: 'clock.arrow.circlepath',
+        ),
+      );
+    } finally {
+      _isPushingPageUpdate = false;
+    }
+  }
+
   /// Resolves the art-row image for a saved queue: a 2x2 collage of covers
   /// from the next [_collageTileCount] distinct albums coming up in the
   /// queue, falling back to the current track's own artwork, then to a
@@ -748,7 +784,7 @@ class CarPlayHelper {
     );
     sections.add(quickActionsSection);
 
-    final [recentPlays, recentlyAdded] = await Future.wait([
+    final [recentPlays, recentlyAddedFetched] = await Future.wait([
       _loadHomeSectionItems(HomeScreenSectionPresetType.recentlyPlayedTracks, _carPlayRecentlyPlayedLimit),
       _loadHomeSectionItems(HomeScreenSectionPresetType.recentlyAddedAlbums, _carPlayRecentlyAddedLimit),
     ]);
@@ -836,29 +872,41 @@ class CarPlayHelper {
       );
     }
 
-    _carPlayLogger.info("Got ${recentlyAdded.length} recently added albums");
-    if (recentlyAdded.isNotEmpty) {
-      CPListSection recentlyAddedSection = CPListSection(
-        header: GlobalSnackbar.requireL10n.recentlyAdded,
-        sectionIndexEnabled: false,
-        items: [],
+    _carPlayLogger.info("Got ${recentlyAddedFetched.length} recently added albums");
+    if (recentlyAddedFetched.isNotEmpty) {
+      final recentlyAddedLimit = await _clampToGridImageLimit(recentlyAddedFetched.length);
+      final recentlyAdded = recentlyAddedFetched.take(recentlyAddedLimit).toList();
+
+      sections.add(
+        CPListSection(
+          items: [
+            CPListImageRowItem(
+              text: GlobalSnackbar.requireL10n.recentlyAdded,
+              gridImages: recentlyAdded.map((album) => _getCarPlayImageUri(album) ?? _carPlayFallbackImage).toList(),
+              onPress: (complete, self) async {
+                try {
+                  await _showRecentlyAddedTemplate();
+                } catch (e) {
+                  GlobalSnackbar.error(e);
+                } finally {
+                  complete();
+                }
+              },
+              onItemPress: (complete, self, index) async {
+                try {
+                  if (index != null && index >= 0 && index < recentlyAdded.length) {
+                    await showCollectionTracksTemplate(recentlyAdded[index]);
+                  }
+                } catch (e) {
+                  GlobalSnackbar.error(e);
+                } finally {
+                  complete();
+                }
+              },
+            ),
+          ],
+        ),
       );
-
-      for (final album in recentlyAdded) {
-        recentlyAddedSection.items.add(
-          CPListItem(
-            text: album.name ?? GlobalSnackbar.requireL10n.unknownName,
-            detailText: album.albumArtist,
-            image: _getCarPlayImageUri(album),
-            onPress: (complete, self) async {
-              await showCollectionTracksTemplate(album);
-              complete();
-            },
-          ),
-        );
-      }
-
-      sections.add(recentlyAddedSection);
     }
 
     return sections;
