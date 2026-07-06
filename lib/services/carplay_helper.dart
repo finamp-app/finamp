@@ -18,11 +18,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 
+import 'favorite_provider.dart';
 import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
 import 'audio_service_helper.dart';
 import 'queue_service.dart';
 import 'item_helper.dart';
+import 'radio_service_helper.dart' as radio;
 
 final _carPlayLogger = Logger("CarPlay");
 
@@ -53,6 +55,11 @@ class CarPlayHelper {
   final providerRef = GetIt.instance<ProviderContainer>();
 
   ProviderSubscription? _userSubscription;
+  ProviderSubscription? _favoriteSubscription;
+  ProviderSubscription? _offlineSubscription;
+  StreamSubscription<FinampQueueItem?>? _currentTrackSubscription;
+  StreamSubscription<FinampPlaybackOrder>? _playbackOrderSubscription;
+  BaseItemId? _nowPlayingButtonsTrackId;
 
   bool get isUserLoggedIn => _finampUserHelper.currentUser != null;
 
@@ -77,10 +84,37 @@ class CarPlayHelper {
   void setupCarplay() {
     _flutterCarplay.addListenerOnConnectionChange(onConnectionChange);
 
-    // Listen for user login/logout changes and refresh CarPlay template
     _userSubscription = providerRef.listen(FinampUserHelper.finampCurrentUserProvider, (previous, next) {
       _carPlayLogger.info("User state changed, refreshing CarPlay template");
       setCarplayRootTemplate();
+      _updateNowPlayingButtons();
+    });
+
+    // Keep the Now Playing buttons in sync with the current track (also
+    // re-subscribes the favourite-status listener below to the new track).
+    // Subscribed to the queue's own current-track stream rather than
+    // audioHandler.mediaItem, since that emits on metadata-only updates
+    // (e.g. artwork loading) and never emits once the queue empties.
+    _currentTrackSubscription = _queueService.getCurrentTrackStream().listen((track) {
+      final trackId = track?.baseItem.id;
+      if (trackId == _nowPlayingButtonsTrackId) return;
+      _nowPlayingButtonsTrackId = trackId;
+      _subscribeToCurrentTrackFavorite();
+      _updateNowPlayingButtons();
+    });
+    _subscribeToCurrentTrackFavorite();
+    _updateNowPlayingButtons();
+
+    // Favourite/start-mix are unavailable offline, so refresh the buttons
+    // whenever offline mode is toggled.
+    _offlineSubscription = providerRef.listen(finampSettingsProvider.isOffline, (previous, next) {
+      _updateNowPlayingButtons();
+    });
+
+    // Keep the shuffle button's icon state in sync with the queue's playback
+    // order. The state is also synced on CarPlay connect.
+    _playbackOrderSubscription = _queueService.getPlaybackOrderStream().listen((order) {
+      FlutterCarplay.updateNowPlayingShuffleState(isShuffled: order == FinampPlaybackOrder.shuffled);
     });
 
     // Defer initial template setup until after the first frame is rendered.
@@ -93,12 +127,25 @@ class CarPlayHelper {
   void disposeCarplay() {
     _userSubscription?.close();
     _closeTemplateSubscriptions();
+    _favoriteSubscription?.close();
+    _offlineSubscription?.close();
+    _currentTrackSubscription?.cancel();
+    _playbackOrderSubscription?.cancel();
     _flutterCarplay.removeListenerOnConnectionChange();
   }
 
   void onConnectionChange(ConnectionStatusTypes status) {
     connectionStatus = status;
     if (status == ConnectionStatusTypes.connected) {
+      // The Now Playing template is a system-owned singleton that can be
+      // presented unprompted on connect, so make sure its buttons and
+      // shuffle state are configured immediately rather than waiting for the
+      // next track/order change.
+      _updateNowPlayingButtons();
+      FlutterCarplay.updateNowPlayingShuffleState(
+        isShuffled: _queueService.playbackOrder == FinampPlaybackOrder.shuffled,
+      );
+
       // Resume playback if there's a loaded queue that's paused
       final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
       if (_queueService.getCurrentTrack() != null && audioHandler.paused && isUserLoggedIn) {
@@ -111,6 +158,69 @@ class CarPlayHelper {
         }
       }
     }
+  }
+
+  /// (Re-)subscribes to favourite-status changes for the current track so the
+  /// Now Playing heart button stays in sync when the track is favourited or
+  /// unfavourited (from the phone UI, another button press, etc).
+  void _subscribeToCurrentTrackFavorite() {
+    _favoriteSubscription?.close();
+    final currentTrack = _queueService.getCurrentTrack()?.baseItem;
+    if (currentTrack == null) {
+      _favoriteSubscription = null;
+      return;
+    }
+    _favoriteSubscription = providerRef.listen(isFavoriteProvider(currentTrack), (previous, next) {
+      _updateNowPlayingButtons();
+    });
+  }
+
+  /// Builds and sends the CarPlay Now Playing screen buttons: shuffle
+  /// toggle, favourite, and start instant mix (leading to trailing). Shows
+  /// no buttons when logged out and hides favourite/mix when there is no
+  /// current track or while offline.
+  Future<void> _updateNowPlayingButtons() async {
+    if (!isUserLoggedIn) {
+      await FlutterCarplay.setNowPlayingButtons([]);
+      return;
+    }
+
+    final currentTrack = _queueService.getCurrentTrack()?.baseItem;
+    final isOffline = FinampSettingsHelper.finampSettings.isOffline;
+
+    final buttons = <CPNowPlayingButton>[CPNowPlayingShuffleButton(onPress: () => _queueService.togglePlaybackOrder())];
+
+    if (currentTrack != null && !isOffline) {
+      final isFavorite = providerRef.read(isFavoriteProvider(currentTrack));
+      buttons.add(
+        CPNowPlayingImageButton(
+          image: isFavorite ? 'sfsymbol:heart.fill' : 'sfsymbol:heart',
+          onPress: () => GetIt.instance<MusicPlayerBackgroundTask>().toggleFavoriteStatusOfCurrentTrack(),
+        ),
+      );
+
+      buttons.add(
+        CPNowPlayingImageButton(
+          image: 'sfsymbol:radio',
+          onPress: () async {
+            // Read the track at press time. The plugin keeps earlier
+            // callbacks alive when a button update is skipped as redundant.
+            final track = _queueService.getCurrentTrack()?.baseItem;
+            if (track == null) return;
+            try {
+              _carPlayLogger.info("Mix button pressed, starting an instant mix from '${track.name}'");
+              FinampSetters.setRadioMode(RadioMode.similar);
+              await radio.startRadioPlayback(track);
+            } catch (e) {
+              _carPlayLogger.severe("Starting instant mix failed: $e");
+              GlobalSnackbar.error(e);
+            }
+          },
+        ),
+      );
+    }
+
+    await FlutterCarplay.setNowPlayingButtons(buttons);
   }
 
   List<CPListSection> _groupItemsIntoSections(
@@ -298,6 +408,7 @@ class CarPlayHelper {
     List<CPListSection> sections = [];
 
     CPListSection quickActionsSection = CPListSection(
+      sectionIndexEnabled: false,
       items: [
         CPListItem(
           text: GlobalSnackbar.requireL10n.shuffleAll,
@@ -329,7 +440,11 @@ class CarPlayHelper {
     ]);
 
     if (recentPlays.isNotEmpty) {
-      CPListSection recentPlaysSection = CPListSection(header: GlobalSnackbar.requireL10n.recentlyPlayed, items: []);
+      CPListSection recentPlaysSection = CPListSection(
+        header: GlobalSnackbar.requireL10n.recentlyPlayed,
+        sectionIndexEnabled: false,
+        items: [],
+      );
 
       for (final baseItem in recentPlays) {
         recentPlaysSection.items.add(
@@ -370,7 +485,11 @@ class CarPlayHelper {
 
     _carPlayLogger.info("Got ${recentlyAdded.length} recently added albums");
     if (recentlyAdded.isNotEmpty) {
-      CPListSection recentlyAddedSection = CPListSection(header: GlobalSnackbar.requireL10n.recentlyAdded, items: []);
+      CPListSection recentlyAddedSection = CPListSection(
+        header: GlobalSnackbar.requireL10n.recentlyAdded,
+        sectionIndexEnabled: false,
+        items: [],
+      );
 
       for (final album in recentlyAdded) {
         recentlyAddedSection.items.add(
@@ -455,7 +574,6 @@ class CarPlayHelper {
             emptyViewTitleVariants: [GlobalSnackbar.requireL10n.home],
             emptyViewSubtitleVariants: [GlobalSnackbar.requireL10n.notAvailable],
             systemIcon: 'music.note.house',
-            sectionIndexEnabled: false,
           ),
           CPListTemplate(
             sections: [],

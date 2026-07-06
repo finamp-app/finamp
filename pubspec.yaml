@@ -154,8 +154,8 @@ dependencies:
   bits: ^1.4.0
   flutter_carplay:
     git:
-      url: https://github.com/oguzhnatly/flutter_carplay.git
-      ref: 017ce2e
+      url: https://github.com/finamp-app/flutter_carplay.git
+      ref: cf997048d5b51fbb60bf68bc53538e01a2378f55
   diacritic: ^0.1.6
   mini_music_visualizer: ^1.1.4
 
