@@ -34,6 +34,7 @@ import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/android_auto_helper.dart';
 import 'package:finamp/services/audio_service_smtc.dart';
 import 'package:finamp/services/carplay_helper.dart';
+import 'package:finamp/services/client_certificate_installer.dart';
 import 'package:finamp/services/data_source_service.dart';
 import 'package:finamp/services/dbus_manager.dart';
 import 'package:finamp/services/discord_rpc.dart';
@@ -143,6 +144,8 @@ Future<void> main({bool integrationTesting = false, bool loginTesting = false}) 
     _mainLog.info("Completed applicable migrations");
     await _trustAndroidUserCerts();
     _mainLog.info("Trusted Android user certs");
+    await ClientCertificateInstaller().installClientCertificate();
+    _mainLog.info("Installed client certificate");
     await _setupFinampUserHelper();
     _mainLog.info("Setup user helper");
     await _setupJellyfinApiData();

@@ -1,16 +1,23 @@
+import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/finamp_icon.dart';
-import 'package:finamp/models/jellyfin_models.dart';
-import 'package:finamp/services/jellyfin_api_helper.dart';
-import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/client_certificate_authentication_menu.dart';
+import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/services/client_certificate_installer.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/server_client_discovery_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' show ClientException;
 import 'package:logging/logging.dart';
 
 import 'login_flow.dart';
 
-class LoginServerSelectionPage extends StatefulWidget {
+class LoginServerSelectionPage extends ConsumerStatefulWidget {
   static const routeName = "login/server-selection";
 
   final ServerState serverState;
@@ -19,10 +26,10 @@ class LoginServerSelectionPage extends StatefulWidget {
   const LoginServerSelectionPage({super.key, required this.serverState, this.onServerSelected});
 
   @override
-  State<LoginServerSelectionPage> createState() => _LoginServerSelectionPageState();
+  ConsumerState<LoginServerSelectionPage> createState() => _LoginServerSelectionPageState();
 }
 
-class _LoginServerSelectionPageState extends State<LoginServerSelectionPage> {
+class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionPage> {
   static final _loginServerSelectionPageLogger = Logger("LoginServerSelectionPage");
 
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
@@ -38,12 +45,37 @@ class _LoginServerSelectionPageState extends State<LoginServerSelectionPage> {
       }
     };
 
+    _startDiscovery();
+  }
+
+  void _startDiscovery() {
     widget.serverState.clientDiscoveryHandler.discoverServers((ClientDiscoveryResponse response) async {
-      _loginServerSelectionPageLogger.finer("Found server: ${response.name} at ${response.address}");
+      _loginServerSelectionPageLogger.fine("Found server '${response.name}' at ${response.address}");
 
       final serverUrl = Uri.parse(response.address!);
-      PublicSystemInfoResult? serverInfo = await jellyfinApiHelper.loadCustomServerPublicInfo(serverUrl);
-      _loginServerSelectionPageLogger.finer("Server info: ${serverInfo?.toJson()}");
+      final PublicSystemInfoResult? serverInfo;
+      try {
+        serverInfo = await jellyfinApiHelper.loadCustomServerPublicInfo(serverUrl);
+      } catch (error) {
+        if (ClientCertificateInstaller.isSupported &&
+            error is ClientException &&
+            error.message.contains("TLSV1_ALERT_CERTIFICATE_REQUIRED")) {
+          _loginServerSelectionPageLogger.info(
+            "Discovered server '${response.name}' at ${response.address} requires an mTLS client certificate",
+          );
+          if (mounted && !widget.serverState.clientCertificateRequired) {
+            setState(() {
+              widget.serverState.clientCertificateRequired = true;
+            });
+          }
+        } else {
+          _loginServerSelectionPageLogger.severe(
+            "Failed to load public server info for discovered server '${response.name}' at ${response.address}: $error",
+          );
+        }
+        return;
+      }
+      _loginServerSelectionPageLogger.fine("Server info from ${response.address}: ${serverInfo?.toJson()}");
       if (serverInfo != null && mounted) {
         if (serverInfo.serverName == null) {
           serverInfo.serverName = response.name;
@@ -53,10 +85,19 @@ class _LoginServerSelectionPageState extends State<LoginServerSelectionPage> {
         }
         // no need to filter duplicates, we're using a map
         setState(() {
-          widget.serverState.discoveredServers[serverUrl] = serverInfo;
+          widget.serverState.discoveredServers[serverUrl] = serverInfo!;
         });
       }
     });
+  }
+
+  /// Discards the current discovery handler and starts over with a fresh socket.
+  /// The old socket can end up in a broken state after the app was backgrounded, e.g. while picking a certificate file,
+  /// and servers that responded before a certificate was installed need to be probed again either way.
+  void _restartDiscovery() {
+    widget.serverState.clientDiscoveryHandler.dispose();
+    widget.serverState.clientDiscoveryHandler = JellyfinServerClientDiscovery();
+    _startDiscovery();
   }
 
   @override
@@ -67,6 +108,9 @@ class _LoginServerSelectionPageState extends State<LoginServerSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final clientCertificate = ref.watch(finampSettingsProvider.clientCertificate);
+    final isClientCertificateInstalled = clientCertificate != null;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 32.0),
       child: Center(
@@ -97,8 +141,65 @@ class _LoginServerSelectionPageState extends State<LoginServerSelectionPage> {
             _buildServerUrlInput(context),
             ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 95.0),
-              child: widget.serverState.baseUrlToTest != null && widget.serverState.manualServer == null
-                  ? Padding(
+              child: Column(
+                children: [
+                  if (widget.serverState.manualServer != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: JellyfinServerSelectionWidget(
+                        baseUrl: widget.serverState.baseUrl,
+                        serverInfo: widget.serverState.manualServer,
+                        onPressed: () {
+                          widget.onServerSelected?.call(widget.serverState.manualServer!, widget.serverState.baseUrl!);
+                        },
+                      ),
+                    ),
+                  if (isClientCertificateInstalled)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: CTAMedium(
+                        text: AppLocalizations.of(context)!.clientCertificateInstalled,
+                        icon: TablerIcons.certificate,
+                        onPressed: () => showClientCertificateMenu(context: context),
+                        minWidth: 0,
+                      ),
+                    )
+                  else if (widget.serverState.clientCertificateRequired)
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                          child: Text(
+                            AppLocalizations.of(context)!.clientCertificateRequired,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CTAMedium(
+                              text: AppLocalizations.of(context)!.importClientCertificate,
+                              icon: TablerIcons.certificate,
+                              onPressed: () => showClientCertificateMenu(
+                                context: context,
+                                onImported: () {
+                                  _restartDiscovery();
+                                  final baseUrl = widget.serverState.baseUrl;
+                                  if (baseUrl != null) {
+                                    widget.serverState.onBaseUrlChanged(baseUrl);
+                                  }
+                                },
+                              ),
+                              minWidth: 0,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  if (widget.serverState.baseUrlToTest != null && widget.serverState.manualServer == null)
+                    Padding(
                       padding: const EdgeInsets.only(top: 12.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -111,23 +212,9 @@ class _LoginServerSelectionPageState extends State<LoginServerSelectionPage> {
                           ),
                         ],
                       ),
-                    )
-                  : Visibility(
-                      visible: widget.serverState.manualServer != null,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
-                        child: JellyfinServerSelectionWidget(
-                          baseUrl: widget.serverState.baseUrl,
-                          serverInfo: widget.serverState.manualServer,
-                          onPressed: () {
-                            widget.onServerSelected?.call(
-                              widget.serverState.manualServer!,
-                              widget.serverState.baseUrl!,
-                            );
-                          },
-                        ),
-                      ),
                     ),
+                ],
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20.0, bottom: 16.0),
