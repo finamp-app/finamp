@@ -34,7 +34,7 @@ abstract class JellyfinApi extends ChopperService {
   Future<dynamic> getQuickConnectState();
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
-  @Get(path: "/QuickConnect/Initiate")
+  @Post(path: "/QuickConnect/Initiate")
   Future<dynamic> initiateQuickConnect();
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
