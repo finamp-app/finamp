@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../services/finamp_settings_helper.dart';
@@ -39,6 +40,46 @@ class PlayOnService {
   bool abortConnect = false;
   // If the connection retry loop is currently running
   bool retryActive = false;
+
+  // Sessions updates pushed by the server (used by RemoteSessionService to
+  // monitor the remote session it controls).
+  final _sessionsStream = PublishSubject<List<SessionInfo>>();
+  bool _sessionUpdatesRequested = false;
+
+  /// How often the server should push Sessions updates while subscribed
+  /// (initial delay, interval), in milliseconds.
+  static const String _sessionUpdateInterval = "0,1500";
+
+  /// Subscribes to server-pushed Sessions messages over the websocket and
+  /// returns the resulting stream. The subscription survives reconnects
+  /// ([_connectWebsocket] re-sends SessionsStart); if the socket is down, a
+  /// connection attempt is started and the subscription is established once
+  /// it succeeds.
+  Stream<List<SessionInfo>> startSessionUpdates() {
+    _sessionUpdatesRequested = true;
+    switch (socketState) {
+      case SocketState.connected:
+        _playOnServiceLogger.info("Subscribing to Sessions updates over websocket");
+        _channel.sink.add('{"MessageType":"SessionsStart","Data":"$_sessionUpdateInterval"}');
+      case SocketState.connecting:
+        // _connectWebsocket subscribes once the socket is ready.
+        break;
+      case SocketState.disconnected:
+        _playOnServiceLogger.info("Websocket disconnected, connecting to receive Sessions updates");
+        unawaited(startListener());
+    }
+    return _sessionsStream.stream;
+  }
+
+  /// Stops the server-side Sessions subscription started by
+  /// [startSessionUpdates].
+  void stopSessionUpdates() {
+    _sessionUpdatesRequested = false;
+    if (socketState == SocketState.connected) {
+      _playOnServiceLogger.info("Unsubscribing from Sessions updates");
+      _channel.sink.add('{"MessageType":"SessionsStop"}');
+    }
+  }
 
   Future<void> initialize() async {
     _playOnServiceLogger.info("Initializing PlayOn service");
@@ -228,6 +269,11 @@ class PlayOnService {
 
     _channel.sink.add('{"MessageType":"KeepAlive"}');
 
+    // Restore the Sessions subscription after a reconnect.
+    if (_sessionUpdatesRequested) {
+      _channel.sink.add('{"MessageType":"SessionsStart","Data":"$_sessionUpdateInterval"}');
+    }
+
     _channel.stream.listen(
       _handleMessage,
       onDone: () {
@@ -277,6 +323,15 @@ class PlayOnService {
 
       if (request['MessageType'] != 'ForceKeepAlive' && request['MessageType'] != 'KeepAlive') {
         switch (request['MessageType']) {
+          case "Sessions":
+            // Server-pushed session list (requested via SessionsStart), used
+            // to monitor a remote session we control. Not a remote-control
+            // command, so it must not mark this session as controlled.
+            final sessions = (request['Data'] as List<dynamic>)
+                .map((e) => SessionInfo.fromJson(e as Map<String, dynamic>))
+                .toList();
+            _sessionsStream.add(sessions);
+            return;
           case "GeneralCommand":
             switch (request['Data']['Name']) {
               case "DisplayMessage":

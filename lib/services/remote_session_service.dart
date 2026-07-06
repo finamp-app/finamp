@@ -26,8 +26,8 @@ class RemotePlaybackState {
 /// Drives playback on another Jellyfin session ("Play On" / Connect controller
 /// side). While connected:
 ///
-/// - The remote session's state is monitored (via the PlayOn websocket when
-///   available, falling back to polling GET /Sessions) and mirrored into
+/// - The remote session's state is monitored via the [PlayOnService]
+///   websocket (server-pushed Sessions messages) and mirrored into
 ///   [MusicPlayerBackgroundTask]'s playbackState/mediaItem streams, so every
 ///   consumer (player screen, now playing bar, queue list, media notification,
 ///   and the PlayOn receiver when we're being controlled ourselves) reflects
@@ -51,10 +51,6 @@ class RemoteSessionService {
   /// Jellyfin ticks are 100ns units, so 1 millisecond == 10000 ticks.
   static const int _ticksPerMillisecond = 10000;
 
-  /// How often to poll the server for the remote session's state when the
-  /// websocket is unavailable.
-  static const Duration _pollInterval = Duration(seconds: 1);
-
   /// Maximum item ids per /Sessions/{id}/Playing request. Item ids are passed
   /// as a comma-separated query parameter (~33 chars per id), so larger queues
   /// must be split across requests to stay below common URI length limits
@@ -67,7 +63,7 @@ class RemoteSessionService {
   static const int _maxQueueItemsToSend = 500;
 
   String? _activeSessionId;
-  Timer? _pollTimer;
+  StreamSubscription<List<SessionInfo>>? _sessionsSubscription;
   final _sessionStream = BehaviorSubject<SessionInfo?>.seeded(null);
 
   // mpv-shim reports PlayState.PositionTicks as null while paused / between
@@ -262,26 +258,15 @@ class RemoteSessionService {
 
   void _startMonitoring() {
     _stopMonitoring();
-    unawaited(_poll());
-    _pollTimer = Timer.periodic(_pollInterval, (_) => _poll());
+    _log.info("Monitoring remote session via the PlayOn websocket");
+    _sessionsSubscription = GetIt.instance<PlayOnService>().startSessionUpdates().listen(_handleSessions);
   }
 
   void _stopMonitoring() {
-    _pollTimer?.cancel();
-    _pollTimer = null;
-  }
-
-  Future<void> _poll() async {
-    if (_activeSessionId == null) return;
-    try {
-      // No controllableByUserId filter: it can hide linux/mpv-shim when other
-      // sessions are present. We fetch all sessions and match by id instead.
-      final sessions = await _jellyfinApiHelper.getSessions(logSessions: false, controllableByCurrentUserOnly: false);
-      _handleSessions(sessions);
-    } catch (e, stack) {
-      // Never let a transient error kill the polling timer.
-      _log.severe("Remote poll failed", e, stack);
-    }
+    if (_sessionsSubscription == null) return;
+    unawaited(_sessionsSubscription?.cancel());
+    _sessionsSubscription = null;
+    GetIt.instance<PlayOnService>().stopSessionUpdates();
   }
 
   void _handleSessions(List<SessionInfo> sessions) {

@@ -764,23 +764,14 @@ class JellyfinApiHelper {
   }
 
   /// Gets the list of active sessions on the server (for remote control / "Play On").
-  /// When [controllableByCurrentUserOnly] is false the server-side
-  /// `controllableByUserId` filter is omitted. The filter can hide otherwise
-  /// controllable sessions (e.g. linux/mpv-shim) when other sessions are
-  /// present, so the RemoteSessionService poll passes false and matches by id.
-  Future<List<SessionInfo>> getSessions({bool logSessions = true, bool controllableByCurrentUserOnly = true}) async {
+  Future<List<SessionInfo>> getSessions() async {
     assert(_verifyCallable());
-    final response = await jellyfinApi.getSessions(
-      controllableByUserId: controllableByCurrentUserOnly ? _finampUserHelper.currentUser!.id : null,
-    );
+    final response = await jellyfinApi.getSessions(controllableByUserId: _finampUserHelper.currentUser!.id);
     final sessions = (response as List<dynamic>).map((e) => SessionInfo.fromJson(e as Map<String, dynamic>)).toList();
-    // Skipped during high-frequency polling (RemoteSessionService) to avoid flooding the log.
-    if (logSessions) {
-      for (final s in sessions) {
-        _jellyfinApiHelperLogger.info(
-          "Session: ${s.deviceName} / ${s.client} / remoteControl=${s.supportsRemoteControl}",
-        );
-      }
+    for (final s in sessions) {
+      _jellyfinApiHelperLogger.info(
+        "Session: ${s.deviceName} / ${s.client} / remoteControl=${s.supportsRemoteControl}",
+      );
     }
     return sessions;
   }
