@@ -335,6 +335,7 @@ class _RemoteSessionListState extends State<RemoteSessionList> {
   final _remoteSessionService = GetIt.instance<RemoteSessionService>();
   late Future<List<SessionInfo>> _sessionsFuture;
   String? _connectingToSessionId;
+  bool _disconnecting = false;
   StreamSubscription<SessionInfo?>? _remoteStateSubscription;
 
   @override
@@ -426,23 +427,44 @@ class _RemoteSessionListState extends State<RemoteSessionList> {
   }
 
   Future<void> _disconnect() async {
-    await _remoteSessionService.disconnect();
-    GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnDisconnected);
+    setState(() {
+      _disconnecting = true;
+    });
+    try {
+      await _remoteSessionService.disconnect();
+      GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnDisconnected);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _disconnecting = false;
+        });
+      }
+    }
+  }
+
+  /// The kind of device Finamp is running on, for the "This phone" /
+  /// "This tablet" / "This computer" label of the local playback entry.
+  String _thisDeviceType(BuildContext context) {
+    if (isDesktop) return "computer";
+    return MediaQuery.sizeOf(context).shortestSide >= 600 ? "tablet" : "phone";
   }
 
   Widget _thisDeviceTile(BuildContext context) {
     final isLocal = !_remoteSessionService.isRemote;
     return ToggleableListTile(
-      title: AppLocalizations.of(context)!.playOnThisDevice,
+      isLoading: _disconnecting,
+      title: AppLocalizations.of(context)!.playOnThisDevice(_thisDeviceType(context)),
       subtitle: AppLocalizations.of(context)!.deviceType("speaker"),
       leading: Container(
         padding: const EdgeInsets.all(16.0),
         color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-        child: const Icon(TablerIcons.device_mobile),
+        child: Icon(isDesktop ? TablerIcons.device_laptop : TablerIcons.device_mobile),
       ),
       icon: isLocal ? TablerIcons.device_speaker_filled : TablerIcons.device_speaker,
       state: isLocal,
       onToggle: (bool currentState) async {
+        // Tapping the local device while connected pauses the remote and
+        // migrates playback back to this device.
         if (!isLocal) {
           await _disconnect();
         }
@@ -466,9 +488,9 @@ class _RemoteSessionListState extends State<RemoteSessionList> {
       icon: isConnected ? TablerIcons.device_speaker_filled : TablerIcons.device_speaker,
       state: isConnected,
       onToggle: (bool currentState) async {
-        if (isConnected) {
-          await _disconnect();
-        } else {
+        // Already connected to this session: nothing to do. Disconnecting is
+        // done by selecting another device (or the local one).
+        if (!isConnected) {
           await _connect(session);
         }
       },

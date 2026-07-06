@@ -3649,9 +3649,14 @@
     "@playOnRemoteDeviceDisconnected": {
         "description": "Snackbar message shown when the connection to the remote device was lost and Finamp automatically returned to local playback."
     },
-    "playOnThisDevice": "This device",
+    "playOnThisDevice": "{deviceType, select, phone{This phone} tablet{This tablet} computer{This computer} other{This device}}",
     "@playOnThisDevice": {
-        "description": "Entry in the output menu's remote device list representing local playback on this device."
+        "placeholders": {
+            "deviceType": {
+                "type": "String"
+            }
+        },
+        "description": "Entry in the output menu's remote device list representing local playback on this device. The placeholder is the kind of device Finamp is running on."
     },
     "playOnSessionActivePromptTitle": "Device is already playing",
     "@playOnSessionActivePromptTitle": {
