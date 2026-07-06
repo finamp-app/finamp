@@ -290,6 +290,7 @@ class NowPlayingBar extends ConsumerWidget {
                                                     ? TablerIcons.player_pause
                                                     : TablerIcons.player_play
                                               : TablerIcons.player_play,
+                                          shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)],
                                           size: 32,
                                         ),
                                       ),
@@ -347,19 +348,16 @@ class NowPlayingBar extends ConsumerWidget {
                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  SizedBox(
-                                                    height: 20,
-                                                    child: OneLineMarqueeHelper(
-                                                      key: ValueKey(currentTrack.item.id),
-                                                      text: currentTrack.item.title,
-                                                      style: TextStyle(
-                                                        fontSize: 16,
-                                                        height: 26 / 20,
-                                                        color: primaryTextColor,
-                                                        fontWeight: Theme.brightnessOf(context) == Brightness.light
-                                                            ? FontWeight.w500
-                                                            : FontWeight.w600,
-                                                      ),
+                                                  OneLineMarqueeHelper(
+                                                    key: ValueKey(currentTrack.item.id),
+                                                    text: currentTrack.item.title,
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      height: 26 / 20,
+                                                      color: primaryTextColor,
+                                                      fontWeight: Theme.brightnessOf(context) == Brightness.light
+                                                          ? FontWeight.w500
+                                                          : FontWeight.w600,
                                                     ),
                                                   ),
                                                   const SizedBox(height: 4),

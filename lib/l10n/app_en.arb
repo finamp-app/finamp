@@ -178,6 +178,10 @@
     "@allLibraries": {
         "description": "All Libraries"
     },
+    "activeLibraries": "Active Libraries",
+    "@activeLibraries": {
+        "description": "Active Libraries"
+    },
     "unknownName": "Unknown Name",
     "tracks": "Tracks",
     "albums": "Albums",
@@ -3290,6 +3294,38 @@
     "@playRandomFavoriteItemActionDescription": {
         "description": "Description of a home screen quick action"
     },
+    "playRandomPlaylistActionDescription": "Starts playback of a random playlist",
+    "@playRandomPlaylistActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomArtistActionDescription": "Starts playback of a random artist",
+    "@playRandomArtistActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomGenreActionDescription": "Starts playback of a random genre",
+    "@playRandomGenreActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteAlbumActionDescription": "Starts playback of a random favorite album",
+    "@playRandomFavoriteAlbumActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteTrackActionDescription": "Starts playback of a random favorite track",
+    "@playRandomFavoriteTrackActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoritePlaylistActionDescription": "Starts playback of a random favorite playlist",
+    "@playRandomFavoritePlaylistActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteArtistActionDescription": "Starts playback of a random favorite artist",
+    "@playRandomFavoriteArtistActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomFavoriteGenreActionDescription": "Starts playback of a random favorite genre",
+    "@playRandomFavoriteGenreActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
     "playPreviousQueueActionDescription": "Restores and plays your most recent archived queue",
     "@playPreviousQueueActionDescription": {
         "description": "Description of a home screen quick action"
@@ -3337,6 +3373,38 @@
     },
     "surpriseMeAction": "Surprise Me",
     "@surpriseMeAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomPlaylistAction": "Random Playlist",
+    "@randomPlaylistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomArtistAction": "Random Artist",
+    "@randomArtistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomGenreAction": "Random Genre",
+    "@randomGenreAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteAlbumAction": "Random Favorite Album",
+    "@randomFavoriteAlbumAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteTrackAction": "Random Favorite Track",
+    "@randomFavoriteTrackAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoritePlaylistAction": "Random Favorite Playlist",
+    "@randomFavoritePlaylistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteArtistAction": "Random Favorite Artist",
+    "@randomFavoriteArtistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteGenreAction": "Random Favorite Genre",
+    "@randomFavoriteGenreAction": {
         "description": "Name of a home screen quick action"
     },
     "editAction": "Edit Action",
@@ -3528,5 +3596,36 @@
                 "example": "syncingLocal"
             }
         }
-    }
+    },
+    "cancelChanges": "Cancel changes",
+    "@cancelChanges": {
+        "description": "Button on sort and filter menu that clears any pending changes."
+    },
+    "applyChangesOnClose": "Changes will apply automatically upon menu close.",
+    "@applyChangesOnClose": {
+        "description": "Notification on sort and filter menu that currently pending changes will be automatically applied on close."
+    },
+    "removeFromQueue": "Remove From Queue",
+    "featureChipName": "{chipName, select, explicit{Explicit} playCount{Play Count} additionalPeople{Additional People} playbackMode{Playback Mode} codec{Codec} bitRate{Bitrate} bitDepth{Bit Depth}sampleRate{Sample Rate} size{Size} normalizationGain{Normalization Gain} other{{chipName}}}",
+    "@featureChipName": {
+        "placeholders": {
+            "chipName": {
+                "type": "String",
+                "example": "playCount"
+            }
+        },
+        "description": "Titles for settings controlling which pieces of advanced track info are displayed."
+    },
+    "featureChipDescription": "{chipName, select, additionalPeople{TODO ?????} playbackMode{Streaming and transcoding status information} bitDepth{Bits per audio sample.  Only applicable to lossless codecs, generally 16 bits.} sampleRate{Audio samples per second.  Generally 44.1 kHz.} normalizationGain{Currently active ReplayGain level} other{null}}",
+    "@featureChipDescription": {
+        "placeholders": {
+            "chipName": {
+                "type": "String",
+                "example": "playCount"
+            }
+        },
+        "description": "Descriptions of different pieces of advanced track info."
+    },
+    "maximizePlayer": "Maximize player",
+    "collapsePlayer": "Collapse player to sidebar"
 }

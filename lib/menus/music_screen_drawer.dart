@@ -28,142 +28,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../extensions/localizations.dart';
 
-const finampMainMenuRouteName = "/main-menu";
-
-Future<void> showFinampMainMenu({required BuildContext context}) async {
-  FeedbackHelper.feedback(FeedbackType.selection);
-
-  final finampUserHelper = GetIt.instance<FinampUserHelper>();
-
-  await showThemedBottomSheet<void>(
-    context: context,
-    routeName: finampMainMenuRouteName,
-    minDraggableHeight: 0.8,
-    buildSlivers: (context) {
-      var menu = [
-        Consumer(
-          builder: (context, ref, child) {
-            return SliverList(
-              delegate: SliverChildListDelegate.fixed([
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    FinampIcon(
-                      56,
-                      56,
-                      overrideColor: ref.watch(finampSettingsProvider.isOffline)
-                          ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
-                          : null,
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      ref.watch(packageNameProvider).valueOrNull ?? AppLocalizations.of(context)!.finamp,
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    if (ref.watch(finampSettingsProvider.isOffline))
-                      Text.rich(
-                        TextSpan(
-                          text: AppLocalizations.of(context)!.offlineMode,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    else
-                      Text.rich(
-                        TextSpan(
-                          text: context.l10n.connectedTo,
-                          children: [
-                            TextSpan(
-                              text:
-                                  " ${ref.watch(currentServerInfoProvider).value?.publicServerInfo.serverName ?? context.l10n.unknown}",
-                              style: const TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
-                ),
-                SizedBox(height: 8.0),
-                const OfflineModeSwitchListTile(),
-                const OfflineModeStatusLabel(),
-                Material(
-                  color: Colors.transparent,
-                  child: ListTile(
-                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.file_download)),
-                    title: Text(AppLocalizations.of(context)!.downloads),
-                    onTap: () => Navigator.of(context).pushNamed(DownloadsScreen.routeName),
-                  ),
-                ),
-                Material(
-                  color: Colors.transparent,
-                  child: ListTile(
-                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(TablerIcons.clock)),
-                    title: Text(AppLocalizations.of(context)!.playbackHistory),
-                    onTap: () => Navigator.of(context).pushNamed(PlaybackHistoryScreen.routeName),
-                  ),
-                ),
-                Material(
-                  color: Colors.transparent,
-                  child: ListTile(
-                    leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.auto_delete)),
-                    title: Text(AppLocalizations.of(context)!.queuesScreen),
-                    onTap: () => Navigator.of(context).pushNamed(QueueRestoreScreen.routeName),
-                  ),
-                ),
-                const Divider(),
-              ]),
-            );
-          },
-        ),
-        // This causes an error when logging out if we show this widget
-        if (finampUserHelper.currentUser != null)
-          SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              return ViewListTile(view: finampUserHelper.currentUser!.views.values.elementAt(index));
-            }, childCount: finampUserHelper.currentUser!.views.length),
-          ),
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: SafeArea(
-            bottom: true,
-            top: false,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Divider(),
-                  Material(
-                    color: Colors.transparent,
-                    child: ListTile(
-                      leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.warning)),
-                      title: Text(AppLocalizations.of(context)!.logs),
-                      onTap: () => Navigator.of(context).pushNamed(LogsScreen.routeName),
-                    ),
-                  ),
-                  Material(
-                    color: Colors.transparent,
-                    child: ListTile(
-                      leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.settings)),
-                      title: Text(AppLocalizations.of(context)!.settings),
-                      onTap: () => Navigator.of(context).pushNamed(SettingsScreen.routeName),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ];
-      var stackHeight = 0.0;
-      return (stackHeight, menu);
-    },
-  );
-}
-
 class MusicScreenDrawer extends ConsumerWidget {
   const MusicScreenDrawer({super.key});
 
@@ -176,10 +40,10 @@ class MusicScreenDrawer extends ConsumerWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final minWidth = min(304.0, constraints.maxWidth * .80);
+        final minWidth = min(304.0, constraints.maxWidth * .70);
         final excessWidth = constraints.maxWidth - minWidth;
         final expandedWidth = minWidth + excessWidth * 0.5;
-        final targetWidth = min(expandedWidth, 500.0);
+        final targetWidth = min(expandedWidth, 450.0);
         return Drawer(
           surfaceTintColor: colorScheme.surfaceTint,
           backgroundColor: colorScheme.surface,
@@ -232,6 +96,11 @@ class MusicScreenDrawer extends ConsumerWidget {
                                           " ${ref.watch(currentServerInfoProvider).value?.publicServerInfo.serverName ?? context.l10n.unknown}",
                                       style: const TextStyle(fontWeight: FontWeight.w600),
                                     ),
+                                    if (ref.watch(currentServerInfoProvider).value?.publicServerInfo.version != null)
+                                      TextSpan(
+                                        text:
+                                            " (v${ref.watch(currentServerInfoProvider).value?.publicServerInfo.version})",
+                                      ),
                                   ],
                                 ),
                                 maxLines: 1,
@@ -271,30 +140,55 @@ class MusicScreenDrawer extends ConsumerWidget {
                       const OfflineModeSwitchListTile(),
                       const OfflineModeStatusLabel(),
                       ListTile(
-                        leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.file_download)),
-                        title: Text(AppLocalizations.of(context)!.downloads),
+                        leading: const Padding(
+                          padding: EdgeInsets.only(left: 2.0, right: 12.0),
+                          child: Icon(Icons.file_download, size: 20.0),
+                        ),
+                        title: Text(AppLocalizations.of(context)!.downloads, style: TextStyle(fontSize: 15.0)),
                         onTap: () => Navigator.of(context).pushNamed(DownloadsScreen.routeName),
+                        dense: true,
                       ),
                       ListTile(
-                        leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(TablerIcons.clock)),
-                        title: Text(AppLocalizations.of(context)!.playbackHistory),
+                        leading: const Padding(
+                          padding: EdgeInsets.only(left: 2.0, right: 12.0),
+                          child: Icon(TablerIcons.clock, size: 20.0),
+                        ),
+                        title: Text(AppLocalizations.of(context)!.playbackHistory, style: TextStyle(fontSize: 15.0)),
                         onTap: () => Navigator.of(context).pushNamed(PlaybackHistoryScreen.routeName),
+                        dense: true,
                       ),
                       ListTile(
-                        leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.auto_delete)),
-                        title: Text(AppLocalizations.of(context)!.queuesScreen),
+                        leading: const Padding(
+                          padding: EdgeInsets.only(left: 2.0, right: 12.0),
+                          child: Icon(Icons.auto_delete, size: 20.0),
+                        ),
+                        title: Text(AppLocalizations.of(context)!.queuesScreen, style: TextStyle(fontSize: 15.0)),
                         onTap: () => Navigator.of(context).pushNamed(QueueRestoreScreen.routeName),
+                        dense: true,
                       ),
-                      const Divider(),
                     ]),
                   ),
                   // This causes an error when logging out if we show this widget
-                  if (finampUserHelper.currentUser != null)
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        return ViewListTile(view: finampUserHelper.currentUser!.views.values.elementAt(index));
-                      }, childCount: finampUserHelper.currentUser!.views.length),
+                  if (finampUserHelper.currentUser != null) ...[
+                    SliverPadding(
+                      padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 4.0),
+                      sliver: SliverToBoxAdapter(
+                        child: Text.rich(
+                          TextSpan(
+                            text: AppLocalizations.of(context)!.activeLibraries,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ),
+                  ],
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return ViewListTile(view: finampUserHelper.currentUser!.views.values.elementAt(index));
+                    }, childCount: finampUserHelper.currentUser!.views.length),
+                  ),
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: SafeArea(
@@ -307,14 +201,22 @@ class MusicScreenDrawer extends ConsumerWidget {
                           children: [
                             const Divider(),
                             ListTile(
-                              leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.warning)),
-                              title: Text(AppLocalizations.of(context)!.logs),
+                              leading: const Padding(
+                                padding: EdgeInsets.only(right: 16),
+                                child: Icon(Icons.warning, size: 20.0),
+                              ),
+                              title: Text(AppLocalizations.of(context)!.logs, style: TextStyle(fontSize: 15.0)),
                               onTap: () => Navigator.of(context).pushNamed(LogsScreen.routeName),
+                              dense: true,
                             ),
                             ListTile(
-                              leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.settings)),
-                              title: Text(AppLocalizations.of(context)!.settings),
+                              leading: const Padding(
+                                padding: EdgeInsets.only(right: 16),
+                                child: Icon(Icons.settings, size: 20.0),
+                              ),
+                              title: Text(AppLocalizations.of(context)!.settings, style: TextStyle(fontSize: 15.0)),
                               onTap: () => Navigator.of(context).pushNamed(SettingsScreen.routeName),
+                              dense: true,
                             ),
                           ],
                         ),

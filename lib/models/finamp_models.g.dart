@@ -1349,17 +1349,20 @@ class FinampFeatureChipsConfigurationAdapter
     return FinampFeatureChipsConfiguration(
       enabled: fields[0] as bool,
       features: (fields[1] as List).cast<FinampFeatureChipType>(),
+      migrated: fields[2] == null ? false : fields[2] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, FinampFeatureChipsConfiguration obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.enabled)
       ..writeByte(1)
-      ..write(obj.features);
+      ..write(obj.features)
+      ..writeByte(2)
+      ..write(obj.migrated);
   }
 
   @override
@@ -2848,52 +2851,52 @@ class FinampFeatureChipTypeAdapter extends TypeAdapter<FinampFeatureChipType> {
   FinampFeatureChipType read(BinaryReader reader) {
     switch (reader.readByte()) {
       case 0:
-        return FinampFeatureChipType.playCount;
-      case 1:
-        return FinampFeatureChipType.additionalPeople;
-      case 2:
-        return FinampFeatureChipType.playbackMode;
-      case 3:
-        return FinampFeatureChipType.codec;
-      case 4:
-        return FinampFeatureChipType.bitRate;
-      case 5:
-        return FinampFeatureChipType.bitDepth;
-      case 6:
-        return FinampFeatureChipType.size;
-      case 7:
-        return FinampFeatureChipType.normalizationGain;
-      case 8:
-        return FinampFeatureChipType.sampleRate;
-      case 9:
         return FinampFeatureChipType.explicit;
-      default:
+      case 1:
         return FinampFeatureChipType.playCount;
+      case 2:
+        return FinampFeatureChipType.additionalPeople;
+      case 3:
+        return FinampFeatureChipType.playbackMode;
+      case 4:
+        return FinampFeatureChipType.codec;
+      case 5:
+        return FinampFeatureChipType.bitRate;
+      case 6:
+        return FinampFeatureChipType.bitDepth;
+      case 7:
+        return FinampFeatureChipType.sampleRate;
+      case 8:
+        return FinampFeatureChipType.size;
+      case 9:
+        return FinampFeatureChipType.normalizationGain;
+      default:
+        return FinampFeatureChipType.explicit;
     }
   }
 
   @override
   void write(BinaryWriter writer, FinampFeatureChipType obj) {
     switch (obj) {
-      case FinampFeatureChipType.playCount:
-        writer.writeByte(0);
-      case FinampFeatureChipType.additionalPeople:
-        writer.writeByte(1);
-      case FinampFeatureChipType.playbackMode:
-        writer.writeByte(2);
-      case FinampFeatureChipType.codec:
-        writer.writeByte(3);
-      case FinampFeatureChipType.bitRate:
-        writer.writeByte(4);
-      case FinampFeatureChipType.bitDepth:
-        writer.writeByte(5);
-      case FinampFeatureChipType.size:
-        writer.writeByte(6);
-      case FinampFeatureChipType.normalizationGain:
-        writer.writeByte(7);
-      case FinampFeatureChipType.sampleRate:
-        writer.writeByte(8);
       case FinampFeatureChipType.explicit:
+        writer.writeByte(0);
+      case FinampFeatureChipType.playCount:
+        writer.writeByte(1);
+      case FinampFeatureChipType.additionalPeople:
+        writer.writeByte(2);
+      case FinampFeatureChipType.playbackMode:
+        writer.writeByte(3);
+      case FinampFeatureChipType.codec:
+        writer.writeByte(4);
+      case FinampFeatureChipType.bitRate:
+        writer.writeByte(5);
+      case FinampFeatureChipType.bitDepth:
+        writer.writeByte(6);
+      case FinampFeatureChipType.sampleRate:
+        writer.writeByte(7);
+      case FinampFeatureChipType.size:
+        writer.writeByte(8);
+      case FinampFeatureChipType.normalizationGain:
         writer.writeByte(9);
     }
   }
@@ -3664,6 +3667,22 @@ class FinampQuickActionsAdapter extends TypeAdapter<FinampQuickActions> {
         return FinampQuickActions.surpriseMe;
       case 9:
         return FinampQuickActions.playSpecificItem;
+      case 10:
+        return FinampQuickActions.playRandomPlaylist;
+      case 11:
+        return FinampQuickActions.playRandomArtist;
+      case 12:
+        return FinampQuickActions.playRandomGenre;
+      case 13:
+        return FinampQuickActions.playRandomFavoriteAlbum;
+      case 14:
+        return FinampQuickActions.playRandomFavoriteTrack;
+      case 15:
+        return FinampQuickActions.playRandomFavoritePlaylist;
+      case 16:
+        return FinampQuickActions.playRandomFavoriteArtist;
+      case 17:
+        return FinampQuickActions.playRandomFavoriteGenre;
       default:
         return FinampQuickActions.shuffleTracks;
     }
@@ -3692,6 +3711,22 @@ class FinampQuickActionsAdapter extends TypeAdapter<FinampQuickActions> {
         writer.writeByte(8);
       case FinampQuickActions.playSpecificItem:
         writer.writeByte(9);
+      case FinampQuickActions.playRandomPlaylist:
+        writer.writeByte(10);
+      case FinampQuickActions.playRandomArtist:
+        writer.writeByte(11);
+      case FinampQuickActions.playRandomGenre:
+        writer.writeByte(12);
+      case FinampQuickActions.playRandomFavoriteAlbum:
+        writer.writeByte(13);
+      case FinampQuickActions.playRandomFavoriteTrack:
+        writer.writeByte(14);
+      case FinampQuickActions.playRandomFavoritePlaylist:
+        writer.writeByte(15);
+      case FinampQuickActions.playRandomFavoriteArtist:
+        writer.writeByte(16);
+      case FinampQuickActions.playRandomFavoriteGenre:
+        writer.writeByte(17);
     }
   }
 
@@ -9559,6 +9594,7 @@ FinampFeatureChipsConfiguration _$FinampFeatureChipsConfigurationFromJson(
   features: (json['features'] as List<dynamic>)
       .map((e) => $enumDecode(_$FinampFeatureChipTypeEnumMap, e))
       .toList(),
+  migrated: json['migrated'] as bool,
 );
 
 Map<String, dynamic> _$FinampFeatureChipsConfigurationToJson(
@@ -9568,19 +9604,20 @@ Map<String, dynamic> _$FinampFeatureChipsConfigurationToJson(
   'features': instance.features
       .map((e) => _$FinampFeatureChipTypeEnumMap[e]!)
       .toList(),
+  'migrated': instance.migrated,
 };
 
 const _$FinampFeatureChipTypeEnumMap = {
+  FinampFeatureChipType.explicit: 'explicit',
   FinampFeatureChipType.playCount: 'playCount',
   FinampFeatureChipType.additionalPeople: 'additionalPeople',
   FinampFeatureChipType.playbackMode: 'playbackMode',
   FinampFeatureChipType.codec: 'codec',
   FinampFeatureChipType.bitRate: 'bitRate',
   FinampFeatureChipType.bitDepth: 'bitDepth',
+  FinampFeatureChipType.sampleRate: 'sampleRate',
   FinampFeatureChipType.size: 'size',
   FinampFeatureChipType.normalizationGain: 'normalizationGain',
-  FinampFeatureChipType.sampleRate: 'sampleRate',
-  FinampFeatureChipType.explicit: 'explicit',
 };
 
 FinampOutputRoute _$FinampOutputRouteFromJson(Map<String, dynamic> json) =>
@@ -9783,7 +9820,15 @@ const _$FinampQuickActionsEnumMap = {
   FinampQuickActions.browsePlaybackHistory: 'browsePlaybackHistory',
   FinampQuickActions.playRandomAlbum: 'playRandomAlbum',
   FinampQuickActions.playRandomTrack: 'playRandomTrack',
+  FinampQuickActions.playRandomPlaylist: 'playRandomPlaylist',
+  FinampQuickActions.playRandomArtist: 'playRandomArtist',
+  FinampQuickActions.playRandomGenre: 'playRandomGenre',
   FinampQuickActions.playRandomFavoriteItem: 'playRandomFavoriteItem',
+  FinampQuickActions.playRandomFavoriteAlbum: 'playRandomFavoriteAlbum',
+  FinampQuickActions.playRandomFavoriteTrack: 'playRandomFavoriteTrack',
+  FinampQuickActions.playRandomFavoritePlaylist: 'playRandomFavoritePlaylist',
+  FinampQuickActions.playRandomFavoriteArtist: 'playRandomFavoriteArtist',
+  FinampQuickActions.playRandomFavoriteGenre: 'playRandomFavoriteGenre',
   FinampQuickActions.playPreviousQueue: 'playPreviousQueue',
   FinampQuickActions.configureOutput: 'configureOutput',
   FinampQuickActions.surpriseMe: 'surpriseMe',

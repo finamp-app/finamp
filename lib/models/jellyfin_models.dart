@@ -2153,7 +2153,10 @@ class BaseItemDto with RunTimeTickDuration {
     }
 
     if (type == "Audio") {
-      return name!.toLowerCase();
+      // The sortName has track numbers and whatnot, so we need to use the regular name
+      // This means the server sort we need to match in the tracks tab for jump to letter to work
+      // is a naive sort which does not strip diacritics or force lower case.
+      return name!;
     }
 
     // https://github.com/jellyfin/jellyfin/blob/054f42332d8e0c45fb899eeaef982aa0fd549397/MediaBrowser.Model/Configuration/ServerConfiguration.cs#L129
@@ -2446,7 +2449,7 @@ class MediaSourceInfo with RunTimeTickDuration {
   /// an issue as they are not counted in the size. Attachments are also not
   /// counted, as [mediaStreams] doesn't seem to note their size.
   int transcodedSize(int Function(int channels) bitrateChannels) {
-    final channels = mediaStreams.firstWhere((element) => element.type == "Audio").channels ?? 2;
+    final channels = mediaStreams.firstWhereOrNull((element) => element.type == "Audio")?.channels ?? 2;
     final bitrate = bitrateChannels(channels);
 
     // Divide by 8 to get bytes/sec

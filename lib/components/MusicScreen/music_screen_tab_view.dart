@@ -105,7 +105,8 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     if (letter.isEmpty) return;
 
     letterToSearch = letter;
-    var codePointToScrollTo = letter.toLowerCase().codeUnitAt(0);
+    var codePointToScrollTo = (widget.contentType == ContentType.tracks ? letter.toUpperCase() : letter.toLowerCase())
+        .codeUnitAt(0);
 
     if (letter == '#') {
       codePointToScrollTo = 0;
@@ -126,8 +127,11 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                   baseItem.albumArtists?.sortedBy((e) => e.name ?? '').map((e) => e.name ?? '').join(", ") ??
                   baseItem.albumArtist ??
                   "";
+              // TODO how does jellyfin sort handle this?  Do we match?
+              sortName = removeDiacritics(sortName).toLowerCase();
               break;
             default:
+              // Any modification throws us off from server sorting.  Assume sortName is already stripped and lowercase.
               sortName = baseItem.nameForSorting ?? "";
               break;
           }

@@ -126,7 +126,7 @@ dependencies:
   balanced_text:
     git:
       url: https://github.com/Komodo5197/flutter-balanced-text.git
-      ref: 8f3603a639be6a7d5b0008ec54b0e90df7cd8323
+      ref: a6e93dad04f650734eaa6fa4d332800c7523b2a7
   flutter_to_airplay: ^2.0.5
   flutter_blurhash: ^0.9.1
   scroll_to_index: ^3.0.1

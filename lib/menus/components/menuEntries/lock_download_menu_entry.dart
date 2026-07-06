@@ -26,7 +26,19 @@ class LockDownloadMenuEntry extends ConsumerWidget implements HideableMenuEntry 
     if (downloadStatus?.isIncidental ?? false) {
       var parent = downloadsService.getFirstRequiringItem(downloadStub);
       if (parent != null) {
-        var parentName = AppLocalizations.of(context)!.itemTypeSubtitle(parent.baseItemType.name, parent.name);
+        String parentName;
+        if (parent.type == DownloadItemType.finampCollection) {
+          switch (parent.finampCollection!.type) {
+            case FinampCollectionType.collectionWithLibraryFilter:
+              parentName = AppLocalizations.of(
+                context,
+              )!.itemTypeSubtitle(BaseItemDtoType.fromItem(parent.finampCollection!.item!).name, parent.name);
+            case _:
+              parentName = parent.name;
+          }
+        } else {
+          parentName = AppLocalizations.of(context)!.itemTypeSubtitle(parent.baseItemType.name, parent.name);
+        }
         parentTooltip = AppLocalizations.of(context)!.incidentalDownloadTooltip(parentName);
       }
     }

@@ -1,22 +1,20 @@
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/screens/customization_settings_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../components/LayoutSettingsScreen/player_screen_minimum_cover_padding_editor.dart';
+import '../extensions/localizations.dart';
+import '../models/finamp_models.dart';
 import '../services/finamp_settings_helper.dart';
 
-class PlayerSettingsScreen extends StatefulWidget {
+class PlayerSettingsScreen extends ConsumerWidget {
   const PlayerSettingsScreen({super.key});
   static const routeName = "/settings/player";
-  @override
-  State<PlayerSettingsScreen> createState() => _PlayerSettingsScreenState();
-}
 
-class _PlayerSettingsScreenState extends State<PlayerSettingsScreen> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.playerScreen),
@@ -30,8 +28,11 @@ class _PlayerSettingsScreenState extends State<PlayerSettingsScreen> {
       ),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 200.0),
-        children: const [
+        children: [
           ShowFeatureChipsToggle(),
+          if (ref.watch(finampSettingsProvider.featureChipsConfiguration).enabled) ...[
+            for (var feature in FinampFeatureChipType.values) FeatureChipToggle(feature: feature),
+          ],
           ShowAlbumReleaseDateOnPlayerScreenToggle(),
           PlayerScreenMinimumCoverPaddingEditor(),
           SuppressPlayerPaddingSwitch(),
@@ -99,6 +100,37 @@ class ShowFeatureChipsToggle extends ConsumerWidget {
           FinampSettingsHelper.finampSettings.featureChipsConfiguration.copyWith(enabled: value),
         );
       },
+    );
+  }
+}
+
+class FeatureChipToggle extends ConsumerWidget {
+  const FeatureChipToggle({super.key, required this.feature});
+
+  final FinampFeatureChipType feature;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final subtitle = context.l10n.featureChipDescription(feature.name);
+    return Padding(
+      padding: const EdgeInsets.only(left: 40.0),
+      child: SwitchListTile.adaptive(
+        title: Text(context.l10n.featureChipName(feature.name)),
+        subtitle: subtitle == "null" ? null : Text(subtitle),
+        value: ref.watch(finampSettingsProvider.featureChipsConfiguration).features.contains(feature),
+        onChanged: (value) {
+          final config = FinampSettingsHelper.finampSettings.featureChipsConfiguration;
+          final feat = List.of(config.features);
+          if (value) {
+            feat.add(feature);
+          } else {
+            feat.remove(feature);
+          }
+          FinampSetters.setFeatureChipsConfiguration(
+            config.copyWith(features: FinampFeatureChipType.values.where((x) => feat.contains(x)).toList()),
+          );
+        },
+      ),
     );
   }
 }

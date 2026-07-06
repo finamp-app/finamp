@@ -25,6 +25,7 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path_helper;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../builders/annotations.dart';
 import '../components/MusicScreen/sort_and_filter_row.dart';
@@ -203,15 +204,12 @@ class DefaultSettings {
     features: [
       FinampFeatureChipType.explicit,
       FinampFeatureChipType.playCount,
-      FinampFeatureChipType.additionalPeople,
       FinampFeatureChipType.playbackMode,
       FinampFeatureChipType.codec,
       FinampFeatureChipType.bitRate,
-      FinampFeatureChipType.bitDepth,
-      FinampFeatureChipType.sampleRate,
-      FinampFeatureChipType.size,
       FinampFeatureChipType.normalizationGain,
     ],
+    migrated: true,
   );
   static const showCoversOnAlbumScreen = false;
   static const allowSplitScreen = true;
@@ -1195,6 +1193,7 @@ enum ContentType {
     ContentType.inAlbumArtistAlbums => false,
   };
 
+  // This is basically whether we expect music_screen_tab_view to be able to display this type.
   bool get directlyDisplayable => switch (this) {
     ContentType.albums => true,
     ContentType.genericArtists => false,
@@ -2906,26 +2905,27 @@ enum FinampTranscodingStreamingFormat {
 
 @HiveType(typeId: 74)
 enum FinampFeatureChipType {
+  // Feature chips on the player screen will be displayed in the same order as this enum.
   @HiveField(0)
-  playCount,
+  explicit,
   @HiveField(1)
-  additionalPeople,
+  playCount,
   @HiveField(2)
-  playbackMode,
+  additionalPeople,
   @HiveField(3)
-  codec,
+  playbackMode,
   @HiveField(4)
-  bitRate,
+  codec,
   @HiveField(5)
-  bitDepth,
+  bitRate,
   @HiveField(6)
-  size,
+  bitDepth,
   @HiveField(7)
-  normalizationGain,
-  @HiveField(8)
   sampleRate,
+  @HiveField(8)
+  size,
   @HiveField(9)
-  explicit;
+  normalizationGain;
 
   /// Human-readable version of the [FinampFeatureChipType]
   @override
@@ -2961,13 +2961,17 @@ enum FinampFeatureChipType {
 @JsonSerializable()
 @HiveType(typeId: 75)
 class FinampFeatureChipsConfiguration {
-  const FinampFeatureChipsConfiguration({required this.enabled, required this.features});
+  const FinampFeatureChipsConfiguration({required this.enabled, required this.features, required this.migrated});
 
   @HiveField(0)
   final bool enabled;
 
   @HiveField(1)
   final List<FinampFeatureChipType> features;
+
+  /// Flag for initial migration to user-configurable features
+  @HiveField(2, defaultValue: false)
+  final bool migrated;
 
   factory FinampFeatureChipsConfiguration.fromJson(Map<String, dynamic> json) =>
       _$FinampFeatureChipsConfigurationFromJson(json);
@@ -2981,7 +2985,11 @@ class FinampFeatureChipsConfiguration {
 
   // implement copyWith
   FinampFeatureChipsConfiguration copyWith({bool? enabled, List<FinampFeatureChipType>? features}) {
-    return FinampFeatureChipsConfiguration(enabled: enabled ?? this.enabled, features: features ?? this.features);
+    return FinampFeatureChipsConfiguration(
+      enabled: enabled ?? this.enabled,
+      features: features ?? this.features,
+      migrated: migrated,
+    );
   }
 }
 
@@ -3172,15 +3180,30 @@ class FinampOutputRoute {
 class ScreenSize {
   ScreenSize(this.sizeX, this.sizeY, this.locationX, this.locationY);
 
-  ScreenSize.from(Size size, Offset location)
-    : sizeX = size.width,
-      sizeY = size.height,
-      locationX = location.dx,
-      locationY = location.dy;
+  factory ScreenSize.from(Rect bounds) {
+    final double scaling;
+    // If the main and target monitor have different scaling, the position will be scaled up by the target when saving
+    // but down by the main when applying, leading to an offset.  We undo the scaling and save physical pixel values to
+    // prevent this.  Window size does not need this for some reason, only location.
+    if (Platform.isWindows) {
+      scaling = WindowManager.instance.getDevicePixelRatio();
+    } else {
+      scaling = 1.0;
+    }
+    return ScreenSize(bounds.size.width, bounds.size.height, bounds.topLeft.dx * scaling, bounds.topLeft.dy * scaling);
+  }
 
   Size get size => Size(sizeX, sizeY);
 
-  Offset get location => Offset(locationX, locationY);
+  Offset get location {
+    final double scaling;
+    if (Platform.isWindows) {
+      scaling = WindowManager.instance.getDevicePixelRatio();
+    } else {
+      scaling = 1.0;
+    }
+    return Offset(locationX / scaling, locationY / scaling);
+  }
 
   @HiveField(1)
   double sizeX;
@@ -4084,7 +4107,7 @@ class HomeScreenSectionConfiguration {
       presetType: presetType,
     ),
     HomeScreenSectionPresetType.recentlyAddedAlbums => HomeScreenSectionConfiguration(
-      base: TabsHomeSection(libraryId: allLibraryPlaceholder, contentType: ContentType.albums),
+      base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.albums),
       sortConfig: SortAndFilterConfiguration(sortBy: SortBy.dateCreated, sortOrder: SortOrder.descending, filters: {}),
       customSectionTitle: null,
       presetType: presetType,
@@ -4288,8 +4311,24 @@ enum FinampQuickActions {
   playRandomAlbum,
   @HiveField(4)
   playRandomTrack,
+  @HiveField(10)
+  playRandomPlaylist,
+  @HiveField(11)
+  playRandomArtist,
+  @HiveField(12)
+  playRandomGenre,
   @HiveField(5)
   playRandomFavoriteItem,
+  @HiveField(13)
+  playRandomFavoriteAlbum,
+  @HiveField(14)
+  playRandomFavoriteTrack,
+  @HiveField(15)
+  playRandomFavoritePlaylist,
+  @HiveField(16)
+  playRandomFavoriteArtist,
+  @HiveField(17)
+  playRandomFavoriteGenre,
   @HiveField(6)
   playPreviousQueue,
   @HiveField(7)
@@ -4332,6 +4371,22 @@ enum FinampQuickActions {
         return AppLocalizations.of(context)!.playSpecificItemActionDescription;
       case FinampQuickActions.surpriseMe:
         return AppLocalizations.of(context)!.surpriseMeActionDescription;
+      case FinampQuickActions.playRandomPlaylist:
+        return AppLocalizations.of(context)!.playRandomPlaylistActionDescription;
+      case FinampQuickActions.playRandomArtist:
+        return AppLocalizations.of(context)!.playRandomArtistActionDescription;
+      case FinampQuickActions.playRandomGenre:
+        return AppLocalizations.of(context)!.playRandomGenreActionDescription;
+      case FinampQuickActions.playRandomFavoriteAlbum:
+        return AppLocalizations.of(context)!.playRandomFavoriteAlbumActionDescription;
+      case FinampQuickActions.playRandomFavoriteTrack:
+        return AppLocalizations.of(context)!.playRandomFavoriteTrackActionDescription;
+      case FinampQuickActions.playRandomFavoritePlaylist:
+        return AppLocalizations.of(context)!.playRandomFavoritePlaylistActionDescription;
+      case FinampQuickActions.playRandomFavoriteArtist:
+        return AppLocalizations.of(context)!.playRandomFavoriteArtistActionDescription;
+      case FinampQuickActions.playRandomFavoriteGenre:
+        return AppLocalizations.of(context)!.playRandomFavoriteGenreActionDescription;
     }
   }
 
@@ -4342,7 +4397,15 @@ enum FinampQuickActions {
       FinampQuickActions.browsePlaybackHistory => TablerIcons.clock,
       FinampQuickActions.playRandomAlbum => TablerIcons.album,
       FinampQuickActions.playRandomTrack => TablerIcons.music,
+      FinampQuickActions.playRandomPlaylist => TablerIcons.playlist,
+      FinampQuickActions.playRandomArtist => TablerIcons.user,
+      FinampQuickActions.playRandomGenre => TablerIcons.category,
       FinampQuickActions.playRandomFavoriteItem => TablerIcons.heart_question,
+      FinampQuickActions.playRandomFavoriteAlbum => TablerIcons.album,
+      FinampQuickActions.playRandomFavoriteTrack => TablerIcons.music_heart,
+      FinampQuickActions.playRandomFavoritePlaylist => TablerIcons.playlist,
+      FinampQuickActions.playRandomFavoriteArtist => TablerIcons.user_heart,
+      FinampQuickActions.playRandomFavoriteGenre => TablerIcons.category,
       FinampQuickActions.playPreviousQueue => TablerIcons.restore,
       FinampQuickActions.configureOutput => TablerIcons.device_speaker,
       FinampQuickActions.playSpecificItem => TablerIcons.music_pin,
@@ -4613,6 +4676,22 @@ class QuickActionConfig {
         return l10n.playSpecificItemAction(itemName ?? "finamp_placeholder");
       case FinampQuickActions.surpriseMe:
         return l10n.surpriseMeAction;
+      case FinampQuickActions.playRandomPlaylist:
+        return l10n.randomPlaylistAction;
+      case FinampQuickActions.playRandomArtist:
+        return l10n.randomArtistAction;
+      case FinampQuickActions.playRandomGenre:
+        return l10n.randomGenreAction;
+      case FinampQuickActions.playRandomFavoriteAlbum:
+        return l10n.randomFavoriteAlbumAction;
+      case FinampQuickActions.playRandomFavoriteTrack:
+        return l10n.randomFavoriteTrackAction;
+      case FinampQuickActions.playRandomFavoritePlaylist:
+        return l10n.randomFavoritePlaylistAction;
+      case FinampQuickActions.playRandomFavoriteArtist:
+        return l10n.randomFavoriteArtistAction;
+      case FinampQuickActions.playRandomFavoriteGenre:
+        return l10n.randomFavoriteGenreAction;
     }
   }
 

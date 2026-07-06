@@ -12,6 +12,7 @@ import 'package:finamp/components/PlayerScreen/queue_button.dart';
 import 'package:finamp/components/PlayerScreen/queue_list.dart';
 import 'package:finamp/components/PlayerScreen/track_name_content.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/output_menu.dart';
 import 'package:finamp/menus/playlist_actions_menu.dart';
@@ -30,6 +31,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
+
+import '../extensions/localizations.dart';
+import '../menus/components/icon_button_with_semantics.dart';
 
 const double _defaultToolbarHeight = 53.0;
 const int _defaultMaxToolbarLines = 2;
@@ -183,117 +187,174 @@ class _PlayerScreenContent extends ConsumerWidget {
             }
           }
         },
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            systemOverlayStyle: SystemUiOverlayStyle(
-              // this is needed to ensure the player screen stays in full screen mode WITHOUT having contrast issues in the status bar
-              systemNavigationBarColor: Colors.transparent,
-              systemStatusBarContrastEnforced: false,
-              statusBarIconBrightness: Theme.brightnessOf(context) == Brightness.dark
-                  ? Brightness.light
-                  : Brightness.dark,
-            ),
-            elevation: 0,
-            scrolledUnderElevation: 0.0, // disable tint/shadow when content is scrolled under the app bar
-            centerTitle: true,
-            toolbarHeight: toolbarHeight,
-            title: PlayerScreenAppBarTitle(maxLines: maxToolbarLines),
-            leading: usingPlayerSplitScreen ? null : FinampAppBarBackButton(dismissDirection: AxisDirection.down),
-            actions: [],
-          ),
-          // Required for sleep timer input
-          resizeToAvoidBottomInset: false,
-          extendBodyBehindAppBar: true,
-          body: Stack(
-            children: [
-              if (ref.watch(finampSettingsProvider.useCoverAsBackground)) const BlurredPlayerScreenBackground(),
-              SafeArea(
-                minimum: EdgeInsets.only(top: toolbarHeight),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    controller.setSize(Size(constraints.maxWidth, constraints.maxHeight), screenOrientation, ref);
-                    if (controller.useLandscape) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: controller.albumSize.width,
-                            height: controller.albumSize.height,
-                            child: Padding(
-                              // TODO Why does landscape get an additional 3% on top of minAlbumPadding?
-                              padding: EdgeInsets.only(
-                                left: constraints.maxHeight * 0.03,
-                                top: constraints.maxHeight * 0.03,
-                                bottom: constraints.maxHeight * 0.03,
-                                right: max(0, constraints.maxHeight * 0.03 - 20),
-                              ),
-                              child: const PlayerScreenAlbumImage(),
-                            ),
-                          ),
-                          const Spacer(),
-                          SizedBox(
-                            width: controller.controlsSize.width,
-                            height: controller.controlsSize.height,
-                            child: Column(
-                              children: [
-                                const Spacer(flex: 4),
-                                TrackNameContent(controller),
-                                const Spacer(flex: 4),
-                                ControlArea(controller),
-                                if (controller.shouldShow(PlayerHideable.bottomActions)) const Spacer(flex: 10),
-                                if (controller.shouldShow(PlayerHideable.bottomActions))
-                                  _buildBottomActions(
-                                    context,
-                                    controller,
-                                    isLyricsLoading: isLyricsLoading,
-                                    isLyricsAvailable: isLyricsAvailable,
-                                  ),
-                                const Spacer(flex: 4),
-                              ],
-                            ),
-                          ),
-                          const Spacer(),
-                        ],
-                      );
-                    } else {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: controller.albumSize.height,
-                            width: controller.albumSize.width,
-                            child: const PlayerScreenAlbumImage(),
-                          ),
-                          SizedBox(
-                            height: controller.controlsSize.height,
-                            width: controller.controlsSize.width,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                TrackNameContent(controller),
-                                ControlArea(controller),
-                                if (controller.shouldShow(PlayerHideable.bottomActions))
-                                  _buildBottomActions(
-                                    context,
-                                    controller,
-                                    isLyricsLoading: isLyricsLoading,
-                                    isLyricsAvailable: isLyricsAvailable,
-                                  ),
-                                if (!controller.shouldShow(PlayerHideable.bottomActions)) const SizedBox(height: 5),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-                  },
-                ),
+        child: ValueListenableBuilder(
+          valueListenable: splitScreenAvailable,
+          builder: (context, allowSplitscreen, _) {
+            final appbarActions = [
+              FinampAppBarBackButton(
+                dismissDirection: AxisDirection.down,
+                onPressed: () {
+                  if (usingPlayerSplitScreen) {
+                    FinampSetters.setAllowSplitScreen(false);
+                  } else {
+                    assert(GlobalSnackbar.navigatorState == Navigator.of(context));
+                    GlobalSnackbar.navigatorState?.pop();
+                  }
+                },
               ),
-            ],
-          ),
+              if (allowSplitscreen && usingPlayerSplitScreen)
+                IconButtonWithSemantics(
+                  // padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                  label: context.l10n.maximizePlayer,
+                  onPressed: () {
+                    // This delays the transition one frame so that the sidebar is removed on the same frame as the
+                    // new player screen is built during maximization
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      FinampSetters.setAllowSplitScreen(false);
+                    });
+                    // If we are currently in splitscreen and want to maximize, push a copy of the player screen directly
+                    // onto the main navigator.
+                    GlobalSnackbar.navigatorState?.pushNamed(PlayerScreen.routeName);
+                  },
+                  icon: TablerIcons.arrows_diagonal_2,
+                  strokeWidth: 1.5,
+                  visualDensity: VisualDensity(horizontal: 0, vertical: -2),
+                ),
+              if (allowSplitscreen && !usingPlayerSplitScreen)
+                IconButtonWithSemantics(
+                  // padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                  label: context.l10n.collapsePlayer,
+                  onPressed: () {
+                    // This delays the transition one frame so that the sidebar is removed on the same frame as the
+                    // new player screen is built during maximization
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      FinampSetters.setAllowSplitScreen(true);
+                    });
+                    // If we are not in splitscreen, immediately pop the player off the main navigator in the
+                    // same frame we enable splitscreen, without waiting for queuePop().
+                    assert(GlobalSnackbar.navigatorState == Navigator.of(context));
+                    GlobalSnackbar.navigatorState?.pop();
+                  },
+                  icon: TablerIcons.layout_sidebar_right_collapse,
+                  strokeWidth: 1.5,
+                  visualDensity: VisualDensity(horizontal: 0, vertical: -2),
+                ),
+            ];
+            return Scaffold(
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                systemOverlayStyle: SystemUiOverlayStyle(
+                  // this is needed to ensure the player screen stays in full screen mode WITHOUT having contrast issues in the status bar
+                  systemNavigationBarColor: Colors.transparent,
+                  systemStatusBarContrastEnforced: false,
+                  statusBarIconBrightness: Theme.brightnessOf(context) == Brightness.dark
+                      ? Brightness.light
+                      : Brightness.dark,
+                ),
+                elevation: 0,
+                scrolledUnderElevation: 0.0, // disable tint/shadow when content is scrolled under the app bar
+                centerTitle: true,
+                toolbarHeight: toolbarHeight,
+                title: PlayerScreenAppBarTitle(maxLines: maxToolbarLines),
+                leadingWidth: 40.0 * appbarActions.length,
+                leading: Row(children: appbarActions),
+                actions: [],
+                titleSpacing: 0.0,
+              ),
+              // Required for sleep timer input
+              resizeToAvoidBottomInset: false,
+              extendBodyBehindAppBar: true,
+              body: Stack(
+                children: [
+                  if (ref.watch(finampSettingsProvider.useCoverAsBackground)) const BlurredPlayerScreenBackground(),
+                  SafeArea(
+                    minimum: EdgeInsets.only(top: toolbarHeight),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        controller.setSize(Size(constraints.maxWidth, constraints.maxHeight), screenOrientation, ref);
+                        if (controller.useLandscape) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: controller.albumSize.width,
+                                height: controller.albumSize.height,
+                                child: Padding(
+                                  // TODO Why does landscape get an additional 3% on top of minAlbumPadding?
+                                  padding: EdgeInsets.only(
+                                    left: constraints.maxHeight * 0.03,
+                                    top: constraints.maxHeight * 0.03,
+                                    bottom: constraints.maxHeight * 0.03,
+                                    right: max(0, constraints.maxHeight * 0.03 - 20),
+                                  ),
+                                  child: Hero(tag: "player", child: const PlayerScreenAlbumImage()),
+                                ),
+                              ),
+                              const Spacer(),
+                              SizedBox(
+                                width: controller.controlsSize.width,
+                                height: controller.controlsSize.height,
+                                child: Column(
+                                  children: [
+                                    const Spacer(flex: 4),
+                                    TrackNameContent(controller),
+                                    const Spacer(flex: 4),
+                                    ControlArea(controller),
+                                    if (controller.shouldShow(PlayerHideable.bottomActions)) const Spacer(flex: 10),
+                                    if (controller.shouldShow(PlayerHideable.bottomActions))
+                                      _buildBottomActions(
+                                        context,
+                                        controller,
+                                        isLyricsLoading: isLyricsLoading,
+                                        isLyricsAvailable: isLyricsAvailable,
+                                      ),
+                                    const Spacer(flex: 4),
+                                  ],
+                                ),
+                              ),
+                              const Spacer(),
+                            ],
+                          );
+                        } else {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: controller.albumSize.height,
+                                width: controller.albumSize.width,
+                                child: const PlayerScreenAlbumImage(),
+                              ),
+                              SizedBox(
+                                height: controller.controlsSize.height,
+                                width: controller.controlsSize.width,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    TrackNameContent(controller),
+                                    ControlArea(controller),
+                                    if (controller.shouldShow(PlayerHideable.bottomActions))
+                                      _buildBottomActions(
+                                        context,
+                                        controller,
+                                        isLyricsLoading: isLyricsLoading,
+                                        isLyricsAvailable: isLyricsAvailable,
+                                      ),
+                                    if (!controller.shouldShow(PlayerHideable.bottomActions)) const SizedBox(height: 5),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

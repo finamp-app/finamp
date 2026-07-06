@@ -294,8 +294,7 @@ class SortAndFilterRow extends ConsumerWidget {
                 SimpleButton(
                   icon: currentConfig.sortOrder.getIcon(),
                   text: currentConfig.sortBy.toLocalisedString(context.l10n),
-                  onPressed: showMenu,
-                  onIconPressed: () => controller._updateConfiguration(
+                  onPressed: () => controller._updateConfiguration(
                     currentConfig.copyWith(
                       sortOrder: currentConfig.sortOrder == SortOrder.ascending
                           ? SortOrder.descending
@@ -545,10 +544,6 @@ mixin _SortAndFilterMenuEntriesMixin<T extends ConsumerStatefulWidget> on Consum
       title: ItemFilter(type: option).getName(context.l10n),
       leading: Padding(padding: const EdgeInsets.only(left: 16.0), child: Icon(option.icon)),
       trailing: SizedBox.shrink(),
-      enabled: switch (option) {
-        ItemFilterType.isFullyDownloaded => ref.watch(finampSettingsProvider.isOffline),
-        _ => true,
-      },
       state: switch (option) {
         ItemFilterType.isFavorite => currentConfig.filters.contains(ItemFilter(type: ItemFilterType.isFavorite)),
         ItemFilterType.isFullyDownloaded => currentConfig.filters.contains(
@@ -608,6 +603,7 @@ mixin _SortAndFilterMenuEntriesMixin<T extends ConsumerStatefulWidget> on Consum
 
 class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu>
     with _SortAndFilterMenuEntriesMixin<SortAndFilterMenu> {
+  @override
   late SortAndFilterConfiguration currentConfig;
 
   @override
@@ -636,21 +632,35 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu>
   Widget build(BuildContext context) {
     final List<Widget> menuEntries = [
       ...(widget.removeOnly ? _getRemoveOnlyMenuEntries(context) : _getMenuEntries(context)),
-      SizedBox(height: 32.0),
+      SizedBox(
+        height: 40.0,
+        child: currentConfig != controller._config
+            ? Align(alignment: AlignmentGeometry.directional(0.0, 0.7), child: Text(context.l10n.applyChangesOnClose))
+            : null,
+      ),
       CTAMedium(
-        text: context.l10n.apply,
-        icon: TablerIcons.check,
+        disabled: currentConfig == controller._config,
+        text: context.l10n.cancelChanges,
+        icon: TablerIcons.x,
         onPressed: () {
-          controller._updateConfiguration(currentConfig);
-          Navigator.of(context).pop();
+          setState(() {
+            currentConfig = controller._config;
+          });
+          //Navigator.of(context).pop(false);
         },
       ),
     ];
 
-    // Actual height was 490, bump to 520 for extra bottom padding and wiggle room on element sizes
-    final stackHeight = 520.0 + 56.0 * excessFilters.length + (showOfflineSortWarning ? 60.0 : 0.0);
+    // TODO make this properly calculated somehow?
+    // Actual height was 508, bump to 540 for extra bottom padding and wiggle room on element sizes
+    final stackHeight = 540.0 + 56.0 * excessFilters.length + (showOfflineSortWarning ? 60.0 : 0.0);
 
-    return widget.childBuilder(stackHeight, menu(context, menuEntries));
+    return PopScope(
+      onPopInvokedWithResult: (_, _) {
+        controller._updateConfiguration(currentConfig);
+      },
+      child: widget.childBuilder(stackHeight, menu(context, menuEntries)),
+    );
   }
 
   // All track menu slivers, including headers
@@ -702,6 +712,7 @@ class SortAndFilterEmbeddedMenu extends ConsumerStatefulWidget {
 
 class _SortAndFilterEmbeddedMenuState extends ConsumerState<SortAndFilterEmbeddedMenu>
     with _SortAndFilterMenuEntriesMixin<SortAndFilterEmbeddedMenu> {
+  @override
   late SortAndFilterConfiguration currentConfig;
 
   @override

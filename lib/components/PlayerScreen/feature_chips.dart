@@ -5,6 +5,7 @@ import 'package:file_sizes/file_sizes.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/screens/player_settings_screen.dart';
 import 'package:finamp/services/current_track_metadata_provider.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/metadata_provider.dart';
@@ -20,16 +21,11 @@ final _defaultBackgroundColour = Colors.white.withOpacity(0.1);
 final featureLogger = Logger("Features");
 
 class FeatureState {
-  const FeatureState({
-    required this.context,
-    required this.currentTrack,
-    required this.settings,
-    required this.metadata,
-  });
+  const FeatureState({required this.context, required this.currentTrack, required this.ref, required this.metadata});
 
   final BuildContext context;
   final FinampQueueItem? currentTrack;
-  final FinampSettings settings;
+  final WidgetRef ref;
   final MetadataProvider? metadata;
 
   String get properties =>
@@ -44,27 +40,27 @@ class FeatureState {
       "sampleRate: $sampleRate, "
       "bitDepth: $bitDepth";
 
-  FinampFeatureChipsConfiguration get configuration => settings.featureChipsConfiguration;
+  FinampFeatureChipsConfiguration get configuration => ref.watch(finampSettingsProvider.featureChipsConfiguration);
 
   bool get isDownloaded => metadata?.isDownloaded ?? false;
   bool get isTranscodingAndStreaming =>
       !isDownloaded && (currentTrack?.item.extras?["shouldTranscode"] as bool? ?? false);
   String get container => isTranscodingAndStreaming
-      ? settings.transcodingStreamingFormat.container
+      ? ref.watch(finampSettingsProvider.transcodingStreamingFormat).container
       : metadata?.mediaSourceInfo.container ?? AppLocalizations.of(context)!.unknown;
   String get codec => isTranscodingAndStreaming
-      ? settings.transcodingStreamingFormat.codec
+      ? ref.watch(finampSettingsProvider.transcodingStreamingFormat).codec
       : audioStream?.codec ?? AppLocalizations.of(context)!.unknown;
   int? get size => isTranscodingAndStreaming ? null : metadata?.mediaSourceInfo.size;
   MediaStream? get audioStream => isTranscodingAndStreaming
       ? MediaStream(
           index: 0,
           type: "Audio",
-          codec: settings.transcodingStreamingFormat.codec,
-          bitRate: settings.transcodeBitrate,
-          sampleRate: settings.transcodingStreamingFormat.sampleRate,
+          codec: ref.watch(finampSettingsProvider.transcodingStreamingFormat).codec,
+          bitRate: ref.watch(finampSettingsProvider.transcodeBitrate),
+          sampleRate: ref.watch(finampSettingsProvider.transcodingStreamingFormat).sampleRate,
           channels: null,
-          bitDepth: settings.transcodingStreamingFormat.lossless
+          bitDepth: ref.watch(finampSettingsProvider.transcodingStreamingFormat).lossless
               ? metadata?.mediaSourceInfo.mediaStreams.firstOrNull?.bitDepth
               : null,
           isInterlaced: false,
@@ -81,9 +77,10 @@ class FeatureState {
   // should have a valid mediaStream, so use that audio-only bitrate instead of the
   // whole-file bitrate.
   int? get bitrate => isTranscodingAndStreaming
-      ? (settings.transcodingStreamingFormat == FinampTranscodingStreamingFormat.flacFragmentedMp4
+      ? (ref.watch(finampSettingsProvider.transcodingStreamingFormat) ==
+                FinampTranscodingStreamingFormat.flacFragmentedMp4
             ? null
-            : settings.transcodeBitrate)
+            : ref.watch(finampSettingsProvider.transcodeBitrate))
       : audioStream?.bitRate ?? metadata?.mediaSourceInfo.bitrate;
   int? get sampleRate => audioStream?.sampleRate;
   int? get bitDepth => audioStream?.bitDepth;
@@ -223,7 +220,7 @@ class FeatureChips extends ConsumerWidget {
         final featureState = FeatureState(
           context: context,
           currentTrack: snapshot.data,
-          settings: settings,
+          ref: ref,
           metadata: metadata.valueOrNull,
         );
 
@@ -264,18 +261,22 @@ class Features extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var featureList = features.features;
-    return Wrap(
-      spacing: 4.0,
-      runSpacing: 4.0,
-      children: List.generate(featureList.length, (index) {
-        final feature = featureList[index];
+    return GestureDetector(
+      onSecondaryTap: () => Navigator.of(context).pushNamed(PlayerSettingsScreen.routeName),
+      onLongPress: () => Navigator.of(context).pushNamed(PlayerSettingsScreen.routeName),
+      child: Wrap(
+        spacing: 4.0,
+        runSpacing: 4.0,
+        children: List.generate(featureList.length, (index) {
+          final feature = featureList[index];
 
-        return _FeatureContent(
-          backgroundColor: IconTheme.of(context).color?.withOpacity(0.1) ?? _defaultBackgroundColour,
-          feature: feature,
-          color: color,
-        );
-      }),
+          return _FeatureContent(
+            backgroundColor: IconTheme.of(context).color?.withOpacity(0.1) ?? _defaultBackgroundColour,
+            feature: feature,
+            color: color,
+          );
+        }),
+      ),
     );
   }
 }

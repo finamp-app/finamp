@@ -231,15 +231,15 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
               text: context.l10n.addNewSection,
               icon: TablerIcons.plus,
               onPressed: () async {
-                //TODO dismissing the bottom sheet will be handles like selecting custom section
-                final selectedPreset = await showSectionPresetPickerMenu(context);
-                if (selectedPreset != null) {
+                final returnedPreset = await showSectionPresetPickerMenu(context);
+                if (returnedPreset case (final selectedPreset?,)) {
                   final newSectionInfo = HomeScreenSectionConfiguration.fromPreset(selectedPreset);
                   final newHomeScreenConfig = FinampSettingsHelper.finampSettings.homeScreenConfiguration.copyWith(
                     sections: [...sections, newSectionInfo],
                   );
                   FinampSetters.setHomeScreenConfiguration(newHomeScreenConfig);
-                } else if (context.mounted) {
+                } else if (returnedPreset != null && context.mounted) {
+                  // If returnedPreset is (null,) create a custom sheet.  If it is null, return without doing anything.
                   final sections = List.of(FinampSettingsHelper.finampSettings.homeScreenConfiguration.sections);
                   final defaultSection = HomeScreenSectionConfiguration(
                     base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.tracks),

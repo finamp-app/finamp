@@ -160,7 +160,7 @@ class TrackListTile extends ConsumerWidget {
         showCover ? TrackListItemFeatures.cover : null,
         TrackListItemFeatures.duration,
         TrackListItemFeatures.addToPlaylistOrFavorite,
-        playable && allowDismiss ? TrackListItemFeatures.swipeable : null,
+        playable && allowDismiss ? TrackListItemFeatures.swipeableInTrackList : null,
       ].nonNulls.toList(),
     );
   }
@@ -303,7 +303,8 @@ class QueueListTile extends StatelessWidget {
         TrackListItemFeatures.cover,
         TrackListItemFeatures.duration,
         TrackListItemFeatures.addToPlaylistOrFavorite,
-        TrackListItemFeatures.swipeable,
+        TrackListItemFeatures.swipeableInTrackList,
+        TrackListItemFeatures.swipeableInQueue,
         allowReorder ? TrackListItemFeatures.dragHandle : null,
       ].nonNulls.toList(),
     );
@@ -346,7 +347,7 @@ class EditListTile extends StatelessWidget {
         TrackListItemFeatures.cover,
         TrackListItemFeatures.dragHandle,
         TrackListItemFeatures.fullyDraggable,
-        TrackListItemFeatures.swipeable,
+        TrackListItemFeatures.swipeableInTrackList,
         restoreInsteadOfRemove ? TrackListItemFeatures.restoreButton : TrackListItemFeatures.removeFromListButton,
       ].nonNulls.toList(),
     );
@@ -461,15 +462,20 @@ class TrackListItem extends ConsumerWidget {
           onSecondaryTapDown: features.contains(TrackListItemFeatures.fullyDraggable)
               ? null
               : (details) => menuCallback(),
-          child: features.contains(TrackListItemFeatures.swipeable) && !ref.watch(finampSettingsProvider.disableGesture)
+          child:
+              (features.contains(TrackListItemFeatures.swipeableInTrackList) ||
+                      features.contains(TrackListItemFeatures.swipeableInQueue)) &&
+                  !ref.watch(finampSettingsProvider.disableGesture)
               ? Dismissible(
                   key: Key(listIndex.toString()),
-                  direction: getAllowedDismissDirection(
-                    swipeLeftEnabled:
-                        ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight) != ItemSwipeActions.nothing,
-                    swipeRightEnabled:
-                        ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft) != ItemSwipeActions.nothing,
-                  ),
+                  direction: features.contains(TrackListItemFeatures.swipeableInQueue)
+                      ? DismissDirection.endToStart
+                      : getAllowedDismissDirection(
+                          swipeLeftEnabled:
+                              ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight) != ItemSwipeActions.nothing,
+                          swipeRightEnabled:
+                              ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft) != ItemSwipeActions.nothing,
+                        ),
                   dismissThresholds: const {DismissDirection.startToEnd: 0.65, DismissDirection.endToStart: 0.65},
                   // no background, dismissing really dismisses here
                   confirmDismiss: confirmDismiss,
@@ -524,9 +530,10 @@ enum TrackListItemFeatures {
   addToPlaylistOrFavorite,
   dragHandle,
   fullyDraggable,
-  swipeable,
+  swipeableInTrackList,
   removeFromListButton,
   restoreButton,
+  swipeableInQueue,
 }
 
 class TrackListItemTile extends ConsumerWidget {
@@ -679,7 +686,10 @@ class TrackListItemTile extends ConsumerWidget {
                 height: 1.1,
               ),
               overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+              // It would be better to increase tile height instead of clamping titles to one line and hoping things
+              // now fit, but getting the tile height scaling correct across all widgets is difficult.
+              // TODO properly scale track list tile height
+              maxLines: MediaQuery.textScalerOf(context).scale(15.5) > 15.5 * 1.11 ? 1 : 2,
             ),
           ),
           Flexible(

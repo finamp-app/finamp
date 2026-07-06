@@ -31,7 +31,7 @@ class FinampAppBarBackButton extends StatelessWidget {
       onPressed: onPressed ?? () => Navigator.of(context).pop(),
       icon: getIcon(),
       strokeWidth: 1.5,
-      visualDensity: VisualDensity(horizontal: 0, vertical: -4),
+      visualDensity: VisualDensity(horizontal: 0, vertical: -2),
     );
   }
 }

@@ -43,7 +43,10 @@ class TrackNameContent extends ConsumerWidget {
             child: Consumer(
               builder: (context, ref, _) {
                 final text = currentTrack.item.title;
-                final isTwoLineMode = controller.shouldShow(PlayerHideable.twoLineTitle);
+                // TODO properly scale in player screen controller?
+                final isTwoLineMode =
+                    controller.shouldShow(PlayerHideable.twoLineTitle) &&
+                    !(MediaQuery.textScalerOf(context).scale(20) > 20 * 1.11);
 
                 final textStyle = TextStyle(
                   fontSize: 20,

@@ -43,7 +43,7 @@ void main() async {
           // Login testing flag redirects file accesses to testing folder and clears it on startup.
           // Download base directories are not redirected, so loginTesting flag should be avoided on mobile.
           // Note that this means mobile integration test runs will require manual file clearing outside of CI
-          await app.main(integrationTesting: true, loginTesting: !(Platform.isAndroid || Platform.isIOS));
+          await app.main([], integrationTesting: true, loginTesting: !(Platform.isAndroid || Platform.isIOS));
           mainCompleted = true;
         },
         (e, stack) {
@@ -106,7 +106,7 @@ void main() async {
       expect(find.byType(LoginScreen), findsOneWidget);
     });
     testWidgets('Log in to demo server', (tester) async {
-      GetIt.instance.unregister<ProviderContainer>();
+      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
       GetIt.instance.registerSingleton(ProviderContainer(parent: container));
       await tester.pumpWidget(app.Finamp());
       await tester.pumpAndSettle();
@@ -142,7 +142,7 @@ void main() async {
       expect(find.byType(MusicScreen), findsOneWidget);
     });
     testWidgets('Start playing a track', (tester) async {
-      GetIt.instance.unregister<ProviderContainer>();
+      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
       GetIt.instance.registerSingleton(ProviderContainer(parent: container));
       await tester.pumpWidget(app.Finamp());
       await tester.pump();
