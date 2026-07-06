@@ -382,6 +382,16 @@ class QueueService {
     return info;
   }
 
+  /// Returns the saved queue history (excluding the live "latest" queue),
+  /// newest first.
+  List<FinampStorableQueueInfo> getRecentQueueHistory() {
+    final queueMap = _queuesBox.toMap();
+    queueMap.remove("latest");
+    final queueList = queueMap.values.toList();
+    queueList.sort((x, y) => y.creation - x.creation);
+    return queueList;
+  }
+
   Future<void> performInitialQueueLoad() async {
     if (_savedQueueState == SavedQueueState.preInit) {
       try {
