@@ -442,6 +442,13 @@ Future<void> _setupPlaybackServices() async {
       // notificationColor: TODO use the theme color for older versions of Android,
       // We will handle preloading artwork ourselves
       preloadArtwork: false,
+      // Keep iOS now playing info + remote command handlers registered when
+      // the service stops, so Finamp stays the system's resume candidate for
+      // CarPlay/Bluetooth reconnects instead of losing now-playing status to
+      // whichever app had it before. Requires the audio_service fork
+      // overrides in pubspec.yaml (the flag spans audio_service and
+      // audio_service_platform_interface).
+      iosKeepNowPlayingOnStop: true,
       androidBrowsableRootExtras: <String, dynamic>{
         // support showing search button on Android Auto as well as alternative search results on the player screen after voice search
         "android.media.browse.SEARCH_SUPPORTED": true,

@@ -98,6 +98,10 @@ class QueueService {
   FinampStorableQueueInfo? _failedSavedQueue;
   static const int _maxSavedQueues = 60;
 
+  /// Memoised [Future] for [performInitialQueueLoad] so every caller awaits
+  /// the same restore.
+  Future<void>? _initialQueueLoadFuture;
+
   static int get maxInitialQueueItems => Platform.isIOS || Platform.isMacOS
       ? 1000
       : Platform.isAndroid
@@ -392,32 +396,51 @@ class QueueService {
     return queueList;
   }
 
-  Future<void> performInitialQueueLoad() async {
-    if (_savedQueueState == SavedQueueState.preInit) {
-      try {
-        _savedQueueState = SavedQueueState.init;
-        archiveSavedQueue(inInit: true);
-        var info = _queuesBox.get("latest");
-        if (info != null) {
-          var keys = _queuesBox.values.map((x) => DateTime.fromMillisecondsSinceEpoch(x.creation)).toList();
-          keys.sort();
-          _queueServiceLogger.finest("Stored queue dates: $keys");
-          if (keys.length > _maxSavedQueues) {
-            var extra = keys.getRange(0, keys.length - _maxSavedQueues).map((e) => e.millisecondsSinceEpoch.toString());
-            _queueServiceLogger.finest("Deleting stored queues: $extra");
-            unawaited(_queuesBox.deleteAll(extra));
-          }
+  /// Performs the one-time startup queue restore, loading the last "latest"
+  /// queue into the player, paused, per [FinampSettings.autoloadLastQueueOnStartup].
+  /// Every caller awaits the same [Future].
+  Future<void> performInitialQueueLoad() {
+    return _initialQueueLoadFuture ??= _performInitialQueueLoad();
+  }
 
-          if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup && !await _hasInitialPlayLink()) {
-            await loadSavedQueue(info);
-          } else {
-            _savedQueueState = SavedQueueState.pendingSave;
-          }
+  Future<void> _performInitialQueueLoad() async {
+    try {
+      _savedQueueState = SavedQueueState.init;
+      archiveSavedQueue(inInit: true);
+      var info = _queuesBox.get("latest");
+      if (info != null) {
+        var keys = _queuesBox.values.map((x) => DateTime.fromMillisecondsSinceEpoch(x.creation)).toList();
+        keys.sort();
+        _queueServiceLogger.finest("Stored queue dates: $keys");
+        if (keys.length > _maxSavedQueues) {
+          var extra = keys.getRange(0, keys.length - _maxSavedQueues).map((e) => e.millisecondsSinceEpoch.toString());
+          _queueServiceLogger.finest("Deleting stored queues: $extra");
+          unawaited(_queuesBox.deleteAll(extra));
         }
-      } catch (e) {
-        _queueServiceLogger.severe(e);
-        rethrow;
+
+        if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup && !await _hasInitialPlayLink()) {
+          await loadSavedQueue(info);
+        } else {
+          _savedQueueState = SavedQueueState.pendingSave;
+        }
       }
+    } catch (e) {
+      _queueServiceLogger.severe(e);
+      // Don't memoise a failed restore, so a later caller (e.g. a remote
+      // play command) can retry it instead of being stuck forever.
+      _initialQueueLoadFuture = null;
+      rethrow;
+    }
+  }
+
+  /// Loads the latest saved queue on demand, for callers where
+  /// [performInitialQueueLoad] skipped loading it (e.g.
+  /// [FinampSettings.autoloadLastQueueOnStartup] disabled) but an explicit
+  /// play command expresses intent to resume anyway.
+  Future<void> loadLatestSavedQueueOnDemand() async {
+    var info = _queuesBox.get("latest");
+    if (info != null) {
+      await loadSavedQueue(info);
     }
   }
 
@@ -1283,6 +1306,8 @@ class QueueService {
   FinampQueueItem? getCurrentTrack() {
     return _currentTrack;
   }
+
+  SavedQueueState get savedQueueState => _savedQueueState;
 
   set playbackSpeed(double speed) {
     _playbackSpeed = speed;

@@ -71,6 +71,19 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
             return sceneConfig
         }
 
+        // UIApplicationSupportsMultipleScenes is required for CarPlay, but it
+        // also lets iPadOS spawn extra phone-UI windows, which would share
+        // this app's single Flutter engine and render blank. Destroy any
+        // additional window scene shortly after it connects.
+        if application.connectedScenes.contains(where: { $0 is UIWindowScene }) {
+            let extraSession = connectingSceneSession
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIApplication.shared.requestSceneSessionDestruction(extraSession, options: nil) { error in
+                    NSLog("[FINAMP] Failed to destroy extra window scene session: \(error)")
+                }
+            }
+        }
+
         // For the main app window scene, return configuration with SceneDelegate
         let sceneConfig = UISceneConfiguration(
             name: "Default Configuration",
