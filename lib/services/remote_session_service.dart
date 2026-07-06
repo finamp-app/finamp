@@ -72,11 +72,15 @@ class RemoteSessionService {
   int? _lastKnownPositionTicks;
   String? _lastKnownItemId;
 
-  // Consecutive updates where the remote session wasn't found. We tolerate a
-  // few transient misses (network blips, mpv-shim hiccups) before falling back
-  // to local, so a momentary gap doesn't bounce us out of remote mode.
-  int _consecutiveMisses = 0;
-  static const int _maxConsecutiveMisses = 3;
+  // Server-pushed Sessions messages are event-driven (SessionEnded, playback
+  // progress, ...), not periodic: if the remote dies without a clean websocket
+  // close, no push ever reports it gone. After this long without a Sessions
+  // message, fetch GET /Sessions once to confirm the session still exists.
+  // Kept well above the ~10s playback-progress reporting cadence so it only
+  // fires during genuine silence (e.g. a long pause), where the occasional
+  // request is cheap.
+  static const Duration _watchdogInterval = Duration(seconds: 30);
+  Timer? _watchdogTimer;
 
   /// Pause the remote as soon as it reports playing: used when connecting (or
   /// pushing a new queue) while local playback was paused, since the PlayTo
@@ -168,7 +172,6 @@ class RemoteSessionService {
     _activeSessionId = sessionId;
     _lastKnownPositionTicks = null;
     _lastKnownItemId = null;
-    _consecutiveMisses = 0;
     _pausePending = false;
     // The session list the user connected from already contains the remote's
     // volume; seed it so the volume slider is correct right away.
@@ -246,7 +249,6 @@ class RemoteSessionService {
     _activeSessionId = null;
     _lastKnownPositionTicks = null;
     _lastKnownItemId = null;
-    _consecutiveMisses = 0;
     _pausePending = false;
     _adoptScheduled = false;
     _lastPushedQueueIds = [];
@@ -260,42 +262,67 @@ class RemoteSessionService {
     _stopMonitoring();
     _log.info("Monitoring remote session via the PlayOn websocket");
     _sessionsSubscription = GetIt.instance<PlayOnService>().startSessionUpdates().listen(_handleSessions);
+    _armWatchdog();
   }
 
   void _stopMonitoring() {
+    _watchdogTimer?.cancel();
+    _watchdogTimer = null;
     if (_sessionsSubscription == null) return;
     unawaited(_sessionsSubscription?.cancel());
     _sessionsSubscription = null;
     GetIt.instance<PlayOnService>().stopSessionUpdates();
   }
 
+  void _armWatchdog() {
+    _watchdogTimer?.cancel();
+    _watchdogTimer = Timer(_watchdogInterval, () => unawaited(_checkSessionAlive()));
+  }
+
+  /// Watchdog: no Sessions message for [_watchdogInterval]. Legitimate while
+  /// the remote is paused (no events to push), but also what a silently
+  /// pruned session looks like, so confirm via a one-shot GET /Sessions run
+  /// through the same handler (which re-arms the watchdog or disconnects).
+  Future<void> _checkSessionAlive() async {
+    if (!isRemote) return;
+    _log.fine("No Sessions message for ${_watchdogInterval.inSeconds}s; confirming session via GET /Sessions");
+    List<SessionInfo> sessions;
+    try {
+      sessions = await _jellyfinApiHelper.getSessions();
+    } catch (e) {
+      // Can't reach the server; that says nothing about the remote session,
+      // so stay connected and try again later.
+      _log.warning("Watchdog GET /Sessions failed: $e");
+      _armWatchdog();
+      return;
+    }
+    _handleSessions(sessions);
+  }
+
   void _handleSessions(List<SessionInfo> sessions) {
     final sessionId = _activeSessionId;
     if (sessionId == null) return;
+    _armWatchdog();
     final session = sessions.where((s) => s.id == sessionId).firstOrNull;
     if (session == null) {
-      // Session ended or vanished (e.g. DAC stopped). Tolerate a few transient
-      // misses before falling back, and keep the last-known state on screen
-      // during the window rather than flickering to local.
-      _consecutiveMisses++;
+      // Every Sessions list (pushed or fetched) is the server's complete
+      // session list, so a missing id is authoritative: the session is gone
+      // (e.g. the remote player was stopped). Sessions pushes are event-driven,
+      // so this message may be the only signal we ever get — fall back to
+      // local immediately.
       final returned = sessions.map((s) => "${s.id} (${s.deviceName} / ${s.client})").join(", ");
-      _log.warning(
-        "Remote session $sessionId not in sessions (miss $_consecutiveMisses/$_maxConsecutiveMisses). "
-        "Returned ${sessions.length}: [$returned]",
+      _log.info(
+        "Remote session $sessionId not in sessions; falling back to local. Returned ${sessions.length}: [$returned]",
       );
-      if (_consecutiveMisses >= _maxConsecutiveMisses) {
-        _log.info("Remote session gone after $_consecutiveMisses misses; falling back to local");
-        GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnRemoteDeviceDisconnected);
-        // The session is gone, so there's nothing left to pause.
-        unawaited(disconnect(pauseRemote: false));
-      }
+      GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnRemoteDeviceDisconnected);
+      // The session is gone, so there's nothing left to pause.
+      unawaited(disconnect(pauseRemote: false));
       return;
     }
     _applySessionUpdate(session);
   }
 
   void _applySessionUpdate(SessionInfo session) {
-    _consecutiveMisses = 0;
     // Maintain the last-known-position cache. Reset it when the remote track
     // changes so we don't carry a stale position into a new song; otherwise
     // remember any non-null position the remote reports.
