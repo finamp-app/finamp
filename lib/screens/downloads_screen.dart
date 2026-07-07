@@ -1,14 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/DownloadsScreen/download_error_screen_button.dart';
 import 'package:finamp/components/DownloadsScreen/downloaded_items_list.dart';
 import 'package:finamp/components/DownloadsScreen/downloads_overview.dart';
 import 'package:finamp/components/DownloadsScreen/repair_downloads_button.dart';
 import 'package:finamp/components/DownloadsScreen/sync_downloads_button.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+
+import '../components/Buttons/simple_button.dart';
+import '../extensions/localizations.dart';
+import 'downloads_settings_screen.dart';
 
 class DownloadsScreen extends StatelessWidget {
   const DownloadsScreen({super.key});
@@ -36,7 +41,16 @@ class DownloadsScreen extends StatelessWidget {
               const Divider(),
             ]),
           ),
-          DownloadedItemsTitle(title: localizations.specialDownloads),
+          DownloadedItemsTitle(
+            title: localizations.specialDownloads,
+            action: SimpleButton(
+              text: context.l10n.addSpecialDownloads,
+              icon: TablerIcons.plus,
+              onPressed: () {
+                Navigator.of(context).pushNamed(DownloadsSettingsScreen.routeName);
+              },
+            ),
+          ),
           const DownloadedItemsList(type: DownloadsScreenCategory.special),
           DownloadedItemsTitle(title: localizations.libraryDownloads),
           const DownloadedItemsList(type: DownloadsScreenCategory.library),

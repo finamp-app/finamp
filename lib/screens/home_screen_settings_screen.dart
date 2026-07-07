@@ -525,8 +525,8 @@ class _ResponsiveListTile extends StatelessWidget {
         )..layout();
 
         // Measure action button text to calculate actual button widths
-        const minTextWidth = 200.0;
-        const horizontalGap = 48.0;
+        const minTextWidth = 150.0;
+        const horizontalGap = 30.0;
         const buttonSpacing = 12.0;
         const iconWidth = 16.0;
         const buttonPadding = 4.0;
@@ -544,12 +544,14 @@ class _ResponsiveListTile extends StatelessWidget {
           )..layout();
 
           totalActionsWidth += buttonChromeWidth + buttonPainter.width + buttonSpacing;
+          buttonPainter.dispose();
         }
         totalActionsWidth -= buttonSpacing; // Remove last spacing
 
         // Calculate available space for actions on the same line
         final dragHandleWidth = 24.0 + 8.0; // Icon width + spacing
         final titleWidth = max(minTextWidth, titlePainter.width);
+        titlePainter.dispose();
         final availableWidthForActions = constraints.maxWidth - dragHandleWidth - titleWidth - horizontalGap - 8.0;
 
         final useHorizontalLayout = availableWidthForActions >= totalActionsWidth;

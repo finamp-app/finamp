@@ -3627,5 +3627,9 @@
         "description": "Descriptions of different pieces of advanced track info."
     },
     "maximizePlayer": "Maximize player",
-    "collapsePlayer": "Collapse player to sidebar"
+    "collapsePlayer": "Collapse player to sidebar",
+    "addSpecialDownloads": "Add special download",
+    "@addSpecialDownloads": {
+        "description": "Button on downloads screen which allows adding special downloads, such as all playlists or all favorites."
+    }
 }
