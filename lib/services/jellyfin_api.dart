@@ -5,6 +5,7 @@ import 'package:app_set_id/app_set_id.dart';
 import 'package:chopper/chopper.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/http_aggregate_logging_interceptor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
@@ -698,14 +699,13 @@ Future<DeviceInfo> getDeviceInfo() async {
       : kProfileMode
       ? "profile"
       : "";
+  final uniqueDeviceId = FinampSettingsHelper.finampSettings.deviceId;
   if (Platform.isAndroid) {
     AndroidDeviceInfo androidDeviceInfo = await deviceInfo.androidInfo;
-    final appSetId = await AppSetId().getIdentifier();
-    info = DeviceInfo(name: androidDeviceInfo.name, id: "$appSetId-$idExtension");
+    info = DeviceInfo(name: androidDeviceInfo.name, id: "uniqueDeviceId-$idExtension");
   } else if (Platform.isIOS) {
     IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
-    final appSetId = await AppSetId().getIdentifier();
-    info = DeviceInfo(name: iosDeviceInfo.name, id: "$appSetId-$idExtension");
+    info = DeviceInfo(name: iosDeviceInfo.name, id: "uniqueDeviceId-$idExtension");
   } else if (Platform.isWindows) {
     WindowsDeviceInfo windowsDeviceInfo = await deviceInfo.windowsInfo;
     final windowsId = windowsDeviceInfo.deviceId;

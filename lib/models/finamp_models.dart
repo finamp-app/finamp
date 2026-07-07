@@ -440,6 +440,7 @@ class FinampSettings {
     required this.gridImageSize,
     required this.homeScreenImageSize,
     this.useAndroidGainEffect = DefaultSettings.useAndroidGainEffect,
+    required this.deviceId,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -918,6 +919,13 @@ class FinampSettings {
   @HiveField(150, defaultValue: DefaultSettings.homeScreenImageSizeMobile)
   int homeScreenImageSize;
 
+  /// Unique ID that stays the same for an install but may change across reinstalls
+  /// Used to identify client activity within Jellyfin
+  /// Ideally this ID would be identical across all clients on the same device,
+  /// but that's unrealistic, so a random string should be fine
+  @HiveField(151, defaultValue: "") // dummy value
+  String deviceId;
+
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
       name: DownloadLocation.internalStorageName,
@@ -932,6 +940,7 @@ class FinampSettings {
       homeScreenConfiguration: DefaultSettings.homeScreenConfiguration,
       gridImageSize: DefaultSettings.gridImageSize,
       homeScreenImageSize: DefaultSettings.homeScreenImageSize,
+      deviceId: const Uuid().v4(),
     );
   }
 

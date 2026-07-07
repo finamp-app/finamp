@@ -448,6 +448,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? 90
             : (fields[150] as num).toInt(),
         useAndroidGainEffect: fields[149] == null ? true : fields[149] as bool,
+        deviceId: fields[151] == null ? '' : fields[151] as String,
       )
       ..sortBy = fields[7] as SortBy?
       ..sortOrder = fields[8] as SortOrder?
@@ -470,7 +471,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(144)
+      ..writeByte(145)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -758,7 +759,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(149)
       ..write(obj.useAndroidGainEffect)
       ..writeByte(150)
-      ..write(obj.homeScreenImageSize);
+      ..write(obj.homeScreenImageSize)
+      ..writeByte(151)
+      ..write(obj.deviceId);
   }
 
   @override
