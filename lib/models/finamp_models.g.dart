@@ -448,7 +448,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? 90
             : (fields[150] as num).toInt(),
         useAndroidGainEffect: fields[149] == null ? true : fields[149] as bool,
-        deviceId: fields[151] == null ? '' : fields[151] as String,
+        deviceId: fields[151] == null ? 'unset' : fields[151] as String,
       )
       ..sortBy = fields[7] as SortBy?
       ..sortOrder = fields[8] as SortOrder?

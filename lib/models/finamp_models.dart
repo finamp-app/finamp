@@ -923,7 +923,7 @@ class FinampSettings {
   /// Used to identify client activity within Jellyfin
   /// Ideally this ID would be identical across all clients on the same device,
   /// but that's unrealistic, so a random string should be fine
-  @HiveField(151, defaultValue: "") // dummy value
+  @HiveField(151, defaultValue: "unset") // pre-generation default
   String deviceId;
 
   static Future<FinampSettings> create() async {

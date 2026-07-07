@@ -572,7 +572,7 @@ abstract class JellyfinApi extends ChopperService {
   @Get(path: "/System/Endpoint", optionalBody: true)
   Future<Response<dynamic>> pingServer();
 
-  static JellyfinApi create(bool inForeground) {
+  static JellyfinApi create({required bool inForeground, required String deviceId}) {
     final chopperHttpLogLevel = Level.body; //TODO allow changing the log level in settings (and a debug config file?)
 
     final client = ChopperClient(
@@ -660,8 +660,8 @@ class JellyfinSpecificInterceptor implements Interceptor {
   }
 }
 
-/// Creates the X-Emby-Authorization header
-Future<String> getAuthHeader() async {
+/// Creates the Authorization header
+Future<String> getAuthHeader({required String? deviceId}) async {
   final notAsciiRegex = RegExp(r'[^\x00-\x7F]+');
 
   final finampUserHelper = GetIt.instance<FinampUserHelper>();
@@ -678,7 +678,7 @@ Future<String> getAuthHeader() async {
 
   authHeader = '${authHeader}Client="Finamp", ';
 
-  final deviceInfo = await getDeviceInfo();
+  final deviceInfo = await getDeviceInfo(deviceId: deviceId);
   authHeader = '${authHeader}Device="${deviceInfo.name}",DeviceId="${deviceInfo.id}", ';
 
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -691,7 +691,7 @@ Future<String> getAuthHeader() async {
 
 // return type for deviceInfo
 
-Future<DeviceInfo> getDeviceInfo() async {
+Future<DeviceInfo> getDeviceInfo({required String? deviceId}) async {
   DeviceInfo info;
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   String idExtension = kDebugMode
@@ -699,13 +699,12 @@ Future<DeviceInfo> getDeviceInfo() async {
       : kProfileMode
       ? "profile"
       : "";
-  final uniqueDeviceId = FinampSettingsHelper.finampSettings.deviceId;
   if (Platform.isAndroid) {
     AndroidDeviceInfo androidDeviceInfo = await deviceInfo.androidInfo;
-    info = DeviceInfo(name: androidDeviceInfo.name, id: "uniqueDeviceId-$idExtension");
+    info = DeviceInfo(name: androidDeviceInfo.name, id: "$deviceId-$idExtension");
   } else if (Platform.isIOS) {
     IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
-    info = DeviceInfo(name: iosDeviceInfo.name, id: "uniqueDeviceId-$idExtension");
+    info = DeviceInfo(name: iosDeviceInfo.name, id: "$deviceId-$idExtension");
   } else if (Platform.isWindows) {
     WindowsDeviceInfo windowsDeviceInfo = await deviceInfo.windowsInfo;
     final windowsId = windowsDeviceInfo.deviceId;

@@ -140,6 +140,7 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
     _migrateGridSize();
     _migrateHomescreen();
     _migrateFeatureChips();
+    _migrateDeviceId();
     await _migrateThemeModeLocale();
     _mainLog.info("Completed applicable migrations");
     await _trustAndroidUserCerts();
@@ -700,6 +701,15 @@ Future<void> _migrateThemeModeLocale() async {
   }
 }
 
+/// Migrates to the new randomly-generated device ID and stores it
+void _migrateDeviceId() {
+  final finampSettings = FinampSettingsHelper.finampSettings;
+  // Use this bool being null as a flag to skip migration
+  if (finampSettings.deviceId != "unset") return;
+  finampSettings.deviceId = const Uuid().v4();
+  FinampSettingsHelper.overwriteFinampSettings(finampSettings);
+}
+
 Future<void> _trustAndroidUserCerts() async {
   // Extend the default security context to trust Android user certificates.
   // This is a workaround for <https://github.com/dart-lang/sdk/issues/50435>.
@@ -713,7 +723,7 @@ Future<void> _trustAndroidUserCerts() async {
 }
 
 Future<void> _setupFinampUserHelper() async {
-  GetIt.instance.registerSingleton(FinampUserHelper());
+  GetIt.instance.registerSingleton(FinampUserHelper(deviceId: FinampSettingsHelper.finampSettings.deviceId));
   if (!FinampSettingsHelper.finampSettings.hasCompletedIsarUserMigration) {
     await GetIt.instance<FinampUserHelper>().migrateFromHive();
     FinampSetters.setHasCompletedIsarUserMigration(true);

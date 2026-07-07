@@ -27,7 +27,10 @@ import 'finamp_user_helper.dart';
 import 'jellyfin_api.dart' as jellyfin_api;
 
 class JellyfinApiHelper {
-  final jellyfinApi = jellyfin_api.JellyfinApi.create(true);
+  final jellyfinApi = jellyfin_api.JellyfinApi.create(
+    inForeground: true,
+    deviceId: FinampSettingsHelper.finampSettings.deviceId,
+  );
   final _jellyfinApiHelperLogger = Logger("JellyfinApiHelper");
 
   // Stores the ids of the artists that the user selected to mix
@@ -78,10 +81,13 @@ class JellyfinApiHelper {
       relaxedDurability: true,
     );
     GetIt.instance.registerSingleton(isar);
-    GetIt.instance.registerSingleton(FinampUserHelper());
+    GetIt.instance.registerSingleton(FinampUserHelper(deviceId: FinampSettingsHelper.finampSettings.deviceId));
     // TODO get logging working in background isolate
     await GetIt.instance<FinampUserHelper>().setAuthHeader();
-    jellyfin_api.JellyfinApi backgroundApi = jellyfin_api.JellyfinApi.create(false);
+    jellyfin_api.JellyfinApi backgroundApi = jellyfin_api.JellyfinApi.create(
+      inForeground: false,
+      deviceId: FinampSettingsHelper.finampSettings.deviceId,
+    );
     await for (var request in requestPort) {
       var (func, outputPort) = request as (Future<dynamic> Function(jellyfin_api.JellyfinApi), SendPort);
       try {
