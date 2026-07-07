@@ -3295,5 +3295,216 @@
     "playRandomFavoriteItemActionDescription": "Inicia la reproducció des d'un element preferit aleatori",
     "@playRandomFavoriteItemActionDescription": {
         "description": "Description of a home screen quick action"
+    },
+    "playPreviousQueueActionDescription": "Restaura i reprodueix la teva cua arxivada més recentment",
+    "@playPreviousQueueActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "configureOutputActionDescription": "Obre la configuració del dispositiu de sortida",
+    "@configureOutputActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playSpecificItemActionDescription": "Reprodueix un element configurat específic",
+    "@playSpecificItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "shuffleTracksAction": "Barreja les cançons",
+    "@shuffleTracksAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomAlbumAction": "Àlbum aleatori",
+    "@randomAlbumAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomTrackAction": "Cançó aleatòria",
+    "@randomTrackAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteAction": "Preferit aleatori",
+    "@randomFavoriteAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "previousQueueAction": "Cua anterior",
+    "@previousQueueAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "configureOutputAction": "Configura la sortida",
+    "@configureOutputAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "playSpecificItemAction": "Reprodueix {itemName, select, finamp_placeholder{<Item>} other{{itemName}}}",
+    "@playSpecificItemAction": {
+        "placeholders": {
+            "itemName": {
+                "type": "String"
+            }
+        },
+        "description": "Name of a home screen quick action"
+    },
+    "surpriseMeAction": "Sorprèn-me",
+    "@surpriseMeAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "editAction": "Edita l'acció",
+    "@editAction": {
+        "description": "Button to edit a quick action"
+    },
+    "swapAction": "Intercanvia l'acció",
+    "@swapAction": {
+        "description": "Button to swap the selected quick action"
+    },
+    "removeAction": "Elimina l'acció",
+    "@removeAction": {
+        "description": "Button to remove a quick action"
+    },
+    "addNewAction": "Afegeix una nova acció",
+    "@addNewAction": {
+        "description": "Button to add a new quick action"
+    },
+    "removeSection": "Elimina la secció",
+    "@removeSection": {
+        "description": "Button to remove a home screen section"
+    },
+    "addNewSection": "Afegeix una nova secció",
+    "@addNewSection": {
+        "description": "Button to add a new home screen section"
+    },
+    "preview": "Vista prèvia",
+    "unnamedCollection": "Col·lecció sense nom",
+    "@unnamedCollection": {
+        "description": "Placeholder for unnamed collection in home screen section editor"
+    },
+    "noTracksFound": "No s'ha trobat cap cançó per començar la barreja \"Sorprèn-me\".",
+    "@noTracksFound": {
+        "description": "Message if SurpriseMeMix creation fails"
+    },
+    "nothingFoundToPlay": "No s'ha trobat res per reproduir.",
+    "@nothingFoundToPlay": {
+        "description": "Message if play random item fails"
+    },
+    "errorLoadingHomeSection": "Error en carregar la secció d'inici",
+    "@errorLoadingHomeSection": {
+        "description": "Message if a home screen section cannot be loaded due to a missing item"
+    },
+    "noPreviousQueueFoundToPlay": "No s'ha trobat cap cua prèvia per reproduir.",
+    "@noPreviousQueueFoundToPlay": {
+        "description": "Message if play previous queue quick action fails"
+    },
+    "unknownVersion": "Versió desconeguda",
+    "@unknownVersion": {
+        "description": "Reported server version if request fails"
+    },
+    "isFavoriteFilter": "Preferits",
+    "@isFavoriteFilter": {
+        "description": "Name of favorite filter"
+    },
+    "isUnplayedFilter": "No reproduït",
+    "@isUnplayedFilter": {
+        "description": "Name of unplayed items filter"
+    },
+    "isFullyDownloadedFilter": "Descarregat completament",
+    "@isFullyDownloadedFilter": {
+        "description": "Name of fully downloaded items filter"
+    },
+    "genreFilter": "Gènere: {name}",
+    "@genreFilter": {
+        "description": "Name of genrefilter",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "startsWithFilter": "Comença per: {letter}",
+    "@startsWithFilter": {
+        "description": "Name of starts with letter filter",
+        "placeholders": {
+            "letter": {
+                "type": "String"
+            }
+        }
+    },
+    "searchTermFilter": "Cerca: {searchTerm}",
+    "@searchTermFilter": {
+        "description": "Name of search term filter",
+        "placeholders": {
+            "searchTerm": {
+                "type": "String"
+            }
+        }
+    },
+    "customizeHomeScreen": "Personalitza la pantalla d'inici",
+    "@customizeHomeScreen": {
+        "description": "Label for home screen customize button"
+    },
+    "connectedTo": "Connectat a",
+    "@connectedTo": {
+        "description": "Server info in music screen menu"
+    },
+    "performingArtistFilter": "Àlbums (Apareix a)",
+    "albumArtistFilter": "Àlbums (Artista de l'àlbum)",
+    "allTypes": "Tots els tipus",
+    "itemTypeFilterHeader": "Tipus del fill",
+    "recentlyPlayedTracksDescription": "Cançons que has escoltat recentment, començant per l'última que has reproduït",
+    "@recentlyPlayedTracksDescription": {
+        "description": "Description for a home screen section preset"
+    },
+    "homeFavoritesDownloadWarning": "Estàs segur que vols descarregar els preferits? Això descarregarà els preferits de tota classe, no només els de {sectionType}.",
+    "@homeFavoritesDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because home sections show a specific item type, like Albums, but the download covers all.",
+        "placeholders": {
+            "sectionType": {
+                "type": "String",
+                "example": "Albums"
+            }
+        }
+    },
+    "homeAllPlaylistsWarning": "Estàs segur que vols descarregar totes les llistes de reproducció? Això descarregarà totes les llistes de reproducció, no només les d'aquesta secció.",
+    "@homeAllPlaylistsWarning": {
+        "description": "Warning presented when pressing the download button on playlist home sections with a filter applied.  This is shown because the download will not apply the filter."
+    },
+    "homeRecentAlbumsDownloadWarning": "Això descarregarà els 5 àlbums més recents del servidor. S'actualitzarà i les descàrregues sobrants s'eliminaran a mesura que s'afegeixin nous àlbums al servidor en el futur.",
+    "@homeRecentAlbumsDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because the behavior of the 5 latest albums download is not a 100% match to the home sections."
+    },
+    "alreadyRandomized": "Aquesta secció ja es presenta en ordre aleatori",
+    "@alreadyRandomized": {
+        "description": "Tooltip for shuffle button on home screen sections using a random sort order, where it is disabled due to being unneeded"
+    },
+    "libraryQualifierActive": "Activa",
+    "@libraryQualifierActive": {
+        "description": "Label shown next to the currently selected library in the Finamp menu/drawer"
+    },
+    "offlineSortFallback": "L'ordre per {onlineSort} només està disponible en línia. Actualment es torna a utilitzar l'ordre per defecte",
+    "@offlineSortFallback": {
+        "description": "Warning presented in sort and filter menu when an online-only sort is chosen.",
+        "placeholders": {
+            "onlineSort": {
+                "type": "String",
+                "example": "Play Count"
+            }
+        }
+    },
+    "retry": "Torna-ho a intentar",
+    "retryPageLoad": "No s'han pogut carregar els elements del servidor. Fes clic per tornar-ho a intentar.",
+    "itemType": "{itemType, select, album{Àlbum} playlist{Llista de reproducció} artist{Artista} genre{Gènere} track{Cançó} library{Biblioteca} collection{Col·lecció} unknown{Element} other{{itemType}}}",
+    "@itemType": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            }
+        },
+        "description": "Item type name."
+    },
+    "connectionStateInfoString": "{state, select, syncing{Sincronitzant amb el servidor} downloading{Descarregant del servidor} deleting{Eliminant descàrregues antigues} connectedLocal{Connectat a través de la xarxa local} syncingLocal{Sincronitzant a través de la xarxa local} downloadingLocal{Descarregant a través de la xarxa local} other{}}",
+    "@connectionStateInfoString": {
+        "description": "String describing the current connection state to the server, shown in the music screen drawer/menu.",
+        "placeholders": {
+            "state": {
+                "type": "String",
+                "example": "syncingLocal"
+            }
+        }
     }
 }
