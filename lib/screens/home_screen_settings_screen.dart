@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/HomeScreen/home_screen_content.dart';
@@ -38,9 +40,14 @@ class _HomeScreenSettingsScreenState extends State<HomeScreenSettingsScreen> {
         ],
       ),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.only(bottom: 150.0),
-          children: [const QuickActionsSelector(), const HomeScreenSectionsSelector()],
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 750.0),
+            child: ListView(
+              padding: const EdgeInsets.only(bottom: 150.0),
+              children: [const QuickActionsSelector(), const HomeScreenSectionsSelector()],
+            ),
+          ),
         ),
       ),
     );
@@ -64,6 +71,7 @@ class QuickActionsSelector extends ConsumerWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             buildDefaultDragHandles: false,
+            onReorderStart: (_) => FeedbackHelper.feedback(FeedbackType.light),
             proxyDecorator: (child, _, _) => Material(type: MaterialType.transparency, child: child),
             itemBuilder: (context, index) {
               final action = quickActions[index];
@@ -75,19 +83,11 @@ class QuickActionsSelector extends ConsumerWidget {
                     ColorScheme.of(context).primary.withOpacity(0.05),
                     ColorScheme.of(context).surface,
                   ),
-                  title: Padding(padding: const EdgeInsets.only(left: 4.0), child: Text(action.getTitle(context.l10n))),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                  visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-                  contentPadding: EdgeInsets.only(left: 6.0),
-                  leading: ReorderableDragStartListener(
+                  title: _ResponsiveListTile(
                     index: index,
-                    key: ValueKey("drag-handle-quick-action-$action-$index"),
-                    child: const Icon(Icons.drag_handle),
-                  ),
-                  subtitle: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
+                    title: action.getTitle(context.l10n),
+                    key: ValueKey("quick-action-$action"),
+                    actions: [
                       SimpleButton.small(
                         text: action.action.editable ? context.l10n.editAction : context.l10n.swapAction,
                         icon: action.action.editable ? TablerIcons.edit : TablerIcons.selector,
@@ -106,6 +106,9 @@ class QuickActionsSelector extends ConsumerWidget {
                       ),
                     ],
                   ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                  visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                  contentPadding: EdgeInsets.only(left: 6.0),
                 ),
               );
             },
@@ -188,22 +191,11 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
                     ColorScheme.of(context).primary.withOpacity(0.05),
                     ColorScheme.of(context).surface,
                   ),
-                  title: Padding(
-                    padding: const EdgeInsets.only(left: 4.0),
-                    child: Text(section.getTitle(context.l10n)),
-                  ),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                  visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-                  contentPadding: EdgeInsets.only(left: 6.0),
-                  leading: ReorderableDragStartListener(
+                  title: _ResponsiveListTile(
                     index: index,
-                    key: ValueKey("drag-handle-section-$section-$index"),
-                    child: const Icon(Icons.drag_handle),
-                  ),
-                  subtitle: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
+                    title: section.getTitle(context.l10n),
+                    key: ValueKey("section-$section"),
+                    actions: [
                       SimpleButton.small(
                         text: context.l10n.editSection,
                         icon: TablerIcons.edit,
@@ -221,6 +213,9 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
                       ),
                     ],
                   ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                  visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                  contentPadding: EdgeInsets.only(left: 6.0),
                 ),
               );
             },
@@ -506,6 +501,100 @@ class _GlobalSearchBoxState extends ConsumerState<GlobalSearchBox> {
         ),
       ),
       child: child,
+    );
+  }
+}
+
+class _ResponsiveListTile extends StatelessWidget {
+  const _ResponsiveListTile({super.key, required this.index, required this.title, required this.actions});
+
+  final int index;
+  final String title;
+  final List<SimpleButton> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textStyle = DefaultTextStyle.of(context).style;
+
+        final titlePainter = TextPainter(
+          text: TextSpan(text: title, style: textStyle),
+          textDirection: Directionality.of(context),
+          maxLines: 1,
+        )..layout();
+
+        // Measure action button text to calculate actual button widths
+        const minTextWidth = 200.0;
+        const horizontalGap = 48.0;
+        const buttonSpacing = 12.0;
+        const iconWidth = 16.0;
+        const buttonPadding = 4.0;
+        const buttonChromeWidth =
+            iconWidth + 2 * buttonPadding + 2.0; // SimpleButton.small icon + padding + text-icon spacing
+
+        double totalActionsWidth = 0.0;
+        for (final action in actions) {
+          // Measure the actual button text
+          final buttonText = action.text;
+          final buttonPainter = TextPainter(
+            text: TextSpan(text: buttonText, style: SimpleButton.smallTextStyle),
+            textDirection: Directionality.of(context),
+            maxLines: 1,
+          )..layout();
+
+          totalActionsWidth += buttonChromeWidth + buttonPainter.width + buttonSpacing;
+        }
+        totalActionsWidth -= buttonSpacing; // Remove last spacing
+
+        // Calculate available space for actions on the same line
+        final dragHandleWidth = 24.0 + 8.0; // Icon width + spacing
+        final titleWidth = max(minTextWidth, titlePainter.width);
+        final availableWidthForActions = constraints.maxWidth - dragHandleWidth - titleWidth - horizontalGap - 8.0;
+
+        final useHorizontalLayout = availableWidthForActions >= totalActionsWidth;
+
+        if (useHorizontalLayout) {
+          return Row(
+            children: [
+              ReorderableDragStartListener(
+                index: index,
+                key: ValueKey("drag-handle-${key.toString()}-$index"),
+                child: const Icon(Icons.drag_handle),
+              ),
+              const SizedBox(width: 8.0),
+              Expanded(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: minTextWidth),
+                  child: Text(title),
+                ),
+              ),
+              const SizedBox(width: horizontalGap),
+              Row(mainAxisSize: MainAxisSize.min, spacing: buttonSpacing, children: actions),
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                ReorderableDragStartListener(
+                  index: index,
+                  key: ValueKey("drag-handle-${key.toString()}-$index"),
+                  child: const Icon(Icons.drag_handle),
+                ),
+                const SizedBox(width: 8.0),
+                Expanded(child: Text(title)),
+              ],
+            ),
+            const SizedBox(height: 8.0),
+            Wrap(alignment: WrapAlignment.spaceEvenly, spacing: buttonSpacing, runSpacing: 8.0, children: actions),
+          ],
+        );
+      },
     );
   }
 }

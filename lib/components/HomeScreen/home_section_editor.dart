@@ -608,7 +608,7 @@ Future<(HomeScreenSectionPresetType?,)?> showSectionPresetPickerMenu(
                 // if (preset == RadioMode.similar && radioModeOptionAvailabilityStatus.isAvailable)
                 //   Icon(TablerIcons.star, size: 14.0),
               ],
-              enabled: true,
+              enabled: currentSections.where((section) => section.presetType == presetType).isEmpty,
               icon: TablerIcons.settings_star,
               isInactive: false,
               isSelected: editingSectionIndex != null && currentSections[editingSectionIndex].presetType == presetType,

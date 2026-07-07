@@ -108,6 +108,7 @@ class QuickActionConfigMenuState extends ConsumerState<QuickActionConfigMenu> {
     return FinampQuickActions.values.map<Widget>((quickAction) {
       return Consumer(
         builder: (context, ref, child) {
+          final currentActions = ref.watch(finampSettingsProvider.homeScreenConfiguration).actions;
           return ChoiceMenuOption(
             title: QuickActionConfig(action: quickAction).getTitle(context.l10n),
             description: quickAction.getDescription(context),
@@ -116,7 +117,7 @@ class QuickActionConfigMenuState extends ConsumerState<QuickActionConfigMenu> {
               // if (preset == RadioMode.similar && radioModeOptionAvailabilityStatus.isAvailable)
               //   Icon(TablerIcons.star, size: 14.0),
             ],
-            enabled: true,
+            enabled: currentActions.where((action) => action.action == quickAction).isEmpty,
             icon: quickAction.getIcon(),
             isInactive: false,
             isSelected: quickAction == widget.initialValue?.action,

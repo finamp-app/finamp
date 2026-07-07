@@ -45,7 +45,7 @@ class SimpleButton extends StatelessWidget {
     this.inactive = false,
     this.backgroundColor,
     this.showText = true,
-  }) : textStyle = const TextStyle(fontSize: 14, fontWeight: FontWeight.normal);
+  }) : textStyle = defaultTextStyle;
 
   const SimpleButton.small({
     super.key,
@@ -64,7 +64,10 @@ class SimpleButton extends StatelessWidget {
     this.inactive = false,
     this.backgroundColor,
     this.showText = true,
-  }) : textStyle = const TextStyle(fontSize: 12, fontWeight: FontWeight.normal);
+  }) : textStyle = smallTextStyle;
+
+  static const defaultTextStyle = TextStyle(fontSize: 14, fontWeight: FontWeight.normal);
+  static const smallTextStyle = TextStyle(fontSize: 12, fontWeight: FontWeight.normal);
 
   @override
   Widget build(BuildContext context) {
