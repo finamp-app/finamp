@@ -33,7 +33,7 @@ Future<T?> showThemedBottomSheet<T>({
   FeedbackHelper.feedback(FeedbackType.selection);
   bool useDefaultTheme = false;
   final menu = ThemedBottomSheet(
-    key: ValueKey((item?.id?.raw ?? "") + routeName),
+    key: ValueKey((item?.id.raw ?? "") + routeName),
     buildSlivers: buildSlivers,
     buildWrapper: buildWrapper,
     minDraggableHeight: minDraggableHeight,
@@ -125,7 +125,7 @@ class _ThemedBottomSheetState extends ConsumerState<ThemedBottomSheet> {
             child = buildInternal(height, slivers);
           }
           final colorScheme = ColorScheme.of(context);
-          return ColoredBox(
+          return Material(
             color: ElevationOverlay.applySurfaceTint(colorScheme.surface, colorScheme.surfaceTint, 1),
             child: child,
           );

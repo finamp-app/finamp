@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -175,16 +176,18 @@ class PlayOnService {
     if (retryActive) return;
     try {
       retryActive = true;
-      final startTime = DateTime.now();
+      var retryCount = 0;
       while (true) {
-        await Future<void>.delayed(Duration(seconds: FinampSettingsHelper.finampSettings.playOnReconnectionDelay));
+        final retryDelay = (FinampSettingsHelper.finampSettings.playOnReconnectionDelay * pow(1.3, retryCount)).round();
+        await Future<void>.delayed(Duration(seconds: retryDelay));
+        retryCount++;
         assert(retryActive);
         if (abortConnect) {
           return;
         }
         switch (socketState) {
           case SocketState.disconnected:
-            if (startTime.difference(DateTime.now()) > Duration(minutes: 5)) {
+            if (retryDelay > 5 * 60) {
               // Retry loop has timed out
               _playOnServiceLogger.warning("Stopped attempting to connect playon");
               socketState = SocketState.disconnected;

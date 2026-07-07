@@ -333,7 +333,9 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                                   : null,
                               forceAlbumArtists: (widget.sortConfig.sortBy == SortBy.albumArtist),
                               adaptiveAdditionalInfoSortBy: widget.sortConfig.sortBy,
-                              parentPlayable: ref.watch(finampSettingsProvider.startInstantMixForIndividualTracks)
+                              parentPlayable:
+                                  ref.watch(finampSettingsProvider.startInstantMixForIndividualTracks) &&
+                                      !ref.watch(finampSettingsProvider.isOffline)
                                   ? InstantMix(item.item)
                                   : widget.displayable is FinampPlayable
                                   ? (widget.displayable as FinampPlayable)
