@@ -349,7 +349,9 @@ class RemoteSessionService {
     // the remote as soon as it reports the handed-off item playing.
     if (_pausePending) {
       if (_pausePendingDeadline != null && DateTime.now().isAfter(_pausePendingDeadline!)) {
-        _log.warning("Remote never started playing within the pause-on-start window; giving up");
+        // Normal when the immediate Pause sent with the queue push landed:
+        // the remote then never reports playing and the backstop just expires.
+        _log.fine("Pause-on-start window expired without the remote reporting playback; disarming");
         _pausePending = false;
       } else if (itemId != null && !(session.playState?.isPaused ?? true)) {
         _log.info("Remote started playing while a pause was pending; pausing it");
@@ -676,6 +678,17 @@ class RemoteSessionService {
       itemIds: chunks.first,
       startPositionTicks: startPosition == null ? null : startPosition.inMilliseconds * _ticksPerMillisecond,
     );
+    if (!autoplay) {
+      // The PlayTo API has no way to start paused, so pause right after the
+      // PlayNow request to keep the audible blip as short as possible.
+      // _pausePending stays armed as a backstop for receivers that drop a
+      // Pause arriving before their player has started.
+      try {
+        await pause();
+      } catch (e) {
+        _log.warning("Failed to pause remote right after the queue push: $e");
+      }
+    }
     for (final chunk in chunks.skip(1)) {
       await _jellyfinApiHelper.sendPlayToSession(sessionId: sessionId, itemIds: chunk, playCommand: "PlayLast");
     }
@@ -803,6 +816,10 @@ class RemoteSessionService {
   }
 
   Future<void> playPause() {
+    // An explicit user toggle overrides a pending connect-while-paused pause;
+    // otherwise the backstop in _applySessionUpdate would revert a resume
+    // issued within its window.
+    _pausePending = false;
     final playing = remotePlaybackState?.playing;
     if (playing != null) _presentPlaying(!playing);
     return _sendCommand("PlayPause");
@@ -814,6 +831,8 @@ class RemoteSessionService {
   }
 
   Future<void> unpause() {
+    // See playPause: a user-initiated resume cancels a pending pause.
+    _pausePending = false;
     _presentPlaying(true);
     return _sendCommand("Unpause");
   }
