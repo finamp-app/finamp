@@ -191,8 +191,8 @@ class OutputMenuHeader extends ConsumerWidget {
 /// distinguished only by their cast icon. Local outputs and remote control
 /// are mutually exclusive: while connected to a remote session the native
 /// routes are replaced by a single synthetic "this device" tile that migrates
-/// playback back (restoring the previously active route); that tile also
-/// stands in on platforms without native routes.
+/// playback back; that tile also stands in on platforms without native
+/// routes.
 class OutputTargetList extends StatefulWidget {
   const OutputTargetList({super.key});
 
@@ -216,8 +216,7 @@ class _OutputTargetListState extends State<OutputTargetList> {
     _targetsFuture = _loadTargets();
     // Reload when the connected session changes (e.g. auto-disconnect while
     // the menu is open): the list content depends on remote state (native
-    // routes are hidden while remote), and after migrating back the restored
-    // output route should show as selected.
+    // routes are hidden while remote).
     _remoteStateSubscription = _remoteSessionService.getRemoteStateStream().distinct((a, b) => a?.id == b?.id).listen((
       _,
     ) {
@@ -407,10 +406,6 @@ class _OutputTargetListState extends State<OutputTargetList> {
       if (mounted) {
         setState(() {
           _disconnecting = false;
-          // disconnect() has restored the previous output route by now;
-          // reload so it shows as selected (the remote-state listener fired
-          // before the restore completed).
-          _targetsFuture = _loadTargets();
         });
       }
     }
