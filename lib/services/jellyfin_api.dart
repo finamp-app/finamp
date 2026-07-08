@@ -572,7 +572,7 @@ abstract class JellyfinApi extends ChopperService {
   @Get(path: "/System/Endpoint", optionalBody: true)
   Future<Response<dynamic>> pingServer();
 
-  static JellyfinApi create({required bool inForeground, required String deviceId}) {
+  static JellyfinApi create({required bool inForeground}) {
     final chopperHttpLogLevel = Level.body; //TODO allow changing the log level in settings (and a debug config file?)
 
     final client = ChopperClient(
