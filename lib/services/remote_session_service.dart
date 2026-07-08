@@ -159,13 +159,22 @@ class RemoteSessionService {
     }
     _log.info("Connecting to remote session $sessionId (migrateQueue: $migrateQueue)");
 
-    // Capture local state before entering remote mode (the getters become
-    // remote-aware once _activeSessionId is set).
+    // Capture playback state before switching sessions (the getters follow
+    // whichever session is active): when switching remote-to-remote this is
+    // the previous remote's state, which the new session continues from.
     final wasPlaying = !_audioHandler.paused;
     final localPosition = _audioHandler.playbackPosition;
 
-    // Pause local playback first so audio never plays on both ends.
-    if (wasPlaying) {
+    // Pause whatever is currently audible so audio never plays on both ends:
+    // the previous remote when switching remote-to-remote (the local player
+    // is already a paused mirror then), the local player otherwise.
+    if (isRemote) {
+      try {
+        await pause();
+      } catch (e) {
+        _log.warning("Failed to pause previous remote session $_activeSessionId: $e");
+      }
+    } else if (wasPlaying) {
       await _audioHandler.pause(disableFade: true, localOnly: true);
     }
 
