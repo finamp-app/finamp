@@ -499,6 +499,14 @@ class PlaybackHistoryService {
     if (FinampSettingsHelper.finampSettings.isOffline || _isMirroringRemoteSession) {
       return;
     }
+    if (_queueService.getCurrentTrack() == null) {
+      // Nothing is playing (e.g. the queue was just stopped and cleared):
+      // generateGenericPlaybackProgressInfo would fall back to the last
+      // played track and re-create the session's NowPlayingItem on the
+      // server right after the stop report cleared it, making other clients
+      // think this device is still playing.
+      return;
+    }
     final playbackInfo = playbackData ?? generateGenericPlaybackProgressInfo();
     if (playbackInfo != null) {
       try {
@@ -519,6 +527,12 @@ class PlaybackHistoryService {
 
   Future<void> _updateQueueInfo() async {
     if (FinampSettingsHelper.finampSettings.isOffline || _isMirroringRemoteSession) {
+      return;
+    }
+    if (_queueService.getCurrentTrack() == null) {
+      // See _updatePlaybackInfo: with no current track there is nothing to
+      // report, and the forced fallback to the last played track would undo
+      // a just-sent stop report on the server.
       return;
     }
     final playbackInfo = generateGenericPlaybackProgressInfo(includeNowPlayingQueue: true, force: true);
