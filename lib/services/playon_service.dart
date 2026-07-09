@@ -7,6 +7,7 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/favorite_provider.dart';
 import 'package:finamp/services/jellyfin_api.dart';
 import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/services/radio_service_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -439,6 +440,13 @@ class PlayOnService {
                       itemIds: List<BaseItemId>.from(request['Data']['ItemIds'] as List<dynamic>),
                     );
                     if (items!.isNotEmpty) {
+                      // A queue handed to us by a remote controller is managed
+                      // by that controller: disable the radio so Finamp doesn't
+                      // modify the queue on its own.
+                      if (FinampSettingsHelper.finampSettings.radioEnabled) {
+                        _playOnServiceLogger.info("Disabling the radio: the queue is managed by a remote client");
+                        toggleRadio(false);
+                      }
                       //TODO check if all tracks in the request are in the upcoming queue (peekQueue). If they are, we should try to only reorder the upcoming queue instead of treating it as a new queue, and then skip to the correct index.
                       unawaited(
                         _queueService
