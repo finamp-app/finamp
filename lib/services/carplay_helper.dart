@@ -817,14 +817,14 @@ class CarPlayHelper {
       sectionIndexEnabled: false,
       items: [
         CPListItem(
-          text: GlobalSnackbar.requireL10n.shuffleAll,
+          text: GlobalSnackbar.requireL10n.shuffleTracksAction,
           onPress: (complete, self) async {
             await shuffleAllTracks();
             complete();
           },
         ),
         CPListItem(
-          text: GlobalSnackbar.requireL10n.startRadio,
+          text: GlobalSnackbar.requireL10n.surpriseMeAction,
           onPress: (complete, self) async {
             if (FinampSettingsHelper.finampSettings.isOffline) {
               // Offline: instant mix not available, fallback to shuffle.
@@ -844,6 +844,43 @@ class CarPlayHelper {
       _loadHomeSectionItems(HomeScreenSectionPresetType.recentlyPlayedTracks, _carPlayRecentlyPlayedLimit),
       _loadHomeSectionItems(HomeScreenSectionPresetType.recentlyAddedAlbums, _carPlayRecentlyAddedLimit),
     ]);
+
+    _carPlayLogger.info("Got ${recentlyAddedFetched.length} recently added albums");
+    if (recentlyAddedFetched.isNotEmpty) {
+      final recentlyAddedLimit = await _clampToGridImageLimit(recentlyAddedFetched.length);
+      final recentlyAdded = recentlyAddedFetched.take(recentlyAddedLimit).toList();
+
+      sections.add(
+        CPListSection(
+          items: [
+            CPListImageRowItem(
+              text: GlobalSnackbar.requireL10n.recentlyAdded,
+              gridImages: recentlyAdded.map((album) => _getCarPlayImageUri(album) ?? _carPlayFallbackImage).toList(),
+              onPress: (complete, self) async {
+                try {
+                  await _showRecentlyAddedTemplate();
+                } catch (e) {
+                  GlobalSnackbar.error(e);
+                } finally {
+                  complete();
+                }
+              },
+              onItemPress: (complete, self, index) async {
+                try {
+                  if (index != null && index >= 0 && index < recentlyAdded.length) {
+                    await showCollectionTracksTemplate(recentlyAdded[index]);
+                  }
+                } catch (e) {
+                  GlobalSnackbar.error(e);
+                } finally {
+                  complete();
+                }
+              },
+            ),
+          ],
+        ),
+      );
+    }
 
     if (recentPlays.isNotEmpty) {
       CPListSection recentPlaysSection = CPListSection(
@@ -915,43 +952,6 @@ class CarPlayHelper {
                 try {
                   if (index != null && index >= 0 && index < recentQueues.length) {
                     await _resumeSavedQueue(recentQueues[index]);
-                  }
-                } catch (e) {
-                  GlobalSnackbar.error(e);
-                } finally {
-                  complete();
-                }
-              },
-            ),
-          ],
-        ),
-      );
-    }
-
-    _carPlayLogger.info("Got ${recentlyAddedFetched.length} recently added albums");
-    if (recentlyAddedFetched.isNotEmpty) {
-      final recentlyAddedLimit = await _clampToGridImageLimit(recentlyAddedFetched.length);
-      final recentlyAdded = recentlyAddedFetched.take(recentlyAddedLimit).toList();
-
-      sections.add(
-        CPListSection(
-          items: [
-            CPListImageRowItem(
-              text: GlobalSnackbar.requireL10n.recentlyAdded,
-              gridImages: recentlyAdded.map((album) => _getCarPlayImageUri(album) ?? _carPlayFallbackImage).toList(),
-              onPress: (complete, self) async {
-                try {
-                  await _showRecentlyAddedTemplate();
-                } catch (e) {
-                  GlobalSnackbar.error(e);
-                } finally {
-                  complete();
-                }
-              },
-              onItemPress: (complete, self, index) async {
-                try {
-                  if (index != null && index >= 0 && index < recentlyAdded.length) {
-                    await showCollectionTracksTemplate(recentlyAdded[index]);
                   }
                 } catch (e) {
                   GlobalSnackbar.error(e);
