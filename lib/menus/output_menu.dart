@@ -478,7 +478,9 @@ class _OutputTargetListState extends State<OutputTargetList> {
       leading: Container(
         padding: const EdgeInsets.all(16.0),
         color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-        child: Icon(isConnected ? TablerIcons.cast : TablerIcons.cast_off),
+        // The icon marks the tile as a remote (cast) target; the connection
+        // state is conveyed by the tile's active state, not the icon.
+        child: Icon(TablerIcons.cast),
       ),
       icon: isConnected ? TablerIcons.device_speaker_filled : TablerIcons.device_speaker,
       state: isConnected,
