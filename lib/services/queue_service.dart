@@ -1166,8 +1166,8 @@ class QueueService {
     await _audioHandler.removeFinampQueueItemAt(adjustedQueueIndex);
     _buildQueueFromNativePlayerQueue();
 
-    // No incremental "remove" command exists for remote sessions, so re-push
-    // the whole queue to keep the remote in sync.
+    // No incremental "remove" command exists for remote sessions, so re-send
+    // the queue to keep the remote in sync.
     unawaited(_remoteSessionIfConnected?.resyncQueueToRemote());
   }
 
@@ -1244,8 +1244,8 @@ class QueueService {
 
     _buildQueueFromNativePlayerQueue();
 
-    // No incremental "reorder" command exists for remote sessions, so re-push
-    // the whole queue to keep the remote in sync.
+    // No incremental "reorder" command exists for remote sessions, so re-send
+    // the queue to keep the remote in sync.
     unawaited(_remoteSessionIfConnected?.resyncQueueToRemote());
   }
 

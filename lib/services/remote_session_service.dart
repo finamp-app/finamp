@@ -62,6 +62,12 @@ class RemoteSessionService {
   /// bound the number of requests for very long queues.
   static const int _maxQueueItemsToSend = 500;
 
+  /// Maximum tracks per single PlayNow request when re-sending the queue with
+  /// a start index (remove/reorder/skip). Unlike the chunked handoff above,
+  /// these requests can't be split (StartIndex applies to one request), so
+  /// the queue is capped flat at a size that stays below URI length limits.
+  static const int _maxTracksPerPlayNow = 150;
+
   String? _activeSessionId;
   StreamSubscription<List<SessionInfo>>? _sessionsSubscription;
   final _sessionStream = BehaviorSubject<SessionInfo?>.seeded(null);
@@ -712,50 +718,70 @@ class RemoteSessionService {
     }
   }
 
-  /// Re-pushes the whole queue to the remote, continuing the current track at
-  /// the current position. Used for queue changes that have no incremental
-  /// remote command (remove, reorder, shuffle toggle).
+  /// Re-sends the queue to the remote, continuing the current track at the
+  /// current position. Used for queue changes that have no incremental remote
+  /// command (remove, reorder).
   Future<void> resyncQueueToRemote() async {
     if (!isRemote) return;
     final playing = remotePlaybackState?.playing ?? false;
-    await pushQueueToRemote(autoplay: playing, startPosition: remotePlaybackState?.position);
+    final currentIndex = _queueService.getQueue().previousTracks.length;
+    await _playQueueFromIndex(currentIndex, startPosition: remotePlaybackState?.position, autoplay: playing);
   }
 
   /// Jumps the remote to the queue item [offset] tracks away from the current
-  /// one. Adjacent skips map to playstate commands; larger jumps re-push the
-  /// queue starting at the target track.
+  /// one. Adjacent skips map to playstate commands; larger jumps re-send the
+  /// queue with the target track as the start index.
   Future<void> skipByOffset(int offset) async {
     if (offset == 1) return next();
     if (offset == -1) return previous();
-    final queueInfo = _queueService.getQueue();
-    final upcoming = [
-      if (queueInfo.currentTrack != null) queueInfo.currentTrack!,
-      ...queueInfo.nextUp,
-      ...queueInfo.queue,
-    ];
-    if (offset < 0) {
-      // The remote may not have our played history in its queue, so replay
-      // from the target track by re-pushing the queue from there.
-      final fullQueue = queueInfo.fullQueue;
-      final currentIndex = queueInfo.previousTracks.length;
-      final targetIndex = (currentIndex + offset).clamp(0, fullQueue.length - 1);
-      await _playFromItems(fullQueue.sublist(targetIndex));
-    } else {
-      final targetIndex = offset.clamp(0, upcoming.length - 1);
-      await _playFromItems(upcoming.sublist(targetIndex));
-    }
+    final currentIndex = _queueService.getQueue().previousTracks.length;
+    await _playQueueFromIndex(currentIndex + offset);
   }
 
-  Future<void> _playFromItems(List<FinampQueueItem> items) async {
+  /// Makes the remote play the local queue from [targetIndex] (an index into
+  /// the full queue, played history included) with a single PlayNow request.
+  /// Queues short enough to fit are sent whole with the matching StartIndex,
+  /// so the remote keeps the played history; longer queues are sent from the
+  /// target track onward, capped flat at [_maxTracksPerPlayNow].
+  Future<void> _playQueueFromIndex(int targetIndex, {Duration? startPosition, bool autoplay = true}) async {
     final sessionId = _activeSessionId;
-    if (sessionId == null || items.isEmpty) return;
-    final itemIds = items.take(_maxQueueItemsToSend).map((item) => item.baseItemId).toList();
+    if (sessionId == null) return;
+    final fullQueue = _queueService.getQueue().fullQueue;
+    if (fullQueue.isEmpty) return;
+    final clampedTarget = targetIndex.clamp(0, fullQueue.length - 1);
+    final List<FinampQueueItem> window;
+    final int startIndex;
+    if (fullQueue.length <= _maxTracksPerPlayNow) {
+      window = fullQueue;
+      startIndex = clampedTarget;
+    } else {
+      window = fullQueue.skip(clampedTarget).take(_maxTracksPerPlayNow).toList();
+      startIndex = 0;
+    }
+    final itemIds = window.map((item) => item.baseItemId).toList();
     _lastPushedQueueIds = itemIds.map((id) => _normalizeId(id.raw)).toList();
     _suppressAdoptUntil = DateTime.now().add(const Duration(seconds: 20));
-    final chunks = itemIds.slices(_maxItemsPerPlayRequest).toList();
-    await _jellyfinApiHelper.sendPlayToSession(sessionId: sessionId, itemIds: chunks.first);
-    for (final chunk in chunks.skip(1)) {
-      await _jellyfinApiHelper.sendPlayToSession(sessionId: sessionId, itemIds: chunk, playCommand: "PlayLast");
+    if (!autoplay) {
+      _pausePending = true;
+      _pausePendingDeadline = DateTime.now().add(const Duration(seconds: 10));
+    }
+    _log.info(
+      "Sending ${itemIds.length} queue items to remote session $sessionId "
+      "with start index $startIndex, autoplay=$autoplay, startPosition=$startPosition",
+    );
+    await _jellyfinApiHelper.sendPlayToSession(
+      sessionId: sessionId,
+      itemIds: itemIds,
+      startIndex: startIndex,
+      startPositionTicks: startPosition == null ? null : startPosition.inMilliseconds * _ticksPerMillisecond,
+    );
+    if (!autoplay) {
+      // PlayNow always starts playback; see pushQueueToRemote.
+      try {
+        await pause();
+      } catch (e) {
+        _log.warning("Failed to pause remote right after re-sending the queue: $e");
+      }
     }
   }
 
