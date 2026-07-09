@@ -204,7 +204,16 @@ class _OutputTargetListState extends State<OutputTargetList> {
   final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
   final _remoteSessionService = GetIt.instance<RemoteSessionService>();
 
-  late Future<(List<FinampOutputRoute>, List<SessionInfo>)> _targetsFuture;
+  // Native routes and remote sessions load independently, so the (fast,
+  // local) routes can be shown immediately while the (slow, server
+  // round-trip) session list is still loading. Null = still loading.
+  List<FinampOutputRoute>? _routes;
+  List<SessionInfo>? _sessions;
+
+  /// Discards results of superseded loads (the list is reloaded on remote
+  /// state changes and after switching routes).
+  int _loadGeneration = 0;
+
   String? switchingToRoute;
   String? _connectingToSessionId;
   bool _disconnecting = false;
@@ -213,7 +222,7 @@ class _OutputTargetListState extends State<OutputTargetList> {
   @override
   void initState() {
     super.initState();
-    _targetsFuture = _loadTargets();
+    _loadTargets();
     // Reload when the connected session changes (e.g. auto-disconnect while
     // the menu is open): the list content depends on remote state (native
     // routes are hidden while remote).
@@ -221,9 +230,7 @@ class _OutputTargetListState extends State<OutputTargetList> {
       _,
     ) {
       if (mounted) {
-        setState(() {
-          _targetsFuture = _loadTargets();
-        });
+        setState(_loadTargets);
       }
     });
   }
@@ -234,22 +241,43 @@ class _OutputTargetListState extends State<OutputTargetList> {
     super.dispose();
   }
 
-  Future<(List<FinampOutputRoute>, List<SessionInfo>)> _loadTargets() async {
-    final routes = await audioHandler.getRoutes(); // empty off-Android
-    // Remote sessions are unavailable offline, and a session load failure
-    // shouldn't take the native outputs down with it.
-    var sessions = <SessionInfo>[];
-    if (!FinampSettingsHelper.finampSettings.isOffline) {
-      try {
-        final myDeviceId = (await jellyfin_api.getDeviceInfo()).id;
-        sessions = (await GetIt.instance<JellyfinApiHelper>().getSessions())
-            .where((s) => s.supportsRemoteControl && s.deviceId != myDeviceId)
-            .toList();
-      } catch (e) {
-        GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnDeviceListError(e.toString()));
-      }
+  void _loadTargets() {
+    final generation = ++_loadGeneration;
+    _routes = null;
+    _sessions = FinampSettingsHelper.finampSettings.isOffline ? [] : null;
+    unawaited(
+      audioHandler
+          .getRoutes() // empty off-Android
+          .then((routes) {
+            if (mounted && generation == _loadGeneration) setState(() => _routes = routes);
+          })
+          .catchError((Object e) {
+            GlobalSnackbar.error(e);
+            if (mounted && generation == _loadGeneration) setState(() => _routes = []);
+          }),
+    );
+    if (_sessions == null) {
+      unawaited(
+        _loadSessions().then((sessions) {
+          if (mounted && generation == _loadGeneration) setState(() => _sessions = sessions);
+        }),
+      );
     }
-    return (routes, sessions);
+  }
+
+  /// Loads the remote sessions this device can control. A failure shouldn't
+  /// take the native outputs down with it, so it surfaces as a snackbar and
+  /// an empty list.
+  Future<List<SessionInfo>> _loadSessions() async {
+    try {
+      final myDeviceId = (await jellyfin_api.getDeviceInfo()).id;
+      return (await GetIt.instance<JellyfinApiHelper>().getSessions())
+          .where((s) => s.supportsRemoteControl && s.deviceId != myDeviceId)
+          .toList();
+    } catch (e) {
+      GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnDeviceListError(e.toString()));
+      return [];
+    }
   }
 
   Future<void> _selectRoute(FinampOutputRoute route) async {
@@ -262,7 +290,7 @@ class _OutputTargetListState extends State<OutputTargetList> {
       if (mounted) {
         setState(() {
           switchingToRoute = null;
-          _targetsFuture = _loadTargets();
+          _loadTargets();
         });
       }
     }
@@ -270,45 +298,43 @@ class _OutputTargetListState extends State<OutputTargetList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _targetsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final (routes, sessions) = snapshot.data!;
-          // Local output routes and remote control are mutually exclusive:
-          // while a remote session is connected, the synthetic "this device"
-          // tile is the single local option (tapping it migrates playback
-          // back and restores the previous output route). It also stands in
-          // when there are no native routes (non-Android).
-          final showRoutes = !_remoteSessionService.isRemote && routes.isNotEmpty;
-          final targets = <Widget>[
-            if (!showRoutes) _thisDeviceTile(context),
-            if (showRoutes)
-              ...routes.map(
-                (route) => OutputSelectorTile(
-                  routeInfo: route,
-                  isSelected: route.isSelected,
-                  isLoading: switchingToRoute == route.name,
-                  onSelect: () => _selectRoute(route),
-                ),
-              ),
-            ...sessions.map((session) => _sessionTile(context, session)),
-            if (Platform.isAndroid && !_remoteSessionService.isRemote) openOsOutputOptionsButton(context),
-          ];
-          return SliverList(delegate: SliverChildListDelegate.fixed(targets));
-        } else if (snapshot.hasError) {
-          GlobalSnackbar.error(snapshot.error);
-          return const SliverToBoxAdapter(child: Center(heightFactor: 3.0, child: Icon(Icons.error, size: 64)));
-        } else {
-          return SliverList(
-            delegate: SliverChildListDelegate.fixed([
-              const Center(child: CircularProgressIndicator.adaptive()),
-              if (Platform.isAndroid) openOsOutputOptionsButton(context),
-            ]),
-          );
-        }
-      },
-    );
+    final routes = _routes;
+    final sessions = _sessions;
+    if (routes == null) {
+      return SliverList(
+        delegate: SliverChildListDelegate.fixed([
+          const Center(child: CircularProgressIndicator.adaptive()),
+          if (Platform.isAndroid) openOsOutputOptionsButton(context),
+        ]),
+      );
+    }
+    // Local output routes and remote control are mutually exclusive:
+    // while a remote session is connected, the synthetic "this device"
+    // tile is the single local option (tapping it migrates playback
+    // back). It also stands in when there are no native routes
+    // (non-Android).
+    final showRoutes = !_remoteSessionService.isRemote && routes.isNotEmpty;
+    final targets = <Widget>[
+      if (!showRoutes) _thisDeviceTile(context),
+      if (showRoutes)
+        ...routes.map(
+          (route) => OutputSelectorTile(
+            routeInfo: route,
+            isSelected: route.isSelected,
+            isLoading: switchingToRoute == route.name,
+            onSelect: () => _selectRoute(route),
+          ),
+        ),
+      // Remote sessions get appended as soon as the server responds.
+      if (sessions == null)
+        const Center(
+          child: Padding(padding: EdgeInsets.all(12.0), child: CircularProgressIndicator.adaptive()),
+        )
+      else
+        ...sessions.map((session) => _sessionTile(context, session)),
+      if (Platform.isAndroid && !_remoteSessionService.isRemote) openOsOutputOptionsButton(context),
+    ];
+    return SliverList(delegate: SliverChildListDelegate.fixed(targets));
   }
 
   Widget openOsOutputOptionsButton(BuildContext context) {
