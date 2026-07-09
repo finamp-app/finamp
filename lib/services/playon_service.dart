@@ -441,17 +441,26 @@ class PlayOnService {
                     if (items!.isNotEmpty) {
                       //TODO check if all tracks in the request are in the upcoming queue (peekQueue). If they are, we should try to only reorder the upcoming queue instead of treating it as a new queue, and then skip to the correct index.
                       unawaited(
-                        _queueService.startPlayback(
-                          items: items,
-                          source: QueueItemSource(
-                            name: QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
-                            type: QueueItemSourceType.remoteClient,
-                            id: items[0].id,
-                            item: items[0],
-                          ),
-                          // seems like Jellyfin isn't always sending the correct index
-                          startingIndex: request['Data']['StartIndex'] as int,
-                        ),
+                        _queueService
+                            .startPlayback(
+                              items: items,
+                              source: QueueItemSource(
+                                name: QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
+                                type: QueueItemSourceType.remoteClient,
+                                id: items[0].id,
+                                item: items[0],
+                              ),
+                              // seems like Jellyfin isn't always sending the correct index
+                              startingIndex: request['Data']['StartIndex'] as int,
+                            )
+                            .then((_) async {
+                              // Resume from the requested position instead of 0
+                              // (e.g. when a controller hands its queue off to us).
+                              final startPositionTicks = request['Data']['StartPositionTicks'] as int?;
+                              if (startPositionTicks != null && startPositionTicks > 0) {
+                                await _audioHandler.seek(Duration(microseconds: startPositionTicks ~/ 10));
+                              }
+                            }),
                       );
                     } else {
                       _playOnServiceLogger.severe("Server asked to start an unplayable item");
