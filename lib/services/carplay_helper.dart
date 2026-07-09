@@ -13,7 +13,9 @@ import 'package:finamp/services/music_providers.dart';
 import 'package:finamp/services/music_screen_provider.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart' show IconData;
 import 'package:flutter_carplay/flutter_carplay.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -90,6 +92,7 @@ class CarPlayHelper {
   Timer? _homeRefreshTimer;
   CPListTemplate? _homeTemplate;
   bool _isSettingRootTemplate = false;
+  bool _isUpdatingNowPlayingButtons = false;
   int _recentQueueImageFillRun = 0;
   BaseItemId? _nowPlayingButtonsTrackId;
 
@@ -143,10 +146,10 @@ class CarPlayHelper {
       _updateNowPlayingButtons();
     });
 
-    // Keep the shuffle button's icon state in sync with the queue's playback
-    // order. The state is also synced on CarPlay connect.
+    // Keep the shuffle button's glyph in sync with the queue's playback
+    // order.
     _playbackOrderSubscription = _queueService.getPlaybackOrderStream().listen((order) {
-      FlutterCarplay.updateNowPlayingShuffleState(isShuffled: order == FinampPlaybackOrder.shuffled);
+      _updateNowPlayingButtons();
     });
 
     // Rebuild the home tab when a queue is archived into history so the
@@ -185,13 +188,9 @@ class CarPlayHelper {
     connectionStatus = status;
     if (status == ConnectionStatusTypes.connected) {
       // The Now Playing template is a system-owned singleton that can be
-      // presented unprompted on connect, so make sure its buttons and
-      // shuffle state are configured immediately rather than waiting for the
-      // next track/order change.
+      // presented unprompted on connect, so its buttons can't wait for the next
+      // track or order change.
       _updateNowPlayingButtons();
-      FlutterCarplay.updateNowPlayingShuffleState(
-        isShuffled: _queueService.playbackOrder == FinampPlaybackOrder.shuffled,
-      );
 
       // Resume playback if there's a loaded queue that's paused
       final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
@@ -226,7 +225,21 @@ class CarPlayHelper {
   /// toggle, favourite, and start instant mix (leading to trailing). Shows
   /// no buttons when logged out and hides favourite/mix when there is no
   /// current track or while offline.
+  ///
+  /// Overlapping calls are ignored.
   Future<void> _updateNowPlayingButtons() async {
+    if (_isUpdatingNowPlayingButtons) {
+      return;
+    }
+    _isUpdatingNowPlayingButtons = true;
+    try {
+      await _sendNowPlayingButtons();
+    } finally {
+      _isUpdatingNowPlayingButtons = false;
+    }
+  }
+
+  Future<void> _sendNowPlayingButtons() async {
     if (!isUserLoggedIn) {
       await FlutterCarplay.setNowPlayingButtons([]);
       return;
@@ -235,20 +248,30 @@ class CarPlayHelper {
     final currentTrack = _queueService.getCurrentTrack()?.baseItem;
     final isOffline = FinampSettingsHelper.finampSettings.isOffline;
 
-    final buttons = <CPNowPlayingButton>[CPNowPlayingShuffleButton(onPress: () => _queueService.togglePlaybackOrder())];
+    final isShuffled = _queueService.playbackOrder == FinampPlaybackOrder.shuffled;
+    final shuffleIcon =
+        await _getIconFontImageUri(isShuffled ? TablerIcons.arrows_shuffle : TablerIcons.arrows_right, 40) ??
+        'sfsymbol:shuffle';
+    final buttons = <CPNowPlayingButton>[
+      CPNowPlayingImageButton(image: shuffleIcon, onPress: () => _queueService.togglePlaybackOrder()),
+    ];
 
     if (currentTrack != null && !isOffline) {
       final isFavorite = providerRef.read(isFavoriteProvider(currentTrack));
+      final heartIcon =
+          await _getIconFontImageUri(isFavorite ? TablerIcons.heart_filled : TablerIcons.heart, 40) ??
+          (isFavorite ? 'sfsymbol:heart.fill' : 'sfsymbol:heart');
       buttons.add(
         CPNowPlayingImageButton(
-          image: isFavorite ? 'sfsymbol:heart.fill' : 'sfsymbol:heart',
+          image: heartIcon,
           onPress: () => GetIt.instance<MusicPlayerBackgroundTask>().toggleFavoriteStatusOfCurrentTrack(),
         ),
       );
 
+      final mixIcon = await _getIconFontImageUri(TablerIcons.radio, 40) ?? 'sfsymbol:radio';
       buttons.add(
         CPNowPlayingImageButton(
-          image: 'sfsymbol:radio',
+          image: mixIcon,
           onPress: () async {
             // Read the track at press time. The plugin keeps earlier
             // callbacks alive when a button update is skipped as redundant.
@@ -663,6 +686,39 @@ class CarPlayHelper {
     final collageImage = await picture.toImage(collageSize.round(), collageSize.round());
     final byteData = await collageImage.toByteData(format: ui.ImageByteFormat.png);
     return byteData?.buffer.asUint8List();
+  }
+
+  /// Renders an icon font glyph to a PNG in the temp directory and returns
+  /// its file URI, so CarPlay buttons can show the same icons as the phone
+  /// UI. Only the glyph's alpha matters, CarPlay tints button images itself.
+  Future<String?> _getIconFontImageUri(IconData icon, double size) async {
+    final cacheFile = File(
+      path_helper.join((await getTemporaryDirectory()).path, 'carplay_icon_${icon.codePoint}_${size.round()}.png'),
+    );
+    if (!await cacheFile.exists()) {
+      final recorder = ui.PictureRecorder();
+      final canvas = ui.Canvas(recorder, ui.Rect.fromLTWH(0, 0, size, size));
+      final painter = TextPainter(
+        text: TextSpan(
+          text: String.fromCharCode(icon.codePoint),
+          style: TextStyle(
+            fontFamily: icon.fontFamily,
+            package: icon.fontPackage,
+            fontSize: size,
+            color: const ui.Color(0xFFFFFFFF),
+          ),
+        ),
+        textDirection: ui.TextDirection.ltr,
+      )..layout();
+      painter.paint(canvas, ui.Offset((size - painter.width) / 2, (size - painter.height) / 2));
+      final image = await recorder.endRecording().toImage(size.round(), size.round());
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData == null) {
+        return null;
+      }
+      await cacheFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+    }
+    return Uri.file(cacheFile.path).toString();
   }
 
   /// Archives the live queue, restores [info] at its saved track and seek
