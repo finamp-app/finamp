@@ -51,21 +51,18 @@ class RemoteSessionService {
   /// Jellyfin ticks are 100ns units, so 1 millisecond == 10000 ticks.
   static const int _ticksPerMillisecond = 10000;
 
-  /// Maximum item ids per /Sessions/{id}/Playing request. Item ids are passed
-  /// as a comma-separated query parameter (~33 chars per id), so larger queues
-  /// must be split across requests to stay below common URI length limits
-  /// (414 URI Too Long at ~250 items). The remainder is appended with
-  /// PlayLast commands.
+  /// Maximum item ids per /Sessions/{id}/Playing request when adding tracks
+  /// (PlayNext/PlayLast). Item ids are passed as a comma-separated query
+  /// parameter (~33 chars per id), so large additions are split across
+  /// requests to stay below common URI length limits (414 URI Too Long at
+  /// ~250 items).
   static const int _maxItemsPerPlayRequest = 100;
 
-  /// Maximum upcoming tracks to hand off to a remote session in total, to
-  /// bound the number of requests for very long queues.
-  static const int _maxQueueItemsToSend = 500;
-
-  /// Maximum tracks per single PlayNow request when re-sending the queue with
-  /// a start index (remove/reorder/skip). Unlike the chunked handoff above,
-  /// these requests can't be split (StartIndex applies to one request), so
-  /// the queue is capped flat at a size that stays below URI length limits.
+  /// Maximum tracks per queue sent to a remote session (handoff, remove,
+  /// reorder, skip), truncating any excess. Queues are sent as a single
+  /// PlayNow request (it can't be split: StartIndex applies to one request),
+  /// and remote clients broke on more anyway (Jellyfin Web capped at ~460
+  /// tracks with desyncs), so the cap is flat per review.
   static const int _maxTracksPerPlayNow = 150;
 
   String? _activeSessionId;
@@ -662,57 +659,12 @@ class RemoteSessionService {
 
   // ---- local -> remote sync ----
 
-  /// Hands the local queue (current track + upcoming) off to the remote
-  /// session. Long queues are split across multiple requests to avoid
-  /// 414 URI Too Long: the first chunk is sent with PlayNow (and the start
-  /// position), the rest is appended with PlayLast.
+  /// Hands the local queue off to the remote session, continuing the current
+  /// track from [startPosition] (see [_playQueueFromIndex]).
   Future<void> pushQueueToRemote({required bool autoplay, Duration? startPosition}) async {
-    final sessionId = _activeSessionId;
-    if (sessionId == null) return;
-
-    final queueInfo = _queueService.getQueue();
-    final upcoming = [
-      if (queueInfo.currentTrack != null) queueInfo.currentTrack!,
-      ...queueInfo.nextUp,
-      ...queueInfo.queue,
-    ].take(_maxQueueItemsToSend).toList();
-    if (upcoming.isEmpty) {
-      _log.info("Local queue is empty; nothing to push to the remote");
-      return;
-    }
-
-    final itemIds = upcoming.map((item) => item.baseItemId).toList();
-    _lastPushedQueueIds = itemIds.map((id) => _normalizeId(id.raw)).toList();
-    _suppressAdoptUntil = DateTime.now().add(const Duration(seconds: 20));
-    if (!autoplay) {
-      _pausePending = true;
-      _pausePendingDeadline = DateTime.now().add(const Duration(seconds: 10));
-    }
-
-    final chunks = itemIds.slices(_maxItemsPerPlayRequest).toList();
-    _log.info(
-      "Pushing ${itemIds.length} items to remote session $sessionId "
-      "in ${chunks.length} request(s), autoplay=$autoplay, startPosition=$startPosition",
-    );
-    await _jellyfinApiHelper.sendPlayToSession(
-      sessionId: sessionId,
-      itemIds: chunks.first,
-      startPositionTicks: startPosition == null ? null : startPosition.inMilliseconds * _ticksPerMillisecond,
-    );
-    if (!autoplay) {
-      // The PlayTo API has no way to start paused, so pause right after the
-      // PlayNow request to keep the audible blip as short as possible.
-      // _pausePending stays armed as a backstop for receivers that drop a
-      // Pause arriving before their player has started.
-      try {
-        await pause();
-      } catch (e) {
-        _log.warning("Failed to pause remote right after the queue push: $e");
-      }
-    }
-    for (final chunk in chunks.skip(1)) {
-      await _jellyfinApiHelper.sendPlayToSession(sessionId: sessionId, itemIds: chunk, playCommand: "PlayLast");
-    }
+    if (!isRemote) return;
+    final currentIndex = _queueService.getQueue().previousTracks.length;
+    await _playQueueFromIndex(currentIndex, startPosition: startPosition, autoplay: autoplay);
   }
 
   /// Forwards items added to the local queue to the remote session's queue
@@ -791,11 +743,14 @@ class RemoteSessionService {
       startPositionTicks: startPosition == null ? null : startPosition.inMilliseconds * _ticksPerMillisecond,
     );
     if (!autoplay) {
-      // PlayNow always starts playback; see pushQueueToRemote.
+      // The PlayTo API has no way to start paused, so pause right after the
+      // PlayNow request to keep the audible blip as short as possible.
+      // _pausePending stays armed as a backstop for receivers that drop a
+      // Pause arriving before their player has started.
       try {
         await pause();
       } catch (e) {
-        _log.warning("Failed to pause remote right after re-sending the queue: $e");
+        _log.warning("Failed to pause remote right after sending the queue: $e");
       }
     }
   }
