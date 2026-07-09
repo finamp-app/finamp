@@ -17,12 +17,14 @@ import 'package:finamp/menus/output_menu.dart';
 import 'package:finamp/menus/playlist_actions_menu.dart';
 import 'package:finamp/menus/track_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/blurred_player_screen_background.dart';
 import 'package:finamp/screens/lyrics_screen.dart';
 import 'package:finamp/services/current_track_metadata_provider.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/services/remote_session_service.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -357,15 +359,30 @@ class _PlayerScreenContent extends ConsumerWidget {
             children: [
               Flexible(
                 fit: FlexFit.tight,
-                child: SimpleButton(
-                  text: AppLocalizations.of(context)!.outputMenuButtonTitle,
-                  icon: TablerIcons.device_speaker,
-                  onPressed: () async {
-                    await showOutputMenu(context: context);
-                  },
-                  onPressedSecondary: () async {
-                    final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
-                    await audioHandler.openBluetoothSettings();
+                // While connected to a remote session, the button is labeled
+                // with the remote device's name instead of the generic
+                // "Output".
+                child: StreamBuilder<SessionInfo?>(
+                  stream: GetIt.instance<RemoteSessionService>().getRemoteStateStream().distinct(
+                    (a, b) => a?.id == b?.id && a?.deviceName == b?.deviceName,
+                  ),
+                  initialData: GetIt.instance<RemoteSessionService>().currentRemoteState,
+                  builder: (context, snapshot) {
+                    final remoteSession = snapshot.data;
+                    return SimpleButton(
+                      text:
+                          remoteSession?.deviceName ??
+                          remoteSession?.client ??
+                          AppLocalizations.of(context)!.outputMenuButtonTitle,
+                      icon: remoteSession == null ? TablerIcons.device_speaker : TablerIcons.cast,
+                      onPressed: () async {
+                        await showOutputMenu(context: context);
+                      },
+                      onPressedSecondary: () async {
+                        final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+                        await audioHandler.openBluetoothSettings();
+                      },
+                    );
                   },
                 ),
               ),
