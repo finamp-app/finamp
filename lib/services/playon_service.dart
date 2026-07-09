@@ -346,6 +346,25 @@ class PlayOnService {
 
                 final desiredVolume = request['Data']['Arguments']['Volume'] as String;
                 _audioHandler.setVolume(double.parse(desiredVolume) / 100.0);
+                break;
+              case "SetRepeatMode":
+                _playOnServiceLogger.info("Server requested a repeat mode change");
+                _queueService.loopMode = switch (request['Data']['Arguments']['RepeatMode'] as String?) {
+                  "RepeatAll" => FinampLoopMode.all,
+                  "RepeatOne" => FinampLoopMode.one,
+                  _ => FinampLoopMode.none,
+                };
+                break;
+              case "SetShuffleQueue":
+                _playOnServiceLogger.info("Server requested a playback order change");
+                unawaited(
+                  _queueService.setPlaybackOrder(
+                    request['Data']['Arguments']['ShuffleMode'] == "Shuffle"
+                        ? FinampPlaybackOrder.shuffled
+                        : FinampPlaybackOrder.linear,
+                  ),
+                );
+                break;
             }
             break;
           case "UserDataChanged":
