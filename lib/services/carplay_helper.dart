@@ -12,7 +12,6 @@ import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
-import 'package:finamp/services/downloads_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -21,7 +20,6 @@ import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
 import 'jellyfin_api_helper.dart';
 import 'audio_service_helper.dart';
-import 'playback_history_service.dart';
 import 'queue_service.dart';
 import 'item_helper.dart';
 import 'radio_service_helper.dart' as radio;
@@ -40,6 +38,12 @@ const _carPlayOfflineLimit = 1000;
 /// and transfers much faster than 200x200.
 const _carPlayImageSize = 100;
 
+/// Albums shown in the CarPlay home Recently Added row.
+const _carPlayRecentlyAddedLimit = 3;
+
+/// Tracks shown in the CarPlay home Recently Played row.
+const _carPlayRecentlyPlayedLimit = 5;
+
 class CarPlayHelper {
   ConnectionStatusTypes connectionStatus = ConnectionStatusTypes.unknown;
   final FlutterCarplay _flutterCarplay = FlutterCarplay();
@@ -47,7 +51,6 @@ class CarPlayHelper {
 
   final _finampUserHelper = GetIt.instance<FinampUserHelper>();
   final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
-  final _downloadsService = GetIt.instance<DownloadsService>();
   final providerRef = GetIt.instance<ProviderContainer>();
 
   ProviderSubscription? _userSubscription;
@@ -259,32 +262,15 @@ class CarPlayHelper {
     }
   }
 
-  Future<List<BaseItemDto>> getRecentlyAddedAlbums({int limit = 10}) async {
-    if (FinampSettingsHelper.finampSettings.isOffline) {
-      // Offline: get downloaded albums
-      final allAlbums = await _downloadsService.getAllCollections();
-      final albums = allAlbums
-          .where((d) => d.baseItemType == BaseItemDtoType.album && d.baseItem != null)
-          .map((d) => d.baseItem!)
-          .take(limit)
-          .toList();
-      return albums;
+  /// Resolves a home section preset like the main UI home screen. Presets with no offline
+  /// fallback resolve to UnavailableHomeSectionPlayable and return empty, hiding the row.
+  Future<List<BaseItemDto>> _loadHomeSectionItems(HomeScreenSectionPresetType preset, int limit) async {
+    final section = HomeScreenSectionConfiguration.fromPreset(preset);
+    final displayable = await providerRef.read(resolveSectionProvider(section).future);
+    if (displayable is UnavailableHomeSectionPlayable) {
+      return [];
     }
-
-    final albums = await _jellyfinApiHelper.getItems(
-      parentItem: _finampUserHelper.currentUser?.currentView,
-      includeItemTypes: "MusicAlbum",
-      sortBy: "DateCreated",
-      sortOrder: "Descending",
-      limit: limit,
-    );
-    return albums ?? [];
-  }
-
-  List<FinampQueueItem> getRecentPlays({int limit = 5}) {
-    final history = GetIt.instance<PlaybackHistoryService>().history;
-    // history is chronological (oldest first), take last N and reverse for most-recent-first
-    return history.reversed.take(limit).map((h) => h.item).toList();
+    return _loadPagedItems(displayable as FinampPagedPlayable<FinampPlayableDto>, limit);
   }
 
   Future<List<CPListSection>> _buildHomeSections() async {
@@ -310,13 +296,15 @@ class CarPlayHelper {
     );
     sections.add(quickActionsSection);
 
-    final recentPlays = getRecentPlays(limit: 5);
+    final [recentPlays, recentlyAdded] = await Future.wait([
+      _loadHomeSectionItems(HomeScreenSectionPresetType.recentlyPlayedTracks, _carPlayRecentlyPlayedLimit),
+      _loadHomeSectionItems(HomeScreenSectionPresetType.recentlyAddedAlbums, _carPlayRecentlyAddedLimit),
+    ]);
+
     if (recentPlays.isNotEmpty) {
       CPListSection recentPlaysSection = CPListSection(header: GlobalSnackbar.requireL10n.recentlyPlayed, items: []);
 
-      for (final queueItem in recentPlays) {
-        final baseItem = queueItem.baseItem;
-
+      for (final baseItem in recentPlays) {
         recentPlaysSection.items.add(
           CPListItem(
             text: baseItem.name ?? GlobalSnackbar.requireL10n.unknown,
@@ -353,7 +341,6 @@ class CarPlayHelper {
       }
     }
 
-    final recentlyAdded = await getRecentlyAddedAlbums(limit: 3);
     _carPlayLogger.info("Got ${recentlyAdded.length} recently added albums");
     if (recentlyAdded.isNotEmpty) {
       CPListSection recentlyAddedSection = CPListSection(header: GlobalSnackbar.requireL10n.recentlyAdded, items: []);
