@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/models/music_models.dart';
 import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/music_player_background_task.dart';
+import 'package:finamp/services/music_providers.dart';
 import 'package:finamp/services/music_screen_provider.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
@@ -164,51 +167,42 @@ class CarPlayHelper {
     return items ?? [];
   }
 
-  // playFromBaseItem is based on AndroidAutoHelper.playFromMediaId but using BaseItemDto
-  Future<void> playItem(
-    BaseItemDto item, {
-    int? index = 0,
-    FinampPlaybackOrder? order = FinampPlaybackOrder.linear,
-  }) async {
-    final queueService = GetIt.instance<QueueService>();
-
-    final childItems = await loadChildTracksFromBaseItem(
-      item: item,
-      sortConfig: SortAndFilterConfiguration.defaultSort,
+  Future<void> _startSliceFromPlayable(FinampPlayable playable, {int index = 0, bool shuffled = false}) async {
+    var slice = await providerRef.read(
+      getPlayableSliceProvider(item: playable, startingOffset: shuffled ? 0 : index).future,
     );
+    if (shuffled) {
+      slice = slice.shuffle();
+    }
 
-    await queueService.startPlayback(
-      items: childItems,
-      source: QueueItemSource.fromBaseItem(item),
-      order: order,
-      startingIndex: order == FinampPlaybackOrder.linear ? index : null,
-    );
+    await _queueService.startSlicePlayback(slice);
     await FlutterCarplay.showSharedNowPlaying();
   }
 
-  // Play a list of tracks as an ad-hoc queue (for tracks without a parent container)
-  Future<void> playTracksAsQueue(
-    List<BaseItemDto> tracks, {
-    int? index = 0,
-    FinampPlaybackOrder? order = FinampPlaybackOrder.linear,
-    String? sourceName,
-  }) async {
-    final queueService = GetIt.instance<QueueService>();
+  // playFromBaseItem is based on AndroidAutoHelper.playFromMediaId but using BaseItemDto
+  Future<void> playItem(BaseItemDto item, {int index = 0, FinampPlaybackOrder? order}) => _startSliceFromPlayable(
+    FinampPlayableDto.fromItem(item),
+    index: index,
+    shuffled: order == FinampPlaybackOrder.shuffled,
+  );
 
-    await queueService.startPlayback(
-      items: tracks,
+  // Play the tracks tab as an ad-hoc queue (for tracks without a parent container)
+  Future<void> playTracksAsQueue({int index = 0}) {
+    final playable = MusicScreenPlayable(
+      tab: ContentType.tracks,
+      library: currentLibraryPlaceholder,
       source: QueueItemSource.rawId(
         type: QueueItemSourceType.allTracks,
         name: QueueItemSourceName(
           type: QueueItemSourceNameType.preTranslated,
-          pretranslatedName: sourceName ?? GlobalSnackbar.requireL10n.tracks,
+          pretranslatedName: GlobalSnackbar.requireL10n.tracks,
         ),
-        id: "carplay-tracks-${DateTime.now().millisecondsSinceEpoch}",
+        id: "carplay-tracks",
       ),
-      order: order,
-      startingIndex: order == FinampPlaybackOrder.linear ? index : null,
+      sortConfig: SortAndFilterController.trackSettings(ContentType.tracks).resolveConfig(),
     );
-    await FlutterCarplay.showSharedNowPlaying();
+
+    return _startSliceFromPlayable(playable, index: index);
   }
 
   /// Shuffles all tracks using the shared shuffle handler, then shows CarPlay's Now Playing screen.
@@ -474,9 +468,10 @@ class CarPlayHelper {
     }
     _isPushingPageUpdate = true;
     try {
+      // Playlists keep their native order so the tapped row is the track that plays.
       List<BaseItemDto> mediaItems = await loadChildTracksFromBaseItem(
         item: parent,
-        sortConfig: SortAndFilterConfiguration.defaultSort,
+        sortConfig: SortAndFilterConfiguration.defaultForItem(parent),
       );
 
       CPListSection playlistSection = CPListSection(items: []);
@@ -599,7 +594,7 @@ class CarPlayHelper {
           detailText: item.artists?.join(", ") ?? item.albumArtist,
           image: _getCarPlayImageUri(item),
           onPress: (complete, self) async {
-            await playTracksAsQueue(tracks, index: index, sourceName: GlobalSnackbar.requireL10n.tracks);
+            await playTracksAsQueue(index: index);
             complete();
           },
         );
@@ -692,17 +687,7 @@ class CarPlayHelper {
         CPListItem(
           text: GlobalSnackbar.requireL10n.shuffleAll,
           onPress: (complete, self) async {
-            final tracks = await GetIt.instance<ProviderContainer>().read(
-              getArtistTracksProvider(
-                artist: parent,
-                libraryFilter: _finampUserHelper.currentUser?.currentViewId,
-              ).future,
-            );
-            await playTracksAsQueue(
-              tracks,
-              order: FinampPlaybackOrder.shuffled,
-              sourceName: parent.name ?? GlobalSnackbar.requireL10n.unknownName,
-            );
+            await playItem(parent, order: FinampPlaybackOrder.shuffled);
             complete();
           },
         ),
