@@ -17,6 +17,26 @@ import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
 import 'jellyfin_api_helper.dart';
 
+enum SkipButtonVisibility {
+  always,
+  automatic,
+  never,
+}
+
+class SkipControlSettings {
+  final Duration forwardSkipDuration;
+  final Duration backwardSkipDuration;
+  final SkipButtonVisibility visibility;
+  final bool showInNotification;
+
+  const SkipControlSettings({
+    this.forwardSkipDuration = const Duration(seconds: 30),
+    this.backwardSkipDuration = const Duration(seconds: 10),
+    this.visibility = SkipButtonVisibility.automatic,
+    this.showInNotification = true,
+  });
+}
+
 // Largely copied from just_audio's DefaultShuffleOrder, but with a mildly
 // stupid hack to insert() to make Play Next work
 class FinampShuffleOrder extends ShuffleOrder {
@@ -82,16 +102,19 @@ class FinampShuffleOrder extends ShuffleOrder {
 class MusicPlayerBackgroundTask extends BaseAudioHandler {
   final _player = AudioPlayer(
     audioLoadConfiguration: AudioLoadConfiguration(
-        androidLoadControl: AndroidLoadControl(
-          minBufferDuration: FinampSettingsHelper.finampSettings.bufferDuration,
-          maxBufferDuration: FinampSettingsHelper.finampSettings.bufferDuration,
-          prioritizeTimeOverSizeThresholds: true,
-        ),
-        darwinLoadControl: DarwinLoadControl(
-          preferredForwardBufferDuration:
-              FinampSettingsHelper.finampSettings.bufferDuration,
-        )),
+      androidLoadControl: AndroidLoadControl(
+        minBufferDuration: FinampSettingsHelper.finampSettings.bufferDuration,
+        maxBufferDuration: FinampSettingsHelper.finampSettings.bufferDuration,
+        prioritizeTimeOverSizeThresholds: true,
+      ),
+      darwinLoadControl: DarwinLoadControl(
+        preferredForwardBufferDuration:
+            FinampSettingsHelper.finampSettings.bufferDuration,
+      ),
+    ),
   );
+  
+  final _skipControlSettings = SkipControlSettings();
   ConcatenatingAudioSource _queueAudioSource = ConcatenatingAudioSource(
     children: [],
     shuffleOrder: FinampShuffleOrder(),
@@ -101,33 +124,19 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler {
   final _offlineListenLogHelper = GetIt.instance<OfflineListenLogHelper>();
   final _finampUserHelper = GetIt.instance<FinampUserHelper>();
 
-  /// Set when shuffle mode is changed. If true, [onUpdateQueue] will create a
-  /// shuffled [ConcatenatingAudioSource].
   bool shuffleNextQueue = false;
-
-  /// Set when creating a new queue. Will be used to set the first index in a
-  /// new queue.
   int? nextInitialIndex;
-
-  /// Set to true when we're stopping the audio service. Used to avoid playback
-  /// progress reporting.
   bool _isStopping = false;
-
-  /// Holds the current sleep timer, if any. This is a ValueNotifier so that
-  /// widgets like SleepTimerButton can update when the sleep timer is/isn't
-  /// null.
   bool _sleepTimerIsSet = false;
   Duration _sleepTimerDuration = Duration.zero;
   final ValueNotifier<Timer?> _sleepTimer = ValueNotifier<Timer?>(null);
 
   List<int>? get shuffleIndices => _player.shuffleIndices;
-
   ValueListenable<Timer?> get sleepTimer => _sleepTimer;
 
   MusicPlayerBackgroundTask() {
     _audioServiceBackgroundTaskLogger.info("Starting audio service");
 
-    // Propagate all events from the audio player to AudioService clients.
     _player.playbackEventStream.listen((event) async {
       final prevState = playbackState.valueOrNull;
       final prevIndex = prevState?.queueIndex;
@@ -140,33 +149,27 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler {
       if (currentIndex != null) {
         final currentItem = _getQueueItem(currentIndex);
 
-        // Differences in queue index or item id are considered track changes
         if (currentIndex != prevIndex || currentItem.id != prevItem?.id) {
           mediaItem.add(currentItem);
-
           onTrackChanged(currentItem, currentState, prevItem, prevState);
         }
       }
 
       if (playbackState.valueOrNull != null &&
-          playbackState.valueOrNull?.processingState !=
-              AudioProcessingState.idle &&
-          playbackState.valueOrNull?.processingState !=
-              AudioProcessingState.completed &&
+          playbackState.valueOrNull?.processingState != AudioProcessingState.idle &&
+          playbackState.valueOrNull?.processingState != AudioProcessingState.completed &&
           !FinampSettingsHelper.finampSettings.isOffline &&
           !_isStopping) {
         await _updatePlaybackProgress();
       }
     });
 
-    // Special processing for state transitions.
     _player.processingStateStream.listen((event) {
       if (event == ProcessingState.completed) {
         stop();
       }
     });
 
-    // PlaybackEvent doesn't include shuffle/loops so we listen for changes here
     _player.shuffleModeEnabledStream.listen(
         (_) => playbackState.add(_transformEvent(_player.playbackEvent)));
     _player.loopModeStream.listen(
@@ -247,6 +250,30 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler {
   @Deprecated("Use addQueueItems instead")
   Future<void> addQueueItem(MediaItem mediaItem) async {
     addQueueItems([mediaItem]);
+  }
+  
+  bool _shouldShowSkipControls(MediaItem mediaItem) {
+    switch (_skipControlSettings.visibility) {
+      case SkipButtonVisibility.always:
+        return true;
+      case SkipButtonVisibility.never:
+        return false;
+      case SkipButtonVisibility.automatic:
+        return _shouldAutoShowSkipControls(mediaItem);
+    }
+  }
+
+  /// Determine if skip controls should be automatically shown based on content
+  bool _shouldAutoShowSkipControls(MediaItem mediaItem) {
+    final duration = mediaItem.duration;
+    final genre = mediaItem.genre?.toLowerCase();
+    
+    return (duration != null && duration > const Duration(minutes: 10)) ||
+           (genre != null && (
+             genre.contains('podcast') || 
+             genre.contains('audiobook') ||
+             genre.contains('speech')
+           ));
   }
 
   @override
@@ -341,6 +368,35 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler {
 
       shuffleNextQueue = false;
       nextInitialIndex = null;
+    } catch (e) {
+      _audioServiceBackgroundTaskLogger.severe(e);
+      return Future.error(e);
+    }
+  }
+  
+  Future<void> skipForward() async {
+    try {
+      final position = _player.position;
+      final duration = _player.duration;
+      
+      if (duration != null) {
+        final newPosition = position + _skipControlSettings.forwardSkipDuration;
+        // Ensure we don't seek past the end
+        await _player.seek(newPosition > duration ? duration : newPosition);
+      }
+    } catch (e) {
+      _audioServiceBackgroundTaskLogger.severe(e);
+      return Future.error(e);
+    }
+  }
+
+  /// Skip backward by the configured duration
+  Future<void> skipBackward() async {
+    try {
+      final position = _player.position;
+      final newPosition = position - _skipControlSettings.backwardSkipDuration;
+      // Ensure we don't seek before the start
+      await _player.seek(newPosition.isNegative ? Duration.zero : newPosition);
     } catch (e) {
       _audioServiceBackgroundTaskLogger.severe(e);
       return Future.error(e);
@@ -614,19 +670,45 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler {
   /// just_audio player will be transformed into an audio_service state so that
   /// it can be broadcast to audio_service clients.
   PlaybackState _transformEvent(PlaybackEvent event) {
+    final mediaItem = event.currentIndex != null 
+        ? _getQueueItem(event.currentIndex!)
+        : null;
+    
+    final controls = <MediaControl>[
+      MediaControl.skipToPrevious,
+    ];
+    
+    if (mediaItem != null && _shouldShowSkipControls(mediaItem)) {
+      controls.add(MediaControl(
+        androidIcon: 'drawable/ic_skip_back_10',
+        label: 'Skip Back',
+        action: skipBackward,
+      ));
+    }
+    
+    controls.addAll([
+      if (_player.playing) MediaControl.pause else MediaControl.play,
+      MediaControl.stop,
+    ]);
+    
+    if (mediaItem != null && _shouldShowSkipControls(mediaItem)) {
+      controls.add(MediaControl(
+        androidIcon: 'drawable/ic_skip_forward_30',
+        label: 'Skip Forward',
+        action: skipForward,
+      ));
+    }
+    
+    controls.add(MediaControl.skipToNext);
+
     return PlaybackState(
-      controls: [
-        MediaControl.skipToPrevious,
-        if (_player.playing) MediaControl.pause else MediaControl.play,
-        MediaControl.stop,
-        MediaControl.skipToNext,
-      ],
+      controls: controls,
       systemActions: const {
         MediaAction.seek,
         MediaAction.seekForward,
         MediaAction.seekBackward,
       },
-      androidCompactActionIndices: const [0, 1, 3],
+      androidCompactActionIndices: const [0, 1, 4], // Updated indices to account for skip controls
       processingState: const {
         ProcessingState.idle: AudioProcessingState.idle,
         ProcessingState.loading: AudioProcessingState.loading,
@@ -644,7 +726,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler {
           : AudioServiceShuffleMode.none,
       repeatMode: _audioServiceRepeatMode(_player.loopMode),
     );
-  }
+}
 
   Future<void> _updatePlaybackProgress() async {
     try {
