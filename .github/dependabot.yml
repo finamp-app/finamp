@@ -7,6 +7,7 @@ version: 2
 updates:
   - package-ecosystem: "pub" # See documentation for possible values
     directory: "/" # Location of package manifests
+    target-branch: "redesign"
     schedule:
       interval: "weekly"
   - package-ecosystem: "gradle" # See documentation for possible values
@@ -14,5 +15,6 @@ updates:
       - "/android"
       - "/android/app"
       - "/android/gradle/wrapper
+    target-branch: "redesign"
     schedule:
       interval: "weekly"
