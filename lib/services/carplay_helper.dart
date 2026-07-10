@@ -24,7 +24,6 @@ import 'audio_service_helper.dart';
 import 'playback_history_service.dart';
 import 'queue_service.dart';
 import 'item_helper.dart';
-import 'artist_content_provider.dart';
 import 'radio_service_helper.dart' as radio;
 
 final _carPlayLogger = Logger("CarPlay");
@@ -54,6 +53,9 @@ class CarPlayHelper {
   ProviderSubscription? _userSubscription;
 
   bool get isUserLoggedIn => _finampUserHelper.currentUser != null;
+
+  int get _carPlayItemLimit =>
+      FinampSettingsHelper.finampSettings.isOffline ? _carPlayOfflineLimit : _carPlayOnlineLimit;
 
   final _queueService = GetIt.instance<QueueService>();
 
@@ -88,6 +90,7 @@ class CarPlayHelper {
 
   void disposeCarplay() {
     _userSubscription?.close();
+    _closeTemplateSubscriptions();
     _flutterCarplay.removeListenerOnConnectionChange();
   }
 
@@ -139,32 +142,63 @@ class CarPlayHelper {
     return sortedKeys.map((letter) => CPListSection(header: letter, items: grouped[letter]!)).toList();
   }
 
-  Future<List<BaseItemDto>> getTabItems({required ContentType contentType}) async {
-    final sortBy = FinampSettingsHelper.finampSettings.getTabSortBy(contentType);
-    final sortOrder = FinampSettingsHelper.finampSettings.getSortOrder(contentType);
+  /// Reused across calls: every new controller leaves permanently cached sort state behind.
+  final _tabSortControllers = <ContentType, SortAndFilterController>{};
 
-    // If we are in offline mode, display all matching downloaded parents
-    if (FinampSettingsHelper.finampSettings.isOffline) {
-      final collections = await _downloadsService.getAllCollections(
-        includeItemTypes: [contentType.itemType].nonNulls.toList(),
-      );
-      final baseItems = collections
-          .where((d) => d.baseItem != null)
-          .map((d) => d.baseItem!)
-          .take(_carPlayOfflineLimit)
-          .toList();
-      return sortItems(baseItems, sortBy, sortOrder);
-    }
+  /// premiereDate ascending matches getArtistAlbumsProvider's default order. Reused like [_tabSortControllers].
+  static final _artistAlbumsSortController = SortAndFilterController(
+    contentType: ContentType.tracks,
+    startingConfig: const SortAndFilterConfiguration(
+      sortBy: SortBy.premiereDate,
+      sortOrder: SortOrder.ascending,
+      filters: {},
+    ),
+  );
 
-    // Online mode: fetch from server API
-    final items = await _jellyfinApiHelper.getItems(
-      parentItem: contentType.itemType == BaseItemDtoType.playlist ? null : _finampUserHelper.currentUser?.currentView,
-      includeItemTypes: contentType.itemType?.jellyfinName,
-      sortBy: sortBy.jellyfinName(contentType),
-      sortOrder: contentType == ContentType.tracks ? null : sortOrder.toString(),
-      limit: _carPlayOnlineLimit,
+  /// A library tab request with the same sort settings and offline downgrade as the main UI.
+  MusicScreenPlayable _tabPlayable(ContentType tab) {
+    return MusicScreenPlayable(
+      tab: tab,
+      library: currentLibraryPlaceholder,
+      source: QueueItemSource.rawId(
+        type: QueueItemSourceType.filteredList,
+        name: QueueItemSourceName(
+          type: QueueItemSourceNameType.preTranslated,
+          pretranslatedName: tab.toLocalisedString(GlobalSnackbar.requireL10n),
+        ),
+        id: "carplay-${tab.name}",
+      ),
+      sortConfig: _tabSortControllers
+          .putIfAbsent(tab, () => SortAndFilterController.trackSettings(tab))
+          .resolveConfig(),
     );
-    return items ?? [];
+  }
+
+  /// Holds list data alive for later taps. CarPlay has no pop event, so entries release on root rebuild.
+  final List<ProviderSubscription> _templateSubscriptions = [];
+
+  void _closeTemplateSubscriptions() {
+    for (final subscription in _templateSubscriptions) {
+      subscription.close();
+    }
+    _templateSubscriptions.clear();
+  }
+
+  Future<List<BaseItemDto>> _loadPagedItems(FinampPagedPlayable<FinampPlayableDto> request, int limit) async {
+    _templateSubscriptions.add(providerRef.listen(pagedContentProvider(request), (_, _) {}));
+    final (cached, pending) = providerRef.read(pagedContentProvider(request).notifier).loadSlice(0, limit);
+    final items = pending == null ? cached : cached + (await pending);
+    if (items.isEmpty) {
+      // A failed page load resolves to empty. Rethrow so it doesn't render as an empty library.
+      final error = providerRef.read(pagedContentProvider(request)).error;
+      if (error != null) {
+        // Reset the failed pages like the main UI retry button so the next tap refetches cleanly.
+        providerRef.read(pagedContentProvider(request).notifier).retry();
+        throw error;
+      }
+    }
+    // pagedContentProvider isn't generic enough to express that children here are always FinampPlayableDto.
+    return items.map((x) => (x as FinampPlayableDto).item).toList();
   }
 
   Future<void> _startSliceFromPlayable(FinampPlayable playable, {int index = 0, bool shuffled = false}) async {
@@ -185,25 +219,6 @@ class CarPlayHelper {
     index: index,
     shuffled: order == FinampPlaybackOrder.shuffled,
   );
-
-  // Play the tracks tab as an ad-hoc queue (for tracks without a parent container)
-  Future<void> playTracksAsQueue({int index = 0}) {
-    final playable = MusicScreenPlayable(
-      tab: ContentType.tracks,
-      library: currentLibraryPlaceholder,
-      source: QueueItemSource.rawId(
-        type: QueueItemSourceType.allTracks,
-        name: QueueItemSourceName(
-          type: QueueItemSourceNameType.preTranslated,
-          pretranslatedName: GlobalSnackbar.requireL10n.tracks,
-        ),
-        id: "carplay-tracks",
-      ),
-      sortConfig: SortAndFilterController.trackSettings(ContentType.tracks).resolveConfig(),
-    );
-
-    return _startSliceFromPlayable(playable, index: index);
-  }
 
   /// Shuffles all tracks using the shared shuffle handler, then shows CarPlay's Now Playing screen.
   Future<void> shuffleAllTracks() async {
@@ -364,6 +379,9 @@ class CarPlayHelper {
   }
 
   Future<void> setCarplayRootTemplate() async {
+    // A root rebuild discards the navigation stack, so release its paged requests.
+    _closeTemplateSubscriptions();
+
     // Check if user is logged in first
     if (!isUserLoggedIn) {
       _carPlayLogger.info("User not logged in, showing login prompt on CarPlay");
@@ -520,24 +538,16 @@ class CarPlayHelper {
     try {
       List<BaseItemDto> mediaItems;
       if (genreFilter != null) {
-        if (FinampSettingsHelper.finampSettings.isOffline) {
-          mediaItems = (await _downloadsService.getAllCollections(
-            includeItemTypes: [BaseItemDtoType.album],
-            genreFilter: genreFilter.id,
-          )).where((d) => d.baseItem != null).map((d) => d.baseItem!).take(_carPlayOfflineLimit).toList();
-        } else {
-          mediaItems =
-              await _jellyfinApiHelper.getItems(
-                parentItem: _finampUserHelper.currentUser?.currentView,
-                includeItemTypes: "MusicAlbum",
-                sortBy: "SortName",
-                genreFilter: genreFilter.id,
-                limit: _carPlayOnlineLimit,
-              ) ??
-              [];
-        }
+        final genre = Genre(
+          genreFilter,
+          source: QueueItemSource.fromBaseItem(genreFilter),
+          sortConfig: SortAndFilterConfiguration.defaultSort,
+          type: GenreChildType.albums,
+          library: currentLibraryPlaceholder,
+        );
+        mediaItems = await _loadPagedItems(genre, _carPlayItemLimit);
       } else {
-        mediaItems = await getTabItems(contentType: tabType);
+        mediaItems = await _loadPagedItems(_tabPlayable(tabType), _carPlayItemLimit);
       }
 
       final sections = _groupItemsIntoSections(mediaItems, (item, index) {
@@ -571,22 +581,9 @@ class CarPlayHelper {
     }
     _isPushingPageUpdate = true;
     try {
-      List<BaseItemDto> tracks;
-      if (FinampSettingsHelper.finampSettings.isOffline) {
-        tracks = await getTabItems(contentType: ContentType.tracks);
-        if (tracks.length > _carPlayOfflineLimit) {
-          tracks = tracks.sublist(0, _carPlayOfflineLimit);
-        }
-      } else {
-        tracks =
-            await _jellyfinApiHelper.getItems(
-              parentItem: _finampUserHelper.currentUser?.currentView,
-              includeItemTypes: "Audio",
-              sortBy: "SortName",
-              limit: _carPlayOnlineLimit,
-            ) ??
-            [];
-      }
+      // Taps replay this exact request so the index resolves against the displayed pages.
+      final request = _tabPlayable(ContentType.tracks);
+      final tracks = await _loadPagedItems(request, _carPlayItemLimit);
 
       final sections = _groupItemsIntoSections(tracks, (item, index) {
         return CPListItem(
@@ -594,7 +591,7 @@ class CarPlayHelper {
           detailText: item.artists?.join(", ") ?? item.albumArtist,
           image: _getCarPlayImageUri(item),
           onPress: (complete, self) async {
-            await playTracksAsQueue(index: index);
+            await _startSliceFromPlayable(request, index: index);
             complete();
           },
         );
@@ -629,23 +626,7 @@ class CarPlayHelper {
     }
     _isPushingPageUpdate = true;
     try {
-      List<BaseItemDto> artists;
-      if (FinampSettingsHelper.finampSettings.isOffline) {
-        artists = await getTabItems(contentType: ContentType.genericArtists);
-        if (artists.length > _carPlayOfflineLimit) {
-          artists = artists.sublist(0, _carPlayOfflineLimit);
-        }
-      } else {
-        artists =
-            await _jellyfinApiHelper.getItems(
-              parentItem: _finampUserHelper.currentUser?.currentView,
-              includeItemTypes: "MusicArtist",
-              artistType: ArtistType.albumArtist,
-              sortBy: "SortName",
-              limit: _carPlayOnlineLimit,
-            ) ??
-            [];
-      }
+      final artists = await _loadPagedItems(_tabPlayable(ContentType.albumArtists), _carPlayItemLimit);
 
       final sections = _groupItemsIntoSections(artists, (item, index) {
         return CPListItem(
@@ -678,9 +659,16 @@ class CarPlayHelper {
       CPListSection artistAlbums = CPListSection(header: GlobalSnackbar.requireL10n.albums, items: []);
 
       _carPlayLogger.fine("Fetching albums for artist ${parent.name}");
-      List<BaseItemDto> artistAlbumsList = await GetIt.instance<ProviderContainer>().read(
-        getArtistAlbumsProvider(artist: parent, libraryFilter: _finampUserHelper.currentUser?.currentViewId).future,
+      final artist = Artist(
+        parent,
+        source: QueueItemSource.fromBaseItem(parent),
+        sortConfig: _artistAlbumsSortController.resolveConfig(),
+        type: ArtistChildType.albumsFromArtist,
+        library: currentLibraryPlaceholder,
       );
+      final artistAlbumsList = (await providerRef.read(
+        getChildrenProvider(item: artist).future,
+      )).map((x) => (x as FinampPlayableDto).item).toList();
       _carPlayLogger.fine("Got ${artistAlbumsList.length} albums");
 
       artistAlbums.items.add(
