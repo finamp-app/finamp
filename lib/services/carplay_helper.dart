@@ -18,11 +18,9 @@ import 'package:logging/logging.dart';
 
 import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
-import 'jellyfin_api_helper.dart';
 import 'audio_service_helper.dart';
 import 'queue_service.dart';
 import 'item_helper.dart';
-import 'radio_service_helper.dart' as radio;
 
 final _carPlayLogger = Logger("CarPlay");
 
@@ -50,7 +48,6 @@ class CarPlayHelper {
   bool _isPushingPageUpdate = false;
 
   final _finampUserHelper = GetIt.instance<FinampUserHelper>();
-  final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final providerRef = GetIt.instance<ProviderContainer>();
 
   ProviderSubscription? _userSubscription;
@@ -227,39 +224,11 @@ class CarPlayHelper {
   Future<void> shuffleAllTracks() async {
     _carPlayLogger.info("Starting shuffle all tracks");
     final audioServiceHelper = GetIt.instance<AudioServiceHelper>();
-    await audioServiceHelper.shuffleAll(onlyShowFavorites: false, itemCount: DefaultSettings.quickShuffleItemCount);
-    await FlutterCarplay.showSharedNowPlaying();
-  }
-
-  Future<void> startRadio() async {
-    _carPlayLogger.info("Starting radio");
-
-    await _queueService.stopAndClearQueue();
-
-    if (FinampSettingsHelper.finampSettings.isOffline) {
-      // Offline: instant mix not available, fallback to shuffle
-      await shuffleAllTracks();
-      return;
-    }
-
-    // Fetch 1 random track and start continuous radio from it.
-    // This starts playback in ~1 API call instead of the previous 3.
-    final randomTracks = await _jellyfinApiHelper.getItems(
-      parentItem: _finampUserHelper.currentUser?.currentView,
-      includeItemTypes: "Audio",
-      sortBy: "Random",
-      limit: 1,
+    await audioServiceHelper.shuffleAll(
+      onlyShowFavorites: FinampSettingsHelper.finampSettings.onlyShowFavorites,
+      itemCount: DefaultSettings.quickShuffleItemCount,
     );
-
-    if (randomTracks != null && randomTracks.isNotEmpty) {
-      _carPlayLogger.info("Starting continuous radio from: ${randomTracks.first.name}");
-      FinampSetters.setRadioMode(RadioMode.continuous);
-      await radio.startRadioPlayback(randomTracks.first);
-      await FlutterCarplay.showSharedNowPlaying();
-    } else {
-      // Fallback to shuffle all if we can't get any tracks
-      await shuffleAllTracks();
-    }
+    await FlutterCarplay.showSharedNowPlaying();
   }
 
   /// Resolves a home section preset like the main UI home screen. Presets with no offline
@@ -288,7 +257,13 @@ class CarPlayHelper {
         CPListItem(
           text: GlobalSnackbar.requireL10n.startRadio,
           onPress: (complete, self) async {
-            await startRadio();
+            if (FinampSettingsHelper.finampSettings.isOffline) {
+              // Offline: instant mix not available, fallback to shuffle.
+              await shuffleAllTracks();
+            } else {
+              await GetIt.instance<AudioServiceHelper>().startSurpriseMeMix();
+              await FlutterCarplay.showSharedNowPlaying();
+            }
             complete();
           },
         ),
