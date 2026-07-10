@@ -27,7 +27,6 @@ import 'package:rxdart/rxdart.dart';
 
 import 'android_auto_helper.dart';
 import 'finamp_settings_helper.dart';
-import 'ios_helpers.dart';
 import 'metadata_provider.dart';
 
 enum FadeDirection { fadeIn, fadeOut, none }
@@ -1266,9 +1265,6 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   PlaybackState _transformEvent(PlaybackEvent event) {
     jellyfin_models.BaseItemDto? currentItem;
     bool isFavorite = false;
-
-    // Sync playback state to iOS for CarPlay Now Playing screen
-    IosPlaybackStateSync.setPlaybackState(isPlaying: _player.playing);
 
     if (mediaItem.valueOrNull?.extras?["itemJson"] != null) {
       currentItem = jellyfin_models.BaseItemDto.fromJson(

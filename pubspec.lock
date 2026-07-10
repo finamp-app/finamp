@@ -97,7 +97,7 @@ packages:
       resolved-ref: "1c27b0892dd588f4407d6545207c2b4965a0d283"
       url: "https://github.com/finamp-app/audio_service.git"
     source: git
-    version: "0.18.18"
+    version: "0.18.19"
   audio_service_mpris:
     dependency: "direct main"
     description:

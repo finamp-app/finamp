@@ -193,11 +193,14 @@ dependency_overrides:
       url: https://github.com/Komodo5197/isar-community.git
       ref: a602cd8999048faba043f7e1ce7ba92f4d812762
       path: packages/isar
-  # Fork adds eager iOS MPRemoteCommandCenter registration, an
-  # iosKeepNowPlayingOnStop config flag, and an iOS playing-state fix, so
-  # that Finamp stays the system's resume candidate for CarPlay/Bluetooth
-  # reconnects. The new flag is part of audio_service_platform_interface as
-  # well, so both packages must be overridden together or the build fails.
+  # Forked audio_service to add:
+  # - iOS MPRemoteCommandCenter registration at configure time
+  # - An iosKeepNowPlayingOnStop config flag
+  # - The iOS playing-state fix from 0.18.20, not yet on pub.dev
+  # These keep Finamp as the system's resume candidate for CarPlay and
+  # Bluetooth reconnects. The flag is part of
+  # audio_service_platform_interface too, so both packages must be
+  # overridden together or the build fails.
   audio_service:
     git:
       url: https://github.com/finamp-app/audio_service.git
