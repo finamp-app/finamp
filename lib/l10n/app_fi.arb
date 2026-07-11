@@ -2374,7 +2374,7 @@
     "@preferNextUpPrependingTitle": {
         "description": "Title for the setting to prefer prepending to Next Up over appending"
     },
-    "preferNextUpPrependingSubtitle": "Kun kytketty päälle, 'toista seuraavana'-napit näytetään, kun Seuraavana-jono on tyhjä. Muulloin 'Lisää Seuraavana-jonoon' näytetään oletuksena.",
+    "preferNextUpPrependingSubtitle": "Kun kytketty päälle, 'Toista seuraavaksi'-napit näytetään, kun Seuraavaksi-jono on tyhjä. Muulloin 'Lisää Seur.-jonoon' näytetään oletuksena.",
     "@preferNextUpPrependingSubtitle": {
         "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
     },
@@ -3280,11 +3280,11 @@
     "@randomAlbumAction": {
         "description": "Name of a home screen quick action"
     },
-    "randomTrackAction": "Satunnainen kappale",
+    "randomTrackAction": "Random kappale",
     "@randomTrackAction": {
         "description": "Name of a home screen quick action"
     },
-    "randomFavoriteAction": "Satunnainen suosikki",
+    "randomFavoriteAction": "Random suosikki",
     "@randomFavoriteAction": {
         "description": "Name of a home screen quick action"
     },
@@ -3470,5 +3470,53 @@
                 "example": "syncingLocal"
             }
         }
+    },
+    "clientCertificate": "mTLS-asiakasvarmenne (SSL)",
+    "@clientCertificate": {
+        "description": "Title for the setting that allows managing SSL client certificates used for authentication"
+    },
+    "clientCertificateUnavailable": "Varmennetta ei ole asetettu, asiakkaan todennus on otettu pois käytöstä",
+    "@clientCertificateUnavailable": {
+        "description": "Message shown when the user has no SSL client certificate available to use."
+    },
+    "clientCertificateInstalled": "Varmenne asennettu",
+    "@clientCertificateInstalled": {
+        "description": "Message shown when the user has successfully installed an SSL client certificate."
+    },
+    "clientCertificateDescription": "TLS-asiakasvarmennetta (.p12 tai .pfx) käytetään tämän laitteen todennukseen Jellyfin-palvelimellasi. Vaaditaan vain, jos palvelimesi on määritetty käyttämään molemminpuolista TLS-tunnistusta (mTLS).",
+    "@clientCertificateDescription": {
+        "description": "Explanatory text in the client certificate settings menu describing what a client certificate is used for"
+    },
+    "importClientCertificate": "Tuo varmenne",
+    "@importClientCertificate": {
+        "description": "Label for the button to import a new SSL client certificate."
+    },
+    "removeClientCertificate": "Poista varmenne",
+    "@removeClientCertificate": {
+        "description": "Label for the button to remove the currently installed SSL client certificate."
+    },
+    "clientCertificatePasswordTitle": "Varmenteen salasana",
+    "@clientCertificatePasswordTitle": {
+        "description": "Title of the dialog prompting the user to enter the password for the client certificate being imported."
+    },
+    "clientCertificatePasswordHint": "Salasana",
+    "@clientCertificatePasswordHint": {
+        "description": "Hint text for the password input field when importing a client certificate."
+    },
+    "clientCertificateDeleteConfirm": "Poistetaanko asennettu varmenne? Asiakkaan todennus otetaan pois käytöstä.",
+    "@clientCertificateDeleteConfirm": {
+        "description": "Confirmation prompt shown before removing the installed client certificate."
+    },
+    "clientCertificateImportSuccess": "Varmenne tuotu onnistuneesti",
+    "@clientCertificateImportSuccess": {
+        "description": "Message shown after successfully importing a client certificate."
+    },
+    "clientCertificateImportError": "Varmenteen tuonti epäonnistui",
+    "@clientCertificateImportError": {
+        "description": "Error message shown when importing a client certificate fails."
+    },
+    "clientCertificateRequired": "Asiakasvarmenne vaaditaan",
+    "@clientCertificateRequired": {
+        "description": "Message shown on the server selection screen when the server requires a client certificate to be provided."
     }
 }
