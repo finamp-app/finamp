@@ -13,6 +13,7 @@ import 'package:finamp/services/music_providers.dart';
 import 'package:finamp/services/music_screen_provider.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart' show IconData;
 import 'package:flutter_carplay/flutter_carplay.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -60,9 +61,7 @@ const _carPlayRecentlyPlayedLimit = 5;
 /// row, before clamping to the plugin's runtime grid-image limit.
 const _maxRecentQueues = 6;
 
-/// Placeholder image for a CarPlay art-row entry whose artwork couldn't be
-/// resolved, so the row keeps one image per entry and indices stay aligned
-/// with the underlying list.
+/// Last resort artwork stand-in when the rendered placeholder tile is unavailable.
 const _carPlayFallbackImage = 'sfsymbol:music.note.list';
 
 /// Number of distinct albums composed into a Recent Queues collage cover,
@@ -540,17 +539,17 @@ class CarPlayHelper {
   Future<String> _getRecentQueueCoverImage(FinampStorableQueueInfo info) async {
     final currentTrackId = info.currentTrack;
     if (currentTrackId == null) {
-      return _carPlayFallbackImage;
+      return _getPlaceholderImageUri();
     }
     try {
       final track = await providerRef.read(itemByIdProvider(currentTrackId).future);
       if (track == null) {
-        return _carPlayFallbackImage;
+        return _getPlaceholderImageUri();
       }
-      return _getCarPlayImageUri(track) ?? _carPlayFallbackImage;
+      return _getCarPlayImageUri(track) ?? await _getPlaceholderImageUri();
     } catch (e) {
       _carPlayLogger.warning("Failed to resolve artwork for recent queue: $e");
-      return _carPlayFallbackImage;
+      return _getPlaceholderImageUri();
     }
   }
 
@@ -688,6 +687,50 @@ class CarPlayHelper {
     return byteData?.buffer.asUint8List();
   }
 
+  String? _placeholderImage;
+
+  /// Renders the main UI's artwork placeholder, the album glyph on a card
+  /// coloured tile, to a cached PNG and returns its file URI.
+  Future<String> _getPlaceholderImageUri() async {
+    if (_placeholderImage != null) {
+      return _placeholderImage!;
+    }
+    try {
+      const size = 100.0;
+      final cacheFile = File(
+        path_helper.join((await getTemporaryDirectory()).path, 'carplay_placeholder_${size.round()}.png'),
+      );
+      if (!await cacheFile.exists()) {
+        final recorder = ui.PictureRecorder();
+        final canvas = ui.Canvas(recorder, ui.Rect.fromLTWH(0, 0, size, size));
+        canvas.drawRect(ui.Rect.fromLTWH(0, 0, size, size), ui.Paint()..color = const ui.Color(0xFF424242));
+        final painter = TextPainter(
+          text: TextSpan(
+            text: String.fromCharCode(Icons.album.codePoint),
+            style: TextStyle(
+              fontFamily: Icons.album.fontFamily,
+              fontSize: size * 0.4,
+              color: const ui.Color(0xB3FFFFFF),
+            ),
+          ),
+          textDirection: ui.TextDirection.ltr,
+        )..layout();
+        painter.paint(canvas, ui.Offset((size - painter.width) / 2, (size - painter.height) / 2));
+        final image = await recorder.endRecording().toImage(size.round(), size.round());
+        final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+        if (byteData == null) {
+          return _carPlayFallbackImage;
+        }
+        await cacheFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+      }
+      _placeholderImage = Uri.file(cacheFile.path).toString();
+    } catch (e) {
+      _carPlayLogger.warning("Failed to render artwork placeholder: $e");
+      _placeholderImage = _carPlayFallbackImage;
+    }
+    return _placeholderImage!;
+  }
+
   /// Renders an icon font glyph to a PNG in the temp directory and returns
   /// its file URI, so CarPlay buttons can show the same icons as the phone
   /// UI. Only the glyph's alpha matters, CarPlay tints button images itself.
@@ -747,13 +790,14 @@ class CarPlayHelper {
     _isPushingPageUpdate = true;
     try {
       final l10n = GlobalSnackbar.requireL10n;
+      final placeholderImage = await _getPlaceholderImageUri();
       final items = List.generate(queueHistory.length, (index) {
         final info = queueHistory[index];
         final remaining = info.trackCount - info.previousTracks.length;
         return CPListItem(
           text: info.source.name.getLocalized(l10n),
           detailText: l10n.queueRestoreSubtitle2(info.trackCount, remaining),
-          image: _carPlayFallbackImage,
+          image: placeholderImage,
           onPress: (complete, self) async {
             try {
               await _resumeSavedQueue(info);
@@ -786,12 +830,13 @@ class CarPlayHelper {
   Future<void> _fillRecentQueueImages(List<FinampStorableQueueInfo> queueHistory, List<CPListItem> items) async {
     final run = ++_recentQueueImageFillRun;
     try {
+      final placeholderImage = await _getPlaceholderImageUri();
       for (var i = 0; i < items.length; i++) {
         final image = await _getRecentQueueImage(queueHistory[i]);
         if (run != _recentQueueImageFillRun) {
           return;
         }
-        if (image != _carPlayFallbackImage) {
+        if (image != placeholderImage) {
           items[i].setImage(image);
         }
       }
@@ -849,13 +894,14 @@ class CarPlayHelper {
     if (recentlyAddedFetched.isNotEmpty) {
       final recentlyAddedLimit = await _clampToGridImageLimit(recentlyAddedFetched.length);
       final recentlyAdded = recentlyAddedFetched.take(recentlyAddedLimit).toList();
+      final placeholderImage = await _getPlaceholderImageUri();
 
       sections.add(
         CPListSection(
           items: [
             CPListImageRowItem(
               text: GlobalSnackbar.requireL10n.recentlyAdded,
-              gridImages: recentlyAdded.map((album) => _getCarPlayImageUri(album) ?? _carPlayFallbackImage).toList(),
+              gridImages: recentlyAdded.map((album) => _getCarPlayImageUri(album) ?? placeholderImage).toList(),
               onPress: (complete, self) async {
                 try {
                   await _showRecentlyAddedTemplate();
