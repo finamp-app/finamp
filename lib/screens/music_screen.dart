@@ -65,9 +65,9 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     name: QueueItemSourceName(
       type: ref.watch(finampSettingsProvider.onlyShowFavorites)
           ? QueueItemSourceNameType.yourLikes
-          : QueueItemSourceNameType.shuffleAll,
+          : QueueItemSourceNameType.musicScreenTracks,
     ),
-    id: "shuffleAll",
+    id: "allTracks",
   );
 
   void _stopSearching() {

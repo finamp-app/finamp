@@ -865,10 +865,6 @@
     "@shareOfflineListens": {
         "description": "Button for exporting the JSON file containing any playback events that couldn't be submitted to the server, either because offline mode was enabled or the connection failed"
     },
-    "yourLikes": "Your Likes",
-    "@yourLikes": {
-        "description": "Title for the queue source when the user is playing their liked tracks"
-    },
     "mix": "{mixSource} - Mix",
     "@mix": {
         "description": "Suffix added to a queue source when playing a mix. Example: \"Never Gonna Give You Up - Mix\"",
@@ -3631,5 +3627,25 @@
     "addSpecialDownloads": "Add special download",
     "@addSpecialDownloads": {
         "description": "Button on downloads screen which allows adding special downloads, such as all playlists or all favorites."
+    },
+    "allTracks": "All Tracks (from \"{trackName}\")",
+    "@allTracks": {
+        "description": "Queue source when playing from tracks screen.",
+        "placeholders": {
+            "trackName": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "yourLikes": "Your Likes (from \"{trackName}\")",
+    "@yourLikes": {
+        "description": "Queue source when playing from tracks screen with favorite filter active.",
+        "placeholders": {
+            "trackName": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
     }
 }

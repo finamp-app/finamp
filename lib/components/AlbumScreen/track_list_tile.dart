@@ -114,8 +114,31 @@ class TrackListTile extends ConsumerWidget {
         return;
       }
 
+      final FinampPlayable sourcedParent;
+      if (parentPlayable case MusicScreenPlayable musicScreen) {
+        sourcedParent = MusicScreenPlayable(
+          tab: musicScreen.tab,
+          library: musicScreen.library,
+          source: QueueItemSource.rawId(
+            type: musicScreen.source.type,
+            name: switch (musicScreen.source.name.type) {
+              QueueItemSourceNameType.yourLikes || QueueItemSourceNameType.musicScreenTracks => QueueItemSourceName(
+                type: musicScreen.source.name.type,
+                localizationParameter: item.name ?? "",
+              ),
+              _ => musicScreen.source.name,
+            },
+            item: item,
+            id: "allTracks-${item.id}",
+          ),
+          sortConfig: musicScreen.sortConfig,
+        );
+      } else {
+        sourcedParent = parentPlayable;
+      }
+
       PlayableSlice slice = await ref.watch(
-        getPlayableSliceProvider(item: parentPlayable, startingOffset: index!).future,
+        getPlayableSliceProvider(item: sourcedParent, startingOffset: index!).future,
       );
 
       // start linear playback of album from the given index

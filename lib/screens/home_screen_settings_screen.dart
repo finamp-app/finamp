@@ -78,37 +78,40 @@ class QuickActionsSelector extends ConsumerWidget {
               return Padding(
                 key: ValueKey("quick-action-$action-$index"),
                 padding: const EdgeInsets.only(bottom: 8.0, left: 12.0, right: 12.0),
-                child: ListTile(
-                  tileColor: Color.alphaBlend(
-                    ColorScheme.of(context).primary.withOpacity(0.05),
-                    ColorScheme.of(context).surface,
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: ListTile(
+                    tileColor: Color.alphaBlend(
+                      ColorScheme.of(context).primary.withOpacity(0.05),
+                      ColorScheme.of(context).surface,
+                    ),
+                    title: _ResponsiveListTile(
+                      index: index,
+                      title: action.getTitle(context.l10n),
+                      key: ValueKey("quick-action-$action"),
+                      actions: [
+                        SimpleButton.small(
+                          text: action.action.editable ? context.l10n.editAction : context.l10n.swapAction,
+                          icon: action.action.editable ? TablerIcons.edit : TablerIcons.selector,
+                          onPressed: () => editQuickAction(context, index),
+                        ),
+                        SimpleButton.small(
+                          text: context.l10n.removeAction,
+                          icon: TablerIcons.trash,
+                          onPressed: () {
+                            final newHomeScreenConfig = FinampSettingsHelper.finampSettings.homeScreenConfiguration
+                                .copyWith(
+                                  actions: [...quickActions.sublist(0, index), ...quickActions.sublist(index + 1)],
+                                );
+                            FinampSetters.setHomeScreenConfiguration(newHomeScreenConfig);
+                          },
+                        ),
+                      ],
+                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                    visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                    contentPadding: EdgeInsets.only(left: 6.0),
                   ),
-                  title: _ResponsiveListTile(
-                    index: index,
-                    title: action.getTitle(context.l10n),
-                    key: ValueKey("quick-action-$action"),
-                    actions: [
-                      SimpleButton.small(
-                        text: action.action.editable ? context.l10n.editAction : context.l10n.swapAction,
-                        icon: action.action.editable ? TablerIcons.edit : TablerIcons.selector,
-                        onPressed: () => editQuickAction(context, index),
-                      ),
-                      SimpleButton.small(
-                        text: context.l10n.removeAction,
-                        icon: TablerIcons.trash,
-                        onPressed: () {
-                          final newHomeScreenConfig = FinampSettingsHelper.finampSettings.homeScreenConfiguration
-                              .copyWith(
-                                actions: [...quickActions.sublist(0, index), ...quickActions.sublist(index + 1)],
-                              );
-                          FinampSetters.setHomeScreenConfiguration(newHomeScreenConfig);
-                        },
-                      ),
-                    ],
-                  ),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                  visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-                  contentPadding: EdgeInsets.only(left: 6.0),
                 ),
               );
             },
@@ -186,36 +189,39 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
               return Padding(
                 key: ValueKey("section-$section-$index"),
                 padding: const EdgeInsets.only(bottom: 8.0, left: 12.0, right: 12.0),
-                child: ListTile(
-                  tileColor: Color.alphaBlend(
-                    ColorScheme.of(context).primary.withOpacity(0.05),
-                    ColorScheme.of(context).surface,
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: ListTile(
+                    tileColor: Color.alphaBlend(
+                      ColorScheme.of(context).primary.withOpacity(0.05),
+                      ColorScheme.of(context).surface,
+                    ),
+                    title: _ResponsiveListTile(
+                      index: index,
+                      title: section.getTitle(context.l10n),
+                      key: ValueKey("section-$section"),
+                      actions: [
+                        SimpleButton.small(
+                          text: context.l10n.editSection,
+                          icon: TablerIcons.edit,
+                          onPressed: () => editHomeScreenSection(context, index),
+                        ),
+                        SimpleButton.small(
+                          text: context.l10n.removeSection,
+                          icon: TablerIcons.trash,
+                          onPressed: () {
+                            FeedbackHelper.feedback(FeedbackType.warning);
+                            final newHomeScreenConfig = FinampSettingsHelper.finampSettings.homeScreenConfiguration
+                                .copyWith(sections: [...sections.sublist(0, index), ...sections.sublist(index + 1)]);
+                            FinampSetters.setHomeScreenConfiguration(newHomeScreenConfig);
+                          },
+                        ),
+                      ],
+                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                    visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                    contentPadding: EdgeInsets.only(left: 6.0),
                   ),
-                  title: _ResponsiveListTile(
-                    index: index,
-                    title: section.getTitle(context.l10n),
-                    key: ValueKey("section-$section"),
-                    actions: [
-                      SimpleButton.small(
-                        text: context.l10n.editSection,
-                        icon: TablerIcons.edit,
-                        onPressed: () => editHomeScreenSection(context, index),
-                      ),
-                      SimpleButton.small(
-                        text: context.l10n.removeSection,
-                        icon: TablerIcons.trash,
-                        onPressed: () {
-                          FeedbackHelper.feedback(FeedbackType.warning);
-                          final newHomeScreenConfig = FinampSettingsHelper.finampSettings.homeScreenConfiguration
-                              .copyWith(sections: [...sections.sublist(0, index), ...sections.sublist(index + 1)]);
-                          FinampSetters.setHomeScreenConfiguration(newHomeScreenConfig);
-                        },
-                      ),
-                    ],
-                  ),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                  visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-                  contentPadding: EdgeInsets.only(left: 6.0),
                 ),
               );
             },

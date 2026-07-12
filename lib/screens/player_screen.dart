@@ -195,7 +195,7 @@ class _PlayerScreenContent extends ConsumerWidget {
                 dismissDirection: AxisDirection.down,
                 onPressed: () {
                   if (usingPlayerSplitScreen) {
-                    FinampSetters.setAllowSplitScreen(false);
+                    minimizeSplitScreen.value = true;
                   } else {
                     assert(GlobalSnackbar.navigatorState == Navigator.of(context));
                     GlobalSnackbar.navigatorState?.pop();

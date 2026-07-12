@@ -65,14 +65,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
-  app_set_id:
-    dependency: "direct main"
-    description:
-      name: app_set_id
-      sha256: fe20e185b907e75f9c06f42423db816d3bec64973f10be0034d5bc6703e015cc
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.0"
   archive:
     dependency: "direct main"
     description:

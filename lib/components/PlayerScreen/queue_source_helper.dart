@@ -45,7 +45,18 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
       break;
     case QueueItemSourceType.allTracks:
     case QueueItemSourceType.favorites:
-      Navigator.of(context).pushNamed(MusicScreen.routeName, arguments: ContentType.tracks);
+      Navigator.of(context).push(
+        MaterialPageRoute<MusicScreen>(
+          builder: (context) => MusicScreen(
+            singleTabConfig: HomeScreenSectionConfiguration(
+              base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.tracks),
+              sortConfig: source.type == QueueItemSourceType.favorites
+                  ? SortAndFilterConfiguration.defaultSort.copyWith(favoriteFilter: true)
+                  : SortAndFilterConfiguration.defaultSort,
+            ),
+          ),
+        ),
+      );
       break;
     case QueueItemSourceType.track:
     case QueueItemSourceType.trackMix:

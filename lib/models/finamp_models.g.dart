@@ -2292,6 +2292,8 @@ class QueueItemSourceNameTypeAdapter
         return QueueItemSourceNameType.radio;
       case 11:
         return QueueItemSourceNameType.homeScreenSection;
+      case 12:
+        return QueueItemSourceNameType.musicScreenTracks;
       default:
         return QueueItemSourceNameType.preTranslated;
     }
@@ -2324,6 +2326,8 @@ class QueueItemSourceNameTypeAdapter
         writer.writeByte(10);
       case QueueItemSourceNameType.homeScreenSection:
         writer.writeByte(11);
+      case QueueItemSourceNameType.musicScreenTracks:
+        writer.writeByte(12);
     }
   }
 

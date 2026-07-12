@@ -703,11 +703,9 @@ Future<void> _migrateThemeModeLocale() async {
 
 /// Migrates to the new randomly-generated device ID and stores it
 void _migrateDeviceId() {
-  final finampSettings = FinampSettingsHelper.finampSettings;
-  // Use this bool being null as a flag to skip migration
-  if (finampSettings.deviceId != "unset") return;
-  finampSettings.deviceId = const Uuid().v4();
-  FinampSettingsHelper.overwriteFinampSettings(finampSettings);
+  if (FinampSettingsHelper.finampSettings.deviceId == "unset") {
+    FinampSetters.setDeviceId(const Uuid().v4());
+  }
 }
 
 Future<void> _trustAndroidUserCerts() async {

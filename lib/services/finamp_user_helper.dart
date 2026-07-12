@@ -14,7 +14,7 @@ final finampUserHelperLogger = Logger("FinampUserHelper");
 /// Helper class for Finamp users. Note that this class does not talk to the
 /// Jellyfin server, so stuff like logging in/out is handled in JellyfinApiData.
 class FinampUserHelper {
-  FinampUserHelper({required String? deviceId}) : _deviceId = deviceId {
+  FinampUserHelper({required this.deviceId}) {
     _isar.finampUsers.watchObjectLazy(0).listen((event) {
       _currentUserCache = null;
       setAuthHeader();
@@ -25,12 +25,12 @@ class FinampUserHelper {
   }
 
   Future<void> setAuthHeader() async {
-    authorizationHeader = await jellyfin_api.getAuthHeader(deviceId: _deviceId);
+    authorizationHeader = await jellyfin_api.getAuthHeader(deviceId: deviceId);
   }
 
   final _isar = GetIt.instance<Isar>();
 
-  final String? _deviceId;
+  final String deviceId;
 
   final List<void Function()> _postUserHooks = [];
 

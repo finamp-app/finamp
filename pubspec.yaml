@@ -89,7 +89,6 @@ dependencies:
       url: https://github.com/jfly/flutter_user_certificates_android.git
       ref: db81e4ff3222a7db1308ed03c4bc3142c0d271d5
   device_info_plus: ^12.1.0
-  app_set_id: ^1.2.1
   package_info_plus: ^9.0.0
   octo_image: ^2.0.0
   # Main split view package does not seem actively maintained.  Use fork with ability to specify

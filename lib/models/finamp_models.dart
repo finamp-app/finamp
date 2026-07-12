@@ -2210,6 +2210,8 @@ enum QueueItemSourceNameType {
   radio,
   @HiveField(11)
   homeScreenSection,
+  @HiveField(12)
+  musicScreenTracks,
 }
 
 @HiveType(typeId: 56)
@@ -2232,7 +2234,7 @@ class QueueItemSourceName {
       case QueueItemSourceNameType.preTranslated:
         return pretranslatedName ?? "";
       case QueueItemSourceNameType.yourLikes:
-        return localizations.yourLikes;
+        return localizations.yourLikes(localizationParameter ?? "");
       case QueueItemSourceNameType.shuffleAll:
         return localizations.shuffleAllQueueSource;
       case QueueItemSourceNameType.mix:
@@ -2262,6 +2264,8 @@ class QueueItemSourceName {
                 presetType: HomeScreenSectionPresetType.values.byName(localizationParameter!),
               )
             : pretranslatedName ?? "";
+      case QueueItemSourceNameType.musicScreenTracks:
+        return localizations.allTracks(localizationParameter ?? "");
     }
   }
 

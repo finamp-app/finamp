@@ -321,25 +321,29 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                           controller: controller,
                           index: index,
                           child: switch (item) {
-                            Track() => TrackListTile(
-                              key: ValueKey(item.item.id),
-                              item: item.item,
-                              index: index,
-                              // when the tabBar was filtered and we only have the tracks tab,
-                              // we can allow Dismiss gestures in the track list
-                              allowDismiss: widget.allowTrackGestures,
-                              parentItem: widget.sortConfig.genreFilter != null
-                                  ? ref.watch(itemByIdProvider(widget.sortConfig.genreFilter!.id)).value
-                                  : null,
-                              forceAlbumArtists: (widget.sortConfig.sortBy == SortBy.albumArtist),
-                              adaptiveAdditionalInfoSortBy: widget.sortConfig.sortBy,
-                              parentPlayable:
-                                  ref.watch(finampSettingsProvider.startInstantMixForIndividualTracks) &&
-                                      !ref.watch(finampSettingsProvider.isOffline)
-                                  ? InstantMix(item.item)
-                                  : widget.displayable is FinampPlayable
-                                  ? (widget.displayable as FinampPlayable)
-                                  : item,
+                            Track() => Consumer(
+                              builder: (context, ref, _) {
+                                return TrackListTile(
+                                  key: ValueKey(item.item.id),
+                                  item: item.item,
+                                  index: index,
+                                  // when the tabBar was filtered and we only have the tracks tab,
+                                  // we can allow Dismiss gestures in the track list
+                                  allowDismiss: widget.allowTrackGestures,
+                                  parentItem: widget.sortConfig.genreFilter != null
+                                      ? ref.watch(itemByIdProvider(widget.sortConfig.genreFilter!.id)).value
+                                      : null,
+                                  forceAlbumArtists: (widget.sortConfig.sortBy == SortBy.albumArtist),
+                                  adaptiveAdditionalInfoSortBy: widget.sortConfig.sortBy,
+                                  parentPlayable:
+                                      ref.watch(finampSettingsProvider.startInstantMixForIndividualTracks) &&
+                                          !ref.watch(finampSettingsProvider.isOffline)
+                                      ? InstantMix(item.item)
+                                      : widget.displayable is FinampPlayable
+                                      ? (widget.displayable as FinampPlayable)
+                                      : item,
+                                );
+                              },
                             ),
                             FinampPlayableDto() => ItemWrapper(
                               key: ValueKey(item.item.id),

@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:io' show HttpClient, Platform;
 
-import 'package:app_set_id/app_set_id.dart';
 import 'package:chopper/chopper.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:finamp/models/finamp_models.dart';
-import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/http_aggregate_logging_interceptor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
@@ -661,7 +659,7 @@ class JellyfinSpecificInterceptor implements Interceptor {
 }
 
 /// Creates the Authorization header
-Future<String> getAuthHeader({required String? deviceId}) async {
+Future<String> getAuthHeader({required String deviceId}) async {
   final notAsciiRegex = RegExp(r'[^\x00-\x7F]+');
 
   final finampUserHelper = GetIt.instance<FinampUserHelper>();
@@ -691,7 +689,7 @@ Future<String> getAuthHeader({required String? deviceId}) async {
 
 // return type for deviceInfo
 
-Future<DeviceInfo> getDeviceInfo({required String? deviceId}) async {
+Future<DeviceInfo> getDeviceInfo({required String deviceId}) async {
   DeviceInfo info;
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   String idExtension = kDebugMode
