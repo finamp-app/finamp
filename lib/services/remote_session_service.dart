@@ -60,9 +60,10 @@ class RemoteSessionService {
 
   /// Maximum tracks per queue sent to a remote session (handoff, remove,
   /// reorder, skip), truncating any excess. Queues are sent as a single
-  /// PlayNow request (it can't be split: StartIndex applies to one request),
-  /// and remote clients broke on more anyway (Jellyfin Web capped at ~460
-  /// tracks with desyncs), so the cap is flat per review.
+  /// PlayNow request (it can't be split: appending would need PlayLast, which
+  /// some clients mishandle), and remote clients broke on more anyway
+  /// (Jellyfin Web capped at ~460 tracks with desyncs), so the cap is flat
+  /// per review.
   static const int _maxTracksPerPlayNow = 150;
 
   String? _activeSessionId;
@@ -710,24 +711,17 @@ class RemoteSessionService {
 
   /// Makes the remote play the local queue from [targetIndex] (an index into
   /// the full queue, played history included) with a single PlayNow request.
-  /// Queues short enough to fit are sent whole with the matching StartIndex,
-  /// so the remote keeps the played history; longer queues are sent from the
-  /// target track onward, capped flat at [_maxTracksPerPlayNow].
+  /// The queue is always sent from the target track onward (played history is
+  /// dropped), capped flat at [_maxTracksPerPlayNow]: several remote clients
+  /// ignore a nonzero StartIndex and would start at the first sent track, so
+  /// the request never relies on it.
   Future<void> _playQueueFromIndex(int targetIndex, {Duration? startPosition, bool autoplay = true}) async {
     final sessionId = _activeSessionId;
     if (sessionId == null) return;
     final fullQueue = _queueService.getQueue().fullQueue;
     if (fullQueue.isEmpty) return;
     final clampedTarget = targetIndex.clamp(0, fullQueue.length - 1);
-    final List<FinampQueueItem> window;
-    final int startIndex;
-    if (fullQueue.length <= _maxTracksPerPlayNow) {
-      window = fullQueue;
-      startIndex = clampedTarget;
-    } else {
-      window = fullQueue.skip(clampedTarget).take(_maxTracksPerPlayNow).toList();
-      startIndex = 0;
-    }
+    final window = fullQueue.skip(clampedTarget).take(_maxTracksPerPlayNow).toList();
     final itemIds = window.map((item) => item.baseItemId).toList();
     _lastPushedQueueIds = itemIds.map((id) => _normalizeId(id.raw)).toList();
     _suppressAdoptUntil = DateTime.now().add(const Duration(seconds: 20));
@@ -736,13 +730,12 @@ class RemoteSessionService {
       _pausePendingDeadline = DateTime.now().add(const Duration(seconds: 10));
     }
     _log.info(
-      "Sending ${itemIds.length} queue items to remote session $sessionId "
-      "with start index $startIndex, autoplay=$autoplay, startPosition=$startPosition",
+      "Sending ${itemIds.length} queue items to remote session $sessionId, "
+      "autoplay=$autoplay, startPosition=$startPosition",
     );
     await _jellyfinApiHelper.sendPlayToSession(
       sessionId: sessionId,
       itemIds: itemIds,
-      startIndex: startIndex,
       startPositionTicks: startPosition == null ? null : startPosition.inMilliseconds * _ticksPerMillisecond,
     );
     if (!autoplay) {
