@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -39,17 +40,39 @@ import 'item_by_id_provider.dart';
 
 final _carPlayLogger = Logger("CarPlay");
 
-/// Maximum items to fetch from server for CarPlay lists.
-/// Keeps UI responsive and avoids memory issues on car displays.
-const _carPlayOnlineLimit = 250;
+/// Fallback item cap used when CarPlay's runtime `maximumItemCount` can't be
+/// queried (older head units, or the query failing outright).
+const _fallbackMaxListItems = 250;
 
-/// Maximum items to show in offline mode for CarPlay lists.
-/// Higher than online since no network latency, but still limited for performance.
-const _carPlayOfflineLimit = 1000;
+/// Sections the letter picker occupies: one per letter, plus "#".
+const _letterSectionCount = 27;
+
+/// Fallback section cap, same reasoning as [_fallbackMaxListItems]. Covers the
+/// letter picker plus a leading action row.
+const _fallbackMaxListSections = _letterSectionCount + 1;
+
+/// Debug override for testing progressive loading and the letter picker
+/// without a huge library, e.g. `--dart-define=CARPLAY_ITEM_CAP=30`. 0 means
+/// "use the head unit's real cap".
+const _itemCapOverride = int.fromEnvironment('CARPLAY_ITEM_CAP', defaultValue: 0);
+
+/// Debug override for the section cap, same convention as [_itemCapOverride].
+/// Below [_letterSectionCount] it exercises the flat-list fallback.
+const _sectionCapOverride = int.fromEnvironment('CARPLAY_SECTION_CAP', defaultValue: 0);
+
+/// Online Tracks skips the letter picker: Jellyfin bakes track numbers into
+/// each track's SortName, which the NameStartsWith letter filter compares
+/// against, so every track lands under "#". Flipping this to true is the
+/// only change needed once the server fixes Audio SortName.
+const _enableOnlineTracksLetterPicker = false;
 
 /// Image size for CarPlay artwork. 100x100 is plenty for car displays
 /// and transfers much faster than 200x200.
 const _carPlayImageSize = 100;
+
+/// First page size for CarPlay lists, kept small so lists appear quickly.
+/// The background fill catches up in [musicScreenPageSize] chunks.
+const _carPlayFirstPageSize = 30;
 
 /// Albums shown in the CarPlay home Recently Added art row.
 const _carPlayRecentlyAddedLimit = 6;
@@ -97,10 +120,27 @@ class CarPlayHelper {
 
   bool get isUserLoggedIn => _finampUserHelper.currentUser != null;
 
-  int get _carPlayItemLimit =>
-      FinampSettingsHelper.finampSettings.isOffline ? _carPlayOfflineLimit : _carPlayOnlineLimit;
-
   final _queueService = GetIt.instance<QueueService>();
+
+  /// Runtime caps from `CPListTemplate.getMaximum*Count()`, reset on every
+  /// CarPlay connect since different head units allow different caps. A
+  /// failed query falls back to the consts above and is re-queried.
+  int? _cachedMaxListItems;
+  int? _cachedMaxListSections;
+
+  Future<int> _getMaxListItems() async {
+    if (_itemCapOverride > 0) return _itemCapOverride;
+    final reported = _cachedMaxListItems ??= await CPListTemplate.getMaximumItemCount() ?? _fallbackMaxListItems;
+    // Guard against a head unit reporting a nonsense cap of 0.
+    return reported > 0 ? reported : _fallbackMaxListItems;
+  }
+
+  Future<int> _getMaxListSections() async {
+    if (_sectionCapOverride > 0) return _sectionCapOverride;
+    final reported = _cachedMaxListSections ??=
+        await CPListTemplate.getMaximumSectionCount() ?? _fallbackMaxListSections;
+    return reported > 0 ? reported : _fallbackMaxListSections;
+  }
 
   /// Resolves the image URI for a CarPlay list item via [albumImageProvider],
   /// so CarPlay shares Finamp's image cache. Returns a `file://` URI for
@@ -186,6 +226,11 @@ class CarPlayHelper {
   void onConnectionChange(ConnectionStatusTypes status) {
     connectionStatus = status;
     if (status == ConnectionStatusTypes.connected) {
+      // Different head units allow different caps, so don't carry over a
+      // previous connection's cached values.
+      _cachedMaxListItems = null;
+      _cachedMaxListSections = null;
+
       // The Now Playing template is a system-owned singleton that can be
       // presented unprompted on connect, so its buttons can't wait for the next
       // track or order change.
@@ -300,14 +345,10 @@ class CarPlayHelper {
 
     for (int i = 0; i < items.length; i++) {
       final item = items[i];
-      // Use nameForSorting for bucketing so diacritic items (e.g. "Ärzte")
-      // land under their base letter — Jellyfin strips diacritics server-side
-      // when computing sortName.
-      final name = item.nameForSorting ?? item.name ?? "";
-      String letter = name.isNotEmpty ? name[0].toUpperCase() : "#";
-      if (!RegExp(r'[A-Z]').hasMatch(letter)) {
-        letter = "#";
-      }
+      // Buckets on nameForSorting, so diacritic items (e.g. "Ärzte") land under
+      // their base letter like Jellyfin's server-side sortName. Must stay in
+      // step with the offline letter filter in music_screen_provider.dart.
+      final letter = letterBucketOf(item);
 
       grouped.putIfAbsent(letter, () => []);
       grouped[letter]!.add(itemBuilder(item, i));
@@ -409,7 +450,7 @@ class CarPlayHelper {
       }
       driver?.close();
     });
-    // The immediate fire can finish before `driver` is assigned
+    // listen() delivers its first value before `driver` is assigned, so close that subscription here
     if (completer.isCompleted) {
       driver.close();
     }
@@ -430,6 +471,377 @@ class CarPlayHelper {
     } finally {
       _pendingLoadCancellers.remove(cancel);
     }
+  }
+
+  /// Reads the sort config off a library tab request, regardless of whether
+  /// it's a top-level [MusicScreenPlayable] or a [Genre] drill-down.
+  ResolvedSortConfig _sortConfigOf(FinampPagedPlayable<FinampPlayableDto> request) => switch (request) {
+    Genre<FinampPlayableDto>() => request.sortConfig,
+    MusicScreenPlayable<FinampPlayableDto>() => request.sortConfig,
+  };
+
+  /// Converts [request] to the equivalent [MusicScreenPlayable], so
+  /// `musicScreenItemCountProvider` has a single request shape to key off.
+  MusicScreenPlayable<FinampPlayableDto> _asMusicScreenRequest(FinampPagedPlayable<FinampPlayableDto> request) {
+    return switch (request) {
+      Genre<FinampPlayableDto>() => request.getMusicScreenRequest(),
+      MusicScreenPlayable<FinampPlayableDto>() => request,
+    };
+  }
+
+  /// Replaces [request]'s letter filter, forcing ascending sort-name order
+  /// (see [ResolvedSortConfig.copyWithLetter]). The distinct filter set
+  /// gives each letter its own `pagedContentProvider` cache entry.
+  FinampPagedPlayable<FinampPlayableDto> _withLetter(FinampPagedPlayable<FinampPlayableDto> request, String letter) {
+    return switch (request) {
+      Genre<FinampPlayableDto>() => request.copyWith(request.sortConfig.copyWithLetter(letter)),
+      MusicScreenPlayable<FinampPlayableDto>() => request.copyWith(request.sortConfig.copyWithLetter(letter)),
+    };
+  }
+
+  /// Whether [tab] can show the letter picker. See
+  /// [_enableOnlineTracksLetterPicker] for why online Tracks is excluded.
+  bool _letterLayerSupported(ContentType tab) =>
+      FinampSettingsHelper.finampSettings.isOffline || tab != ContentType.tracks || _enableOnlineTracksLetterPicker;
+
+  /// Groups [items] into A-Z/# sections via [_groupItemsIntoSections],
+  /// degrading to one header-less section if that would exceed
+  /// [maxSections]. [itemCache] memoises built [CPListItem]s by item id
+  /// across repeated calls for the same view, so a tap landing between
+  /// background page appends still resolves against a stable element id.
+  /// [leadingItem], if given, is (re-)inserted at the very top every time.
+  List<CPListSection> _buildProgressiveSections(
+    List<BaseItemDto> items,
+    int maxSections,
+    CPListItem Function(BaseItemDto item, int index) itemBuilder,
+    Map<String, CPListItem> itemCache, {
+    CPListItem? leadingItem,
+    bool groupByLetter = true,
+  }) {
+    // A letter-filtered list is a single bucket already, so letter headers
+    // and a one-letter scrubber would be noise.
+    if (!groupByLetter) {
+      final flatItems = [
+        for (final (index, item) in items.indexed) itemCache.putIfAbsent(item.id.raw, () => itemBuilder(item, index)),
+      ];
+      final section = CPListSection(items: flatItems, sectionIndexEnabled: false);
+      if (leadingItem != null) {
+        section.items.insert(0, leadingItem);
+      }
+      return [section];
+    }
+
+    final sections = _groupItemsIntoSections(
+      items,
+      (item, index) => itemCache.putIfAbsent(item.id.raw, () => itemBuilder(item, index)),
+    );
+
+    final flatSections = sections.length > maxSections
+        ? [CPListSection(items: sections.expand((section) => section.items).toList())]
+        : sections;
+
+    if (leadingItem != null && flatSections.isNotEmpty) {
+      flatSections.first.items.insert(0, leadingItem);
+    }
+    return flatSections;
+  }
+
+  /// Chooses between a flat progressive list and the letter picker for a
+  /// library tab view, then pushes whichever applies. A failed item-count
+  /// check falls back to the flat list.
+  ///
+  /// [itemBuilderFor] is invoked with the exact request a list is pushed for
+  /// (the tab request, or its letter-filtered variant), so tap handlers that
+  /// replay the request by index always match the displayed list.
+  Future<void> _showLibraryTemplate({
+    required FinampPagedPlayable<FinampPlayableDto> request,
+    required CPListItem Function(BaseItemDto item, int index) Function(FinampPagedPlayable<FinampPlayableDto>)
+    itemBuilderFor,
+    required String systemIcon,
+    String? title,
+    CPListItem Function()? leadingItemBuilder,
+  }) async {
+    final [maxItems, maxSections] = await Future.wait([_getMaxListItems(), _getMaxListSections()]);
+    final musicRequest = _asMusicScreenRequest(request);
+    final sortBy = _sortConfigOf(request).sortBy;
+
+    // The picker needs one section per letter, plus one for a leading action
+    // row (e.g. Shuffle All) on the views that have one.
+    final requiredSections = _letterSectionCount + (leadingItemBuilder != null ? 1 : 0);
+
+    final String? letterLayerRefusal;
+    if (sortBy == SortBy.random) {
+      letterLayerRefusal = "random sort has no letter order";
+    } else if (!_letterLayerSupported(musicRequest.tab)) {
+      letterLayerRefusal = "tab does not support letter filtering";
+    } else if (maxSections < requiredSections) {
+      letterLayerRefusal = "head unit allows $maxSections sections, picker needs $requiredSections";
+    } else {
+      letterLayerRefusal = null;
+    }
+
+    var useLetterLayer = false;
+    int? total;
+    if (letterLayerRefusal == null) {
+      try {
+        final count = await providerRef.read(musicScreenItemCountProvider(musicRequest).future);
+        total = count;
+        useLetterLayer = count > maxItems;
+      } catch (e) {
+        _carPlayLogger.warning("Failed to check CarPlay library size, falling back to a flat list: $e");
+      }
+    }
+
+    _carPlayLogger.info(
+      "CarPlay ${musicRequest.tab}: ${total ?? '?'} items, caps $maxItems items / $maxSections sections, "
+      "letters: $useLetterLayer${letterLayerRefusal == null ? '' : ' ($letterLayerRefusal)'}",
+    );
+
+    if (useLetterLayer) {
+      await _showLetterPickerTemplate(
+        request: request,
+        itemBuilderFor: itemBuilderFor,
+        systemIcon: systemIcon,
+        title: title,
+        maxItems: maxItems,
+        maxSections: maxSections,
+        leadingItemBuilder: leadingItemBuilder,
+      );
+    } else {
+      await _pushProgressiveListTemplate(
+        request: request,
+        itemBuilderFor: itemBuilderFor,
+        systemIcon: systemIcon,
+        title: title,
+        leadingItemBuilder: leadingItemBuilder,
+        maxItems: maxItems,
+        maxSections: maxSections,
+      );
+    }
+  }
+
+  /// Pushes the [_letterSectionCount]-section letter picker. Tapping a letter
+  /// pushes the matching filtered list via [_pushProgressiveListTemplate].
+  /// Each section carries an explicit `sectionIndexTitle` but no visible
+  /// header, so the letter isn't rendered twice, and CarPlay's side scrubber
+  /// then pops the native full-screen letter grid for these sections.
+  Future<void> _showLetterPickerTemplate({
+    required FinampPagedPlayable<FinampPlayableDto> request,
+    required CPListItem Function(BaseItemDto item, int index) Function(FinampPagedPlayable<FinampPlayableDto>)
+    itemBuilderFor,
+    required String systemIcon,
+    required int maxItems,
+    required int maxSections,
+    String? title,
+    CPListItem Function()? leadingItemBuilder,
+  }) async {
+    final letters = [for (var i = 0; i < 26; i++) String.fromCharCode(65 + i), "#"];
+
+    final sections = letters.map((letter) {
+      return CPListSection(
+        sectionIndexTitle: letter,
+        items: [
+          CPListItem(
+            text: letter,
+            onPress: (complete, self) async {
+              if (_isPushingPageUpdate) {
+                _carPlayLogger.warning("Navigation dropped: already pushing page update");
+                complete();
+                return;
+              }
+              _isPushingPageUpdate = true;
+              try {
+                await _pushProgressiveListTemplate(
+                  request: _withLetter(request, letter),
+                  itemBuilderFor: itemBuilderFor,
+                  systemIcon: systemIcon,
+                  title: letter,
+                  maxItems: maxItems,
+                  maxSections: maxSections,
+                  groupByLetter: false,
+                );
+              } catch (e) {
+                GlobalSnackbar.error(e);
+              } finally {
+                _isPushingPageUpdate = false;
+                complete();
+              }
+            },
+          ),
+        ],
+      );
+    }).toList();
+
+    // Shuffle All applies to the whole library, so it belongs on the picker
+    // rather than inside any single letter's list.
+    final leadingItem = leadingItemBuilder?.call();
+    final letterPickerTemplate = CPListTemplate(
+      title: title,
+      sections: [
+        if (leadingItem != null) CPListSection(items: [leadingItem], sectionIndexEnabled: false),
+        ...sections,
+      ],
+      systemIcon: systemIcon,
+      emptyViewTitleVariants: [GlobalSnackbar.requireL10n.emptyFilteredListTitle],
+    );
+
+    await FlutterCarplay.push(template: letterPickerTemplate);
+  }
+
+  /// Pushes [request] as a list template as soon as its first page loads, then
+  /// keeps appending further pages up to [maxItems] by observing the paged
+  /// provider. Random sort is the exception: it forces `startIndex=0`
+  /// server-side so appending would just duplicate items, so it shows one
+  /// capped page instead.
+  ///
+  /// [itemBuilderFor], bound to this exact [request], builds a [CPListItem]
+  /// for a playable item at its index within the full (appended) list,
+  /// matching what [_startSliceFromPlayable] expects. [leadingItemBuilder],
+  /// if given, adds one extra item (e.g. Shuffle All) at the very top of the
+  /// first section.
+  Future<void> _pushProgressiveListTemplate({
+    required FinampPagedPlayable<FinampPlayableDto> request,
+    required CPListItem Function(BaseItemDto item, int index) Function(FinampPagedPlayable<FinampPlayableDto>)
+    itemBuilderFor,
+    required String systemIcon,
+    required int maxItems,
+    required int maxSections,
+    String? title,
+    CPListItem Function()? leadingItemBuilder,
+    bool groupByLetter = true,
+  }) async {
+    // Bind tap handlers to this exact request (which may be letter-filtered)
+    // so replaying it by index resolves to the tapped item.
+    final itemBuilder = itemBuilderFor(request);
+    final itemCache = <String, CPListItem>{};
+    final leadingItem = leadingItemBuilder?.call();
+    var cancelled = false;
+
+    final provider = pagedContentProvider(request);
+    final isRandom = _sortConfigOf(request).sortBy == SortBy.random;
+    // Random loads its whole capped page in one request
+    final firstPageTarget = isRandom ? maxItems : min(_carPlayFirstPageSize, maxItems);
+
+    if (providerRef.read(provider).error != null) {
+      providerRef.read(provider.notifier).retry();
+    }
+
+    // Retain the paged data so later taps resolve, until the next root rebuild.
+    _templateSubscriptions.add(providerRef.listen(provider, (_, _) {}));
+
+    final pushed = Completer<void>();
+    CPListTemplate? template;
+    ProviderSubscription? driver;
+
+    // Requests the next page while more items are wanted and available, and
+    // closes the driver once the list is complete, cancelled, or errored.
+    void requestNextPage() {
+      if (cancelled) {
+        driver?.close();
+        return;
+      }
+      final state = providerRef.read(provider);
+      // A settling load emits and drives the next request
+      if (state.isLoading) return;
+      if (state.error != null) {
+        // The error resets when the next load starts
+        _carPlayLogger.warning("Stopped filling CarPlay list '$title' early: ${state.error}");
+        driver?.close();
+        return;
+      }
+      final loaded = (state.items ?? []).length;
+      if (!isRandom && loaded < maxItems && state.hasNextPage) {
+        providerRef.read(provider.notifier).newPage(pageSize: min(musicScreenPageSize, maxItems - loaded));
+      } else {
+        driver?.close();
+        _carPlayLogger.info("CarPlay list '$title' complete at $loaded items");
+      }
+    }
+
+    // Repaints the on-screen template as pages arrive, driving new page requests and the first push.
+    driver = providerRef.listen<PagingState<int, FinampDisplayableOrPlayable>>(provider, fireImmediately: true, (
+      _,
+      next,
+    ) {
+      if (cancelled) {
+        driver?.close();
+        if (!pushed.isCompleted) pushed.complete();
+        return;
+      }
+      if (next.isLoading) return;
+
+      final loaded = (next.items ?? []).length;
+      final items = (next.items ?? []).take(maxItems).map((x) => (x as FinampPlayableDto).item).toList();
+
+      // A first-load error with nothing cached leaves no list to show.
+      if (template == null && next.error != null && items.isEmpty) {
+        driver?.close();
+        if (!pushed.isCompleted) pushed.completeError(next.error!);
+        return;
+      }
+
+      // Keep assembling the first page before the list appears on screen.
+      if (template == null && loaded < firstPageTarget && next.hasNextPage && next.error == null) {
+        providerRef.read(provider.notifier).newPage(pageSize: firstPageTarget - loaded);
+        return;
+      }
+
+      final sections = _buildProgressiveSections(
+        items,
+        maxSections,
+        itemBuilder,
+        itemCache,
+        leadingItem: leadingItem,
+        groupByLetter: groupByLetter,
+      );
+
+      if (template == null) {
+        final pushTemplate = CPListTemplate(
+          title: title,
+          sections: sections,
+          systemIcon: systemIcon,
+          emptyViewTitleVariants: [GlobalSnackbar.requireL10n.emptyFilteredListTitle],
+          onPop: () => cancelled = true,
+        );
+        template = pushTemplate;
+        // Push first, then start the fill once the template is on screen so no
+        // section update can race ahead of the push.
+        unawaited(
+          FlutterCarplay.push(template: pushTemplate).then((_) {
+            _carPlayLogger.info("Pushed CarPlay list '$title' with ${items.length} items (cap $maxItems)");
+            if (!pushed.isCompleted) pushed.complete();
+            requestNextPage();
+          }),
+        );
+        return;
+      }
+
+      // Repaint the pushed template with the newly arrived page, then request
+      // the next one only after the update settles.
+      unawaited(() async {
+        try {
+          await _flutterCarplay.updateListTemplateSections(elementId: template!.uniqueId, sections: sections);
+        } catch (e) {
+          _carPlayLogger.warning("Failed to append CarPlay list page: $e");
+          driver?.close();
+          return;
+        }
+        requestNextPage();
+      }());
+    });
+    // listen() delivers its first value before `driver` is assigned, so close that subscription here
+    if (pushed.isCompleted) {
+      driver.close();
+    }
+
+    void cancel() {
+      cancelled = true;
+      if (!pushed.isCompleted) pushed.complete();
+      driver?.close();
+    }
+
+    _pendingLoadCancellers.add(cancel);
+    await pushed.future;
   }
 
   Future<void> _startSliceFromPlayable(FinampPlayable playable, {int index = 0, bool shuffled = false}) async {
@@ -1207,39 +1619,38 @@ class CarPlayHelper {
     }
     _isPushingPageUpdate = true;
     try {
-      List<BaseItemDto> mediaItems;
+      final FinampPagedPlayable<FinampPlayableDto> request;
       if (genreFilter != null) {
-        final genre = Genre(
+        request = Genre(
           genreFilter,
           source: QueueItemSource.fromBaseItem(genreFilter),
           sortConfig: SortAndFilterConfiguration.defaultSort,
           type: GenreChildType.albums,
           library: currentLibraryPlaceholder,
         );
-        mediaItems = await _loadPagedItems(genre, _carPlayItemLimit);
       } else {
-        mediaItems = await _loadPagedItems(_tabPlayable(tabType), _carPlayItemLimit);
+        request = _tabPlayable(tabType);
       }
 
-      final sections = _groupItemsIntoSections(mediaItems, (item, index) {
-        return CPListItem(
-          text: item.name ?? GlobalSnackbar.requireL10n.unknown,
-          detailText: item.artists?.join(", ") ?? item.albumArtist,
-          image: _getCarPlayImageUri(item),
-          onPress: (complete, self) async {
-            if (tabType == ContentType.genres && genreFilter == null) {
-              await showBrowsableListTemplate(tabType: tabType, genreFilter: item);
-            } else {
-              await showCollectionTracksTemplate(item);
-            }
-            complete();
-          },
-        );
-      });
-
-      CPListTemplate albumsTemplate = CPListTemplate(sections: sections, systemIcon: 'square.stack');
-
-      await FlutterCarplay.push(template: albumsTemplate);
+      await _showLibraryTemplate(
+        request: request,
+        systemIcon: 'square.stack',
+        title: genreFilter?.name ?? tabType.toLocalisedString(GlobalSnackbar.requireL10n),
+        itemBuilderFor: (_) =>
+            (item, index) => CPListItem(
+              text: item.name ?? GlobalSnackbar.requireL10n.unknown,
+              detailText: item.artists?.join(", ") ?? item.albumArtist,
+              image: _getCarPlayImageUri(item),
+              onPress: (complete, self) async {
+                if (tabType == ContentType.genres && genreFilter == null) {
+                  await showBrowsableListTemplate(tabType: tabType, genreFilter: item);
+                } else {
+                  await showCollectionTracksTemplate(item);
+                }
+                complete();
+              },
+            ),
+      );
     } finally {
       _isPushingPageUpdate = false;
     }
@@ -1252,39 +1663,30 @@ class CarPlayHelper {
     }
     _isPushingPageUpdate = true;
     try {
-      // Taps replay this exact request so the index resolves against the displayed pages.
-      final request = _tabPlayable(ContentType.tracks);
-      final tracks = await _loadPagedItems(request, _carPlayItemLimit);
-
-      final sections = _groupItemsIntoSections(tracks, (item, index) {
-        return CPListItem(
-          text: item.name ?? GlobalSnackbar.requireL10n.unknownName,
-          detailText: item.artists?.join(", ") ?? item.albumArtist,
-          image: _getCarPlayImageUri(item),
+      await _showLibraryTemplate(
+        request: _tabPlayable(ContentType.tracks),
+        systemIcon: 'music.note',
+        title: ContentType.tracks.toLocalisedString(GlobalSnackbar.requireL10n),
+        leadingItemBuilder: () => CPListItem(
+          text: GlobalSnackbar.requireL10n.shuffleAll,
           onPress: (complete, self) async {
-            await _startSliceFromPlayable(request, index: index);
+            await shuffleAllTracks();
             complete();
           },
-        );
-      });
-
-      // Add shuffle button at the beginning
-      if (sections.isNotEmpty) {
-        sections.first.items.insert(
-          0,
-          CPListItem(
-            text: GlobalSnackbar.requireL10n.shuffleAll,
-            onPress: (complete, self) async {
-              await shuffleAllTracks();
-              complete();
-            },
-          ),
-        );
-      }
-
-      CPListTemplate tracksTemplate = CPListTemplate(sections: sections, systemIcon: 'music.note');
-
-      await FlutterCarplay.push(template: tracksTemplate);
+        ),
+        // Taps replay the pushed list's request (possibly letter-filtered) so
+        // the index resolves against the displayed pages.
+        itemBuilderFor: (request) =>
+            (item, index) => CPListItem(
+              text: item.name ?? GlobalSnackbar.requireL10n.unknownName,
+              detailText: item.artists?.join(", ") ?? item.albumArtist,
+              image: _getCarPlayImageUri(item),
+              onPress: (complete, self) async {
+                await _startSliceFromPlayable(request, index: index);
+                complete();
+              },
+            ),
+      );
     } finally {
       _isPushingPageUpdate = false;
     }
@@ -1297,21 +1699,19 @@ class CarPlayHelper {
     }
     _isPushingPageUpdate = true;
     try {
-      final artists = await _loadPagedItems(_tabPlayable(ContentType.albumArtists), _carPlayItemLimit);
-
-      final sections = _groupItemsIntoSections(artists, (item, index) {
-        return CPListItem(
-          text: item.name ?? GlobalSnackbar.requireL10n.unknownName,
-          onPress: (complete, self) async {
-            await showArtistTemplate(item);
-            complete();
-          },
-        );
-      });
-
-      CPListTemplate artistsTemplate = CPListTemplate(sections: sections, systemIcon: 'person.2');
-
-      await FlutterCarplay.push(template: artistsTemplate);
+      await _showLibraryTemplate(
+        request: _tabPlayable(ContentType.albumArtists),
+        systemIcon: 'person.2',
+        title: ContentType.albumArtists.toLocalisedString(GlobalSnackbar.requireL10n),
+        itemBuilderFor: (_) =>
+            (item, index) => CPListItem(
+              text: item.name ?? GlobalSnackbar.requireL10n.unknownName,
+              onPress: (complete, self) async {
+                await showArtistTemplate(item);
+                complete();
+              },
+            ),
+      );
     } finally {
       _isPushingPageUpdate = false;
     }

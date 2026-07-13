@@ -436,6 +436,9 @@ abstract class JellyfinApi extends ChopperService {
 
     /// Optional. Filter by items whose name is sorted equally than a given input string.
     @Query("NameStartsWith") String? nameStartsWith,
+
+    /// Optional. Filter by items whose name is sorted less than a given input string.
+    @Query("NameLessThan") String? nameLessThan,
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
@@ -483,6 +486,9 @@ abstract class JellyfinApi extends ChopperService {
 
     /// Optional. Filter by items whose name is sorted equally than a given input string.
     @Query("NameStartsWith") String? nameStartsWith,
+
+    /// Optional. Filter by items whose name is sorted less than a given input string.
+    @Query("NameLessThan") String? nameLessThan,
   });
 
   /// Gets all genres from a given item, folder, or the entire library.
@@ -535,6 +541,12 @@ abstract class JellyfinApi extends ChopperService {
 
     /// Optional. The maximum number of records to return.
     @Query("Limit") int? limit,
+
+    /// Optional. Filter by items whose name is sorted equally than a given input string.
+    @Query("NameStartsWith") String? nameStartsWith,
+
+    /// Optional. Filter by items whose name is sorted less than a given input string.
+    @Query("NameLessThan") String? nameLessThan,
   });
 
   /// Marks an item as a favorite.

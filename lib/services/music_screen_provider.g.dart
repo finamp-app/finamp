@@ -12,7 +12,7 @@ part of 'music_screen_provider.dart';
 // **************************************************************************
 
 String _$loadHomeSectionItemsHash() =>
-    r'03d5a2113df428ecafabb89f08f4b1fa56f90de0';
+    r'79de212cae057856d0c2c10ef7dea9dc84ede6d4';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -201,8 +201,150 @@ class _LoadHomeSectionItemsProviderElement
   int get limit => (origin as LoadHomeSectionItemsProvider).limit;
 }
 
+String _$musicScreenItemCountHash() =>
+    r'c49c43e47599e8b6f4f7bc6280fa844767f0eee8';
+
+/// Total item count for [request], ignoring pagination. CarPlay uses this to
+/// decide whether a view needs the letter picker.
+///
+/// Copied from [musicScreenItemCount].
+@ProviderFor(musicScreenItemCount)
+const musicScreenItemCountProvider = MusicScreenItemCountFamily();
+
+/// Total item count for [request], ignoring pagination. CarPlay uses this to
+/// decide whether a view needs the letter picker.
+///
+/// Copied from [musicScreenItemCount].
+class MusicScreenItemCountFamily extends Family<AsyncValue<int>> {
+  /// Total item count for [request], ignoring pagination. CarPlay uses this to
+  /// decide whether a view needs the letter picker.
+  ///
+  /// Copied from [musicScreenItemCount].
+  const MusicScreenItemCountFamily();
+
+  /// Total item count for [request], ignoring pagination. CarPlay uses this to
+  /// decide whether a view needs the letter picker.
+  ///
+  /// Copied from [musicScreenItemCount].
+  MusicScreenItemCountProvider call(
+    MusicScreenPlayable<FinampPlayableDto> request,
+  ) {
+    return MusicScreenItemCountProvider(request);
+  }
+
+  @override
+  MusicScreenItemCountProvider getProviderOverride(
+    covariant MusicScreenItemCountProvider provider,
+  ) {
+    return call(provider.request);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'musicScreenItemCountProvider';
+}
+
+/// Total item count for [request], ignoring pagination. CarPlay uses this to
+/// decide whether a view needs the letter picker.
+///
+/// Copied from [musicScreenItemCount].
+class MusicScreenItemCountProvider extends AutoDisposeFutureProvider<int> {
+  /// Total item count for [request], ignoring pagination. CarPlay uses this to
+  /// decide whether a view needs the letter picker.
+  ///
+  /// Copied from [musicScreenItemCount].
+  MusicScreenItemCountProvider(MusicScreenPlayable<FinampPlayableDto> request)
+    : this._internal(
+        (ref) => musicScreenItemCount(ref as MusicScreenItemCountRef, request),
+        from: musicScreenItemCountProvider,
+        name: r'musicScreenItemCountProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$musicScreenItemCountHash,
+        dependencies: MusicScreenItemCountFamily._dependencies,
+        allTransitiveDependencies:
+            MusicScreenItemCountFamily._allTransitiveDependencies,
+        request: request,
+      );
+
+  MusicScreenItemCountProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.request,
+  }) : super.internal();
+
+  final MusicScreenPlayable<FinampPlayableDto> request;
+
+  @override
+  Override overrideWith(
+    FutureOr<int> Function(MusicScreenItemCountRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: MusicScreenItemCountProvider._internal(
+        (ref) => create(ref as MusicScreenItemCountRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        request: request,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<int> createElement() {
+    return _MusicScreenItemCountProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MusicScreenItemCountProvider && other.request == request;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, request.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin MusicScreenItemCountRef on AutoDisposeFutureProviderRef<int> {
+  /// The parameter `request` of this provider.
+  MusicScreenPlayable<FinampPlayableDto> get request;
+}
+
+class _MusicScreenItemCountProviderElement
+    extends AutoDisposeFutureProviderElement<int>
+    with MusicScreenItemCountRef {
+  _MusicScreenItemCountProviderElement(super.provider);
+
+  @override
+  MusicScreenPlayable<FinampPlayableDto> get request =>
+      (origin as MusicScreenItemCountProvider).request;
+}
+
 String _$getJellyfinCollectionHash() =>
-    r'a0f53ba1d31000864d5a81b22ecc132f0bd99934';
+    r'1c7ade2240687f4de0fb3a93b51f27a97fb80e8a';
 
 /// See also [getJellyfinCollection].
 @ProviderFor(getJellyfinCollection)

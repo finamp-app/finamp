@@ -271,13 +271,40 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
   required int startIndex,
   required int limit,
 }) async {
-  final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
-
   // If the fully downloaded filter is active, just use the offline items.
   if (ref.watch(finampSettingsProvider.isOffline) ||
       request.sortConfig.filters.where((x) => x.type == ItemFilterType.isFullyDownloaded).isNotEmpty) {
     return loadHomeSectionItemsOffline(ref: ref, request: request, startIndex: startIndex, limit: limit);
   }
+
+  final result = await _fetchMusicScreenPageOnline(ref, request: request, startIndex: startIndex, limit: limit);
+  return result.items;
+}
+
+/// Total item count for [request], ignoring pagination. CarPlay uses this to
+/// decide whether a view needs the letter picker.
+@riverpod
+Future<int> musicScreenItemCount(Ref ref, MusicScreenPlayable request) async {
+  // Fully-downloaded-filtered requests serve offline items, so count those
+  if (ref.watch(finampSettingsProvider.isOffline) ||
+      request.sortConfig.filters.where((x) => x.type == ItemFilterType.isFullyDownloaded).isNotEmpty) {
+    final items = await _buildHomeSectionItemsOffline(ref: ref, request: request);
+    return items?.length ?? 0;
+  }
+
+  final result = await _fetchMusicScreenPageOnline(ref, request: request, startIndex: 0, limit: 1);
+  return result.totalRecordCount;
+}
+
+/// Shared online fetch backing both [loadHomeSectionItems] and
+/// [musicScreenItemCount] - same request, same behaviour as the main UI.
+Future<QueryResult_BaseItemDto> _fetchMusicScreenPageOnline(
+  Ref ref, {
+  required MusicScreenPlayable request,
+  required int startIndex,
+  required int limit,
+}) async {
+  final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
   final BaseItemId? libraryId;
   if (request.library == allLibraryPlaceholder) {
@@ -287,7 +314,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
       FinampUserHelper.finampCurrentUserProvider.select((value) => value?.currentView?.id),
     );
     if (nullableLibraryId == null) {
-      return [];
+      return QueryResult_BaseItemDto(totalRecordCount: 0, startIndex: 0, items: []);
     } else {
       libraryId = nullableLibraryId;
     }
@@ -300,7 +327,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
   if (libraryId != null) {
     library = await ref.watch(itemByIdProvider(libraryId).future);
     if (library == null) {
-      return [];
+      return QueryResult_BaseItemDto(totalRecordCount: 0, startIndex: 0, items: []);
     }
   }
 
@@ -316,7 +343,9 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
 
   final artistType = artistFilter != null ? ref.watch(finampSettingsProvider.defaultArtistType) : tabArtistType;
 
-  return jellyfinApiHelper.getItems(
+  final letterFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.startsWithCharacter);
+  final letter = letterFilter?.extraString;
+  return jellyfinApiHelper.getItemsWithTotalRecordCount(
     libraryFilter: library?.id,
     parentItem: request.tab == ContentType.playlists ? null : (artistFilter?.extraBaseItem ?? library),
     includeItemTypes: [request.tab.itemType?.jellyfinName].join(","),
@@ -328,9 +357,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
           (filter) => switch (filter.type) {
             ItemFilterType.isFavorite => "IsFavorite",
             ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
-            // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
-            ItemFilterType.startsWithCharacter =>
-              throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
+            ItemFilterType.startsWithCharacter => null, // handled via nameStartsWith/nameLessThan below
             ItemFilterType.genreFilter => null,
             ItemFilterType.artistFilter => null,
             ItemFilterType.searchTerm => null,
@@ -348,6 +375,9 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
     //    : null,
     artistType: artistType,
     genreFilter: genreFilter?.extraBaseItem.id,
+    // "#" follows jellyfin-web and maps to NameLessThan=A, so names sorting after "z" are missed.
+    nameStartsWith: letter == null || letter == "#" ? null : letter,
+    nameLessThan: letter == "#" ? "A" : null,
   );
 }
 
@@ -356,6 +386,18 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
   required MusicScreenPlayable request,
   int startIndex = 0,
   int limit = 10,
+}) async {
+  final items = await _buildHomeSectionItemsOffline(ref: ref, request: request);
+  if (items == null) return null;
+  return items.skip(startIndex).take(limit).toList();
+}
+
+/// Builds the full (unpaginated) offline item list for [request], including
+/// in-memory letter filtering. Shared by [loadHomeSectionItemsOffline] and
+/// [musicScreenItemCount].
+Future<List<BaseItemDto>?> _buildHomeSectionItemsOffline({
+  required Ref ref,
+  required MusicScreenPlayable request,
 }) async {
   final downloadsService = GetIt.instance<DownloadsService>();
 
@@ -424,6 +466,11 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
     items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
   }
 
+  final letterFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.startsWithCharacter);
+  if (letterFilter != null) {
+    items = items.where((item) => letterBucketOf(item) == letterFilter.extraString).toList();
+  }
+
   var sortBy = request.sortConfig.sortBy;
   // PlayCount and Last Played are not representative in Offline Mode
   // so we disable it and overwrite it with the Sort Name if it was selected
@@ -442,7 +489,16 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
     items = filterItemsByGenreName(items, genreFilter.extraBaseItem);
   }
 
-  return items.skip(startIndex).take(limit).toList();
+  return items;
+}
+
+/// Buckets [item] to "A".."Z" or "#" by the first character of its
+/// [BaseItemDto.nameForSorting]. The letters CarPlay shows come from
+/// `_groupItemsIntoSections`, so the two must agree on every item.
+String letterBucketOf(BaseItemDto item) {
+  final name = item.nameForSorting ?? item.name ?? "";
+  final letter = name.isNotEmpty ? name[0].toUpperCase() : "#";
+  return RegExp(r'[A-Z]').hasMatch(letter) ? letter : "#";
 }
 
 List<BaseItemDto> sortItems(List<BaseItemDto> itemsToSort, SortBy? sortBy, SortOrder? sortOrder) {
@@ -745,8 +801,15 @@ Future<List<BaseItemDto>?> getJellyfinCollection(
           sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite) &&
           ref.watch(finampSettingsProvider.trackOfflineFavorites),
     );
-    return stubs.map((x) => x.baseItem).nonNulls.toList();
+    var items = stubs.map((x) => x.baseItem).nonNulls.toList();
+    final letterFilter = sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.startsWithCharacter);
+    if (letterFilter != null) {
+      items = items.where((item) => letterBucketOf(item) == letterFilter.extraString).toList();
+    }
+    return items;
   } else {
+    final letterFilter = sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.startsWithCharacter);
+    final letter = letterFilter?.extraString;
     return GetIt.instance<JellyfinApiHelper>().getItems(
       parentItem: collection,
       recursive: false, //!!! prevent loading tracks and albums from inside the collection items
@@ -757,9 +820,7 @@ Future<List<BaseItemDto>?> getJellyfinCollection(
             (filter) => switch (filter.type) {
               ItemFilterType.isFavorite => "IsFavorite",
               ItemFilterType.isFullyDownloaded => null, // only applicable for offline mode
-              // ItemFilterType.startsWithCharacter => "NameStartsWith: ${filter.value}",
-              ItemFilterType.startsWithCharacter =>
-                throw UnimplementedError(), //TODO properly handle the "NameStartsWith" filter in the API helper
+              ItemFilterType.startsWithCharacter => null, // handled via nameStartsWith/nameLessThan below
               ItemFilterType.genreFilter => throw UnimplementedError(),
               ItemFilterType.artistFilter => throw UnimplementedError(),
               ItemFilterType.searchTerm => throw UnimplementedError(),
@@ -771,6 +832,9 @@ Future<List<BaseItemDto>?> getJellyfinCollection(
       isFavorite: JellyfinApiHelper.getIsFavoriteFilter(ContentType.mixed, sortConfig.filters),
       // TODO allow filtering collection child types?
       //includeItemTypes: sectionInfo.contentType.itemType?.jellyfinName,
+      // "#" follows jellyfin-web and maps to NameLessThan=A.
+      nameStartsWith: letter == null || letter == "#" ? null : letter,
+      nameLessThan: letter == "#" ? "A" : null,
     );
   }
 }
