@@ -946,8 +946,16 @@ class QueueService {
 
     // If we're controlling a remote session, stop it and leave remote mode
     // first (before clearing local state, so nothing gets echoed to the
-    // remote and the commands below hit the local player).
-    await _remoteSessionIfConnected?.stopAndDisconnect();
+    // remote and the commands below hit the local player). Deliberately not
+    // using _remoteSessionIfConnected: stopping is a user command, not an
+    // echo, and must reach the remote even while a remote-initiated update
+    // is being applied to the local queue.
+    if (GetIt.instance.isRegistered<RemoteSessionService>()) {
+      final remoteSession = GetIt.instance<RemoteSessionService>();
+      if (remoteSession.isRemote) {
+        await remoteSession.stopAndDisconnect();
+      }
+    }
 
     archiveSavedQueue();
     if (_savedQueueState == SavedQueueState.pendingSave) {

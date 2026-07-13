@@ -546,6 +546,9 @@ class RemoteSessionService {
         _log.warning("Could not resolve any items of the remote queue; not adopting");
         return;
       }
+      // The session may have been disconnected (e.g. playback stopped) while
+      // the missing items were being fetched; don't resurrect its queue.
+      if (!isRemote) return;
 
       final currentItemId = session.nowPlayingItem?.id.raw;
       var startIndex = currentItemId == null
