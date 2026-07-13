@@ -10,12 +10,14 @@ import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/components/toggleable_list_tile.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/dlna_service.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:finamp/utils/platform_helper.dart';
+import 'package:dart_cast/dart_cast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
@@ -101,9 +103,23 @@ Future<void> showOutputMenu({required BuildContext context, bool usePlayerTheme 
               child: OutputTargetList(), // Pass the outputRoutes
             ),
           ),
+        // DLNA / network devices section
+        SliverStickyHeader(
+          header: Padding(
+            padding: const EdgeInsets.only(top: 10.0, bottom: 8.0, left: 16.0, right: 16.0),
+            child: Text(
+              AppLocalizations.of(context)!.outputDevices,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          sliver: MenuMask(
+            height: OutputMenuHeader.defaultHeight,
+            child: DlnaDeviceList(),
+          ),
+        ),
       ];
       // TODO better estimate, how to deal with lag getting playlists?
-      var stackHeight = MediaQuery.heightOf(context) * (Platform.isAndroid ? 0.65 : 0.4);
+      var stackHeight = MediaQuery.heightOf(context) * (Platform.isAndroid ? 0.75 : 0.5);
       return (stackHeight, menu);
     },
   );
@@ -519,5 +535,267 @@ class VerticalSliderThumbShape extends SliderComponentShape {
     final RRect thumbRRect = RRect.fromRectAndRadius(thumbRect, Radius.circular(borderRadius));
 
     context.canvas.drawRRect(thumbRRect, paint);
+  }
+}
+
+/// DLNA / network audio device list for the output menu.
+///
+/// Shows "This Device" (local playback), discovered DLNA devices, and
+/// a manual IP entry option for devices that don't show up via discovery.
+class DlnaDeviceList extends StatefulWidget {
+  const DlnaDeviceList({super.key});
+
+  @override
+  State<DlnaDeviceList> createState() => _DlnaDeviceListState();
+}
+
+class _DlnaDeviceListState extends State<DlnaDeviceList> {
+  final _dlnaService = GetIt.instance<DlnaService>();
+  final _audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+
+  bool _isScanning = false;
+  List<CastDevice> _devices = [];
+  StreamSubscription? _discoverySub;
+  DlnaOutputDevice? _connectedDevice;
+  StreamSubscription? _deviceSub;
+  bool _showManualEntry = false;
+  bool _isManualConnecting = false;
+  final _ipController = TextEditingController();
+  CastDevice? _connectingDevice;
+
+  @override
+  void initState() {
+    super.initState();
+    _connectedDevice = _dlnaService.connectedDevice;
+    _deviceSub = _dlnaService.deviceStream.listen((device) {
+      if (mounted) {
+        setState(() {
+          _connectedDevice = device;
+        });
+      }
+    });
+    _startScanning();
+  }
+
+  @override
+  void dispose() {
+    _dlnaService.stopDiscovery();
+    _discoverySub?.cancel();
+    _deviceSub?.cancel();
+    _ipController.dispose();
+    super.dispose();
+  }
+
+  void _startScanning() {
+    setState(() {
+      _isScanning = true;
+      _devices.clear();
+    });
+    _discoverySub = _dlnaService.startDiscoveryStream().listen((devices) {
+      if (mounted) {
+        setState(() {
+          _devices = List.from(devices);
+        });
+      }
+    }, onDone: () {
+      if (mounted) {
+        setState(() {
+          _isScanning = false;
+        });
+      }
+    }, onError: (_) {
+      if (mounted) {
+        setState(() {
+          _isScanning = false;
+        });
+      }
+    });
+  }
+
+  Future<void> _selectDlnaDevice(CastDevice device) async {
+    setState(() {
+      _connectingDevice = device;
+    });
+    try {
+      await _dlnaService.disconnect();
+      final success = await _dlnaService.connect(device);
+      if (success) {
+        await _audioHandler.connectToDlna(_dlnaService);
+      }
+    } catch (_) {}
+    if (mounted) {
+      setState(() {
+        _connectingDevice = null;
+      });
+    }
+  }
+
+  Future<void> _selectLocalDevice() async {
+    await _audioHandler.disconnectFromDlna();
+  }
+
+  Future<void> _connectManually() async {
+    final ip = _ipController.text.trim();
+    if (ip.isEmpty) return;
+    setState(() {
+      _isManualConnecting = true;
+    });
+    try {
+      final device = await _dlnaService.discoverDeviceByAddress(ip);
+      if (device != null) {
+        await _dlnaService.disconnect();
+        final success = await _dlnaService.connect(device);
+        if (success) {
+          await _audioHandler.connectToDlna(_dlnaService);
+          if (mounted) {
+            setState(() {
+              _showManualEntry = false;
+              _isManualConnecting = false;
+            });
+          }
+          return;
+        }
+      }
+      if (mounted) {
+        setState(() {
+          _isManualConnecting = false;
+        });
+        GlobalSnackbar.error(
+          Exception(AppLocalizations.of(context)!.noDeviceFoundAt(ip)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isManualConnecting = false;
+        });
+        GlobalSnackbar.error(e);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final isDlnaMode = _audioHandler.isDlnaMode;
+
+    final items = <Widget>[];
+
+    // "This Device" — local playback
+    items.add(ToggleableListTile(
+      title: l10n.thisDevice,
+      subtitle: AppLocalizations.of(context)!.deviceType("speaker"),
+      leading: Container(
+        padding: const EdgeInsets.all(16.0),
+        color: theme.colorScheme.primary.withOpacity(0.3),
+        child: Icon(TablerIcons.device_speaker),
+      ),
+      icon: isDlnaMode ? TablerIcons.device_speaker : TablerIcons.device_speaker_filled,
+      state: !isDlnaMode,
+      onToggle: (_) => _selectLocalDevice(),
+      confirmationFeedback: false,
+      enabled: true,
+    ));
+
+    // Discovered DLNA devices
+    for (final device in _devices) {
+      final isActive = isDlnaMode &&
+          _connectedDevice?.name == device.name;
+      final isConnecting = _connectingDevice == device;
+      items.add(ToggleableListTile(
+        title: device.name,
+        subtitle: device.address.address,
+        leading: Container(
+          padding: const EdgeInsets.all(16.0),
+          color: theme.colorScheme.primary.withOpacity(0.3),
+          child: Icon(TablerIcons.cast),
+        ),
+        icon: TablerIcons.cast,
+        state: isActive,
+        isLoading: isConnecting,
+        onToggle: (_) => _selectDlnaDevice(device),
+        confirmationFeedback: false,
+        enabled: true,
+      ));
+    }
+
+    // Scanning indicator
+    if (_isScanning && _devices.isEmpty) {
+      items.add(const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Center(child: CircularProgressIndicator.adaptive()),
+      ));
+    }
+
+    // No devices found message
+    if (!_isScanning && _devices.isEmpty) {
+      items.add(Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Text(
+            l10n.noDevicesFound,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ));
+    }
+
+    // Manual IP entry
+    if (!_showManualEntry) {
+      items.add(Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Center(
+          child: CTAMedium(
+            text: l10n.addDeviceManually,
+            icon: TablerIcons.plus,
+            onPressed: () {
+              setState(() {
+                _showManualEntry = true;
+              });
+            },
+          ),
+        ),
+      ));
+    } else {
+      items.add(Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _ipController,
+                decoration: InputDecoration(
+                  hintText: "192.168.0.5",
+                  isDense: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+                enabled: !_isManualConnecting,
+                onSubmitted: (_) => _connectManually(),
+              ),
+            ),
+            const SizedBox(width: 8),
+            _isManualConnecting
+                ? const SizedBox(
+                    width: 24, height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : IconButton(
+                    icon: Icon(TablerIcons.send),
+                    onPressed: _connectManually,
+                  ),
+          ],
+        ),
+      ));
+    }
+
+    return SliverList(
+      delegate: SliverChildListDelegate.fixed(items),
+    );
   }
 }

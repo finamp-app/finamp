@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:balanced_text/balanced_text.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/PlayerScreen/control_area.dart';
+
 import 'package:finamp/components/PlayerScreen/player_screen_album_image.dart';
 import 'package:finamp/components/PlayerScreen/player_screen_appbar_title.dart';
 import 'package:finamp/components/PlayerScreen/player_split_screen_scaffold.dart';
@@ -200,7 +201,6 @@ class _PlayerScreenContent extends ConsumerWidget {
             toolbarHeight: toolbarHeight,
             title: PlayerScreenAppBarTitle(maxLines: maxToolbarLines),
             leading: usingPlayerSplitScreen ? null : FinampAppBarBackButton(dismissDirection: AxisDirection.down),
-            actions: [],
           ),
           // Required for sleep timer input
           resizeToAvoidBottomInset: false,
