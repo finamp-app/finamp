@@ -1,0 +1,39 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    clang cmake git ninja-build pkg-config \
+    libgtk-3-dev liblzma-dev libstdc++-12-dev \
+    openjdk-17-jdk-headless \
+    unzip xz-utils curl wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Android command-line tools
+RUN mkdir -p /opt/android-sdk/cmdline-tools && \
+    wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O /tmp/cmdline-tools.zip && \
+    unzip -q /tmp/cmdline-tools.zip -d /opt/android-sdk/cmdline-tools && \
+    mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest && \
+    rm /tmp/cmdline-tools.zip
+
+ENV ANDROID_HOME=/opt/android-sdk
+ENV ANDROID_SDK_ROOT=/opt/android-sdk
+ENV PATH="${PATH}:/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools"
+
+# Accept Android SDK licenses and install required components
+RUN yes | sdkmanager --licenses > /dev/null 2>&1 && \
+    sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;27.0.12077973" > /dev/null 2>&1
+
+# Clone Flutter 3.41.0 (Dart 3.9.0)
+RUN git clone --depth 1 -b 3.41.0 https://github.com/flutter/flutter.git /opt/flutter
+ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:${PATH}"
+
+# Pre-cache Flutter artifacts
+RUN flutter --version
+
+# Install Rust (needed by flutter_discord_rpc via cargokit)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+WORKDIR /app
