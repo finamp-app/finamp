@@ -26,6 +26,7 @@ import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'android_auto_helper.dart';
+import 'dlna_service.dart';
 import 'finamp_settings_helper.dart';
 import 'ios_helpers.dart';
 import 'metadata_provider.dart';
@@ -170,6 +171,37 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   late final BehaviorSubject<FadeState> fadeState;
 
   final outputSwitcherChannel = MethodChannel('com.unicornsonlsd.finamp/output_switcher');
+
+  /// When true, audio output is routed to a DLNA device instead of the local
+  /// [AudioPlayer]. All play/pause/seek/skip operations are sent to the DLNA
+  /// device via [_dlnaService].
+  bool _isDlnaMode = false;
+
+  /// The DLNA service used for device discovery and playback control.
+  DlnaService? _dlnaService;
+
+  /// Subscription to DLNA playback status (position, state, duration).
+  StreamSubscription<DlnaPlaybackStatus>? _dlnaStatusSub;
+
+  /// The last known DLNA playback status. Used for progress reporting and UI.
+  DlnaPlaybackStatus _dlnaStatus = DlnaPlaybackStatus(
+    state: DlnaPlaybackState.stopped,
+    position: Duration.zero,
+    duration: Duration.zero,
+  );
+
+  /// Whether we are currently loading a new track onto the DLNA device.
+  /// Prevents auto-advance from firing during track transitions.
+  bool _isDlnaLoadingTrack = false;
+
+  /// Whether audio is currently being routed to a DLNA device.
+  bool get isDlnaMode => _isDlnaMode;
+
+  /// The currently connected DLNA device name, or null if not casting.
+  String? get dlnaDeviceName => _dlnaService?.connectedDevice?.name;
+
+  /// The current DLNA playback status. Used by UI when casting.
+  DlnaPlaybackStatus get dlnaStatus => _dlnaStatus;
 
   /// Some Bluetooth headsets send skip and pause/play media button events in
   /// very quick succession for a double-tap skip gesture. This guard ignores a
@@ -551,13 +583,20 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       for (final queueItem in queueItems) {
         audioSources.add(await _queueItemToAudioSource(queueItem));
       }
-      return await _player.setAudioSources(
+      final result = await _player.setAudioSources(
         audioSources,
         preload: preload,
         initialIndex: initialIndex,
         initialPosition: initialPosition,
         shuffleOrder: shuffleOrder,
       );
+
+      // If in DLNA mode, load the first track onto the DLNA device
+      if (_isDlnaMode && _dlnaService != null) {
+        await _loadCurrentTrackToDlna();
+      }
+
+      return result;
     } on PlayerException catch (e) {
       _audioServiceBackgroundTaskLogger.severe("Player error code ${e.code}: ${e.message}");
       GlobalSnackbar.error(e);
@@ -611,6 +650,11 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     _audioServiceBackgroundTaskLogger.fine(
       "play() start: disableFade=$disableFade, playing=${_player.playing}, fadeDirection=${fadeState.value.fadeDirection}, currentIndex=${_player.currentIndex}, position=${_player.position}",
     );
+    if (_isDlnaMode && _dlnaService != null) {
+      _dlnaService!.play();
+      _broadcastDlnaPlaybackState(playing: true);
+      return;
+    }
     if (_shouldIgnorePlayPauseAfterRecentSkip) {
       return;
     }
@@ -642,6 +686,11 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     _audioServiceBackgroundTaskLogger.fine(
       "pause() start: disableFade=$disableFade, playing=${_player.playing}, fadeDirection=${fadeState.value.fadeDirection}, currentIndex=${_player.currentIndex}, position=${_player.position}",
     );
+    if (_isDlnaMode && _dlnaService != null) {
+      _dlnaService!.pause();
+      _broadcastDlnaPlaybackState(playing: false);
+      return;
+    }
     if (_shouldIgnorePlayPauseAfterRecentSkip) {
       return;
     }
@@ -756,6 +805,11 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     try {
       _audioServiceBackgroundTaskLogger.info("Audio service received stop command");
 
+      if (_isDlnaMode && _dlnaService != null) {
+        await _dlnaService!.stop();
+        _broadcastDlnaPlaybackState(playing: false);
+      }
+
       if (FinampSettingsHelper.finampSettings.clearQueueOnStopEvent) {
         await GetIt.instance<QueueService>().stopAndClearQueue();
       } else {
@@ -812,6 +866,19 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       "skipToPrevious() start: forceSkip=$forceSkip, playing=${_player.playing}, fadeDirection=${fadeState.value.fadeDirection}, hasPrevious=${_player.hasPrevious}, loopMode=${_player.loopMode}, currentIndex=${_player.currentIndex}, position=${_player.position}",
     );
     _lastSkipCommandAt = DateTime.now();
+    if (_isDlnaMode && _dlnaService != null) {
+      if (_dlnaStatus.position.inSeconds >= 5) {
+        // Restart current track
+        await _loadCurrentTrackToDlna();
+      } else if (_player.hasPrevious) {
+        await _player.seekToPrevious();
+        await _loadCurrentTrackToDlna();
+      } else {
+        // No previous track — restart from beginning
+        await _loadCurrentTrackToDlna();
+      }
+      return;
+    }
     bool doSkip = true;
 
     try {
@@ -848,6 +915,16 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       "skipToNext() start: playing=${_player.playing}, fadeDirection=${fadeState.value.fadeDirection}, hasNext=${_player.hasNext}, loopMode=${_player.loopMode}, currentIndex=${_player.currentIndex}, position=${_player.position}",
     );
     _lastSkipCommandAt = DateTime.now();
+    if (_isDlnaMode && _dlnaService != null) {
+      if (_player.loopMode == LoopMode.one || !_player.hasNext) {
+        // Use skipByOffset to handle loop mode wrapping properly
+        await skipByOffset(1);
+      } else {
+        await _player.seekToNext();
+      }
+      await _loadCurrentTrackToDlna();
+      return;
+    }
     try {
       if (_player.loopMode == LoopMode.one || !_player.hasNext) {
         // if the user manually skips to the next track, they probably want to actually skip to the next track
@@ -895,6 +972,12 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   Future<void> skipToIndex(int index) async {
     _audioServiceBackgroundTaskLogger.fine("skipping to index: $index");
 
+    if (_isDlnaMode && _dlnaService != null) {
+      await _player.seek(Duration.zero, index: _player.shuffleModeEnabled ? shuffleIndices[index] : index);
+      await _loadCurrentTrackToDlna();
+      return;
+    }
+
     try {
       await _player.seek(Duration.zero, index: _player.shuffleModeEnabled ? shuffleIndices[index] : index);
     } catch (e) {
@@ -905,6 +988,10 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
   @override
   Future<void> seek(Duration position) async {
+    if (_isDlnaMode && _dlnaService != null) {
+      await _dlnaService!.seek(position);
+      return;
+    }
     try {
       await _player.seek(position);
     } catch (e) {
@@ -1214,6 +1301,262 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   //   return sleepTimer.getRemaining();
   // }
 
+  // ─── DLNA / Cast output methods ───────────────────────────────────────────
+
+  /// Connect to a DLNA device and switch audio output to it.
+  ///
+  /// Pauses the local player, connects to the DLNA device, and loads the
+  /// current track onto it. The local [AudioPlayer] is kept in a paused state
+  /// so the queue state stays consistent.
+  Future<bool> connectToDlna(DlnaService dlnaService) async {
+    try {
+      _audioServiceBackgroundTaskLogger.info("Switching output to DLNA device");
+
+      _dlnaService = dlnaService;
+      _isDlnaMode = true;
+
+      // Listen to DLNA status updates for position, state, and auto-advance
+      _dlnaStatusSub?.cancel();
+      _dlnaStatusSub = dlnaService.statusStream.listen((status) {
+        _dlnaStatus = status;
+
+        // Broadcast the DLNA position/state as a PlaybackState so the UI
+        // (progress slider, player buttons) updates correctly.
+        _broadcastDlnaPlaybackState(playing: status.state == DlnaPlaybackState.playing);
+
+        // Auto-advance when the DLNA device reports playback has stopped
+        // after playing (track finished). We check !_isDlnaLoadingTrack to
+        // avoid advancing during track transitions.
+        if (status.state == DlnaPlaybackState.stopped &&
+            !_isDlnaLoadingTrack) {
+          // Only auto-advance if we were actually playing (position > 0)
+          // and the track reached near the end (position close to duration).
+          // This prevents false auto-advance when the device reports STOPPED
+          // during connection/startup (before playback starts).
+          if (status.duration > Duration.zero &&
+              status.position > const Duration(seconds: 3) &&
+              (status.duration - status.position).abs() <
+                  const Duration(seconds: 5)) {
+            _audioServiceBackgroundTaskLogger.info(
+                "DLNA track finished, auto-advancing");
+            skipToNext();
+          }
+        }
+      });
+
+      // Pause the local player — we keep the queue state but don't play locally
+      if (_player.playing) {
+        await _player.pause();
+      }
+
+      // Load the current track onto the DLNA device, if we have a queue
+      if (_player.sequence.isNotEmpty && _player.currentIndex != null) {
+        await _loadCurrentTrackToDlna();
+      }
+
+      return true;
+    } catch (e) {
+      _audioServiceBackgroundTaskLogger.severe("Failed to connect DLNA: $e");
+      _isDlnaMode = false;
+      _dlnaService = null;
+      return false;
+    }
+  }
+
+  /// Disconnect from the DLNA device and resume local playback.
+  ///
+  /// Stops the DLNA device, resumes the local [AudioPlayer] from the DLNA's
+  /// last known position.
+  Future<void> disconnectFromDlna() async {
+    _audioServiceBackgroundTaskLogger.info("Disconnecting DLNA output");
+
+    _dlnaStatusSub?.cancel();
+    _dlnaStatusSub = null;
+
+    // Seek the local player to the DLNA's last position before switching back
+    if (_dlnaStatus.position > Duration.zero && _player.currentIndex != null) {
+      try {
+        await _player.seek(_dlnaStatus.position);
+      } catch (e) {
+        _audioServiceBackgroundTaskLogger.warning(
+            "Could not seek local player to DLNA position: $e");
+      }
+    }
+
+    if (_dlnaService != null) {
+      await _dlnaService!.stop();
+    }
+
+    _isDlnaMode = false;
+    _dlnaService = null;
+    _dlnaStatus = DlnaPlaybackStatus(
+      state: DlnaPlaybackState.stopped,
+      position: Duration.zero,
+      duration: Duration.zero,
+    );
+
+    // Resume local playback
+    if (_player.processingState != ProcessingState.completed) {
+      await _player.play();
+    }
+  }
+
+  /// Load the current track (based on _player.currentIndex) onto the DLNA
+  /// device. Used on track changes and initial connection.
+  Future<void> _loadCurrentTrackToDlna() async {
+    final dlnaService = _dlnaService;
+    if (dlnaService == null || !dlnaService.isConnected) return;
+
+    final currentIndex = _player.currentIndex;
+    if (currentIndex == null || _player.sequence.isEmpty) return;
+
+    _isDlnaLoadingTrack = true;
+
+    try {
+      final queueItem = _player.sequence[currentIndex].tag as FinampQueueItem?;
+      if (queueItem == null) return;
+
+      final item = queueItem.item;
+      final title = item.title;
+      final imageUrl = item.artUri?.toString();
+
+      final isDownloaded = item.extras?["downloadedTrackPath"] != null;
+
+      // Determine the MIME type from the Jellyfin container field so the
+      // DLNA device gets the correct protocolInfo (e.g. audio/mpeg for MP3,
+      // audio/flac for FLAC). Falls back to "audio/mpeg" if unknown.
+      final itemJson = item.extras?["itemJson"] as Map<String, dynamic>?;
+      final container = itemJson?["Container"] as String?;
+      final mimeType = _dlnaMimeTypeFromContainer(container);
+
+      // Pass the current local playback position so the DLNA device
+      // resumes from where the user left off.
+      final startPosition = _player.position;
+
+      if (isDownloaded) {
+        // Serve the downloaded file via the HTTP proxy
+        final downloadedPath = item.extras!["downloadedTrackPath"] as String;
+        final success = await dlnaService.loadMedia(
+          filePath: downloadedPath,
+          title: title,
+          imageUrl: imageUrl,
+          mimeType: mimeType,
+          startPosition: startPosition,
+        );
+        if (!success) {
+          _audioServiceBackgroundTaskLogger.warning(
+              "Failed to load downloaded song on DLNA");
+        }
+      } else {
+        // Build the direct-play URL (no transcode for DLNA — most devices
+        // can't handle HLS)
+        final uri = await _trackUriForDlna(item);
+        final success = await dlnaService.loadMedia(
+          url: uri.toString(),
+          title: title,
+          imageUrl: imageUrl,
+          mimeType: mimeType,
+          startPosition: startPosition,
+        );
+        if (!success) {
+          _audioServiceBackgroundTaskLogger.warning(
+              "Failed to load streaming song on DLNA");
+        }
+      }
+
+      // Update mediaItem so the UI reflects the current track
+      mediaItem.add(item);
+    } catch (e) {
+      _audioServiceBackgroundTaskLogger.severe(
+          "Error loading track to DLNA: $e");
+    } finally {
+      _isDlnaLoadingTrack = false;
+    }
+  }
+
+  /// Build the media URL for a [MediaItem] to send to a DLNA device.
+  ///
+  /// Unlike [_trackUri], this always uses direct play (no HLS/transcode) since
+  /// most DLNA devices don't support HLS. The DLNA device fetches the URL
+  /// itself, so we don't need to be on Android/iOS.
+  Future<Uri> _trackUriForDlna(MediaItem mediaItem) async {
+    final finampUserHelper = GetIt.instance<FinampUserHelper>();
+
+    final parsedBaseUrl = Uri.parse(finampUserHelper.currentUser!.baseURL);
+
+    List<String> builtPath = List.from(parsedBaseUrl.pathSegments);
+    Map<String, String> queryParameters = Map.from(parsedBaseUrl.queryParameters);
+
+    // Include the API key so the DLNA device can authenticate
+    queryParameters["ApiKey"] = finampUserHelper.currentUser!.accessToken;
+
+    // Always use direct play for DLNA — most devices can't handle HLS
+    builtPath.addAll(["Items", mediaItem.extras!["itemJson"]["Id"] as String, "File"]);
+
+    return Uri(
+      host: parsedBaseUrl.host,
+      port: parsedBaseUrl.port,
+      scheme: parsedBaseUrl.scheme,
+      userInfo: parsedBaseUrl.userInfo,
+      pathSegments: builtPath,
+      queryParameters: queryParameters,
+    );
+  }
+
+  /// Map a Jellyfin container string to a MIME type for DLNA protocolInfo.
+  ///
+  /// Jellyfin container values include: "mp3", "flac", "wav", "m4a", "aac",
+  /// "ogg", "wma", "ape", "ac3", "opus", "webm", "mp4", etc.
+  /// Returns null if the container is unknown or null — the caller should
+  /// default to "audio/mpeg" in that case.
+  String? _dlnaMimeTypeFromContainer(String? container) {
+    if (container == null) return null;
+    return switch (container.toLowerCase()) {
+      'mp3' => 'audio/mpeg',
+      'flac' => 'audio/flac',
+      'wav' || 'wave' => 'audio/wav',
+      'm4a' => 'audio/m4a',
+      'aac' => 'audio/aac',
+      'ogg' || 'oggpag' || 'opus' => 'audio/ogg',
+      'wma' => 'audio/x-ms-wma',
+      'ape' => 'audio/ape',
+      'ac3' => 'audio/ac3',
+      'adts' => 'audio/vnd.dlna.adts',
+      _ => null, // unknown — caller defaults to audio/mpeg
+    };
+  }
+
+  /// Broadcast a PlaybackState to AudioService clients reflecting DLNA state.
+  void _broadcastDlnaPlaybackState({required bool playing}) {
+    final currentIndex = _player.currentIndex;
+    playbackState.add(PlaybackState(
+      controls: [
+        MediaControl.skipToPrevious,
+        if (playing) MediaControl.pause else MediaControl.play,
+        MediaControl.stop,
+        MediaControl.skipToNext,
+      ],
+      systemActions: const {
+        MediaAction.seek,
+        MediaAction.seekForward,
+        MediaAction.seekBackward,
+      },
+      androidCompactActionIndices: const [0, 1, 3],
+      processingState: AudioProcessingState.ready,
+      playing: playing,
+      updatePosition: _dlnaStatus.position,
+      bufferedPosition: _dlnaStatus.position,
+      speed: 1.0,
+      queueIndex: currentIndex,
+      shuffleMode: _player.shuffleModeEnabled
+          ? AudioServiceShuffleMode.all
+          : AudioServiceShuffleMode.none,
+      repeatMode: _audioServiceRepeatMode(_player.loopMode),
+    ));
+  }
+
+  // ─── End DLNA methods ──────────────────────────────────────────────────────
+
   /// Transform a just_audio event into an audio_service state.
   ///
   /// This method is used from the constructor. Every event received from the
@@ -1303,7 +1646,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   SequenceState get sequenceState => _player.sequenceState;
   double get volume => (_volume._internalVolume * 100).roundToDouble() / 100;
   bool get paused => !_player.playing;
-  Duration get playbackPosition => _player.position;
+  Duration get playbackPosition => _isDlnaMode ? _dlnaStatus.position : _player.position;
 
   void onQueueServiceAvailable() {
     // Moved here because currentTrackMetadataProvider depends on queueService
