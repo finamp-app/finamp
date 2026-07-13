@@ -816,6 +816,15 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
   Future<void> handleEndOfQueue() async {
     try {
+      // While controlling a remote session, the local player is only a paused
+      // queue mirror: rebuilding it (e.g. when adopting the remote queue)
+      // emits spurious completed events, and acting on those would command
+      // the remote (restart its queue / seek). The remote handles its own
+      // queue end.
+      if (_remoteSession != null) {
+        _audioServiceBackgroundTaskLogger.fine("Ignoring queue completed event from the local remote-session mirror");
+        return;
+      }
       _audioServiceBackgroundTaskLogger.info("Queue completed.");
       // A full stop will trigger a re-shuffle with an unshuffled first
       // item, so only pause.
