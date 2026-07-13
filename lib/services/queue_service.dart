@@ -878,7 +878,9 @@ class QueueService {
       if (remoteSession != null) {
         // Hand the new queue off to the connected remote session instead of
         // starting local playback; the local player stays a paused mirror.
-        await remoteSession.pushQueueToRemote(autoplay: beginPlaying, startPosition: initialSeekPosition);
+        // The remote always starts playing (the PlayTo API can't hand a
+        // queue off without starting playback).
+        await remoteSession.pushQueueToRemote(startPosition: initialSeekPosition);
       } else if (beginPlaying) {
         // don't await this, because it will not return until playback is finished
         unawaited(_audioHandler.play(disableFade: true, localOnly: true));

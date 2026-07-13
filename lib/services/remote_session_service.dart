@@ -86,12 +86,6 @@ class RemoteSessionService {
   static const Duration _watchdogInterval = Duration(seconds: 30);
   Timer? _watchdogTimer;
 
-  /// Pause the remote as soon as it reports playing: used when connecting (or
-  /// pushing a new queue) while local playback was paused, since the PlayTo
-  /// API has no way to start paused.
-  bool _pausePending = false;
-  DateTime? _pausePendingDeadline;
-
   // ---- queue sync bookkeeping (echo suppression) ----
 
   /// While we're pushing our own queue to the remote, its NowPlayingQueue
@@ -190,7 +184,6 @@ class RemoteSessionService {
     _activeSessionId = sessionId;
     _lastKnownPositionTicks = null;
     _lastKnownItemId = null;
-    _pausePending = false;
     // When handing off a queue, the remote plays our current effective order,
     // so it inherits the local shuffle state; an adopted queue starts linear.
     _remotePlaybackOrder = migrateQueue ? _queueService.playbackOrder : FinampPlaybackOrder.linear;
@@ -203,7 +196,9 @@ class RemoteSessionService {
 
     try {
       if (migrateQueue) {
-        await pushQueueToRemote(autoplay: wasPlaying, startPosition: localPosition);
+        // The PlayTo API has no way to hand a queue off without starting
+        // playback, so the remote starts playing even if local was paused.
+        await pushQueueToRemote(startPosition: localPosition);
       } else {
         // Attach to existing playback: adopt whatever the remote is playing.
         _sessionStream.add(session);
@@ -270,7 +265,6 @@ class RemoteSessionService {
     _activeSessionId = null;
     _lastKnownPositionTicks = null;
     _lastKnownItemId = null;
-    _pausePending = false;
     _adoptScheduled = false;
     _lastPushedQueueIds = [];
     _seededVolumeLevel = null;
@@ -359,23 +353,6 @@ class RemoteSessionService {
     final reportedTicks = session.playState?.positionTicks;
     if (reportedTicks != null) {
       _lastKnownPositionTicks = reportedTicks;
-    }
-
-    // Connect-while-paused: the PlayTo API always starts playback, so pause
-    // the remote as soon as it reports the handed-off item playing.
-    if (_pausePending) {
-      if (_pausePendingDeadline != null && DateTime.now().isAfter(_pausePendingDeadline!)) {
-        // Normal when the immediate Pause sent with the queue push landed:
-        // the remote then never reports playing and the backstop just expires.
-        _log.fine("Pause-on-start window expired without the remote reporting playback; disarming");
-        _pausePending = false;
-      } else if (itemId != null && !(session.playState?.isPaused ?? true)) {
-        _log.info("Remote started playing while a pause was pending; pausing it");
-        _pausePending = false;
-        unawaited(pause());
-        // Present the state as already paused to avoid a flash of "playing".
-        session.playState?.isPaused = true;
-      }
     }
 
     _log.finer(
@@ -665,10 +642,10 @@ class RemoteSessionService {
 
   /// Hands the local queue off to the remote session, continuing the current
   /// track from [startPosition] (see [_playQueueFromIndex]).
-  Future<void> pushQueueToRemote({required bool autoplay, Duration? startPosition}) async {
+  Future<void> pushQueueToRemote({Duration? startPosition}) async {
     if (!isRemote) return;
     final currentIndex = _queueService.getQueue().previousTracks.length;
-    await _playQueueFromIndex(currentIndex, startPosition: startPosition, autoplay: autoplay);
+    await _playQueueFromIndex(currentIndex, startPosition: startPosition);
   }
 
   /// Forwards items added to the local queue to the remote session's queue
@@ -694,9 +671,8 @@ class RemoteSessionService {
   /// command (remove, reorder).
   Future<void> resyncQueueToRemote() async {
     if (!isRemote) return;
-    final playing = remotePlaybackState?.playing ?? false;
     final currentIndex = _queueService.getQueue().previousTracks.length;
-    await _playQueueFromIndex(currentIndex, startPosition: remotePlaybackState?.position, autoplay: playing);
+    await _playQueueFromIndex(currentIndex, startPosition: remotePlaybackState?.position);
   }
 
   /// Jumps the remote to the queue item [offset] tracks away from the current
@@ -715,7 +691,7 @@ class RemoteSessionService {
   /// dropped), capped flat at [_maxTracksPerPlayNow]: several remote clients
   /// ignore a nonzero StartIndex and would start at the first sent track, so
   /// the request never relies on it.
-  Future<void> _playQueueFromIndex(int targetIndex, {Duration? startPosition, bool autoplay = true}) async {
+  Future<void> _playQueueFromIndex(int targetIndex, {Duration? startPosition}) async {
     final sessionId = _activeSessionId;
     if (sessionId == null) return;
     final fullQueue = _queueService.getQueue().fullQueue;
@@ -725,30 +701,14 @@ class RemoteSessionService {
     final itemIds = window.map((item) => item.baseItemId).toList();
     _lastPushedQueueIds = itemIds.map((id) => _normalizeId(id.raw)).toList();
     _suppressAdoptUntil = DateTime.now().add(const Duration(seconds: 20));
-    if (!autoplay) {
-      _pausePending = true;
-      _pausePendingDeadline = DateTime.now().add(const Duration(seconds: 10));
-    }
     _log.info(
-      "Sending ${itemIds.length} queue items to remote session $sessionId, "
-      "autoplay=$autoplay, startPosition=$startPosition",
+      "Sending ${itemIds.length} queue items to remote session $sessionId, startPosition=$startPosition",
     );
     await _jellyfinApiHelper.sendPlayToSession(
       sessionId: sessionId,
       itemIds: itemIds,
       startPositionTicks: startPosition == null ? null : startPosition.inMilliseconds * _ticksPerMillisecond,
     );
-    if (!autoplay) {
-      // The PlayTo API has no way to start paused, so pause right after the
-      // PlayNow request to keep the audible blip as short as possible.
-      // _pausePending stays armed as a backstop for receivers that drop a
-      // Pause arriving before their player has started.
-      try {
-        await pause();
-      } catch (e) {
-        _log.warning("Failed to pause remote right after sending the queue: $e");
-      }
-    }
   }
 
   /// Toggles the playback order on the remote client itself (SetShuffleQueue):
@@ -840,10 +800,6 @@ class RemoteSessionService {
   }
 
   Future<void> playPause() {
-    // An explicit user toggle overrides a pending connect-while-paused pause;
-    // otherwise the backstop in _applySessionUpdate would revert a resume
-    // issued within its window.
-    _pausePending = false;
     final playing = remotePlaybackState?.playing;
     if (playing != null) _presentPlaying(!playing);
     return _sendCommand("PlayPause");
@@ -855,8 +811,6 @@ class RemoteSessionService {
   }
 
   Future<void> unpause() {
-    // See playPause: a user-initiated resume cancels a pending pause.
-    _pausePending = false;
     _presentPlaying(true);
     return _sendCommand("Unpause");
   }
