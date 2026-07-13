@@ -86,6 +86,17 @@ class RemoteSessionService {
   static const Duration _watchdogInterval = Duration(seconds: 30);
   Timer? _watchdogTimer;
 
+  /// Non-null between pushing a queue to the remote and the remote reporting
+  /// playback of one of the pushed tracks: the mirrored track/position are
+  /// stale during that window, so the playback state is presented as loading.
+  /// The deadline is a backstop for remotes that never report the pushed
+  /// queue.
+  DateTime? _settleDeadline;
+
+  /// True while a pushed queue hasn't been confirmed playing by the remote
+  /// yet (see [_settleDeadline]).
+  bool get isSettling => _settleDeadline != null;
+
   // ---- queue sync bookkeeping (echo suppression) ----
 
   /// While we're pushing our own queue to the remote, its NowPlayingQueue
@@ -184,6 +195,7 @@ class RemoteSessionService {
     _activeSessionId = sessionId;
     _lastKnownPositionTicks = null;
     _lastKnownItemId = null;
+    _settleDeadline = null;
     // When handing off a queue, the remote plays our current effective order,
     // so it inherits the local shuffle state; an adopted queue starts linear.
     _remotePlaybackOrder = migrateQueue ? _queueService.playbackOrder : FinampPlaybackOrder.linear;
@@ -265,6 +277,7 @@ class RemoteSessionService {
     _activeSessionId = null;
     _lastKnownPositionTicks = null;
     _lastKnownItemId = null;
+    _settleDeadline = null;
     _adoptScheduled = false;
     _lastPushedQueueIds = [];
     _seededVolumeLevel = null;
@@ -353,6 +366,15 @@ class RemoteSessionService {
     final reportedTicks = session.playState?.positionTicks;
     if (reportedTicks != null) {
       _lastKnownPositionTicks = reportedTicks;
+    }
+
+    // A pushed queue has settled once the remote reports one of the pushed
+    // tracks as playing (or the backstop deadline passes).
+    if (_settleDeadline != null) {
+      if ((itemId != null && _lastPushedQueueIds.contains(_normalizeId(itemId))) ||
+          DateTime.now().isAfter(_settleDeadline!)) {
+        _settleDeadline = null;
+      }
     }
 
     _log.finer(
@@ -701,14 +723,23 @@ class RemoteSessionService {
     final itemIds = window.map((item) => item.baseItemId).toList();
     _lastPushedQueueIds = itemIds.map((id) => _normalizeId(id.raw)).toList();
     _suppressAdoptUntil = DateTime.now().add(const Duration(seconds: 20));
+    _settleDeadline = DateTime.now().add(const Duration(seconds: 10));
     _log.info(
       "Sending ${itemIds.length} queue items to remote session $sessionId, startPosition=$startPosition",
     );
-    await _jellyfinApiHelper.sendPlayToSession(
-      sessionId: sessionId,
-      itemIds: itemIds,
-      startPositionTicks: startPosition == null ? null : startPosition.inMilliseconds * _ticksPerMillisecond,
-    );
+    try {
+      await _jellyfinApiHelper.sendPlayToSession(
+        sessionId: sessionId,
+        itemIds: itemIds,
+        startPositionTicks: startPosition == null ? null : startPosition.inMilliseconds * _ticksPerMillisecond,
+      );
+    } catch (e) {
+      _settleDeadline = null;
+      rethrow;
+    }
+    // Present the settling state (loading) right away instead of after the
+    // next remote update.
+    unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
   }
 
   /// Toggles the playback order on the remote client itself (SetShuffleQueue):

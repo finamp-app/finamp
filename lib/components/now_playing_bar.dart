@@ -284,14 +284,24 @@ class NowPlayingBar extends ConsumerWidget {
                                           unawaited(audioHandler.togglePlayback());
                                         },
                                         color: Colors.white,
-                                        icon: Icon(
-                                          mediaState.playbackState.playing
-                                              ? mediaState.fadeState.fadeDirection != FadeDirection.fadeOut
-                                                    ? TablerIcons.player_pause
-                                                    : TablerIcons.player_play
-                                              : TablerIcons.player_play,
-                                          size: 32,
-                                        ),
+                                        // Show a spinner while the playback
+                                        // state is loading (e.g. a queue
+                                        // pushed to a remote session hasn't
+                                        // been confirmed playing yet).
+                                        icon: mediaState.playbackState.processingState == AudioProcessingState.loading
+                                            ? const SizedBox(
+                                                width: 28,
+                                                height: 28,
+                                                child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white),
+                                              )
+                                            : Icon(
+                                                mediaState.playbackState.playing
+                                                    ? mediaState.fadeState.fadeDirection != FadeDirection.fadeOut
+                                                          ? TablerIcons.player_pause
+                                                          : TablerIcons.player_play
+                                                    : TablerIcons.player_play,
+                                                size: 32,
+                                              ),
                                       ),
                                     ),
                                   ],

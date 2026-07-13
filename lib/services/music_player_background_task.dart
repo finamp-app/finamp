@@ -1284,7 +1284,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     // the remote instead of the (paused) local player, so every audio_service
     // consumer reflects remote playback. Buffered position is reported as zero
     // ("not cached"): the local buffer is meaningless for the remote stream.
-    final remoteState = _remoteSession?.remotePlaybackState;
+    final remoteSession = _remoteSession;
+    final remoteState = remoteSession?.remotePlaybackState;
     final playing = remoteState?.playing ?? _player.playing;
 
     // Sync playback state to iOS for CarPlay Now Playing screen
@@ -1340,8 +1341,11 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           ? const {MediaAction.seek, MediaAction.seekForward, MediaAction.seekBackward}
           : {},
       androidCompactActionIndices: const [0, 1, 2],
-      processingState: remoteState != null
-          ? AudioProcessingState.ready
+      // While a queue pushed to the remote hasn't settled yet (or no remote
+      // state has been received at all), the mirrored track/position are
+      // stale, so present a loading state instead of pretending to be ready.
+      processingState: remoteSession != null
+          ? (remoteSession.isSettling || remoteState == null ? AudioProcessingState.loading : AudioProcessingState.ready)
           : const {
               ProcessingState.idle: AudioProcessingState.idle,
               ProcessingState.loading: AudioProcessingState.loading,
