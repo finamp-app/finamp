@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/screens/customization_settings_screen.dart';
@@ -30,9 +31,39 @@ class PlayerSettingsScreen extends ConsumerWidget {
         padding: const EdgeInsets.only(bottom: 200.0),
         children: [
           ShowFeatureChipsToggle(),
-          if (ref.watch(finampSettingsProvider.featureChipsConfiguration).enabled) ...[
-            for (var feature in FinampFeatureChipType.values) FeatureChipToggle(feature: feature),
-          ],
+          if (ref.watch(finampSettingsProvider.featureChipsConfiguration).enabled)
+            ReorderableListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(), // Disable scrolling on inner list
+              buildDefaultDragHandles: false,
+              children:
+                  Set.of(
+                    ref
+                        .read(finampSettingsProvider.featureChipsConfiguration)
+                        .features
+                        .followedBy(FinampFeatureChipType.values),
+                  ).mapIndexed((index, feature) {
+                    return FeatureChipToggle(
+                      key: ValueKey(feature),
+                      feature: feature,
+                      index: index,
+                      canBeReordered: ref
+                          .read(finampSettingsProvider.featureChipsConfiguration)
+                          .features
+                          .contains(feature),
+                    );
+                  }).toList(),
+              onReorderItem: (oldIndex, newIndex) {
+                final oldFeatureChipsConfig = ref.read(finampSettingsProvider.featureChipsConfiguration);
+                final oldFeatures = List.of(oldFeatureChipsConfig.features);
+
+                // move all values below newIndex down by one
+                final oldFeature = oldFeatures[oldIndex];
+                oldFeatures.removeAt(oldIndex);
+                oldFeatures.insert(newIndex, oldFeature);
+                FinampSetters.setFeatureChipsConfiguration(oldFeatureChipsConfig.copyWith(features: oldFeatures));
+              },
+            ),
           ShowAlbumReleaseDateOnPlayerScreenToggle(),
           PlayerScreenMinimumCoverPaddingEditor(),
           SuppressPlayerPaddingSwitch(),
@@ -105,9 +136,11 @@ class ShowFeatureChipsToggle extends ConsumerWidget {
 }
 
 class FeatureChipToggle extends ConsumerWidget {
-  const FeatureChipToggle({super.key, required this.feature});
+  const FeatureChipToggle({super.key, required this.feature, required this.index, required this.canBeReordered});
 
   final FinampFeatureChipType feature;
+  final int index;
+  final bool canBeReordered;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -117,6 +150,9 @@ class FeatureChipToggle extends ConsumerWidget {
       child: SwitchListTile.adaptive(
         title: Text(context.l10n.featureChipName(feature.name)),
         subtitle: subtitle == "null" ? null : Text(subtitle),
+        secondary: canBeReordered
+            ? ReorderableDragStartListener(index: index, child: const Icon(Icons.drag_handle))
+            : null,
         value: ref.watch(finampSettingsProvider.featureChipsConfiguration).features.contains(feature),
         onChanged: (value) {
           final config = FinampSettingsHelper.finampSettings.featureChipsConfiguration;
@@ -126,9 +162,7 @@ class FeatureChipToggle extends ConsumerWidget {
           } else {
             feat.remove(feature);
           }
-          FinampSetters.setFeatureChipsConfiguration(
-            config.copyWith(features: FinampFeatureChipType.values.where((x) => feat.contains(x)).toList()),
-          );
+          FinampSetters.setFeatureChipsConfiguration(config.copyWith(features: feat));
         },
       ),
     );

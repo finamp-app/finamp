@@ -37,14 +37,7 @@ class TabsSettingsScreen extends ConsumerWidget {
         itemBuilder: (context, index) {
           return HideTabToggle(tabContentType: tabOrder[index], key: ValueKey(tabOrder[index]), index: index);
         },
-        onReorder: (oldIndex, newIndex) {
-          // For some weird reason newIndex is one above what it should be
-          // when oldIndex is lower. This if statement is in Flutter's
-          // ReorderableListView documentation.
-          if (oldIndex < newIndex) {
-            newIndex -= 1;
-          }
-
+        onReorderItem: (oldIndex, newIndex) {
           var currentTabOrder = List.of(tabOrder);
 
           // move all values below newIndex down by one

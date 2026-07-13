@@ -122,7 +122,7 @@ class FeatureState {
 
       if (feature == FinampFeatureChipType.additionalPeople && (currentTrack?.baseItem.people?.isNotEmpty ?? false)) {
         currentTrack?.baseItem.people?.forEach((person) {
-          features.add(FeatureProperties(type: feature, text: "${person.role}: ${person.name}"));
+          features.add(FeatureProperties(type: feature, text: "${person.role ?? person.type}: ${person.name}"));
         });
       }
 
