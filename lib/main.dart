@@ -109,6 +109,7 @@ import 'screens/transcoding_settings_screen.dart';
 import 'screens/view_selector.dart';
 import 'screens/volume_normalization_settings_screen.dart';
 import 'services/audio_service_helper.dart';
+import 'services/dlna_service.dart';
 import 'services/jellyfin_api_helper.dart';
 import 'services/music_player_background_task.dart';
 import 'setup_logging.dart';
@@ -160,6 +161,8 @@ Future<void> main({bool integrationTesting = false, bool loginTesting = false}) 
     _mainLog.info("Setup os integrations");
     await _setupPlayOnService();
     _mainLog.info("Setup PlayOnService");
+    _setupDlnaService();
+    _mainLog.info("Setup DLNA service");
     await _setupPlaybackServices();
     _mainLog.info("Setup audio player");
     await _setupKeepScreenOnHelper();
@@ -231,6 +234,10 @@ Future<void> _setupJellyfinApiData() async {
 
 void _setupOfflineListenLogHelper() {
   GetIt.instance.registerSingleton(OfflineListenLogHelper());
+}
+
+void _setupDlnaService() {
+  GetIt.instance.registerSingleton(DlnaService());
 }
 
 Future<void> _setupDownloadsHelper() async {
