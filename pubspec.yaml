@@ -77,6 +77,8 @@ dependencies:
   file_picker: ^11.0.2
   file: ^7.0.1
   permission_handler: ^12.0.0
+  dart_cast: ^0.6.0
+  multicast_dns: ^0.3.3
   provider: ^6.0.5
   uuid: ^4.5.1
   infinite_scroll_pagination: ^5.0.0
