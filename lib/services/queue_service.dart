@@ -943,19 +943,27 @@ class QueueService {
     }
   }
 
-  Future<void> stopAndClearQueue() async {
+  /// Stops playback and clears the queue. While controlling a remote session,
+  /// the remote queue is stopped too but the connection is kept, so the next
+  /// queue started locally plays on the remote again; [disconnectRemote]
+  /// additionally tears the connection down (e.g. on logout).
+  Future<void> stopAndClearQueue({bool disconnectRemote = false}) async {
     queueServiceLogger.info("Stopping playback");
 
-    // If we're controlling a remote session, stop it and leave remote mode
-    // first (before clearing local state, so nothing gets echoed to the
-    // remote and the commands below hit the local player). Deliberately not
-    // using _remoteSessionIfConnected: stopping is a user command, not an
-    // echo, and must reach the remote even while a remote-initiated update
-    // is being applied to the local queue.
+    // If we're controlling a remote session, stop it first (before clearing
+    // local state, so nothing gets echoed to the remote and the commands
+    // below hit the local player). Deliberately not using
+    // _remoteSessionIfConnected: stopping is a user command, not an echo,
+    // and must reach the remote even while a remote-initiated update is
+    // being applied to the local queue.
     if (GetIt.instance.isRegistered<RemoteSessionService>()) {
       final remoteSession = GetIt.instance<RemoteSessionService>();
       if (remoteSession.isRemote) {
-        await remoteSession.stopAndDisconnect();
+        if (disconnectRemote) {
+          await remoteSession.stopAndDisconnect();
+        } else {
+          await remoteSession.stopRemote();
+        }
       }
     }
 

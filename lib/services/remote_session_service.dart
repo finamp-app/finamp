@@ -269,10 +269,34 @@ class RemoteSessionService {
     unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
   }
 
+  /// Stops the remote session's playback while staying connected: both ends
+  /// end up stopped together, and the next queue started locally is handed
+  /// off to the remote again. Used when the local queue is stopped while
+  /// connected.
+  Future<void> stopRemote() async {
+    if (!isRemote) return;
+    _log.info("Stopping playback on remote session $_activeSessionId (staying connected)");
+    _lastKnownItemId = null;
+    _lastKnownPositionTicks = null;
+    _settleDeadline = null;
+    _lastPushedQueueIds = [];
+    // The remote may still push updates reflecting its pre-stop queue; don't
+    // adopt those into the (now stopped) local queue.
+    _suppressAdoptUntil = DateTime.now().add(const Duration(seconds: 10));
+    // Present the stopped state immediately instead of the last mirrored one.
+    _sessionStream.add(null);
+    try {
+      await stop();
+    } catch (e) {
+      _log.warning("Failed to stop remote session: $e");
+    }
+    unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
+  }
+
   /// Stops the remote session's playback entirely and returns control to
   /// local playback, without migrating the remote position back. Used when
-  /// the queue is being discarded (e.g. stop-and-clear), where [disconnect]'s
-  /// pause-and-continue-locally behavior would be wrong.
+  /// the connection is being torn down completely (e.g. logout), where
+  /// [disconnect]'s pause-and-continue-locally behavior would be wrong.
   Future<void> stopAndDisconnect() async {
     if (!isRemote) return;
     _log.info("Stopping remote session $_activeSessionId and disconnecting");
@@ -427,8 +451,11 @@ class RemoteSessionService {
     final queueInSync = remoteIds == null || remoteIds.isEmpty || _isContiguousSublist(remoteIds, localFullIds);
 
     if (!queueInSync) {
-      if (DateTime.now().isBefore(_suppressAdoptUntil) && _isOwnPushEcho(remoteIds)) {
-        // Our own queue push is still propagating chunk by chunk.
+      // Suppress adoption while a change we sent (push, addition, stop) is
+      // still propagating: with no pushed queue to compare against, any
+      // mismatch during the window is assumed to be our own change echoing
+      // back; after a push, only its prefix is.
+      if (DateTime.now().isBefore(_suppressAdoptUntil) && (_lastPushedQueueIds.isEmpty || _isOwnPushEcho(remoteIds))) {
         return;
       }
       _scheduleAdopt();
@@ -542,8 +569,9 @@ class RemoteSessionService {
         _log.fine("Remote queue is in sync again; skipping adoption");
         return;
       }
-      if (DateTime.now().isBefore(_suppressAdoptUntil) && _isOwnPushEcho(remoteIdsNormalized)) {
-        _log.fine("Own queue push still propagating; skipping adoption");
+      if (DateTime.now().isBefore(_suppressAdoptUntil) &&
+          (_lastPushedQueueIds.isEmpty || _isOwnPushEcho(remoteIdsNormalized))) {
+        _log.fine("Own queue change still propagating; skipping adoption");
         return;
       }
       final idMap = <String, BaseItemDto>{
@@ -744,9 +772,7 @@ class RemoteSessionService {
     // the UI presents this expected state instead of the remote's stale one.
     _lastKnownItemId = window.first.baseItemId.raw;
     _lastKnownPositionTicks = (startPosition ?? Duration.zero).inMilliseconds * _ticksPerMillisecond;
-    _log.info(
-      "Sending ${itemIds.length} queue items to remote session $sessionId, startPosition=$startPosition",
-    );
+    _log.info("Sending ${itemIds.length} queue items to remote session $sessionId, startPosition=$startPosition");
     try {
       await _jellyfinApiHelper.sendPlayToSession(
         sessionId: sessionId,
@@ -830,6 +856,11 @@ class RemoteSessionService {
   }
 
   Future<void> unpause() {
+    // An idle remote (e.g. stopped while staying connected) has nothing to
+    // resume; hand the local queue off again instead.
+    if (!isSettling && currentRemoteState?.nowPlayingItem == null && _queueService.getQueue().currentTrack != null) {
+      return pushQueueToRemote(startPosition: _audioHandler.playbackPosition);
+    }
     _presentPlaying(true);
     return _sendCommand("Unpause");
   }

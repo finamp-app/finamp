@@ -783,12 +783,11 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     try {
       _audioServiceBackgroundTaskLogger.info("Audio service received stop command");
 
-      // Stopping while controlling a remote session stops the remote and
-      // returns to local mode, then applies the normal local stop behavior.
-      // stopAndClearQueue() stops the remote itself, so only handle the
-      // non-clearing path here to avoid sending Stop twice.
+      // Stopping while controlling a remote session also stops the remote,
+      // staying connected. stopAndClearQueue() stops the remote itself, so
+      // only handle the non-clearing path here to avoid sending Stop twice.
       if (_remoteSession != null && !FinampSettingsHelper.finampSettings.clearQueueOnStopEvent) {
-        await _remoteSession!.stopAndDisconnect();
+        await _remoteSession!.stopRemote();
       }
 
       if (FinampSettingsHelper.finampSettings.clearQueueOnStopEvent) {
