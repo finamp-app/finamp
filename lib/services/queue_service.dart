@@ -1218,6 +1218,9 @@ class QueueService {
         }
       }
       _buildQueueFromNativePlayerQueue();
+      // No incremental "remove" command exists for remote sessions, so re-send
+      // the queue to keep the remote in sync (same as removeAtOffset).
+      unawaited(_remoteSessionIfConnected?.resyncQueueToRemote());
     });
   }
 
