@@ -146,7 +146,7 @@
     "pathReturnSlashErrorMessage": "Les chemins qui retournent \"/\" ne peuvent pas être utilisés",
     "customLocationsBuggy": "Les emplacements personnalisés peuvent être extrêmement problématiques et ne sont pas recommandés dans la plupart des cas. Les emplacements situés dans le dossier système \"Musique\" empêchent l'enregistrement des pochettes d'album en raison des limitations de l'OS.",
     "enterLowPriorityStateOnPauseSubtitle": "Permet de supprimer la notification lorsque la lecture est en pause. Permet également à Android de fermer le service lorsqu'il est en pause.",
-    "shuffleAllTrackCount": "Lecture aléatoire de tous les titres",
+    "shuffleAllTrackCount": "Nombre de pistes aléatoires",
     "shuffleAllTrackCountSubtitle": "Nombre de titres à charger lorsque vous utilisez le bouton « Lecture aléatoire » dans l'onglet Titres ou l'écran Genre.",
     "viewType": "Disposition de l'affichage",
     "viewTypeSubtitle": "Type d'affichage pour l'écran Musique",
@@ -862,7 +862,7 @@
     "@queueRetryMessage": {
         "description": "Message displayed on now-playing bar when all items in a saved queue fail to load."
     },
-    "shuffleAlbumsToNextUp": "Lecture aléatoire des albums jusqu'au suivant",
+    "shuffleAlbumsToNextUp": "Ajoute les albums mélangés à la fin de la liste",
     "@shuffleAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of Next Up"
     },
@@ -1042,7 +1042,7 @@
     "@reportQueueToServer": {
         "description": "Label for the setting that toggles reporting of the current queue to the Jellyfin server"
     },
-    "startInstantMixForIndividualTracksSwitchSubtitle": "Lorsque cette option est activée, appuyer sur un titre dans l’onglet Titres lancera un mix instantané de celui-ci au lieu d’une unique lecture.",
+    "startInstantMixForIndividualTracksSwitchSubtitle": "Lorsque cette option est activée, le fait d'appuyer sur un morceau dans l'onglet « Titres » lance un mix instantané de ce morceau au lieu d'une simple lecture.",
     "repairDownloads": "Réparation des problèmes avec les fichiers téléchargés ou leurs métadonnées.",
     "@repairDownloads": {
         "description": "Tooltip for downloads repair button."
@@ -1079,7 +1079,7 @@
     "@confirmShuffleToQueue": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the regular queue"
     },
-    "shuffleAlbumsToQueue": "Lecture aléatoire des albums dans la file d'attente",
+    "shuffleAlbumsToQueue": "Ajoute les albums mélangés à la fin de la liste",
     "@shuffleAlbumsToQueue": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of the regular queue"
     },
@@ -1219,7 +1219,7 @@
         "description": "Subtitle for the setting that controls if timestamps are shown for lyrics"
     },
     "swipeLeftToRightActionSubtitle": "Action déclenchée lors du glissement d'un titre de gauche à droite dans la liste.",
-    "swipeLeftToRightAction": "Balayage à droite",
+    "swipeLeftToRightAction": "Action de balayage vers la droite",
     "appearsOnAlbums": "Apparaît dans",
     "albumArtists": "Artistes d'album",
     "performingArtists": "Artistes interprètes",
