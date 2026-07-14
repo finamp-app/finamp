@@ -474,7 +474,11 @@ class _OutputTargetListState extends State<OutputTargetList> {
     return ToggleableListTile(
       isLoading: _connectingToSessionId == session.id,
       title: _sessionDisplayName(session),
-      subtitle: session.client ?? AppLocalizations.of(context)!.deviceType("unknown"),
+      // Surface what the device is currently playing, so the user knows what
+      // they would take over before connecting.
+      subtitle: session.nowPlayingItem?.name != null
+          ? AppLocalizations.of(context)!.playOnSessionNowPlaying(session.nowPlayingItem!.name!)
+          : session.client ?? AppLocalizations.of(context)!.deviceType("unknown"),
       leading: Container(
         padding: const EdgeInsets.all(16.0),
         color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
