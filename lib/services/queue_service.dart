@@ -1444,27 +1444,16 @@ class QueueService {
   FinampPlaybackOrder get playbackOrder => _playbackOrder;
 
   Future<void> togglePlaybackOrder() async {
-    // While connected to a remote session, the order change happens on the
-    // remote client itself: it reorders its own queue, which is then adopted
-    // as the new local queue (the local mirror always stays linear).
-    final remoteSession = _remoteSessionIfConnected;
-    if (remoteSession != null) {
-      return remoteSession.toggleRemotePlaybackOrder();
-    }
     if (_playbackOrder == FinampPlaybackOrder.shuffled) {
       await setPlaybackOrder(FinampPlaybackOrder.linear);
     } else {
       await setPlaybackOrder(FinampPlaybackOrder.shuffled);
     }
-  }
-
-  /// Presents [order] as the current playback order in
-  /// [getPlaybackOrderStream] without touching the player. Used while a
-  /// remote session is connected: the effective order lives on the remote and
-  /// the local queue mirror itself stays linear, but the shuffle UI should
-  /// reflect the remote's order.
-  void presentRemotePlaybackOrder(FinampPlaybackOrder order) {
-    _playbackOrderStream.add(order);
+    // The local order is authoritative while a remote session is connected:
+    // re-send the queue in its new effective order rather than shuffling on
+    // the remote (SetShuffleQueue), whose order we could neither predict nor
+    // keep in sync with the local queue.
+    unawaited(_remoteSessionIfConnected?.resyncQueueToRemote());
   }
 
   void toggleLoopMode() {

@@ -114,11 +114,6 @@ class RemoteSessionService {
   bool _applyingRemoteUpdate = false;
   bool get isApplyingRemoteUpdate => _applyingRemoteUpdate;
 
-  /// The remote session's playback order. Tracked optimistically (most remote
-  /// clients don't report their shuffle state back): reflects the last order
-  /// set from here, seeded from the local order when handing off a queue.
-  FinampPlaybackOrder _remotePlaybackOrder = FinampPlaybackOrder.linear;
-
   /// Whether we are currently controlling a remote session.
   bool get isRemote => _activeSessionId != null;
 
@@ -196,9 +191,6 @@ class RemoteSessionService {
     _lastKnownPositionTicks = null;
     _lastKnownItemId = null;
     _settleDeadline = null;
-    // When handing off a queue, the remote plays our current effective order,
-    // so it inherits the local shuffle state; an adopted queue starts linear.
-    _remotePlaybackOrder = migrateQueue ? _queueService.playbackOrder : FinampPlaybackOrder.linear;
     // The session list the user connected from already contains the remote's
     // volume; seed it so the volume slider is correct right away.
     _seededVolumeLevel = session.playState?.volumeLevel;
@@ -292,10 +284,6 @@ class RemoteSessionService {
     _adoptScheduled = false;
     _lastPushedQueueIds = [];
     _seededVolumeLevel = null;
-    _remotePlaybackOrder = FinampPlaybackOrder.linear;
-    // The queue UI may be presenting the remote's playback order; restore the
-    // actual local one.
-    _queueService.presentRemotePlaybackOrder(_queueService.playbackOrder);
     _sessionStream.add(null);
   }
 
@@ -575,9 +563,6 @@ class RemoteSessionService {
       } finally {
         _applyingRemoteUpdate = false;
       }
-      // Replacing the queue presents a linear playback order; restore the
-      // remote's (tracked) order, which the adopted queue already reflects.
-      _queueService.presentRemotePlaybackOrder(_remotePlaybackOrder);
     } catch (e, stack) {
       _log.severe("Failed to adopt remote queue", e, stack);
     } finally {
@@ -751,38 +736,6 @@ class RemoteSessionService {
     // Present the settling state (loading) right away instead of after the
     // next remote update.
     unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
-  }
-
-  /// Toggles the playback order on the remote client itself (SetShuffleQueue):
-  /// the remote reorders its own queue, which is fetched after a short delay
-  /// and adopted as the new local queue, keeping the current track. The local
-  /// mirror is never shuffled itself; it follows the remote's effective order.
-  Future<void> toggleRemotePlaybackOrder() async {
-    final order = _remotePlaybackOrder == FinampPlaybackOrder.shuffled
-        ? FinampPlaybackOrder.linear
-        : FinampPlaybackOrder.shuffled;
-    _remotePlaybackOrder = order;
-    _queueService.presentRemotePlaybackOrder(order);
-    await _sendGeneralCommand(
-      "SetShuffleQueue",
-      arguments: {"ShuffleMode": order == FinampPlaybackOrder.shuffled ? "Shuffle" : "Sorted"},
-    );
-    _scheduleQueueRefetch();
-  }
-
-  /// Fetches the session state once after a short delay, giving the remote
-  /// time to apply a queue-changing command: Sessions pushes are event-driven
-  /// and may not fire for it (e.g. while paused). Runs through the regular
-  /// handler, so a changed remote queue is adopted via the usual path.
-  void _scheduleQueueRefetch() {
-    Future<void>.delayed(const Duration(seconds: 3), () async {
-      if (!isRemote) return;
-      try {
-        _handleSessions(await _jellyfinApiHelper.getSessions());
-      } catch (e) {
-        _log.warning("Failed to fetch sessions after a queue-changing command: $e");
-      }
-    });
   }
 
   /// Sets the repeat mode on the remote session.
