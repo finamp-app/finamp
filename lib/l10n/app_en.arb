@@ -2851,6 +2851,10 @@
             }
         }
     },
+    "volumeControlDisabledCastingHint": "Audio is being cast to a device that doesn't support the in-app volume control.",
+    "@volumeControlDisabledCastingHint": {
+        "description": "Hint text displayed below the volume bar when the in-app volume slider is disabled because audio is being cast to a device that bypasses the in-app volume handling and handles its own volume, such as when using Airplay."
+    },
     "seekControlHint": "{shortcut} to skip -5s/+30s",
     "@seekControlHint": {
         "description": "Shortcut hint for seeking backward 5s or forward 30s.",
