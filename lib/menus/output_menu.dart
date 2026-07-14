@@ -49,16 +49,30 @@ Future<void> showOutputMenu({required BuildContext context, bool usePlayerTheme 
             // slider to 100% and disable it. Other platforms and output modes
             // (e.g. Bluetooth) keep the normal per-app volume control.
             final airPlayActive = ref.watch(airPlayActiveProvider).valueOrNull ?? false;
-            return VolumeSlider(
-              initialValue: airPlayActive
-                  ? 1.0
-                  : (ref.watch(finampSettingsProvider.currentVolume) * 100).floor() / 100.0,
-              enabled: !airPlayActive,
-              onChange: (double currentValue) async {
-                final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
-                audioHandler.setVolume(currentValue);
-              },
-              forceLoading: true,
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                VolumeSlider(
+                  initialValue: airPlayActive
+                      ? 1.0
+                      : (ref.watch(finampSettingsProvider.currentVolume) * 100).floor() / 100.0,
+                  enabled: !airPlayActive,
+                  onChange: (double currentValue) async {
+                    final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+                    audioHandler.setVolume(currentValue);
+                  },
+                  forceLoading: true,
+                ),
+                if (airPlayActive)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    child: Text(
+                      AppLocalizations.of(context)!.volumeControlDisabledCastingHint,
+                      style: Theme.of(context).textTheme.bodySmall,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+              ],
             );
           },
         ),
