@@ -862,7 +862,7 @@
     "@queueRetryMessage": {
         "description": "Message displayed on now-playing bar when all items in a saved queue fail to load."
     },
-    "shuffleAlbumsToNextUp": "Ajoute les albums mélangés à la fin de la liste",
+    "shuffleAlbumsToNextUp": "Lecture aléatoire des albums",
     "@shuffleAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of Next Up"
     },
@@ -1079,7 +1079,7 @@
     "@confirmShuffleToQueue": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the regular queue"
     },
-    "shuffleAlbumsToQueue": "Ajoute les albums mélangés à la fin de la liste",
+    "shuffleAlbumsToQueue": "Ajouter des albums à la file d'attente",
     "@shuffleAlbumsToQueue": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of the regular queue"
     },
