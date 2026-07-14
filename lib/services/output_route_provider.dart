@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:audio_session/audio_session.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<bool> _currentRouteIsAirPlay(AVAudioSession session) async {
@@ -8,20 +9,28 @@ Future<bool> _currentRouteIsAirPlay(AVAudioSession session) async {
   return route.outputs.any((port) => port.portType == AVAudioSessionPort.airPlay);
 }
 
-/// Emits whether AirPlay is currently the active audio output route.
+/// Emits whether the app's own audio is currently being rendered by an AirPlay
+/// receiver, such that the in-app per-app volume slider has no audible effect.
 ///
-/// This is only meaningful on iOS, where the per-app volume slider has no
-/// audible effect while audio is rendered by an AirPlay receiver. On all other
-/// platforms (and for non-AirPlay routes such as Bluetooth or the device
-/// speaker) this stays `false`.
+/// Only meaningful on iOS. On all other platforms (and for non-AirPlay routes
+/// such as Bluetooth or the device speaker) this stays `false`.
 ///
-/// We listen to [AVAudioSession.routeChangeStream] directly rather than
-/// `audio_session`'s `devicesStream`, because the latter only emits for route
-/// changes with an added/removed device. Selecting an already-available AirPlay
-/// target instead produces an `override`/`routeConfigurationChange` reason,
-/// which `devicesStream` filters out, so it would miss most AirPlay toggles.
+/// Note on the "iOS app on Mac" build: the app can independently cast its audio
+/// to AirPlay, but that route is invisible to every public API on the
+/// Designed-for-iPad runtime — `AVAudioSession.currentRoute` reports the
+/// built-in speaker and `MPVolumeView.isWirelessRouteActive` is `false`, because
+/// macOS routes the app's output to AirPlay at a layer the app can't observe. So
+/// we can't detect it there and intentionally leave the slider enabled. That is
+/// also the correct behavior when the app plays through the system output device
+/// (even one that is itself on AirPlay), where the per-app volume still applies.
 final airPlayActiveProvider = StreamProvider<bool>((ref) async* {
   if (!Platform.isIOS) {
+    yield false;
+    return;
+  }
+  // The detection below relies on the app's audio session route reflecting the
+  // app's output, which is not the case on the iOS-app-on-Mac build (see above).
+  if ((await DeviceInfoPlugin().iosInfo).isiOSAppOnMac) {
     yield false;
     return;
   }
