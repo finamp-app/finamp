@@ -87,10 +87,10 @@ class RemoteSessionService {
   Timer? _watchdogTimer;
 
   /// Non-null between pushing a queue to the remote and the remote reporting
-  /// playback of one of the pushed tracks: the mirrored track/position are
-  /// stale during that window, so the playback state is presented as loading.
-  /// The deadline is a backstop for remotes that never report the pushed
-  /// queue.
+  /// playback of one of the pushed tracks: session updates during that window
+  /// predate the push, so they are ignored and the pushed target state is
+  /// presented optimistically instead (see [_toPlaybackState]). The deadline
+  /// is a backstop for remotes that never report the pushed queue.
   DateTime? _settleDeadline;
 
   /// True while a pushed queue hasn't been confirmed playing by the remote
@@ -144,6 +144,16 @@ class RemoteSessionService {
   int? _seededVolumeLevel;
 
   RemotePlaybackState? _toPlaybackState(SessionInfo? session) {
+    // While a pushed queue is settling, any session snapshot predates the
+    // push: present the pushed target optimistically (the remote starts
+    // playing it on arrival) instead of stale or missing state.
+    if (isSettling) {
+      return RemotePlaybackState(
+        position: Duration(microseconds: (_lastKnownPositionTicks ?? 0) ~/ 10),
+        duration: _queueService.getQueue().currentTrack?.item.duration,
+        playing: true,
+      );
+    }
     if (session == null) return null;
     // Fall back to the last known position when the remote reports null (e.g.
     // while paused). The cache is updated in _applySessionUpdate before the
@@ -354,18 +364,7 @@ class RemoteSessionService {
   }
 
   void _applySessionUpdate(SessionInfo session) {
-    // Maintain the last-known-position cache. Reset it when the remote track
-    // changes so we don't carry a stale position into a new song; otherwise
-    // remember any non-null position the remote reports.
     final itemId = session.nowPlayingItem?.id.raw;
-    if (itemId != _lastKnownItemId) {
-      _lastKnownItemId = itemId;
-      _lastKnownPositionTicks = null;
-    }
-    final reportedTicks = session.playState?.positionTicks;
-    if (reportedTicks != null) {
-      _lastKnownPositionTicks = reportedTicks;
-    }
 
     // A pushed queue has settled once the remote reports one of the pushed
     // tracks as playing (or the backstop deadline passes).
@@ -373,7 +372,28 @@ class RemoteSessionService {
       if ((itemId != null && _lastPushedQueueIds.contains(_normalizeId(itemId))) ||
           DateTime.now().isAfter(_settleDeadline!)) {
         _settleDeadline = null;
+      } else {
+        // The remote hasn't applied the push yet, so this update reflects the
+        // pre-push state: mirroring it would flap the UI back to the old
+        // track, and its queue could get adopted over the just-pushed local
+        // one. Keep presenting the optimistic pushed state instead; the
+        // deadline caps how long updates are ignored, and session liveness
+        // was already checked in _handleSessions.
+        _log.finer("Ignoring pre-push remote update (item=${session.nowPlayingItem?.name})");
+        return;
       }
+    }
+
+    // Maintain the last-known-position cache. Reset it when the remote track
+    // changes so we don't carry a stale position into a new song; otherwise
+    // remember any non-null position the remote reports.
+    if (itemId != _lastKnownItemId) {
+      _lastKnownItemId = itemId;
+      _lastKnownPositionTicks = null;
+    }
+    final reportedTicks = session.playState?.positionTicks;
+    if (reportedTicks != null) {
+      _lastKnownPositionTicks = reportedTicks;
     }
 
     _log.finer(
@@ -720,6 +740,10 @@ class RemoteSessionService {
     _lastPushedQueueIds = itemIds.map((id) => _normalizeId(id.raw)).toList();
     _suppressAdoptUntil = DateTime.now().add(const Duration(seconds: 20));
     _settleDeadline = DateTime.now().add(const Duration(seconds: 10));
+    // Seed the mirrored state with the pushed target: while the push settles,
+    // the UI presents this expected state instead of the remote's stale one.
+    _lastKnownItemId = window.first.baseItemId.raw;
+    _lastKnownPositionTicks = (startPosition ?? Duration.zero).inMilliseconds * _ticksPerMillisecond;
     _log.info(
       "Sending ${itemIds.length} queue items to remote session $sessionId, startPosition=$startPosition",
     );
@@ -733,7 +757,7 @@ class RemoteSessionService {
       _settleDeadline = null;
       rethrow;
     }
-    // Present the settling state (loading) right away instead of after the
+    // Present the optimistic post-push state right away instead of after the
     // next remote update.
     unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
   }

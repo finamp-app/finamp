@@ -1341,11 +1341,11 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           ? const {MediaAction.seek, MediaAction.seekForward, MediaAction.seekBackward}
           : {},
       androidCompactActionIndices: const [0, 1, 2],
-      // While a queue pushed to the remote hasn't settled yet (or no remote
-      // state has been received at all), the mirrored track/position are
-      // stale, so present a loading state instead of pretending to be ready.
+      // The mirrored remote state is always presented as ready: while a
+      // pushed queue is settling, remotePlaybackState reports the expected
+      // post-push state optimistically instead of a loading state.
       processingState: remoteSession != null
-          ? (remoteSession.isSettling || remoteState == null ? AudioProcessingState.loading : AudioProcessingState.ready)
+          ? AudioProcessingState.ready
           : const {
               ProcessingState.idle: AudioProcessingState.idle,
               ProcessingState.loading: AudioProcessingState.loading,
