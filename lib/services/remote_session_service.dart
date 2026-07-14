@@ -229,13 +229,17 @@ class RemoteSessionService {
   /// Stops controlling the remote session and returns control to local
   /// playback. The remote is paused first (the queue "migrates back" to
   /// Finamp, so it shouldn't keep playing on both ends), unless [pauseRemote]
-  /// is false (e.g. when the remote session has already vanished).
+  /// is false (e.g. when the remote session has already vanished). If the
+  /// remote was playing, local playback resumes from where it left off; a
+  /// paused remote stays paused locally.
   Future<void> disconnect({bool pauseRemote = true}) async {
     _log.info("Disconnecting from remote session $_activeSessionId");
     // Continue locally from where the remote left off: remember the remote's
-    // last-known track and position before tearing down state.
+    // last-known track, position and playing state before tearing down state
+    // (pause() below mutates the mirrored playing state).
     final lastItemId = _lastKnownItemId;
     final lastPosition = remotePlaybackState?.position;
+    final wasPlaying = remotePlaybackState?.playing ?? false;
 
     if (pauseRemote) {
       try {
@@ -247,11 +251,18 @@ class RemoteSessionService {
 
     _teardown();
 
-    // Sync local playback to where the remote left off. Local stays paused;
-    // the user taps play to resume from here. Must run after _teardown so the
-    // commands hit the local player, not the (now gone) remote.
+    // Sync local playback to where the remote left off. Must run after
+    // _teardown so the commands hit the local player, not the (now gone)
+    // remote.
     if (lastPosition != null) {
       await _syncLocalToRemote(lastItemId, lastPosition);
+    }
+    // Playback moved back to this device: continue playing if the remote was.
+    // When the remote vanished instead of being migrated back (pauseRemote is
+    // false), stay paused - suddenly blasting audio locally because a remote
+    // player died would be surprising.
+    if (pauseRemote && wasPlaying) {
+      await _audioHandler.play(disableFade: true);
     }
     unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
   }
