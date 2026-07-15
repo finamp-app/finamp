@@ -396,7 +396,10 @@ class PlayOnService {
                 });
             switch (request['Data']['Command']) {
               case "Stop":
-                await _audioHandler.stop();
+                // A controller's Stop ends its whole queue, so clear ours
+                // too; stopping only the native player would leave the queue
+                // behind.
+                await _queueService.stopAndClearQueue();
                 break;
               case "Pause":
                 await _audioHandler.pause();
