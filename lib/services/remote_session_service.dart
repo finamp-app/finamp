@@ -390,11 +390,10 @@ class RemoteSessionService {
   void _applySessionUpdate(SessionInfo session) {
     final itemId = session.nowPlayingItem?.id.raw;
 
-    // A pushed queue has settled once the remote reports one of the pushed
-    // tracks as playing (or the backstop deadline passes).
+    // A pushed queue has settled once the remote reports playing it (or the
+    // backstop deadline passes).
     if (_settleDeadline != null) {
-      if ((itemId != null && _lastPushedQueueIds.contains(_normalizeId(itemId))) ||
-          DateTime.now().isAfter(_settleDeadline!)) {
+      if (_reflectsPushedQueue(session) || DateTime.now().isAfter(_settleDeadline!)) {
         _settleDeadline = null;
       } else {
         // The remote hasn't applied the push yet, so this update reflects the
@@ -476,6 +475,23 @@ class RemoteSessionService {
     }
 
     _syncLoopModeFromRemote(session);
+  }
+
+  /// True once [session] shows the remote playing the queue we last pushed:
+  /// it must report one of the pushed tracks, and any queue it reports must
+  /// match the push. Playing a pushed track alone is not enough: a re-push of
+  /// the same tracks in a new order (shuffle, remove, reorder) starts on the
+  /// track that was already playing, so pre-push updates also report a pushed
+  /// track — together with the outdated queue, which must keep being ignored
+  /// or it would be adopted over the just-pushed local order.
+  bool _reflectsPushedQueue(SessionInfo session) {
+    final itemId = session.nowPlayingItem?.id.raw;
+    if (itemId == null || !_lastPushedQueueIds.contains(_normalizeId(itemId))) return false;
+    final queueIds = session.nowPlayingQueue?.map((e) => _normalizeId(e.id)).toList();
+    // Not every client reports its queue; the playing track is the only
+    // signal then.
+    if (queueIds == null || queueIds.isEmpty) return true;
+    return _isOwnPushEcho(queueIds);
   }
 
   /// Jellyfin ids appear both dashed (GUID) and undashed depending on the
