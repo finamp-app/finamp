@@ -730,22 +730,35 @@ class RemoteSessionService {
     await _playQueueFromIndex(currentIndex, startPosition: startPosition);
   }
 
+  /// Serializes queue-addition requests to the remote: additions are sent
+  /// fire-and-forget, and concurrent requests could be applied by the server
+  /// out of order (scrambling e.g. a batch of radio tracks).
+  Future<void> _additionSendChain = Future.value();
+
   /// Forwards items added to the local queue to the remote session's queue
   /// ([asNext]: play next vs. append at the end).
-  Future<void> sendItemsToRemoteQueue(List<BaseItemId> itemIds, {required bool asNext}) async {
+  Future<void> sendItemsToRemoteQueue(List<BaseItemId> itemIds, {required bool asNext}) {
     final sessionId = _activeSessionId;
-    if (sessionId == null || itemIds.isEmpty) return;
+    if (sessionId == null || itemIds.isEmpty) return Future.value();
     _suppressAdoptUntil = DateTime.now().add(const Duration(seconds: 10));
     // After an addition, the local queue is the source of truth for echo
     // detection; recompute after QueueService has updated its state.
     _lastPushedQueueIds = [];
-    for (final chunk in itemIds.slices(_maxItemsPerPlayRequest)) {
-      await _jellyfinApiHelper.sendPlayToSession(
-        sessionId: sessionId,
-        itemIds: chunk,
-        playCommand: asNext ? "PlayNext" : "PlayLast",
-      );
-    }
+    final send = _additionSendChain.then((_) async {
+      for (final chunk in itemIds.slices(_maxItemsPerPlayRequest)) {
+        await _jellyfinApiHelper.sendPlayToSession(
+          sessionId: sessionId,
+          itemIds: chunk,
+          playCommand: asNext ? "PlayNext" : "PlayLast",
+        );
+      }
+    });
+    // Keep the chain usable after a failed send; the failure still propagates
+    // to this call's awaiter.
+    _additionSendChain = send.catchError((Object e) {
+      _log.warning("Failed to send queue addition to remote session: $e");
+    });
+    return send;
   }
 
   /// Re-sends the queue to the remote, continuing the current track at the

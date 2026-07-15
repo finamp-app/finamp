@@ -476,7 +476,7 @@ class PlayOnService {
                     break;
                   case 'PlayNext':
                     var items = await _jellyfinApiHelper.getItems(
-                      sortBy: "IndexNumber", //!!! don't sort, use the sorting provided by the command!
+                      // don't sort, use the sorting provided by the command!
                       includeItemTypes: "Audio",
                       itemIds: List<BaseItemId>.from(request['Data']['ItemIds'] as List<dynamic>),
                     );
@@ -496,7 +496,7 @@ class PlayOnService {
                     break;
                   case 'PlayLast':
                     var items = await _jellyfinApiHelper.getItems(
-                      sortBy: "IndexNumber", //!!! don't sort, use the sorting provided by the command!
+                      // don't sort, use the sorting provided by the command!
                       includeItemTypes: "Audio",
                       itemIds: List<BaseItemId>.from(request['Data']['ItemIds'] as List<dynamic>),
                     );
