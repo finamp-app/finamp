@@ -34,10 +34,13 @@ class RemotePlaybackState {
 ///   remote playback without special-casing.
 /// - Transport commands issued to the audio handler are routed here and
 ///   forwarded to the remote session as playstate commands.
-/// - The local queue acts as a paused mirror of the remote queue: local queue
-///   changes are pushed to the remote (see [QueueService]), and remote queue
-///   changes are adopted locally with the remoteClient queue source, keeping
-///   queue persistence/restore working.
+/// - The local queue acts as a paused mirror of the remote queue and is the
+///   source of truth while the remote plays content from it: local queue
+///   changes are pushed to the remote (see [QueueService]), and remote
+///   updates only move the mirrored current track. Only when the remote
+///   plays something outside the local queue (another controller took over)
+///   is its queue adopted locally, with the remoteClient queue source,
+///   keeping queue persistence/restore working.
 ///
 /// This is the inverse of [PlayOnService], which handles the controllee side
 /// (receiving commands).
@@ -97,13 +100,16 @@ class RemoteSessionService {
   /// yet (see [_settleDeadline]).
   bool get isSettling => _settleDeadline != null;
 
-  // ---- queue sync bookkeeping (echo suppression) ----
+  // ---- queue sync bookkeeping ----
 
-  /// While we're pushing our own queue to the remote, its NowPlayingQueue
-  /// will disagree with ours until all chunks are processed. Don't adopt the
-  /// remote queue during that window (it would echo half-transferred state
-  /// back into the local queue).
+  /// A stopped remote may keep pushing updates reflecting its pre-stop state
+  /// for a moment; those look like foreign content against the cleared local
+  /// queue, so adoption is suppressed until this deadline (it would
+  /// resurrect the just-stopped queue).
   DateTime _suppressAdoptUntil = DateTime.fromMillisecondsSinceEpoch(0);
+
+  /// The ids of the last queue pushed to the remote, used to detect when the
+  /// remote reports having applied the push (see [_reflectsPushedQueue]).
   List<String> _lastPushedQueueIds = [];
   bool _adoptScheduled = false;
   bool _adoptInProgress = false;
@@ -201,6 +207,7 @@ class RemoteSessionService {
     _lastKnownPositionTicks = null;
     _lastKnownItemId = null;
     _settleDeadline = null;
+    _suppressAdoptUntil = DateTime.fromMillisecondsSinceEpoch(0);
     // The session list the user connected from already contains the remote's
     // volume; seed it so the volume slider is correct right away.
     _seededVolumeLevel = session.playState?.volumeLevel;
@@ -317,6 +324,7 @@ class RemoteSessionService {
     _settleDeadline = null;
     _adoptScheduled = false;
     _lastPushedQueueIds = [];
+    _suppressAdoptUntil = DateTime.fromMillisecondsSinceEpoch(0);
     _seededVolumeLevel = null;
     _sessionStream.add(null);
   }
@@ -434,38 +442,35 @@ class RemoteSessionService {
 
   // ---- remote -> local sync ----
 
-  /// Keeps the local (paused) queue mirror in sync with the remote session:
-  /// adopts remote queue changes and follows remote track changes.
+  /// Keeps the local (paused) queue mirror in sync with the remote session
+  /// following the ownership model: as long as the remote plays content from
+  /// the local queue, the local queue is the source of truth and remote
+  /// updates only move the mirrored current track. Only when the remote
+  /// plays something outside the local queue — another controller pushed a
+  /// queue to it — is the remote queue adopted.
   Future<void> _syncFromRemote(SessionInfo session) async {
     if (_adoptInProgress || _applyingRemoteUpdate) return;
 
-    final remoteIds = session.nowPlayingQueue?.map((e) => _normalizeId(e.id)).toList();
+    final itemId = session.nowPlayingItem?.id.raw;
+    // Nothing playing: nothing to follow, and nothing to adopt (a stopped
+    // remote may still report its old queue; adopting it would resurrect a
+    // queue that was just cleared).
+    if (itemId == null) return;
+
     final queueInfo = _queueService.getQueue();
-    final localFullIds = queueInfo.fullQueue.map((e) => _normalizeId(e.baseItemId.raw)).toList();
-
-    // The remote queue matches if it is a contiguous window of our full queue:
-    // a handed-off queue omits played history, and the window drifts as the
-    // remote advances tracks (we only ever hand off from the current track
-    // onward).
-    final queueInSync = remoteIds == null || remoteIds.isEmpty || _isContiguousSublist(remoteIds, localFullIds);
-
-    if (!queueInSync) {
-      // Suppress adoption while a change we sent (push, addition, stop) is
-      // still propagating: with no pushed queue to compare against, any
-      // mismatch during the window is assumed to be our own change echoing
-      // back; after a push, only its prefix is.
-      if (DateTime.now().isBefore(_suppressAdoptUntil) && (_lastPushedQueueIds.isEmpty || _isOwnPushEcho(remoteIds))) {
-        return;
-      }
+    if (!_localQueueContains(queueInfo, itemId)) {
+      // Foreign content: someone else took over the remote. Adopt its queue
+      // instead of fighting over control, unless a stop we sent is still
+      // propagating (pre-stop echoes look foreign against the cleared queue).
+      if (DateTime.now().isBefore(_suppressAdoptUntil)) return;
       _scheduleAdopt();
       return;
     }
 
-    // Queue matches: follow the remote's current track so mediaItem / queue
+    // Our content: follow the remote's current track so mediaItem / queue
     // highlighting / metadata stay correct.
-    final itemId = session.nowPlayingItem?.id.raw;
     final localCurrentId = queueInfo.currentTrack?.baseItemId.raw;
-    if (itemId != null && (localCurrentId == null || _normalizeId(itemId) != _normalizeId(localCurrentId))) {
+    if (localCurrentId == null || _normalizeId(itemId) != _normalizeId(localCurrentId)) {
       _applyingRemoteUpdate = true;
       try {
         await _skipLocalToItem(itemId);
@@ -475,6 +480,13 @@ class RemoteSessionService {
     }
 
     _syncLoopModeFromRemote(session);
+  }
+
+  /// True if the local full queue (played history included) contains
+  /// [itemId], i.e. the remote is playing content this queue owns.
+  static bool _localQueueContains(FinampQueueInfo queueInfo, String itemId) {
+    final normalized = _normalizeId(itemId);
+    return queueInfo.fullQueue.any((e) => _normalizeId(e.baseItemId.raw) == normalized);
   }
 
   /// True once [session] shows the remote playing the queue we last pushed:
@@ -497,22 +509,6 @@ class RemoteSessionService {
   /// Jellyfin ids appear both dashed (GUID) and undashed depending on the
   /// endpoint/client, so normalize before comparing.
   static String _normalizeId(String id) => id.replaceAll("-", "").toLowerCase();
-
-  /// True if [candidate] appears as a contiguous run inside [list].
-  static bool _isContiguousSublist(List<String> candidate, List<String> list) {
-    if (candidate.length > list.length) return false;
-    for (var start = 0; start <= list.length - candidate.length; start++) {
-      var matches = true;
-      for (var i = 0; i < candidate.length; i++) {
-        if (list[start + i] != candidate[i]) {
-          matches = false;
-          break;
-        }
-      }
-      if (matches) return true;
-    }
-    return false;
-  }
 
   /// True if [remoteIds] looks like a partially-applied version of the queue
   /// we just pushed (a prefix, since chunks are appended with PlayLast).
@@ -574,20 +570,17 @@ class RemoteSessionService {
       // Re-use items we already have locally, fetch only the missing ones.
       final queueInfo = _queueService.getQueue();
 
-      // The adoption was scheduled on a stale mismatch (e.g. an own push that
-      // has since been applied by the remote); re-check against the latest
-      // state before replacing the local queue.
-      final remoteIdsNormalized = remoteIds.map(_normalizeId).toList();
-      if (_isContiguousSublist(
-        remoteIdsNormalized,
-        queueInfo.fullQueue.map((e) => _normalizeId(e.baseItemId.raw)).toList(),
-      )) {
-        _log.fine("Remote queue is in sync again; skipping adoption");
+      // The adoption was scheduled on a stale update; re-check ownership
+      // against the latest state before replacing the local queue: if the
+      // remote is (again) playing content from the local queue, the local
+      // queue stays authoritative.
+      final nowPlayingId = session.nowPlayingItem?.id.raw;
+      if (nowPlayingId != null && _localQueueContains(queueInfo, nowPlayingId)) {
+        _log.fine("Remote is playing our content; skipping adoption");
         return;
       }
-      if (DateTime.now().isBefore(_suppressAdoptUntil) &&
-          (_lastPushedQueueIds.isEmpty || _isOwnPushEcho(remoteIdsNormalized))) {
-        _log.fine("Own queue change still propagating; skipping adoption");
+      if (DateTime.now().isBefore(_suppressAdoptUntil)) {
+        _log.fine("Own stop still propagating; skipping adoption");
         return;
       }
       final idMap = <String, BaseItemDto>{
@@ -740,10 +733,6 @@ class RemoteSessionService {
   Future<void> sendItemsToRemoteQueue(List<BaseItemId> itemIds, {required bool asNext}) {
     final sessionId = _activeSessionId;
     if (sessionId == null || itemIds.isEmpty) return Future.value();
-    _suppressAdoptUntil = DateTime.now().add(const Duration(seconds: 10));
-    // After an addition, the local queue is the source of truth for echo
-    // detection; recompute after QueueService has updated its state.
-    _lastPushedQueueIds = [];
     final send = _additionSendChain.then((_) async {
       for (final chunk in itemIds.slices(_maxItemsPerPlayRequest)) {
         await _jellyfinApiHelper.sendPlayToSession(
@@ -795,7 +784,6 @@ class RemoteSessionService {
     final window = fullQueue.skip(clampedTarget).take(_maxTracksPerPlayNow).toList();
     final itemIds = window.map((item) => item.baseItemId).toList();
     _lastPushedQueueIds = itemIds.map((id) => _normalizeId(id.raw)).toList();
-    _suppressAdoptUntil = DateTime.now().add(const Duration(seconds: 20));
     _settleDeadline = DateTime.now().add(const Duration(seconds: 10));
     // Seed the mirrored state with the pushed target: while the push settles,
     // the UI presents this expected state instead of the remote's stale one.
