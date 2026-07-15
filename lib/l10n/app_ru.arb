@@ -2747,5 +2747,12 @@
     "explicit": "Explicit",
     "@explicit": {
         "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
-    }
+    },
+    "outputDevices": "Устройства вывода",
+    "thisDevice": "Это устройство",
+    "scanningForDevices": "Поиск устройств...",
+    "noDevicesFound": "Устройства не найдены",
+    "addDeviceManually": "Добавить устройство вручную",
+    "castingTo": "Трансляция на {deviceName}",
+    "noDeviceFoundAt": "Устройство DLNA не найдено по адресу {address}"
 }

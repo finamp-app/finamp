@@ -2861,5 +2861,12 @@
     "losslessNoBitrate": "FLACへのトランスコード時には適用されません",
     "@losslessNoBitrate": {
         "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
-    }
+    },
+    "outputDevices": "出力デバイス",
+    "thisDevice": "このデバイス",
+    "scanningForDevices": "デバイスをスキャン中...",
+    "noDevicesFound": "デバイスが見つかりません",
+    "addDeviceManually": "デバイスを手動で追加",
+    "castingTo": "{deviceName}にキャスト中",
+    "noDeviceFoundAt": "{address}にDLNAデバイスが見つかりません"
 }

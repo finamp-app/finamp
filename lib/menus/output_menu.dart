@@ -10,12 +10,14 @@ import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/components/toggleable_list_tile.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/dlna_service.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:finamp/utils/platform_helper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
@@ -43,10 +45,11 @@ Future<void> showOutputMenu({required BuildContext context, bool usePlayerTheme 
         // ),
         Consumer(
           builder: (context, ref, child) {
+            final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+            final isDlnaMode = audioHandler.isDlnaMode;
             return VolumeSlider(
-              initialValue: (ref.watch(finampSettingsProvider.currentVolume) * 100).floor() / 100.0,
+              initialValue: isDlnaMode ? 0.5 : (ref.watch(finampSettingsProvider.currentVolume) * 100).floor() / 100.0,
               onChange: (double currentValue) async {
-                final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
                 audioHandler.setVolume(currentValue);
               },
               forceLoading: true,
@@ -86,24 +89,21 @@ Future<void> showOutputMenu({required BuildContext context, bool usePlayerTheme 
             child: SliverList(delegate: SliverChildListDelegate.fixed(menuEntries)),
           ),
         ),
-        if (Platform.isAndroid)
-          SliverStickyHeader(
-            header: Padding(
-              padding: const EdgeInsets.only(top: 10.0, bottom: 8.0, left: 16.0, right: 16.0),
-              child: Text(
-                AppLocalizations.of(context)!.outputMenuDevicesSectionTitle,
-                // AppLocalizations.of(context)!.outputMenuDevicesSectionTitle,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            sliver: MenuMask(
-              height: OutputMenuHeader.defaultHeight,
-              child: OutputTargetList(), // Pass the outputRoutes
+        // Devices section — shows Bluetooth routes (Android) and DLNA
+        // devices in a single unified list.
+        SliverStickyHeader(
+          header: Padding(
+            padding: const EdgeInsets.only(top: 10.0, bottom: 8.0, left: 16.0, right: 16.0),
+            child: Text(
+              AppLocalizations.of(context)!.outputMenuDevicesSectionTitle,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
+          sliver: MenuMask(height: OutputMenuHeader.defaultHeight, child: OutputTargetList()),
+        ),
       ];
       // TODO better estimate, how to deal with lag getting playlists?
-      var stackHeight = MediaQuery.heightOf(context) * (Platform.isAndroid ? 0.65 : 0.4);
+      var stackHeight = MediaQuery.heightOf(context) * (Platform.isAndroid ? 0.75 : 0.5);
       return (stackHeight, menu);
     },
   );
@@ -181,55 +181,319 @@ class OutputTargetList extends StatefulWidget {
 
 class _OutputTargetListState extends State<OutputTargetList> {
   final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+  final _dlnaService = GetIt.instance<DlnaService>();
   String? switchingToRoute;
 
+  // Bluetooth route state
+  List<FinampOutputRoute> _bluetoothRoutes = [];
+  bool _bluetoothLoading = true;
+
+  // DLNA state
+  bool _isScanning = false;
+  List<DlnaOutputDevice> _dlnaDevices = [];
+  StreamSubscription? _dlnaDiscoverySub;
+  DlnaOutputDevice? _connectedDlnaDevice;
+  StreamSubscription? _dlnaDeviceSub;
+  bool _showManualEntry = false;
+  bool _isManualConnecting = false;
+  final _ipController = TextEditingController();
+  DlnaOutputDevice? _connectingDlnaDevice;
+
   @override
-  Widget build(BuildContext context) {
-    Future<List<FinampOutputRoute>> outputRoutes = audioHandler.getRoutes();
-    return FutureBuilder(
-      future: outputRoutes,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              if (index == snapshot.data!.length) {
-                return openOsOutputOptionsButton(context);
-              }
-              final route = snapshot.data![index];
-              if (route.isSelected) {
-                switchingToRoute = null; // Reset switching state if route is selected
-              }
-              return OutputSelectorTile(
-                routeInfo: route,
-                isLoading: switchingToRoute == route.name,
-                onSelect: ({bool loading = false, bool value = false}) {
-                  setState(() {
-                    switchingToRoute = loading ? route.name : null;
-                    outputRoutes = audioHandler.getRoutes();
-                  });
-                },
-              );
-            }, childCount: snapshot.data!.length + 1),
-          );
-        } else if (snapshot.hasError) {
-          GlobalSnackbar.error(snapshot.error);
-          return const SliverToBoxAdapter(child: Center(heightFactor: 3.0, child: Icon(Icons.error, size: 64)));
-        } else {
-          return SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              if (index == 1) {
-                return openOsOutputOptionsButton(context);
-              } else {
-                return const Center(child: CircularProgressIndicator.adaptive());
-              }
-            }, childCount: 2),
-          );
+  void initState() {
+    super.initState();
+    _connectedDlnaDevice = _dlnaService.connectedDevice;
+    _dlnaDeviceSub = _dlnaService.deviceStream.listen((device) {
+      if (mounted) {
+        setState(() {
+          _connectedDlnaDevice = device;
+        });
+      }
+    });
+    _startDlnaScanning();
+    _loadBluetoothRoutes();
+  }
+
+  void _loadBluetoothRoutes() async {
+    try {
+      final routes = await audioHandler.getRoutes();
+      if (mounted) {
+        setState(() {
+          _bluetoothRoutes = routes;
+          _bluetoothLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _bluetoothLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _dlnaService.stopDiscovery();
+    _dlnaDiscoverySub?.cancel();
+    _dlnaDeviceSub?.cancel();
+    _ipController.dispose();
+    super.dispose();
+  }
+
+  void _startDlnaScanning() {
+    setState(() {
+      _isScanning = true;
+      _dlnaDevices.clear();
+    });
+    _dlnaDiscoverySub = _dlnaService.startDiscoveryStream().listen(
+      (devices) {
+        if (mounted) {
+          setState(() {
+            _dlnaDevices = List.from(devices);
+          });
+        }
+      },
+      onDone: () {
+        if (mounted) {
+          setState(() {
+            _isScanning = false;
+          });
+        }
+      },
+      onError: (_) {
+        if (mounted) {
+          setState(() {
+            _isScanning = false;
+          });
         }
       },
     );
   }
 
-  Widget openOsOutputOptionsButton(BuildContext context) {
+  Future<void> _selectDlnaDevice(DlnaOutputDevice device) async {
+    setState(() {
+      _connectingDlnaDevice = device;
+    });
+    try {
+      await _dlnaService.disconnect();
+      final success = await _dlnaService.connect(device);
+      if (success) {
+        await audioHandler.connectToDlna(_dlnaService);
+      }
+    } catch (_) {}
+    if (mounted) {
+      setState(() {
+        _connectingDlnaDevice = null;
+      });
+    }
+  }
+
+  Future<void> _selectLocalDevice() async {
+    await audioHandler.disconnectFromDlna();
+  }
+
+  Future<void> _connectManually() async {
+    final ip = _ipController.text.trim();
+    if (ip.isEmpty) return;
+    setState(() {
+      _isManualConnecting = true;
+    });
+    try {
+      final device = await _dlnaService.discoverDeviceByAddress(ip);
+      if (device != null) {
+        await _dlnaService.disconnect();
+        final success = await _dlnaService.connect(device);
+        if (success) {
+          await audioHandler.connectToDlna(_dlnaService);
+          if (mounted) {
+            setState(() {
+              _showManualEntry = false;
+              _isManualConnecting = false;
+            });
+          }
+          return;
+        }
+      }
+      if (mounted) {
+        setState(() {
+          _isManualConnecting = false;
+        });
+        GlobalSnackbar.error(Exception(AppLocalizations.of(context)!.noDeviceFoundAt(ip)));
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isManualConnecting = false;
+        });
+        GlobalSnackbar.error(e);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final isDlnaMode = audioHandler.isDlnaMode;
+
+    final items = <Widget>[];
+
+    // "This Device" — local playback
+    items.add(
+      ToggleableListTile(
+        title: l10n.thisDevice,
+        subtitle: l10n.deviceType("speaker"),
+        leading: Container(
+          padding: const EdgeInsets.all(16.0),
+          color: theme.colorScheme.primary.withOpacity(0.3),
+          child: Icon(TablerIcons.device_speaker),
+        ),
+        icon: isDlnaMode ? TablerIcons.device_speaker : TablerIcons.device_speaker_filled,
+        state: !isDlnaMode,
+        onToggle: (_) => _selectLocalDevice(),
+        confirmationFeedback: false,
+        enabled: true,
+      ),
+    );
+
+    // Bluetooth / system output routes (Android only)
+    if (Platform.isAndroid) {
+      if (_bluetoothLoading) {
+        items.add(
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Center(child: CircularProgressIndicator.adaptive()),
+          ),
+        );
+      } else {
+        for (final route in _bluetoothRoutes) {
+          if (route.isSelected) {
+            switchingToRoute = null;
+          }
+          items.add(
+            OutputSelectorTile(
+              routeInfo: route,
+              isLoading: switchingToRoute == route.name,
+              onSelect: ({bool loading = false, bool value = false}) {
+                setState(() {
+                  switchingToRoute = loading ? route.name : null;
+                  _loadBluetoothRoutes();
+                });
+              },
+            ),
+          );
+        }
+      }
+    }
+
+    // Discovered DLNA devices
+    for (final device in _dlnaDevices) {
+      final isActive = isDlnaMode && _connectedDlnaDevice?.name == device.name;
+      final isConnecting = _connectingDlnaDevice == device;
+      items.add(
+        ToggleableListTile(
+          title: device.name,
+          subtitle: device.address,
+          leading: Container(
+            padding: const EdgeInsets.all(16.0),
+            color: theme.colorScheme.primary.withOpacity(0.3),
+            child: Icon(TablerIcons.cast),
+          ),
+          icon: TablerIcons.cast,
+          state: isActive,
+          isLoading: isConnecting,
+          onToggle: (_) => _selectDlnaDevice(device),
+          confirmationFeedback: false,
+          enabled: true,
+        ),
+      );
+    }
+
+    // Scanning indicator
+    if (_isScanning && _dlnaDevices.isEmpty) {
+      items.add(
+        const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Center(child: CircularProgressIndicator.adaptive()),
+        ),
+      );
+    }
+
+    // No devices found message (only if no Bluetooth routes either)
+    if (!_isScanning && _dlnaDevices.isEmpty) {
+      items.add(
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Text(
+              l10n.noDevicesFound,
+              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Manual IP entry
+    if (!_showManualEntry) {
+      items.add(
+        Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CTAMedium(
+                text: l10n.addDeviceManually,
+                icon: TablerIcons.plus,
+                onPressed: () {
+                  setState(() {
+                    _showManualEntry = true;
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      items.add(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _ipController,
+                  decoration: InputDecoration(
+                    hintText: "192.168.0.5",
+                    isDense: true,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  keyboardType: TextInputType.number,
+                  enabled: !_isManualConnecting,
+                  onSubmitted: (_) => _connectManually(),
+                ),
+              ),
+              const SizedBox(width: 8),
+              _isManualConnecting
+                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                  : IconButton(icon: Icon(TablerIcons.send), onPressed: _connectManually),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Open OS output settings (Android only)
+    if (Platform.isAndroid) {
+      items.add(_openOsOutputOptionsButton(context));
+    }
+
+    return SliverList(delegate: SliverChildListDelegate.fixed(items));
+  }
+
+  Widget _openOsOutputOptionsButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 16.0),
       child: Row(
@@ -238,10 +502,8 @@ class _OutputTargetListState extends State<OutputTargetList> {
           CTAMedium(
             text: AppLocalizations.of(context)!.outputMenuOpenConnectionSettingsButtonTitle,
             icon: TablerIcons.cast,
-            //accentColor: Theme.of(context).colorScheme.primary,
             onPressed: () async {
               final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
-              // await audioHandler.showOutputSwitcherDialog();
               await audioHandler.openBluetoothSettings();
             },
           ),

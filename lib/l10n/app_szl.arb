@@ -207,5 +207,12 @@
             }
         }
     },
-    "removeFromMix": "Wymaż ze miksu"
+    "removeFromMix": "Wymaż ze miksu",
+    "outputDevices": "Wyjściowe masziny",
+    "thisDevice": "Ta maszina",
+    "scanningForDevices": "Skanowanie maszin...",
+    "noDevicesFound": "Niy znolesiyż maszin",
+    "addDeviceManually": "Dodej maszina ręcznie",
+    "castingTo": "Przesyłanie do {deviceName}",
+    "noDeviceFoundAt": "Niy znolesiyż maszin DLNA na adresie {address}"
 }

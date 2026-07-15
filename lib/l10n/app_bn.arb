@@ -10,5 +10,12 @@
     "startupErrorTitle": "অ্যাপ শুরু করার সময় কোনো সমস্যা হয়েছে!",
     "@startupErrorTitle": {
         "description": "The title for the error screen that shows when startup fails."
-    }
+    },
+    "outputDevices": "আউটপুট ডিভাইস",
+    "thisDevice": "এই ডিভাইস",
+    "scanningForDevices": "ডিভাইস স্ক্যান করা হচ্ছে...",
+    "noDevicesFound": "কোনো ডিভাইস পাওয়া যায়নি",
+    "addDeviceManually": "ম্যানুয়ালি ডিভাইস যোগ করুন",
+    "castingTo": "{deviceName} এ কাস্ট করা হচ্ছে",
+    "noDeviceFoundAt": "{address} এ কোনো DLNA ডিভাইস পাওয়া যায়নি"
 }

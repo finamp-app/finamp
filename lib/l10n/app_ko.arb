@@ -1963,5 +1963,12 @@
     "shuffleSomeToNextUp": "Next Up에 임의 재생 곡 추가",
     "@shuffleSomeToNextUp": {
         "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
-    }
+    },
+    "outputDevices": "출력 장치",
+    "thisDevice": "이 기기",
+    "scanningForDevices": "장치 검색 중...",
+    "noDevicesFound": "장치를 찾을 수 없음",
+    "addDeviceManually": "기기 수동 추가",
+    "castingTo": "{deviceName}으로 전송 중",
+    "noDeviceFoundAt": "{address}에서 DLNA 장치를 찾을 수 없음"
 }

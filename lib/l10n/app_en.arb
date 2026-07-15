@@ -3576,5 +3576,33 @@
     "clientCertificateRequired": "Client certificate required",
     "@clientCertificateRequired": {
         "description": "Message shown on the server selection screen when the server requires a client certificate to be provided."
+    },
+    "outputDevices": "Output Devices",
+    "@outputDevices": {},
+    "thisDevice": "This Device",
+    "@thisDevice": {},
+    "scanningForDevices": "Scanning for devices...",
+    "@scanningForDevices": {},
+    "noDevicesFound": "No devices found",
+    "@noDevicesFound": {},
+    "castingTo": "Casting to {deviceName}",
+    "@castingTo": {
+        "placeholders": {
+            "deviceName": {
+                "type": "String",
+                "example": "Living Room Speaker"
+            }
+        }
+    },
+    "addDeviceManually": "Add device manually",
+    "@addDeviceManually": {},
+    "noDeviceFoundAt": "No DLNA device found at {address}",
+    "@noDeviceFoundAt": {
+        "placeholders": {
+            "address": {
+                "type": "String",
+                "example": "192.168.0.5"
+            }
+        }
     }
 }

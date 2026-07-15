@@ -208,5 +208,12 @@
                 "example": "401"
             }
         }
-    }
+    },
+    "outputDevices": "Izhodne naprave",
+    "thisDevice": "Ta naprava",
+    "scanningForDevices": "Iskanje naprav...",
+    "noDevicesFound": "Najdenih ni bilo naprav",
+    "addDeviceManually": "Ročno dodaj napravo",
+    "castingTo": "Predvajanje na {deviceName}",
+    "noDeviceFoundAt": "Nobena naprava DLNA ni bila najdena na naslovu {address}"
 }

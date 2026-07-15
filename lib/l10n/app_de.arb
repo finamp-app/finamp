@@ -3454,5 +3454,12 @@
                 "example": "syncingLocal"
             }
         }
-    }
+    },
+    "outputDevices": "Ausgabegeräte",
+    "thisDevice": "Dieses Gerät",
+    "scanningForDevices": "Suche nach Geräten...",
+    "noDevicesFound": "Keine Geräte gefunden",
+    "addDeviceManually": "Gerät manuell hinzufügen",
+    "castingTo": "Wird an {deviceName} übertragen",
+    "noDeviceFoundAt": "Kein DLNA-Gerät unter {address} gefunden"
 }

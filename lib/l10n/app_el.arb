@@ -1671,5 +1671,12 @@
     "genreScreen": "Οθόνη Είδους",
     "@genreScreen": {
         "description": "Name for the view/screen that shows genres"
-    }
+    },
+    "outputDevices": "Συσκευές εξόδου",
+    "thisDevice": "Αυτή η συσκευή",
+    "scanningForDevices": "Σάρωση για συσκευές...",
+    "noDevicesFound": "Δεν βρέθηκαν συσκευές",
+    "addDeviceManually": "Χειροκίνητη προσθήκη συσκευής",
+    "castingTo": "Μετάδοση σε {deviceName}",
+    "noDeviceFoundAt": "Δεν βρέθηκε συσκευή DLNA στη διεύθυνση {address}"
 }

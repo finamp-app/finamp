@@ -2942,5 +2942,12 @@
     "cannotDeleteLocation": "לא ניתן למחוק מיקום",
     "@cannotDeleteLocation": {
         "description": "Message that a download location cannot currently be deleted."
-    }
+    },
+    "outputDevices": "התקני פלט",
+    "thisDevice": "מכשיר זה",
+    "scanningForDevices": "סורק מכשירים...",
+    "noDevicesFound": "לא נמצאו מכשירים",
+    "addDeviceManually": "הוסף מכשיר ידנית",
+    "castingTo": "משדר ל{deviceName}",
+    "noDeviceFoundAt": "לא נמצא מכשיר DLNA בכתובת {address}"
 }

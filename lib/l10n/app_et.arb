@@ -2814,5 +2814,12 @@
             }
         },
         "description": "Options in multi-channel handling dropdown"
-    }
+    },
+    "outputDevices": "Väljundseadmed",
+    "thisDevice": "See seade",
+    "scanningForDevices": "Seadmete otsimine...",
+    "noDevicesFound": "Seadmeid ei leitud",
+    "addDeviceManually": "Lisa seade käsitsi",
+    "castingTo": "Edastatakse seadmesse {deviceName}",
+    "noDeviceFoundAt": "DLNA seadet ei leitud aadressilt {address}"
 }

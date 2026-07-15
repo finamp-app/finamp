@@ -347,5 +347,12 @@
     "login": "Logg in",
     "@login": {
         "description": "Label for the login button."
-    }
+    },
+    "outputDevices": "Utdataenheter",
+    "thisDevice": "Denne enheten",
+    "scanningForDevices": "Søker etter enheter...",
+    "noDevicesFound": "Ingen enheter funnet",
+    "addDeviceManually": "Legg til enhet manuelt",
+    "castingTo": "Caster til {deviceName}",
+    "noDeviceFoundAt": "Ingen DLNA-enhet funnet på {address}"
 }

@@ -3525,5 +3525,12 @@
                 "example": "syncingLocal"
             }
         }
-    }
+    },
+    "outputDevices": "Perangkat output",
+    "thisDevice": "Perangkat ini",
+    "scanningForDevices": "Memindai perangkat...",
+    "noDevicesFound": "Tidak ada perangkat ditemukan",
+    "addDeviceManually": "Tambah perangkat manual",
+    "castingTo": "Mengirim ke {deviceName}",
+    "noDeviceFoundAt": "Tidak ada perangkat DLNA ditemukan di {address}"
 }

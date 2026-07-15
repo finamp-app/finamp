@@ -1694,5 +1694,12 @@
             }
         },
         "description": "Localized names of special downloadable collection representing cached images for a certain library."
-    }
+    },
+    "outputDevices": "Uitvoerapparaten",
+    "thisDevice": "Dit apparaat",
+    "scanningForDevices": "Apparaten zoeken...",
+    "noDevicesFound": "Geen apparaten gevonden",
+    "addDeviceManually": "Apparaat handmatig toevoegen",
+    "castingTo": "Casten naar {deviceName}",
+    "noDeviceFoundAt": "Geen DLNA-apparaat gevonden op {address}"
 }

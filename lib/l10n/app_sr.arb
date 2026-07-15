@@ -251,5 +251,12 @@
     },
     "activeDownloadsTitle": "Aktivna preuzimanja",
     "noActiveDownloads": "Nema aktivnih preuzimanja.",
-    "error": "Greška"
+    "error": "Greška",
+    "outputDevices": "Уређаји за излаз",
+    "thisDevice": "Овај уређај",
+    "scanningForDevices": "Скенирање уређаја...",
+    "noDevicesFound": "Није пронађен ниједан уређај",
+    "addDeviceManually": "Додај уређај ручно",
+    "castingTo": "Пренос на {deviceName}",
+    "noDeviceFoundAt": "Није пронађен DLNA уређај на адреси {address}"
 }

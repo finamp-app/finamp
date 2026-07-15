@@ -1993,5 +1993,12 @@
     "loopingUnavailableWhileRadioActiveWarning": "Mijenjanje modusa petlje nije dostupno dok je radio aktivan, jer će red čekanja beskonačno nastavljati.",
     "@loopingUnavailableWhileRadioActiveWarning": {
         "description": "Warning message when trying to change the loop mode while radio is active."
-    }
+    },
+    "outputDevices": "Izlazni uređaji",
+    "thisDevice": "Ovaj uređaj",
+    "scanningForDevices": "Pretraživanje uređaja...",
+    "noDevicesFound": "Nema pronađenih uređaja",
+    "addDeviceManually": "Ručno dodaj uređaj",
+    "castingTo": "Prebacivanje na {deviceName}",
+    "noDeviceFoundAt": "Nije pronađen DLNA uređaj na adresi {address}"
 }

@@ -3487,5 +3487,12 @@
                 "example": "syncingLocal"
             }
         }
-    }
+    },
+    "outputDevices": "வெளியீட்டு சாதனங்கள்",
+    "thisDevice": "இந்த சாதனம்",
+    "scanningForDevices": "சாதனங்களை ஸ்கேன் செய்கிறது...",
+    "noDevicesFound": "சாதனங்கள் இல்லை",
+    "addDeviceManually": "சாதனத்தை கைமுறையாக சேர்க்கவும்",
+    "castingTo": "{deviceName} க்கு காஸ்ட் செய்யப்படுகிறது",
+    "noDeviceFoundAt": "{address} இல் DLNA சாதனம் இல்லை"
 }

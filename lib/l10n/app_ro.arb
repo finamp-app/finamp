@@ -1,1 +1,9 @@
-{}
+{
+    "outputDevices": "Dispozitive de ieșire",
+    "thisDevice": "Acest dispozitiv",
+    "scanningForDevices": "Se caută dispozitive...",
+    "noDevicesFound": "Niciun dispozitiv găsit",
+    "addDeviceManually": "Adaugă dispozitiv manual",
+    "castingTo": "Se transmite către {deviceName}",
+    "noDeviceFoundAt": "Niciun dispozitiv DLNA găsit la adresa {address}"
+}

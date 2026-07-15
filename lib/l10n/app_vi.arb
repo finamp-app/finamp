@@ -1117,5 +1117,12 @@
     "discordRPCSettingDescription": "Bật Discord Rich Presence để phát bài hát bạn đang nghe trên trạng thái Discord. Sẽ không kết nối Discord nếu Chế độ ngoại tuyến được bật.",
     "@discordRPCSettingDescription": {
         "description": "Description for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
-    }
+    },
+    "outputDevices": "Thiết bị xuất",
+    "thisDevice": "Thiết bị này",
+    "scanningForDevices": "Đang quét thiết bị...",
+    "noDevicesFound": "Không tìm thấy thiết bị",
+    "addDeviceManually": "Thêm thiết bị thủ công",
+    "castingTo": "Đang truyền đến {deviceName}",
+    "noDeviceFoundAt": "Không tìm thấy thiết bị DLNA tại {address}"
 }

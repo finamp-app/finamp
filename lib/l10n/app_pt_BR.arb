@@ -1701,5 +1701,12 @@
     "@colorCodeHint": {
         "description": "Hint text for the color code input field. Don't translate 'coffee', unless the translation is also a valid hex color code."
     },
-    "save": "Salvar"
+    "save": "Salvar",
+    "outputDevices": "Dispositivos de saída",
+    "thisDevice": "Este dispositivo",
+    "scanningForDevices": "Procurando dispositivos...",
+    "noDevicesFound": "Nenhum dispositivo encontrado",
+    "addDeviceManually": "Adicionar dispositivo manualmente",
+    "castingTo": "Transmitindo para {deviceName}",
+    "noDeviceFoundAt": "Nenhum dispositivo DLNA encontrado em {address}"
 }

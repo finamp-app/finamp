@@ -3477,5 +3477,12 @@
                 "example": "syncingLocal"
             }
         }
-    }
+    },
+    "outputDevices": "Dispositivos de saída",
+    "thisDevice": "Este dispositivo",
+    "scanningForDevices": "Procurando dispositivos...",
+    "noDevicesFound": "Nenhum dispositivo encontrado",
+    "addDeviceManually": "Adicionar dispositivo manualmente",
+    "castingTo": "Transmitindo para {deviceName}",
+    "noDeviceFoundAt": "Nenhum dispositivo DLNA encontrado em {address}"
 }

@@ -2417,5 +2417,12 @@
     "multichannelHandlingSubtitle": "Cómo gestionar pistas multicanal (más de 2 canales) al realizar la transcodificación. Se aplica tanto al streaming como a las descargas.",
     "@multichannelHandlingSubtitle": {
         "description": "Subtitle for multi-channel handling dropdown"
-    }
+    },
+    "outputDevices": "Dispositivos de salida",
+    "thisDevice": "Este dispositivo",
+    "scanningForDevices": "Buscando dispositivos...",
+    "noDevicesFound": "No se encontraron dispositivos",
+    "addDeviceManually": "Añadir dispositivo manualmente",
+    "castingTo": "Transmitiendo a {deviceName}",
+    "noDeviceFoundAt": "No se encontró ningún dispositivo DLNA en {address}"
 }

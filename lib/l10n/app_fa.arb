@@ -1641,5 +1641,12 @@
     "playOnStaleDelaySubtitle": "مدت زمانی که یک نشست «پخش روی» از راه دور پس از دریافت فرمان فعال در نظر گرفته می‌شود. هنگام فعال بودن، وضعیت پخش با دفعات بیشتری گزارش می‌شود که می‌تواند باعث افزایش مصرف پهنای‌باند شود.",
     "@playOnStaleDelaySubtitle": {
         "description": "Description of the setting that controls how long a PlayOn remote session is considered active"
-    }
+    },
+    "outputDevices": "دستگاه‌های خروجی",
+    "thisDevice": "این دستگاه",
+    "scanningForDevices": "در حال اسکن دستگاه‌ها...",
+    "noDevicesFound": "دستگاهی یافت نشد",
+    "addDeviceManually": "افزودن دستی دستگاه",
+    "castingTo": "در حال ارسال به {deviceName}",
+    "noDeviceFoundAt": "دستگاه DLNA در آدرس {address} یافت نشد"
 }

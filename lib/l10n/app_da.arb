@@ -1836,5 +1836,12 @@
             }
         },
         "description": "Tooltip for downloadbutton on incidental downloads, which show a lock icon. It says one of the requiring downloads."
-    }
+    },
+    "outputDevices": "Udgangsenheder",
+    "thisDevice": "Denne enhed",
+    "scanningForDevices": "Søger efter enheder...",
+    "noDevicesFound": "Ingen enheder fundet",
+    "addDeviceManually": "Tilføj enhed manuelt",
+    "castingTo": "Caster til {deviceName}",
+    "noDeviceFoundAt": "Ingen DLNA-enhed fundet på {address}"
 }

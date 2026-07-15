@@ -229,5 +229,12 @@
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
     "showFastScroller": "แสดงตัวเลื่อนแบบเร็ว",
-    "interactions": "การกระทำ"
+    "interactions": "การกระทำ",
+    "outputDevices": "อุปกรณ์เอาต์พุต",
+    "thisDevice": "อุปกรณ์นี้",
+    "scanningForDevices": "กำลังสแกนอุปกรณ์...",
+    "noDevicesFound": "ไม่พบอุปกรณ์",
+    "addDeviceManually": "เพิ่มอุปกรณ์ด้วยตนเอง",
+    "castingTo": "กำลังแคสต์ไปยัง{deviceName}",
+    "noDeviceFoundAt": "ไม่พบอุปกรณ์ DLNA ที่{address}"
 }

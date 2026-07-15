@@ -1715,5 +1715,12 @@
     "customizeHomeScreen": "Ana ekranı düzenle",
     "@customizeHomeScreen": {
         "description": "Label for home screen customize button"
-    }
+    },
+    "outputDevices": "Çıkış cihazları",
+    "thisDevice": "Bu cihaz",
+    "scanningForDevices": "Cihazlar taranıyor...",
+    "noDevicesFound": "Cihaz bulunamadı",
+    "addDeviceManually": "Cihazı manuel olarak ekle",
+    "castingTo": "{deviceName} cihazına yayın yapılıyor",
+    "noDeviceFoundAt": "{address} adresinde DLNA cihazı bulunamadı"
 }

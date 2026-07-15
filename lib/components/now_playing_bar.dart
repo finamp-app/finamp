@@ -453,6 +453,15 @@ class NowPlayingBar extends ConsumerWidget {
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
+                                              if (audioHandler.isDlnaMode)
+                                                Padding(
+                                                  padding: const EdgeInsets.only(top: 4.0, right: 4.0),
+                                                  child: Icon(
+                                                    Icons.cast_connected,
+                                                    size: 16,
+                                                    color: Theme.of(context).colorScheme.primary,
+                                                  ),
+                                                ),
                                               Padding(
                                                 padding: const EdgeInsets.only(top: 4.0, right: 4.0),
                                                 child: AddToPlaylistButton(

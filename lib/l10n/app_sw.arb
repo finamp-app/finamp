@@ -1,1 +1,9 @@
-{}
+{
+    "outputDevices": "Vifaa vya pato",
+    "thisDevice": "Kifaa hiki",
+    "scanningForDevices": "Inatafuta vifaa...",
+    "noDevicesFound": "Hakuna vifaa vilivyopatikana",
+    "addDeviceManually": "Ongeza kifaa kwa mkono",
+    "castingTo": "Inatuma kwa {deviceName}",
+    "noDeviceFoundAt": "Hakuna kifaa cha DLNA kilichopatikana kwenye {address}"
+}

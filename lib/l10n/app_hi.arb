@@ -1614,5 +1614,12 @@
     "@allLibraries": {
         "description": "All Libraries"
     },
-    "appearsOnAlbums": "दिखाई देता है"
+    "appearsOnAlbums": "दिखाई देता है",
+    "outputDevices": "आउटपुट डिवाइस",
+    "thisDevice": "यह डिवाइस",
+    "scanningForDevices": "डिवाइस स्कैन कर रहा है...",
+    "noDevicesFound": "कोई डिवाइस नहीं मिला",
+    "addDeviceManually": "डिवाइस मैन्युअली जोड़ें",
+    "castingTo": "{deviceName} पर कास्ट कर रहा है",
+    "noDeviceFoundAt": "{address} पर कोई DLNA डिवाइस नहीं मिला"
 }

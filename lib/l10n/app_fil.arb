@@ -182,5 +182,12 @@
     "tracks": "Mga Track",
     "albums": "Mga Album",
     "appearsOnAlbums": "Nasa",
-    "artists": "Mga Arista"
+    "artists": "Mga Arista",
+    "outputDevices": "Mga output device",
+    "thisDevice": "Itong device",
+    "scanningForDevices": "Nag-iiscan ng mga device...",
+    "noDevicesFound": "Walang nahanap na device",
+    "addDeviceManually": "Idagdag device manually",
+    "castingTo": "Nag-cacast sa {deviceName}",
+    "noDeviceFoundAt": "Walang nahanap na DLNA device sa {address}"
 }

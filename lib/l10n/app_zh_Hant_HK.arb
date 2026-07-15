@@ -598,5 +598,12 @@
     "confirmAddedToPlaylist": "已加入至播放清單",
     "@confirmAddedToPlaylist": {
         "description": "Snackbar message that shows when the user successfully adds items to a playlist."
-    }
+    },
+    "outputDevices": "輸出裝置",
+    "thisDevice": "此裝置",
+    "scanningForDevices": "正在掃描裝置...",
+    "noDevicesFound": "未找到裝置",
+    "addDeviceManually": "手動新增裝置",
+    "castingTo": "正在投射到{deviceName}",
+    "noDeviceFoundAt": "在{address}未找到DLNA裝置"
 }

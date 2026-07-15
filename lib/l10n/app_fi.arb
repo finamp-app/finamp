@@ -3470,5 +3470,12 @@
                 "example": "syncingLocal"
             }
         }
-    }
+    },
+    "outputDevices": "Laitetyypit",
+    "thisDevice": "Tämä laite",
+    "scanningForDevices": "Etsitään laitteita...",
+    "noDevicesFound": "Laitteita ei löytynyt",
+    "addDeviceManually": "Lisää laite manuaalisesti",
+    "castingTo": "Lähetetään laitteeseen {deviceName}",
+    "noDeviceFoundAt": "DLNA-laitetta ei löytynyt osoitteesta {address}"
 }

@@ -1673,5 +1673,12 @@
     "applyFilterOnGenreChipTapTitle": "Zastosuj filtr przy karty gatunku",
     "@applyFilterOnGenreChipTapTitle": {
         "description": "Title for the setting that controls if taps on genre chips should apply a genre filter to the current screen or should redirect to the GenreScreen."
-    }
+    },
+    "outputDevices": "Urządzenia wyjściowe",
+    "thisDevice": "To urządzenie",
+    "scanningForDevices": "Skanowanie urządzeń...",
+    "noDevicesFound": "Nie znaleziono urządzeń",
+    "addDeviceManually": "Dodaj urządzenie ręcznie",
+    "castingTo": "Przesyłanie do {deviceName}",
+    "noDeviceFoundAt": "Nie znaleziono urządzenia DLNA pod adresem {address}"
 }

@@ -2770,5 +2770,12 @@
     "multichannelHandlingTitle": "Транскодування багатоканальних треків",
     "@multichannelHandlingTitle": {
         "description": "Title for multi-channel handling dropdown"
-    }
+    },
+    "outputDevices": "Пристрої виводу",
+    "thisDevice": "Цей пристрій",
+    "scanningForDevices": "Пошук пристроїв...",
+    "noDevicesFound": "Пристроїв не знайдено",
+    "addDeviceManually": "Додати пристрій вручну",
+    "castingTo": "Трансляція на {deviceName}",
+    "noDeviceFoundAt": "Пристрій DLNA не знайдено за адресою {address}"
 }

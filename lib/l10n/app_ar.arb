@@ -2854,5 +2854,12 @@
     "previousTracksPersistenceModeExpanded": "موسع (ظاهر)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
-    }
+    },
+    "outputDevices": "أجهزة الإخراج",
+    "thisDevice": "هذا الجهاز",
+    "scanningForDevices": "البحث عن الأجهزة...",
+    "noDevicesFound": "لم يتم العثور على أجهزة",
+    "addDeviceManually": "إضافة جهاز يدوياً",
+    "castingTo": "البث إلى {deviceName}",
+    "noDeviceFoundAt": "لم يتم العثور على جهاز DLNA في {address}"
 }

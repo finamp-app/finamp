@@ -2867,5 +2867,12 @@
     "shuffleSomeAlbumsToQueue": "Shuffla vissa Album till Kö",
     "@shuffleSomeAlbumsToQueue": {
         "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
-    }
+    },
+    "outputDevices": "Utgångsenheter",
+    "thisDevice": "Denna enhet",
+    "scanningForDevices": "Söker efter enheter...",
+    "noDevicesFound": "Inga enheter hittades",
+    "addDeviceManually": "Lägg till enhet manuellt",
+    "castingTo": "Castar till {deviceName}",
+    "noDeviceFoundAt": "Ingen DLNA-enhet hittades på {address}"
 }

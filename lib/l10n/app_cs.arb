@@ -3464,5 +3464,12 @@
                 "example": "syncingLocal"
             }
         }
-    }
+    },
+    "outputDevices": "Výstupní zařízení",
+    "thisDevice": "Toto zařízení",
+    "scanningForDevices": "Hledání zařízení...",
+    "noDevicesFound": "Nebyla nalezena žádná zařízení",
+    "addDeviceManually": "Přidat zařízení ručně",
+    "castingTo": "Přehrávání na {deviceName}",
+    "noDeviceFoundAt": "Žádné DLNA zařízení nenalezeno na adrese {address}"
 }

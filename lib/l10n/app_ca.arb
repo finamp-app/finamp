@@ -3053,5 +3053,12 @@
             }
         },
         "description": "Label for sleep timer track count slider"
-    }
+    },
+    "outputDevices": "Dispositius de sortida",
+    "thisDevice": "Aquest dispositiu",
+    "scanningForDevices": "Cercant dispositius...",
+    "noDevicesFound": "No s'han trobat dispositius",
+    "addDeviceManually": "Afegeix dispositiu manualment",
+    "castingTo": "Transmetent a {deviceName}",
+    "noDeviceFoundAt": "No s'ha trobat cap dispositiu DLNA a {address}"
 }

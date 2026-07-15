@@ -3464,5 +3464,12 @@
                 "example": "syncingLocal"
             }
         }
-    }
+    },
+    "outputDevices": "输出设备",
+    "thisDevice": "此设备",
+    "scanningForDevices": "正在扫描设备...",
+    "noDevicesFound": "未找到设备",
+    "addDeviceManually": "手动添加设备",
+    "castingTo": "正在投射到{deviceName}",
+    "noDeviceFoundAt": "在{address}未找到DLNA设备"
 }

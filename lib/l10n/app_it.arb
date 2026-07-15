@@ -3008,5 +3008,12 @@
     "sectionType": "Tipo di sezione",
     "@sectionType": {
         "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
-    }
+    },
+    "outputDevices": "Dispositivi di output",
+    "thisDevice": "Questo dispositivo",
+    "scanningForDevices": "Ricerca dispositivi...",
+    "noDevicesFound": "Nessun dispositivo trovato",
+    "addDeviceManually": "Aggiungi dispositivo manualmente",
+    "castingTo": "Trasmissione a {deviceName}",
+    "noDeviceFoundAt": "Nessun dispositivo DLNA trovato a {address}"
 }

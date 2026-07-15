@@ -239,5 +239,12 @@
     "size": "",
     "@size": {
         "description": "Label for the feature chips showing the size (original file size or transcoded size, if available) of a track"
-    }
+    },
+    "outputDevices": "Изходни устройства",
+    "thisDevice": "Това устройство",
+    "scanningForDevices": "Сканиране за устройства...",
+    "noDevicesFound": "Няма намерени устройства",
+    "addDeviceManually": "Добави устройство ръчно",
+    "castingTo": "Предава се към {deviceName}",
+    "noDeviceFoundAt": "Не е намерено DLNA устройство на адрес {address}"
 }
