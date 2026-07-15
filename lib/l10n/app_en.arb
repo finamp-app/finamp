@@ -3645,16 +3645,6 @@
     "@playOnRemoteDeviceDisconnected": {
         "description": "Snackbar message shown when the connection to the remote device was lost and Finamp automatically returned to local playback."
     },
-    "playOnSessionNowPlaying": "Playing: {itemName}",
-    "@playOnSessionNowPlaying": {
-        "description": "Subtitle of a remote device in the output menu, showing the track that device is currently playing.",
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Bohemian Rhapsody"
-            }
-        }
-    },
     "playOnThisDevice": "{deviceType, select, phone{This phone} tablet{This tablet} computer{This computer} other{This device}}",
     "@playOnThisDevice": {
         "placeholders": {

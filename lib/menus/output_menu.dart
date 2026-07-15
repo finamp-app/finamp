@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
+import 'package:finamp/components/album_image.dart';
 import 'package:finamp/components/Shortcuts/global_shortcut_manager.dart';
 import 'package:finamp/components/Shortcuts/music_control_shortcuts.dart';
 import 'package:finamp/components/global_snackbar.dart';
@@ -471,21 +472,38 @@ class _OutputTargetListState extends State<OutputTargetList> {
 
   Widget _sessionTile(BuildContext context, SessionInfo session) {
     final isConnected = _remoteSessionService.isRemote && _remoteSessionService.activeSessionId == session.id;
+    final nowPlayingItem = session.nowPlayingItem;
     return ToggleableListTile(
       isLoading: _connectingToSessionId == session.id,
       title: _sessionDisplayName(session),
-      // Surface what the device is currently playing, so the user knows what
-      // they would take over before connecting.
-      subtitle: session.nowPlayingItem?.name != null
-          ? AppLocalizations.of(context)!.playOnSessionNowPlaying(session.nowPlayingItem!.name!)
-          : session.client ?? AppLocalizations.of(context)!.deviceType("unknown"),
-      leading: Container(
-        padding: const EdgeInsets.all(16.0),
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-        // The icon marks the tile as a remote (cast) target; the connection
-        // state is conveyed by the tile's active state, not the icon.
-        child: Icon(TablerIcons.cast),
-      ),
+      subtitle: session.client ?? AppLocalizations.of(context)!.deviceType("unknown"),
+      // Surface what the device is currently playing (so the user knows what
+      // they would take over) through its album art; a small cast badge keeps
+      // the tile recognizable as a remote (cast) target. Idle devices keep
+      // the plain cast icon.
+      leading: nowPlayingItem != null
+          ? Stack(
+              children: [
+                AlbumImage(item: nowPlayingItem),
+                Positioned(
+                  right: 2.0,
+                  bottom: 2.0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2.0),
+                    decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(4.0)),
+                    child: const Icon(TablerIcons.cast, size: 14.0, color: Colors.white),
+                  ),
+                ),
+              ],
+            )
+          : Container(
+              padding: const EdgeInsets.all(16.0),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              // The icon marks the tile as a remote (cast) target; the
+              // connection state is conveyed by the tile's active state, not
+              // the icon.
+              child: Icon(TablerIcons.cast),
+            ),
       icon: isConnected ? TablerIcons.device_speaker_filled : TablerIcons.device_speaker,
       state: isConnected,
       onToggle: (bool currentState) async {
