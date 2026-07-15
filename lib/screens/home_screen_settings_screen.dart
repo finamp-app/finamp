@@ -21,6 +21,8 @@ import '../components/HomeScreen/quick_action_editor.dart';
 import '../extensions/localizations.dart';
 import '../services/music_providers.dart';
 
+const minWidthForInlineLayout = 700.0;
+
 class HomeScreenSettingsScreen extends StatefulWidget {
   const HomeScreenSettingsScreen({super.key});
   static const routeName = "/settings/home-screen";
@@ -39,23 +41,32 @@ class _HomeScreenSettingsScreenState extends State<HomeScreenSettingsScreen> {
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetHomeScreenSettings),
         ],
       ),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 750.0),
-            child: ListView(
-              padding: const EdgeInsets.only(bottom: 150.0),
-              children: [const QuickActionsSelector(), const HomeScreenSectionsSelector()],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SafeArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: minWidthForInlineLayout),
+                child: ListView(
+                  padding: const EdgeInsets.only(bottom: 150.0),
+                  children: [
+                    QuickActionsSelector(useInlineLayout: constraints.maxWidth > minWidthForInlineLayout),
+                    HomeScreenSectionsSelector(useInlineLayout: constraints.maxWidth > minWidthForInlineLayout),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 }
 
 class QuickActionsSelector extends ConsumerWidget {
-  const QuickActionsSelector({super.key});
+  const QuickActionsSelector({super.key, required this.useInlineLayout});
+
+  final bool useInlineLayout;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,6 +100,7 @@ class QuickActionsSelector extends ConsumerWidget {
                       index: index,
                       title: action.getTitle(context.l10n),
                       key: ValueKey("quick-action-$action"),
+                      useInlineLayout: useInlineLayout,
                       actions: [
                         SimpleButton.small(
                           text: action.action.editable ? context.l10n.editAction : context.l10n.swapAction,
@@ -154,7 +166,9 @@ class QuickActionsSelector extends ConsumerWidget {
 }
 
 class HomeScreenSectionsSelector extends ConsumerWidget {
-  const HomeScreenSectionsSelector({super.key});
+  const HomeScreenSectionsSelector({super.key, required this.useInlineLayout});
+
+  final bool useInlineLayout;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -200,6 +214,7 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
                       index: index,
                       title: section.getTitle(context.l10n),
                       key: ValueKey("section-$section"),
+                      useInlineLayout: useInlineLayout,
                       actions: [
                         SimpleButton.small(
                           text: context.l10n.editSection,
@@ -512,97 +527,49 @@ class _GlobalSearchBoxState extends ConsumerState<GlobalSearchBox> {
 }
 
 class _ResponsiveListTile extends StatelessWidget {
-  const _ResponsiveListTile({super.key, required this.index, required this.title, required this.actions});
+  const _ResponsiveListTile({
+    super.key,
+    required this.index,
+    required this.title,
+    required this.actions,
+    this.useInlineLayout = false,
+  });
 
   final int index;
   final String title;
   final List<SimpleButton> actions;
+  final bool useInlineLayout;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final textStyle = DefaultTextStyle.of(context).style;
+    final tileKey = "drag-handle-${key.toString()}-$index";
 
-        final titlePainter = TextPainter(
-          text: TextSpan(text: title, style: textStyle),
-          textDirection: Directionality.of(context),
-          maxLines: 1,
-        )..layout();
+    if (useInlineLayout) {
+      return Row(
+        children: [
+          ReorderableDragStartListener(index: index, key: ValueKey(tileKey), child: const Icon(Icons.drag_handle)),
+          const SizedBox(width: 8.0),
+          Expanded(child: Text(title)),
+          const SizedBox(width: 28.0),
+          Row(mainAxisSize: MainAxisSize.min, spacing: 12.0, children: actions),
+        ],
+      );
+    }
 
-        // Measure action button text to calculate actual button widths
-        const minTextWidth = 150.0;
-        const horizontalGap = 30.0;
-        const buttonSpacing = 12.0;
-        const iconWidth = 16.0;
-        const buttonPadding = 4.0;
-        const buttonChromeWidth =
-            iconWidth + 2 * buttonPadding + 2.0; // SimpleButton.small icon + padding + text-icon spacing
-
-        double totalActionsWidth = 0.0;
-        for (final action in actions) {
-          // Measure the actual button text
-          final buttonText = action.text;
-          final buttonPainter = TextPainter(
-            text: TextSpan(text: buttonText, style: SimpleButton.smallTextStyle),
-            textDirection: Directionality.of(context),
-            maxLines: 1,
-          )..layout();
-
-          totalActionsWidth += buttonChromeWidth + buttonPainter.width + buttonSpacing;
-          buttonPainter.dispose();
-        }
-        totalActionsWidth -= buttonSpacing; // Remove last spacing
-
-        // Calculate available space for actions on the same line
-        final dragHandleWidth = 24.0 + 8.0; // Icon width + spacing
-        final titleWidth = max(minTextWidth, titlePainter.width);
-        titlePainter.dispose();
-        final availableWidthForActions = constraints.maxWidth - dragHandleWidth - titleWidth - horizontalGap - 8.0;
-
-        final useHorizontalLayout = availableWidthForActions >= totalActionsWidth;
-
-        if (useHorizontalLayout) {
-          return Row(
-            children: [
-              ReorderableDragStartListener(
-                index: index,
-                key: ValueKey("drag-handle-${key.toString()}-$index"),
-                child: const Icon(Icons.drag_handle),
-              ),
-              const SizedBox(width: 8.0),
-              Expanded(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minWidth: minTextWidth),
-                  child: Text(title),
-                ),
-              ),
-              const SizedBox(width: horizontalGap),
-              Row(mainAxisSize: MainAxisSize.min, spacing: buttonSpacing, children: actions),
-            ],
-          );
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
           children: [
-            Row(
-              children: [
-                ReorderableDragStartListener(
-                  index: index,
-                  key: ValueKey("drag-handle-${key.toString()}-$index"),
-                  child: const Icon(Icons.drag_handle),
-                ),
-                const SizedBox(width: 8.0),
-                Expanded(child: Text(title)),
-              ],
-            ),
-            const SizedBox(height: 8.0),
-            Wrap(alignment: WrapAlignment.spaceEvenly, spacing: buttonSpacing, runSpacing: 8.0, children: actions),
+            ReorderableDragStartListener(index: index, key: ValueKey(tileKey), child: const Icon(Icons.drag_handle)),
+            const SizedBox(width: 8.0),
+            Expanded(child: Text(title)),
           ],
-        );
-      },
+        ),
+        const SizedBox(height: 8.0),
+        Wrap(alignment: WrapAlignment.spaceEvenly, spacing: 12.0, runSpacing: 8.0, children: actions),
+      ],
     );
   }
 }
