@@ -231,6 +231,7 @@ class SortAndFilterRow extends ConsumerWidget {
       bottom: false,
       child: GestureDetector(
         onTap: showMenu,
+        onSecondaryTap: showMenu,
         behavior: HitTestBehavior.opaque,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -293,14 +294,14 @@ class SortAndFilterRow extends ConsumerWidget {
                 SimpleButton(
                   icon: currentConfig.sortOrder.getIcon(),
                   text: currentConfig.sortBy.toLocalisedString(context.l10n),
-                  onPressed: () => controller._updateConfiguration(
+                  onPressed: showMenu,
+                  onPressedSecondary: () => controller._updateConfiguration(
                     currentConfig.copyWith(
                       sortOrder: currentConfig.sortOrder == SortOrder.ascending
                           ? SortOrder.descending
                           : SortOrder.ascending,
                     ),
                   ),
-                  onPressedSecondary: showMenu,
                 ),
             ],
           ),
