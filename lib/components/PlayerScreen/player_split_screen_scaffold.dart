@@ -98,7 +98,7 @@ Widget buildPlayerSplitScreenScaffold(BuildContext context, Widget? widget) {
                             builder: (context, child) => MediaQuery(
                               data: MediaQuery.of(context).copyWith(
                                 size: Size(size.width * (_controller.weights[0] ?? 1.0), size.height),
-                                padding: padding.copyWith(right: padding.right + 10),
+                                padding: padding.copyWith(right: padding.right + 6),
                               ),
                               child: child!,
                             ),

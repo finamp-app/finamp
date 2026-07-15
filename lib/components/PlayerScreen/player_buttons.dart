@@ -8,6 +8,7 @@ import 'package:finamp/components/audio_fade_progress_visualizer_container.dart'
 import 'package:finamp/screens/player_screen.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/utils/locale_helper.dart';
+import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -54,7 +55,7 @@ class PlayerButtons extends StatelessWidget {
               child: IconButton(
                 tooltip: getStringComponentsInLocaleOrder(context, [
                   AppLocalizations.of(context)!.skipToPreviousTrackButtonTooltip,
-                  "(${GlobalShortcuts.getDisplay(SkipToPreviousIntent)})",
+                  if (isDesktop) "(${GlobalShortcuts.getDisplay(SkipToPreviousIntent)})",
                 ], separator: "\n"),
                 icon: const Icon(TablerIcons.player_skip_back),
                 onPressed: () async {
@@ -81,7 +82,7 @@ class PlayerButtons extends StatelessWidget {
                 label: AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
                 tooltip: getStringComponentsInLocaleOrder(context, [
                   AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
-                  "(${GlobalShortcuts.getDisplay(TogglePlaybackIntent)})",
+                  if (isDesktop) "(${GlobalShortcuts.getDisplay(TogglePlaybackIntent)})",
                 ], separator: "\n"),
                 icon: AudioFadeProgressVisualizerContainer(
                   key: const Key("PlayerButtonAudioFadeProgressVisualizer"),
@@ -110,7 +111,7 @@ class PlayerButtons extends StatelessWidget {
               child: IconButton(
                 tooltip: getStringComponentsInLocaleOrder(context, [
                   AppLocalizations.of(context)!.skipToNextTrackButtonTooltip,
-                  "(${GlobalShortcuts.getDisplay(SkipToNextIntent)})",
+                  if (isDesktop) "(${GlobalShortcuts.getDisplay(SkipToNextIntent)})",
                 ], separator: "\n"),
                 icon: const Icon(TablerIcons.player_skip_forward),
                 onPressed: () async {

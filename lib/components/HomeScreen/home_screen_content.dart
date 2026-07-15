@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:balanced_text/balanced_text.dart';
 import 'package:finamp/components/AlbumScreen/download_button.dart';
 import 'package:finamp/components/Buttons/cta_small.dart';
+import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/HomeScreen/home_screen_quick_action_button.dart';
 import 'package:finamp/components/HomeScreen/quick_action_editor.dart';
 import 'package:finamp/components/HomeScreen/show_all_button.dart';
@@ -134,7 +135,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
               );
             },
           ),
-          const SliverPadding(padding: EdgeInsets.only(top: 4)),
+          const SliverPadding(padding: EdgeInsets.only(top: 12.0)),
           SliverMainAxisGroup(
             slivers: ref
                 .watch(finampSettingsProvider.homeScreenConfiguration)
@@ -205,11 +206,13 @@ class HomeScreenSection extends ConsumerWidget {
 
     final viewPadding = MediaQuery.paddingOf(context);
     return SliverPadding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.only(bottom: 16.0),
       sliver: FinampSectionHeader(
         sticky: false,
         key: Key(sectionInfo.toString()),
         title: sectionInfo.getTitle(context.l10n),
+        label: context.l10n.showAll,
+        titleTrailingIcon: TablerIcons.chevron_right,
         headerPadding: EdgeInsets.only(left: viewPadding.left + 14.0, right: viewPadding.right + 20.0),
         contentPadding: EdgeInsets.zero,
         actions: [
@@ -250,14 +253,6 @@ class HomeScreenSection extends ConsumerWidget {
               warningMessage: downloadInfo.warning,
               downloadOnly: true,
             ),
-          ShowAllButton(
-            label: context.l10n.showAll,
-            onPressed: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute<MusicScreen>(builder: (context) => MusicScreen(singleTabConfig: sectionInfo)));
-            },
-          ),
         ],
         onTap: () {
           Navigator.of(

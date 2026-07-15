@@ -960,7 +960,7 @@ class FinampApp extends ConsumerWidget {
           // ),
           dismissDirection: DismissDirection.horizontal,
         ),
-        tooltipTheme: const TooltipThemeData(waitDuration: Duration(milliseconds: 800)),
+        tooltipTheme: const TooltipThemeData(waitDuration: Duration(milliseconds: 800), preferBelow: false),
         pageTransitionsTheme: transitionBuilder,
       ),
       darkTheme: ThemeData(

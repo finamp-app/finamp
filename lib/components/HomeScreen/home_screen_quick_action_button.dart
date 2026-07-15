@@ -29,7 +29,7 @@ class HomeScreenQuickActionButton extends StatelessWidget {
     final accentColor = disabled ? ColorScheme.of(context).primary.withOpacity(0.5) : ColorScheme.of(context).primary;
 
     final buttonChildren = [
-      Icon(icon, size: 24, color: accentColor, weight: 1.0),
+      Icon(icon, size: 16, color: accentColor, weight: 1.0, applyTextScaling: true),
       Text(
         text,
         style: TextStyle(
@@ -39,6 +39,7 @@ class HomeScreenQuickActionButton extends StatelessWidget {
                       : Colors.white)
                   .withOpacity(disabled ? 0.5 : 1.0),
           fontSize: 13,
+          height: 0.9,
           fontWeight: FontWeight.w500,
         ),
         textAlign: TextAlign.center,
@@ -50,7 +51,7 @@ class HomeScreenQuickActionButton extends StatelessWidget {
         : Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
             alignment: WrapAlignment.center,
-            spacing: isDesktop ? 4.0 : 6.0,
+            spacing: 6.0,
             children: buttonChildren,
           );
 

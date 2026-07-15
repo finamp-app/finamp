@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/HomeScreen/home_screen_content.dart';
@@ -44,15 +42,17 @@ class _HomeScreenSettingsScreenState extends State<HomeScreenSettingsScreen> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SafeArea(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: minWidthForInlineLayout),
-                child: ListView(
-                  padding: const EdgeInsets.only(bottom: 150.0),
-                  children: [
-                    QuickActionsSelector(useInlineLayout: constraints.maxWidth > minWidthForInlineLayout),
-                    HomeScreenSectionsSelector(useInlineLayout: constraints.maxWidth > minWidthForInlineLayout),
-                  ],
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 150.0),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: minWidthForInlineLayout),
+                  child: Column(
+                    children: [
+                      QuickActionsSelector(useInlineLayout: constraints.maxWidth > minWidthForInlineLayout),
+                      HomeScreenSectionsSelector(useInlineLayout: constraints.maxWidth > minWidthForInlineLayout),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -77,7 +77,11 @@ class QuickActionsSelector extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
-          ListTile(title: Text(context.l10n.quickActions), subtitle: Text(context.l10n.quickActionsSubtitle)),
+          ListTile(
+            title: Text(context.l10n.quickActions),
+            subtitle: Text(context.l10n.quickActionsSubtitle),
+            contentPadding: EdgeInsets.zero,
+          ),
           ReorderableListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -88,7 +92,7 @@ class QuickActionsSelector extends ConsumerWidget {
               final action = quickActions[index];
               return Padding(
                 key: ValueKey("quick-action-$action-$index"),
-                padding: const EdgeInsets.only(bottom: 8.0, left: 12.0, right: 12.0),
+                padding: const EdgeInsets.only(bottom: 8.0),
                 child: Material(
                   type: MaterialType.transparency,
                   child: ListTile(
@@ -143,7 +147,7 @@ class QuickActionsSelector extends ConsumerWidget {
             },
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 4.0, left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(top: 4.0),
             child: CTAMedium(
               text: context.l10n.addNewAction,
               icon: TablerIcons.plus,
@@ -179,7 +183,11 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ListTile(title: Text(context.l10n.sectionsMenu), subtitle: Text(context.l10n.sectionMenuSubtitle)),
+          ListTile(
+            title: Text(context.l10n.sectionsMenu),
+            subtitle: Text(context.l10n.sectionMenuSubtitle),
+            contentPadding: EdgeInsets.zero,
+          ),
           ReorderableListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
@@ -202,7 +210,7 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
               final section = sections[index];
               return Padding(
                 key: ValueKey("section-$section-$index"),
-                padding: const EdgeInsets.only(bottom: 8.0, left: 12.0, right: 12.0),
+                padding: const EdgeInsets.only(bottom: 8.0),
                 child: Material(
                   type: MaterialType.transparency,
                   child: ListTile(
@@ -242,7 +250,7 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
             },
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 4.0, left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(top: 4.0),
             child: CTAMedium(
               text: context.l10n.addNewSection,
               icon: TablerIcons.plus,
@@ -552,6 +560,7 @@ class _ResponsiveListTile extends StatelessWidget {
           Expanded(child: Text(title)),
           const SizedBox(width: 28.0),
           Row(mainAxisSize: MainAxisSize.min, spacing: 12.0, children: actions),
+          const SizedBox(width: 16.0),
         ],
       );
     }

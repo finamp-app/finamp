@@ -1173,6 +1173,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  mini_music_visualizer:
+    dependency: "direct main"
+    description:
+      name: mini_music_visualizer
+      sha256: "779a957424ce9a09cc00989a8cf9b7541ec22316d9781a43e701afa6acacf274"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.4"
   msix:
     dependency: "direct dev"
     description:

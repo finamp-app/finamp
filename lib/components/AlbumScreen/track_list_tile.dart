@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mini_music_visualizer/mini_music_visualizer.dart';
 
 import '../../extensions/localizations.dart';
 import '../../models/music_models.dart';
@@ -670,24 +671,46 @@ class TrackListItemTile extends ConsumerWidget {
                 : const EdgeInsets.only(left: 6.0, right: 0.0),
             child: Container(
               constraints: const BoxConstraints(minWidth: 22.0),
-              child: Text(
-                features.contains(TrackListItemFeatures.listIndex)
-                    ? ((listIndex ?? 0) + 1).toString()
-                    : actualIndex.toString(),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.clip,
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              child: isCurrentTrack && !features.contains(TrackListItemFeatures.cover)
+                  ? MiniMusicVisualizer(
+                      animate: true,
+                      color: Theme.of(context).colorScheme.secondary,
+                      width: 4,
+                      height: 15,
+                      radius: 2,
+                    )
+                  : Text(
+                      features.contains(TrackListItemFeatures.listIndex)
+                          ? ((listIndex ?? 0) + 1).toString()
+                          : actualIndex.toString(),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.clip,
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
             ),
           ),
         if (features.contains(TrackListItemFeatures.cover))
-          AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverCornerRadius)),
+          isCurrentTrack
+              ? Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      foregroundDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(albumCoverCornerRadius),
+                        color: Colors.black.withOpacity(0.4),
+                      ),
+                      child: AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverCornerRadius)),
+                    ),
+                    MiniMusicVisualizer(animate: true, color: Colors.white, width: 4, height: 15, radius: 2),
+                  ],
+                )
+              : AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverCornerRadius)),
       ],
     );
     final tileTitle = ConstrainedBox(
@@ -921,7 +944,7 @@ class TrackListItemTile extends ConsumerWidget {
                     printDuration(baseItem.runTimeTicksDuration(), leadingZeroes: false),
                     semanticsLabel: durationLabelString,
                     textAlign: TextAlign.end,
-                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6)),
                   ),
                 if (features.contains(TrackListItemFeatures.addToPlaylistOrFavorite))
                   Semantics(

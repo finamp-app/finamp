@@ -216,7 +216,7 @@ class PlayOnService {
     // the [api_key] parameter is deprecated, but there's no way to set HTTP headers for our websocket client
     // apparently this is because it's not possible to do on the web, which would mean that Jellyfin Web (which is also broken as of 10.11.5) would also need an alternative to authenticate, for example sending the auth token in the first message after connecting
     final url =
-        "${_finampUserHelper.currentUser!.baseURL}/socket?api_key=${_finampUserHelper.currentUser!.accessToken}&deviceId=${deviceInfo.id}";
+        "${_finampUserHelper.currentUser!.baseURL}/socket?ApiKey=${_finampUserHelper.currentUser!.accessToken}&deviceId=${deviceInfo.id}";
     final parsedUrl = Uri.parse(url);
     final wsUrl = parsedUrl.replace(scheme: parsedUrl.scheme == "https" ? "wss" : "ws");
     _channel = WebSocketChannel.connect(wsUrl);

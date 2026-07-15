@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -37,7 +38,7 @@ class NowPlayingBar extends ConsumerWidget {
   const NowPlayingBar({super.key});
 
   static const horizontalPadding = 8.0;
-  static const albumImageSize = 70.0;
+  static const albumImageSize = 64.0;
 
   BoxDecoration? getShadow(BuildContext context) => BoxDecoration(
     borderRadius: const BorderRadius.all(Radius.circular(12.0)),
@@ -270,32 +271,6 @@ class NowPlayingBar extends ConsumerWidget {
                                       imageListenable: currentAlbumImageProvider,
                                       borderRadius: BorderRadius.zero,
                                     ),
-                                    AudioFadeProgressVisualizerContainer(
-                                      key: const Key("AlbumArtAudioFadeProgressVisualizer"),
-                                      width: albumImageSize,
-                                      height: albumImageSize,
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(12.0),
-                                        bottomLeft: Radius.circular(12.0),
-                                      ),
-                                      child: IconButton(
-                                        tooltip: AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
-                                        onPressed: () {
-                                          FeedbackHelper.feedback(FeedbackType.light);
-                                          unawaited(audioHandler.togglePlayback());
-                                        },
-                                        color: Colors.white,
-                                        icon: Icon(
-                                          mediaState.playbackState.playing
-                                              ? mediaState.fadeState.fadeDirection != FadeDirection.fadeOut
-                                                    ? TablerIcons.player_pause
-                                                    : TablerIcons.player_play
-                                              : TablerIcons.player_play,
-                                          shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)],
-                                          size: 32,
-                                        ),
-                                      ),
-                                    ),
                                   ],
                                 ),
                                 Expanded(
@@ -353,7 +328,7 @@ class NowPlayingBar extends ConsumerWidget {
                                                     key: ValueKey(currentTrack.item.id),
                                                     text: currentTrack.item.title,
                                                     style: TextStyle(
-                                                      fontSize: 16,
+                                                      fontSize: 14,
                                                       height: 26 / 20,
                                                       color: primaryTextColor,
                                                       fontWeight: Theme.brightnessOf(context) == Brightness.light
@@ -370,7 +345,7 @@ class NowPlayingBar extends ConsumerWidget {
                                                           processArtist(currentTrack.item.artist, context),
                                                           style: TextStyle(
                                                             color: primaryTextColor,
-                                                            fontSize: 13,
+                                                            fontSize: 14,
                                                             fontWeight: FontWeight.w400,
                                                             overflow: TextOverflow.ellipsis,
                                                           ),
@@ -382,6 +357,7 @@ class NowPlayingBar extends ConsumerWidget {
                                                         builder: (context, snapshot) {
                                                           if (snapshot.hasData) {
                                                             playbackPosition = snapshot.data;
+                                                            final showRemaining = Platform.isIOS || Platform.isMacOS;
                                                             final positionFullMinutes =
                                                                 (playbackPosition?.inMinutes ?? 0) % 60;
                                                             final positionFullHours = (playbackPosition?.inHours ?? 0);
@@ -404,8 +380,13 @@ class NowPlayingBar extends ConsumerWidget {
                                                                 children: [
                                                                   Text(
                                                                     printDuration(
-                                                                      playbackPosition,
+                                                                      showRemaining
+                                                                          ? ((mediaState.mediaItem?.duration ??
+                                                                                    Duration.zero) -
+                                                                                (playbackPosition ?? Duration.zero))
+                                                                          : playbackPosition,
                                                                       leadingZeroes: false,
+                                                                      isRemaining: showRemaining,
                                                                     ),
                                                                     style: TextStyle(
                                                                       fontSize: 14,
@@ -413,28 +394,31 @@ class NowPlayingBar extends ConsumerWidget {
                                                                       color: primaryTextColor.withOpacity(0.8),
                                                                     ),
                                                                   ),
-                                                                  const SizedBox(width: 2),
-                                                                  Text(
-                                                                    '/',
-                                                                    style: TextStyle(
-                                                                      color: primaryTextColor.withOpacity(0.8),
-                                                                      fontSize: 14,
-                                                                      fontWeight: FontWeight.w400,
+                                                                  if (!showRemaining) ...[
+                                                                    const SizedBox(width: 2),
+                                                                    Text(
+                                                                      '/',
+                                                                      style: TextStyle(
+                                                                        color: primaryTextColor.withOpacity(0.8),
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight.w400,
+                                                                      ),
                                                                     ),
-                                                                  ),
-                                                                  const SizedBox(width: 2),
-                                                                  Text(
-                                                                    // '3:44',
-                                                                    (mediaState.mediaItem?.duration?.inHours ?? 0.0) >=
-                                                                            1.0
-                                                                        ? "${mediaState.mediaItem?.duration?.inHours.toString()}:${((mediaState.mediaItem?.duration?.inMinutes ?? 0) % 60).toString().padLeft(2, '0')}:${((mediaState.mediaItem?.duration?.inSeconds ?? 0) % 60).toString().padLeft(2, '0')}"
-                                                                        : "${mediaState.mediaItem?.duration?.inMinutes.toString()}:${((mediaState.mediaItem?.duration?.inSeconds ?? 0) % 60).toString().padLeft(2, '0')}",
-                                                                    style: TextStyle(
-                                                                      color: primaryTextColor.withOpacity(0.8),
-                                                                      fontSize: 14,
-                                                                      fontWeight: FontWeight.w400,
+                                                                    const SizedBox(width: 2),
+                                                                    Text(
+                                                                      // '3:44',
+                                                                      (mediaState.mediaItem?.duration?.inHours ??
+                                                                                  0.0) >=
+                                                                              1.0
+                                                                          ? "${mediaState.mediaItem?.duration?.inHours.toString()}:${((mediaState.mediaItem?.duration?.inMinutes ?? 0) % 60).toString().padLeft(2, '0')}:${((mediaState.mediaItem?.duration?.inSeconds ?? 0) % 60).toString().padLeft(2, '0')}"
+                                                                          : "${mediaState.mediaItem?.duration?.inMinutes.toString()}:${((mediaState.mediaItem?.duration?.inSeconds ?? 0) % 60).toString().padLeft(2, '0')}",
+                                                                      style: TextStyle(
+                                                                        color: primaryTextColor.withOpacity(0.8),
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight.w400,
+                                                                      ),
                                                                     ),
-                                                                  ),
+                                                                  ],
                                                                 ],
                                                               ),
                                                             );
@@ -452,15 +436,42 @@ class NowPlayingBar extends ConsumerWidget {
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(top: 4.0, right: 4.0),
-                                                child: AddToPlaylistButton(
-                                                  item: currentTrackBaseItem,
-                                                  queueItem: currentTrack,
-                                                  color: primaryTextColor,
-                                                  size: 28,
-                                                  visualDensity: const VisualDensity(horizontal: -4),
-                                                ),
+                                              AddToPlaylistButton(
+                                                item: currentTrackBaseItem,
+                                                queueItem: currentTrack,
+                                                color: primaryTextColor,
+                                                size: 28,
+                                                visualDensity: const VisualDensity(horizontal: -4),
+                                              ),
+                                              Stack(
+                                                alignment: Alignment.center,
+                                                children: [
+                                                  AudioFadeProgressVisualizerContainer(
+                                                    key: const Key("AlbumArtAudioFadeProgressVisualizer"),
+                                                    color: primaryTextColor.withOpacity(0.5),
+                                                    width: albumImageSize,
+                                                    height: albumImageSize,
+                                                    borderRadius: BorderRadius.circular(12.0),
+                                                    child: SizedBox.shrink(),
+                                                  ),
+                                                  IconButton(
+                                                    tooltip: AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
+                                                    onPressed: () {
+                                                      FeedbackHelper.feedback(FeedbackType.light);
+                                                      unawaited(audioHandler.togglePlayback());
+                                                    },
+                                                    color: primaryTextColor,
+                                                    visualDensity: VisualDensity.compact,
+                                                    icon: Icon(
+                                                      mediaState.playbackState.playing
+                                                          ? mediaState.fadeState.fadeDirection != FadeDirection.fadeOut
+                                                                ? TablerIcons.player_pause
+                                                                : TablerIcons.player_play
+                                                          : TablerIcons.player_play,
+                                                      size: 28,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),

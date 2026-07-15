@@ -85,7 +85,7 @@ class _LyricsScreenContentState extends ConsumerState<_LyricsScreenContent> {
           centerTitle: true,
           toolbarHeight: toolbarHeight,
           title: PlayerScreenAppBarTitle(maxLines: maxLines),
-          leading: FinampAppBarBackButton(dismissDirection: AxisDirection.right),
+          leading: FinampAppBarBackButton(dismissDirection: AxisDirection.left),
           actions: [
             if (Platform.isIOS)
               Padding(

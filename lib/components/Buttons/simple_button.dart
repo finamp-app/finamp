@@ -110,43 +110,44 @@ class SimpleButton extends StatelessWidget {
         ),
     ];
 
-    return Tooltip(
-      message: disabled ? context.l10n.tooltipDisabled(label ?? text) : label ?? text,
-      child: GestureDetector(
-        onLongPress: () {
+    final button = GestureDetector(
+      onLongPress: () {
+        FeedbackHelper.feedback(FeedbackType.selection);
+        if (onPressedSecondary != null) {
+          onPressedSecondary!();
+        }
+      },
+      onSecondaryTap: () {
+        if (onPressedSecondary != null) {
           FeedbackHelper.feedback(FeedbackType.selection);
-          if (onPressedSecondary != null) {
-            onPressedSecondary!();
-          }
-        },
-        onSecondaryTap: () {
-          if (onPressedSecondary != null) {
-            FeedbackHelper.feedback(FeedbackType.selection);
-            onPressedSecondary!();
-          }
-        },
-        child: TextButton(
-          onPressed: disabled ? null : onPressed,
-          style: ButtonStyle(
-            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-              iconPosition == IconPosition.start
-                  ? EdgeInsets.only(left: 2, top: 0, bottom: 0, right: backgroundColor != null ? 6 : 2)
-                  : EdgeInsets.only(left: backgroundColor != null ? 6 : 2, top: 0, bottom: 0, right: 2),
-            ),
-            backgroundColor: WidgetStateProperty.all<Color>(backgroundColor ?? Colors.transparent),
-            visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+          onPressedSecondary!();
+        }
+      },
+      child: TextButton(
+        onPressed: disabled ? null : onPressed,
+        style: ButtonStyle(
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
-          child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            alignment: WrapAlignment.center,
-            spacing: 6.0,
-            children: iconPosition == IconPosition.start ? contents : contents.reversed.toList(),
+          padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+            iconPosition == IconPosition.start
+                ? EdgeInsets.only(left: 2, top: 0, bottom: 0, right: backgroundColor != null ? 6 : 2)
+                : EdgeInsets.only(left: backgroundColor != null ? 6 : 2, top: 0, bottom: 0, right: 2),
           ),
+          backgroundColor: WidgetStateProperty.all<Color>(backgroundColor ?? Colors.transparent),
+          visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+        ),
+        child: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          alignment: WrapAlignment.center,
+          spacing: 6.0,
+          children: iconPosition == IconPosition.start ? contents : contents.reversed.toList(),
         ),
       ),
     );
+
+    return label != null
+        ? Tooltip(message: disabled ? context.l10n.tooltipDisabled(label!) : label, child: button)
+        : button;
   }
 }

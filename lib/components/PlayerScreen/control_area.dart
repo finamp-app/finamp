@@ -2,6 +2,7 @@ import 'package:finamp/components/Shortcuts/global_shortcut_manager.dart';
 import 'package:finamp/components/Shortcuts/music_control_shortcuts.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/screens/player_screen.dart';
+import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/material.dart';
 
 import 'feature_chips.dart';
@@ -20,14 +21,17 @@ class ControlArea extends StatelessWidget {
       children: [
         if (controller.shouldShow(PlayerHideable.features)) const FeatureChips(),
         if (controller.shouldShow(PlayerHideable.progressSlider))
-          Tooltip(
-            message: AppLocalizations.of(context)!.seekControlHint(
-              "${GlobalShortcuts.getDisplay(SeekForwardIntent)} / "
-              "${GlobalShortcuts.getDisplay(SeekBackwardIntent)}",
-            ),
-            triggerMode: TooltipTriggerMode.tap,
-            child: const ProgressSlider(),
-          ),
+          if (isDesktop)
+            Tooltip(
+              message: AppLocalizations.of(context)!.seekControlHint(
+                "${GlobalShortcuts.getDisplay(SeekForwardIntent)} / "
+                "${GlobalShortcuts.getDisplay(SeekBackwardIntent)}",
+              ),
+              triggerMode: TooltipTriggerMode.tap,
+              child: const ProgressSlider(),
+            )
+          else
+            const ProgressSlider(),
         PlayerButtons(controller),
       ],
     );
