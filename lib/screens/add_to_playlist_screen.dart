@@ -16,14 +16,18 @@ class AddToPlaylistScreen extends StatefulWidget {
 class _AddToPlaylistScreenState extends State<AddToPlaylistScreen> {
   @override
   Widget build(BuildContext context) {
-    final itemId = ModalRoute.of(context)!.settings.arguments as String;
+    // Accepts either a single item id or a list of them (multi-select), so all
+    // existing callers keep working.
+    final arguments = ModalRoute.of(context)!.settings.arguments;
+    final itemIds =
+        arguments is List<String> ? arguments : [arguments as String];
 
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.addToPlaylistTitle),
       ),
       body: AddToPlaylistList(
-        itemToAddId: itemId,
+        itemsToAdd: itemIds,
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
@@ -33,7 +37,7 @@ class _AddToPlaylistScreenState extends State<AddToPlaylistScreen> {
           // cancels the dialog.
           final result = await showDialog<bool>(
             context: context,
-            builder: (context) => NewPlaylistDialog(itemToAdd: itemId),
+            builder: (context) => NewPlaylistDialog(itemsToAdd: itemIds),
           );
 
           if (!mounted) return;

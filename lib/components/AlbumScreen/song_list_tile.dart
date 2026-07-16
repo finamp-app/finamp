@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mini_music_visualizer/mini_music_visualizer.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/jellyfin_models.dart';
 import '../../screens/add_to_playlist_screen.dart';
@@ -16,6 +17,7 @@ import '../album_image.dart';
 import '../error_snackbar.dart';
 import '../favourite_button.dart';
 import '../print_duration.dart';
+import '../song_selection_controller.dart';
 import 'downloaded_indicator.dart';
 
 enum SongListTileMenuItems {
@@ -75,6 +77,13 @@ class _SongListTileState extends State<SongListTile> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
+    // Screens that support multi-select provide a [SongSelectionController]
+    // above this widget. The lookup is nullable so that every other call site
+    // keeps its original (non-selecting) behaviour with no changes.
+    final selectionController = context.watch<SongSelectionController?>();
+    final isSelecting = selectionController?.isSelecting ?? false;
+    final isSelected = selectionController?.isSelected(widget.item) ?? false;
+
     /// Sets the item's favourite on the Jellyfin server.
     Future<void> setFavourite() async {
       try {
@@ -117,7 +126,10 @@ class _SongListTileState extends State<SongListTile> {
                       widget.parentId;
 
           return ListTile(
-            leading: AlbumImage(item: widget.item),
+            selected: isSelected,
+            leading: isSelecting
+                ? _SelectableAlbumImage(item: widget.item, selected: isSelected)
+                : AlbumImage(item: widget.item),
             title: RichText(
               text: TextSpan(
                 children: [
@@ -200,6 +212,10 @@ class _SongListTileState extends State<SongListTile> {
               ],
             ),
             onTap: () {
+              if (isSelecting) {
+                selectionController!.toggle(widget.item);
+                return;
+              }
               _audioServiceHelper.replaceQueueWithItem(
                 itemList: widget.children ?? [widget.item],
                 initialIndex: widget.index ?? 0,
@@ -210,6 +226,18 @@ class _SongListTileState extends State<SongListTile> {
 
     return GestureDetector(
       onLongPressStart: (details) async {
+        // On surfaces that support multi-select, a long press enters selection
+        // mode directly (like QQ Music) instead of opening the context menu.
+        if (selectionController != null) {
+          Feedback.forLongPress(context);
+          if (selectionController.isSelecting) {
+            selectionController.toggle(widget.item);
+          } else {
+            selectionController.startSelection(widget.item);
+          }
+          return;
+        }
+
         Feedback.forLongPress(context);
 
         // This horrible check does 2 things:
@@ -365,7 +393,7 @@ class _SongListTileState extends State<SongListTile> {
 
           case SongListTileMenuItems.addToPlaylist:
             Navigator.of(context).pushNamed(AddToPlaylistScreen.routeName,
-                arguments: widget.item.id);
+                arguments: [widget.item.id]);
             break;
 
           case SongListTileMenuItems.removeFromPlaylist:
@@ -445,7 +473,8 @@ class _SongListTileState extends State<SongListTile> {
           ? listTile
           : Dismissible(
               key: Key(widget.index.toString()),
-              direction: FinampSettingsHelper.finampSettings.disableGesture
+              direction: isSelecting ||
+                      FinampSettingsHelper.finampSettings.disableGesture
                   ? DismissDirection.none
                   : DismissDirection.horizontal,
               background: Container(
@@ -494,6 +523,48 @@ class _SongListTileState extends State<SongListTile> {
               },
               child: listTile,
             ),
+    );
+  }
+}
+
+/// The album image with a selection overlay, shown in place of [AlbumImage]
+/// while the tile is in selection mode. [AlbumImage] remains the sizing child
+/// so the artwork keeps its normal size.
+class _SelectableAlbumImage extends StatelessWidget {
+  const _SelectableAlbumImage({
+    Key? key,
+    required this.item,
+    required this.selected,
+  }) : super(key: key);
+
+  final BaseItemDto item;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        AlbumImage(item: item),
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: selected
+                  ? Colors.black.withOpacity(0.45)
+                  : Colors.transparent,
+              borderRadius: AlbumImage.borderRadius,
+            ),
+            child: Center(
+              child: Icon(
+                selected ? Icons.check_circle : Icons.radio_button_unchecked,
+                color: selected
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.white,
+                size: 28.0,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

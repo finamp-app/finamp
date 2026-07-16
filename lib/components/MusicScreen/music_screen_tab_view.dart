@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/finamp_models.dart';
 import '../../models/jellyfin_models.dart';
@@ -14,6 +15,7 @@ import '../../services/finamp_settings_helper.dart';
 import '../../services/finamp_user_helper.dart';
 import '../../services/jellyfin_api_helper.dart';
 import '../AlbumScreen/song_list_tile.dart';
+import '../song_selection_controller.dart';
 import '../error_snackbar.dart';
 import '../first_page_progress_indicator.dart';
 import '../new_page_progress_indicator.dart';
@@ -74,6 +76,18 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
   String? letterToSearch;
   String lastSortOrder = SortOrder.ascending.toString();
   Timer? timer;
+
+  // On the Songs tab, the multi-select controller is fed the currently loaded
+  // items (for "select all"). Cached from build so the paging listener can push
+  // updates as more pages load, without relying on incidental rebuilds.
+  SongSelectionController? _songSelectionController;
+
+  void _updateSelectableItems() {
+    if (widget.tabContentType == TabContentType.songs) {
+      _songSelectionController
+          ?.setSelectableItems(_pagingController.itemList ?? []);
+    }
+  }
 
   // This function just lets us easily set stuff to the getItems call we want.
   Future<void> _getPage(int pageKey) async {
@@ -142,6 +156,8 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
     _pagingController.addPageRequestListener((pageKey) {
       _getPage(pageKey);
     });
+    // Keep the "select all" candidate list current as pages load.
+    _pagingController.addListener(_updateSelectableItems);
     lastSortOrder =
         widget.sortOrder?.toString() ?? SortOrder.ascending.toString();
     controller = ScrollController();
@@ -240,6 +256,15 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
       valueListenable: FinampSettingsHelper.finampSettingsListener,
       builder: (context, box, _) {
         final isOffline = box.get("FinampSettings")?.isOffline ?? false;
+
+        // Multi-select is only offered on the Songs tab, and only when a
+        // [SongSelectionController] is provided above this view (i.e. the Music
+        // screen, not the artist detail view). We use `read` so that toggling a
+        // selection doesn't rebuild the whole paginated list.
+        final selectionController = _songSelectionController =
+            widget.tabContentType == TabContentType.songs
+                ? context.read<SongSelectionController?>()
+                : null;
 
         if (isOffline) {
           // We do the same checks we do when online to ensure that the list is
@@ -394,6 +419,8 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
             }
           }
 
+          selectionController?.setSelectableItems(offlineSortedItems ?? []);
+
           return Scrollbar(
             controller: controller,
             child: Stack(
@@ -476,6 +503,9 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
             _oldView = widget.view;
             _pagingController.refresh();
           }
+
+          selectionController
+              ?.setSelectableItems(_pagingController.itemList ?? []);
 
           return RefreshIndicator(
             // RefreshIndicator wants an async function, so we use Future.sync()

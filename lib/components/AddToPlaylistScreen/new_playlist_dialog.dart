@@ -10,10 +10,10 @@ import '../error_snackbar.dart';
 class NewPlaylistDialog extends StatefulWidget {
   const NewPlaylistDialog({
     Key? key,
-    required this.itemToAdd,
+    required this.itemsToAdd,
   }) : super(key: key);
 
-  final String itemToAdd;
+  final List<String> itemsToAdd;
 
   @override
   State<NewPlaylistDialog> createState() => _NewPlaylistDialogState();
@@ -71,7 +71,7 @@ class _NewPlaylistDialogState extends State<NewPlaylistDialog> {
       try {
         await _jellyfinApiHelper.createNewPlaylist(NewPlaylist(
           name: _name,
-          ids: [widget.itemToAdd],
+          ids: widget.itemsToAdd,
           userId: _finampUserHelper.currentUser!.id,
         ));
 

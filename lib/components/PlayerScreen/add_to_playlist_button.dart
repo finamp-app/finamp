@@ -21,9 +21,9 @@ class AddToPlaylistButton extends StatelessWidget {
           return IconButton(
             onPressed: () => Navigator.of(context).pushReplacementNamed(
                 AddToPlaylistScreen.routeName,
-                arguments:
-                    BaseItemDto.fromJson(snapshot.data!.extras!["itemJson"])
-                        .id),
+                arguments: [
+                  BaseItemDto.fromJson(snapshot.data!.extras!["itemJson"]).id
+                ]),
             icon: const Icon(Icons.playlist_add),
             tooltip: AppLocalizations.of(context)!.addToPlaylistTooltip,
           );

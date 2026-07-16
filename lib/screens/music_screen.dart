@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 
 import '../models/finamp_models.dart';
 import '../services/finamp_settings_helper.dart';
@@ -13,6 +14,9 @@ import '../components/MusicScreen/music_screen_drawer.dart';
 import '../components/MusicScreen/sort_by_menu_button.dart';
 import '../components/MusicScreen/sort_order_button.dart';
 import '../components/now_playing_bar.dart';
+import '../components/selection_action_bar.dart';
+import '../components/selection_app_bar.dart';
+import '../components/song_selection_controller.dart';
 import '../components/error_snackbar.dart';
 import '../services/jellyfin_api_helper.dart';
 
@@ -158,132 +162,154 @@ class _MusicScreenState extends State<MusicScreen>
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Box<FinampUser>>(
-      valueListenable: _finampUserHelper.finampUsersListenable,
-      builder: (context, value, _) {
-        return ValueListenableBuilder<Box<FinampSettings>>(
-          valueListenable: FinampSettingsHelper.finampSettingsListener,
-          builder: (context, value, _) {
-            final finampSettings = value.get("FinampSettings");
+    return ChangeNotifierProvider(
+      create: (_) => SongSelectionController(),
+      child: ValueListenableBuilder<Box<FinampUser>>(
+        valueListenable: _finampUserHelper.finampUsersListenable,
+        builder: (context, value, _) {
+          return ValueListenableBuilder<Box<FinampSettings>>(
+            valueListenable: FinampSettingsHelper.finampSettingsListener,
+            builder: (context, value, _) {
+              final finampSettings = value.get("FinampSettings");
+              final selection = context.watch<SongSelectionController>();
 
-            // Get the tabs from the user's tab order, and filter them to only
-            // include enabled tabs
-            final tabs = finampSettings!.tabOrder.where((e) =>
-                FinampSettingsHelper.finampSettings.showTabs[e] ?? false);
+              // Get the tabs from the user's tab order, and filter them to only
+              // include enabled tabs
+              final tabs = finampSettings!.tabOrder.where((e) =>
+                  FinampSettingsHelper.finampSettings.showTabs[e] ?? false);
 
-            if (tabs.length != _tabController?.length) {
-              _musicScreenLogger.info(
-                  "Rebuilding MusicScreen tab controller (${tabs.length} != ${_tabController?.length})");
-              _buildTabController();
-            }
+              if (tabs.length != _tabController?.length) {
+                _musicScreenLogger.info(
+                    "Rebuilding MusicScreen tab controller (${tabs.length} != ${_tabController?.length})");
+                _buildTabController();
+              }
 
-            return WillPopScope(
-              onWillPop: () async {
-                if (isSearching) {
-                  _stopSearching();
-                  return false;
-                }
-                return true;
-              },
-              child: Scaffold(
-                appBar: AppBar(
-                  title: isSearching
-                      ? TextField(
-                          controller: textEditingController,
-                          autofocus: true,
-                          onChanged: (value) => setState(() {
-                            searchQuery = value;
-                          }),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: MaterialLocalizations.of(context)
-                                .searchFieldLabel,
+              return WillPopScope(
+                onWillPop: () async {
+                  if (selection.isSelecting) {
+                    selection.endSelection();
+                    return false;
+                  }
+                  if (isSearching) {
+                    _stopSearching();
+                    return false;
+                  }
+                  return true;
+                },
+                child: Scaffold(
+                  appBar: selection.isSelecting
+                      ? SelectionAppBar(controller: selection)
+                      : AppBar(
+                          title: isSearching
+                              ? TextField(
+                                  controller: textEditingController,
+                                  autofocus: true,
+                                  onChanged: (value) => setState(() {
+                                    searchQuery = value;
+                                  }),
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: MaterialLocalizations.of(context)
+                                        .searchFieldLabel,
+                                  ),
+                                )
+                              : Text(_finampUserHelper
+                                      .currentUser?.currentView?.name ??
+                                  AppLocalizations.of(context)!.music),
+                          bottom: TabBar(
+                            controller: _tabController,
+                            tabs: tabs
+                                .map((tabType) => Tab(
+                                      text: tabType
+                                          .toLocalisedString(context)
+                                          .toUpperCase(),
+                                    ))
+                                .toList(),
+                            isScrollable: true,
+                            tabAlignment: TabAlignment.start,
                           ),
-                        )
-                      : Text(_finampUserHelper.currentUser?.currentView?.name ??
-                          AppLocalizations.of(context)!.music),
-                  bottom: TabBar(
+                          leading: isSearching
+                              ? BackButton(
+                                  onPressed: () => _stopSearching(),
+                                )
+                              : null,
+                          actions: isSearching
+                              ? [
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.cancel,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
+                                    ),
+                                    onPressed: () => setState(() {
+                                      textEditingController.clear();
+                                      searchQuery = null;
+                                    }),
+                                    tooltip:
+                                        AppLocalizations.of(context)!.clear,
+                                  )
+                                ]
+                              : [
+                                  SortOrderButton(
+                                    tabs.elementAt(_tabController!.index),
+                                  ),
+                                  SortByMenuButton(
+                                    tabs.elementAt(_tabController!.index),
+                                  ),
+                                  IconButton(
+                                    icon: finampSettings.isFavourite
+                                        ? const Icon(Icons.favorite)
+                                        : const Icon(Icons.favorite_outline),
+                                    onPressed: finampSettings.isOffline
+                                        ? null
+                                        : () =>
+                                            FinampSettingsHelper.setIsFavourite(
+                                                !finampSettings.isFavourite),
+                                    tooltip: AppLocalizations.of(context)!
+                                        .favourites,
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.search),
+                                    onPressed: () => setState(() {
+                                      isSearching = true;
+                                    }),
+                                    tooltip: MaterialLocalizations.of(context)
+                                        .searchFieldLabel,
+                                  ),
+                                ],
+                        ),
+                  bottomNavigationBar:
+                      const SelectionAwareBottomBar(child: NowPlayingBar()),
+                  drawer: const MusicScreenDrawer(),
+                  floatingActionButton: selection.isSelecting
+                      ? null
+                      : Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: getFloatingActionButton(),
+                        ),
+                  body: TabBarView(
                     controller: _tabController,
-                    tabs: tabs
-                        .map((tabType) => Tab(
-                              text: tabType
-                                  .toLocalisedString(context)
-                                  .toUpperCase(),
+                    physics: selection.isSelecting
+                        ? const NeverScrollableScrollPhysics()
+                        : null,
+                    children: tabs
+                        .map((tabType) => MusicScreenTabView(
+                              tabContentType: tabType,
+                              searchTerm: searchQuery,
+                              isFavourite: finampSettings.isFavourite,
+                              sortBy: finampSettings.getTabSortBy(tabType),
+                              sortOrder: finampSettings.getSortOrder(tabType),
+                              view: _finampUserHelper.currentUser?.currentView,
                             ))
                         .toList(),
-                    isScrollable: true,
-                    tabAlignment: TabAlignment.start,
                   ),
-                  leading: isSearching
-                      ? BackButton(
-                          onPressed: () => _stopSearching(),
-                        )
-                      : null,
-                  actions: isSearching
-                      ? [
-                          IconButton(
-                            icon: Icon(
-                              Icons.cancel,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                            onPressed: () => setState(() {
-                              textEditingController.clear();
-                              searchQuery = null;
-                            }),
-                            tooltip: AppLocalizations.of(context)!.clear,
-                          )
-                        ]
-                      : [
-                          SortOrderButton(
-                            tabs.elementAt(_tabController!.index),
-                          ),
-                          SortByMenuButton(
-                            tabs.elementAt(_tabController!.index),
-                          ),
-                          IconButton(
-                            icon: finampSettings.isFavourite
-                                ? const Icon(Icons.favorite)
-                                : const Icon(Icons.favorite_outline),
-                            onPressed: finampSettings.isOffline
-                                ? null
-                                : () => FinampSettingsHelper.setIsFavourite(
-                                    !finampSettings.isFavourite),
-                            tooltip: AppLocalizations.of(context)!.favourites,
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.search),
-                            onPressed: () => setState(() {
-                              isSearching = true;
-                            }),
-                            tooltip: MaterialLocalizations.of(context)
-                                .searchFieldLabel,
-                          ),
-                        ],
                 ),
-                bottomNavigationBar: const NowPlayingBar(),
-                drawer: const MusicScreenDrawer(),
-                floatingActionButton: Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: getFloatingActionButton(),
-                ),
-                body: TabBarView(
-                  controller: _tabController,
-                  children: tabs
-                      .map((tabType) => MusicScreenTabView(
-                            tabContentType: tabType,
-                            searchTerm: searchQuery,
-                            isFavourite: finampSettings.isFavourite,
-                            sortBy: finampSettings.getTabSortBy(tabType),
-                            sortOrder: finampSettings.getSortOrder(tabType),
-                            view: _finampUserHelper.currentUser?.currentView,
-                          ))
-                      .toList(),
-                ),
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

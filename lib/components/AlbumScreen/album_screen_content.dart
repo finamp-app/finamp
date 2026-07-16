@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/jellyfin_models.dart';
 import '../../services/finamp_settings_helper.dart';
 import '../../components/favourite_button.dart';
+import '../selection_app_bar.dart';
+import '../song_selection_controller.dart';
 import 'album_screen_content_flexible_space_bar.dart';
 import 'delete_button.dart';
 import 'song_list_tile.dart';
@@ -43,6 +46,21 @@ class _AlbumScreenContentState extends State<AlbumScreenContent> {
       });
     }
 
+    // Multi-select support. The controller is provided above the AlbumScreen's
+    // Scaffold, so the batch action bar and this app bar share it.
+    final selectionController = context.watch<SongSelectionController?>();
+    final isSelecting = selectionController?.isSelecting ?? false;
+    if (selectionController != null) {
+      selectionController.parent = widget.parent;
+      selectionController.setSelectableItems(widget.children);
+      selectionController.onItemsRemoved = (removed) {
+        setState(() {
+          final removedIds = removed.map((e) => e.id).toSet();
+          widget.children.removeWhere((e) => removedIds.contains(e.id));
+        });
+      };
+    }
+
     List<List<BaseItemDto>> childrenPerDisc = [];
     // if not in playlist, try splitting up tracks by disc numbers
     // if first track has a disc number, let's assume the rest has it too
@@ -62,30 +80,40 @@ class _AlbumScreenContentState extends State<AlbumScreenContent> {
     return Scrollbar(
       child: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            title: Text(widget.parent.name ??
-                AppLocalizations.of(context)!.unknownName),
-            // 125 + 64 is the total height of the widget we use as a
-            // FlexibleSpaceBar. We add the toolbar height since the widget
-            // should appear below the appbar.
-            // TODO: This height is affected by platform density.
-            expandedHeight: kToolbarHeight + 125 + 64,
-            pinned: true,
-            flexibleSpace: AlbumScreenContentFlexibleSpaceBar(
-              album: widget.parent,
-              items: widget.children,
+          if (isSelecting)
+            SliverAppBar(
+              pinned: true,
+              leading: selectionCloseButton(context, selectionController!),
+              title: selectionTitle(context, selectionController),
+              actions: selectionAppBarActions(context, selectionController),
+            )
+          else
+            SliverAppBar(
+              title: Text(widget.parent.name ??
+                  AppLocalizations.of(context)!.unknownName),
+              // 125 + 64 is the total height of the widget we use as a
+              // FlexibleSpaceBar. We add the toolbar height since the widget
+              // should appear below the appbar.
+              // TODO: This height is affected by platform density.
+              expandedHeight: kToolbarHeight + 125 + 64,
+              pinned: true,
+              flexibleSpace: AlbumScreenContentFlexibleSpaceBar(
+                album: widget.parent,
+                items: widget.children,
+              ),
+              actions: [
+                if (widget.parent.type == "Playlist" &&
+                    !FinampSettingsHelper.finampSettings.isOffline)
+                  PlaylistNameEditButton(playlist: widget.parent),
+                FavoriteButton(item: widget.parent),
+                if (GetIt.instance<DownloadsHelper>()
+                    .isAlbumDownloaded(widget.parent.id))
+                  DeleteButton(parent: widget.parent, items: widget.children),
+                if (!FinampSettingsHelper.finampSettings.isOffline)
+                  SyncAlbumOrPlaylistButton(
+                      parent: widget.parent, items: widget.children)
+              ],
             ),
-            actions: [
-              if (widget.parent.type == "Playlist" &&
-                  !FinampSettingsHelper.finampSettings.isOffline)
-                PlaylistNameEditButton(playlist: widget.parent),
-              FavoriteButton(item: widget.parent),
-              if (GetIt.instance<DownloadsHelper>().isAlbumDownloaded(widget.parent.id))
-                DeleteButton(parent: widget.parent, items: widget.children),
-              if (!FinampSettingsHelper.finampSettings.isOffline)
-                SyncAlbumOrPlaylistButton(parent: widget.parent, items: widget.children)
-            ],
-          ),
           if (widget.children.length > 1 &&
               childrenPerDisc.length >
                   1) // show headers only for multi disc albums

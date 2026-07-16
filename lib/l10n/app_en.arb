@@ -583,5 +583,45 @@
   "sync": "Synchronize with Server",
   "@sync": {},
   "about": "About Finamp",
-  "@about": {}
+  "@about": {},
+  "selectAll": "Select All",
+  "@selectAll": {},
+  "deselectAll": "Deselect All",
+  "@deselectAll": {},
+  "itemsSelected": "{count,plural, =0{No items selected} =1{{count} selected} other{{count} selected}}",
+  "@itemsSelected": {
+    "description": "Title shown in the selection app bar with the number of selected songs.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addedItemsToFavourites": "{count,plural, =1{Added {count} song to favourites} other{Added {count} songs to favourites}}",
+  "@addedItemsToFavourites": {
+    "description": "Snackbar shown after adding the selected songs to favourites.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removedItemsFromFavourites": "{count,plural, =1{Removed {count} song from favourites} other{Removed {count} songs from favourites}}",
+  "@removedItemsFromFavourites": {
+    "description": "Snackbar shown after removing the selected songs from favourites.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteSelectedDownloadsPrompt": "{count,plural, =1{Are you sure you want to delete {count} downloaded song?} other{Are you sure you want to delete {count} downloaded songs?}}",
+  "@deleteSelectedDownloadsPrompt": {
+    "description": "Confirmation prompt shown before deleting the downloads of the selected songs.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

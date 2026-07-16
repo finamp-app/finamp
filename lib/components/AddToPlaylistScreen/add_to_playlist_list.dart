@@ -9,10 +9,10 @@ import '../error_snackbar.dart';
 class AddToPlaylistList extends StatefulWidget {
   const AddToPlaylistList({
     Key? key,
-    required this.itemToAddId,
+    required this.itemsToAdd,
   }) : super(key: key);
 
-  final String itemToAddId;
+  final List<String> itemsToAdd;
 
   @override
   State<AddToPlaylistList> createState() => _AddToPlaylistListState();
@@ -49,7 +49,7 @@ class _AddToPlaylistListState extends State<AddToPlaylistList> {
                     try {
                       await jellyfinApiHelper.addItemstoPlaylist(
                         playlistId: snapshot.data![index].id,
-                        ids: [widget.itemToAddId],
+                        ids: widget.itemsToAdd,
                       );
 
                       if (!mounted) return;
