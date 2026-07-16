@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' show ClientException;
+import 'package:http/http.dart' show ClientException, Response;
 import 'package:logging/logging.dart';
 
 import 'login_flow.dart';
@@ -62,6 +62,18 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
             error.message.contains("TLSV1_ALERT_CERTIFICATE_REQUIRED")) {
           _loginServerSelectionPageLogger.info(
             "Discovered server '${response.name}' at ${response.address} requires an mTLS client certificate",
+          );
+          if (mounted && !widget.serverState.clientCertificateRequired) {
+            setState(() {
+              widget.serverState.clientCertificateRequired = true;
+            });
+          }
+        } else if (ClientCertificateInstaller.isSupported &&
+            error is Response &&
+            error.statusCode >= 400 &&
+            error.statusCode < 500) {
+          _loginServerSelectionPageLogger.info(
+            "Discovered server '${response.name}' at ${response.address} might require an mTLS client certificate (HTTP ${error.statusCode})",
           );
           if (mounted && !widget.serverState.clientCertificateRequired) {
             setState(() {
