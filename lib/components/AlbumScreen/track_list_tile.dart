@@ -28,6 +28,7 @@ import '../../services/finamp_settings_helper.dart';
 import '../../services/music_providers.dart';
 import '../../services/queue_service.dart';
 import '../../services/theme_provider.dart';
+import '../../services/track_selection_provider.dart';
 import '../album_image.dart';
 import '../print_duration.dart';
 import 'downloaded_indicator.dart';
@@ -74,6 +75,13 @@ class TrackListTile extends ConsumerWidget {
     this.allowDismiss = true,
     this.highlightCurrentTrack = true,
     this.playbackProgress,
+
+    /// When set, this tile participates in multi-select for the given scope
+    /// (usually the parent album/playlist id). Tapping toggles selection and
+    /// long-pressing enters selection mode instead of opening the track menu.
+    /// Left null everywhere multi-select is not offered, so those uses are
+    /// unaffected.
+    this.selectionScope,
   });
 
   final BaseItemDto item;
@@ -88,6 +96,7 @@ class TrackListTile extends ConsumerWidget {
   final bool allowDismiss;
   final bool highlightCurrentTrack;
   final double? playbackProgress;
+  final String? selectionScope;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -133,6 +142,7 @@ class TrackListTile extends ConsumerWidget {
       highlightCurrentTrack: highlightCurrentTrack,
       onRemoveFromList: onRemoveFromList,
       onTap: trackListTileOnTap,
+      selectionScope: selectionScope,
       confirmDismiss: (direction) async {
         var followUpAction = (direction == DismissDirection.startToEnd)
             ? FinampSettingsHelper.finampSettings.itemSwipeActionLeftToRight
@@ -371,6 +381,7 @@ class TrackListItem extends ConsumerWidget {
   final Future<bool> Function(DismissDirection direction) confirmDismiss;
   final VoidCallback? onRemoveFromList;
   final double? playbackProgress;
+  final String? selectionScope;
 
   const TrackListItem({
     super.key,
@@ -390,6 +401,7 @@ class TrackListItem extends ConsumerWidget {
     this.leftSwipeBackground = const SizedBox.shrink(),
     this.rightSwipeBackground = const SizedBox.shrink(),
     this.playbackProgress,
+    this.selectionScope,
   });
 
   @override
@@ -411,6 +423,19 @@ class TrackListItem extends ConsumerWidget {
       currentTrackProvider.select((queueItem) => queueItem.valueOrNull?.baseItemId == baseItem.id),
     );
 
+    // Multi-select support: only active when a selectionScope is provided.
+    final scope = selectionScope;
+    final selection = scope != null ? ref.watch(trackSelectionProvider(scope)) : null;
+    final isSelecting = selection?.isSelecting ?? false;
+    final isSelected = selection?.isSelected(baseItem) ?? false;
+    void toggleSelection() {
+      if (scope != null) ref.read(trackSelectionProvider(scope).notifier).toggle(baseItem);
+    }
+
+    void enterSelection() {
+      if (scope != null) ref.read(trackSelectionProvider(scope).notifier).startSelection(baseItem);
+    }
+
     var listCard = Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 6.0),
       child: TrackListItemTile(
@@ -424,14 +449,41 @@ class TrackListItem extends ConsumerWidget {
         adaptiveAdditionalInfoSortBy: adaptiveAdditionalInfoSortBy,
         isCurrentTrack: isCurrentlyPlaying,
         highlightCurrentTrack: highlightCurrentTrack,
-        onTap: () => onTap(playable),
+        onTap: isSelecting ? () => toggleSelection() : () => onTap(playable),
         playbackProgress: playbackProgress,
         onRemoveFromList: onRemoveFromList,
         features: features,
       ),
     );
 
-    var listItem = playable ? listCard : Opacity(opacity: 0.5, child: listCard);
+    Widget listItem = playable ? listCard : Opacity(opacity: 0.5, child: listCard);
+
+    // Overlay a selection indicator when in selection mode.
+    if (isSelecting) {
+      listItem = Stack(
+        children: [
+          listItem,
+          if (isSelected)
+            Positioned.fill(
+              child: IgnorePointer(child: Container(color: Theme.of(context).colorScheme.primary.withOpacity(0.15))),
+            ),
+          Positioned(
+            left: 16,
+            top: 0,
+            bottom: 0,
+            child: Center(
+              child: Icon(
+                isSelected ? TablerIcons.circle_check_filled : TablerIcons.circle,
+                color: isSelected
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                size: 26.0,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
 
     var unthemedItem = Builder(
       builder: (context) {
@@ -455,13 +507,23 @@ class TrackListItem extends ConsumerWidget {
             // Begin precalculating theme for song menu
             ref.listenManual(finampThemeProvider(ThemeInfo(baseItem)), (_, __) {});
           },
-          onLongPressStart: features.contains(TrackListItemFeatures.fullyDraggable)
-              ? null
-              : (details) => menuCallback(),
+          onLongPressStart: scope != null
+              ? (details) {
+                  FeedbackHelper.feedback(FeedbackType.selection);
+                  if (isSelecting) {
+                    toggleSelection();
+                  } else {
+                    enterSelection();
+                  }
+                }
+              : (features.contains(TrackListItemFeatures.fullyDraggable) ? null : (details) => menuCallback()),
           onSecondaryTapDown: features.contains(TrackListItemFeatures.fullyDraggable)
               ? null
               : (details) => menuCallback(),
-          child: features.contains(TrackListItemFeatures.swipeable) && !ref.watch(finampSettingsProvider.disableGesture)
+          child:
+              features.contains(TrackListItemFeatures.swipeable) &&
+                  !isSelecting &&
+                  !ref.watch(finampSettingsProvider.disableGesture)
               ? Dismissible(
                   key: Key(listIndex.toString()),
                   direction: getAllowedDismissDirection(

@@ -3576,5 +3576,18 @@
     "clientCertificateRequired": "Client certificate required",
     "@clientCertificateRequired": {
         "description": "Message shown on the server selection screen when the server requires a client certificate to be provided."
+    },
+    "selectAll": "Select All",
+    "@selectAll": {},
+    "deselectAll": "Deselect All",
+    "@deselectAll": {},
+    "itemsSelected": "{count, plural, =0{No items selected} =1{{count} selected} other{{count} selected}}",
+    "@itemsSelected": {
+        "description": "Title shown in the selection app bar with the number of selected tracks.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 import 'package:finamp/components/AlbumScreen/album_screen_content.dart';
+import 'package:finamp/components/AlbumScreen/track_selection_bar.dart';
 import 'package:finamp/components/now_playing_bar.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,11 @@ class AlbumScreen extends ConsumerWidget {
     return Scaffold(
       extendBody: true,
       body: AlbumScreenContent(parent: resolvedParent, genreFilter: genreFilter),
-      bottomNavigationBar: const NowPlayingBar(),
+      bottomNavigationBar: TrackSelectionAwareBottomBar(
+        scope: resolvedParent.id.toString(),
+        parent: resolvedParent,
+        child: const NowPlayingBar(),
+      ),
     );
   }
 }
