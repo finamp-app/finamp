@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:finamp/components/AlbumScreen/downloaded_indicator.dart';
+import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
 import 'package:finamp/components/album_image.dart';
 import 'package:finamp/components/favorite_button.dart';
 import 'package:finamp/components/print_duration.dart';
@@ -67,7 +68,20 @@ class ItemCollectionListTile extends ConsumerWidget {
       item: itemDownloadStub,
       size: Theme.of(context).textTheme.bodyMedium!.fontSize! + 1,
     );
-    final titleText = Text(item.name ?? AppLocalizations.of(context)!.unknownName, overflow: TextOverflow.ellipsis);
+    final titleText = Text(
+      item.name ?? AppLocalizations.of(context)!.unknownName,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        color: Theme.of(context).textTheme.bodyLarge!.color,
+        fontSize: 15.5,
+        fontWeight: FontWeight.w500,
+        height: 1.1,
+      ),
+      // It would be better to increase tile height instead of clamping titles to one line and hoping things
+      // now fit, but getting the tile height scaling correct across all widgets is difficult.
+      // TODO properly scale item collection list tile height
+      maxLines: MediaQuery.textScalerOf(context).scale(15.5) > 15.5 * 1.11 ? 1 : 2,
+    );
     final isCurrentlyPlaying = ref.watch(
       currentTrackProvider.select((queueItem) => queueItem.valueOrNull?.source.id == item.id.raw),
     );
@@ -131,7 +145,11 @@ class ItemCollectionListTile extends ConsumerWidget {
           additionalInfoSortBy == SortBy.premiereDate) {
         return TextSpan(
           text: ReleaseDateHelper.autoFormat(item) ?? l10n.noReleaseDate,
-          style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7)),
+          style: TextStyle(
+            color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+          ),
         );
       }
       switch (additionalInfoSortBy) {
@@ -163,12 +181,18 @@ class ItemCollectionListTile extends ConsumerWidget {
         downloadedIndicator.isVisible(ref) ||
         item.isExplicit);
     final subtitleText = Text.rich(
+      overflow: TextOverflow.clip,
+      softWrap: false,
+      maxLines: 1,
       TextSpan(
         children: [
           WidgetSpan(
-            child: Transform.translate(
-              offset: isOnDesktop ? Offset(-3, 1.3) : Offset(-3, 0.4),
-              child: downloadedIndicator,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 2.0),
+              child: Transform.translate(
+                offset: isOnDesktop ? Offset(-1.5, 1.7) : Offset(-1.5, 0.4),
+                child: downloadedIndicator,
+              ),
             ),
             alignment: PlaceholderAlignment.baseline,
             baseline: TextBaseline.alphabetic,
@@ -185,60 +209,92 @@ class ItemCollectionListTile extends ConsumerWidget {
               alignment: PlaceholderAlignment.baseline,
               baseline: TextBaseline.alphabetic,
             ),
-          if (downloadedIndicator.isVisible(ref))
+          if (downloadedIndicator.isVisible(ref) || item.isExplicit)
             WidgetSpan(child: SizedBox(width: (additionalInfo != null) ? 5.0 : 2.0)),
           if (additionalInfo != null) ...[
             if (additionalInfoIcon != null) additionalInfoIcon,
             additionalInfo,
-            TextSpan(
-              text: (itemType == BaseItemDtoType.album && albumShowsYearAndDurationInstead)
-                  ? " · ${printDuration(item.runTimeTicksDuration())}"
-                  : (subtitle != null)
-                  ? " · $subtitle"
-                  : null,
-              style: TextStyle(color: Theme.of(context).disabledColor),
-            ),
+            if ((itemType == BaseItemDtoType.album && albumShowsYearAndDurationInstead) || subtitle != null) ...[
+              const WidgetSpan(child: SizedBox(width: 10.0)),
+              TextSpan(
+                text: (itemType == BaseItemDtoType.album && albumShowsYearAndDurationInstead)
+                    ? printDuration(item.runTimeTicksDuration())
+                    : subtitle,
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.6),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ],
           ] else ...[
             TextSpan(
               text: subtitle,
-              style: TextStyle(color: Theme.of(context).disabledColor),
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ],
       ),
-      overflow: TextOverflow.ellipsis,
     );
 
     final unthemedListTile = Builder(
       // get updated context after the theme is applied
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 6.0, right: 6.0),
+        return Container(
+          padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 6.0),
+          constraints: const BoxConstraints(maxHeight: TrackListItemTile.defaultTileHeight),
           child: ListTile(
+            horizontalTitleGap: TrackListItemTile.defaultTitleGap,
             textColor: Theme.of(context).textTheme.bodyLarge?.color,
-            contentPadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: !showSubtitle ? 8.0 : 0.0),
+            visualDensity: const VisualDensity(horizontal: 0.0, vertical: 1.0),
+            minVerticalPadding: 0.0,
+            contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
             onTap: onTap,
-            leading: AlbumImage(item: item),
-            title: titleText,
-            subtitle: (showSubtitle) ? subtitleText : null,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if ((itemType == BaseItemDtoType.artist
-                        ? jellyfinApiHelper.selectedMixArtists
-                        : (itemType == BaseItemDtoType.genre)
-                        ? jellyfinApiHelper.selectedMixGenres
-                        : jellyfinApiHelper.selectedMixAlbums)
-                    .contains(item))
-                  const Icon(Icons.explore),
-                FavoriteButton(
-                  item: item,
-                  onlyIfFav: true,
-                  showFavoriteIconOnlyWhenFilterDisabled: showFavoriteIconOnlyWhenFilterDisabled,
-                ),
-              ],
+            leading: AlbumImage(
+              item: item,
+              borderRadius: BorderRadius.circular(TrackListItemTile.albumCoverBorderRadius),
+            ),
+            title: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: TrackListItemTile.defaultTileHeight),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Flexible(fit: FlexFit.loose, flex: 3, child: titleText),
+                  if (showSubtitle) Flexible(fit: FlexFit.loose, flex: 2, child: subtitleText),
+                ],
+              ),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(TrackListItemTile.albumCoverBorderRadius),
+            ),
+            trailing: Padding(
+              padding: const EdgeInsets.only(right: 4.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if ((itemType == BaseItemDtoType.artist
+                          ? jellyfinApiHelper.selectedMixArtists
+                          : (itemType == BaseItemDtoType.genre)
+                          ? jellyfinApiHelper.selectedMixGenres
+                          : jellyfinApiHelper.selectedMixAlbums)
+                      .contains(item))
+                    const Icon(Icons.explore),
+                  FavoriteButton(
+                    item: item,
+                    onlyIfFav: true,
+                    showFavoriteIconOnlyWhenFilterDisabled: showFavoriteIconOnlyWhenFilterDisabled,
+                  ),
+                ],
+              ),
             ),
           ),
         );

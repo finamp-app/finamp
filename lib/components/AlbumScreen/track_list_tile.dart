@@ -596,7 +596,7 @@ class TrackListItemTile extends ConsumerWidget {
 
   static const double defaultTileHeight = 60.0;
   static const double defaultTitleGap = 10.0;
-  static const double albumCoverCornerRadius = 8.0;
+  static const double albumCoverBorderRadius = 8.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -702,15 +702,15 @@ class TrackListItemTile extends ConsumerWidget {
                   children: [
                     Container(
                       foregroundDecoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(albumCoverCornerRadius),
+                        borderRadius: BorderRadius.circular(albumCoverBorderRadius),
                         color: Colors.black.withOpacity(0.4),
                       ),
-                      child: AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverCornerRadius)),
+                      child: AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverBorderRadius)),
                     ),
                     MiniMusicVisualizer(animate: true, color: Colors.white, width: 4, height: 15, radius: 2),
                   ],
                 )
-              : AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverCornerRadius)),
+              : AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverBorderRadius)),
       ],
     );
     final tileTitle = ConstrainedBox(
@@ -924,11 +924,11 @@ class TrackListItemTile extends ConsumerWidget {
       hasOverflowed: (BoxConstraints constraints) => constraints.maxWidth > 750,
       builder: (context, showOverflowMenu) {
         return ListTile(
-          visualDensity: const VisualDensity(horizontal: 0.0, vertical: 0.5),
+          visualDensity: const VisualDensity(horizontal: 0.0, vertical: 1.0),
           minVerticalPadding: 0.0,
           horizontalTitleGap: defaultTitleGap,
           contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(albumCoverCornerRadius)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(albumCoverBorderRadius)),
           tileColor: highlightTrack ? Theme.of(context).colorScheme.surfaceContainer : Colors.transparent,
           leading: tileLead,
           title: tileTitle,
@@ -1028,7 +1028,7 @@ class TrackListItemTile extends ConsumerWidget {
                       decoration: ShapeDecoration(
                         color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.1),
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(albumCoverCornerRadius)),
+                          borderRadius: BorderRadius.all(Radius.circular(albumCoverBorderRadius)),
                         ),
                       ),
                     ),

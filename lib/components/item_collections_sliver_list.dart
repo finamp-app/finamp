@@ -1,3 +1,4 @@
+import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
@@ -24,7 +25,8 @@ class CollectionsSliverList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filterArtistScreens = ref.watch(finampSettingsProvider.genreFilterArtistScreens);
-    return SliverList(
+    return SliverFixedExtentList(
+      itemExtent: TrackListItemTile.defaultTileHeight + TrackListItemTile.defaultTitleGap,
       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
         final BaseItemDto item = childrenForList[index];
         final itemType = BaseItemDtoType.fromItem(item);
