@@ -103,14 +103,14 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
     }
 
     return Column(
-      spacing: 8.0,
+      spacing: 5.0,
       children: [
         SafeArea(
           child: Padding(
             padding: EdgeInsets.only(
-              left: 12.0,
+              left: 7.0,
               right: 6.0,
-              top: (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ? 12.0 : 0.0,
+              top: (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ? 9.0 : 0.0,
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -120,53 +120,62 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                 if (backButtonInsteadOfTabs)
                   SizedBox(width: _upperToolbarHeight + 6, height: _upperToolbarHeight, child: FinampAppBarBackButton())
                 else
-                  GestureDetector(
-                    onTap: () {
-                      // open drawer
-                      Scaffold.of(context).openDrawer();
-                      // showFinampMainMenu(context: context);
-                    },
-                    onSecondaryTap: ref.watch(isDownloadingOrSyncingPollingProvider)
-                        ? () {
-                            if (ref.read(isDownloadingOrSyncingPollingProvider)) {
-                              Navigator.of(context).pushNamed(DownloadsScreen.routeName);
-                            }
-                          }
-                        : null,
-                    onDoubleTap: ref.watch(isDownloadingOrSyncingPollingProvider)
-                        ? () {
-                            if (ref.read(isDownloadingOrSyncingPollingProvider)) {
-                              Navigator.of(context).pushNamed(DownloadsScreen.routeName);
-                            }
-                          }
-                        : null,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        FinampIcon(
-                          36,
-                          36,
-                          overrideColor: ref.watch(finampSettingsProvider.isOffline)
-                              ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
-                              : null,
-                        ),
-                        Positioned(bottom: -4, right: -2, child: Icon(statusIcon, size: 16)),
-                        if (ref.watch(isDownloadingOrSyncingPollingProvider))
-                          Positioned(
-                            bottom: statusIcon != null ? -6 : 1,
-                            right: statusIcon != null ? -4 : 3,
-                            child: SizedBox.square(
-                              dimension: statusIcon != null ? 20.0 : 10.0,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 1,
-                                valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onSurface),
-                              ),
+                  Material(
+                    elevation: 1.5,
+                    // mediaquery returns the real padding because we haven't had a builder since the SafeArea.
+                    //shape: DrawerOpenBorder(leftOffset: 12.0 + MediaQuery.paddingOf(context).left),
+                    color: Color.alphaBlend(
+                      activeTabBackgroundColor.withOpacity(Theme.brightnessOf(context) == Brightness.dark ? 0.4 : 0.13),
+                      ColorScheme.of(context).surface,
+                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(15.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
+                      child: GestureDetector(
+                        onTap: openMenu,
+                        onSecondaryTap: ref.watch(isDownloadingOrSyncingPollingProvider)
+                            ? () {
+                                if (ref.read(isDownloadingOrSyncingPollingProvider)) {
+                                  Navigator.of(context).pushNamed(DownloadsScreen.routeName);
+                                }
+                              }
+                            : null,
+                        onDoubleTap: ref.watch(isDownloadingOrSyncingPollingProvider)
+                            ? () {
+                                if (ref.read(isDownloadingOrSyncingPollingProvider)) {
+                                  Navigator.of(context).pushNamed(DownloadsScreen.routeName);
+                                }
+                              }
+                            : null,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            FinampIcon(
+                              36,
+                              36,
+                              overrideColor: ref.watch(finampSettingsProvider.isOffline)
+                                  ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
+                                  : null,
                             ),
-                          ),
-                      ],
+                            Positioned(bottom: -4, right: -2, child: Icon(statusIcon, size: 16)),
+                            if (ref.watch(isDownloadingOrSyncingPollingProvider))
+                              Positioned(
+                                bottom: statusIcon != null ? -6 : 1,
+                                right: statusIcon != null ? -4 : 3,
+                                child: SizedBox.square(
+                                  dimension: statusIcon != null ? 20.0 : 10.0,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 1,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onSurface),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 9.0),
                 if (isSearching) ...[
                   Expanded(
                     child: TextField(
@@ -201,28 +210,22 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                   ),
                 ] else ...[
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: openMenu,
-                          child: FutureBuilder(
-                            future: PackageInfo.fromPlatform(),
-                            builder: (context, asyncSnapshot) {
-                              final appName = asyncSnapshot.data?.appName ?? AppLocalizations.of(context)!.finamp;
-                              return Text(
-                                singleTabConfig?.getTitle(context.l10n) ??
-                                    finampUserHelper.currentUser?.currentView?.name ??
-                                    appName,
-                                style: TextStyle(fontSize: 20),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              );
-                            },
-                          ),
-                        ),
-                      ],
+                    child: GestureDetector(
+                      onTap: openMenu,
+                      child: FutureBuilder(
+                        future: PackageInfo.fromPlatform(),
+                        builder: (context, asyncSnapshot) {
+                          final appName = asyncSnapshot.data?.appName ?? AppLocalizations.of(context)!.finamp;
+                          return Text(
+                            singleTabConfig?.getTitle(context.l10n) ??
+                                finampUserHelper.currentUser?.currentView?.name ??
+                                appName,
+                            style: TextStyle(fontSize: 20),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          );
+                        },
+                      ),
                     ),
                   ),
                   if (!Platform.isIOS && !Platform.isAndroid)
@@ -279,17 +282,18 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                         )
                       : SizedBox.shrink(),
                 ),
-                IconButtonWithSemantics(
-                  label: context.l10n.globalMenu,
-                  icon: TablerIcons.dots,
-                  iconSize: 28.0,
-                  onPressed: openMenu,
-                  onLongPress: singleTabConfig != null
-                      ? null
-                      : () {
-                          Navigator.pushNamed(context, SettingsScreen.routeName);
-                        },
-                ),
+                if (singleTabConfig != null)
+                  IconButtonWithSemantics(
+                    label: context.l10n.globalMenu,
+                    icon: TablerIcons.dots,
+                    iconSize: 28.0,
+                    onPressed: openMenu,
+                    onLongPress: singleTabConfig != null
+                        ? null
+                        : () {
+                            Navigator.pushNamed(context, SettingsScreen.routeName);
+                          },
+                  ),
               ],
             ),
           ),
@@ -321,17 +325,17 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                   },
                   child: Container(
                     /*decoration: ShapeDecoration(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        side: BorderSide(
-                          color: tabController?.index == sortedTabs.indexOf(tabType)
-                              ? Theme.of(context).colorScheme.primaryContainer
-                              : ColorScheme.of(context).outlineVariant,
-                          strokeAlign: 1.0,
-                          width: 1.5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          side: BorderSide(
+                            color: tabController?.index == sortedTabs.indexOf(tabType)
+                                ? Theme.of(context).colorScheme.primaryContainer
+                                : ColorScheme.of(context).outlineVariant,
+                            strokeAlign: 1.0,
+                            width: 1.5,
+                          ),
                         ),
-                      ),
-                    ),*/
+                      ),*/
                     padding: tabType == ContentType.home
                         ? EdgeInsets.only(left: 4, right: 8, top: 3, bottom: 3)
                         : EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -397,3 +401,69 @@ final isDownloadingOrSyncingPollingProvider = Provider((Ref ref) {
       downloadsService.deleteBuffer.isRunning ||
       downloadsService.downloadTaskQueue.isRunning;
 });
+
+// Potential drawer button shape.  Currently unused.
+class DrawerOpenBorder extends ShapeBorder {
+  const DrawerOpenBorder({required this.leftOffset});
+
+  final double leftOffset;
+
+  final double verticalOverdraw = 5.0;
+  // TODO we only have this space on desktop
+  final double leftEdgeHeight = 15.0;
+  final double horizontalOverdraw = 5.0;
+  final double curveTune1 = -6;
+  double get curveTune2 => curveTune1 * leftEdgeHeight / 18.0;
+
+  @override
+  EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) => Path();
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
+    //return Path()
+    //..addOval(rect.inflate(5))
+    //..addRRect(RRect.fromRectAndRadius(rect.inflate(5), Radius.circular(10)))
+    //..close();
+    final r1 = Rect.fromLTRB(
+      rect.left - leftOffset,
+      rect.top - leftEdgeHeight,
+      rect.left - leftOffset + leftEdgeHeight,
+      rect.bottom + leftEdgeHeight,
+    );
+    final r2 = Rect.fromLTRB(
+      rect.left - leftOffset,
+      rect.top - verticalOverdraw,
+      rect.left - leftOffset + leftEdgeHeight,
+      rect.bottom + verticalOverdraw,
+    );
+    final r3 = Rect.fromLTRB(
+      rect.center.dx + horizontalOverdraw,
+      rect.top - verticalOverdraw,
+      rect.right + horizontalOverdraw,
+      rect.bottom + verticalOverdraw,
+    );
+    return Path()
+      ..moveTo(r1.topLeft.dx, r1.topLeft.dy)
+      ..cubicToPoints(r2.topLeft + Offset(0, curveTune2), r2.topLeft + Offset(-curveTune2, 0), r2.topRight)
+      ..lineToPoint(r3.topLeft)
+      ..cubicToPoints(r3.topRight + Offset(curveTune1, 0), r3.topRight + Offset(0, -curveTune1), r3.centerRight)
+      ..cubicToPoints(r3.bottomRight + Offset(0, curveTune1), r3.bottomRight + Offset(curveTune1, 0), r3.bottomLeft)
+      ..lineToPoint(r2.bottomRight)
+      ..cubicToPoints(r2.bottomLeft + Offset(-curveTune2, 0), r2.bottomLeft + Offset(0, -curveTune2), r1.bottomLeft)
+      ..close();
+  }
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {}
+
+  @override
+  ShapeBorder scale(double t) => this;
+}
+
+extension on Path {
+  void cubicToPoints(Offset p1, Offset p2, Offset p3) => cubicTo(p1.dx, p1.dy, p2.dx, p2.dy, p3.dx, p3.dy);
+  void lineToPoint(Offset p1) => lineTo(p1.dx, p1.dy);
+}

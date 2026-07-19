@@ -236,7 +236,7 @@ class GlobalSnackbar {
               content: Text(errorText),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.of(context).maybePop(),
                   child: Text(MaterialLocalizations.of(context).closeButtonLabel),
                 ),
               ],
@@ -279,7 +279,7 @@ class GlobalSnackbar {
         content: Text(text.$2),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).maybePop(),
             child: Text(MaterialLocalizations.of(context).closeButtonLabel),
           ),
         ],

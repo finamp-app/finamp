@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/screens/lyrics_screen.dart';
+import 'package:finamp/screens/splash_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/keep_screen_on_helper.dart';
 import 'package:flutter/material.dart';
@@ -165,6 +166,13 @@ class SplitScreenNavigatorObserver extends NavigatorObserver {
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     if (usingPlayerSplitScreen && previousRoute != null && !shouldNotPop(previousRoute)) {
       queuePop();
+    }
+    // previousRoute will only be null if we've messed something up and accidentally popped the initial splashScreen
+    // route.  This check will add it back to recover.  Hopefully this never happens.
+    if (previousRoute == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        navigator?.pushNamed(SplashScreen.routeName);
+      });
     }
   }
 

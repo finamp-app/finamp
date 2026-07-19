@@ -509,10 +509,22 @@ class HomeSectionInfo extends ConsumerWidget {
             iconData: config.sortConfig.sortOrder.getIcon(),
             textSpan: TextSpan(text: config.sortConfig.sortBy.toLocalisedString(context.l10n)),
           ),
-          ...config.sortConfig.filters.map(
-            (filter) => IconAndText(
-              iconData: TablerIcons.filter,
-              textSpan: TextSpan(text: filter.getName(context.l10n)),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 10.0,
+              children: config.sortConfig.filters
+                  .map(
+                    (filter) => ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 150.0),
+                      child: IconAndText(
+                        iconData: TablerIcons.filter,
+                        textSpan: TextSpan(text: filter.getName(context.l10n)),
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ],

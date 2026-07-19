@@ -28,7 +28,7 @@ class FinampAppBarBackButton extends StatelessWidget {
     return IconButtonWithSemantics(
       // padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
       label: MaterialLocalizations.of(context).backButtonTooltip,
-      onPressed: onPressed ?? () => Navigator.of(context).pop(),
+      onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
       icon: getIcon(),
       strokeWidth: 1.5,
       visualDensity: VisualDensity(horizontal: 0, vertical: -2),

@@ -9,6 +9,7 @@
 library;
 
 import 'package:collection/collection.dart';
+import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -3336,42 +3337,10 @@ enum SortBy {
   /// function, the same input would return "Album".
   @override
   @Deprecated("Use toLocalisedString when possible")
-  String toString() => _humanReadableName(this);
+  String toString() => toLocalisedString(GlobalSnackbar.requireL10n);
 
-  String toLocalisedString(AppLocalizations l10n) => _humanReadableLocalisedName(this, l10n);
-
-  /// Name used by Jellyfin in API requests.
-  String jellyfinName(ContentType? contentType) {
-    return switch (contentType) {
-      ContentType.albums => _jellyfinNameMusicAlbums(this),
-      ContentType.tracks => _jellyfinNameTracks(this),
-      _ => _jellyfinName(this),
-    };
-  }
-
-  String _humanReadableName(SortBy sortBy) {
-    return switch (sortBy) {
-      SortBy.album => "Album",
-      SortBy.albumArtist => "Album Artist",
-      SortBy.artist => "Performing Artist",
-      SortBy.budget => "Budget",
-      SortBy.communityRating => "Community Rating",
-      SortBy.criticRating => "Critic Rating",
-      SortBy.dateCreated => "Date Added",
-      SortBy.datePlayed => "Date Played",
-      SortBy.playCount => "Play Count",
-      SortBy.premiereDate => "Release Date",
-      SortBy.productionYear => "Production Year",
-      SortBy.sortName => "Name",
-      SortBy.random => "Random",
-      SortBy.revenue => "Revenue",
-      SortBy.runtime => "Runtime",
-      SortBy.defaultOrder => "Server Order",
-    };
-  }
-
-  String _humanReadableLocalisedName(SortBy sortBy, AppLocalizations l10n) {
-    return switch (sortBy) {
+  String toLocalisedString(AppLocalizations l10n) {
+    return switch (this) {
       SortBy.album => l10n.album,
       SortBy.albumArtist => l10n.albumArtist,
       SortBy.artist => l10n.performingArtist,
@@ -3388,6 +3357,15 @@ enum SortBy {
       SortBy.revenue => l10n.revenue,
       SortBy.runtime => l10n.duration,
       SortBy.defaultOrder => l10n.defaultOrder,
+    };
+  }
+
+  /// Name used by Jellyfin in API requests.
+  String jellyfinName(ContentType? contentType) {
+    return switch (contentType) {
+      ContentType.albums => _jellyfinNameMusicAlbums(this),
+      ContentType.tracks => _jellyfinNameTracks(this),
+      _ => _jellyfinName(this),
     };
   }
 

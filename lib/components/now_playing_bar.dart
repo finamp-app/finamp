@@ -39,6 +39,7 @@ class NowPlayingBar extends ConsumerWidget {
 
   static const horizontalPadding = 8.0;
   static const albumImageSize = 64.0;
+  static const showPlayButtonAtEnd = false;
 
   BoxDecoration? getShadow(BuildContext context) => BoxDecoration(
     borderRadius: const BorderRadius.all(Radius.circular(12.0)),
@@ -271,6 +272,33 @@ class NowPlayingBar extends ConsumerWidget {
                                       imageListenable: currentAlbumImageProvider,
                                       borderRadius: BorderRadius.zero,
                                     ),
+                                    if (!showPlayButtonAtEnd)
+                                      AudioFadeProgressVisualizerContainer(
+                                        key: const Key("AlbumArtAudioFadeProgressVisualizer"),
+                                        width: albumImageSize,
+                                        height: albumImageSize,
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(12.0),
+                                          bottomLeft: Radius.circular(12.0),
+                                        ),
+                                        child: IconButton(
+                                          tooltip: AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
+                                          onPressed: () {
+                                            FeedbackHelper.feedback(FeedbackType.light);
+                                            unawaited(audioHandler.togglePlayback());
+                                          },
+                                          color: Colors.white,
+                                          icon: Icon(
+                                            mediaState.playbackState.playing
+                                                ? mediaState.fadeState.fadeDirection != FadeDirection.fadeOut
+                                                      ? TablerIcons.player_pause
+                                                      : TablerIcons.player_play
+                                                : TablerIcons.player_play,
+                                            shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)],
+                                            size: 32,
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                                 Expanded(
@@ -328,7 +356,7 @@ class NowPlayingBar extends ConsumerWidget {
                                                     key: ValueKey(currentTrack.item.id),
                                                     text: currentTrack.item.title,
                                                     style: TextStyle(
-                                                      fontSize: 14,
+                                                      fontSize: 14.5,
                                                       height: 26 / 20,
                                                       color: primaryTextColor,
                                                       fontWeight: Theme.brightnessOf(context) == Brightness.light
@@ -345,7 +373,7 @@ class NowPlayingBar extends ConsumerWidget {
                                                           processArtist(currentTrack.item.artist, context),
                                                           style: TextStyle(
                                                             color: primaryTextColor,
-                                                            fontSize: 14,
+                                                            fontSize: 13,
                                                             fontWeight: FontWeight.w400,
                                                             overflow: TextOverflow.ellipsis,
                                                           ),
@@ -433,47 +461,55 @@ class NowPlayingBar extends ConsumerWidget {
                                               ),
                                             ),
                                           ),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.end,
-                                            children: [
-                                              AddToPlaylistButton(
-                                                item: currentTrackBaseItem,
-                                                queueItem: currentTrack,
-                                                color: primaryTextColor,
-                                                size: 28,
-                                                visualDensity: const VisualDensity(horizontal: -4),
-                                              ),
-                                              Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  AudioFadeProgressVisualizerContainer(
-                                                    key: const Key("AlbumArtAudioFadeProgressVisualizer"),
-                                                    color: primaryTextColor.withOpacity(0.5),
-                                                    width: albumImageSize,
-                                                    height: albumImageSize,
-                                                    borderRadius: BorderRadius.circular(12.0),
-                                                    child: SizedBox.shrink(),
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 5.0),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.end,
+                                              children: [
+                                                AddToPlaylistButton(
+                                                  item: currentTrackBaseItem,
+                                                  queueItem: currentTrack,
+                                                  color: primaryTextColor,
+                                                  size: 28,
+                                                  visualDensity: const VisualDensity(horizontal: -4),
+                                                ),
+
+                                                if (showPlayButtonAtEnd)
+                                                  Stack(
+                                                    alignment: Alignment.center,
+                                                    children: [
+                                                      AudioFadeProgressVisualizerContainer(
+                                                        key: const Key("AlbumArtAudioFadeProgressVisualizer"),
+                                                        color: primaryTextColor.withOpacity(0.5),
+                                                        width: albumImageSize,
+                                                        height: albumImageSize,
+                                                        borderRadius: BorderRadius.circular(12.0),
+                                                        child: SizedBox.shrink(),
+                                                      ),
+                                                      IconButton(
+                                                        tooltip: AppLocalizations.of(
+                                                          context,
+                                                        )!.togglePlaybackButtonTooltip,
+                                                        onPressed: () {
+                                                          FeedbackHelper.feedback(FeedbackType.light);
+                                                          unawaited(audioHandler.togglePlayback());
+                                                        },
+                                                        color: primaryTextColor,
+                                                        visualDensity: VisualDensity.compact,
+                                                        icon: Icon(
+                                                          mediaState.playbackState.playing
+                                                              ? mediaState.fadeState.fadeDirection !=
+                                                                        FadeDirection.fadeOut
+                                                                    ? TablerIcons.player_pause
+                                                                    : TablerIcons.player_play
+                                                              : TablerIcons.player_play,
+                                                          size: 28,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  IconButton(
-                                                    tooltip: AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
-                                                    onPressed: () {
-                                                      FeedbackHelper.feedback(FeedbackType.light);
-                                                      unawaited(audioHandler.togglePlayback());
-                                                    },
-                                                    color: primaryTextColor,
-                                                    visualDensity: VisualDensity.compact,
-                                                    icon: Icon(
-                                                      mediaState.playbackState.playing
-                                                          ? mediaState.fadeState.fadeDirection != FadeDirection.fadeOut
-                                                                ? TablerIcons.player_pause
-                                                                : TablerIcons.player_play
-                                                          : TablerIcons.player_play,
-                                                      size: 28,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),

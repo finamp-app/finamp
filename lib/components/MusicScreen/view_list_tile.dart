@@ -48,6 +48,7 @@ class ViewListTile extends ConsumerWidget {
           // update state first to give visual feedback, then close menu
           if (!context.mounted) return;
           Navigator.of(context).pop();
+          //await Navigator.of(context).maybePop();
         },
         lowContrast: true,
       ),

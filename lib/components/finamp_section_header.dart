@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
-import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
@@ -89,34 +88,42 @@ class FinampSectionHeader extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Material(
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(6.0),
-                    // all handled by the [GestureDetector] above,
-                    // but kept here for the desktop hover effect
-                    onTap: onTap,
-                    onLongPress: onSecondaryTap,
-                    onSecondaryTap: onSecondaryTap,
-                    child: Padding(
-                      padding: hoverPadding,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            title,
-                            semanticsLabel: label,
-                            style: TextTheme.of(context).titleMedium,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                Flexible(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Material(
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(6.0),
+                        // all handled by the [GestureDetector] above,
+                        // but kept here for the desktop hover effect
+                        onTap: onTap,
+                        onLongPress: onSecondaryTap,
+                        onSecondaryTap: onSecondaryTap,
+                        child: Padding(
+                          padding: hoverPadding,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  title,
+                                  semanticsLabel: label,
+                                  style: TextTheme.of(context).titleMedium,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              SizedBox(width: 2.0),
+                              if (titleTrailingIcon != null)
+                                Icon(titleTrailingIcon, size: 20.0, applyTextScaling: true),
+                            ],
                           ),
-                          SizedBox(width: 2.0),
-                          if (titleTrailingIcon != null) Icon(titleTrailingIcon, size: 20.0, applyTextScaling: true),
-                        ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-                Spacer(),
                 ...actions,
               ],
             ),

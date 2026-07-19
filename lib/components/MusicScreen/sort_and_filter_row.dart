@@ -241,10 +241,10 @@ class SortAndFilterRow extends ConsumerWidget {
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final filerButtonWidth = 52.0;
+                    final filterButtonWidth = 52.0;
                     final minimumMaxChipWidth = 125.0;
                     final chipSpacing = 2.0;
-                    final maxChips = ((constraints.maxWidth - filerButtonWidth) / (minimumMaxChipWidth + chipSpacing))
+                    final maxChips = ((constraints.maxWidth - filterButtonWidth) / (minimumMaxChipWidth + chipSpacing))
                         .floor();
                     final showChips = hideLeadingIcon || (maxChips >= activeFilterCount && activeFilterCount > 0);
                     return Row(
@@ -271,7 +271,7 @@ class SortAndFilterRow extends ConsumerWidget {
                               constraints: BoxConstraints(
                                 // Cap chip width to prevent unusually long ones from causing overflow.
                                 // If showChips, this is guaranteed to be at least minimumMaxChipWidth
-                                maxWidth: (constraints.maxWidth - filerButtonWidth) / activeFilterCount,
+                                maxWidth: (constraints.maxWidth - filterButtonWidth) / activeFilterCount,
                               ),
                               child: ActiveFilterChip(
                                 filter: filter,

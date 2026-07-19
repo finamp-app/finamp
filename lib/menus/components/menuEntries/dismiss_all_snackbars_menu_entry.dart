@@ -18,7 +18,7 @@ class DismissAllSnackbarsMenuEntry extends ConsumerWidget implements HideableMen
         title: AppLocalizations.of(context)!.snackbarOptionsMenuClearAllButton,
         onTap: () {
           GlobalSnackbar.dismissAllSnackbars();
-          Navigator.of(context).pop();
+          Navigator.of(context).maybePop();
         },
       ),
     );
