@@ -14,6 +14,8 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/feedback_helper.dart';
+import 'package:finamp/services/media_state_stream.dart';
+import 'package:finamp/services/music_player_background_task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -653,6 +655,10 @@ class TrackListItemTile extends ConsumerWidget {
 
     final showPlaybackProgress = !highlightCurrentTrack && playbackProgress != null && playbackProgress! < 0.99;
 
+    final isCurrentlyPlaying =
+        ref.watch(mediaStateProvider).playbackState.playing ||
+        ref.watch(mediaStateProvider).fadeState.fadeDirection == FadeDirection.fadeOut;
+
     final tileLead = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -671,7 +677,7 @@ class TrackListItemTile extends ConsumerWidget {
                 : const EdgeInsets.only(left: 6.0, right: 0.0),
             child: Container(
               constraints: const BoxConstraints(minWidth: 22.0),
-              child: isCurrentTrack && !features.contains(TrackListItemFeatures.cover)
+              child: isCurrentTrack && isCurrentlyPlaying && !features.contains(TrackListItemFeatures.cover)
                   ? MiniMusicVisualizer(
                       animate: true,
                       color: Theme.of(context).colorScheme.secondary,
@@ -696,7 +702,7 @@ class TrackListItemTile extends ConsumerWidget {
             ),
           ),
         if (features.contains(TrackListItemFeatures.cover))
-          isCurrentTrack
+          isCurrentTrack && isCurrentlyPlaying
               ? Stack(
                   alignment: Alignment.center,
                   children: [

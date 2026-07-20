@@ -11,6 +11,7 @@ import 'package:finamp/utils/locale_helper.dart';
 import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -18,112 +19,102 @@ import 'package:finamp/l10n/app_localizations.dart';
 import '../../services/media_state_stream.dart';
 import '../../services/music_player_background_task.dart';
 
-class PlayerButtons extends StatelessWidget {
+class PlayerButtons extends ConsumerWidget {
   const PlayerButtons(this.controller, {super.key});
 
   final PlayerHideableController controller;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
 
-    return StreamBuilder<MediaState>(
-      stream: mediaStateStream,
-      initialData: MediaState(
-        audioHandler.mediaItem.valueOrNull,
-        audioHandler.playbackState.value,
-        audioHandler.fadeState.value,
-      ),
-      builder: (context, snapshot) {
-        final mediaState = snapshot.data!;
-        final playbackState = mediaState.playbackState;
-        final fadeState = mediaState.fadeState;
+    final mediaState = ref.watch(mediaStateProvider);
+    final playbackState = mediaState.playbackState;
+    final fadeState = mediaState.fadeState;
 
-        return Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          textDirection: TextDirection.ltr,
-          children: [
-            if (controller.shouldShow(PlayerHideable.loopShuffleButtons)) PlayerButtonsPlaybackOrder(),
-            Semantics.fromProperties(
-              properties: SemanticsProperties(
-                label: AppLocalizations.of(context)!.skipToPreviousTrackButtonTooltip,
-                button: true,
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      textDirection: TextDirection.ltr,
+      children: [
+        if (controller.shouldShow(PlayerHideable.loopShuffleButtons)) PlayerButtonsPlaybackOrder(),
+        Semantics.fromProperties(
+          properties: SemanticsProperties(
+            label: AppLocalizations.of(context)!.skipToPreviousTrackButtonTooltip,
+            button: true,
+          ),
+          container: true,
+          excludeSemantics: true,
+          child: IconButton(
+            tooltip: getStringComponentsInLocaleOrder(context, [
+              AppLocalizations.of(context)!.skipToPreviousTrackButtonTooltip,
+              if (isDesktop) "(${GlobalShortcuts.getDisplay(SkipToPreviousIntent)})",
+            ], separator: "\n"),
+            icon: const Icon(TablerIcons.player_skip_back),
+            onPressed: () async {
+              FeedbackHelper.feedback(FeedbackType.light);
+              await audioHandler.skipToPrevious();
+            },
+          ),
+        ),
+        Semantics.fromProperties(
+          properties: SemanticsProperties(
+            label: AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
+            button: true,
+          ),
+          container: true,
+          excludeSemantics: true,
+          child: _RoundedIconButton(
+            width: controller.shouldShow(PlayerHideable.bigPlayButton) ? 62 : 48,
+            height: controller.shouldShow(PlayerHideable.bigPlayButton) ? 62 : 48,
+            borderRadius: BorderRadius.circular(controller.shouldShow(PlayerHideable.bigPlayButton) ? 16 : 12),
+            onTap: () {
+              FeedbackHelper.feedback(FeedbackType.light);
+              unawaited(audioHandler.togglePlayback());
+            },
+            label: AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
+            tooltip: getStringComponentsInLocaleOrder(context, [
+              AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
+              if (isDesktop) "(${GlobalShortcuts.getDisplay(TogglePlaybackIntent)})",
+            ], separator: "\n"),
+            icon: AudioFadeProgressVisualizerContainer(
+              key: const Key("PlayerButtonAudioFadeProgressVisualizer"),
+              borderRadius: BorderRadius.all(
+                Radius.circular(controller.shouldShow(PlayerHideable.bigPlayButton) ? 16 : 12),
               ),
-              container: true,
-              excludeSemantics: true,
-              child: IconButton(
-                tooltip: getStringComponentsInLocaleOrder(context, [
-                  AppLocalizations.of(context)!.skipToPreviousTrackButtonTooltip,
-                  if (isDesktop) "(${GlobalShortcuts.getDisplay(SkipToPreviousIntent)})",
-                ], separator: "\n"),
-                icon: const Icon(TablerIcons.player_skip_back),
-                onPressed: () async {
-                  FeedbackHelper.feedback(FeedbackType.light);
-                  await audioHandler.skipToPrevious();
-                },
-              ),
-            ),
-            Semantics.fromProperties(
-              properties: SemanticsProperties(
-                label: AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
-                button: true,
-              ),
-              container: true,
-              excludeSemantics: true,
-              child: _RoundedIconButton(
-                width: controller.shouldShow(PlayerHideable.bigPlayButton) ? 62 : 48,
-                height: controller.shouldShow(PlayerHideable.bigPlayButton) ? 62 : 48,
-                borderRadius: BorderRadius.circular(controller.shouldShow(PlayerHideable.bigPlayButton) ? 16 : 12),
-                onTap: () {
-                  FeedbackHelper.feedback(FeedbackType.light);
-                  unawaited(audioHandler.togglePlayback());
-                },
-                label: AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
-                tooltip: getStringComponentsInLocaleOrder(context, [
-                  AppLocalizations.of(context)!.togglePlaybackButtonTooltip,
-                  if (isDesktop) "(${GlobalShortcuts.getDisplay(TogglePlaybackIntent)})",
-                ], separator: "\n"),
-                icon: AudioFadeProgressVisualizerContainer(
-                  key: const Key("PlayerButtonAudioFadeProgressVisualizer"),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(controller.shouldShow(PlayerHideable.bigPlayButton) ? 16 : 12),
-                  ),
-                  color: IconTheme.of(context).color!.withAlpha(128),
-                  child: Icon(
-                    playbackState.playing
-                        ? fadeState.fadeDirection != FadeDirection.fadeOut
-                              ? TablerIcons.player_pause
-                              : TablerIcons.player_play
-                        : TablerIcons.player_play,
-                    size: 32,
-                  ),
-                ),
+              color: IconTheme.of(context).color!.withAlpha(128),
+              child: Icon(
+                playbackState.playing
+                    ? fadeState.fadeDirection != FadeDirection.fadeOut
+                          ? TablerIcons.player_pause
+                          : TablerIcons.player_play
+                    : TablerIcons.player_play,
+                size: 32,
               ),
             ),
-            Semantics.fromProperties(
-              properties: SemanticsProperties(
-                label: AppLocalizations.of(context)!.skipToNextTrackButtonTooltip,
-                button: true,
-              ),
-              container: true,
-              excludeSemantics: true,
-              child: IconButton(
-                tooltip: getStringComponentsInLocaleOrder(context, [
-                  AppLocalizations.of(context)!.skipToNextTrackButtonTooltip,
-                  if (isDesktop) "(${GlobalShortcuts.getDisplay(SkipToNextIntent)})",
-                ], separator: "\n"),
-                icon: const Icon(TablerIcons.player_skip_forward),
-                onPressed: () async {
-                  FeedbackHelper.feedback(FeedbackType.light);
-                  await audioHandler.skipToNext();
-                },
-              ),
-            ),
-            if (controller.shouldShow(PlayerHideable.loopShuffleButtons)) PlayerButtonsLoopMode(),
-          ],
-        );
-      },
+          ),
+        ),
+        Semantics.fromProperties(
+          properties: SemanticsProperties(
+            label: AppLocalizations.of(context)!.skipToNextTrackButtonTooltip,
+            button: true,
+          ),
+          container: true,
+          excludeSemantics: true,
+          child: IconButton(
+            tooltip: getStringComponentsInLocaleOrder(context, [
+              AppLocalizations.of(context)!.skipToNextTrackButtonTooltip,
+              if (isDesktop) "(${GlobalShortcuts.getDisplay(SkipToNextIntent)})",
+            ], separator: "\n"),
+            icon: const Icon(TablerIcons.player_skip_forward),
+            onPressed: () async {
+              FeedbackHelper.feedback(FeedbackType.light);
+              await audioHandler.skipToNext();
+            },
+          ),
+        ),
+        if (controller.shouldShow(PlayerHideable.loopShuffleButtons)) PlayerButtonsLoopMode(),
+      ],
     );
   }
 }

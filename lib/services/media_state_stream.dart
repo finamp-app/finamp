@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -23,3 +24,9 @@ Stream<MediaState> get mediaStateStream {
     (mediaItem, playbackState, fadeState) => MediaState(mediaItem, playbackState, fadeState),
   );
 }
+
+final mediaStateProvider = StreamProvider.autoDispose<MediaState>((_) => mediaStateStream).select((v) {
+  final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+  return v.valueOrNull ??
+      MediaState(audioHandler.mediaItem.valueOrNull, audioHandler.playbackState.value, audioHandler.fadeState.value);
+});
