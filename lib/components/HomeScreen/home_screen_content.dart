@@ -400,7 +400,8 @@ class HomeScreenSectionContent extends ConsumerWidget {
   }
 
   Widget _buildHorizontalSkeletonLoader(WidgetRef ref) {
-    final skeletonCount = 10;
+    final skeletonCount = homeScreenSectionItemLimit;
+
     final skeletonBaseColor = Theme.brightnessOf(ref.context) == Brightness.light
         ? Colors.grey.shade300
         : Colors.grey.shade800;

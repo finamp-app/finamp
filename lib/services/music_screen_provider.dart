@@ -20,7 +20,7 @@ import 'music_providers.dart';
 part 'music_screen_provider.g.dart';
 
 const musicScreenPageSize = 100;
-const homeScreenSectionItemLimit = 20;
+const homeScreenSectionItemLimit = 25;
 
 @riverpod
 class PagedContent extends _$PagedContent {
