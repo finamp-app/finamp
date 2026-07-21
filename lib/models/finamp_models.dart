@@ -4613,6 +4613,8 @@ class SortAndFilterConfiguration {
 
   static const defaultInAlbumSort = ResolvedSortConfig.defaultInAlbumSort;
 
+  static const randomSort = ResolvedSortConfig.randomSort;
+
   static ResolvedSortConfig defaultForItem(BaseItemDto item) {
     if ([BaseItemDtoType.album, BaseItemDtoType.playlist].contains(BaseItemDtoType.fromItem(item))) {
       return defaultInAlbumSort;

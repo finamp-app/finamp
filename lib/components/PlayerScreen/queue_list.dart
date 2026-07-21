@@ -701,7 +701,11 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
         (a, b) => QueueListStreamState(a, b),
       ),
       initialData: QueueListStreamState(
-        MediaState(audioHandler.mediaItem.value, audioHandler.playbackState.value, audioHandler.fadeState.value),
+        MediaState(
+          audioHandler.mediaItem.value,
+          audioHandler.playbackState.value,
+          audioHandler.fadeState.value.fadeDirection,
+        ),
         _queueService.getQueue(),
       ),
       builder: (context, snapshot) {

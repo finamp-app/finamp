@@ -5,6 +5,7 @@ import 'package:finamp/components/PlayerScreen/player_buttons_playback_order.dar
 import 'package:finamp/components/Shortcuts/global_shortcut_manager.dart';
 import 'package:finamp/components/Shortcuts/music_control_shortcuts.dart';
 import 'package:finamp/components/audio_fade_progress_visualizer_container.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/screens/player_screen.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/utils/locale_helper.dart';
@@ -14,7 +15,6 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 
 import '../../services/media_state_stream.dart';
 import '../../services/music_player_background_task.dart';
@@ -28,9 +28,9 @@ class PlayerButtons extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
 
-    final mediaState = ref.watch(mediaStateProvider);
-    final playbackState = mediaState.playbackState;
-    final fadeState = mediaState.fadeState;
+    final showPauseButton = ref.watch(
+      mediaStateProvider.select((x) => x.playbackState.playing && x.fadeDirection != FadeDirection.fadeOut),
+    );
 
     return Row(
       mainAxisSize: MainAxisSize.max,
@@ -83,14 +83,7 @@ class PlayerButtons extends ConsumerWidget {
                 Radius.circular(controller.shouldShow(PlayerHideable.bigPlayButton) ? 16 : 12),
               ),
               color: IconTheme.of(context).color!.withAlpha(128),
-              child: Icon(
-                playbackState.playing
-                    ? fadeState.fadeDirection != FadeDirection.fadeOut
-                          ? TablerIcons.player_pause
-                          : TablerIcons.player_play
-                    : TablerIcons.player_play,
-                size: 32,
-              ),
+              child: Icon(showPauseButton ? TablerIcons.player_pause : TablerIcons.player_play, size: 32),
             ),
           ),
         ),

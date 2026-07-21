@@ -655,9 +655,9 @@ class TrackListItemTile extends ConsumerWidget {
 
     final showPlaybackProgress = !highlightCurrentTrack && playbackProgress != null && playbackProgress! < 0.99;
 
-    final isCurrentlyPlaying =
-        ref.watch(mediaStateProvider).playbackState.playing ||
-        ref.watch(mediaStateProvider).fadeState.fadeDirection == FadeDirection.fadeOut;
+    final isCurrentlyPlaying = ref.watch(
+      mediaStateProvider.select((x) => x.playbackState.playing || x.fadeDirection == FadeDirection.fadeOut),
+    );
 
     final tileLead = Row(
       mainAxisSize: MainAxisSize.min,

@@ -100,6 +100,10 @@ extension type const ResolvedSortConfig._(SortAndFilterConfiguration config) imp
   static const defaultInAlbumSort = ResolvedSortConfig._(
     SortAndFilterConfiguration(sortBy: SortBy.defaultOrder, sortOrder: SortOrder.ascending, filters: {}),
   );
+
+  static const randomSort = ResolvedSortConfig._(
+    SortAndFilterConfiguration(sortBy: SortBy.random, sortOrder: SortOrder.ascending, filters: {}),
+  );
 }
 
 class _SortControllerState {

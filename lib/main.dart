@@ -369,7 +369,9 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
-      minimumSize: Size(336, 607),
+      minimumSize: Size(400, 250),
+      // This matches the size of the iPhone 5, which is probably the smallest screen size worth testing against
+      //minimumSize: Size(336, 607),
     );
     unawaited(
       WindowManager.instance.waitUntilReadyToShow(windowOptions, () async {

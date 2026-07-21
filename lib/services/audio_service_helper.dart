@@ -23,35 +23,12 @@ class AudioServiceHelper {
 
   /// Shuffles every track in the user's current view.
   Future<void> shuffleAll({required bool onlyShowFavorites, BaseItemDto? genreFilter, int? itemCount}) async {
-    List<jellyfin_models.BaseItemDto>? items;
-
-    if (FinampSettingsHelper.finampSettings.isOffline) {
-      // If offline, get a shuffled list of tracks from _downloadsHelper.
-      // This is a bit inefficient since we have to get all of the tracks and
-      // shuffle them before making a sublist, but I couldn't think of a better
-      // way.
-      items = (await _isarDownloader.getAllTracks(
-        viewFilter: _finampUserHelper.currentUser?.currentView?.id,
-        genreFilter: genreFilter?.id,
-        onlyFavorites: onlyShowFavorites,
-        nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
-      )).map((e) => e.baseItem!).toList();
-      items.shuffle();
-      final count = itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount;
-      if (items.length - 1 > count) {
-        items = items.sublist(0, count);
-      }
-    } else {
-      // If online, get all audio items from the user's view
-      items = await _jellyfinApiHelper.getItems(
-        parentItem: _finampUserHelper.currentUser!.currentView,
-        includeItemTypes: "Audio",
-        filters: onlyShowFavorites ? "IsFavorite" : null,
-        limit: itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount,
-        sortBy: "Random",
-        genreFilter: genreFilter?.id,
-      );
-    }
+    List<jellyfin_models.BaseItemDto>? items = await getShuffleAllTracks(
+      onlyShowFavorites: onlyShowFavorites,
+      library: _finampUserHelper.currentUser!.currentView!,
+      genreFilter: genreFilter,
+      itemCount: itemCount,
+    );
 
     if (items != null) {
       QueueItemSource source = (genreFilter != null)
@@ -74,6 +51,43 @@ class AudioServiceHelper {
 
       await _queueService.startPlayback(items: items, source: source, order: FinampPlaybackOrder.shuffled);
     }
+  }
+
+  Future<List<BaseItemDto>?> getShuffleAllTracks({
+    required bool onlyShowFavorites,
+    required BaseItemDto library,
+    BaseItemDto? genreFilter,
+    int? itemCount,
+  }) async {
+    List<jellyfin_models.BaseItemDto>? items;
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      // If offline, get a shuffled list of tracks from _downloadsHelper.
+      // This is a bit inefficient since we have to get all of the tracks and
+      // shuffle them before making a sublist, but I couldn't think of a better
+      // way.
+      items = (await _isarDownloader.getAllTracks(
+        viewFilter: library.id,
+        genreFilter: genreFilter?.id,
+        onlyFavorites: onlyShowFavorites,
+        nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
+      )).map((e) => e.baseItem!).toList();
+      items.shuffle();
+      final count = itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount;
+      if (items.length - 1 > count) {
+        items = items.sublist(0, count);
+      }
+    } else {
+      // If online, get all audio items from the user's view
+      items = await _jellyfinApiHelper.getItems(
+        parentItem: library,
+        includeItemTypes: "Audio",
+        filters: onlyShowFavorites ? "IsFavorite" : null,
+        limit: itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+        sortBy: "Random",
+        genreFilter: genreFilter?.id,
+      );
+    }
+    return items;
   }
 
   /// Start instant mix from item.
