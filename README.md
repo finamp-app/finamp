@@ -86,19 +86,13 @@ Some of its features include:
 
 ## Getting Finamp
 
-<div style="display: flex; align-items: center;" align="center">
+<div align="center">
 
-[<img src="app-store-badges/fdroid.png"
-    alt="Get it on F-Droid"
-    height="80">](https://f-droid.org/packages/com.unicornsonlsd.finamp/)
+[<img src="app-store-badges/fdroid.png" height="80" alt="F-Droid">](https://f-droid.org/packages/com.unicornsonlsd.finamp/)
 
-[<img src="app-store-badges/play-store.png"
-    alt="Get it on Google Play"
-    height="80">](https://play.google.com/store/apps/details?id=com.unicornsonlsd.finamp)
+[<img src="app-store-badges/play-store.png" height="80" alt="Google Play">](https://play.google.com/store/apps/details?id=com.unicornsonlsd.finamp)
 
-[<img style="margin-left: 15px;" src="app-store-badges/app-store.svg"
-    alt="Download on the App Store"
-    height="55">](https://apps.apple.com/us/app/finamp/id1574922594)
+[<img src="app-store-badges/app-store.svg" width="180" alt="App Store">](https://apps.apple.com/us/app/finamp/id1574922594)
 
 </div>
 
@@ -166,10 +160,7 @@ This app is still a work in progress, and has some bugs/issues that haven't been
 - More customization options
 
 ## Screenshots (Stable Version, outdated)
-
-| | |
-|:-------------------------:|:-------------------------:|
-|<img src=<https://raw.githubusercontent.com/jmshrv/finamp/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png>> | <img src=<https://raw.githubusercontent.com/jmshrv/finamp/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png>>
-| <img src=<https://raw.githubusercontent.com/jmshrv/finamp/master/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png>> | <img src=<https://raw.githubusercontent.com/jmshrv/finamp/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png>> |
+<img src="https://raw.githubusercontent.com/jmshrv/finamp/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="300"> <img src="https://raw.githubusercontent.com/jmshrv/finamp/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="300">
+<img src="https://raw.githubusercontent.com/jmshrv/finamp/master/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="300"> <img src="https://raw.githubusercontent.com/jmshrv/finamp/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width="300">
 
 Name source: <https://www.reddit.com/r/jellyfin/comments/hjxshn/jellyamp_crossplatform_desktop_music_player/fwqs5i0/>
