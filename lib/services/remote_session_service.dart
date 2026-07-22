@@ -255,11 +255,19 @@ class RemoteSessionService {
   }
 
   /// Stops controlling the remote session and returns control to local
-  /// playback. The remote is paused first (the queue "migrates back" to
-  /// Finamp, so it shouldn't keep playing on both ends), unless [pauseRemote]
-  /// is false (e.g. when the remote session has already vanished). If the
-  /// remote was playing, local playback resumes from where it left off; a
-  /// paused remote stays paused locally.
+  /// playback. The remote is paused first so it doesn't keep playing on both
+  /// ends, unless [pauseRemote] is false (e.g. the remote session already
+  /// vanished).
+  ///
+  /// What plays here afterwards depends on how we connected:
+  /// - Migrate (we pushed our own queue): keep playing our queue, continuing
+  ///   from where the remote left off (with any changes made on the remote).
+  /// - Adopt (we attached to a foreign queue): restore this device's own
+  ///   pre-connect queue instead of carrying the remote's over, or clear the
+  ///   queue if there was nothing playing here before connecting.
+  ///
+  /// If the remote was playing, local playback resumes; a paused (or vanished)
+  /// remote stays paused locally.
   Future<void> disconnect({bool pauseRemote = true}) async {
     _log.info("Disconnecting from remote session $_activeSessionId");
     // Continue locally from where the remote left off: remember the remote's
@@ -268,6 +276,8 @@ class RemoteSessionService {
     final lastItemId = _lastKnownItemId;
     final lastPosition = remotePlaybackState?.position;
     final wasPlaying = remotePlaybackState?.playing ?? false;
+    final preConnectQueue = _preConnectQueue;
+    final viaMigrate = _connectedViaMigrate;
 
     if (pauseRemote) {
       try {
@@ -279,18 +289,28 @@ class RemoteSessionService {
 
     _teardown();
 
-    // Sync local playback to where the remote left off. Must run after
-    // _teardown so the commands hit the local player, not the (now gone)
-    // remote.
-    if (lastPosition != null) {
-      await _syncLocalToRemote(lastItemId, lastPosition);
-    }
-    // Playback moved back to this device: continue playing if the remote was.
-    // When the remote vanished instead of being migrated back (pauseRemote is
-    // false), stay paused - suddenly blasting audio locally because a remote
-    // player died would be surprising.
-    if (pauseRemote && wasPlaying) {
-      await _audioHandler.play(disableFade: true);
+    // Commands below must run after _teardown so they hit the local player, not
+    // the (now gone) remote. When the remote vanished instead of being migrated
+    // back (pauseRemote is false), stay paused - suddenly blasting audio locally
+    // because a remote player died would be surprising.
+    final resumeLocally = pauseRemote && wasPlaying;
+    if (viaMigrate) {
+      // We pushed our own queue: keep it and continue from where the remote
+      // left off (with any changes made while controlling the remote).
+      if (lastPosition != null) {
+        await _syncLocalToRemote(lastItemId, lastPosition);
+      }
+      if (resumeLocally) {
+        await _audioHandler.play(disableFade: true);
+      }
+    } else if (preConnectQueue != null) {
+      // We adopted a foreign queue: restore this device's own queue instead of
+      // carrying the remote's over.
+      await _queueService.loadSavedQueue(preConnectQueue, beginPlayingOverride: resumeLocally);
+    } else {
+      // Adopted a foreign queue with nothing playing here before: clear the
+      // mirror rather than keeping the remote's queue on this device.
+      await _queueService.stopAndClearQueue();
     }
     unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
   }
@@ -586,31 +606,104 @@ class RemoteSessionService {
     });
   }
 
-  /// Rebuilds the local queue from the remote session's NowPlayingQueue, using
-  /// the remoteClient queue source (we can't know the real source of a remote
-  /// queue). Goes through the regular queue replacement path so the queue is
-  /// persisted and restorable after an app restart.
+  /// Resolves [session]'s NowPlayingQueue into concrete items plus the index of
+  /// the track it is currently playing, fetching any items not already in the
+  /// local queue. Returns null if nothing could be resolved.
+  ///
+  /// The current track is located by playlistItemId — unique per queue entry,
+  /// so it survives a track that appears more than once — falling back to the
+  /// item id when the client doesn't report playlist item ids. Matching by item
+  /// id alone silently picked the first occurrence; and when the current track
+  /// isn't listed in the queue at all (some clients report an up-next-only
+  /// queue) it is prepended and kept current, rather than falling back to index
+  /// 0 (the track after the one playing, which showed the next track).
+  Future<(List<BaseItemDto>, int)?> _resolveRemoteQueue(SessionInfo session) async {
+    final remoteQueue = session.nowPlayingQueue;
+    if (remoteQueue == null || remoteQueue.isEmpty) return null;
+    final remoteIds = remoteQueue.map((e) => e.id).toList();
+
+    // Re-use items we already have locally, fetch only the missing ones.
+    final idMap = <String, BaseItemDto>{
+      for (final item in _queueService.getQueue().fullQueue) _normalizeId(item.baseItemId.raw): item.baseItem,
+    };
+    final missingIds = remoteIds
+        .where((id) => !idMap.containsKey(_normalizeId(id)))
+        .toSet()
+        .map(BaseItemId.new)
+        .toList();
+    if (missingIds.isNotEmpty) {
+      final fetched = await _jellyfinApiHelper.getItems(itemIds: missingIds) ?? [];
+      for (final item in fetched) {
+        idMap[_normalizeId(item.id.raw)] = item;
+      }
+    }
+
+    final currentPlaylistItemId = session.playlistItemId;
+    final currentItemId = session.nowPlayingItem?.id.raw;
+    final items = <BaseItemDto>[];
+    var startIndex = -1;
+    var matchMode = "none";
+    for (final queueItem in remoteQueue) {
+      final item = idMap[_normalizeId(queueItem.id)];
+      if (item == null) continue;
+      if (startIndex == -1) {
+        if (currentPlaylistItemId != null && queueItem.playlistItemId == currentPlaylistItemId) {
+          startIndex = items.length;
+          matchMode = "playlistItemId";
+        } else if (currentPlaylistItemId == null &&
+            currentItemId != null &&
+            _normalizeId(queueItem.id) == _normalizeId(currentItemId)) {
+          startIndex = items.length;
+          matchMode = "itemId";
+        }
+      }
+      items.add(item);
+    }
+    if (items.isEmpty) {
+      _log.warning("Could not resolve any items of the remote queue");
+      return null;
+    }
+    if (startIndex == -1) {
+      final current = session.nowPlayingItem;
+      if (current != null) {
+        items.insert(0, current);
+        matchMode = "prepended";
+      } else {
+        matchMode = "fallback0";
+      }
+      startIndex = 0;
+    }
+
+    // Diagnostic (bug #1 desync): confirms which match path ran on real
+    // hardware. "prepended"/"fallback0" mean the queue didn't list the
+    // playing track; "itemId" with duplicates in the queue is also suspect.
+    _log.info(
+      "Resolved remote queue: ${items.length} items, current index $startIndex "
+      "(match=$matchMode, playlistItemId=$currentPlaylistItemId, itemId=$currentItemId, "
+      "queueReportsPlaylistItemIds=${remoteQueue.any((e) => e.playlistItemId != null)})",
+    );
+    return (items, startIndex);
+  }
+
+  /// Rebuilds the local queue from the connected remote session's
+  /// NowPlayingQueue, using the remoteClient queue source (we can't know the
+  /// real source of a remote queue). Goes through the regular queue replacement
+  /// path so the queue is persisted and restorable after an app restart.
   Future<void> _adoptRemoteQueue() async {
     final session = _sessionStream.valueOrNull;
-    final remoteQueue = session?.nowPlayingQueue;
-    if (session == null || remoteQueue == null || remoteQueue.isEmpty) {
+    if (session == null || session.nowPlayingQueue == null || session.nowPlayingQueue!.isEmpty) {
       _log.fine("No remote queue to adopt");
       return;
     }
     if (_adoptInProgress) return;
     _adoptInProgress = true;
     try {
-      final remoteIds = remoteQueue.map((e) => e.id).toList();
-
-      // Re-use items we already have locally, fetch only the missing ones.
-      final queueInfo = _queueService.getQueue();
-
       // The adoption was scheduled on a stale update; re-check ownership
       // against the latest state before replacing the local queue: if the
       // remote is (again) playing content from the local queue, the local
       // queue stays authoritative.
       final nowPlayingId = session.nowPlayingItem?.id.raw;
-      if (nowPlayingId != null && _localQueueContains(queueInfo, nowPlayingId)) {
+      if (nowPlayingId != null && _localQueueContains(_queueService.getQueue(), nowPlayingId)) {
         _log.fine("Remote is playing our content; skipping adoption");
         return;
       }
@@ -618,78 +711,13 @@ class RemoteSessionService {
         _log.fine("Own stop still propagating; skipping adoption");
         return;
       }
-      final idMap = <String, BaseItemDto>{
-        for (final item in queueInfo.fullQueue) _normalizeId(item.baseItemId.raw): item.baseItem,
-      };
-      final missingIds = remoteIds
-          .where((id) => !idMap.containsKey(_normalizeId(id)))
-          .toSet()
-          .map(BaseItemId.new)
-          .toList();
-      if (missingIds.isNotEmpty) {
-        final fetched = await _jellyfinApiHelper.getItems(itemIds: missingIds) ?? [];
-        for (final item in fetched) {
-          idMap[_normalizeId(item.id.raw)] = item;
-        }
-      }
-      // Resolve the queue while locating the remote's current track. Match by
-      // playlistItemId — unique per queue entry, so it survives a track that
-      // appears more than once — falling back to the item id when the client
-      // doesn't report playlist item ids. Matching by item id alone silently
-      // picked the first occurrence, and a not-found current track fell back to
-      // index 0 (the track after the one playing), showing the next track.
-      final currentPlaylistItemId = session.playlistItemId;
-      final currentItemId = session.nowPlayingItem?.id.raw;
-      final items = <BaseItemDto>[];
-      var startIndex = -1;
-      var matchMode = "none";
-      for (final queueItem in remoteQueue) {
-        final item = idMap[_normalizeId(queueItem.id)];
-        if (item == null) continue;
-        if (startIndex == -1) {
-          if (currentPlaylistItemId != null && queueItem.playlistItemId == currentPlaylistItemId) {
-            startIndex = items.length;
-            matchMode = "playlistItemId";
-          } else if (currentPlaylistItemId == null &&
-              currentItemId != null &&
-              _normalizeId(queueItem.id) == _normalizeId(currentItemId)) {
-            startIndex = items.length;
-            matchMode = "itemId";
-          }
-        }
-        items.add(item);
-      }
-      if (items.isEmpty) {
-        _log.warning("Could not resolve any items of the remote queue; not adopting");
-        return;
-      }
+      final resolved = await _resolveRemoteQueue(session);
+      if (resolved == null) return;
       // The session may have been disconnected (e.g. playback stopped) while
       // the missing items were being fetched; don't resurrect its queue.
       if (!isRemote) return;
-
-      if (startIndex == -1) {
-        // The current track isn't listed in the queue (e.g. the client reports
-        // an up-next-only queue). Keep it as the current track instead of
-        // silently starting on whatever sits at index 0.
-        final current = session.nowPlayingItem;
-        if (current != null) {
-          items.insert(0, current);
-          matchMode = "prepended";
-        } else {
-          matchMode = "fallback0";
-        }
-        startIndex = 0;
-      }
+      final (items, startIndex) = resolved;
       final position = remotePlaybackState?.position;
-
-      // Diagnostic (bug #1 desync): confirms which match path ran on real
-      // hardware. "prepended"/"fallback0" mean the queue didn't list the
-      // playing track; "itemId" with duplicates in the queue is also suspect.
-      _log.info(
-        "Adopting remote queue: ${items.length} items, current index $startIndex "
-        "(match=$matchMode, playlistItemId=$currentPlaylistItemId, itemId=$currentItemId, "
-        "queueReportsPlaylistItemIds=${remoteQueue.any((e) => e.playlistItemId != null)})",
-      );
       _applyingRemoteUpdate = true;
       try {
         await _queueService.replaceQueueFromRemote(items: items, startIndex: startIndex, startPosition: position);
@@ -701,6 +729,33 @@ class RemoteSessionService {
     } finally {
       _adoptInProgress = false;
     }
+  }
+
+  /// Pulls [session]'s current queue onto this device and plays it locally,
+  /// starting from the track the remote is playing, without connecting to or
+  /// controlling the remote session. Lets a user grab a queue from another
+  /// device (e.g. a receive-only TV) without a connect + migrate-back round
+  /// trip.
+  Future<void> adoptQueueFrom(SessionInfo session) async {
+    if (isRemote) {
+      _log.warning("Refusing to adopt a queue while controlling a remote session");
+      return;
+    }
+    _log.info("Adopting queue from session ${session.id} without connecting");
+    final resolved = await _resolveRemoteQueue(session);
+    if (resolved == null) {
+      _log.warning("Nothing to adopt from session ${session.id}");
+      return;
+    }
+    final (items, startIndex) = resolved;
+    final positionTicks = session.playState?.positionTicks;
+    final position = positionTicks != null ? Duration(microseconds: positionTicks ~/ 10) : null;
+    await _queueService.replaceQueueFromRemote(
+      items: items,
+      startIndex: startIndex,
+      startPosition: position,
+      beginPlaying: true,
+    );
   }
 
   /// Skips the local (paused) player to the remote's current track. Searches

@@ -3631,6 +3631,20 @@
     "@playOnStoppedAndDisconnected": {
         "description": "Snackbar message shown after the user stopped a remote device's playback and disconnected from it."
     },
+    "playOnAdoptQueue": "Play this queue here",
+    "@playOnAdoptQueue": {
+        "description": "Tooltip for the button on a remote device's tile that pulls the device's current queue onto this device and plays it here, without connecting to (controlling) that device."
+    },
+    "playOnQueueAdopted": "Playing {deviceName}'s queue here",
+    "@playOnQueueAdopted": {
+        "description": "Snackbar message shown after pulling a remote device's queue onto this device.",
+        "placeholders": {
+            "deviceName": {
+                "type": "String",
+                "example": "Living Room"
+            }
+        }
+    },
     "playOnDeviceListError": "Error: {error}",
     "@playOnDeviceListError": {
         "description": "Error message shown in the device sheet when the list of remote devices could not be loaded.",

@@ -912,10 +912,16 @@ class QueueService {
   /// session (Play On / Connect). Uses the remoteClient queue source since the
   /// real source of a remote queue is unknown, and goes through the regular
   /// queue replacement path so the queue is persisted for restore.
+  /// Replaces the local queue with a queue coming from a remote session. When
+  /// controlling a remote (mirror), [beginPlaying] is false — the local player
+  /// is a paused mirror. When pulling a queue onto this device without
+  /// connecting ("Adopt queue"), pass [beginPlaying] true to start playback
+  /// here.
   Future<void> replaceQueueFromRemote({
     required List<jellyfin_models.BaseItemDto> items,
     required int startIndex,
     Duration? startPosition,
+    bool beginPlaying = false,
   }) async {
     await _replaceWholeQueue(
       itemList: items,
@@ -927,7 +933,7 @@ class QueueService {
       ),
       initialIndex: startIndex,
       initialSeekPosition: startPosition,
-      beginPlaying: false,
+      beginPlaying: beginPlaying,
     );
   }
 

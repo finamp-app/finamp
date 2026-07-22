@@ -217,6 +217,7 @@ class _OutputTargetListState extends State<OutputTargetList> {
 
   String? switchingToRoute;
   String? _connectingToSessionId;
+  String? _adoptingSessionId;
   bool _disconnecting = false;
   bool _stoppingRemote = false;
   StreamSubscription<SessionInfo?>? _remoteStateSubscription;
@@ -457,6 +458,28 @@ class _OutputTargetListState extends State<OutputTargetList> {
     }
   }
 
+  /// Pulls a remote device's queue onto this device and plays it here, without
+  /// connecting to or controlling that device.
+  Future<void> _adoptQueue(SessionInfo session) async {
+    setState(() {
+      _adoptingSessionId = session.id;
+    });
+    try {
+      await _remoteSessionService.adoptQueueFrom(session);
+      GlobalSnackbar.message(
+        (context) => AppLocalizations.of(context)!.playOnQueueAdopted(_sessionDisplayName(session)),
+      );
+    } catch (e) {
+      GlobalSnackbar.error(e);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _adoptingSessionId = null;
+        });
+      }
+    }
+  }
+
   /// The kind of device Finamp is running on, for the "This phone" /
   /// "This tablet" / "This computer" label of the local playback entry.
   String _thisDeviceType(BuildContext context) {
@@ -492,9 +515,12 @@ class _OutputTargetListState extends State<OutputTargetList> {
   Widget _sessionTile(BuildContext context, SessionInfo session) {
     final isConnected = _remoteSessionService.isRemote && _remoteSessionService.activeSessionId == session.id;
     final nowPlayingItem = session.nowPlayingItem;
+    final themeColor = Theme.of(context).colorScheme.primary;
 
     // While connected, offer an explicit "stop & disconnect" action that stops
-    // the remote (clearing its queue) and returns to this device.
+    // the remote (clearing its queue) and returns to this device. For a device
+    // that's playing but not connected, offer to pull its queue onto this
+    // device and play it here, without connecting to (controlling) it.
     Widget? trailing;
     if (isConnected) {
       trailing = IconButton(
@@ -503,10 +529,24 @@ class _OutputTargetListState extends State<OutputTargetList> {
         tooltip: AppLocalizations.of(context)!.playOnStopAndDisconnect,
         onPressed: _stoppingRemote ? null : _stopAndDisconnect,
       );
+    } else if (nowPlayingItem != null) {
+      trailing = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(TablerIcons.transfer_in),
+            color: themeColor,
+            tooltip: AppLocalizations.of(context)!.playOnAdoptQueue,
+            onPressed: _adoptingSessionId == session.id ? null : () => _adoptQueue(session),
+          ),
+          Icon(TablerIcons.device_speaker, size: 36.0, color: themeColor),
+        ],
+      );
     }
 
     return ToggleableListTile(
-      isLoading: _connectingToSessionId == session.id || (isConnected && _stoppingRemote),
+      isLoading:
+          _connectingToSessionId == session.id || _adoptingSessionId == session.id || (isConnected && _stoppingRemote),
       title: _sessionDisplayName(session),
       subtitle: session.client ?? AppLocalizations.of(context)!.deviceType("unknown"),
       // Surface what the device is currently playing (so the user knows what
