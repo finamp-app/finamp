@@ -135,7 +135,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
               );
             },
           ),
-          const SliverPadding(padding: EdgeInsets.only(top: 12.0)),
+          const SliverPadding(padding: EdgeInsets.only(top: 4.0)),
           SliverMainAxisGroup(
             slivers: ref
                 .watch(finampSettingsProvider.homeScreenConfiguration)
@@ -206,7 +206,7 @@ class HomeScreenSection extends ConsumerWidget {
 
     final viewPadding = MediaQuery.paddingOf(context);
     return SliverPadding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.only(bottom: 20.0),
       sliver: FinampSectionHeader(
         sticky: false,
         key: Key(sectionInfo.toString()),
@@ -363,7 +363,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
             itemCount: items.length + 2,
             itemBuilder: (context, rawIndex) {
               if (rawIndex == 0) {
-                return SizedBox(width: 4.0); // initial padding, + separator
+                return SizedBox(width: 6.0); // initial padding, + separator
               } else if (rawIndex == items.length + 1) {
                 // Add extra right padding if we have hit the end of list and there are no more items available
                 if (items.length < homeScreenSectionItemLimit) {

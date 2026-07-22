@@ -13,6 +13,7 @@ import 'package:finamp/screens/downloads_screen.dart';
 import 'package:finamp/screens/settings_screen.dart';
 import 'package:finamp/screens/tabs_settings_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
+import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
@@ -97,6 +98,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
             await showModalHomeSectionMenu(context: context, section: config);
         }
       } else {
+        FeedbackHelper.feedback(FeedbackType.light);
         Scaffold.of(context).openDrawer();
         //await showFinampMainMenu(context: context);
       }
@@ -108,7 +110,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
         SafeArea(
           child: Padding(
             padding: EdgeInsets.only(
-              left: 7.0,
+              left: 14.0,
               right: 6.0,
               top: (Platform.isLinux || Platform.isWindows || Platform.isMacOS) ? 9.0 : 0.0,
             ),
@@ -121,16 +123,33 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                   SizedBox(width: _upperToolbarHeight + 6, height: _upperToolbarHeight, child: FinampAppBarBackButton())
                 else
                   Material(
-                    elevation: 1.5,
+                    elevation: 3.0,
+                    surfaceTintColor: Colors.transparent,
                     // mediaquery returns the real padding because we haven't had a builder since the SafeArea.
                     //shape: DrawerOpenBorder(leftOffset: 12.0 + MediaQuery.paddingOf(context).left),
-                    color: Color.alphaBlend(
-                      activeTabBackgroundColor.withOpacity(Theme.brightnessOf(context) == Brightness.dark ? 0.4 : 0.13),
-                      ColorScheme.of(context).surface,
+                    shadowColor: Theme.brightnessOf(context) == Brightness.dark
+                        ? Colors.transparent
+                        : Theme.of(context).colorScheme.shadow.withOpacity(0.4),
+                    // color: Color.alphaBlend(
+                    //   activeTabBackgroundColor.withOpacity(Theme.brightnessOf(context) == Brightness.dark ? 0.4 : 0.13),
+                    //   ColorScheme.of(context).surface,
+                    // ),
+                    color: Theme.brightnessOf(context) == Brightness.dark
+                        ? Color.alphaBlend(
+                            ref.watch(finampSettingsProvider.useMonochromeIcon)
+                                ? ColorScheme.of(context).primary.withOpacity(0.1)
+                                : Color(0xff000e2e),
+                            ColorScheme.of(context).surface,
+                          )
+                        : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadiusGeometry.circular(12.0),
+                      side: Theme.brightnessOf(context) == Brightness.dark
+                          ? BorderSide(color: ColorScheme.of(context).outline.withOpacity(0.3), width: 0.5)
+                          : BorderSide.none,
                     ),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(15.0)),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
+                      padding: const EdgeInsets.only(left: 5.0, right: 3.0, top: 5.0, bottom: 3.0),
                       child: GestureDetector(
                         onTap: openMenu,
                         onSecondaryTap: ref.watch(isDownloadingOrSyncingPollingProvider)
@@ -147,13 +166,12 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                 }
                               }
                             : null,
-                        onDoubleTap: () => Navigator.of(context).pushNamed(SettingsScreen.routeName),
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
                             FinampIcon(
-                              36,
-                              36,
+                              35,
+                              35,
                               overrideColor: ref.watch(finampSettingsProvider.isOffline)
                                   ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
                                   : null,
@@ -310,7 +328,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
             labelPadding: EdgeInsets.symmetric(horizontal: 4.0),
             dividerHeight: 0.0,
             dividerColor: Colors.transparent,
-            padding: EdgeInsets.only(top: 2.0, bottom: 2.0, left: 12.0, right: 6.0),
+            padding: EdgeInsets.only(top: 4.0, bottom: 0.0, left: 10.0, right: 6.0),
             tabs: sortedTabs.map((tabType) {
               final textStyle = tabController?.index == sortedTabs.indexOf(tabType)
                   ? null
