@@ -880,7 +880,7 @@
             }
         }
     },
-    "playingFromType": "{source, select, album{앨범} playlist{플레이리스트} trackMix{곡 믹스} artistMix{아티스트 믹스} albumMix{앨범 믹스} genreMix{장르 믹스} favorites{즐겨찾기} allTracks{전곡} filteredList{선별한 곡들} genre{장르} artist{아티스트} track{곡} nextUpAlbum{Next Up의 앨범} nextUpPlaylist{다음 Next Up의 플레이리스트} nextUpArtist{Next Up의 아티스트} nextUpGenre{Next Up의 장르} remoteClient{원격 클라이언트} radio{라디오} other{}} 재생 중",
+    "playingFromType": "{source, select, album{앨범} playlist{플레이리스트} trackMix{곡 믹스} artistMix{아티스트 믹스} albumMix{앨범 믹스} genreMix{장르 믹스} favorites{즐겨찾기} allTracks{전곡} filteredList{선별한 곡들} genre{장르} artist{아티스트} track{곡} nextUpAlbum{Next Up의 앨범} nextUpPlaylist{다음 Next Up의 플레이리스트} nextUpArtist{Next Up의 아티스트} nextUpGenre{Next Up의 장르} remoteClient{원격 클라이언트} radio{라디오} homeScreenSection{} collection{콜렉션} collectionMix{콜렉션 믹스} other{}} 재생 중",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -1545,7 +1545,7 @@
     "@useHighContrastColorsSubtitle": {
         "description": "Subtitle for the setting that controls if high contrast colors are used throughout the app"
     },
-    "fixedGridTileSizeEnum": "{size, select, small{소형} medium{중형} large{대형} veryLarge{초대형} other{???}}",
+    "fixedGridTileSizeEnum": "{size, select, tiny{미세하게} verySmall{매우 작게} small{작게} medium{중간} large{크게} veryLarge{매우 크게} huge{거대하게} giant{더 거대하게} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
             "size": {
@@ -1963,5 +1963,134 @@
     "shuffleSomeToNextUp": "Next Up에 임의 재생 곡 추가",
     "@shuffleSomeToNextUp": {
         "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
+    },
+    "shuffleSomeToQueue": "대기열에 임의 재생 추가",
+    "@shuffleSomeToQueue": {
+        "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "movePlayNext": "\"Next Up\" 재생",
+    "@movePlayNext": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "moveAddToNextUp": "\"Next Up\"에 추가",
+    "@moveAddToNextUp": {
+        "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
+    },
+    "moveAddToQueue": "현재 대기열에 추가",
+    "@moveAddToQueue": {
+        "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
+    },
+    "radio": "라디오",
+    "@radio": {
+        "description": "Title for the queue source when the user is playing a track added via radio"
+    },
+    "radioForItem": "{radioSource} - 라디오",
+    "@radioForItem": {
+        "description": "Suffix added to a queue source when playing a radio track. Example: \"Never Gonna Give You Up - Radio\"",
+        "placeholders": {
+            "radioSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "ascending": "오름차순",
+    "@ascending": {
+        "description": "Label for ascending order."
+    },
+    "descending": "내림차순",
+    "@descending": {
+        "description": "Label for descending order."
+    },
+    "shuffleSomeAlbums": "앨범 임의 재생",
+    "@shuffleSomeAlbums": {
+        "description": "Label for action that shuffles some albums of a genre"
+    },
+    "lyricsEmptyStateFailed": "가사를 불러올 수 없음",
+    "@lyricsEmptyStateFailed": {
+        "description": "Message shown when lyrics failed to load"
+    },
+    "shuffleSomeAlbumsNext": "\"Next Up\"에 임의 앨범 추가",
+    "@shuffleSomeAlbumsNext": {
+        "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
+    },
+    "shuffleSomeAlbumsToNextUp": "\"Next Up\"에 임의 앨범 추가",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
+    },
+    "shuffleSomeAlbumsToQueue": "재생 대기열에 임의 앨범 추가",
+    "@shuffleSomeAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
+    },
+    "volumeNormalizationIOSBaseGainEditorDescription": "현재 안드로이드 이외의 플랫폼에서 볼륨 정규화를 적용하려면 Gain값 변화를 구현하기 위해 재생 볼륨 조정이 필요합니다. 볼륨을 100% 이상으로 높일 수 없으므로 소리가 작은 트랙의 볼륨을 높일 수 있도록 기본 볼륨을 낮춰야 했습니다.\n\n이 값은 데시벨(dB) 단위로, -10 dB는 약 30% 볼륨, -4.5 dB는 약 60% 볼륨, -2 dB는 약 80% 볼륨에 해당합니다.\n양수 값은 임계값까지 볼륨 감소가 적용되지 않음을 의미합니다(예: +6.4 dB 오프셋의 경우 -6.4 dB 게인(또는 그보다 더 큰 양수 값)), 하지만 소리가 작은 트랙의 볼륨이 과도하게 커지는 것은 방지합니다.\n\n이 값은 라이브러리에서 가장 높은(가장 양수인) 게인의 역수로 설정해야 합니다. 즉, 라이브러리에서 가장 높은 게인이 -3dB이고(다른 모든 트랙의 게인이 -5dB, -8dB, -10dB 등인 경우) +3dB로 설정해야 합니다.",
+    "@volumeNormalizationIOSBaseGainEditorDescription": {
+        "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "multichannelHandlingTitle": "다채널 트랜스코딩 처리",
+    "@multichannelHandlingTitle": {
+        "description": "Title for multi-channel handling dropdown"
+    },
+    "multichannelHandlingSubtitle": "트랜스코딩 할 때 다채널 트랙(>2채널) 처리 방법. 스트리밍과 다운로드 모두 적용됩니다.",
+    "@multichannelHandlingSubtitle": {
+        "description": "Subtitle for multi-channel handling dropdown"
+    },
+    "multichannelHandlingOption": "{option, select, stereoDownmixLossy{스테레오로 다운믹스(손실압축으로만)} stereoDownmixAll{스테레오로 다운믹스(전체 사운드)} fixedBitrate{다운믹스 안 함} other{{option}} }",
+    "@multichannelHandlingOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in multi-channel handling dropdown"
+    },
+    "keepScreenOnWhilePluggedIn": "전원이 연결됐을 때만 화면 켜짐을 유지합니다",
+    "keepScreenOnWhilePluggedInSubtitle": "전원 연결이 안 된 경우 화면 켜짐 유지 설정을 무시합니다",
+    "additionalPeople": "참여 인원",
+    "@additionalPeople": {
+        "description": "Label for the feature chips showing additional people in the credits of a track or album"
+    },
+    "playbackMode": "재생 모드",
+    "@playbackMode": {
+        "description": "Label for the feature chips showing the playback mode of a track. See [playbackModeLocal], [playbackModeDirectPlaying], and [playbackModeTranscoding]"
+    },
+    "codec": "코덱",
+    "@codec": {
+        "description": "Label for the feature chips showing the codec of a track"
+    },
+    "bitRate": "비트레이트",
+    "@bitRate": {
+        "description": "Label for the feature chips showing the bit rate of a track"
+    },
+    "bitDepth": "비트 심도",
+    "@bitDepth": {
+        "description": "Label for the feature chips showing the bit depth of a track"
+    },
+    "size": "용량",
+    "@size": {
+        "description": "Label for the feature chips showing the size (original file size or transcoded size, if available) of a track"
+    },
+    "normalizationGain": "게인",
+    "@normalizationGain": {
+        "description": "Label for the feature chips showing the normalization gain / LUFS offset of a track"
+    },
+    "sampleRate": "샘플레이트",
+    "@sampleRate": {
+        "description": "Label for the feature chips showing the sample rate of a track"
+    },
+    "showFeatureChipsToggleTitle": "곡의 고급 정보 표시",
+    "@showFeatureChipsToggleTitle": {
+        "description": "Title for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
+    },
+    "showFeatureChipsToggleSubtitle": "재생 화면에 코덱, 비트레이트 등 곡의 고급 정보를 표시합니다.",
+    "@showFeatureChipsToggleSubtitle": {
+        "description": "Subtitle for the setting that controls if the feature chips showing advanced track info are shown on the player screen"
+    },
+    "seeAll": "모두 보기",
+    "@seeAll": {
+        "description": ""
+    },
+    "albumScreen": "앨범 화면",
+    "@albumScreen": {
+        "description": "Name for the view/screen that shows albums"
     }
 }

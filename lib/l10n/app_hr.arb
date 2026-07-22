@@ -1993,5 +1993,10 @@
     "loopingUnavailableWhileRadioActiveWarning": "Mijenjanje modusa petlje nije dostupno dok je radio aktivan, jer će red čekanja beskonačno nastavljati.",
     "@loopingUnavailableWhileRadioActiveWarning": {
         "description": "Warning message when trying to change the loop mode while radio is active."
-    }
+    },
+    "noItemsDownloaded": "Nema preuzetih stavki.",
+    "@noItemsDownloaded": {
+        "description": "Shown on the downloads screen for sections without any downloaded items."
+    },
+    "logoutButtonSubtitle": "Prijavljivanje u drugi server će obrisati postojeća preuzimanja"
 }

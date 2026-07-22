@@ -2795,7 +2795,7 @@
     "@previousTracksPersistenceModeSelectorTitle": {
         "description": "Title for setting that allows to override state of previous tracks header in queue list"
     },
-    "previousTracksPersistenceModeSelectorSubtitle": "Wenn du die Warteschlange öffnest, sollte der vorherige Titel Abschnitt ... sein",
+    "previousTracksPersistenceModeSelectorSubtitle": "Wenn du die Warteschlange öffnest, sollte der \"Vorherige Tracks\"-Abschnitt ... sein.",
     "@previousTracksPersistenceModeSelectorSubtitle": {
         "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
     },
@@ -3419,7 +3419,7 @@
     "@carPlaySiriHint": {
         "description": "Hint text for how to use Siri to search in CarPlay."
     },
-    "carPlayLoginPrompt": "Öffne die Finamp App auf deinem Smartphone, um dich auf deinem Jellyfin-Server anzumelden.",
+    "carPlayLoginPrompt": "Öffne die Finamp App auf deinem Smartphone, um dich auf deinem Jellyfin Server anzumelden.",
     "@carPlayLoginPrompt": {
         "description": "Label shown when the user is trying to use CarPlay without being logged in."
     },
@@ -3454,5 +3454,53 @@
                 "example": "syncingLocal"
             }
         }
+    },
+    "clientCertificatePasswordTitle": "Zertifikatspasswort",
+    "@clientCertificatePasswordTitle": {
+        "description": "Title of the dialog prompting the user to enter the password for the client certificate being imported."
+    },
+    "clientCertificatePasswordHint": "Passwort",
+    "@clientCertificatePasswordHint": {
+        "description": "Hint text for the password input field when importing a client certificate."
+    },
+    "clientCertificateDeleteConfirm": "Willst du das installierte Zertifikat entfernen? Clientauthentifizierung wird dabei deaktiviert.",
+    "@clientCertificateDeleteConfirm": {
+        "description": "Confirmation prompt shown before removing the installed client certificate."
+    },
+    "clientCertificateImportSuccess": "Zertifikat erfolgreich importiert",
+    "@clientCertificateImportSuccess": {
+        "description": "Message shown after successfully importing a client certificate."
+    },
+    "clientCertificateImportError": "Import des Zertifikats fehlgeschlagen",
+    "@clientCertificateImportError": {
+        "description": "Error message shown when importing a client certificate fails."
+    },
+    "clientCertificateRequired": "Client-Zertifikat erforderlich",
+    "@clientCertificateRequired": {
+        "description": "Message shown on the server selection screen when the server requires a client certificate to be provided."
+    },
+    "clientCertificate": "mTLS (SSL) Client-Zertifikat",
+    "@clientCertificate": {
+        "description": "Title for the setting that allows managing SSL client certificates used for authentication"
+    },
+    "clientCertificateUnavailable": "Kein Zertifikat eingerichtet, Client-Authentifizierung deaktiviert",
+    "@clientCertificateUnavailable": {
+        "description": "Message shown when the user has no SSL client certificate available to use."
+    },
+    "clientCertificateInstalled": "Zertifikat installiert",
+    "@clientCertificateInstalled": {
+        "description": "Message shown when the user has successfully installed an SSL client certificate."
+    },
+    "clientCertificateDescription": "Ein TLS-Client-Zertifikat (.p12 oder .pfx) wird verwendet, um dieses Gerät beim Jellyfin-Server zu authentifizieren. Dies ist nur erforderlich, wenn der Server für gegenseitiges TLS (mutual TLS) konfiguriert ist.",
+    "@clientCertificateDescription": {
+        "description": "Explanatory text in the client certificate settings menu describing what a client certificate is used for"
+    },
+    "importClientCertificate": "Zertifikat importieren",
+    "@importClientCertificate": {
+        "description": "Label for the button to import a new SSL client certificate."
+    },
+    "removeClientCertificate": "Zertifikat entfernen",
+    "@removeClientCertificate": {
+        "description": "Label for the button to remove the currently installed SSL client certificate."
     }
 }

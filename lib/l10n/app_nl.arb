@@ -1694,5 +1694,18 @@
             }
         },
         "description": "Localized names of special downloadable collection representing cached images for a certain library."
+    },
+    "maxConcurrentDownloadsSubtitle": "Meer parallele downloads zorgen mogelijk voor versneld downloaden op de achtergrond, maar leiden soms ook tot mislukte downloads bij hele grote bestanden, of in sommige gevallen tot wat vertraging van de app.",
+    "@maxConcurrentDownloadsSubtitle": {
+        "description": "Description of setting controlling max concurrent downloads."
+    },
+    "maxConcurrentDownloadsLabel": "{count} Parallele Downloads",
+    "@maxConcurrentDownloadsLabel": {
+        "description": "Label of values on max concurrent downloads slider",
+        "placeholders": {
+            "count": {
+                "type": "String"
+            }
+        }
     }
 }
