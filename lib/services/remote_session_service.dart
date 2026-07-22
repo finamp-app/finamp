@@ -597,7 +597,33 @@ class RemoteSessionService {
           idMap[_normalizeId(item.id.raw)] = item;
         }
       }
-      final items = remoteIds.map((id) => idMap[_normalizeId(id)]).nonNulls.toList();
+      // Resolve the queue while locating the remote's current track. Match by
+      // playlistItemId — unique per queue entry, so it survives a track that
+      // appears more than once — falling back to the item id when the client
+      // doesn't report playlist item ids. Matching by item id alone silently
+      // picked the first occurrence, and a not-found current track fell back to
+      // index 0 (the track after the one playing), showing the next track.
+      final currentPlaylistItemId = session.playlistItemId;
+      final currentItemId = session.nowPlayingItem?.id.raw;
+      final items = <BaseItemDto>[];
+      var startIndex = -1;
+      var matchMode = "none";
+      for (final queueItem in remoteQueue) {
+        final item = idMap[_normalizeId(queueItem.id)];
+        if (item == null) continue;
+        if (startIndex == -1) {
+          if (currentPlaylistItemId != null && queueItem.playlistItemId == currentPlaylistItemId) {
+            startIndex = items.length;
+            matchMode = "playlistItemId";
+          } else if (currentPlaylistItemId == null &&
+              currentItemId != null &&
+              _normalizeId(queueItem.id) == _normalizeId(currentItemId)) {
+            startIndex = items.length;
+            matchMode = "itemId";
+          }
+        }
+        items.add(item);
+      }
       if (items.isEmpty) {
         _log.warning("Could not resolve any items of the remote queue; not adopting");
         return;
@@ -606,14 +632,29 @@ class RemoteSessionService {
       // the missing items were being fetched; don't resurrect its queue.
       if (!isRemote) return;
 
-      final currentItemId = session.nowPlayingItem?.id.raw;
-      var startIndex = currentItemId == null
-          ? 0
-          : items.indexWhere((item) => _normalizeId(item.id.raw) == _normalizeId(currentItemId));
-      if (startIndex == -1) startIndex = 0;
+      if (startIndex == -1) {
+        // The current track isn't listed in the queue (e.g. the client reports
+        // an up-next-only queue). Keep it as the current track instead of
+        // silently starting on whatever sits at index 0.
+        final current = session.nowPlayingItem;
+        if (current != null) {
+          items.insert(0, current);
+          matchMode = "prepended";
+        } else {
+          matchMode = "fallback0";
+        }
+        startIndex = 0;
+      }
       final position = remotePlaybackState?.position;
 
-      _log.info("Adopting remote queue: ${items.length} items, current index $startIndex");
+      // Diagnostic (bug #1 desync): confirms which match path ran on real
+      // hardware. "prepended"/"fallback0" mean the queue didn't list the
+      // playing track; "itemId" with duplicates in the queue is also suspect.
+      _log.info(
+        "Adopting remote queue: ${items.length} items, current index $startIndex "
+        "(match=$matchMode, playlistItemId=$currentPlaylistItemId, itemId=$currentItemId, "
+        "queueReportsPlaylistItemIds=${remoteQueue.any((e) => e.playlistItemId != null)})",
+      );
       _applyingRemoteUpdate = true;
       try {
         await _queueService.replaceQueueFromRemote(items: items, startIndex: startIndex, startPosition: position);
