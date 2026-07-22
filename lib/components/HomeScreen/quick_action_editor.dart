@@ -89,7 +89,8 @@ class QuickActionConfigMenuState extends ConsumerState<QuickActionConfigMenu> {
             children: [
               Text(switch (selected) {
                 FinampQuickActions.playSpecificItem => context.l10n.selectAnItem,
-                //TODO add more strings
+                FinampQuickActions.playRandomItem ||
+                FinampQuickActions.playRandomFavoriteItem => context.l10n.selectItemTypes,
                 _ => context.l10n.homeScreenQuickActionPickerMenuTitle,
               }, style: Theme.of(context).textTheme.titleMedium),
             ],
@@ -181,15 +182,7 @@ class QuickActionConfigMenuState extends ConsumerState<QuickActionConfigMenu> {
         FinampQuickActions.playRandomItem || FinampQuickActions.playRandomFavoriteItem => [
           TargetItemTypesSelector(
             notifier: itemTypesNotifier,
-            initialValue:
-                widget.initialValue?.itemTypes ??
-                const {
-                  BaseItemDtoType.track,
-                  BaseItemDtoType.album,
-                  BaseItemDtoType.artist,
-                  BaseItemDtoType.genre,
-                  BaseItemDtoType.playlist,
-                },
+            initialValue: widget.initialValue?.itemTypes ?? const {},
           ),
           SizedBox(height: 20.0),
           ValueListenableBuilder(
@@ -197,6 +190,7 @@ class QuickActionConfigMenuState extends ConsumerState<QuickActionConfigMenu> {
             builder: (context, value, _) {
               return CTAMedium(
                 text: context.l10n.save,
+                disabled: value.isEmpty,
                 icon: TablerIcons.device_floppy,
                 onPressed: () {
                   if (context.mounted) {

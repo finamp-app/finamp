@@ -4355,6 +4355,7 @@ enum FinampQuickActions {
   surpriseMe(true),
   @HiveField(9)
   playSpecificItem(true);
+  // ID 10 moved upwards for more sensible user-facing ordering
   //TODO support album/artist shuffle (requires queue support)
 
   final bool showToUser;

@@ -3052,6 +3052,10 @@
     "@selectAnItem": {
         "description": "Title for 'play specific item' quick action edit menu"
     },
+    "selectItemTypes": "Select item types",
+    "@selectItemTypes": {
+        "description": "Title for 'play random item' quick action edit menu"
+    },
     "sectionsMenu": "Sections",
     "@sectionsMenu": {
         "description": "Title for home screen sections edit menu"

@@ -665,7 +665,7 @@ class _TargetItemTypesSelectorState extends ConsumerState<TargetItemTypesSelecto
           child: FilterChip(
             label: Text(itemType.localized(context.l10n)),
             selected: isSelected,
-            selectedColor: Color.alphaBlend(ColorScheme.of(context).primary.withOpacity(0.15), Colors.transparent),
+            //selectedColor: Color.alphaBlend(ColorScheme.of(context).primary.withOpacity(0.15), Colors.transparent),
             backgroundColor: Colors.transparent,
             side: BorderSide(
               color: isSelected
@@ -681,10 +681,6 @@ class _TargetItemTypesSelectorState extends ConsumerState<TargetItemTypesSelecto
                   this.selected.add(itemType);
                 } else {
                   this.selected.remove(itemType);
-                  if (this.selected.isEmpty) {
-                    FeedbackHelper.feedback(FeedbackType.warning);
-                    this.selected.add(itemType);
-                  }
                 }
                 widget.notifier.value = Set.of(this.selected);
               });

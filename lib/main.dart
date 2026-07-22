@@ -553,6 +553,24 @@ void _migrateHomescreen() {
     }
   }
 
+  for (int i = 0; i < finampSettings.homeScreenConfiguration.actions.length; i++) {
+    final action = finampSettings.homeScreenConfiguration.actions[i];
+    if (action.action == FinampQuickActions.playRandomAlbum) {
+      finampSettings.homeScreenConfiguration.actions[i] = QuickActionConfig(
+        action: FinampQuickActions.playRandomItem,
+        itemTypes: {BaseItemDtoType.album},
+      );
+      changed = true;
+    }
+    if (action.action == FinampQuickActions.playRandomTrack) {
+      finampSettings.homeScreenConfiguration.actions[i] = QuickActionConfig(
+        action: FinampQuickActions.playRandomItem,
+        itemTypes: {BaseItemDtoType.track},
+      );
+      changed = true;
+    }
+  }
+
   if (changed) {
     FinampSettingsHelper.overwriteFinampSettings(finampSettings);
   }
