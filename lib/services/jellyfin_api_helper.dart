@@ -6,6 +6,7 @@ import 'dart:isolate';
 import 'package:chopper/chopper.dart';
 import 'package:collection/collection.dart';
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/services/client_certificate_installer.dart';
 import 'package:finamp/services/http_aggregate_logging_interceptor.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../models/finamp_models.dart' hide ContentType;
+import '../models/finamp_models.dart' as finamp_models;
 import '../models/jellyfin_models.dart';
 import 'downloads_service.dart';
 import 'downloads_service_backend.dart';
@@ -47,7 +49,11 @@ class JellyfinApiHelper {
   JellyfinApiHelper() {
     ReceivePort startupPort = ReceivePort();
     var rootToken = RootIsolateToken.instance!;
-    Isolate.spawn(_processRequestsBackground, (startupPort.sendPort, rootToken));
+    // Pass client certificate to background isolates, since Hive isn't accessible from them.
+    var clientCertificate = ClientCertificateInstaller.isSupported
+        ? FinampSettingsHelper.finampSettings.clientCertificate
+        : null;
+    Isolate.spawn(_processRequestsBackground, (startupPort.sendPort, rootToken, clientCertificate));
     Future.sync(() async {
       _workerIsolatePort = await startupPort.first as SendPort?;
     });
@@ -57,13 +63,18 @@ class JellyfinApiHelper {
 
   /// This should only be run in a worker isolate
   /// Sets up singletons and listens for work.
-  static Future<void> _processRequestsBackground((SendPort, RootIsolateToken) input) async {
+  static Future<void> _processRequestsBackground((SendPort, RootIsolateToken, ClientCertificate?) input) async {
     BackgroundIsolateBinaryMessenger.ensureInitialized(input.$2);
     ReceivePort requestPort = ReceivePort();
 
     // Extend the default security context to trust Android user certificates.
     // This is a workaround for <https://github.com/dart-lang/sdk/issues/50435>.
     await FlutterUserCertificatesAndroid().trustAndroidUserCertificates(SecurityContext.defaultContext);
+
+    // Configure SecurityContext to use client certificate, if provided.
+    if (input.$3 != null) {
+      ClientCertificateInstaller().installCertificateInSecurityContext(input.$3!, SecurityContext.defaultContext);
+    }
 
     input.$1.send(requestPort.sendPort);
     final dir = (Platform.isAndroid || Platform.isIOS)
@@ -127,6 +138,15 @@ class JellyfinApiHelper {
     BaseItemId? genreFilter,
     bool? isFavorite,
 
+    /// Optional. Filter by items whose name starts with a given string.
+    String? nameStartsWith,
+
+    /// Optional. Filter by items whose name is sorted equally or greater than a given input string.
+    String? nameStartsWithOrGreater,
+
+    /// Optional. Filter by items whose name is equally or lesser than a given input string.
+    String? nameLessThan,
+
     /// The record index to start at. All items with a lower index will be
     /// dropped from the results.
     int? startIndex,
@@ -162,6 +182,9 @@ class JellyfinApiHelper {
       artistType: artistType,
       genreFilter: genreFilter,
       isFavorite: isFavorite,
+      nameStartsWith: nameStartsWith,
+      nameStartsWithOrGreater: nameStartsWithOrGreater,
+      nameLessThan: nameLessThan,
       startIndex: startIndex,
       limit: limit,
     );
@@ -222,6 +245,9 @@ class JellyfinApiHelper {
     ArtistType? artistType,
     BaseItemId? genreFilter,
     bool? isFavorite,
+    String? nameStartsWith,
+    String? nameStartsWithOrGreater,
+    String? nameLessThan,
     int? startIndex,
     int? limit,
   }) async {
@@ -242,7 +268,7 @@ class JellyfinApiHelper {
         return QueryResult_BaseItemDto(totalRecordCount: 0, startIndex: 0, items: []);
       }
     } else {
-      _jellyfinApiHelperLogger.fine("Getting items.");
+      _jellyfinApiHelperLogger.fine("Getting up to $limit items of type $includeItemTypes.");
     }
 
     return runInIsolate((api) async {
@@ -279,6 +305,7 @@ class JellyfinApiHelper {
             userId: currentUserId,
             fields: fields,
             isFavorite: isFavorite,
+            nameStartsWith: nameStartsWith,
           );
         } else {
           //artistType == ArtistType.artist
@@ -294,6 +321,7 @@ class JellyfinApiHelper {
             limit: limit,
             fields: fields,
             isFavorite: isFavorite,
+            nameStartsWith: nameStartsWith,
           );
         }
       } else if (parentItem?.type == "MusicArtist") {
@@ -389,6 +417,9 @@ class JellyfinApiHelper {
           ids: itemIds?.join(","),
           fields: fields,
           isFavorite: isFavorite,
+          nameStartsWith: nameStartsWith,
+          nameStartsWithOrGreater: nameStartsWithOrGreater,
+          nameLessThan: nameLessThan,
         );
       }
       return QueryResult_BaseItemDto.fromJson(response as Map<String, dynamic>);
@@ -476,6 +507,7 @@ class JellyfinApiHelper {
   /// Fetch the public server info from the server.
   /// Can be used to check if the server is online / the URL is correct.
   Future<PublicSystemInfoResult?> loadServerPublicInfo({Duration? timeout}) async {
+    assert(_verifyCallable());
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
     // Some users won't have a password.
     if (baseUrlTemp == null && finampUserHelper.currentUser?.baseURL == null) {
@@ -502,6 +534,7 @@ class JellyfinApiHelper {
   /// Can be used to check if the server is online / the URL is correct.
   /// Since we're potentially looking multiple servers, while the user is entering another base URL, we use a custom http client for this request.
   Future<PublicSystemInfoResult?> loadCustomServerPublicInfo(Uri customServerUrl) async {
+    assert(_verifyCallable());
     final requestUrl = customServerUrl.replace(
       pathSegments: customServerUrl.pathSegments.followedBy(["System", "Info", "Public"]),
     );
@@ -520,6 +553,7 @@ class JellyfinApiHelper {
 
   /// Fetch all public users from the server.
   Future<PublicUsersResponse> loadPublicUsers() async {
+    assert(_verifyCallable());
     // Some users won't have a password.
     if (_finampUserHelper.currentUser?.baseURL == null && baseUrlTemp == null) {
       return PublicUsersResponse(users: []);
@@ -618,18 +652,21 @@ class JellyfinApiHelper {
 
   /// Gets the current user.
   Future<UserDto> getUser() async {
+    assert(_verifyCallable());
     var response = await jellyfinApi.getUser();
     return UserDto.fromJson(response as Map<String, dynamic>);
   }
 
   /// Gets a user by their id.
   Future<UserDto?> getUserById(String userId) async {
+    assert(_verifyCallable());
     var response = await jellyfinApi.getUserById(userId);
     return UserDto.fromJson(response as Map<String, dynamic>);
   }
 
   /// Gets all the user's views.
   Future<List<BaseItemDto>> getViews() async {
+    assert(_verifyCallable());
     var response = await jellyfinApi.getViews(_finampUserHelper.currentUser!.id);
 
     return QueryResult_BaseItemDto.fromJson(response as Map<String, dynamic>).items!;
@@ -1240,5 +1277,20 @@ class JellyfinApiHelper {
     }
     _jellyfinApiHelperLogger.warning("_verifyCallable failed in phase ${SchedulerBinding.instance.schedulerPhase}");
     return false;
+  }
+
+  /// Get [isFavorite] property for API item requests, based on content type and filters
+  /// TODO apply this directly here in the API helper once it has been refactored to work with [finamp_models.ContentType] and [SortAndFilterConfiguration] instead of raw strings
+  static bool? getIsFavoriteFilter(finamp_models.ContentType contentType, Set<ItemFilter> filters) {
+    // Jellyfin 10.10 and 10.11 use the [isFavorite] boolean filter instead of the list-based [filters] parameter for genres, so add that here
+    // I guess part of the reason for this is that it's not possible to favorite a genre through the Jellyfin Web UI at all...
+    if ([finamp_models.ContentType.genres, finamp_models.ContentType.mixed].contains(contentType)) {
+      // Only send isFavorite when the filter is actually active. Passing isFavorite=false makes
+      // Jellyfin 10.11 return HTTP 500 on the /Genres endpoint, leaving the Genres tab empty (#1653).
+      // On Jellyfin 10.10 and 12.0, isFavorite=false returns only items that are *not* favorites,
+      // which is also not what we want here (we want all genres to be shown, unfiltered)
+      return filters.any((filter) => filter.type == ItemFilterType.isFavorite) ? true : null;
+    }
+    return null;
   }
 }

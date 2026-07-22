@@ -30,7 +30,7 @@ class AlbumScreenContentFlexibleSpaceBar extends ConsumerWidget {
   });
 
   final BaseItemDto parentItem;
-  final List<BaseItemDto> items;
+  final List<BaseItemDto>? items;
   final SortAndFilterController controller;
 
   @override
@@ -53,11 +53,7 @@ class AlbumScreenContentFlexibleSpaceBar extends ConsumerWidget {
                     const SizedBox(width: 4),
                     Expanded(
                       flex: 2,
-                      child: ItemInfo(
-                        item: parentItem,
-                        itemTracks: items,
-                        updateGenreFilter: controller.updateGenreFilter,
-                      ),
+                      child: ItemInfo(item: parentItem, itemTracks: items, sortConfigController: controller),
                     ),
                   ],
                 ),

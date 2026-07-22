@@ -41,7 +41,7 @@ class HomeScreenQuickActionButton extends StatelessWidget {
           fontSize: 13,
           fontWeight: FontWeight.w500,
         ),
-        textAlign: vertical ? TextAlign.center : TextAlign.start,
+        textAlign: TextAlign.center,
       ),
     ];
 

@@ -175,6 +175,15 @@ abstract class JellyfinApi extends ChopperService {
 
     /// Optional. Controls if multi-disc should be returned as separate albums (true) or as a single album (false).
     @Query("CollapseBoxSetItems") bool? collapseMultiDiscAlbums,
+
+    /// Optional. Filter by items whose name is sorted equally than a given input string.
+    @Query("NameStartsWith") String? nameStartsWith,
+
+    /// Optional. Filter by items whose name is sorted equally or greater than a given input string.
+    @Query("NameStartsWithOrGreater") String? nameStartsWithOrGreater,
+
+    /// Optional. Filter by items whose name is equally or lesser than a given input string.
+    @Query("NameLessThan") String? nameLessThan,
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
@@ -221,6 +230,10 @@ abstract class JellyfinApi extends ChopperService {
     @Path() required BaseItemId id,
     @Query() required String userId,
     @Query() required int limit,
+    // when requesting Instant Mixes (Jellyfin 10.10.x & 10.11.x), Jellyfin omits the [hasOwnImage] field and other metadata, which leads to us (and Jellyfin Web) falling back to the album image, even though a track image is present.
+    // These parameters help to get more accurate image data
+    @Query() bool? enableImages = true,
+    @Query() List<String>? enableImageTypes = const ["Primary", "Disc", "Thumb", "Art"],
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
@@ -420,6 +433,9 @@ abstract class JellyfinApi extends ChopperService {
 
     /// Optional filter by items that are marked as favorite, or not.
     @Query("isFavorite") bool? isFavorite,
+
+    /// Optional. Filter by items whose name is sorted equally than a given input string.
+    @Query("NameStartsWith") String? nameStartsWith,
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
@@ -464,6 +480,9 @@ abstract class JellyfinApi extends ChopperService {
 
     /// Optional filter by items that are marked as favorite, or not.
     @Query("isFavorite") bool? isFavorite,
+
+    /// Optional. Filter by items whose name is sorted equally than a given input string.
+    @Query("NameStartsWith") String? nameStartsWith,
   });
 
   /// Gets all genres from a given item, folder, or the entire library.

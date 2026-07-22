@@ -13,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../models/music_slices.dart';
 import '../../../services/music_providers.dart';
 
 Map<PlaybackActionRowPage, Widget> getPlaybackActionPages({
@@ -183,10 +184,8 @@ class PlayPlaybackAction extends ConsumerWidget {
           Navigator.pop(context);
         }
 
-        await queueService.startPlayback(
-          items: (await ref.watch(getPlayerSliceProvider(item: item, startingOffset: 0).future)).items,
-          source: item.source,
-          order: FinampPlaybackOrder.linear,
+        await queueService.startSlicePlayback(
+          await ref.watch(getPlayableSliceProvider(item: item, startingOffset: 0).future),
         );
       },
       iconColor: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
@@ -214,10 +213,7 @@ class PlayNextPlaybackAction extends ConsumerWidget {
           Navigator.pop(context);
         }
 
-        await queueService.addNext(
-          items: (await ref.watch(getPlayerSliceProvider(item: item, startingOffset: 0).future)).items,
-          source: item.source,
-        );
+        await queueService.addNext(await ref.watch(getPlayableSliceProvider(item: item, startingOffset: 0).future));
 
         GlobalSnackbar.message(
           (scaffold) =>
@@ -251,7 +247,7 @@ class MovePlayNextPlaybackAction extends ConsumerWidget {
         }
 
         unawaited(queueService.removeQueueItem(item));
-        await queueService.addNext(items: [item.baseItem], source: item.source);
+        await queueService.addNext(PlayableSlice.simple([item.baseItem], item.source));
 
         GlobalSnackbar.message(
           (scaffold) => AppLocalizations.of(scaffold)!.confirmPlayNext(BaseItemDtoType.fromItem(item.baseItem).name),
@@ -283,10 +279,7 @@ class AddToNextUpPlaybackAction extends ConsumerWidget {
           Navigator.pop(context);
         }
 
-        await queueService.addToNextUp(
-          items: (await ref.watch(getPlayerSliceProvider(item: item, startingOffset: 0).future)).items,
-          source: item.source,
-        );
+        await queueService.addToNextUp(await ref.watch(getPlayableSliceProvider(item: item, startingOffset: 0).future));
 
         GlobalSnackbar.message(
           (scaffold) =>
@@ -325,7 +318,7 @@ class MoveAddToNextUpPlaybackAction extends ConsumerWidget {
         }
 
         unawaited(queueService.removeQueueItem(item));
-        await queueService.addToNextUp(items: [item.baseItem], source: item.source);
+        await queueService.addToNextUp(PlayableSlice.simple([item.baseItem], item.source));
 
         GlobalSnackbar.message(
           (scaffold) => AppLocalizations.of(scaffold)!.confirmAddToNextUp(BaseItemDtoType.fromItem(item.baseItem).name),
@@ -357,10 +350,7 @@ class AddToQueuePlaybackAction extends ConsumerWidget {
           Navigator.pop(context);
         }
 
-        await queueService.addToQueue(
-          items: (await ref.watch(getPlayerSliceProvider(item: item, startingOffset: 0).future)).items,
-          source: item.source,
-        );
+        await queueService.addToQueue(await ref.watch(getPlayableSliceProvider(item: item, startingOffset: 0).future));
 
         GlobalSnackbar.message(
           (scaffold) =>
@@ -399,7 +389,7 @@ class MoveAddToQueuePlaybackAction extends ConsumerWidget {
         }
 
         unawaited(queueService.removeQueueItem(item));
-        await queueService.addToQueue(items: [item.baseItem], source: item.source);
+        await queueService.addToQueue(PlayableSlice.simple([item.baseItem], item.source));
 
         GlobalSnackbar.message(
           (scaffold) => AppLocalizations.of(scaffold)!.confirmAddToQueue(BaseItemDtoType.fromItem(item.baseItem).name),
@@ -444,10 +434,8 @@ class ShufflePlaybackAction extends ConsumerWidget {
           Navigator.pop(context);
         }
 
-        await queueService.startPlayback(
-          items: (await ref.watch(getPlayerSliceProvider(item: item, startingOffset: 0).future)).items,
-          source: item.source,
-          order: FinampPlaybackOrder.shuffled,
+        await queueService.startSlicePlayback(
+          (await ref.watch(getPlayableSliceProvider(item: item, startingOffset: 0).future)).shuffle(),
         );
       },
       iconColor: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
@@ -490,9 +478,7 @@ class ShuffleNextPlaybackAction extends ConsumerWidget {
         }
 
         await queueService.addNext(
-          items: (await ref.watch(getPlayerSliceProvider(item: item, startingOffset: 0).future)).items,
-          source: item.source,
-          order: FinampPlaybackOrder.shuffled,
+          (await ref.watch(getPlayableSliceProvider(item: item, startingOffset: 0).future)).shuffle(),
         );
 
         GlobalSnackbar.message((scaffold) => AppLocalizations.of(scaffold)!.confirmShuffleNext, isConfirmation: true);
@@ -537,9 +523,7 @@ class ShuffleToNextUpPlaybackAction extends ConsumerWidget {
         }
 
         await queueService.addToNextUp(
-          items: (await ref.watch(getPlayerSliceProvider(item: item, startingOffset: 0).future)).items,
-          source: item.source,
-          order: FinampPlaybackOrder.shuffled,
+          (await ref.watch(getPlayableSliceProvider(item: item, startingOffset: 0).future)).shuffle(),
         );
 
         GlobalSnackbar.message(
@@ -587,9 +571,7 @@ class ShuffleToQueuePlaybackAction extends ConsumerWidget {
         }
 
         await queueService.addToQueue(
-          items: (await ref.watch(getPlayerSliceProvider(item: item, startingOffset: 0).future)).items,
-          source: item.source,
-          order: FinampPlaybackOrder.shuffled,
+          (await ref.watch(getPlayableSliceProvider(item: item, startingOffset: 0).future)).shuffle(),
         );
 
         GlobalSnackbar.message(
@@ -621,6 +603,7 @@ class ShuffleAlbumsPlaybackAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final queueService = GetIt.instance<QueueService>();
+    assert(item is Genre || item is Artist || (item is FinampSortable<Album> && item is FinampPlayable));
 
     return PlaybackAction(
       icon: TablerIcons.arrows_shuffle,
@@ -635,14 +618,7 @@ class ShuffleAlbumsPlaybackAction extends ConsumerWidget {
           Navigator.pop(context);
         }
 
-        await queueService.startPlayback(
-          items: groupItems(
-            items: (await ref.watch(getPlayerSliceProvider(item: item, startingOffset: 0).future)).items,
-            groupListBy: (element) => element.albumId?.toString(),
-            manuallyShuffle: true,
-          ),
-          source: item.source,
-        );
+        await queueService.startSlicePlayback(await ref.watch(getAlbumShuffledPlayerSliceProvider(item: item).future));
       },
       iconColor: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
     );
@@ -668,10 +644,7 @@ class ShuffleAlbumsNextPlaybackAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final queueService = GetIt.instance<QueueService>();
-    // This should be either an artist or genre, so it should always have an item.
-    // TODO remove these casts - artist+genre union type?  Or is that to awkward?
-    final baseItem = (item as FinampPlayableDto).item;
-    final sortable = (item as FinampSortable).sortConfig;
+    assert(item is Genre || item is Artist || (item is FinampSortable<Album> && item is FinampPlayable));
 
     return PlaybackAction(
       icon: TablerIcons.corner_right_down,
@@ -687,16 +660,7 @@ class ShuffleAlbumsNextPlaybackAction extends ConsumerWidget {
           Navigator.pop(context);
         }
 
-        await queueService.addNext(
-          items: groupItems(
-            items: itemType == BaseItemDtoType.genre
-                ? await loadChildTracksFromShuffledGenreAlbums(baseItem: baseItem)
-                : await loadChildTracksFromBaseItem(item: baseItem, sortConfig: sortable),
-            groupListBy: (element) => element.albumId?.toString(),
-            manuallyShuffle: true,
-          ),
-          source: item.source,
-        );
+        await queueService.addNext(await ref.watch(getAlbumShuffledPlayerSliceProvider(item: item).future));
 
         GlobalSnackbar.message((scaffold) => AppLocalizations.of(scaffold)!.confirmShuffleNext, isConfirmation: true);
       },
@@ -724,10 +688,7 @@ class ShuffleAlbumsToNextUpPlaybackAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final queueService = GetIt.instance<QueueService>();
-    // This should be either an artist or genre, so it should always have an item.
-    // TODO remove these casts - artist+genre union type?  Or is that to awkward?
-    final baseItem = (item as FinampPlayableDto).item;
-    final sortable = (item as FinampSortable).sortConfig;
+    assert(item is Genre || item is Artist || (item is FinampSortable<Album> && item is FinampPlayable));
 
     return PlaybackAction(
       icon: TablerIcons.corner_right_down_double,
@@ -743,16 +704,7 @@ class ShuffleAlbumsToNextUpPlaybackAction extends ConsumerWidget {
           Navigator.pop(context);
         }
 
-        await queueService.addToNextUp(
-          items: groupItems(
-            items: itemType == BaseItemDtoType.genre
-                ? await loadChildTracksFromShuffledGenreAlbums(baseItem: baseItem)
-                : await loadChildTracksFromBaseItem(item: baseItem, sortConfig: sortable),
-            groupListBy: (element) => element.albumId?.toString(),
-            manuallyShuffle: true,
-          ),
-          source: item.source,
-        );
+        await queueService.addToNextUp(await ref.watch(getAlbumShuffledPlayerSliceProvider(item: item).future));
 
         GlobalSnackbar.message(
           (scaffold) => AppLocalizations.of(scaffold)!.confirmShuffleToNextUp,
@@ -783,10 +735,7 @@ class ShuffleAlbumsToQueuePlaybackAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final queueService = GetIt.instance<QueueService>();
-    // This should be either an artist or genre, so it should always have an item.
-    // TODO remove these casts - artist+genre union type?  Or is that to awkward?
-    final baseItem = (item as FinampPlayableDto).item;
-    final sortable = (item as FinampSortable).sortConfig;
+    assert(item is Genre || item is Artist || (item is FinampSortable<Album> && item is FinampPlayable));
 
     return PlaybackAction(
       icon: TablerIcons.playlist,
@@ -802,16 +751,7 @@ class ShuffleAlbumsToQueuePlaybackAction extends ConsumerWidget {
           Navigator.pop(context);
         }
 
-        await queueService.addToQueue(
-          items: groupItems(
-            items: itemType == BaseItemDtoType.genre
-                ? await loadChildTracksFromShuffledGenreAlbums(baseItem: baseItem)
-                : await loadChildTracksFromBaseItem(item: baseItem, sortConfig: sortable),
-            groupListBy: (element) => element.albumId?.toString(),
-            manuallyShuffle: true,
-          ),
-          source: item.source,
-        );
+        await queueService.addToQueue(await ref.watch(getAlbumShuffledPlayerSliceProvider(item: item).future));
 
         GlobalSnackbar.message(
           (scaffold) => AppLocalizations.of(scaffold)!.confirmShuffleToQueue,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:finamp/components/album_image.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/queue_restore_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
@@ -25,13 +26,13 @@ class QueueRestoreTile extends ConsumerWidget {
     final queueService = GetIt.instance<QueueService>();
     int remainingTracks = info.trackCount - info.previousTracks.length;
 
-    BaseItemDto? track = info.currentTrack == null ? null : ref.watch(itemByIdProvider(info.currentTrack!)).value;
+    BaseItemDto? track = info.currentTrack == null ? null : ref.watch(itemByIdProvider(info.currentTrack!)).valueOrNull;
 
     QueueItemSource source = info.source;
     if (source.wantsItem) {
       // BaseItemId uses String equals, the linter is mistaken.
       // ignore: provider_parameters
-      final sourceItem = ref.watch(itemByIdProvider(BaseItemId(source.id))).value;
+      final sourceItem = ref.watch(itemByIdProvider(BaseItemId(source.id))).valueOrNull;
       if (sourceItem != null) {
         source = source.withItem(sourceItem);
       }
@@ -77,9 +78,8 @@ class QueueRestoreTile extends ConsumerWidget {
           ],
         ),
         // TODO add right click handler
-        onLongPress: () => {
-          if (source.item != null) {openItemMenu(context: context, item: source.item!, queueInfo: info)},
-        },
+        onTap: () => showQueueRestoreMenu(context: context, queueInfo: info),
+        onLongPress: () => showQueueRestoreMenu(context: context, queueInfo: info),
         trailing: IconButton(
           icon: const Icon(TablerIcons.restore),
           onPressed: () {

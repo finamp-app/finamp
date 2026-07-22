@@ -1,3 +1,4 @@
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/PlayerScreen/artist_chip.dart';
 import 'package:finamp/components/PlayerScreen/genre_chip.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -13,23 +14,24 @@ import '../icon_and_text.dart';
 import '../print_duration.dart';
 
 class ItemInfo extends ConsumerWidget {
-  const ItemInfo({super.key, required this.item, required this.itemTracks, this.updateGenreFilter});
+  const ItemInfo({super.key, required this.item, required this.itemTracks, this.sortConfigController});
 
   final BaseItemDto item;
-  final List<BaseItemDto> itemTracks;
-  final void Function(BaseItemDto?)? updateGenreFilter;
+  final List<BaseItemDto>? itemTracks;
+  final SortAndFilterController? sortConfigController;
 
   // TODO: see if there's a way to expand this column to the row that it's in
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isOffline = ref.watch(finampSettingsProvider.isOffline);
-    final itemTracksCount = itemTracks.length;
-    final trackCountString = (itemTracks.length == item.childCount || !isOffline)
+    final tracks = itemTracks ?? [];
+    final itemTracksCount = tracks.length;
+    final trackCountString = (tracks.length == item.childCount || !isOffline)
         ? AppLocalizations.of(context)!.trackCount(itemTracksCount)
         : AppLocalizations.of(context)!.offlineTrackCount(item.childCount!, itemTracksCount);
-    final trackDurationString = itemTracks.length == item.childCount
+    final trackDurationString = tracks.length == item.childCount
         ? "$trackCountString (${printDuration(item.runTimeTicksDuration())})"
-        : "$trackCountString (${printDuration(itemTracks.map((t) => t.runTimeTicksDuration()).whereType<Duration>().fold<Duration>(Duration.zero, (sum, dur) => sum + dur))})";
+        : "$trackCountString (${printDuration(tracks.map((t) => t.runTimeTicksDuration()).whereType<Duration>().fold<Duration>(Duration.zero, (sum, dur) => sum + dur))})";
 
     final isPlaylist = BaseItemDtoType.fromItem(item) == BaseItemDtoType.playlist;
 
@@ -54,7 +56,7 @@ class ItemInfo extends ConsumerWidget {
         if (!isPlaylist) ArtistChips(baseItem: item, artistType: ArtistType.albumArtist),
         IconAndText(
           iconData: Icons.music_note,
-          textSpan: TextSpan(text: trackDurationString),
+          textSpan: TextSpan(text: itemTracks == null ? context.l10n.loading : trackDurationString),
         ),
         if (!isPlaylist)
           IconAndText(
@@ -64,7 +66,7 @@ class ItemInfo extends ConsumerWidget {
         Row(
           children: [
             Expanded(
-              child: GenreIconAndText(parent: item, updateGenreFilter: updateGenreFilter),
+              child: GenreIconAndText(parent: item, sortConfigController: sortConfigController),
             ),
           ],
         ),

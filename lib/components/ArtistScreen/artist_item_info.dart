@@ -1,3 +1,4 @@
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/PlayerScreen/genre_chip.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -15,13 +16,15 @@ class ArtistItemInfo extends ConsumerWidget {
     required this.item,
     required this.itemTracks,
     required this.itemAlbums,
-    this.updateGenreFilter,
+    required this.sortConfig,
+    this.sortConfigController,
   });
 
   final BaseItemDto item;
   final int itemTracks;
   final int itemAlbums;
-  final void Function(BaseItemDto?)? updateGenreFilter;
+  final SortAndFilterConfiguration sortConfig;
+  final SortAndFilterController? sortConfigController;
 
   // TODO: see if there's a way to expand this column to the row that it's in
   @override
@@ -43,7 +46,7 @@ class ArtistItemInfo extends ConsumerWidget {
           textSpan: TextSpan(text: AppLocalizations.of(context)!.albumCount(itemAlbums)),
         ),
         if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.genre && item.genreItems != null)
-          GenreIconAndText(parent: item, updateGenreFilter: updateGenreFilter),
+          GenreIconAndText(parent: item, sortConfig: sortConfig, sortConfigController: sortConfigController),
       ],
     );
   }

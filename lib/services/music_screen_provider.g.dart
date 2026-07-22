@@ -12,7 +12,7 @@ part of 'music_screen_provider.dart';
 // **************************************************************************
 
 String _$loadHomeSectionItemsHash() =>
-    r'8289d6b981877350ef47feb0a54245186aa12a78';
+    r'8e90c86604ce4ba8fc283512dc6b2e121d3b6fc6';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -202,7 +202,7 @@ class _LoadHomeSectionItemsProviderElement
 }
 
 String _$getJellyfinCollectionHash() =>
-    r'2c309a52346676f88d4107e9fb690dbf3acc4a7f';
+    r'a0f53ba1d31000864d5a81b22ecc132f0bd99934';
 
 /// See also [getJellyfinCollection].
 @ProviderFor(getJellyfinCollection)
@@ -349,7 +349,7 @@ class _GetJellyfinCollectionProviderElement
       (origin as GetJellyfinCollectionProvider).sortConfig;
 }
 
-String _$pagedContentHash() => r'01638ce08a65306141d3ed91d2fe9759c3f945a5';
+String _$pagedContentHash() => r'1eaefb681245bb519b05fa4c4186d5a85d7a4fbe';
 
 abstract class _$PagedContent
     extends

@@ -31,7 +31,7 @@ class AudioServiceSMTC extends AudioServicePlatform {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
         // Listen to button events and update playback status accordingly
-        smtc.buttonPressStream.listen((event) async {
+        smtc.buttonPressStream.listen((PressedButton event) async {
           switch (event) {
             case PressedButton.play:
               await _handlerCallbacks!.play(const PlayRequest());

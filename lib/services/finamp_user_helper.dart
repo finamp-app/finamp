@@ -166,7 +166,7 @@ class UserInfoProviders {
         return userInfo;
       });
 
-  /// Provider for info about the currently connected server
+  /// Provider for additional user info fetched from the server
   static final currentUserInfoProvider = Provider<AsyncValue<UserInfo?>>((ref) {
     final currentUserId = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.id;
     if (currentUserId != null) {

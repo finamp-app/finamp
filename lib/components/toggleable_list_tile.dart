@@ -17,6 +17,8 @@ class ToggleableListTile extends ConsumerWidget {
     this.isLoading = false,
     this.enabled = true,
     this.confirmationFeedback = true,
+    this.condensed = false,
+    this.lowContrast = false,
   });
 
   final String title;
@@ -30,6 +32,8 @@ class ToggleableListTile extends ConsumerWidget {
   final bool enabled;
   final bool confirmationFeedback;
   final bool? divider;
+  final bool condensed;
+  final bool lowContrast;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,10 +41,20 @@ class ToggleableListTile extends ConsumerWidget {
     var themeColor = Theme.of(context).colorScheme.primary;
     final showDivider = divider ?? trailing == null;
     return Padding(
-      padding: const EdgeInsets.only(left: 12.0, right: 12.0, top: 4.0, bottom: 4.0),
+      padding: condensed
+          ? const EdgeInsets.only(left: 8.0, right: 8.0, top: 4.0, bottom: 4.0)
+          : const EdgeInsets.only(left: 12.0, right: 12.0, top: 4.0, bottom: 4.0),
       child: Container(
         decoration: ShapeDecoration(
-          color: themeColor.withOpacity(state ? 0.3 : 0.1),
+          color: themeColor.withOpacity(
+            lowContrast
+                ? state
+                      ? 0.1
+                      : 0.0
+                : state
+                ? 0.3
+                : 0.1,
+          ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         clipBehavior: Clip.antiAlias,
@@ -101,7 +115,7 @@ class ToggleableListTile extends ConsumerWidget {
                   },
             contentPadding: EdgeInsets.zero,
             minVerticalPadding: 0,
-            // visualDensity: const VisualDensity(horizontal: -4.0, vertical: -4.0),
+            visualDensity: condensed ? const VisualDensity(horizontal: 0.0, vertical: -2.0) : null,
           ),
         ),
       ),

@@ -37,6 +37,8 @@ sealed class FinampUnpagedDisplayable<ChildType extends FinampDisplayableOrPlaya
 sealed class FinampPagedPlayable<ChildType extends FinampPlayable> extends FinampPlayable
     implements FinampDisplayable<ChildType> {
   const FinampPagedPlayable({required super.source});
+
+  int get normalChildSize;
 }
 
 sealed class FinampPlayableDto extends FinampPlayable {
@@ -99,69 +101,10 @@ sealed class FinampSortable<ChildType extends FinampDisplayableOrPlayable> exten
 
 //
 //
-//  Public slice classes to return
-//
-//
-
-final class PlayableSlice {
-  PlayableSlice({required this.items, required this.startingIndex, required this.source, required this.shuffleState})
-    : assert(items.every((x) => BaseItemDtoType.fromItem(x) == BaseItemDtoType.track));
-
-  final List<BaseItemDto> items;
-  final int startingIndex;
-  final QueueItemSource source;
-  final SliceShuffleState shuffleState;
-
-  PlayableSlice shuffle() {
-    return PlayableSlice(
-      items: items,
-      startingIndex: 0,
-      source: source,
-      shuffleState: shuffleState == SliceShuffleState.linear ? SliceShuffleState.playerShuffled : shuffleState,
-    );
-  }
-
-  // TODO is this useful?
-  PlayableSlice preShuffle() {
-    final clonedItems = List<BaseItemDto>.from(items);
-    clonedItems.shuffle();
-    return PlayableSlice(
-      items: clonedItems,
-      startingIndex: 0,
-      source: source,
-      shuffleState: SliceShuffleState.preShuffled,
-    );
-  }
-
-  PlayableSlice fromIndex(int newIndex, {int? limit}) {
-    newIndex = newIndex.clamp(0, max(0, items.length - 1));
-    if (limit == null) {
-      return PlayableSlice(items: items, startingIndex: newIndex, source: source, shuffleState: shuffleState);
-    }
-
-    final excess = limit - (items.length - newIndex);
-    final preTracks = excess.clamp(0, newIndex);
-
-    return PlayableSlice(
-      items: items.safeSliceByLength(newIndex - preTracks, min(newIndex + limit, items.length)),
-      startingIndex: preTracks,
-      source: source,
-      shuffleState: shuffleState,
-    );
-  }
-}
-
-// TODO add class extends PlayableSlice with a shuffle order for player already prepared to allow passing queues around easily?
-
-enum SliceShuffleState { preShuffled, playerShuffled, linear }
-
-//
-//
 //   Private classes to ease implementations
 //
 //
 
-// As of right now, we do not apply paging for any item types, only the music screens.
 sealed class _SortableItem<ChildType extends FinampPlayableDto> extends FinampPlayableDto
     implements FinampSortable<ChildType>, FinampUnpagedDisplayable<ChildType>, FinampUnpagedPlayable<ChildType> {
   _SortableItem(super.item, {required super.source, required this.sortConfig})
@@ -180,6 +123,30 @@ sealed class _SortableItem<ChildType extends FinampPlayableDto> extends FinampPl
   @override
   bool equalsHelperChain(Object other) {
     return other is _SortableItem && sortConfig == other.sortConfig && super.equalsHelperChain(other);
+  }
+
+  @override
+  int get hashHelperChain => Object.hash(sortConfig, super.hashHelperChain);
+}
+
+sealed class _SortablePagedItem<ChildType extends FinampPlayableDto> extends FinampPlayableDto
+    implements FinampSortable<ChildType>, FinampPagedPlayable<ChildType> {
+  _SortablePagedItem(super.item, {required super.source, required this.sortConfig})
+    : assert(() {
+        ContentType type = [BaseItemDtoType.album, BaseItemDtoType.playlist].contains(BaseItemDtoType.fromItem(item))
+            ? ContentType.inPlaylist
+            : ContentType.tracks;
+        final controller = SortAndFilterController(startingConfig: sortConfig, contentType: type);
+        final resolvedConfig = GetIt.instance<ProviderContainer>().read(resolveSortProvider(controller));
+        return sortConfig == resolvedConfig;
+      }());
+
+  @override
+  final ResolvedSortConfig sortConfig;
+
+  @override
+  bool equalsHelperChain(Object other) {
+    return other is _SortablePagedItem && sortConfig == other.sortConfig && super.equalsHelperChain(other);
   }
 
   @override
@@ -244,11 +211,14 @@ mixin _NeedsEquals {
         copy = Track(track.item, source: track.source);
       case InstantMix mix:
         copy = InstantMix(mix.item);
+      case UnavailableHomeSectionPlayable item:
+        copy = UnavailableHomeSectionPlayable(source: item.source, section: item.section);
     }
     return equalsHelper(copy) && equalsHelperChain(copy) && hashCode == copy.hashCode && !identical(item, copy);
   }
 }
 
-extension MaybeGetItem on FinampDisplayableOrPlayable {
+extension PlayableHelpers on FinampDisplayableOrPlayable {
   BaseItemDto? get maybeItem => this is FinampPlayableDto ? (this as FinampPlayableDto).item : null;
+  bool get canShuffleAlbums => this is Genre || this is Artist || this is FinampDisplayable<Album>;
 }

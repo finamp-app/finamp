@@ -300,7 +300,7 @@ class _GetDefaultSortedPlaylistTracksProviderElement
 }
 
 String _$getSortedPlaylistTracksHash() =>
-    r'b1a38a61289c3bbe1d0939f15ff0ca19e22e4da4';
+    r'f4cc84c7a588acdfabd32956b014e59d093f163b';
 
 /// See also [getSortedPlaylistTracks].
 @ProviderFor(getSortedPlaylistTracks)
@@ -315,7 +315,7 @@ class GetSortedPlaylistTracksFamily
   /// See also [getSortedPlaylistTracks].
   GetSortedPlaylistTracksProvider call(
     BaseItemDto parent,
-    SortAndFilterConfiguration sortConfig,
+    ResolvedSortConfig sortConfig,
   ) {
     return GetSortedPlaylistTracksProvider(parent, sortConfig);
   }
@@ -348,7 +348,7 @@ class GetSortedPlaylistTracksProvider
   /// See also [getSortedPlaylistTracks].
   GetSortedPlaylistTracksProvider(
     BaseItemDto parent,
-    SortAndFilterConfiguration sortConfig,
+    ResolvedSortConfig sortConfig,
   ) : this._internal(
         (ref) => getSortedPlaylistTracks(
           ref as GetSortedPlaylistTracksRef,
@@ -379,7 +379,7 @@ class GetSortedPlaylistTracksProvider
   }) : super.internal();
 
   final BaseItemDto parent;
-  final SortAndFilterConfiguration sortConfig;
+  final ResolvedSortConfig sortConfig;
 
   @override
   Override overrideWith(
@@ -434,7 +434,7 @@ mixin GetSortedPlaylistTracksRef
   BaseItemDto get parent;
 
   /// The parameter `sortConfig` of this provider.
-  SortAndFilterConfiguration get sortConfig;
+  ResolvedSortConfig get sortConfig;
 }
 
 class _GetSortedPlaylistTracksProviderElement
@@ -446,7 +446,7 @@ class _GetSortedPlaylistTracksProviderElement
   @override
   BaseItemDto get parent => (origin as GetSortedPlaylistTracksProvider).parent;
   @override
-  SortAndFilterConfiguration get sortConfig =>
+  ResolvedSortConfig get sortConfig =>
       (origin as GetSortedPlaylistTracksProvider).sortConfig;
 }
 

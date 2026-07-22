@@ -169,7 +169,7 @@ class _GlobalSearchProviderElement
   bool get includeTracks => (origin as GlobalSearchProvider).includeTracks;
 }
 
-String _$resolveSectionHash() => r'a2d831d849f800b0f7b08c98f953d32193142685';
+String _$resolveSectionHash() => r'fb1ca99c7145fa70fc9bbf931029039584829f8c';
 
 /// See also [resolveSection].
 @ProviderFor(resolveSection)
@@ -296,24 +296,24 @@ class _ResolveSectionProviderElement
       (origin as ResolveSectionProvider).section;
 }
 
-String _$getPlayerSliceHash() => r'8ab3b7f5b94db3c75262fc3f435a7e240be74b8c';
+String _$getPlayableSliceHash() => r'a7de6c8ea850e99401cdae69950743ea398e1370';
 
-/// See also [getPlayerSlice].
-@ProviderFor(getPlayerSlice)
-const getPlayerSliceProvider = GetPlayerSliceFamily();
+/// See also [getPlayableSlice].
+@ProviderFor(getPlayableSlice)
+const getPlayableSliceProvider = GetPlayableSliceFamily();
 
-/// See also [getPlayerSlice].
-class GetPlayerSliceFamily extends Family<AsyncValue<PlayableSlice>> {
-  /// See also [getPlayerSlice].
-  const GetPlayerSliceFamily();
+/// See also [getPlayableSlice].
+class GetPlayableSliceFamily extends Family<AsyncValue<PlayableSlice>> {
+  /// See also [getPlayableSlice].
+  const GetPlayableSliceFamily();
 
-  /// See also [getPlayerSlice].
-  GetPlayerSliceProvider call({
+  /// See also [getPlayableSlice].
+  GetPlayableSliceProvider call({
     required FinampPlayable item,
     required int startingOffset,
     int? limit,
   }) {
-    return GetPlayerSliceProvider(
+    return GetPlayableSliceProvider(
       item: item,
       startingOffset: startingOffset,
       limit: limit,
@@ -321,8 +321,8 @@ class GetPlayerSliceFamily extends Family<AsyncValue<PlayableSlice>> {
   }
 
   @override
-  GetPlayerSliceProvider getProviderOverride(
-    covariant GetPlayerSliceProvider provider,
+  GetPlayableSliceProvider getProviderOverride(
+    covariant GetPlayableSliceProvider provider,
   ) {
     return call(
       item: provider.item,
@@ -343,37 +343,38 @@ class GetPlayerSliceFamily extends Family<AsyncValue<PlayableSlice>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'getPlayerSliceProvider';
+  String? get name => r'getPlayableSliceProvider';
 }
 
-/// See also [getPlayerSlice].
-class GetPlayerSliceProvider extends AutoDisposeFutureProvider<PlayableSlice> {
-  /// See also [getPlayerSlice].
-  GetPlayerSliceProvider({
+/// See also [getPlayableSlice].
+class GetPlayableSliceProvider
+    extends AutoDisposeFutureProvider<PlayableSlice> {
+  /// See also [getPlayableSlice].
+  GetPlayableSliceProvider({
     required FinampPlayable item,
     required int startingOffset,
     int? limit,
   }) : this._internal(
-         (ref) => getPlayerSlice(
-           ref as GetPlayerSliceRef,
+         (ref) => getPlayableSlice(
+           ref as GetPlayableSliceRef,
            item: item,
            startingOffset: startingOffset,
            limit: limit,
          ),
-         from: getPlayerSliceProvider,
-         name: r'getPlayerSliceProvider',
+         from: getPlayableSliceProvider,
+         name: r'getPlayableSliceProvider',
          debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
              ? null
-             : _$getPlayerSliceHash,
-         dependencies: GetPlayerSliceFamily._dependencies,
+             : _$getPlayableSliceHash,
+         dependencies: GetPlayableSliceFamily._dependencies,
          allTransitiveDependencies:
-             GetPlayerSliceFamily._allTransitiveDependencies,
+             GetPlayableSliceFamily._allTransitiveDependencies,
          item: item,
          startingOffset: startingOffset,
          limit: limit,
        );
 
-  GetPlayerSliceProvider._internal(
+  GetPlayableSliceProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -391,12 +392,12 @@ class GetPlayerSliceProvider extends AutoDisposeFutureProvider<PlayableSlice> {
 
   @override
   Override overrideWith(
-    FutureOr<PlayableSlice> Function(GetPlayerSliceRef provider) create,
+    FutureOr<PlayableSlice> Function(GetPlayableSliceRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: GetPlayerSliceProvider._internal(
-        (ref) => create(ref as GetPlayerSliceRef),
+      override: GetPlayableSliceProvider._internal(
+        (ref) => create(ref as GetPlayableSliceRef),
         from: from,
         name: null,
         dependencies: null,
@@ -411,12 +412,12 @@ class GetPlayerSliceProvider extends AutoDisposeFutureProvider<PlayableSlice> {
 
   @override
   AutoDisposeFutureProviderElement<PlayableSlice> createElement() {
-    return _GetPlayerSliceProviderElement(this);
+    return _GetPlayableSliceProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is GetPlayerSliceProvider &&
+    return other is GetPlayableSliceProvider &&
         other.item == item &&
         other.startingOffset == startingOffset &&
         other.limit == limit;
@@ -435,7 +436,7 @@ class GetPlayerSliceProvider extends AutoDisposeFutureProvider<PlayableSlice> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin GetPlayerSliceRef on AutoDisposeFutureProviderRef<PlayableSlice> {
+mixin GetPlayableSliceRef on AutoDisposeFutureProviderRef<PlayableSlice> {
   /// The parameter `item` of this provider.
   FinampPlayable get item;
 
@@ -446,20 +447,149 @@ mixin GetPlayerSliceRef on AutoDisposeFutureProviderRef<PlayableSlice> {
   int? get limit;
 }
 
-class _GetPlayerSliceProviderElement
+class _GetPlayableSliceProviderElement
     extends AutoDisposeFutureProviderElement<PlayableSlice>
-    with GetPlayerSliceRef {
-  _GetPlayerSliceProviderElement(super.provider);
+    with GetPlayableSliceRef {
+  _GetPlayableSliceProviderElement(super.provider);
 
   @override
-  FinampPlayable get item => (origin as GetPlayerSliceProvider).item;
+  FinampPlayable get item => (origin as GetPlayableSliceProvider).item;
   @override
-  int get startingOffset => (origin as GetPlayerSliceProvider).startingOffset;
+  int get startingOffset => (origin as GetPlayableSliceProvider).startingOffset;
   @override
-  int? get limit => (origin as GetPlayerSliceProvider).limit;
+  int? get limit => (origin as GetPlayableSliceProvider).limit;
 }
 
-String _$getChildTracksHash() => r'e8be34dc51bb2390e93925347fb5226012d0087a';
+String _$getAlbumShuffledPlayerSliceHash() =>
+    r'230a194145a309c3a69f5f80fe062400ae278e1a';
+
+/// See also [getAlbumShuffledPlayerSlice].
+@ProviderFor(getAlbumShuffledPlayerSlice)
+const getAlbumShuffledPlayerSliceProvider = GetAlbumShuffledPlayerSliceFamily();
+
+/// See also [getAlbumShuffledPlayerSlice].
+class GetAlbumShuffledPlayerSliceFamily
+    extends Family<AsyncValue<PlayableSlice>> {
+  /// See also [getAlbumShuffledPlayerSlice].
+  const GetAlbumShuffledPlayerSliceFamily();
+
+  /// See also [getAlbumShuffledPlayerSlice].
+  GetAlbumShuffledPlayerSliceProvider call({required FinampPlayable item}) {
+    return GetAlbumShuffledPlayerSliceProvider(item: item);
+  }
+
+  @override
+  GetAlbumShuffledPlayerSliceProvider getProviderOverride(
+    covariant GetAlbumShuffledPlayerSliceProvider provider,
+  ) {
+    return call(item: provider.item);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getAlbumShuffledPlayerSliceProvider';
+}
+
+/// See also [getAlbumShuffledPlayerSlice].
+class GetAlbumShuffledPlayerSliceProvider
+    extends AutoDisposeFutureProvider<PlayableSlice> {
+  /// See also [getAlbumShuffledPlayerSlice].
+  GetAlbumShuffledPlayerSliceProvider({required FinampPlayable item})
+    : this._internal(
+        (ref) => getAlbumShuffledPlayerSlice(
+          ref as GetAlbumShuffledPlayerSliceRef,
+          item: item,
+        ),
+        from: getAlbumShuffledPlayerSliceProvider,
+        name: r'getAlbumShuffledPlayerSliceProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$getAlbumShuffledPlayerSliceHash,
+        dependencies: GetAlbumShuffledPlayerSliceFamily._dependencies,
+        allTransitiveDependencies:
+            GetAlbumShuffledPlayerSliceFamily._allTransitiveDependencies,
+        item: item,
+      );
+
+  GetAlbumShuffledPlayerSliceProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.item,
+  }) : super.internal();
+
+  final FinampPlayable item;
+
+  @override
+  Override overrideWith(
+    FutureOr<PlayableSlice> Function(GetAlbumShuffledPlayerSliceRef provider)
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetAlbumShuffledPlayerSliceProvider._internal(
+        (ref) => create(ref as GetAlbumShuffledPlayerSliceRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        item: item,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<PlayableSlice> createElement() {
+    return _GetAlbumShuffledPlayerSliceProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetAlbumShuffledPlayerSliceProvider && other.item == item;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, item.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetAlbumShuffledPlayerSliceRef
+    on AutoDisposeFutureProviderRef<PlayableSlice> {
+  /// The parameter `item` of this provider.
+  FinampPlayable get item;
+}
+
+class _GetAlbumShuffledPlayerSliceProviderElement
+    extends AutoDisposeFutureProviderElement<PlayableSlice>
+    with GetAlbumShuffledPlayerSliceRef {
+  _GetAlbumShuffledPlayerSliceProviderElement(super.provider);
+
+  @override
+  FinampPlayable get item =>
+      (origin as GetAlbumShuffledPlayerSliceProvider).item;
+}
+
+String _$getChildTracksHash() => r'549f7a09f30ea42698768bf2b1243312485b70b6';
 
 /// See also [getChildTracks].
 @ProviderFor(getChildTracks)
@@ -580,7 +710,7 @@ class _GetChildTracksProviderElement
       (origin as GetChildTracksProvider).item;
 }
 
-String _$getChildItemsHash() => r'eb5b7de4959d1382b531ad5d1e3f2850a7011ded';
+String _$getChildItemsHash() => r'9bb5a70df1d6eeb9407ba0e44729af2cce2a0dd2';
 
 /// See also [getChildItems].
 @ProviderFor(getChildItems)

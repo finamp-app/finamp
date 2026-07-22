@@ -12,6 +12,7 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/radio_service_helper.dart';
+import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -115,6 +116,11 @@ class DefaultSettings {
   static const androidStopForegroundOnPause = true;
   static const onlyShowFavorites = false;
   static const trackShuffleItemCount = 250;
+
+  /// Default track count for CarPlay and Siri shuffle. Lower than default
+  /// for main app as the longer shuffle amount is slow over constrained
+  /// CarPlay interface.
+  static const quickShuffleItemCount = 30;
   static const volumeNormalizationActive = true;
   // Set the base gain to 6.0 dB, which will work against any tracks that have a normalization gain of -6.0 dB or lower. For higher gains this will cause the actual volume to be lower than it should be, since we can't compensate the volume upwards beyond 100%
   // Ideally the maximum gain in each library should be fetched from the server, and this volume should be adjusted accordingly to be the exact inverse, so that the quietest track in the library plays at 100% volume, and only louder tracks get their volume reduced
@@ -272,19 +278,27 @@ class DefaultSettings {
   static final homeScreenConfiguration = FinampHomeScreenConfiguration(
     actions: [
       QuickActionConfig(action: FinampQuickActions.shuffleTracks),
-      QuickActionConfig(action: FinampQuickActions.browseRecentQueues),
+      QuickActionConfig(action: FinampQuickActions.playRandomFavoriteItem),
+      QuickActionConfig(action: FinampQuickActions.playPreviousQueue),
       QuickActionConfig(action: FinampQuickActions.surpriseMe),
     ],
     sections: [
-      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoriteTracks),
-      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.forgottenFavoriteTracks),
-      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.recentlyPlayedTracks),
       HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.recentlyAddedAlbums),
-      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoriteArtists),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoriteTracks),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.frequentlyPlayedAlbums),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.favoritePlaylists),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.forgottenFavoriteTracks),
+      HomeScreenSectionConfiguration.fromPreset(HomeScreenSectionPresetType.recentQueues),
     ],
   );
-  static const gridImageSize = 160;
+  static const gridImageSizeMobile = 130;
+  static const gridImageSizeDesktop = 150;
+  static int get homeScreenImageSize => isDesktop ? homeScreenImageSizeDesktop : homeScreenImageSizeMobile;
+  static const homeScreenImageSizeMobile = 90;
+  static const homeScreenImageSizeDesktop = 120;
+  static int get gridImageSize => isDesktop ? gridImageSizeDesktop : gridImageSizeMobile;
   static const useAndroidGainEffect = true;
+  static const ClientCertificate? clientCertificate = null;
 }
 
 @HiveType(typeId: 28)
@@ -426,7 +440,8 @@ class FinampSettings {
     this.forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid,
     this.previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode,
     required this.homeScreenConfiguration,
-    this.gridImageSize = DefaultSettings.gridImageSize,
+    required this.gridImageSize,
+    required this.homeScreenImageSize,
     this.useAndroidGainEffect = DefaultSettings.useAndroidGainEffect,
   });
 
@@ -894,7 +909,7 @@ class FinampSettings {
   )
   FinampHomeScreenConfiguration homeScreenConfiguration = DefaultSettings.homeScreenConfiguration;
 
-  @HiveField(147, defaultValue: DefaultSettings.gridImageSize)
+  @HiveField(147, defaultValue: DefaultSettings.gridImageSizeMobile)
   int gridImageSize;
 
   @HiveField(148, defaultValue: DefaultSettings.amoledTheme)
@@ -902,6 +917,12 @@ class FinampSettings {
 
   @HiveField(149, defaultValue: DefaultSettings.useAndroidGainEffect)
   bool useAndroidGainEffect;
+
+  @HiveField(150, defaultValue: DefaultSettings.homeScreenImageSizeMobile)
+  int homeScreenImageSize;
+
+  @HiveField(151, defaultValue: DefaultSettings.clientCertificate)
+  ClientCertificate? clientCertificate = DefaultSettings.clientCertificate;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
@@ -915,6 +936,8 @@ class FinampSettings {
       tabSortBy: {},
       tabSortOrder: {},
       homeScreenConfiguration: DefaultSettings.homeScreenConfiguration,
+      gridImageSize: DefaultSettings.gridImageSize,
+      homeScreenImageSize: DefaultSettings.homeScreenImageSize,
     );
   }
 
@@ -940,7 +963,7 @@ class FinampSettings {
   }
 }
 
-enum CustomPlaybackActions { shuffle, toggleFavorite, radio }
+enum CustomPlaybackActions { shuffle, toggleFavorite, radio, dbusVolume }
 
 /// Custom storage locations for storing music/images.
 @HiveType(typeId: 31)
@@ -1873,6 +1896,8 @@ enum BaseItemDtoType {
         return library;
       case "Folder":
         return folder;
+      case "BoxSet":
+        return collection;
       default:
         return unknown;
     }
@@ -1887,6 +1912,8 @@ enum BaseItemDtoType {
         return null;
     }
   }
+
+  String localized(AppLocalizations l10n) => l10n.itemType(name);
 }
 
 /// The category of a section on the download screen.
@@ -2015,6 +2042,10 @@ enum QueueItemSourceType {
   radio,
   @HiveField(23)
   homeScreenSection,
+  @HiveField(24)
+  collection,
+  @HiveField(25)
+  collectionMix,
 }
 
 @HiveType(typeId: 53)
@@ -4371,6 +4402,16 @@ enum ItemFilterType {
   const ItemFilterType(this.extraType);
 
   final Type extraType;
+
+  IconData get icon => switch (this) {
+    isFavorite => TablerIcons.heart,
+    isFullyDownloaded => TablerIcons.download,
+    startsWithCharacter => TablerIcons.abc,
+    genreFilter => TablerIcons.tag,
+    artistFilter => TablerIcons.user,
+    searchTerm => TablerIcons.list_search,
+    isUnplayed => TablerIcons.headphones_off,
+  };
 }
 
 @JsonSerializable()
@@ -4414,6 +4455,19 @@ class ItemFilter {
         return l10n.startsWithFilter(extraString.toUpperCase());
       case ItemFilterType.searchTerm:
         return l10n.searchTermFilter(extraString);
+    }
+  }
+
+  String getPlainName(AppLocalizations l10n) {
+    switch (type) {
+      case ItemFilterType.genreFilter:
+        return extraBaseItem.name ?? "";
+      case ItemFilterType.startsWithCharacter:
+        return extraString.toUpperCase();
+      case ItemFilterType.searchTerm:
+        return extraString;
+      case _:
+        return getName(l10n);
     }
   }
 
@@ -4469,7 +4523,7 @@ class SortAndFilterConfiguration {
       processedFilters.add(ItemFilter(type: ItemFilterType.artistFilter, extras: artistFilter));
     }
     if (favoriteFilter != null) {
-      processedFilters.removeWhere((x) => x.type == ItemFilterType.genreFilter);
+      processedFilters.removeWhere((x) => x.type == ItemFilterType.isFavorite);
       if (favoriteFilter) {
         processedFilters.add(ItemFilter(type: ItemFilterType.isFavorite));
       }
@@ -4582,4 +4636,15 @@ class QuickActionConfig {
   String toString() {
     return jsonEncode(toJson());
   }
+}
+
+@HiveType(typeId: 127)
+class ClientCertificate {
+  ClientCertificate({required this.data, required this.password});
+
+  @HiveField(0)
+  final Uint8List data;
+
+  @HiveField(1)
+  final String password;
 }

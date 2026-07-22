@@ -14,6 +14,7 @@ import 'package:finamp/hive_registrar.g.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/models/locale_adapter.dart';
+import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/accessibility_settings_screen.dart';
 import 'package:finamp/screens/album_settings_screen.dart';
 import 'package:finamp/screens/artist_settings_screen.dart';
@@ -32,6 +33,8 @@ import 'package:finamp/screens/queue_restore_screen.dart';
 import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/android_auto_helper.dart';
 import 'package:finamp/services/audio_service_smtc.dart';
+import 'package:finamp/services/carplay_helper.dart';
+import 'package:finamp/services/client_certificate_installer.dart';
 import 'package:finamp/services/data_source_service.dart';
 import 'package:finamp/services/dbus_manager.dart';
 import 'package:finamp/services/discord_rpc.dart';
@@ -40,7 +43,11 @@ import 'package:finamp/services/downloads_service_backend.dart';
 import 'package:finamp/services/finamp_logs_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/ios_helpers.dart';
+import 'package:finamp/services/item_by_id_provider.dart';
+import 'package:finamp/services/item_helper.dart';
 import 'package:finamp/services/keep_screen_on_helper.dart';
+import 'package:finamp/services/music_providers.dart';
 import 'package:finamp/services/network_manager.dart';
 import 'package:finamp/services/offline_listen_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
@@ -108,8 +115,6 @@ import 'setup_logging.dart';
 
 final _mainLog = Logger("Main()");
 late DateTime startTime;
-const _androidIntentChannel = MethodChannel("com.unicornsonlsd.finamp/intent");
-const _androidIntentEvents = EventChannel("com.unicornsonlsd.finamp/intent/events");
 
 final providerScopeKey = GlobalKey();
 
@@ -139,6 +144,8 @@ Future<void> main({bool integrationTesting = false, bool loginTesting = false}) 
     _mainLog.info("Completed applicable migrations");
     await _trustAndroidUserCerts();
     _mainLog.info("Trusted Android user certs");
+    await ClientCertificateInstaller().installClientCertificate();
+    _mainLog.info("Installed client certificate");
     await _setupFinampUserHelper();
     _mainLog.info("Setup user helper");
     await _setupJellyfinApiData();
@@ -448,6 +455,10 @@ Future<void> _setupPlaybackServices() async {
   GetIt.instance.registerSingleton(PlaybackHistoryService());
   GetIt.instance.registerSingleton(AudioServiceHelper());
 
+  if (Platform.isIOS) {
+    GetIt.instance.registerSingleton<CarPlayHelper>(CarPlayHelper());
+  }
+
   // Begin to restore queue
   unawaited(queueService.performInitialQueueLoad().catchError((dynamic x) => GlobalSnackbar.error(x)));
 }
@@ -694,58 +705,24 @@ class Finamp extends StatefulWidget {
 class _FinampState extends State<Finamp> with WindowListener {
   static final Logger windowManagerLogger = Logger("WindowManager");
   static final Logger linkHandlingLogger = Logger("LinkHandling");
-  static final Logger launchIntentLogger = Logger("LaunchIntentHandling");
 
   StreamSubscription<Uri>? _uriLinkSubscription;
-  StreamSubscription<dynamic>? _androidIntentSubscription;
 
   @override
   void initState() {
     super.initState();
 
-    if (Platform.isAndroid) {
-      _androidIntentSubscription = _androidIntentEvents.receiveBroadcastStream().listen(
-        (dynamic event) async {
-          final intent = event as String?;
-          if (intent != null) {
-            await _handleAndroidIntent(intent);
-          }
-        },
-        onError: (Object error, StackTrace stackTrace) {
-          launchIntentLogger.warning("Failed to receive Android intent stream event", error, stackTrace);
-        },
-      );
-
-      _androidIntentChannel.setMethodCallHandler((call) async {
-        switch (call.method) {
-          case "onIntent":
-            final intent = call.arguments as String?;
-            if (intent != null) {
-              await _handleAndroidIntent(intent);
-            }
-            return null;
-          default:
-            throw MissingPluginException("Unknown method: ${call.method}");
-        }
-      });
-    }
-
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _uriLinkSubscription = AppLinks().uriLinkStream.listen((uri) async {
         linkHandlingLogger.info("Received link: $uri");
+
         var state = GlobalSnackbar.navigatorState;
         if (state != null) {
-          if (uri.host == "internal") {
-            await state.pushNamed(uri.path);
-          }
+          _handleAppLink(uri, state);
         } else {
           linkHandlingLogger.warning("No context available to handle link");
         }
       });
-
-      if (Platform.isAndroid) {
-        unawaited(_consumeInitialAndroidLaunchIntent());
-      }
     });
 
     // If the app is running on desktop, we add a listener to the window manager
@@ -753,24 +730,51 @@ class _FinampState extends State<Finamp> with WindowListener {
       WindowManager.instance.addListener(this);
       // windowManager.setPreventClose(true); //!!! destroying the window manager instance doesn't seem to work on Windows release builds, the app just freezes instead
     }
-  }
 
-  Future<void> _consumeInitialAndroidLaunchIntent() async {
-    final String? action = await _androidIntentChannel.invokeMethod<String>("consumeIntent");
-    if (action != null) {
-      await _handleAndroidIntent(action);
+    // iOS-specific setup (CarPlay, Siri)
+    if (Platform.isIOS) {
+      GetIt.instance<CarPlayHelper>().setupCarplay();
+      IosSiriHandler.setup();
     }
   }
 
-  Future<void> _handleAndroidIntent(String action) async {
-    launchIntentLogger.info("Received Android launch action: $action");
-    switch (action) {
-      case "android.intent.action.MUSIC_PLAYER":
-        {
-          await GetIt.instance<AudioServiceHelper>().startSurpriseMeMix();
+  void _handleAppLink(Uri uri, NavigatorState state) async {
+    final container = GetIt.instance<ProviderContainer>();
+    switch (uri.host) {
+      case "internal":
+        await state.pushNamed(uri.path);
+
+      // Also see _hasInitialPlayLink in QueueService
+      case "play":
+        switch (uri.pathSegments) {
+          case ["surprisemix"]:
+            await GetIt.instance<AudioServiceHelper>().startSurpriseMeMix();
+          case [String itemId]:
+            final item = await container.read(itemByIdProvider(BaseItemId(itemId)).future);
+            if (item != null) {
+              await GetIt.instance<QueueService>().startSlicePlayback(
+                await GetIt.instance<ProviderContainer>().read(
+                  getPlayableSliceProvider(item: FinampPlayableDto.fromItem(item), startingOffset: 0).future,
+                ),
+              );
+            }
+          case _:
+            linkHandlingLogger.warning("Link: $uri could not be deciphered by play handler");
         }
-      default:
-        launchIntentLogger.warning("Unhandled Android launch action: $action");
+
+      case "show":
+        switch (uri.pathSegments) {
+          case [String itemId]:
+            final item = await container.read(itemByIdProvider(BaseItemId(itemId)).future);
+            if (item != null) {
+              openItemPage(item, state, showTracks: true);
+            }
+          case _:
+            linkHandlingLogger.warning("Link: $uri could not be deciphered by show handler");
+        }
+
+      case _:
+        linkHandlingLogger.warning("Link: $uri could not be deciphered");
     }
   }
 
@@ -778,11 +782,14 @@ class _FinampState extends State<Finamp> with WindowListener {
   Future<void> dispose() async {
     super.dispose();
     await DiscordRpc.stop().timeout(Duration(milliseconds: 500));
-    await _androidIntentSubscription?.cancel();
     await _uriLinkSubscription?.cancel();
 
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       WindowManager.instance.removeListener(this);
+    }
+
+    if (Platform.isIOS) {
+      GetIt.instance<CarPlayHelper>().disposeCarplay();
     }
   }
 

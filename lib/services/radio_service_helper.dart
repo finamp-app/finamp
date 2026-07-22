@@ -22,6 +22,8 @@ import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../models/music_slices.dart';
+
 final _radioLogger = Logger("Radio");
 final _radioRandom = Random();
 
@@ -126,16 +128,20 @@ Future<void> maybeAddRadioTracks() async {
           );
           _radioCacheStateStream.add(localResult);
           await queueService.addToQueue(
-            items: tracksToAdd.toList(),
-            source: QueueItemSource.rawId(
-              type: QueueItemSourceType.radio,
-              name: currentQueue.source.item != null
-                  ? QueueItemSourceName(
-                      type: QueueItemSourceNameType.radio,
-                      localizationParameter: currentQueue.source.item?.name ?? "",
-                    )
-                  : QueueItemSourceName(type: QueueItemSourceNameType.radio),
-              id: currentQueue.source.item?.id.raw ?? currentQueue.source.id,
+            BasePlayableSlice(
+              items: tracksToAdd.toList(),
+              startingIndex: 0,
+              source: QueueItemSource.rawId(
+                type: QueueItemSourceType.radio,
+                name: currentQueue.source.item != null
+                    ? QueueItemSourceName(
+                        type: QueueItemSourceNameType.radio,
+                        localizationParameter: currentQueue.source.item?.name ?? "",
+                      )
+                    : QueueItemSourceName(type: QueueItemSourceNameType.radio),
+                id: currentQueue.source.item?.id.raw ?? currentQueue.source.id,
+              ),
+              shuffleState: SliceShuffleState.linear,
             ),
           );
           _radioLogger.finer(

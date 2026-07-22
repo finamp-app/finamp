@@ -443,7 +443,10 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         homeScreenConfiguration: fields[146] == null
             ? const FinampHomeScreenConfiguration(actions: [], sections: [])
             : fields[146] as FinampHomeScreenConfiguration,
-        gridImageSize: fields[147] == null ? 160 : (fields[147] as num).toInt(),
+        gridImageSize: fields[147] == null ? 130 : (fields[147] as num).toInt(),
+        homeScreenImageSize: fields[150] == null
+            ? 90
+            : (fields[150] as num).toInt(),
         useAndroidGainEffect: fields[149] == null ? true : fields[149] as bool,
       )
       ..sortBy = fields[7] as SortBy?
@@ -461,13 +464,14 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..radioEnabled = fields[140] == null ? false : fields[140] as bool
       ..radioMode = fields[141] == null
           ? RadioMode.similar
-          : fields[141] as RadioMode;
+          : fields[141] as RadioMode
+      ..clientCertificate = fields[151] as ClientCertificate?;
   }
 
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(143)
+      ..writeByte(145)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -753,7 +757,11 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(148)
       ..write(obj.amoledTheme)
       ..writeByte(149)
-      ..write(obj.useAndroidGainEffect);
+      ..write(obj.useAndroidGainEffect)
+      ..writeByte(150)
+      ..write(obj.homeScreenImageSize)
+      ..writeByte(151)
+      ..write(obj.clientCertificate);
   }
 
   @override
@@ -1879,6 +1887,43 @@ class QuickActionConfigAdapter extends TypeAdapter<QuickActionConfig> {
           typeId == other.typeId;
 }
 
+class ClientCertificateAdapter extends TypeAdapter<ClientCertificate> {
+  @override
+  final typeId = 127;
+
+  @override
+  ClientCertificate read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ClientCertificate(
+      data: fields[0] as Uint8List,
+      password: fields[1] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ClientCertificate obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.data)
+      ..writeByte(1)
+      ..write(obj.password);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ClientCertificateAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class ContentTypeAdapter extends TypeAdapter<ContentType> {
   @override
   final typeId = 36;
@@ -2126,6 +2171,10 @@ class QueueItemSourceTypeAdapter extends TypeAdapter<QueueItemSourceType> {
         return QueueItemSourceType.radio;
       case 23:
         return QueueItemSourceType.homeScreenSection;
+      case 24:
+        return QueueItemSourceType.collection;
+      case 25:
+        return QueueItemSourceType.collectionMix;
       default:
         return QueueItemSourceType.album;
     }
@@ -2182,6 +2231,10 @@ class QueueItemSourceTypeAdapter extends TypeAdapter<QueueItemSourceType> {
         writer.writeByte(22);
       case QueueItemSourceType.homeScreenSection:
         writer.writeByte(23);
+      case QueueItemSourceType.collection:
+        writer.writeByte(24);
+      case QueueItemSourceType.collectionMix:
+        writer.writeByte(25);
     }
   }
 

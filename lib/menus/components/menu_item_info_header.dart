@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:finamp/components/AddToPlaylistScreen/add_to_playlist_button.dart';
 import 'package:finamp/components/PlayerScreen/album_chip.dart';
 import 'package:finamp/components/PlayerScreen/artist_chip.dart';
@@ -10,17 +11,13 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/models/music_models.dart';
-import 'package:finamp/screens/album_screen.dart';
-import 'package:finamp/screens/artist_screen.dart';
-import 'package:finamp/screens/genre_screen.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
-import '../../components/finamp_icon.dart';
 import '../../extensions/localizations.dart';
-import '../../services/finamp_settings_helper.dart';
+import '../../services/item_helper.dart';
 
 const double infoHeaderFullExtent = 162.0;
 const double infoHeaderFullInternalHeight = 140.0;
@@ -40,6 +37,7 @@ Widget _getMenuHeaderForItemType({
       BaseItemDtoType.playlist => PlaylistInfo(item: baseItem, condensed: condensed, features: features),
       BaseItemDtoType.genre => GenreInfo(item: baseItem, condensed: condensed, features: features),
       BaseItemDtoType.artist => ArtistInfo(item: baseItem, condensed: condensed, features: features),
+      BaseItemDtoType.collection => CollectionInfo(item: baseItem, condensed: condensed, features: features),
       _ => TrackInfo(item: baseItem, condensed: condensed, features: features),
     },
     MusicScreenPlayable(sortConfig: final config, library: final library, tab: final content) => HomeSectionInfo(
@@ -49,14 +47,16 @@ Widget _getMenuHeaderForItemType({
         customSectionTitle: item.source.name.getLocalized(context.l10n),
       ),
     ),
-    LatestQueues() => HomeSectionInfo(
+    LatestQueues(sortConfig: final sortconfig) => HomeSectionInfo(
       config: HomeScreenSectionConfiguration(
         base: QueuesHomeSection(),
-        sortConfig: SortAndFilterConfiguration.defaultSort,
+        sortConfig: sortconfig,
         customSectionTitle: item.source.name.getLocalized(context.l10n),
       ),
     ),
-    _ => throw UnsupportedError("Cannot show menu header for $item"),
+    UnavailableHomeSectionPlayable(section: final section) => HomeSectionInfo(config: section),
+    PlayableQueue() => throw UnsupportedError("Cannot show menu header for $item"),
+    PrecalculatedPlayable() => throw UnsupportedError("Cannot show menu header for $item"),
   };
 }
 
@@ -161,7 +161,7 @@ class TrackInfo extends ConsumerWidget {
     return ItemInfo(
       item: item,
       condensed: condensed,
-      features: features,
+      features: features.whereNot((feature) => feature == MenuItemInfoHeaderFeatures.openItem).toList(),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       featureImage: AlbumImage(item: item, borderRadius: BorderRadius.zero, tapToZoom: true),
       infoRows: [
@@ -395,15 +395,49 @@ class GenreInfo extends ConsumerWidget {
   }
 }
 
+class CollectionInfo extends ConsumerWidget {
+  const CollectionInfo({super.key, required this.item, required this.condensed, required this.features});
+
+  final BaseItemDto item;
+  final bool condensed;
+  final List<MenuItemInfoHeaderFeatures> features;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ItemInfo(
+      item: item,
+      condensed: condensed,
+      features: features,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      featureImage: AlbumImage(item: item, borderRadius: BorderRadius.zero, tapToZoom: true),
+      infoRows: [
+        Text(
+          item.name ?? AppLocalizations.of(context)!.unknownName,
+          textAlign: TextAlign.start,
+          style: TextStyle(
+            fontSize: condensed ? 16 : 18,
+            height: 1.2,
+            color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
+          ),
+          overflow: TextOverflow.ellipsis,
+          softWrap: true,
+          maxLines: 2,
+        ),
+        if (!condensed) ...[const SizedBox(height: 6), ItemAmount(baseItem: item)],
+      ],
+    );
+  }
+}
+
 class ItemInfo extends StatelessWidget {
   const ItemInfo({
     super.key,
     required this.item,
     required this.condensed,
-    required this.shape,
     required this.featureImage,
     required this.infoRows,
     required this.features,
+    this.shape = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
   });
 
   final BaseItemDto item;
@@ -415,23 +449,244 @@ class ItemInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.transparent,
-      child: Center(
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: condensed ? 28.0 : 12.0),
-          height: condensed ? infoHeaderCondensedInternalHeight : infoHeaderFullInternalHeight,
-          clipBehavior: Clip.antiAlias,
-          decoration: ShapeDecoration(
-            color: Theme.brightnessOf(context) == Brightness.dark
-                ? Colors.black.withOpacity(0.25)
-                : Colors.white.withOpacity(0.15),
-            shape: shape,
+    return _getGenericMenuInfo(
+      context,
+      condensed: condensed,
+      features: features,
+      featureImage: featureImage,
+      item: item,
+      onOpen: () => openItemPage(item, Navigator.of(context)),
+      shape: shape,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: infoRows,
+      ),
+    );
+  }
+}
+
+class HomeSectionInfo extends ConsumerWidget {
+  const HomeSectionInfo({super.key, required this.config, this.item});
+
+  final HomeScreenSectionConfiguration config;
+  final BaseItemDto? item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    AlbumImage? image;
+    if (item != null && config.base is CollectionHomeSection) {
+      image = AlbumImage(item: item, borderRadius: BorderRadius.zero, tapToZoom: true);
+    }
+
+    return _getGenericMenuInfo(
+      context,
+      condensed: false,
+      featureImage: image,
+      features: const [MenuItemInfoHeaderFeatures.artwork],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            config.getTitle(context.l10n),
+            textAlign: TextAlign.start,
+            style: TextStyle(
+              fontSize: 20,
+              height: 1.2,
+              color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
+            ),
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+            maxLines: 2,
           ),
+          // TODO display tab type
+          //if (config.base case TabsHomeSection tab)
+          //  Text(tab.contentType.toLocalisedString(context.l10n), style: TextStyle(fontSize: 17)),
+          IconAndText(
+            iconData: config.sortConfig.sortOrder.getIcon(),
+            textSpan: TextSpan(text: config.sortConfig.sortBy.toLocalisedString(context.l10n)),
+          ),
+          ...config.sortConfig.filters.map(
+            (filter) => IconAndText(
+              iconData: TablerIcons.filter,
+              textSpan: TextSpan(text: filter.getName(context.l10n)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GenericMenuInfoHeader extends StatelessWidget {
+  final Widget child;
+  final bool condensed;
+  final List<MenuItemInfoHeaderFeatures> features;
+  final AlbumImage? featureImage;
+  final BaseItemDto? item;
+  final VoidCallback? onOpen;
+  final ShapeBorder shape;
+
+  const GenericMenuInfoHeader({
+    super.key,
+    required this.child,
+    required this.condensed,
+    this.features = const [],
+    this.featureImage,
+    this.item,
+    this.onOpen,
+    this.shape = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+  });
+
+  const GenericMenuInfoHeader.condensed({
+    super.key,
+    required this.child,
+    this.features = const [],
+    this.featureImage,
+    this.item,
+    this.onOpen,
+    this.shape = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+  }) : condensed = true;
+
+  const GenericMenuInfoHeader.noArtwork({
+    super.key,
+    required this.child,
+    this.features = const [],
+    this.item,
+    this.onOpen,
+    this.shape = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+  }) : condensed = false,
+       featureImage = null;
+
+  const GenericMenuInfoHeader.condensedNoArtwork({
+    super.key,
+    required this.child,
+    this.features = const [],
+    this.item,
+    this.onOpen,
+    this.shape = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+  }) : condensed = true,
+       featureImage = null;
+
+  @override
+  Widget build(BuildContext context) {
+    return _getGenericMenuInfo(
+      context,
+      child: child,
+      condensed: condensed,
+      features: features,
+      featureImage: featureImage,
+      item: item,
+      onOpen: onOpen,
+      shape: shape,
+    );
+  }
+}
+
+class GenericMenuInfoSliverHeader extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  final bool condensed;
+  final List<MenuItemInfoHeaderFeatures> features;
+  final AlbumImage? featureImage;
+  final BaseItemDto? item;
+  final VoidCallback? onOpen;
+  final ShapeBorder shape;
+
+  const GenericMenuInfoSliverHeader({
+    required this.child,
+    required this.condensed,
+    this.features = const [],
+    this.featureImage,
+    this.item,
+    this.onOpen,
+    this.shape = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+  });
+
+  const GenericMenuInfoSliverHeader.condensed({
+    required this.child,
+    this.features = const [],
+    this.featureImage,
+    this.item,
+    this.onOpen,
+    this.shape = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+  }) : condensed = true;
+
+  const GenericMenuInfoSliverHeader.noArtwork({
+    required this.child,
+    this.features = const [],
+    this.item,
+    this.onOpen,
+    this.shape = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+  }) : condensed = false,
+       featureImage = null;
+
+  const GenericMenuInfoSliverHeader.condensedNoArtwork({
+    required this.child,
+    this.features = const [],
+    this.item,
+    this.onOpen,
+    this.shape = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+  }) : condensed = true,
+       featureImage = null;
+
+  static const MenuMaskHeight defaultHeight = MenuMaskHeight(151.0);
+  static const MenuMaskHeight condensedHeight = MenuMaskHeight(80.0);
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return _getGenericMenuInfo(
+      context,
+      child: child,
+      condensed: condensed,
+      features: features,
+      featureImage: featureImage,
+      item: item,
+      onOpen: onOpen,
+      shape: shape,
+    );
+  }
+
+  @override
+  double get maxExtent => (condensed ? condensedHeight.raw : defaultHeight.raw) + 10.0;
+
+  @override
+  double get minExtent => (condensed ? condensedHeight.raw : defaultHeight.raw) + 10.0;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => true;
+}
+
+Widget _getGenericMenuInfo(
+  BuildContext context, {
+  required Widget child,
+  required bool condensed,
+  List<MenuItemInfoHeaderFeatures> features = const [],
+  AlbumImage? featureImage,
+  BaseItemDto? item,
+  VoidCallback? onOpen,
+  ShapeBorder shape = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+}) {
+  return Container(
+    color: Colors.transparent,
+    child: Center(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: condensed ? 28.0 : 12.0),
+        height: condensed ? infoHeaderCondensedInternalHeight : infoHeaderFullInternalHeight,
+        clipBehavior: Clip.antiAlias,
+        decoration: ShapeDecoration(
+          color: Theme.brightnessOf(context) == Brightness.dark
+              ? Colors.black.withOpacity(0.25)
+              : Colors.white.withOpacity(0.15),
+          shape: shape,
+        ),
+        child: GestureDetector(
+          onTap: onOpen,
           child: Stack(
             children: [
-              if (BaseItemDtoType.fromItem(item) != BaseItemDtoType.track &&
-                  features.contains(MenuItemInfoHeaderFeatures.openItem))
+              if (features.contains(MenuItemInfoHeaderFeatures.openItem))
                 Positioned(
                   top: 0,
                   right: 0,
@@ -439,18 +694,7 @@ class ItemInfo extends StatelessWidget {
                     icon: const Icon(TablerIcons.external_link, size: 20),
                     padding: const EdgeInsets.all(0.0),
                     visualDensity: VisualDensity(horizontal: -2.0, vertical: -3.0),
-                    onPressed: () {
-                      if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.track) {
-                        return;
-                      }
-                      Navigator.pushNamed(context, switch (BaseItemDtoType.fromItem(item)) {
-                        BaseItemDtoType.album => AlbumScreen.routeName,
-                        BaseItemDtoType.playlist => AlbumScreen.routeName,
-                        BaseItemDtoType.genre => GenreScreen.routeName,
-                        BaseItemDtoType.artist => ArtistScreen.routeName,
-                        _ => AlbumScreen.routeName,
-                      }, arguments: item);
-                    },
+                    onPressed: onOpen,
                     color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
                   ),
                 ),
@@ -467,18 +711,10 @@ class ItemInfo extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (features.contains(MenuItemInfoHeaderFeatures.artwork))
+                  if (features.contains(MenuItemInfoHeaderFeatures.artwork) && featureImage != null)
                     AspectRatio(aspectRatio: 1.0, child: featureImage),
                   Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 8.0, right: 26.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: infoRows,
-                      ),
-                    ),
+                    child: Container(padding: const EdgeInsets.only(left: 8.0, right: 26.0), child: child),
                   ),
                 ],
               ),
@@ -486,96 +722,6 @@ class ItemInfo extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class HomeSectionInfo extends ConsumerWidget {
-  const HomeSectionInfo({super.key, required this.config, this.item});
-
-  final HomeScreenSectionConfiguration config;
-  final BaseItemDto? item;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final Widget image;
-    if (item != null && config.base is CollectionHomeSection) {
-      image = AlbumImage(item: item, borderRadius: BorderRadius.zero, tapToZoom: true);
-    } else {
-      image = Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: ColorScheme.of(context).primary.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: FinampIcon(
-          70,
-          70,
-          overrideColor: ref.watch(finampSettingsProvider.isOffline)
-              ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
-              : null,
-        ),
-      );
-    }
-
-    return Container(
-      color: Colors.transparent,
-      child: Center(
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 12.0),
-          height: infoHeaderFullInternalHeight,
-          clipBehavior: Clip.antiAlias,
-          decoration: ShapeDecoration(
-            color: Theme.brightnessOf(context) == Brightness.dark
-                ? Colors.black.withOpacity(0.25)
-                : Colors.white.withOpacity(0.15),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          padding: config.base is CollectionHomeSection ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 6.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (config.base is CollectionHomeSection) AspectRatio(aspectRatio: 1.0, child: image),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 26.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        config.getTitle(context.l10n),
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize: 18,
-                          height: 1.2,
-                          color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: true,
-                        maxLines: 2,
-                      ),
-                      IconAndText(
-                        iconData: config.sortConfig.sortOrder == SortOrder.ascending
-                            ? TablerIcons.sort_ascending
-                            : TablerIcons.sort_descending,
-                        textSpan: TextSpan(text: config.sortConfig.sortBy.toLocalisedString(context.l10n)),
-                      ),
-                      ...config.sortConfig.filters.map(
-                        (filter) => IconAndText(
-                          iconData: TablerIcons.filter,
-                          textSpan: TextSpan(text: filter.getName(context.l10n)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+    ),
+  );
 }

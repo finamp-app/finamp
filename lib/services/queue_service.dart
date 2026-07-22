@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:app_links/app_links.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:collection/collection.dart';
 import 'package:finamp/components/PlayerScreen/queue_source_helper.dart';
@@ -30,6 +31,8 @@ import 'package:path/path.dart' as path_helper;
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
+
+import '../models/music_slices.dart';
 
 /// A track queueing service for Finamp.
 class QueueService {
@@ -123,7 +126,7 @@ class QueueService {
       _currentQueueIndex = event.queueIndex ?? 0;
 
       // Ignore playback events if queue is empty.
-      if (previousIndex != _currentQueueIndex && _currentTrack != null) {
+      if (_audioHandler.audioSources.isNotEmpty && (previousIndex != _currentQueueIndex || _currentTrack == null)) {
         _queueServiceLogger.finer("Play queue index changed, new index: $_currentQueueIndex");
         _buildQueueFromNativePlayerQueue();
       } else {
@@ -395,7 +398,7 @@ class QueueService {
             unawaited(_queuesBox.deleteAll(extra));
           }
 
-          if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup) {
+          if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup && !await _hasInitialPlayLink()) {
             await loadSavedQueue(info);
           } else {
             _savedQueueState = SavedQueueState.pendingSave;
@@ -405,6 +408,15 @@ class QueueService {
         _queueServiceLogger.severe(e);
         rethrow;
       }
+    }
+  }
+
+  Future<bool> _hasInitialPlayLink() async {
+    try {
+      final initialLink = await AppLinks().getInitialLink();
+      return initialLink != null && initialLink.host == "play";
+    } catch (_) {
+      return false;
     }
   }
 
@@ -605,10 +617,11 @@ class QueueService {
     }
   }
 
-  // TODO cut this over to take a PlayableSlice.
+  // TODO cut more/all usages of this over to startSlicePlayback
   Future<void> startPlayback({
     required List<jellyfin_models.BaseItemDto> items,
     required QueueItemSource source,
+    // Only used for radio startup
     QueueItemSource? customTrackSource,
     FinampPlaybackOrder? order,
     int? startingIndex,
@@ -628,6 +641,63 @@ class QueueService {
       "Started playing '${source.name.getLocalized(GlobalSnackbar.requireL10n)}' (${source.type}) in order $order from index $startingIndex",
     );
     _queueServiceLogger.info("Items for queue: [${items.map((e) => e.name).join(", ")}]");
+  }
+
+  Future<void> startSlicePlayback(PlayableSlice slice) async => _startSlicePlayback(slice: slice);
+
+  Future<void> _startSlicePlayback({required PlayableSlice slice, bool beginPlaying = true}) async {
+    switch (slice) {
+      case BasePlayableSlice():
+      case GroupedPlayableSlice():
+      case PreCachedPlayableSlice() when slice.shuffleState == SliceShuffleState.playerShuffled:
+        final base = await slice.resolve();
+        final order = switch (base.shuffleState) {
+          SliceShuffleState.preShuffled => FinampPlaybackOrder.linear,
+          SliceShuffleState.playerShuffled => FinampPlaybackOrder.shuffled,
+          SliceShuffleState.linear => FinampPlaybackOrder.linear,
+        };
+        await _replaceWholeQueue(
+          itemList: base.items,
+          source: base.source,
+          order: order,
+          initialIndex: order == FinampPlaybackOrder.linear ? base.startingIndex : null,
+          beginPlaying: beginPlaying,
+        );
+        _queueServiceLogger.info(
+          "Started playing '${base.source.name.getLocalized(GlobalSnackbar.requireL10n)}' (${base.source.type}) in order $order from index ${base.startingIndex}",
+        );
+        _queueServiceLogger.info("Items for queue: [${base.items.map((e) => e.name).join(", ")}]");
+      // TODO also do pre-cache work in other queue add methods?
+      case PreCachedPlayableSlice slice:
+        // Shuffle state is linear or preshuffled, so ignore.
+        await _replaceWholeQueue(
+          itemList: slice.cachedTracks,
+          source: slice.source,
+          order: FinampPlaybackOrder.linear,
+          initialIndex: slice.startingOffset,
+          beginPlaying: beginPlaying,
+        );
+        _queueServiceLogger.info(
+          "Started playing '${slice.source.name.getLocalized(GlobalSnackbar.requireL10n)}' (${slice.source.type}), pending additional tracks",
+        );
+        _queueServiceLogger.info("Items for queue: [${slice.cachedTracks.map((e) => e.name).join(", ")}]");
+        final additionalTracks = List.of(await slice.fetchTracks);
+        if (!slice.combineTracks) {
+          assert(() {
+            for (int i = 0; i < slice.cachedTracks.length; i++) {
+              if (slice.cachedTracks[i] != additionalTracks[i]) {
+                return false;
+              }
+            }
+            return true;
+          }());
+          for (var track in slice.cachedTracks) {
+            additionalTracks.remove(track);
+          }
+        }
+        // TODO verify we haven't made other queue changes?
+        await _insertFollowupItems(additionalTracks, slice.source, slice.cachedTracks.length);
+    }
   }
 
   /// Replaces the queue with the given list of items. If startAtIndex is specified, Any items below it
@@ -743,8 +813,13 @@ class QueueService {
       }
 
       if (Platform.isIOS || Platform.isMacOS) {
-        // Both iOS and macOS will start playing the first queue index if we don't stop first
-        await _audioHandler.stopPlayback();
+        // Both iOS and macOS will start playing the first queue index if we don't stop first.
+        // Use pause() instead of stop() to keep the audio session active and prevent
+        // other apps (e.g. Podcasts) from briefly resuming during Siri handoff.
+        // Server activity reporting: pause() sends a progress update (paused state)
+        // rather than a stop event; when the new queue starts, onTrackChanged fires
+        // and correctly reports the old track stopped + new track started.
+        await _audioHandler.pause();
       }
       await _audioHandler.clearFinampQueueItems();
 
@@ -767,7 +842,9 @@ class QueueService {
       if (beginPlaying) {
         // only open the player screen if we actually start playing, otherwise it would open after startup + queue restore
         if (FinampSettingsHelper.finampSettings.autoExpandPlayerScreen) {
-          unawaited(NowPlayingBar.openPlayerScreen());
+          if (GlobalSnackbar.navigatorState?.mounted ?? false) {
+            unawaited(NowPlayingBar.openPlayerScreen());
+          }
         }
       }
 
@@ -852,49 +929,31 @@ class QueueService {
     return;
   }
 
-  Future<void> addToQueue({
-    required List<jellyfin_models.BaseItemDto> items,
-    QueueItemSource? source,
-    FinampPlaybackOrder? order,
-  }) async {
+  Future<void> addToQueue(PlayableSlice slice) async {
     if (_audioHandler.audioSources.isEmpty) {
-      return _replaceWholeQueue(
-        itemList: items,
-        order: order,
-        source:
-            source ??
-            QueueItemSource.rawId(
-              type: QueueItemSourceType.queue,
-              name: const QueueItemSourceName(type: QueueItemSourceNameType.queue),
-              id: "queue",
-              item: null,
-            ),
-        beginPlaying: false,
-      );
+      return _startSlicePlayback(slice: slice, beginPlaying: false);
     }
+    final baseSlice = await slice.resolve(preShuffle: true);
+    final items = baseSlice.items;
 
     try {
       if (_savedQueueState == SavedQueueState.pendingSave) {
         _savedQueueState = SavedQueueState.saving;
       }
-      if (order == FinampPlaybackOrder.shuffled) {
-        List<jellyfin_models.BaseItemDto> clonedItems = List.from(items);
-        clonedItems.shuffle();
-        items = clonedItems;
-      }
       List<FinampQueueItem> queueItems = [];
       for (final item in items) {
         queueItems.add(
           FinampQueueItem(
-            item: await generateMediaItem(item, contextNormalizationGain: source?.contextNormalizationGain),
-            source: source ?? _order.originalSource,
+            item: await generateMediaItem(item, contextNormalizationGain: slice.source.contextNormalizationGain),
+            source: slice.source,
             type: QueueItemQueueType.queue,
           ),
         );
-        _queueServiceLogger.fine(
-          "Added '${queueItems.last.item.title}' to queue from '${source?.name}' (${source?.type})",
-        );
       }
+
+      _queueServiceLogger.fine(
+        "Added ${items.length} items to queue from '${slice.source.name}' (${slice.source.type})",
+      );
 
       await _audioHandler.appendFinampQueueItems(queueItems);
 
@@ -905,48 +964,23 @@ class QueueService {
     }
   }
 
-  Future<void> addNext({
-    required List<jellyfin_models.BaseItemDto> items,
-    QueueItemSource? source,
-    FinampPlaybackOrder? order,
-  }) async {
+  Future<void> addNext(PlayableSlice slice) async {
     if (_audioHandler.audioSources.isEmpty) {
-      return _replaceWholeQueue(
-        itemList: items,
-        source:
-            source ??
-            QueueItemSource.rawId(
-              type: QueueItemSourceType.queue,
-              name: const QueueItemSourceName(type: QueueItemSourceNameType.queue),
-              id: "queue",
-              item: null,
-            ),
-        beginPlaying: false,
-        order: order,
-      );
+      return _startSlicePlayback(slice: slice, beginPlaying: false);
     }
+    final baseSlice = await slice.resolve(preShuffle: true);
+    final items = baseSlice.items;
 
     try {
       if (_savedQueueState == SavedQueueState.pendingSave) {
         _savedQueueState = SavedQueueState.saving;
       }
-      if (order == FinampPlaybackOrder.shuffled) {
-        List<jellyfin_models.BaseItemDto> clonedItems = List.from(items);
-        clonedItems.shuffle();
-        items = clonedItems;
-      }
       List<FinampQueueItem> queueItems = [];
       for (final item in items) {
         queueItems.add(
           FinampQueueItem(
-            item: await generateMediaItem(item, contextNormalizationGain: source?.contextNormalizationGain),
-            source:
-                source ??
-                QueueItemSource.rawId(
-                  id: "next-up",
-                  name: const QueueItemSourceName(type: QueueItemSourceNameType.nextUp),
-                  type: QueueItemSourceType.nextUp,
-                ),
+            item: await generateMediaItem(item, contextNormalizationGain: slice.source.contextNormalizationGain),
+            source: slice.source,
             type: QueueItemQueueType.nextUp,
           ),
         );
@@ -954,14 +988,9 @@ class QueueService {
 
       int adjustedQueueIndex = getActualIndexByLinearIndex(_currentQueueIndex);
       int offset = min(_audioHandler.audioSources.length, 1);
-      int offsetLog = offset;
-
-      for (final queueItem in queueItems) {
-        _queueServiceLogger.fine(
-          "Prepended '${queueItem.item.title}' to Next Up (index ${adjustedQueueIndex + offsetLog})",
-        );
-        offsetLog++;
-      }
+      _queueServiceLogger.fine(
+        "Prepended ${items.length} items to Next Up at index ${adjustedQueueIndex + offset} from '${slice.source.name}' (${slice.source.type})",
+      );
       await _audioHandler.insertFinampQueueItems(adjustedQueueIndex + offset, queueItems);
 
       _buildQueueFromNativePlayerQueue(); // update internal queues
@@ -971,48 +1000,23 @@ class QueueService {
     }
   }
 
-  Future<void> addToNextUp({
-    required List<jellyfin_models.BaseItemDto> items,
-    QueueItemSource? source,
-    FinampPlaybackOrder? order,
-  }) async {
+  Future<void> addToNextUp(PlayableSlice slice) async {
     if (_audioHandler.audioSources.isEmpty) {
-      return _replaceWholeQueue(
-        itemList: items,
-        source:
-            source ??
-            QueueItemSource.rawId(
-              type: QueueItemSourceType.queue,
-              name: const QueueItemSourceName(type: QueueItemSourceNameType.queue),
-              id: "queue",
-              item: null,
-            ),
-        beginPlaying: false,
-        order: order,
-      );
+      return _startSlicePlayback(slice: slice, beginPlaying: false);
     }
+    final baseSlice = await slice.resolve(preShuffle: true);
+    final items = baseSlice.items;
 
     try {
       if (_savedQueueState == SavedQueueState.pendingSave) {
         _savedQueueState = SavedQueueState.saving;
       }
-      if (order == FinampPlaybackOrder.shuffled) {
-        List<jellyfin_models.BaseItemDto> clonedItems = List.from(items);
-        clonedItems.shuffle();
-        items = clonedItems;
-      }
       List<FinampQueueItem> queueItems = [];
       for (final item in items) {
         queueItems.add(
           FinampQueueItem(
-            item: await generateMediaItem(item, contextNormalizationGain: source?.contextNormalizationGain),
-            source:
-                source ??
-                QueueItemSource.rawId(
-                  id: "next-up",
-                  name: const QueueItemSourceName(type: QueueItemSourceNameType.nextUp),
-                  type: QueueItemSourceType.nextUp,
-                ),
+            item: await generateMediaItem(item, contextNormalizationGain: slice.source.contextNormalizationGain),
+            source: slice.source,
             type: QueueItemQueueType.nextUp,
           ),
         );
@@ -1020,16 +1024,11 @@ class QueueService {
 
       _buildQueueFromNativePlayerQueue(logUpdate: false); // update internal queues
       int offset = _queueNextUp.length + min(_audioHandler.audioSources.length, 1);
-      int offsetLog = offset;
 
       int adjustedQueueIndex = getActualIndexByLinearIndex(_currentQueueIndex);
-
-      for (final queueItem in queueItems) {
-        _queueServiceLogger.fine(
-          "Appended '${queueItem.item.title}' to Next Up (index ${adjustedQueueIndex + offsetLog})",
-        );
-        offsetLog++;
-      }
+      _queueServiceLogger.fine(
+        "Appended ${items.length} items to Next Up at index ${adjustedQueueIndex + offset} from '${slice.source.name}' (${slice.source.type})",
+      );
       await _audioHandler.insertFinampQueueItems(adjustedQueueIndex + offset, queueItems);
 
       _buildQueueFromNativePlayerQueue(); // update internal queues
@@ -1037,6 +1036,60 @@ class QueueService {
       _queueServiceLogger.severe(e);
       rethrow;
     }
+  }
+
+  Future<void> _insertFollowupItems(
+    List<jellyfin_models.BaseItemDto> items,
+    QueueItemSource source,
+    int previousItems,
+  ) async {
+    if (_audioHandler.audioSources.isEmpty) {
+      assert(
+        false,
+        "PreCachedPlayableSlice should always have enough tracks to begin playback.  Was the queue manually cleared?",
+      );
+      _queueServiceLogger.fine("Queue was already empty when inserting followup items");
+      return;
+    }
+    List<FinampQueueItem> queueItems = [];
+    for (final item in items) {
+      queueItems.add(
+        FinampQueueItem(
+          item: await generateMediaItem(item, contextNormalizationGain: source.contextNormalizationGain),
+          source: source,
+          type: QueueItemQueueType.queue,
+        ),
+      );
+    }
+
+    _buildQueueFromNativePlayerQueue(logUpdate: false); // update internal queues
+
+    if (_playbackOrder == FinampPlaybackOrder.shuffled) {
+      // If the queue was shuffled between playback start and followup items loading, we don't currently have any good options
+      // We will just shuffle the items and add them to the end of the queue.  This will prevent unshuffling, and it
+      // will still leave all of the first set of tracks shuffled before the followup set, but it should be better
+      // than playing back unshuffled.
+      queueItems.shuffle();
+
+      _queueServiceLogger.fine(
+        "Added ${items.length} followup items to shuffled queue from '${source.name}' (${source.type})",
+      );
+
+      await _audioHandler.appendFinampQueueItems(queueItems);
+    } else {
+      int offset = previousItems + _queueNextUp.length;
+      int adjustedQueueIndex = getActualIndexByLinearIndex(_currentQueueIndex);
+      int earliestQueueOffset = adjustedQueueIndex + _queueNextUp.length + min(_audioHandler.audioSources.length, 1);
+      offset = offset.clamp(earliestQueueOffset, _audioHandler.audioSources.length);
+
+      _queueServiceLogger.fine(
+        "Inserted ${items.length} followup items into queue at index $offset from '${source.name}' (${source.type})",
+      );
+
+      await _audioHandler.insertFinampQueueItems(offset, queueItems);
+    }
+
+    _buildQueueFromNativePlayerQueue(); // update internal queues
   }
 
   Future<void> skipByOffset(int offset) async {

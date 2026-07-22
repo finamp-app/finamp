@@ -243,7 +243,8 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
         baseItem: widget.item,
         parentItem: widget.parentItem,
         confirmRemoval: widget.confirmPlaylistRemoval,
-        onRemove: widget.onRemoveFromList,
+        // Do not trigger on remove for playlist removal if we are in the queue
+        onRemove: widget.queueItem == null ? widget.onRemoveFromList : null,
       ),
       InstantMixMenuEntry(baseItem: widget.item),
       StartRadioMenuEntry(baseItem: widget.item),

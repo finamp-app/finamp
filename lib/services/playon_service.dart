@@ -16,6 +16,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../services/finamp_settings_helper.dart';
 import '../../services/jellyfin_api_helper.dart';
 import '../../services/music_player_background_task.dart';
+import '../models/music_slices.dart';
 import 'finamp_user_helper.dart';
 
 final _playOnServiceLogger = Logger("PlayOnService");
@@ -388,7 +389,19 @@ class PlayOnService {
                       includeItemTypes: "Audio",
                       itemIds: List<BaseItemId>.from(request['Data']['ItemIds'] as List<dynamic>),
                     );
-                    unawaited(_queueService.addToNextUp(items: items!));
+                    unawaited(
+                      _queueService.addToNextUp(
+                        PlayableSlice.simple(
+                          items!,
+                          QueueItemSource(
+                            name: QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
+                            type: QueueItemSourceType.remoteClient,
+                            id: items[0].id,
+                            item: items[0],
+                          ),
+                        ),
+                      ),
+                    );
                     break;
                   case 'PlayLast':
                     var items = await _jellyfinApiHelper.getItems(
@@ -396,7 +409,19 @@ class PlayOnService {
                       includeItemTypes: "Audio",
                       itemIds: List<BaseItemId>.from(request['Data']['ItemIds'] as List<dynamic>),
                     );
-                    unawaited(_queueService.addToQueue(items: items!));
+                    unawaited(
+                      _queueService.addToQueue(
+                        PlayableSlice.simple(
+                          items!,
+                          QueueItemSource(
+                            name: QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
+                            type: QueueItemSourceType.remoteClient,
+                            id: items[0].id,
+                            item: items[0],
+                          ),
+                        ),
+                      ),
+                    );
                     break;
                 }
             }

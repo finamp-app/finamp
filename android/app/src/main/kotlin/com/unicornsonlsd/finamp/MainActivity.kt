@@ -2,34 +2,40 @@ package com.unicornsonlsd.finamp
 
 import android.app.UiModeManager
 import android.content.Intent
+import android.content.Intent.CATEGORY_APP_MUSIC
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore.INTENT_ACTION_MUSIC_PLAYER
 import android.provider.Settings
 import android.system.ErrnoException
 import android.system.Os
 import android.util.Log
 import androidx.annotation.WorkerThread
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.mediarouter.app.SystemOutputSwitcherDialogController
 import androidx.mediarouter.media.MediaRouter
 import com.ryanheise.audioservice.AudioServiceActivity
-import io.flutter.plugin.common.EventChannel
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayInputStream
 import java.io.File
-import android.os.Build
+import java.security.KeyStore
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.KeyManagerFactory
+import javax.net.ssl.SSLContext
 
 
 class MainActivity : AudioServiceActivity() {
     companion object {
+        private const val CLIENT_CERT_CHANNEL = "com.unicornsonlsd.finamp/client_certificate"
+        private const val CLIENT_CERT_CHANNEL_LOG_TAG = "ClientCertChannel"
+
         private const val DOWNLOADS_SERVICE_CHANNEL = "com.unicornsonlsd.finamp/downloads_service"
         private const val DOWNLOADS_SERVICE_CHANNEL_LOG_TAG = "DownloadsServiceChannel"
-
-        private const val INTENT_CHANNEL = "com.unicornsonlsd.finamp/intent"
-        private const val INTENT_EVENTS_CHANNEL = "com.unicornsonlsd.finamp/intent/events"
-        private const val INTENT_CHANNEL_LOG_TAG = "intentChannel"
 
         private const val OUTPUT_SWITCHER_CHANNEL = "com.unicornsonlsd.finamp/output_switcher"
         private const val OUTPUT_SWITCHER_CHANNEL_LOG_TAG = "OutputSwitcherChannel"
@@ -39,56 +45,87 @@ class MainActivity : AudioServiceActivity() {
     }
 
     private lateinit var mediaRouter: MediaRouter
-    private var intentChannel: MethodChannel? = null
-    private var intentEventSink: EventChannel.EventSink? = null
-    private var pendingIntent: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        updateIntent(intent)
         super.onCreate(savedInstanceState)
 
         mediaRouter = MediaRouter.getInstance(this)
-        cacheLaunchIntent(intent)
     }
 
     override fun onNewIntent(intent: Intent) {
+        updateIntent(intent)
         super.onNewIntent(intent)
-        setIntent(intent)
-        cacheLaunchIntent(intent)
+    }
+
+    private fun updateIntent(intent: Intent) {
+        if (
+            (intent.action == INTENT_ACTION_MUSIC_PLAYER || intent.action == CATEGORY_APP_MUSIC) &&
+            intent.data == null
+        ) {
+            intent.data = "finamp://play/surprisemix".toUri()
+        }
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        EventChannel(
+        MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
-            INTENT_EVENTS_CHANNEL,
-        ).setStreamHandler(object : EventChannel.StreamHandler {
-            override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
-                intentEventSink = events
-                flushPendingIntent()
-            }
+            CLIENT_CERT_CHANNEL,
+        ).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "installClientCertificate" -> {
+                    val bytes = call.argument<ByteArray>("bytes")
+                    val password = call.argument<String>("password")
+                    if (bytes == null || password == null) {
+                        result.error("INVALID_ARGS", "bytes and password are required", null)
+                        return@setMethodCallHandler
+                    }
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            try {
+                                installClientCertificate(bytes, password)
 
-            override fun onCancel(arguments: Any?) {
-                intentEventSink = null
-            }
-        })
-        intentChannel = MethodChannel(
-            flutterEngine.dartExecutor.binaryMessenger,
-            INTENT_CHANNEL,
-        ).also { channel ->
-            channel.setMethodCallHandler { call, result ->
-                when (call.method) {
-                    "consumeIntent" -> {
-                        result.success(pendingIntent)
-                        pendingIntent = null
+                                Log.i(
+                                    CLIENT_CERT_CHANNEL_LOG_TAG,
+                                    "Client certificate installed in Android SSL context"
+                                )
+                                result.success(null)
+                            } catch (e: Exception) {
+                                Log.e(
+                                    CLIENT_CERT_CHANNEL_LOG_TAG,
+                                    "Failed to install client certificate",
+                                    e
+                                )
+                                result.error("CERT_ERROR", e.message, null)
+                            }
+                        }
                     }
-                    else -> {
-                        Log.e(INTENT_CHANNEL_LOG_TAG, "Method not found: '${call.method}'")
-                        result.notImplemented()
+                }
+                "clearClientCertificate" -> {
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            try {
+                                clearClientCertificate()
+
+                                Log.i(
+                                    CLIENT_CERT_CHANNEL_LOG_TAG,
+                                    "Client certificate cleared from Android SSL context"
+                                )
+                                result.success(null)
+                            } catch (e: Exception) {
+                                Log.e(CLIENT_CERT_CHANNEL_LOG_TAG, "Failed to clear client certificate", e)
+                                result.error("CERT_ERROR", e.message, null)
+                            }
+                        }
                     }
+                }
+                else -> {
+                    Log.e(CLIENT_CERT_CHANNEL_LOG_TAG, "Method not found: '${call.method}'")
+                    result.notImplemented()
                 }
             }
         }
-        flushPendingIntent()
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             DOWNLOADS_SERVICE_CHANNEL,
@@ -128,15 +165,15 @@ class MainActivity : AudioServiceActivity() {
                     val targetMode = call.argument<Int?>("targetMode")
                     when (targetMode) {
                         0 -> {
-                            uiManager.setApplicationNightMode( UiModeManager.MODE_NIGHT_AUTO)
+                            uiManager.setApplicationNightMode(UiModeManager.MODE_NIGHT_AUTO)
                             result.success(null)
                         }
                         1 -> {
-                            uiManager.setApplicationNightMode( UiModeManager.MODE_NIGHT_NO)
+                            uiManager.setApplicationNightMode(UiModeManager.MODE_NIGHT_NO)
                             result.success(null)
                         }
                         2 -> {
-                            uiManager.setApplicationNightMode( UiModeManager.MODE_NIGHT_YES)
+                            uiManager.setApplicationNightMode(UiModeManager.MODE_NIGHT_YES)
                             result.success(null)
                         }
                         else -> {
@@ -218,6 +255,27 @@ class MainActivity : AudioServiceActivity() {
         }
     }
 
+    private fun installClientCertificate(bytes: ByteArray, password: String) {
+        val keyStore = KeyStore.getInstance("PKCS12")
+        keyStore.load(ByteArrayInputStream(bytes), password.toCharArray())
+
+        val keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
+        keyManagerFactory.init(keyStore, password.toCharArray())
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(keyManagerFactory.keyManagers, null, null)
+
+        SSLContext.setDefault(sslContext)
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.socketFactory)
+    }
+
+    private fun clearClientCertificate() {
+        val defaultContext = SSLContext.getInstance("TLS")
+        defaultContext.init(null, null, null)
+        SSLContext.setDefault(defaultContext)
+        HttpsURLConnection.setDefaultSSLSocketFactory(defaultContext.socketFactory)
+    }
+
     /**
      * Fixes the owner of downloaded files.
      *
@@ -268,39 +326,5 @@ class MainActivity : AudioServiceActivity() {
 
     private fun showOutputSwitcherDialog() {
         SystemOutputSwitcherDialogController.showDialog(this)
-    }
-
-    private fun cacheLaunchIntent(intent: Intent?) {
-        val action = intent?.action ?: return
-        
-        Log.d(INTENT_CHANNEL_LOG_TAG, "Caching launch action: $action")
-        pendingIntent = action
-        flushPendingIntent()
-    }
-
-    private fun flushPendingIntent() {
-        val action = pendingIntent ?: return
-        val eventSink = intentEventSink
-        if (eventSink != null) {
-            eventSink.success(action)
-            pendingIntent = null
-            return
-        }
-
-        val channel = intentChannel ?: return
-
-        channel.invokeMethod("onIntent", action, object : MethodChannel.Result {
-            override fun success(result: Any?) {
-                pendingIntent = null
-            }
-
-            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
-                Log.e(INTENT_CHANNEL_LOG_TAG, "Failed to dispatch intent '$action': $errorCode $errorMessage")
-            }
-
-            override fun notImplemented() {
-                Log.w(INTENT_CHANNEL_LOG_TAG, "Flutter intent handler is not ready yet")
-            }
-        })
     }
 }

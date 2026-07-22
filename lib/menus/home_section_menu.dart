@@ -92,6 +92,12 @@ HomeDownloadInfo? getHomeDownloadInfo(
 ) {
   switch (section.base) {
     case TabsHomeSection tabSection:
+      if (tabSection.contentType == ContentType.playlists) {
+        return HomeDownloadInfo(
+          stub: DownloadStub.fromFinampCollection(FinampCollection(type: FinampCollectionType.allPlaylists)),
+          warning: section.sortConfig.filters.isEmpty ? null : l10n.homeAllPlaylistsWarning,
+        );
+      }
       return switch (section.presetType) {
         HomeScreenSectionPresetType.favoriteTracks ||
         HomeScreenSectionPresetType.favoriteAlbums ||
@@ -108,7 +114,6 @@ HomeDownloadInfo? getHomeDownloadInfo(
         ),
         _ => null,
       };
-    // TODO put all playlist download somewhere?
     case CollectionHomeSection collectionSection:
       if (item == null) return null;
       final type = BaseItemDtoType.fromItem(item);
@@ -132,7 +137,7 @@ HomeDownloadInfo? getHomeDownloadInfo(
           stub: DownloadStub.fromFinampCollection(
             FinampCollection(
               type: FinampCollectionType.collectionWithLibraryFilter,
-              // TODO allow LibraryIds?
+              // TODO allow LibraryIds instead of fetching full baseitemDtos?
               library: library,
               item: item,
             ),

@@ -24,21 +24,21 @@ const albumMenuRouteName = "/album-menu";
 
 Future<void> showModalAlbumMenu({
   required BuildContext context,
-  required FinampPlayable item,
+  required FinampPlayable album,
   FinampStorableQueueInfo? queueInfo,
 }) async {
-  final BaseItemDto baseItem = switch (item) {
-    AlbumDisc() => item.item,
-    Album() => item.item,
-    _ => throw UnsupportedError("Cannot show album menu for item $item"),
+  final BaseItemDto baseItem = switch (album) {
+    AlbumDisc() => album.item,
+    Album() => album.item,
+    _ => throw UnsupportedError("Cannot show album menu for item $album"),
   };
 
   // Normal menu entries, excluding headers
   List<HideableMenuEntry> getMenuEntries(BuildContext context) {
     return [
       if (queueInfo != null) RestoreQueueMenuEntry(queueInfo: queueInfo),
-      AddToPlaylistMenuEntry(item: item),
-      if (item is Album) ...[
+      AddToPlaylistMenuEntry(item: album),
+      if (album is Album) ...[
         // instant mixes from arbitrary collection of tracks is not supported
         InstantMixMenuEntry(baseItem: baseItem),
         MixBuilderMenuEntry(baseItem: baseItem),
@@ -57,10 +57,10 @@ Future<void> showModalAlbumMenu({
     final menuEntries = getMenuEntries(context);
     final stackHeight = ThemedBottomSheet.calculateStackHeight(context: context, menuEntries: menuEntries);
     List<Widget> menu = [
-      SliverPersistentHeader(delegate: MenuItemInfoSliverHeader(item: item), pinned: true),
+      SliverPersistentHeader(delegate: MenuItemInfoSliverHeader(item: album), pinned: true),
       MenuMask(
         height: MenuItemInfoSliverHeader.defaultHeight,
-        child: SliverToBoxAdapter(child: PlaybackActionRow(item: item)),
+        child: SliverToBoxAdapter(child: PlaybackActionRow(item: album)),
       ),
       MenuMask(
         height: MenuItemInfoSliverHeader.defaultHeight,

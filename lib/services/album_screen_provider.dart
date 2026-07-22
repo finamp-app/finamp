@@ -53,21 +53,14 @@ Future<(List<BaseItemDto>, List<BaseItemDto>)> getDefaultSortedPlaylistTracks(Re
 Future<(List<BaseItemDto>, List<BaseItemDto>)> getSortedPlaylistTracks(
   Ref ref,
   BaseItemDto parent,
-  SortAndFilterConfiguration sortConfig,
+  ResolvedSortConfig sortConfig,
 ) async {
-  // Get the currently active playlist sorting
-  final bool isOffline = ref.watch(finampSettingsProvider.isOffline);
   List<BaseItemDto> playlistAllTracksSorted;
   List<BaseItemDto> playlistPlayableTracksSorted;
   SortOrder playlistSortOrder = sortConfig.sortOrder;
-  SortBy playlistSortBySetting = sortConfig.sortBy;
+  SortBy playlistSortBy = sortConfig.sortBy;
   final genreFilter = sortConfig.genreFilter;
   // TODO can we, and do we want to, support other filter config options?
-  // TODO is it better to resolve offline fallback here, or in controller creator like musicscreen currently does?
-  final playlistSortBy =
-      (isOffline && (playlistSortBySetting == SortBy.datePlayed || playlistSortBySetting == SortBy.playCount))
-      ? SortBy.defaultOrder
-      : playlistSortBySetting;
 
   // Get Playlist Items
   final result = await ref.watch(getAlbumOrPlaylistTracksProvider(parent).future);
@@ -91,6 +84,12 @@ Future<(List<BaseItemDto>, List<BaseItemDto>)> getSortedPlaylistTracks(
   if (genreFilter != null && BaseItemDtoType.fromItem(parent) == BaseItemDtoType.playlist) {
     playlistAllTracksSorted = playlistAllTracksSorted.where((track) {
       return track.genreItems?.any((g) => g.id == genreFilter.id) ?? false;
+    }).toList();
+  }
+
+  if (sortConfig.favoritesFilter) {
+    playlistAllTracksSorted = playlistAllTracksSorted.where((track) {
+      return track.userData?.isFavorite ?? true;
     }).toList();
   }
 

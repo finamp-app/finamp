@@ -24,20 +24,20 @@ const artistMenuRouteName = "/artist-menu";
 
 Future<void> showModalArtistMenu({
   required BuildContext context,
-  required BaseItemDto baseItem,
+  required BaseItemDto item,
   FinampStorableQueueInfo? queueInfo,
 }) async {
-  final playableItem = Artist.fromItem(baseItem);
+  final playableItem = Artist.fromItem(item);
   // Normal menu entries, excluding headers
   List<HideableMenuEntry> getMenuEntries(BuildContext context) {
     return [
       if (queueInfo != null) RestoreQueueMenuEntry(queueInfo: queueInfo),
       AddToPlaylistMenuEntry(item: playableItem),
-      InstantMixMenuEntry(baseItem: baseItem),
-      MixBuilderMenuEntry(baseItem: baseItem),
-      StartRadioMenuEntry(baseItem: baseItem),
-      AdaptiveDownloadLockDeleteMenuEntry(baseItem: baseItem),
-      ToggleFavoriteMenuEntry(baseItem: baseItem),
+      InstantMixMenuEntry(baseItem: item),
+      MixBuilderMenuEntry(baseItem: item),
+      StartRadioMenuEntry(baseItem: item),
+      AdaptiveDownloadLockDeleteMenuEntry(baseItem: item),
+      ToggleFavoriteMenuEntry(baseItem: item),
     ];
   }
 
@@ -65,7 +65,7 @@ Future<void> showModalArtistMenu({
 
   await showThemedBottomSheet(
     context: context,
-    item: baseItem,
+    item: item,
     routeName: artistMenuRouteName,
     buildSlivers: (context) => getMenuProperties(context),
   );

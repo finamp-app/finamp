@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
-import 'package:finamp/extensions/list.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce/hive.dart';
@@ -12,6 +11,7 @@ import '../components/global_snackbar.dart';
 import '../models/finamp_models.dart';
 import '../models/jellyfin_models.dart';
 import '../models/music_models.dart';
+import '../models/music_slices.dart';
 import 'album_screen_provider.dart';
 import 'artist_content_provider.dart';
 import 'finamp_settings_helper.dart';
@@ -74,11 +74,19 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
         ),
         id: section.id,
       );
+      final resolvedSort = SortAndFilterController.resolveOfflineWithoutFallback(
+        ref,
+        tabSection.contentType,
+        section.sortConfig,
+      );
+      if (resolvedSort == null) {
+        return UnavailableHomeSectionPlayable(source: source, section: section);
+      }
       return MusicScreenPlayable(
         tab: tabSection.contentType,
         library: tabSection.libraryId,
         source: source,
-        sortConfig: SortAndFilterController.resolveOffline(ref, tabSection.contentType, section.sortConfig),
+        sortConfig: resolvedSort,
       );
     case CollectionHomeSection collectionSection:
       final item = await ref.watch(itemByIdProvider(collectionSection.itemId).future);
@@ -108,13 +116,15 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
         item: item,
         id: section.id,
       );
-      final resolvedSort = SortAndFilterController.resolveOffline(
+      final resolvedSort = SortAndFilterController.resolveOfflineWithoutFallback(
         ref,
         collectionSection.contentType,
         section.sortConfig,
       );
+      if (resolvedSort == null) {
+        return UnavailableHomeSectionPlayable(source: source, section: section);
+      }
 
-      // TODO this is a pretty horrible abuse of the contentType field.  Refactor storage method?
       if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.artist) {
         return Artist(
           item,
@@ -155,7 +165,7 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
 }
 
 @riverpod
-Future<PlayableSlice> getPlayerSlice(
+Future<PlayableSlice> getPlayableSlice(
   Ref ref, {
   required FinampPlayable item,
   required int startingOffset,
@@ -164,14 +174,14 @@ Future<PlayableSlice> getPlayerSlice(
   switch (item) {
     case FinampUnpagedPlayable<Track>():
       final items = (await ref.watch(getChildTracksProvider(item: item).future)).map((x) => x.item).toList();
-      return PlayableSlice(
+      return BasePlayableSlice(
         items: items,
         startingIndex: startingOffset,
         source: item.source,
         shuffleState: SliceShuffleState.linear,
       );
     case Track():
-      return PlayableSlice(
+      return BasePlayableSlice(
         items: [item.item],
         startingIndex: 0,
         source: item.source,
@@ -179,7 +189,7 @@ Future<PlayableSlice> getPlayerSlice(
       );
     case InstantMix():
       throw UnsupportedError("Music screen should not be including instant mix.");
-    case MusicScreenPlayable<FinampPlayableDto>():
+    case FinampPagedPlayable<FinampPlayableDto>():
       bool hardLimit = true;
       if (limit == null) {
         limit = ref.watch(finampSettingsProvider.trackShuffleItemCount);
@@ -188,74 +198,153 @@ Future<PlayableSlice> getPlayerSlice(
       int preTracks = 0;
       // If we are working directly with tracks, add some extra to flesh out the previous tracks section
       // TODO merge all this into _getPagedchildTracks so we can get pretracks in other scenarios?
-      if (item is MusicScreenPlayable<Track>) {
+      if (item is FinampPagedPlayable<Track>) {
         preTracks = min(min(20, (limit! / 10.0).ceil()), startingOffset);
       }
 
-      final items = await _getPagedChildTracks(
-        ref,
-        item: item,
-        startingChild: startingOffset - preTracks,
-        trackLimit: limit! + preTracks,
-        hardLimit: hardLimit,
-      );
+      final trackLimit = limit! + preTracks;
+      // Drop normal child size by half to reduce the odds of undershooting.  Clamps to a minimum expected child size of one.
+      int childLimit = (trackLimit / max(1.0, item.normalChildSize / 2.0)).ceil();
+      // Keep page provider alive even though we only read its notifier.
+      ref.listen(pagedContentProvider(item), (_, _) {});
+      final pager = ref.read(pagedContentProvider(item).notifier);
+      final (children, childFuture) = pager.loadSlice(startingOffset - preTracks, childLimit);
 
-      return PlayableSlice(
-        items: items,
-        startingIndex: preTracks,
-        source: item.source,
-        shuffleState: SliceShuffleState.linear,
+      // We require a MusicScreenPlayable<FinampPlayableItem> as input, so all children are guaranteed to be FinampPlayableDtos.
+      // pagedContentProvider is not generic so it can't propagate this constraint, so we must cast
+      return _fetchFromChildren(
+        ref,
+        item,
+        children.cast<FinampPlayableDto>().toList(),
+        childFuture?.then((x) => x.cast<FinampPlayableDto>()),
+        0,
+        trackLimit,
+        preTracks,
+        hardLimit,
       );
     case PlayableQueue():
       // TODO: add special queue slice
       throw UnimplementedError();
     case FinampUnpagedDisplayable<FinampPlayableDto> displayable:
       final children = await ref.watch(getChildItemsProvider(item: displayable).future);
-      final output = <BaseItemDto>[];
-      // TODO should we be adding any/all of the pretracks?
-      // TODO load tracks directly?  I think that might cause a sort mismatch, though.
-      for (final child in children.safeSliceByLength(startingOffset)) {
-        output.addAll(await _flattenToTracks(ref, item: child));
-        if (limit != null && output.length > limit) {
-          break;
-        }
-      }
-      return PlayableSlice(
-        items: limit == null ? output : output.slice(0, min(limit, output.length)),
-        startingIndex: 0,
-        source: item.source,
-        shuffleState: SliceShuffleState.linear,
-      );
+      return _fetchFromChildren(ref, item, children, null, startingOffset, limit, 0, true);
   }
 }
 
-Future<List<BaseItemDto>> _getPagedChildTracks(
-  Ref ref, {
-  required MusicScreenPlayable<FinampPlayableDto> item,
-  required int startingChild,
-  required int trackLimit,
-  required bool hardLimit,
-}) async {
-  // Drop normal child size by half to reduce the odds of undershooting.  Clamps to a minimum expected child size of one.
-  int childLimit = (trackLimit / min(1.0, item.normalChildSize / 2.0)).ceil();
-  // Keep page provider alive even though we only read its notifier.
-  ref.listen(pagedContentProvider(item), (_, _) {});
-  final pager = ref.read(pagedContentProvider(item).notifier);
-  final children = await pager.loadSlice(startingChild, childLimit);
-  final output = <BaseItemDto>[];
-  for (final rawChild in children) {
-    // We require a MusicScreenPlayable<FinampPlayableItem> as input, so all children are guaranteed to be FinampPlayableItems.
-    // pagedContentProvider is not generic so it can't propagate this constraint, so we must cast
-    final child = rawChild as FinampPlayableDto;
-    output.addAll(await _flattenToTracks(ref, item: child));
-    if (output.length > trackLimit) {
+Future<PlayableSlice> _fetchFromChildren(
+  Ref ref,
+  FinampPlayable item,
+  List<FinampPlayableDto> children,
+  Future<List<FinampPlayableDto>>? childFuture,
+  int startingChild,
+  int? limit,
+  int preTracks,
+  bool hardLimit,
+) async {
+  final precacheOutput = <BaseItemDto>[];
+  // If all children are tracks, we can just add every available child during the precache
+  // phase instead of delaying to the resolve phase.
+  bool avoidFlattening = item is! FinampDisplayable<Track>;
+  int precachedChildren = 0;
+  bool exhaustedChildren = true;
+  final precacheLimit = preTracks + 3;
+  for (int i = min(startingChild, children.length); i <= children.length; i++) {
+    if (precacheOutput.length >= precacheLimit && (avoidFlattening || i == children.length)) {
+      exhaustedChildren = false;
       break;
     }
+    if (i == children.length && childFuture != null) {
+      children.addAll(await childFuture);
+      childFuture = null;
+    }
+    if (i == children.length) {
+      break;
+    }
+    precacheOutput.addAll(
+      await _flattenToTracks(ref, item: children[i], limit: limit == null ? null : limit - precacheOutput.length),
+    );
+    precachedChildren++;
   }
-  return output.slice(0, hardLimit ? min(trackLimit, output.length) : null);
+
+  if (exhaustedChildren || (limit != null && precacheOutput.length >= limit)) {
+    final returnedItems = limit == null || !hardLimit
+        ? precacheOutput
+        : precacheOutput.slice(0, min(limit, precacheOutput.length));
+    return BasePlayableSlice(
+      items: returnedItems,
+      startingIndex: preTracks.clamp(0, max(0, returnedItems.length - 1)),
+      source: item.source,
+      shuffleState: SliceShuffleState.linear,
+    );
+  }
+
+  return PreCachedPlayableSlice(
+    source: item.source,
+    shuffleState: SliceShuffleState.linear,
+    cachedTracks: precacheOutput,
+    // We are guaranteed to have reached enough pretracks if we make it to this point.
+    startingOffset: preTracks,
+    fetchTracks: Future.sync(() async {
+      final futureLimit = limit == null ? null : limit - precacheOutput.length;
+      final output = <BaseItemDto>[];
+      for (int i = min(startingChild + precachedChildren, children.length); i <= children.length; i++) {
+        if (futureLimit != null && output.length > futureLimit) {
+          break;
+        }
+        if (i == children.length && childFuture != null) {
+          children.addAll(await childFuture!);
+          childFuture = null;
+        }
+        if (i == children.length) {
+          break;
+        }
+        output.addAll(
+          await _flattenToTracks(ref, item: children[i], limit: futureLimit == null ? null : -output.length),
+        );
+      }
+      return futureLimit == null || !hardLimit ? output : output.slice(0, min(futureLimit, output.length));
+    }),
+    combineTracks: true,
+  );
 }
 
-Future<List<BaseItemDto>> _flattenToTracks(Ref ref, {required FinampPlayableDto item}) async {
+@riverpod
+Future<PlayableSlice> getAlbumShuffledPlayerSlice(Ref ref, {required FinampPlayable item}) async {
+  assert(item is Genre || item is Artist || (item is FinampSortable<Album> && item is FinampPlayable));
+  final albumPlayable =
+      switch (item) {
+            FinampSortable<Album>() => item,
+            Artist artist => Artist(
+              artist.item,
+              sortConfig: SortAndFilterConfiguration.defaultSort,
+              // Only track types should get through to here
+              type: ArtistChildType.appearsOnAlbums,
+              library: artist.library,
+            ),
+            Genre genre => Genre(
+              genre.item,
+              sortConfig: SortAndFilterConfiguration.defaultSort,
+              type: GenreChildType.albums,
+              library: genre.library,
+            ),
+            _ => throw UnsupportedError("Cannot shuffle albums of $item"),
+          }
+          as FinampSortable<Album>;
+  final shuffledPlayable =
+      albumPlayable.copyWith(
+            SortAndFilterController.resolveOffline(
+              ref,
+              ContentType.albums,
+              albumPlayable.sortConfig.copyWith(sortBy: SortBy.random),
+            ),
+          )
+          as FinampPlayable;
+  final slice = await ref.watch(getPlayableSliceProvider(item: shuffledPlayable, startingOffset: 0).future);
+  return slice.markPreshuffled();
+  // return GroupedPlayableSlice(parent: slice, groupBy: (element) => element.albumId?.toString());
+}
+
+Future<List<BaseItemDto>> _flattenToTracks(Ref ref, {required FinampPlayableDto item, required int? limit}) async {
   switch (item) {
     case FinampUnpagedDisplayable<Track> unpagged:
       final tracks = await getChildTracks(ref, item: unpagged);
@@ -269,9 +358,25 @@ Future<List<BaseItemDto>> _flattenToTracks(Ref ref, {required FinampPlayableDto 
       final children = await ref.watch(getChildItemsProvider(item: displayable).future);
       final output = <BaseItemDto>[];
       for (final child in children) {
-        output.addAll(await _flattenToTracks(ref, item: child));
+        output.addAll(await _flattenToTracks(ref, item: child, limit: limit == null ? null : limit - output.length));
+        if (limit != null && output.length > limit) {
+          break;
+        }
       }
       return output;
+    case Genre<FinampPlayableDto>():
+      // Keep page provider alive even though we only read its notifier.
+      ref.listen(pagedContentProvider(item), (_, _) {});
+      final pager = ref.read(pagedContentProvider(item).notifier);
+      final (children, childFuture) = pager.loadSlice(
+        0,
+        limit ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+      );
+      if ((limit == null || children.length < limit) && childFuture != null) {
+        children.addAll(await childFuture);
+      }
+      // The children of a FinampPlayableDto should always be more FinampPlayableDtos
+      return children.map((x) => (x as FinampPlayableDto).item).toList();
   }
 }
 
@@ -305,20 +410,6 @@ Future<List<Track>> getChildTracks(Ref ref, {required FinampUnpagedDisplayable<T
         ).future,
       );
       return children.map<Track>((child) => Track(child)).toList();
-    case Genre<Track>():
-      assert(item.type == GenreChildType.tracks);
-      final sort = item.sortConfig.copyWithGenre(item.item);
-      final playable = MusicScreenPlayable(
-        tab: ContentType.tracks,
-        library: item.library,
-        source: item.source,
-        sortConfig: sort,
-      );
-      // TODO something smarter?  But if the genre has more than 999 tracks, we probably shouldn't be loading them anyway.
-      // should we make genres paged?
-      // Keep page provider alive even though we only read its notifier.
-      ref.listen(pagedContentProvider(playable), (_, _) {});
-      return (await ref.read(pagedContentProvider(playable).notifier).loadSlice(0, 9999)).cast<Track>();
   }
 }
 
@@ -360,26 +451,6 @@ Future<List<FinampPlayableDto>> getChildItems(
           );
           return children.map<FinampPlayableDto>((child) => Album.fromItem(child)).toList();
       }
-    case Genre<FinampPlayableDto>():
-      assert(item.type != GenreChildType.tracks);
-      final sort = item.sortConfig.copyWithGenre(item.item);
-      final playable = MusicScreenPlayable(
-        tab: switch (item.type) {
-          GenreChildType.tracks => throw UnsupportedError(
-            "This request should have been a FinampUnpagedDisplayable<Track>",
-          ),
-          GenreChildType.albums => ContentType.albums,
-          // TODO could we supply genericArtists here?  I don't believe that type can resolve, currently.
-          GenreChildType.artists => ContentType.performingArtists,
-          GenreChildType.playlists => ContentType.playlists,
-        },
-        library: item.library,
-        source: item.source,
-        sortConfig: sort,
-      );
-      // Keep page provider alive even though we only read its notifier.
-      ref.listen(pagedContentProvider(playable), (_, _) {});
-      return (await ref.watch(pagedContentProvider(playable).notifier).loadSlice(0, 9999)).cast<FinampPlayableDto>();
   }
 }
 

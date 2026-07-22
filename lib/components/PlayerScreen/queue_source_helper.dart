@@ -15,6 +15,7 @@ import 'package:finamp/services/album_screen_provider.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +52,26 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
       if (source.item != null) {
         showModalTrackMenu(context: context, item: source.item!);
       }
+    case QueueItemSourceType.collection:
+    case QueueItemSourceType.collectionMix:
+      if (source.item != null) {
+        // showModalCollectionMenu(context: context, item: source.item!);
+        Navigator.of(context).push(
+          MaterialPageRoute<MusicScreen>(
+            builder: (context) => MusicScreen(
+              singleTabConfig: HomeScreenSectionConfiguration(
+                base: CollectionHomeSection(
+                  itemId: source.item!.id,
+                  libraryId: GetIt.instance<FinampUserHelper>().currentUser!.currentViewId!,
+                  contentType: ContentType.mixed,
+                ),
+                customSectionTitle: source.item!.name ?? AppLocalizations.of(context)!.unknownName,
+                sortConfig: SortAndFilterConfiguration.defaultSort,
+              ),
+            ),
+          ),
+        );
+      }
     case QueueItemSourceType.radio:
       final radioSource = GetIt.instance<QueueService>().getQueue().source;
       if (radioSource.item == null) {
@@ -71,7 +92,21 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
           Navigator.of(context).pushNamed(GenreScreen.routeName, arguments: radioSource.item);
           break;
         case BaseItemDtoType.collection:
-        //TODO implement collection screen
+          Navigator.of(context).push(
+            MaterialPageRoute<MusicScreen>(
+              builder: (context) => MusicScreen(
+                singleTabConfig: HomeScreenSectionConfiguration(
+                  base: CollectionHomeSection(
+                    itemId: radioSource.item!.id,
+                    libraryId: GetIt.instance<FinampUserHelper>().currentUser!.currentViewId!,
+                    contentType: ContentType.mixed,
+                  ),
+                  customSectionTitle: radioSource.item!.name ?? AppLocalizations.of(context)!.unknownName,
+                  sortConfig: SortAndFilterConfiguration.defaultSort,
+                ),
+              ),
+            ),
+          );
         case BaseItemDtoType.noItem:
         case BaseItemDtoType.library:
         case BaseItemDtoType.folder:

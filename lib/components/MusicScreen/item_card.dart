@@ -1,18 +1,13 @@
-import 'dart:async';
-
-import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/album_image.dart';
-import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/queue_restore_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/generate_subtitle.dart';
-import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get_it/get_it.dart';
 
 import '../../extensions/localizations.dart';
 import '../../services/item_by_id_provider.dart';
@@ -24,18 +19,18 @@ const double queuesHomeSectionHeight = 84;
 /// Card content for items. You probably shouldn't use this widget directly,
 /// use ItemWrapper instead.
 class ItemCard extends ConsumerWidget {
-  const ItemCard({super.key, required this.item, this.onTap, required this.forceText});
+  const ItemCard({super.key, required this.item, this.onTap, this.forHomeScreen = false});
 
   final BaseItemDto item;
   final void Function()? onTap;
-  final bool forceText;
+  final bool forHomeScreen;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final showText = forceText || ref.watch(finampSettingsProvider.showTextOnGridView);
+    final showText = forHomeScreen || ref.watch(finampSettingsProvider.showTextOnGridView);
     final hasImage = !(item.blurHash == null && item.imageId == null);
     return Container(
-      constraints: BoxConstraints(maxWidth: calculateItemCollectionCardWidth(ref).$1),
+      constraints: BoxConstraints(maxWidth: calculateItemCollectionCardWidth(ref, forHomeScreen: forHomeScreen).$1),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(borderRadius: AlbumImage.defaultBorderRadius),
       child: Column(
@@ -63,7 +58,14 @@ class ItemCard extends ConsumerWidget {
                       ),
                     )
                   else
-                    AlbumImage(item: item, sizePreset: ref.watch(finampSettingsProvider.gridImageSize)),
+                    AlbumImage(
+                      item: item,
+                      sizePreset: ref.watch(
+                        forHomeScreen
+                            ? finampSettingsProvider.homeScreenImageSize
+                            : finampSettingsProvider.gridImageSize,
+                      ),
+                    ),
                   Positioned.fill(
                     child: Material(
                       color: Colors.transparent,
@@ -140,16 +142,15 @@ class HomeScreenQueueTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final queueService = GetIt.instance<QueueService>();
     int remainingTracks = info.trackCount - info.previousTracks.length;
 
-    BaseItemDto? track = info.currentTrack == null ? null : ref.watch(itemByIdProvider(info.currentTrack!)).value;
+    BaseItemDto? track = info.currentTrack == null ? null : ref.watch(itemByIdProvider(info.currentTrack!)).valueOrNull;
 
     QueueItemSource source = info.source;
     if (source.wantsItem) {
       // BaseItemId uses String equals, the linter is mistaken.
       // ignore: provider_parameters
-      final sourceItem = ref.watch(itemByIdProvider(BaseItemId(source.id))).value;
+      final sourceItem = ref.watch(itemByIdProvider(BaseItemId(source.id))).valueOrNull;
       if (sourceItem != null) {
         source = source.withItem(sourceItem);
       }
@@ -161,17 +162,9 @@ class HomeScreenQueueTile extends ConsumerWidget {
         width: queuesHomeSectionWidth,
         // height: _queuesSectionHeight,
         child: GestureDetector(
-          onSecondaryTap: () => {
-            if (source.item != null) {openItemMenu(context: context, item: source.item!, queueInfo: info)},
-          },
-          onLongPress: () => {
-            if (source.item != null) {openItemMenu(context: context, item: source.item!, queueInfo: info)},
-          },
-          onTap: () {
-            queueService.archiveSavedQueue();
-            unawaited(queueService.loadSavedQueue(info).catchError(GlobalSnackbar.error));
-            Navigator.of(context).popUntil((route) => route.isFirst && !route.willHandlePopInternally);
-          },
+          onSecondaryTap: () => showQueueRestoreMenu(context: context, queueInfo: info),
+          onLongPress: () => showQueueRestoreMenu(context: context, queueInfo: info),
+          onTap: () => showQueueRestoreMenu(context: context, queueInfo: info),
           child: Container(
             decoration: BoxDecoration(
               color: Theme.brightnessOf(context) == Brightness.dark
@@ -222,8 +215,10 @@ class HomeScreenQueueTile extends ConsumerWidget {
 }
 
 /// This might calculate the width base on the device width in the future, or something similar
-(double, double) calculateItemCollectionCardWidth(WidgetRef ref) {
-  final target = ref.watch(finampSettingsProvider.gridImageSize).toDouble();
+(double, double) calculateItemCollectionCardWidth(WidgetRef ref, {bool forHomeScreen = false}) {
+  final target = ref
+      .watch(forHomeScreen ? finampSettingsProvider.homeScreenImageSize : finampSettingsProvider.gridImageSize)
+      .toDouble();
   final padding = ((target - 30) / 17.0).clamp(1.0, 10.0);
   return (target - padding, padding);
 }
@@ -231,11 +226,11 @@ class HomeScreenQueueTile extends ConsumerWidget {
 int calculateItemCollectionTextLines(BaseItemDtoType itemType) {
   switch (itemType) {
     case BaseItemDtoType.artist:
-    case BaseItemDtoType.track:
-      return 2;
-    case BaseItemDtoType.album:
-    case BaseItemDtoType.playlist:
     case BaseItemDtoType.genre:
+    case BaseItemDtoType.playlist:
+      return 2;
+    case BaseItemDtoType.track:
+    case BaseItemDtoType.album:
     case _:
       return 3;
   }
@@ -245,6 +240,7 @@ double calculateItemCollectionCardHeight({
   required WidgetRef ref,
   required HomeScreenSectionConfiguration? sectionInfo,
   required BaseItemDtoType? itemType,
+  bool forHomeScreen = false,
 }) {
   assert(
     (sectionInfo == null && itemType != null) || (sectionInfo != null && itemType == null),
@@ -262,7 +258,7 @@ double calculateItemCollectionCardHeight({
       // Fallback to albums children as the tallest type
       resolvedItemType = base.contentType.itemType ?? BaseItemDtoType.album;
   }
-  return calculateItemCollectionCardWidth(ref).$1 +
+  return calculateItemCollectionCardWidth(ref, forHomeScreen: forHomeScreen).$1 +
       (ref.watch(finampSettingsProvider.showTextOnGridView) || sectionInfo != null
           ? _itemCollectionCardTextSpacing +
                 calculateTextHeight(

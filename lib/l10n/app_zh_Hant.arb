@@ -1,6 +1,6 @@
 {
     "serverUrl": "伺服器 URL",
-    "showTextOnGridViewSubtitle": "是否在使用「網格瀏覽」時顯示文字（如曲名、藝人名稱等）。",
+    "showTextOnGridViewSubtitle": "是否在「網格瀏覽」中顯示文字，例如曲名、藝人名稱等。首頁的網格一律會顯示文字，不受此設定影響。",
     "internalExternalIpExplanation": "如果您希望能夠遠程訪問您的 Jellyfin 伺服器，則需要使用您的外部 IP。\n\n如果您的伺服器位於 HTTP 端口 (80/443) 上，則不必指定端口。 如果您的伺服器位於反向代理後面，則可能會出現這種情況。\n\n如果網址正確，輸入欄位下方應該會出現一些關於你的伺服器的相關資訊。",
     "@internalExternalIpExplanation": {
         "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
@@ -16,10 +16,6 @@
     "selectMusicLibraries": "選擇音樂庫",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
-    },
-    "couldNotFindLibraries": "找不到任何音樂庫。",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
     },
     "unknownName": "未知名稱",
     "tracks": "歌曲",
@@ -59,16 +55,6 @@
     "name": "名稱",
     "random": "隨機",
     "revenue": "收入",
-    "downloadMissingImages": "下載缺少的圖片",
-    "downloadedMissingImages": "{count,plural, =0{未找到缺少的圖片} =1{已下載 {count} 張缺少的圖片} other{已下載 {count} 張缺少的圖片}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "downloadCount": "{count,plural, =1{{count} 個下載} other{{count} 個下載}}",
     "@downloadCount": {
         "placeholders": {
@@ -110,7 +96,6 @@
         }
     },
     "errorScreenError": "獲取錯誤列表時出錯！您可以在 GitHub 上提出問題並清除應用程式資料",
-    "failedToGetTrackFromDownloadId": "無法根據下載 ID 取得歌曲",
     "error": "錯誤",
     "discNumber": "光碟 {number}",
     "@discNumber": {
@@ -131,10 +116,8 @@
         }
     },
     "required": "必需的",
-    "updateButtonLabel": "更新",
     "playlistUpdated": "播放清單名稱已更新。",
-    "downloadsDeleted": "已刪除下載內容。",
-    "addDownloads": "新增下載項目",
+    "addDownloads": "新增下載內容",
     "location": "位置",
     "downloadsQueued": "正在下載中",
     "addButtonLabel": "新增",
@@ -160,43 +143,19 @@
     "selectDirectory": "選擇目錄",
     "unknownError": "未知錯誤",
     "pathReturnSlashErrorMessage": "不能使用「/」作為下載路徑",
-    "directoryMustBeEmpty": "目錄必須為空",
     "customLocationsBuggy": "自訂位置可能會導致嚴重錯誤，通常不建議使用。存放於系統「音樂」資料夾內的位置，因作業系統的限制，無法儲存專輯封面。",
     "enterLowPriorityStateOnPause": "暫停時進入低優先級狀態",
     "enterLowPriorityStateOnPauseSubtitle": "允許暫停後可滑掉通知，並讓 Android 關閉播放服務。",
     "shuffleAllTrackCount": "隨機播放所有歌曲次數",
     "shuffleAllTrackCountSubtitle": "使用全部隨機播放按鈕時，要載入的歌曲數量。",
     "viewType": "瀏覽方式",
-    "viewTypeSubtitle": "調整音樂清單的瀏覽方式",
+    "viewTypeSubtitle": "調整音樂列表的瀏覽方式",
     "list": "列表",
     "grid": "網格",
-    "portrait": "縱向",
     "landscape": "橫向",
-    "gridCrossAxisCount": "{value} 網格數量",
-    "@gridCrossAxisCount": {
-        "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "Portrait"
-            }
-        }
-    },
-    "gridCrossAxisCountSubtitle": "當為 {value} 時，每列使用的網格數量。",
-    "@gridCrossAxisCountSubtitle": {
-        "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-        "placeholders": {
-            "value": {
-                "type": "String",
-                "example": "landscape"
-            }
-        }
-    },
     "showTextOnGridView": "在網格瀏覽中顯示文字",
     "useCoverAsBackground": "使用模糊的專輯封面作為播放介面的背景",
     "useCoverAsBackgroundSubtitle": "在播放介面中是否顯示模糊的專輯封面作為背景。",
-    "hideTrackArtistsIfSameAsAlbumArtists": "若與專輯藝人相同則隱藏歌曲藝人",
-    "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "當歌曲藝人與專輯藝人相同時，是否仍在專輯介面中顯示歌曲藝人。",
     "theme": "主題",
     "system": "系統",
     "light": "淺色",
@@ -206,7 +165,6 @@
     "yesButtonLabel": "是",
     "noButtonLabel": "否",
     "minutes": "分鍾",
-    "invalidNumber": "無效數字",
     "sleepTimerTooltip": "睡眠定時器",
     "addToPlaylistTooltip": "加入播放清單",
     "addToPlaylistTitle": "加入播放清單",
@@ -214,16 +172,12 @@
     "createButtonLabel": "建立",
     "playlistCreated": "已建立播放清單。",
     "noAlbum": "無專輯",
-    "noItem": "無項目",
-    "noArtist": "無藝人",
+    "noItem": "無內容",
     "unknownArtist": "未知藝人",
     "queue": "播放佇列",
     "addToQueue": "加入播放佇列",
-    "replaceQueue": "更換播放佇列",
     "instantMix": "即時混播",
     "goToAlbum": "檢視專輯",
-    "addedToQueue": "已加入播放佇列。",
-    "queueReplaced": "播放佇列已被取代。",
     "startingInstantMix": "開始即時混播。",
     "anErrorHasOccured": "發生了一個錯誤。",
     "responseError": "{error} 狀態碼 {statusCode}.",
@@ -256,42 +210,26 @@
     "addToMix": "加入混播",
     "disableGesture": "禁用手勢",
     "disableGestureSubtitle": "是否禁用手勢功能。",
-    "removeFromPlaylistTooltip": "從播放清單中移除歌曲",
-    "removeFromPlaylistTitle": "從播放清單中移除",
+    "removeFromPlaylistTooltip": "移出播放清單",
+    "removeFromPlaylistTitle": "移出播放清單",
     "removedFromPlaylist": "已從播放清單中移除。",
     "bufferDurationSubtitle": "預先緩衝的音軌時間長度（秒）。變更後需要重新啟動應用程式。",
     "bufferDuration": "緩衝時長",
-    "redownloadedItems": "{count,plural, =0{沒有需要重新下載的項目。} =1{已重新下載{count}個項目} other{已重新下載{count}個項目}}",
-    "@redownloadedItems": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "language": "語言",
     "showUncensoredLogMessage": "此記錄包含你的登入資訊。是否顯示？",
-    "insertedIntoQueue": "已加入播放佇列。",
-    "@insertedIntoQueue": {
-        "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-    },
     "refresh": "重新整理",
     "confirm": "確認",
     "playNext": "加入下一首",
     "@playNext": {
         "description": "Popup menu item title for inserting an item into the play queue after the currently-playing item."
     },
-    "resetTabs": "重置分頁",
     "noMusicLibrariesBody": "找不到音樂庫。請確保 Jellyfin 中至少有一個媒體庫的類別需設置成\"音樂\"。",
     "noMusicLibrariesTitle": "尚無音樂庫",
     "@noMusicLibrariesTitle": {
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
-    "syncDownloadedPlaylists": "同步已下載的播放清單",
     "interactions": "互動",
     "showFastScroller": "顯示快速滾動條",
-    "swipeInsertQueueNext": "滑動接續播放歌曲",
-    "swipeInsertQueueNextSubtitle": "開啟後滑動音樂清單中的歌曲，可以將歌曲接著播放，而不是加到播放清單的最後一首。",
     "loginFlowQuickConnectInstructions": "打開 Jellyfin 應用程式或網站，點擊你的用戶圖示，然後選擇「快速連接」。",
     "@loginFlowQuickConnectInstructions": {
         "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
@@ -555,29 +493,7 @@
             }
         }
     },
-    "addToMorePlaylistsTooltip": "加入更多播放清單",
-    "addToMorePlaylistsTitle": "加入更多播放清單",
-    "removeFromPlaylistNamedTooltip": "從播放清單「 '{playlistName}'」移除",
-    "@removeFromPlaylistNamedTooltip": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "removeFromPlaylistNamedTitle": "從播放清單'{playlistName}'中移除",
-    "@removeFromPlaylistNamedTitle": {
-        "description": "Tooltip for the action that removes a track from a specific playlist. The playlist name is a placeholder.",
-        "placeholders": {
-            "playlistName": {
-                "type": "String",
-                "example": "My Favorite Tracks"
-            }
-        }
-    },
-    "unknownAlbum": "未知專輯",
+    "addToMorePlaylistsTitle": "加入播放清單",
     "playbackModeDirectPlaying": "原生播放",
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
@@ -622,15 +538,11 @@
     "@showCoversOnAlbumScreenSubtitle": {
         "description": "Subtitle for the setting that controls if album covers are shown for each track separately on the album screen"
     },
-    "emptyTopTracksList": "您還沒聆聽過這位藝人的任何音樂。",
-    "@emptyTopTracksList": {
-        "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
-    },
-    "emptyFilteredListTitle": "找不到符合的項目",
+    "emptyFilteredListTitle": "找不到符合的內容",
     "@emptyFilteredListTitle": {
         "description": "Message shown when a list of items is filtered and no items match the filter"
     },
-    "emptyFilteredListSubtitle": "找不到符合的項目。試著取消篩選條件或更改搜索詞。",
+    "emptyFilteredListSubtitle": "找不到符合的內容。試著取消篩選條件或更改搜索詞。",
     "@emptyFilteredListSubtitle": {
         "description": "Message shown when a list of items is filtered and no items match the filter"
     },
@@ -670,8 +582,6 @@
     "@playerScreenMinimumCoverPaddingEditorTitle": {
         "description": "Title for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
-    "confirmFavoriteAdded": "已收藏",
-    "confirmFavoriteRemoved": "已移除收藏",
     "lyricsScreen": "歌詞介面",
     "@lyricsScreen": {
         "description": "Name for the view/screen that shows lyrics for the currently playing track"
@@ -708,7 +618,7 @@
     "@togglePlaybackButtonTooltip": {
         "description": "Tooltip for the button that toggles playback"
     },
-    "previousTracks": "先前播放的歌曲",
+    "previousTracks": "已播放的歌曲",
     "@previousTracks": {
         "description": "Description in the queue panel for the list of tracks that come before the current track in the queue. The tracks might not actually have been played (e.g. if the user skipped ahead to a specific track)."
     },
@@ -757,7 +667,7 @@
     "@shuffleToQueue": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
-    "confirmAddToNextUp": "{type, select, track{歌曲} album{專輯} artist{藝人} playlist{播放清單} genre{類型} disc{光碟} other{項目}}已加入即將播放",
+    "confirmAddToNextUp": "{type, select, track{歌曲} album{專輯} artist{藝人} playlist{播放清單} genre{類型} disc{光碟} other{內容}}已加入即將播放",
     "@confirmAddToNextUp": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the \"Next Up\" queue",
         "placeholders": {
@@ -766,7 +676,7 @@
             }
         }
     },
-    "confirmAddToQueue": "{type, select, track{歌曲} album{專輯} artist{藝人} playlist{播放清單} genre{類型} disc{光碟} other{項目}}已加入播放佇列",
+    "confirmAddToQueue": "{type, select, track{歌曲} album{專輯} artist{藝人} playlist{播放清單} genre{類型} disc{光碟} other{內容}}已加入播放佇列",
     "@confirmAddToQueue": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the regular queue",
         "placeholders": {
@@ -817,7 +727,7 @@
     "@savedQueue": {
         "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
     },
-    "playingFromType": "現正播放自{source, select, album{專輯} playlist{播放清單} trackMix{歌曲混播} artistMix{藝人混播} albumMix{專輯混播} genreMix{類型混播} favorites{收藏} allTracks{所有歌曲} filteredList{篩選} genre{類型} artist{藝人} track{歌曲} nextUpAlbum{即將播放中的專輯} nextUpPlaylist{即將播放中的播放清單} nextUpArtist{即將播放中的藝人} nextUpGenre{即將播放中的類型} remoteClient{其他用戶端} radio{電台} other{}}",
+    "playingFromType": "現正播放自 {source, select, album{專輯} playlist{播放清單} trackMix{歌曲混播} artistMix{藝人混播} albumMix{專輯混播} genreMix{類型混播} favorites{收藏} allTracks{所有歌曲} filteredList{篩選結果} genre{類型} artist{藝人} track{歌曲} nextUpAlbum{即將播放中的專輯} nextUpPlaylist{即將播放中的播放清單} nextUpArtist{即將播放中的藝人} nextUpGenre{即將播放中的類型} remoteClient{其他用戶端} radio{電台} homeScreenSection{} collection{收藏} collectionMix{收藏的混播} other{}}",
     "@playingFromType": {
         "description": "Prefix shown before the type of the main queue source at the top of the player screen. Example: \"Playing From Album\"",
         "placeholders": {
@@ -835,7 +745,7 @@
             }
         }
     },
-    "confirmPlayNext": "{type, select, track{歌曲} album{專輯} artist{藝人} playlist{播放清單} genre{類型} other{項目}}將會在下一首播放",
+    "confirmPlayNext": "{type, select, track{歌曲} album{專輯} artist{藝人} playlist{播放清單} genre{類型} other{內容}}將會在下一首播放",
     "@confirmPlayNext": {
         "description": "A confirmation message that is shown after successfully adding a track to the front of the \"Next Up\" queue",
         "placeholders": {
@@ -1034,7 +944,7 @@
     "@volumeNormalizationModeSelectorTitle": {
         "description": "Title for the dropdown that selects the replay gain mode"
     },
-    "finampCollectionNames": "{itemType, select, favorites{收藏} allPlaylists{全部播放清單} fiveLatestAlbums{最新5張專輯} allPlaylistsMetadata{清單資訊} other{{itemType}} }",
+    "finampCollectionNames": "{itemType, select,favorites{收藏}allPlaylists{所有播放清單}fiveLatestAlbums{最新五張專輯}allPlaylistsMetadata{播放清單資訊}collectionWithLibraryFilter{依音樂庫篩選的收藏}other{{itemType}}}",
     "@finampCollectionNames": {
         "placeholders": {
             "itemType": {
@@ -1052,7 +962,7 @@
     "prioritizePlayerCoverSubtitle": "播放介面將優先顯示較大的專輯封面顯示，而在較小螢幕上，非必要的操作介面將進一步隱藏，以提升視覺體驗。",
     "fiveLatestAlbumsSettingSubtitle": "下載內容會在到期後自動移除。若要防止專輯被移除，請鎖定下載。",
     "cacheLibraryImagesSettingsSubtitle": "目前音樂庫中的所有專輯、藝人、類型和播放清單封面都將被下載。",
-    "itemDeletedSnackbar": "{itemType, select,album{專輯}playlist{播放清單}artist{藝人}genre{類型}track{歌曲}library{音樂庫}other{項目}}已從{deviceType, select,device{裝置}server{伺服器}other{未知}}刪除",
+    "itemDeletedSnackbar": "{itemType, select,album{專輯}playlist{播放清單}artist{藝人}genre{類型}track{歌曲}library{音樂庫}other{內容}}已從{deviceType, select,device{裝置}server{伺服器}other{未知}}刪除",
     "@itemDeletedSnackbar": {
         "description": "Used whenever item gets deleted from the device or server, message in snackbar"
     },
@@ -1060,7 +970,7 @@
     "@volumeNormalizationModeSelectorDescription": {
         "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown"
     },
-    "deleteFromTargetDialogText": "你即將從{device, select, device{此裝置} server{伺服器的檔案系統與音樂庫{deleteType, select, canDelete{，此操作也會同時從此裝置刪除該項目。} cantDelete{，此項目會保留在此裝置上，直到下次同步。} notDownloaded{} other{}}} other{}}中刪除此{itemType, select, album{專輯} playlist{播放清單} artist{藝人} genre{類型} track{歌曲} library{音樂庫} other{項目}}。\n此操作無法復原。",
+    "deleteFromTargetDialogText": "你即將從{device, select, device{此裝置} server{伺服器的檔案系統與音樂庫{deleteType, select, canDelete{，此操作也會同時從此裝置刪除該內容。} cantDelete{，此內容會保留在此裝置上，直到下次同步。} notDownloaded{} other{}}} other{}}中刪除此{itemType, select, album{專輯} playlist{播放清單} artist{藝人} genre{類型} track{歌曲} library{音樂庫} other{內容}}。\n此操作無法復原。",
     "@deleteFromTargetDialogText": {
         "description": "(Important: Note the space in front of some cases) A Confirm Prompt used whenever an item is about to be deleted from the device or server. The Server case should explain that this cannot be reverted, this information is not needed for the device since the user can just download the track again. The delete Type adapts the server text even more in can the user can or cant delete the item."
     },
@@ -1081,11 +991,11 @@
     "@volumeNormalizationModeAlbumBased": {
         "description": "'Album-based' option for the replay gain mode dropdown. In album-based mode, the album gain is always used, regardless of whether an album is playing or not."
     },
-    "preferQuickSyncSwitchSubtitle": "執行同步時，某些通常不變的項目（如歌曲與專輯）將不會被更新。而「下載修復」將一律執行完整同步。",
+    "preferQuickSyncSwitchSubtitle": "執行同步時，某些通常不變的內容（如歌曲與專輯）將不會被更新。而「下載修復」將一律執行完整同步。",
     "@preferQuickSyncSwitchSubtitle": {
         "description": "Description of setting that skips completed albums while syncing."
     },
-    "itemTypeSubtitle": "{itemType, select, album{專輯} playlist{播放清單} artist{藝人} genre{類型} track{歌曲} library{音樂庫} unknown{項目} other{{itemType}}} - {itemName}",
+    "itemTypeSubtitle": "{itemType, select, album{專輯} playlist{播放清單} artist{藝人} genre{類型} track{歌曲} library{音樂庫} unknown{內容} other{{itemType}}} - {itemName}",
     "@itemTypeSubtitle": {
         "placeholders": {
             "itemType": {
@@ -1126,7 +1036,7 @@
         "description": "'Track-based' option for the replay gain mode dropdown. In track-based mode, the track gain is always used, regardless of whether an album is playing or not."
     },
     "startInstantMixForIndividualTracksSwitchSubtitle": "啟用後，在「歌曲」分頁點選單一歌曲時，將會自動播放該歌曲的隨機混播，而非僅播放該歌曲本身。",
-    "repairComplete": "下載項目已成功修復。",
+    "repairComplete": "下載內容已成功修復。",
     "@repairComplete": {
         "description": "Message displayed after download repair completes."
     },
@@ -1134,7 +1044,7 @@
     "@syncComplete": {
         "description": "Message displayed after download sync completes."
     },
-    "repairDownloads": "修復已下載檔案或中繼資料的問題。",
+    "repairDownloads": "修復已下載檔案或資訊的問題。",
     "@repairDownloads": {
         "description": "Tooltip for downloads repair button."
     },
@@ -1142,7 +1052,7 @@
     "@requireWifiForDownloads": {
         "description": "Description of setting for only performing downloads while on wifi"
     },
-    "downloadLibraryPrompt": "您確定要下載整個音樂庫 {libraryName} 的所有內容嗎？",
+    "downloadLibraryPrompt": "您確定要下載音樂庫「{libraryName}」的所有內容嗎？",
     "@downloadLibraryPrompt": {
         "description": "Confirmation prompt before downloading entire library, which may be large.",
         "placeholders": {
@@ -1197,7 +1107,7 @@
     "@downloadBitrateSubtitle": {
         "description": "subtitle for Download Bitrate settings slider"
     },
-    "activeDownloadsListHeader": "{itemCount} 個{typeName, select, downloading{正在下載} failed{失敗} syncFailed{同步異常} enqueued{等待下載} other{}}的{itemCount, plural, =1{項目} other{項目}}",
+    "activeDownloadsListHeader": "{itemCount} 個{typeName, select, downloading{正在下載} failed{失敗} syncFailed{同步異常} enqueued{等待下載} other{}}的{itemCount, plural, =1{內容} other{內容}}",
     "@activeDownloadsListHeader": {
         "description": "Header text for lists of active downloads of a particular state.",
         "placeholders": {
@@ -1209,7 +1119,7 @@
             }
         }
     },
-    "downloadsWorkersSettingSubtitle": "此設定控制中繼資料同步與下載項目刪除的任務數量。提高此數量可加快處理速度，但也可能造成延遲。",
+    "downloadsWorkersSettingSubtitle": "此設定控制資訊同步與下載內容刪除的任務數量。提高此數量可加快處理速度，但也可能造成延遲。",
     "@downloadsWorkersSettingSubtitle": {
         "description": "Description of setting controlling download worker count."
     },
@@ -1296,7 +1206,7 @@
     "@downloadItem": {
         "description": "Option to download item in long-press menu."
     },
-    "syncDownloads": "同步並下載缺少的項目。",
+    "syncDownloads": "同步並下載缺少的內容。",
     "@syncDownloads": {
         "description": "Tooltip for downloads sync button."
     },
@@ -1325,7 +1235,7 @@
             }
         }
     },
-    "incidentalDownloadTooltip": "此項目由 {parentName} 下載。",
+    "incidentalDownloadTooltip": "此內容由 {parentName} 下載。",
     "@incidentalDownloadTooltip": {
         "placeholders": {
             "parentName": {
@@ -1382,10 +1292,6 @@
     "@redownloadTitle": {
         "description": "Title for download transcode setting which redownloads tracks with higher allowed qualities"
     },
-    "deleteDownloadsConfirmButtonText": "刪除",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
     "dontTranscode": "下載原始格式{description, select, null{} other{：{description}}}",
     "@dontTranscode": {
         "placeholders": {
@@ -1396,34 +1302,15 @@
         },
         "description": "Dropdown option to download original version of tracks"
     },
-    "deleteDownloadsPrompt": "確定要從此裝置中刪除{itemType, select, album{專輯} playlist{播放清單} artist{藝人} genre{類型} track{歌曲} library{音樂庫} other{項目}}'{itemName}'嗎？",
-    "@deleteDownloadsPrompt": {
-        "placeholders": {
-            "itemName": {
-                "type": "String",
-                "example": "Abandon Ship"
-            },
-            "itemType": {
-                "type": "String",
-                "example": "album"
-            }
-        },
-        "description": "Confirmation prompt shown before deleting downloaded media from the local device, destructive action, doesn't affect the media on the server."
-    },
     "redownloadcomplete": "轉碼下載作業已排程。",
     "@redownloadcomplete": {
         "description": "Mesage when Automatically Redownload Transcodes transcode setting completes operations."
     },
-    "fixedGridSizeSwitchSubtitle": "網格大小不會隨著視窗/畫面大小改變。",
-    "hideQueueButtonSubtitle": "隱藏播放介面的播放佇列按鈕。向上滑動以開啟播放佇列列表。",
     "oneLineMarqueeTextButton": "自動捲動較長的標題",
-    "marqueeOrTruncateButton": "在較長的標題使用刪節號",
     "oneLineMarqueeTextButtonSubtitle": "自動捲動長度超過兩行的標題",
-    "hideQueueButton": "隱藏隊列按鈕",
     "hidePlayerBottomActions": "隱藏底部按鈕",
-    "marqueeOrTruncateButtonSubtitle": "在較長的標題盡頭顯示 … 代替捲動文字",
     "showArtistChipImageSubtitle": "此設定會影響藝人照片的縮圖顯示，例如在播放介面上。",
-    "fixedGridTileSizeEnum": "{size, select, small{小} medium{中} large{大} veryLarge{非常大} other{???}}",
+    "fixedGridTileSizeEnum": "{size, select, tiny{極小} verySmall{很小} small{小} medium{中} large{大} veryLarge{很大} huge{超大} giant{巨大} other{???}}",
     "@fixedGridTileSizeEnum": {
         "placeholders": {
             "size": {
@@ -1437,8 +1324,6 @@
     "@scrollToCurrentTrack": {
         "description": "Tooltip for button that scrolls the queue list back to the current track"
     },
-    "fixedGridSizeSwitchTitle": "使用固定大小的網格",
-    "fixedGridSizeTitle": "網格大小",
     "showArtistChipImage": "同時顯示藝人照片與名稱",
     "defaultDownloadLocationButton": "設為預設下載位置。若停用，將可於每次下載時個別選擇位置。",
     "@defaultDownloadLocationButton": {
@@ -1451,7 +1336,7 @@
     "allowSplitScreenTitle": "允許分割畫面",
     "enableVibration": "啟用震動",
     "enableVibrationSubtitle": "是否啟用震動。",
-    "lockDownload": "永遠保留在裝置上",
+    "lockDownload": "永久保留於裝置",
     "@lockDownload": {
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
     },
@@ -1499,7 +1384,7 @@
     },
     "downloadAllPlaylistsSetting": "下載所有播放清單",
     "trackOfflineFavoritesSubtitle": "離線時也能顯示更新後的收藏狀態，不會下載額外檔案。",
-    "allPlaylistsInfoSettingSubtitle": "同步所有播放清單的中繼資料以改善播放清單使用體驗",
+    "allPlaylistsInfoSettingSubtitle": "同步所有播放清單的資訊以改善播放清單使用體驗",
     "showLyricsTimestampsSubtitle": "控制歌詞介面中是否顯示每行歌詞的時間標記。",
     "@showLyricsTimestampsSubtitle": {
         "description": "Subtitle for the setting that controls if timestamps are shown for lyrics"
@@ -1533,7 +1418,7 @@
     "@addRemoveFromPlaylist": {
         "description": "Header for add to/remove from playlist popup menu"
     },
-    "addPlaylistSubheader": "加入項目至播放清單",
+    "addPlaylistSubheader": "加入內容至播放清單",
     "@addPlaylistSubheader": {
         "description": "Subheader for adding to a playlist in the add to/remove from playlist popup menu"
     },
@@ -1602,11 +1487,11 @@
     "@trackMenuButtonTooltip": {
         "description": "Tooltip for the button that opens the track menu"
     },
-    "quickActions": "快速動作",
+    "quickActions": "快速操作",
     "@quickActions": {
         "description": "Title for the short menu that can be shown when long-pressing on the menu button on the player screen. Currently only used for adding to and removing from playlists."
     },
-    "allPlaylistsInfoSetting": "下載播放清單的中繼資料",
+    "allPlaylistsInfoSetting": "下載播放清單的資訊",
     "showSeekControlsOnMediaNotificationSubtitle": "控制媒體通知中是否顯示可拖曳的進度條，讓您無需開啟應用程式即可調整播放位置。",
     "@showSeekControlsOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a seekable progress bar."
@@ -1694,7 +1579,7 @@
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
     },
-    "noItemsDownloaded": "尚未下載任何項目。",
+    "noItemsDownloaded": "尚未下載任何內容。",
     "@noItemsDownloaded": {
         "description": "Shown on the downloads screen for sections without any downloaded items."
     },
@@ -1711,7 +1596,7 @@
         "description": "Title for the audio fade-in duration setting."
     },
     "audioFadeInDurationSettingTitle": "音訊淡入時長",
-    "swipeLeftToRightActionSubtitle": "向右滑動音樂清單中的歌曲時觸發的操作。",
+    "swipeLeftToRightActionSubtitle": "向右滑動音樂列表中的歌曲時觸發的操作。",
     "audioFadeOutDurationSettingSubtitle": "音訊淡出的時間長度，以毫秒為單位。",
     "@audioFadeOutDurationSettingSubtitle": {
         "description": "Subtitle for the audio fade-in duration setting. Set to 0 to disable fade-in."
@@ -1728,7 +1613,7 @@
     },
     "autoOfflineSettingTitle": "自動離線模式",
     "swipeLeftToRightAction": "右滑動作",
-    "swipeRightToLeftActionSubtitle": "向左滑動音樂清單中的歌曲時觸發的操作。",
+    "swipeRightToLeftActionSubtitle": "向左滑動音樂列表中的歌曲時觸發的操作。",
     "autoOfflineOptionNetwork": "區域網路",
     "@autoOfflineOptionNetwork": {
         "description": "This is shown when the autoOffline feature is set to Network, this means offline mode will be automatically enabled when no wifi or ethernet connection is active"
@@ -1749,7 +1634,6 @@
     "appearsOnAlbums": "收錄於",
     "albumArtists": "專輯藝人",
     "performingArtists": "歌曲藝人",
-    "playbackReporting": "播放分析",
     "currentVolumeFeatureText": "{volume}% 音量",
     "@currentVolumeFeatureText": {
         "description": "Label for the feature chip that is shown if the volume is not 100%",
@@ -1867,7 +1751,7 @@
             }
         }
     },
-    "allLibraries": "所有媒體",
+    "allLibraries": "所有的音樂庫",
     "@allLibraries": {
         "description": "All Libraries"
     },
@@ -1875,7 +1759,6 @@
     "@noGenres": {
         "description": "Gets shown when there are no genres available for an album or artist"
     },
-    "onlineMode": "線上模式",
     "favorites": "收藏",
     "showShuffleButtonOnMediaNotificationTitle": "在媒體通知中顯示隨機播放按鈕",
     "@showShuffleButtonOnMediaNotificationTitle": {
@@ -1896,11 +1779,8 @@
     "latestTracks": "最新上架的歌曲",
     "recentlyPlayedTracks": "最近聽過的歌曲",
     "favoriteArtists": "收藏的藝人",
-    "randomAlbums": "隨機推薦的專輯",
-    "randomArtists": "隨機推薦的藝人",
     "mostPlayed": "經常播放",
     "favoriteTracks": "收藏的歌曲",
-    "randomFavoritesFirst": "隨機播放（優先收藏項目）",
     "recentlyAdded": "最近新增",
     "recentlyPlayed": "最近播放",
     "latestReleases": "最新發行",
@@ -1916,10 +1796,6 @@
     "genreListsInheritSorting": "繼承完整清單的排序",
     "@genreListsInheritSorting": {
         "description": "Label for the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
-    },
-    "curatedItemsMostPlayedOfflineTooltip": "離線模式下無法使用。",
-    "@curatedItemsMostPlayedOfflineTooltip": {
-        "description": "Tooltip for Most Played on Curated Items in Offline Mode."
     },
     "downloadButtonDisabledGenreFilterTooltip": "請先取消類型篩選，才能進行下載。",
     "@downloadButtonDisabledGenreFilterTooltip": {
@@ -2017,7 +1893,7 @@
     "@genreFilterArtistScreensSubtitle": {
         "description": "Description of the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
     },
-    "genreNoItems": "你沒有任何屬於此類型的{itemType, select,playlists{播放清單}artists{藝人}albums{專輯}tracks{歌曲}other{項目}}。",
+    "genreNoItems": "你沒有任何屬於此類型的{itemType, select,playlists{播放清單}artists{藝人}albums{專輯}tracks{歌曲}other{內容}}。",
     "@genreNoItems": {
         "description": "Message for empty See All lists for a genre.",
         "placeholders": {
@@ -2043,7 +1919,7 @@
     "@genreListsInheritSortingSubtitle": {
         "description": "Description of the setting that controls if a See All Genre Lists should inherit the Genre Sorting and Filtering."
     },
-    "curatedItemsNoFavorites": "你尚未收藏任何{itemType, select, artistGenreFilter{由此藝人演唱的此類型的收藏} artist{此藝人的收藏} genre{此類型的收藏} other{項目}}。",
+    "curatedItemsNoFavorites": "你尚未收藏任何{itemType, select, artistGenreFilter{由此藝人演唱的此類型的收藏} artist{此藝人的收藏} genre{此類型的收藏} other{內容}}。",
     "@curatedItemsNoFavorites": {
         "description": "Tooltip for Favorites on Curated Items in Online Mode when no favorites yet.",
         "placeholders": {
@@ -2122,7 +1998,7 @@
     "@defaultOrder": {
         "description": "Default sorting order for playlists (server order)"
     },
-    "itemCountLoading": "{childType, select, track{首歌曲} album{張專輯} other{項目}}",
+    "itemCountLoading": "{childType, select, track{首歌曲} album{張專輯} other{內容}}",
     "@itemCountLoading": {
         "description": "Shown while the item count is being calculated.",
         "placeholders": {
@@ -2143,7 +2019,7 @@
             }
         }
     },
-    "itemCount": "{childType, select,track{{amount, plural, =1{1 首歌曲} other{{amount} 首歌曲}}} album{{amount, plural, =1{1 張專輯} other{{amount} 張專輯}}} other{{amount, plural, =1{1 個項目} other{{amount} 個項目}}}}",
+    "itemCount": "{childType, select,track{{amount, plural, =1{1 首歌曲} other{{amount} 首歌曲}}} album{{amount, plural, =1{1 張專輯} other{{amount} 張專輯}}} other{{amount, plural, =1{1 個內容} other{{amount} 個內容}}}}",
     "@itemCount": {
         "description": "Error shown when the library select screen fails to load.",
         "placeholders": {
@@ -2165,7 +2041,7 @@
             }
         }
     },
-    "itemCountCalculating": "正在計算項目數量",
+    "itemCountCalculating": "正在計算內容數量",
     "@itemCountCalculating": {
         "description": "Shown to screen readers while the item count is being calculated."
     },
@@ -2206,12 +2082,8 @@
     },
     "preferLocalNetworkEnableSwitchDescription": "是否在進入 Jellyfin 伺服器所在的區域網路時使用不同的位址",
     "preferLocalNetworkTargetAddressLocalSettingDescription": "Jellyfin 伺服器在區域網路內的連線位址",
-    "preferLocalNetworkInfoBox": "此功能需要位置權限（且需啟用定位功能）以讀取網路名稱。",
-    "@preferLocalNetworkInfoBox": {
-        "description": "This is only shown on ios and android since desktop doesnt require location permissions"
-    },
     "preferLocalNetworkPublicAddressSettingTitle": "外部網路",
-    "sleepTimerRemainingTime": "將於{time, plural, =1{1 分鐘內} other{{time} 分鐘後}}進入睡眠",
+    "sleepTimerRemainingTime": "{time,plural,=1{<1 分後睡眠} other{{time} 分後睡眠}}",
     "@sleepTimerRemainingTime": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
         "placeholders": {
@@ -2220,7 +2092,7 @@
             }
         }
     },
-    "sleepTimerRemainingTracks": "將於{time, plural, =1{此曲播畢後} other{ {time} 首後}}進入睡眠",
+    "sleepTimerRemainingTracks": "{time,plural,=1{此曲播畢後睡眠} other{{time} 首後睡眠}}",
     "@sleepTimerRemainingTracks": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
         "placeholders": {
@@ -2326,7 +2198,7 @@
         "description": "Description for the quick connect authorization menu, shown at the bottom"
     },
     "logoutButtonSubtitle": "登入新的伺服器時，原本下載的檔案將被刪除",
-    "createPlaylistFromCurrentQueue": "將播放佇列儲存為播放清單",
+    "createPlaylistFromCurrentQueue": "儲存播放佇列為播放清單",
     "@createPlaylistFromCurrentQueue": {
         "description": "Label for a button that creates a new playlist from the current queue."
     },
@@ -2343,20 +2215,12 @@
         "description": "Subtitle for the setting that controls if high contrast colors are used throughout the app"
     },
     "adaptive": "自動調整",
-    "shuffleCountButton": "隨機播放（{count, plural,=1{{count} 首歌曲} other{{count} 首歌曲}}）",
-    "@shuffleCountButton": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "none": "無",
-    "additionalBaseItemInfoTitle": "額外項目資訊",
+    "additionalBaseItemInfoTitle": "額外內容資訊",
     "@additionalBaseItemInfoTitle": {
         "description": "Title for the setting that controls the displayed additional item info."
     },
-    "additionalBaseItemInfoSubtitle": "控制在各類型項目清單中要顯示哪種類型的額外資訊。當設定為「自動調整」時，系統會根據目前的排序方式或使用情境，自動選擇要顯示的資訊內容。",
+    "additionalBaseItemInfoSubtitle": "控制在各類型內容清單中要顯示哪種類型的額外資訊。當設定為「自動調整」時，系統會根據目前的排序方式或使用情境，自動選擇要顯示的資訊內容。",
     "@additionalBaseItemInfoSubtitle": {
         "description": "Subtitle for the setting that controls the displayed additional item info."
     },
@@ -2408,7 +2272,7 @@
     "@autoExpandPlayerScreenSubtitle": {
         "description": "Subtitle for the setting that controls if the player screen is opened directly after starting a new queue"
     },
-    "confirmAddCollectionItemToPlaylist": "您確定要將 {itemType, select, album{專輯} playlist{播放清單} artist{藝人} genre{類型} other{項目}} '{itemName}' 中的所有歌曲加入此播放清單嗎？這些歌曲之後只能逐一移除。",
+    "confirmAddCollectionItemToPlaylist": "您確定要將 {itemType, select, album{專輯} playlist{播放清單} artist{藝人} genre{類型} other{內容}} '{itemName}' 中的所有歌曲加入此播放清單嗎？這些歌曲之後只能逐一移除。",
     "@confirmAddCollectionItemToPlaylist": {
         "description": "Warning dialog for adding an album, artist, etc. or multiple tracks to a playlist, clarifying that this cannot be undone without removing all tracks individually and manually.",
         "placeholders": {
@@ -2532,15 +2396,11 @@
     "@androidImageErrorPrompt": {
         "description": "Label shown on popup dialog when adding a download location when writing songs succeeds but writing images fails, which can occur on android."
     },
-    "addDownloadLocationsErrorButton": "強制加入",
-    "@addDownloadLocationsErrorButton": {
-        "description": "Label shown on button for adding a download location we suspect to be buggy"
-    },
-    "syncFailedWarningShort": "警告：部分下載項目與伺服器同步失敗。",
+    "syncFailedWarningShort": "警告：部分下載內容與伺服器同步失敗。",
     "@syncFailedWarningShort": {
         "description": "Simple warning message for when download sync fails due to items being deleted from the server."
     },
-    "syncFailedWarningLong": "部分下載未能與伺服器同步。伺服器上的對應檔案可能已刪除。建議刪除這些下載失敗的項目，以清理過期的檔案。",
+    "syncFailedWarningLong": "部分下載未能與伺服器同步。伺服器上的對應檔案可能已刪除。建議刪除這些下載失敗的內容，以清理過期的檔案。",
     "@syncFailedWarningLong": {
         "description": "Expanded warning message for when download sync fails due to items being deleted from the server."
     },
@@ -2548,7 +2408,7 @@
     "@openDownloads": {
         "description": "Label on a button to open the downloads screen after a sync fails."
     },
-    "syncingFailed": "同步失敗。此下載項目可能已從伺服器移除，建議刪除。",
+    "syncingFailed": "同步失敗。此下載內容可能已從伺服器移除，建議刪除。",
     "@syncingFailed": {
         "description": "Message shown for downloads with the sync failed status, which is generally caused by the server-side item being removed."
     },
@@ -2560,7 +2420,7 @@
     "@autoplayRestoredQueueSubtitle": {
         "description": "Subtitle for the setting that controls if restored queues automatically play."
     },
-    "missingBlurhashWarning": "警告：偵測到 Jellyfin 伺服器未正確生成 BlurHash。這會使 Finamp 無法辨識重複圖片並導致重複下載。請修正伺服器設定並執行下載修復以清理下載項目。",
+    "missingBlurhashWarning": "警告：偵測到 Jellyfin 伺服器未正確生成 BlurHash。這會使 Finamp 無法辨識重複圖片並導致重複下載。請修正伺服器設定並執行下載修復以清理下載內容。",
     "@missingBlurhashWarning": {
         "description": "A warning message displayed on the downloads screen if the jellyfin server is missing blurhashes."
     },
@@ -2572,7 +2432,7 @@
     "@savingChanges": {
         "description": "Text shown while the changes to a playlist are being saved"
     },
-    "noPermissionToEditMetadata": "需具管理員權限才能編輯中繼資料圖片。",
+    "noPermissionToEditMetadata": "需具管理員權限才能編輯媒體圖片。",
     "@noPermissionToEditMetadata": {
         "description": "Error message shown when the user tries to edit metadata but doesn't have permission to do so, i.e. because they are not an admin"
     },
@@ -2619,11 +2479,7 @@
         "description": "Hint text for the color code input field"
     },
     "save": "儲存",
-    "invalidColorCode": "無效的色碼",
-    "@invalidColorCode": {
-        "description": "Snackbar message shown when the user tries to save an invalid hex color code"
-    },
-    "downloadAllPlaylistsSettingWarning": "注意：將下載所有播放清單內的內容，包含所有音樂庫中的項目。",
+    "downloadAllPlaylistsSettingWarning": "注意：將下載所有播放清單內的內容，包含所有音樂庫中的內容。",
     "snackbarOptionsMenuTitle": "管理訊息",
     "@snackbarOptionsMenuTitle": {
         "description": "Title for the snackbar options menu that allows the user to manage snackbar messages"
@@ -2690,14 +2546,6 @@
             }
         }
     },
-    "radioModeSettingsTitle": "電台模式",
-    "@radioModeSettingsTitle": {
-        "description": "Title for the setting that controls the radio mode/algorithm."
-    },
-    "radioModeSettingsSubtitle": "設定電台選擇歌曲的方式。",
-    "@radioModeSettingsSubtitle": {
-        "description": "Subtitle for the setting that controls the radio mode/algorithm."
-    },
     "radioModeMenuTitle": "選擇電台模式",
     "@radioModeMenuTitle": {
         "description": "Title for menu that allows users to choose the radio mode."
@@ -2750,16 +2598,6 @@
     "@radioModeDisableButtonSubtitle": {
         "description": "Subtitle for the option that disables radio mode."
     },
-    "radioModeOptionConfirmation": "已切換為{option, select, reshuffle{隨機重排} random{隨機歌曲} similar{相似歌曲} continuous{連續播放} albumMix{專輯混播} other{{option}}}",
-    "@radioModeOptionConfirmation": {
-        "placeholders": {
-            "option": {
-                "type": "String",
-                "description": "Corresponds to RadioMode.name"
-            }
-        },
-        "description": "Confirmation displayed when the radio mode is changed."
-    },
     "radioModeEnabledSubtitle": "點擊以設定",
     "@radioModeEnabledSubtitle": {
         "description": "Subtitle displayed in the queue to show when radio mode is enabled."
@@ -2767,10 +2605,6 @@
     "radioModeDisabledSubtitle": "點擊以啟用",
     "@radioModeDisabledSubtitle": {
         "description": "Subtitle displayed in the queue to show that radio mode is disabled."
-    },
-    "radioModeDisabledBecauseNotAvailableOfflineSubtitle": "目前模式無法離線使用。",
-    "@radioModeDisabledBecauseNotAvailableOfflineSubtitle": {
-        "description": "Subtitle displayed in the queue to show that radio mode is disabled because the current mode is not available offline."
     },
     "radioModeDescription": "{mode, select,reshuffle{持續隨機重排播放佇列}random{從初始選擇隨機排序歌曲}similar{根據原播放佇列加入相似歌曲}continuous{根據目前歌曲加入相似歌曲}albumMix{加入相關專輯的歌曲}other{}}",
     "@radioModeDescription": {
@@ -2957,11 +2791,11 @@
             }
         }
     },
-    "previousTracksPersistenceModeSelectorTitle": "在播放佇列中顯示已播放歌曲",
+    "previousTracksPersistenceModeSelectorTitle": "在播放佇列中顯示已播放的歌曲",
     "@previousTracksPersistenceModeSelectorTitle": {
         "description": "Title for setting that allows to override state of previous tracks header in queue list"
     },
-    "previousTracksPersistenceModeSelectorSubtitle": "開啟播放佇列時，已播放歌曲區塊將…",
+    "previousTracksPersistenceModeSelectorSubtitle": "開啟播放佇列時，已播放的歌曲區塊將…",
     "@previousTracksPersistenceModeSelectorSubtitle": {
         "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
     },
@@ -2976,5 +2810,662 @@
     "previousTracksPersistenceModeExpanded": "展開 (顯示)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
+    },
+    "amoledTheme": "使用 AMOLED 主題",
+    "@amoledTheme": {
+        "description": "Toggles the dark color scheme between dark gray and pure black."
+    },
+    "amoledThemeSubtitle": "將深色主題替換為純黑主題。",
+    "useAndroidGainEffectTitle": "使用增益效果",
+    "@useAndroidGainEffectTitle": {
+        "description": "Title for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "useAndroidGainEffectSubtitle": "使用原生增益效果來控制音量。此方式更具彈性，但在部分裝置上可能導致播放器異常。一般情況下不需要手動更改。需重新啟動應用程式後才會生效。",
+    "@useAndroidGainEffectSubtitle": {
+        "description": "Subtitle for Android gain effect setting.  This setting is used to work around player errors on some devices."
+    },
+    "androidGainDisabled": "因初始化錯誤，已切換為增益效果備用模式。",
+    "@androidGainDisabled": {
+        "description": "Message presented when the android gain effect fallback is enabled after an error occurs."
+    },
+    "losslessNoBitrate": "不適用於FLAC轉碼",
+    "@losslessNoBitrate": {
+        "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
+    },
+    "home": "首頁",
+    "@home": {
+        "description": "Label for the home/main screen"
+    },
+    "search": "搜尋",
+    "@search": {
+        "description": "Button for the user to click to perform a search"
+    },
+    "library": "音樂庫",
+    "@library": {
+        "description": "Label for library - the user can click this and see the conent in their system."
+    },
+    "voiceSearch": "語音搜尋",
+    "@voiceSearch": {
+        "description": "Heading for the page that prompts the user to perform a voice search."
+    },
+    "carPlaySiriHint": "你可以說Hey Siri，在Finamp播放 [歌曲/歌手/專輯]",
+    "@carPlaySiriHint": {
+        "description": "Hint text for how to use Siri to search in CarPlay."
+    },
+    "carPlayLoginPrompt": "請在手機上開啟Finamp App，登入你的Jellyfin伺服器。",
+    "@carPlayLoginPrompt": {
+        "description": "Label shown when the user is trying to use CarPlay without being logged in."
+    },
+    "ascending": "由小到大",
+    "@ascending": {
+        "description": "Label for ascending order."
+    },
+    "descending": "由大到小",
+    "@descending": {
+        "description": "Label for descending order."
+    },
+    "homeScreenSettingsTitle": "首頁",
+    "@homeScreenSettingsTitle": {
+        "description": "Title for the home screen settings"
+    },
+    "homeScreenSectionPresetPickerMenuTitle": "選擇預設組",
+    "@homeScreenSectionPresetPickerMenuTitle": {
+        "description": "Title for the preset picker menu, which allows users to pick a preset section to add to the home screen"
+    },
+    "homeScreenSectionCustomSectionTitle": "自訂區塊",
+    "@homeScreenSectionCustomSectionTitle": {
+        "description": "Title for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenSectionCustomSectionDescription": "設定你自己的區塊",
+    "@homeScreenSectionCustomSectionDescription": {
+        "description": "Description for the custom section type, which can be added to the home screen"
+    },
+    "homeScreenQuickActionPickerMenuTitle": "選擇操作",
+    "@homeScreenQuickActionPickerMenuTitle": {
+        "description": "Title for the quick action picker menu, which allows users to pick a quick action to add to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksTitle": "收藏的歌曲",
+    "@homeScreenSectionPresetFavoriteTracksTitle": {
+        "description": "Title for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetFavoriteTracksDescription": "隨機排序你收藏的歌曲",
+    "@homeScreenSectionPresetFavoriteTracksDescription": {
+        "description": "Description for the favorite tracks preset section, which can be added to the home screen"
+    },
+    "nameRequired": "名稱（必要）",
+    "@nameRequired": {
+        "description": "Descriptor for the required name field when adding download locations."
+    },
+    "tooltipDisabled": "{tip}（停用）",
+    "@tooltipDisabled": {
+        "placeholders": {
+            "tip": {
+                "type": "String"
+            }
+        },
+        "description": "Added to tooltips on disabled buttons"
+    },
+    "noDownloadsInLocation": "此處目前沒有任何下載。",
+    "@noDownloadsInLocation": {
+        "description": "Message when deleting a downloads location informing the user it is empty."
+    },
+    "deleteDownloadLocation": "刪除位置",
+    "@deleteDownloadLocation": {
+        "description": "Button for confirming deletion of deownload location"
+    },
+    "cannotDeleteLocation": "無法刪除位置",
+    "@cannotDeleteLocation": {
+        "description": "Message that a download location cannot currently be deleted."
+    },
+    "globalMenu": "選單",
+    "@globalMenu": {
+        "description": "Tooltip for menu open button on music screen"
+    },
+    "lookingForSomethingElse": "正在尋找其他東西？",
+    "@lookingForSomethingElse": {
+        "description": "Header for home screen customization button"
+    },
+    "showAll": "顯示全部",
+    "@showAll": {
+        "description": "Tooltip for show all button on home screen sections"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksTitle": "收藏中久未播放的歌曲",
+    "@homeScreenSectionPresetForgottenFavoriteTracksTitle": {
+        "description": "Title for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "homeScreenSectionPresetForgottenFavoriteTracksDescription": "從未播放的收藏歌曲",
+    "@homeScreenSectionPresetForgottenFavoriteTracksDescription": {
+        "description": "Description for the forgotten favorite tracks preset section, which can be added to the home screen"
+    },
+    "noExternalDirectories": "沒有外部目錄。",
+    "@noExternalDirectories": {
+        "description": "Message when the user tries to configure an Appdirectory external download directory but none are availible"
+    },
+    "exteranlStorageTip": "如果路徑不包含「emulated」，可能是外部儲存空間。",
+    "@exteranlStorageTip": {
+        "description": "Helper text in Appdirectory download location config form"
+    },
+    "cannotDeleteLocationEplanation": "此位置包含下載內容，無法刪除。請先刪除以下下載內容：",
+    "@cannotDeleteLocationEplanation": {
+        "description": "Explanation that the download location cannot be deleted due to not being empty."
+    },
+    "builtWithByTheFinampContributors": "由 Finamp 貢獻者以 ♥ 打造。",
+    "@builtWithByTheFinampContributors": {
+        "description": "Message in home screen footer"
+    },
+    "failedToLoadSection": "區塊載入失敗。",
+    "@failedToLoadSection": {
+        "description": "Message when an error is thrown while resolving home screen section"
+    },
+    "sectionContentsNotDownloaded": "區塊內容尚未下載。",
+    "@sectionContentsNotDownloaded": {
+        "description": "Message when a home screen section has no items while offline"
+    },
+    "errorLoadingItems": "無法載入內容。",
+    "@errorLoadingItems": {
+        "description": "Message when an error occurs while loading home screen section contents"
+    },
+    "noItemsAvailable": "沒有可顯示的內容。",
+    "@noItemsAvailable": {
+        "description": "Message when a home screen section has no items while online"
+    },
+    "filters": "篩選",
+    "@filters": {
+        "description": "Label for filters in Sort & Filter menu"
+    },
+    "removeFilter": "清除此篩選條件",
+    "@removeFilter": {
+        "description": "Tooltip for removable filter chips in Sort & Filter row"
+    },
+    "removeFilters": "清除篩選條件",
+    "@removeFilters": {
+        "description": "Title for remove filters only variant of sort and filter menu"
+    },
+    "sortFilter": "排序&篩選",
+    "@sortFilter": {
+        "description": "title for Sort & Filter menu"
+    },
+    "editSection": "編輯此區塊",
+    "@editSection": {
+        "description": "Label for edit home section menu entry"
+    },
+    "failedToLoadSectionMissingItem": "無法載入區塊，找不到內容。",
+    "@failedToLoadSectionMissingItem": {
+        "description": "Message when the parent item of a home screen section is missing from the server"
+    },
+    "connected": "已連線",
+    "@connected": {
+        "description": "Fallback for 'Connected to <server name>' message while server info is loaded"
+    },
+    "timerMinutes": "{minutes} 分",
+    "@timerMinutes": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer duration slider"
+    },
+    "timerTracks": "{tracks} 首歌曲",
+    "@timerTracks": {
+        "placeholders": {
+            "tracks": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer track count slider"
+    },
+    "quickActionsSubtitle": "選取並排序要顯示在首頁的快速操作。",
+    "@quickActionsSubtitle": {
+        "description": "Subtitle for quick actions edit menu"
+    },
+    "selectAnItem": "選擇內容",
+    "@selectAnItem": {
+        "description": "Title for 'play specific item' quick action edit menu"
+    },
+    "sectionsMenu": "區塊",
+    "@sectionsMenu": {
+        "description": "Title for home screen sections edit menu"
+    },
+    "sectionMenuSubtitle": "選取並排序要顯示在首頁的區塊。",
+    "@sectionMenuSubtitle": {
+        "description": "Subtitle for home screen sections edit menu"
+    },
+    "sectionType": "區塊類型",
+    "@sectionType": {
+        "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
+    },
+    "featuredCollection": "精選收藏",
+    "@featuredCollection": {
+        "description": "Title for home screen section editor collection selector"
+    },
+    "tabType": "分頁類型",
+    "@tabType": {
+        "description": "Title for home screen section editor tab type dropdown (albums, artists, ect...)"
+    },
+    "currentLibrary": "目前的音樂庫",
+    "@currentLibrary": {
+        "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
+    },
+    "loading": "正在載入…",
+    "@loading": {
+        "description": "Message when items or libraries are loading in home screen section editor"
+    },
+    "sectionTitle": "區塊標題",
+    "@sectionTitle": {
+        "description": "Title for custom section title editor in home screen section editor"
+    },
+    "egFavoriteTracks": "例如：收藏的歌曲",
+    "@egFavoriteTracks": {
+        "description": "Placeholder text in custom section title editor in home screen section editor"
+    },
+    "customSectionTitleRequired": "請為自訂區塊輸入標題",
+    "@customSectionTitleRequired": {
+        "description": "Message when a custom section title is needed in home screen section editor"
+    },
+    "editHomeScreenSection": "編輯首頁區塊",
+    "@editHomeScreenSection": {
+        "description": "Title for home screen section editor menu"
+    },
+    "sectionConfigInvalid": "目前的設定無效。",
+    "@sectionConfigInvalid": {
+        "description": "Message in home screen section edit menu preview window when a valid preview cannot be generated"
+    },
+    "searchNotAvailibleWhileOffline": "離線時無法使用搜尋！",
+    "@searchNotAvailibleWhileOffline": {
+        "description": "Message in home screen section editor search widget when offline"
+    },
+    "noSearchResults": "無搜尋結果。",
+    "@noSearchResults": {
+        "description": "Message in home screen section editor search widget when no results are returned"
+    },
+    "collectionDropdownHint": "選擇內容種類",
+    "@collectionDropdownHint": {
+        "description": "Hint for selector dropdown in home screen editor search widget"
+    },
+    "gridImageSizeTitle": "網格大小",
+    "@gridImageSizeTitle": {
+        "description": "Title of grid tile image size setting"
+    },
+    "gridImageSizeSubtitle": "調整網格瀏覽中的內容大小",
+    "@gridImageSizeSubtitle": {
+        "description": "Subtitle of grid tile image size setting"
+    },
+    "gridImageSizeLabel": "{colCountExact, plural, =0{~ } =1{} other{}}{colCount, plural, =1{1 行（{sizeDescriptor}）} other{{colCount} 行（{sizeDescriptor}）}}",
+    "@gridImageSizeLabel": {
+        "placeholders": {
+            "sizeDescriptor": {
+                "type": "String",
+                "example": "Very Small"
+            },
+            "colCount": {
+                "type": "int"
+            },
+            "colCountExact": {
+                "type": "int",
+                "description": "0 = not exact, add e.g. tilde character (~), 1 = exact, just show the number"
+            }
+        },
+        "description": "Slider label in grid tile image size setting"
+    },
+    "homeScreenImageSizeTitle": "首頁網格大小",
+    "@homeScreenImageSizeTitle": {
+        "description": "Title of home screen tile image size setting"
+    },
+    "homeScreenImageSizeSubtitle": "調整首頁上的內容大小",
+    "@homeScreenImageSizeSubtitle": {
+        "description": "Subtitle of home screen tile image size setting"
+    },
+    "noFilterActive": "尚未套用篩選",
+    "@noFilterActive": {
+        "description": "Message in sort & filter row when no filters are active"
+    },
+    "activeFilterCount": "{filterCount, plural, =0{無篩選} other{{filterCount} 個篩選中}}",
+    "@activeFilterCount": {
+        "placeholders": {
+            "filterCount": {
+                "type": "int"
+            }
+        },
+        "description": "Message in sort & filter row"
+    },
+    "inPlaylist": "在播放清單中",
+    "@inPlaylist": {
+        "description": "Name of 'In Playlist' content type"
+    },
+    "inCollection": "在收藏中",
+    "@inCollection": {
+        "description": "Name of jellyfin 'Collection' content type"
+    },
+    "tabView": "分頁檢視",
+    "@tabView": {
+        "description": "Name of home screen section type which uses the contents of a music screen tab"
+    },
+    "collection": "合集",
+    "@collection": {
+        "description": "Name of home screen section type which uses the contents of a supplied playable item"
+    },
+    "queues": "播放佇列",
+    "@queues": {
+        "description": "Name of home screen section type which shows the latest played queues"
+    },
+    "favoritePlaylists": "收藏的播放清單",
+    "@favoritePlaylists": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteGenres": "收藏的類型",
+    "@favoriteGenres": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteAlbumsDescription": "隨機排序你收藏的專輯",
+    "@favoriteAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteArtistsDescription": "隨機排序你收藏的歌手",
+    "@favoriteArtistsDescription": {
+        "description": "Description  of a home screen section preset"
+    },
+    "favoritePlaylistsDescription": "隨機排序你收藏的播放清單",
+    "@favoritePlaylistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "favoriteGenresDescription": "隨機排序你收藏的類型",
+    "@favoriteGenresDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "playRandomFavoriteItemActionDescription": "隨機播放任一收藏",
+    "@playRandomFavoriteItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "randomFavoriteAction": "隨機播放收藏",
+    "@randomFavoriteAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "isFavoriteFilter": "我的收藏",
+    "@isFavoriteFilter": {
+        "description": "Name of favorite filter"
+    },
+    "homeFavoritesDownloadWarning": "你確定要下載所有收藏嗎？不限於此區塊中的{sectionType}。",
+    "@homeFavoritesDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because home sections show a specific item type, like Albums, but the download covers all.",
+        "placeholders": {
+            "sectionType": {
+                "type": "String",
+                "example": "Albums"
+            }
+        }
+    },
+    "newlyAddedAlbums": "新增的專輯",
+    "@newlyAddedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "newlyAddedTracks": "新增的歌曲",
+    "@newlyAddedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedAlbums": "經常播放的專輯",
+    "@frequentlyPlayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedTracks": "經常播放的歌曲",
+    "@frequentlyPlayedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedArtists": "經常播放的藝人",
+    "@frequentlyPlayedArtists": {
+        "description": "Name of a home screen section preset"
+    },
+    "unplayedAlbums": "未播放過的專輯",
+    "@unplayedAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "recentQueues": "最近的播放佇列",
+    "@recentQueues": {
+        "description": "Name of a home screen section preset"
+    },
+    "recentlyAddedAlbumsDescription": "你最近加入音樂庫的專輯，從最新的開始排序",
+    "@recentlyAddedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedTracksDescription": "你最近加入音樂庫的歌曲，從最新的開始排序",
+    "@recentlyAddedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedAlbumsDescription": "你經常聽的專輯，從最常播放的開始排序",
+    "@frequentlyPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedTracksDescription": "你經常聽的歌曲，從最常播放的開始排序",
+    "@frequentlyPlayedTracksDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "frequentlyPlayedArtistsDescription": "你經常聽的歌手，從最常播放的開始排序",
+    "@frequentlyPlayedArtistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "neverPlayedAlbumsDescription": "隨機排列你尚未聽過的專輯",
+    "@neverPlayedAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentQueuesDescription": "你最近建立的播放佇列，從最新的開始排序",
+    "@recentQueuesDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "shuffleTracksActionDescription": "隨機播放音樂庫中的歌曲",
+    "@shuffleTracksActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browseRecentQueuesActionDescription": "從最近播放的佇列中選擇",
+    "@browseRecentQueuesActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "browsePlaybackHistoryActionDescription": "瀏覽你的播放紀錄",
+    "@browsePlaybackHistoryActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomAlbumActionDescription": "隨機播放任一專輯",
+    "@playRandomAlbumActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "surpriseMeActionDescription": "隨機選擇一首歌曲，並以電台模式開始連續播放",
+    "@surpriseMeActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playRandomTrackActionDescription": "隨機播放任一歌曲",
+    "@playRandomTrackActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playPreviousQueueActionDescription": "恢復播放你最近封存的播放佇列",
+    "@playPreviousQueueActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "configureOutputActionDescription": "開啟輸出裝置設定",
+    "@configureOutputActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "playSpecificItemActionDescription": "播放自訂好的內容",
+    "@playSpecificItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "shuffleTracksAction": "隨機播放歌曲",
+    "@shuffleTracksAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomAlbumAction": "隨機播放專輯",
+    "@randomAlbumAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomTrackAction": "隨機播放歌曲",
+    "@randomTrackAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "previousQueueAction": "上次的播放佇列",
+    "@previousQueueAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "configureOutputAction": "媒體輸出",
+    "@configureOutputAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "playSpecificItemAction": "播放{itemName, select, finamp_placeholder{<自訂>} other{{itemName}}}",
+    "@playSpecificItemAction": {
+        "placeholders": {
+            "itemName": {
+                "type": "String"
+            }
+        },
+        "description": "Name of a home screen quick action"
+    },
+    "surpriseMeAction": "驚喜播放",
+    "@surpriseMeAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "editAction": "編輯操作",
+    "@editAction": {
+        "description": "Button to edit a quick action"
+    },
+    "swapAction": "更換操作",
+    "@swapAction": {
+        "description": "Button to swap the selected quick action"
+    },
+    "removeAction": "移除操作",
+    "@removeAction": {
+        "description": "Button to remove a quick action"
+    },
+    "addNewAction": "新增操作",
+    "@addNewAction": {
+        "description": "Button to add a new quick action"
+    },
+    "removeSection": "移除區塊",
+    "@removeSection": {
+        "description": "Button to remove a home screen section"
+    },
+    "addNewSection": "新增區塊",
+    "@addNewSection": {
+        "description": "Button to add a new home screen section"
+    },
+    "preview": "預覽",
+    "unnamedCollection": "未命名的收藏",
+    "@unnamedCollection": {
+        "description": "Placeholder for unnamed collection in home screen section editor"
+    },
+    "noTracksFound": "找不到可用於「驚喜播放」的歌曲。",
+    "@noTracksFound": {
+        "description": "Message if SurpriseMeMix creation fails"
+    },
+    "nothingFoundToPlay": "找不到可播放的內容。",
+    "@nothingFoundToPlay": {
+        "description": "Message if play random item fails"
+    },
+    "errorLoadingHomeSection": "載入首頁區塊時發生錯誤",
+    "@errorLoadingHomeSection": {
+        "description": "Message if a home screen section cannot be loaded due to a missing item"
+    },
+    "noPreviousQueueFoundToPlay": "找不到上次可播放的播放佇列。",
+    "@noPreviousQueueFoundToPlay": {
+        "description": "Message if play previous queue quick action fails"
+    },
+    "unknownVersion": "未知版本",
+    "@unknownVersion": {
+        "description": "Reported server version if request fails"
+    },
+    "isUnplayedFilter": "未播放",
+    "@isUnplayedFilter": {
+        "description": "Name of unplayed items filter"
+    },
+    "isFullyDownloadedFilter": "已完整下載",
+    "@isFullyDownloadedFilter": {
+        "description": "Name of fully downloaded items filter"
+    },
+    "genreFilter": "類型：{name}",
+    "@genreFilter": {
+        "description": "Name of genrefilter",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "startsWithFilter": "開頭為：{letter}",
+    "@startsWithFilter": {
+        "description": "Name of starts with letter filter",
+        "placeholders": {
+            "letter": {
+                "type": "String"
+            }
+        }
+    },
+    "searchTermFilter": "搜尋：{searchTerm}",
+    "@searchTermFilter": {
+        "description": "Name of search term filter",
+        "placeholders": {
+            "searchTerm": {
+                "type": "String"
+            }
+        }
+    },
+    "customizeHomeScreen": "自訂首頁",
+    "@customizeHomeScreen": {
+        "description": "Label for home screen customize button"
+    },
+    "connectedTo": "已連線至",
+    "@connectedTo": {
+        "description": "Server info in music screen menu"
+    },
+    "performingArtistFilter": "專輯（收錄於）",
+    "albumArtistFilter": "專輯（專輯藝人）",
+    "allTypes": "所有類型",
+    "itemTypeFilterHeader": "子類型",
+    "recentlyPlayedTracksDescription": "你最近聽過的歌曲，從最近播放的開始排序",
+    "@recentlyPlayedTracksDescription": {
+        "description": "Description for a home screen section preset"
+    },
+    "homeAllPlaylistsWarning": "你確定要下載所有播放清單嗎？不限於此區塊中的播放清單。",
+    "@homeAllPlaylistsWarning": {
+        "description": "Warning presented when pressing the download button on playlist home sections with a filter applied.  This is shown because the download will not apply the filter."
+    },
+    "homeRecentAlbumsDownloadWarning": "這會下載伺服器上最新的 5 張專輯。之後伺服器新增專輯時，此內容會自動更新，並移除多餘的下載內容。",
+    "@homeRecentAlbumsDownloadWarning": {
+        "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because the behavior of the 5 latest albums download is not a 100% match to the home sections."
+    },
+    "alreadyRandomized": "此區段已經是隨機排序",
+    "@alreadyRandomized": {
+        "description": "Tooltip for shuffle button on home screen sections using a random sort order, where it is disabled due to being unneeded"
+    },
+    "libraryQualifierActive": "使用中",
+    "@libraryQualifierActive": {
+        "description": "Label shown next to the currently selected library in the Finamp menu/drawer"
+    },
+    "offlineSortFallback": "只有在線上時才能依 {onlineSort} 排序。目前將改用預設排序",
+    "@offlineSortFallback": {
+        "description": "Warning presented in sort and filter menu when an online-only sort is chosen.",
+        "placeholders": {
+            "onlineSort": {
+                "type": "String",
+                "example": "Play Count"
+            }
+        }
+    },
+    "retry": "重試",
+    "retryPageLoad": "從伺服器載入內容失敗。點選即可重試。",
+    "itemType": "{itemType, select, album{專輯} playlist{播放清單} artist{藝人} genre{類型} track{歌曲} library{音樂庫} collection{收藏} unknown{內容} other{{itemType}}}",
+    "@itemType": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            }
+        },
+        "description": "Item type name."
+    },
+    "connectionStateInfoString": "{state, select, syncing{正在與伺服器同步} downloading{正在從伺服器下載} deleting{正在刪除舊下載} connectedLocal{已透過區域網路連線} syncingLocal{正在透過區域網路同步} downloadingLocal{正在透過區域網路下載} other{}}",
+    "@connectionStateInfoString": {
+        "description": "String describing the current connection state to the server, shown in the music screen drawer/menu.",
+        "placeholders": {
+            "state": {
+                "type": "String",
+                "example": "syncingLocal"
+            }
+        }
     }
 }

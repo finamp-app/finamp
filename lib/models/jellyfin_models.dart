@@ -3269,6 +3269,12 @@ enum SortBy {
   @HiveField(15)
   defaultOrder;
 
+  bool get onlineOnly => switch (this) {
+    SortBy.datePlayed => true,
+    SortBy.playCount => true,
+    _ => false,
+  };
+
   static List<SortBy> defaultsFor({required BaseItemDtoType? type, bool includeDefaultOrder = false}) {
     List<SortBy> options;
 
@@ -3309,10 +3315,12 @@ enum SortBy {
           SortBy.runtime,
           SortBy.random,
         ];
+      case BaseItemDtoType.collection:
+        options = [SortBy.sortName, SortBy.datePlayed, SortBy.dateCreated, SortBy.runtime, SortBy.random];
       case BaseItemDtoType.genre:
         options = [SortBy.sortName, SortBy.dateCreated, SortBy.random];
       default:
-        options = [SortBy.sortName];
+        options = [SortBy.sortName, SortBy.random];
     }
     if (includeDefaultOrder) {
       options.insert(0, SortBy.defaultOrder);
@@ -3496,8 +3504,8 @@ enum SortOrder {
 
   IconData getIcon() {
     return switch (this) {
-      SortOrder.ascending => TablerIcons.sort_ascending,
-      SortOrder.descending => TablerIcons.sort_descending,
+      SortOrder.ascending => TablerIcons.sort_ascending_letters,
+      SortOrder.descending => TablerIcons.sort_descending_letters,
     };
   }
 }

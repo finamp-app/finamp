@@ -8,6 +8,15 @@
 			<false/>
 			<key>UISceneConfigurations</key>
 			<dict>
+				<key>CPTemplateApplicationSceneSessionRoleApplication</key>
+				<array>
+					<dict>
+						<key>UISceneConfigurationName</key>
+						<string>CarPlay Configuration</string>
+						<key>UISceneDelegateClassName</key>
+						<string>flutter_carplay.FlutterCarPlaySceneDelegate</string>
+					</dict>
+				</array>
 				<key>UIWindowSceneSessionRoleApplication</key>
 				<array>
 					<dict>
@@ -77,6 +86,18 @@
 		<string>I don't know why this permission is being requested, you should probably deny it. If you can, create a GitHub issue with a screenshot of this message.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>I don't know why this permission is being requested, you should probably deny it. If you can, create a GitHub issue with a screenshot of this message.</string>
+		<key>NSSiriUsageDescription</key>
+		<string>Finamp uses Siri to play music via voice commands like "Play [track/artist] on Finamp".</string>
+		<key>INIntentsSupported</key>
+		<array>
+			<string>INPlayMediaIntent</string>
+			<string>INSearchForMediaIntent</string>
+		</array>
+		<key>INSupportedMediaCategories</key>
+		<array>
+			<string>INMediaCategoryGeneral</string>
+			<string>INMediaCategoryMusic</string>
+		</array>
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>audio</string>
@@ -102,8 +123,6 @@
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
-		<key>UIStatusBarStyle</key>
-		<string>UIStatusBarStyleDefault</string>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
 		<key>UIStatusBarHidden</key>

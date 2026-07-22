@@ -17,6 +17,7 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(BaseItemDtoAdapter());
     registerAdapter(BaseItemPersonAdapter());
     registerAdapter(ClientCapabilitiesAdapter());
+    registerAdapter(ClientCertificateAdapter());
     registerAdapter(CodecProfileAdapter());
     registerAdapter(CollectionHomeSectionAdapter());
     registerAdapter(ContainerProfileAdapter());
@@ -130,6 +131,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(BaseItemDtoAdapter());
     registerAdapter(BaseItemPersonAdapter());
     registerAdapter(ClientCapabilitiesAdapter());
+    registerAdapter(ClientCertificateAdapter());
     registerAdapter(CodecProfileAdapter());
     registerAdapter(CollectionHomeSectionAdapter());
     registerAdapter(ContainerProfileAdapter());

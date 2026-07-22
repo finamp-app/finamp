@@ -25,6 +25,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../extensions/localizations.dart';
 import '../../models/music_models.dart';
+import '../../models/music_slices.dart';
 import '../../services/audio_service_helper.dart';
 import '../../services/downloads_service.dart';
 import '../../services/finamp_settings_helper.dart';
@@ -166,7 +167,8 @@ class TrackListTile extends ConsumerWidget {
       }
 
       // Build a fast lookup set of already-present track IDs
-      final Set<String> childIds = slice.items.map((track) => track.id.raw).where((id) => id.isNotEmpty).toSet();
+      final resolved = await slice.resolve();
+      final Set<String> childIds = resolved.items.map((track) => track.id.raw).where((id) => id.isNotEmpty).toSet();
 
       // Filter out tracks that are already in "children" and then sort according to the selected filter
       List<BaseItemDto> remainingTracks = allTracks.where((track) => !childIds.contains(track.id.raw)).toList();
@@ -174,17 +176,18 @@ class TrackListTile extends ConsumerWidget {
 
       // Append to queue
       await queueService.addToQueue(
-        items: remainingTracks,
-        order: FinampPlaybackOrder.linear,
-        source: QueueItemSource.rawId(
-          type: QueueItemSourceType.album,
-          name: QueueItemSourceName(
-            type: QueueItemSourceNameType.preTranslated,
-            pretranslatedName: parentItem?.name ?? item.album ?? AppLocalizations.of(context)!.placeholderSource,
+        PlayableSlice.simple(
+          remainingTracks,
+          QueueItemSource.rawId(
+            type: QueueItemSourceType.album,
+            name: QueueItemSourceName(
+              type: QueueItemSourceNameType.preTranslated,
+              pretranslatedName: parentItem?.name ?? item.album ?? AppLocalizations.of(context)!.placeholderSource,
+            ),
+            id: parentItem?.id.raw ?? "",
+            item: parentItem,
+            contextNormalizationGain: null,
           ),
-          id: parentItem?.id.raw ?? "",
-          item: parentItem,
-          contextNormalizationGain: null,
         ),
       );
     }
@@ -202,42 +205,11 @@ class TrackListTile extends ConsumerWidget {
       }
 
       PlayableSlice slice = await ref.watch(
-        getPlayerSliceProvider(item: parentPlayable, startingOffset: index!).future,
+        getPlayableSliceProvider(item: parentPlayable, startingOffset: index!).future,
       );
 
       // start linear playback of album from the given index
-      await queueService.startPlayback(
-        items: slice.items,
-        startingIndex: slice.startingIndex,
-        order: FinampPlaybackOrder.linear,
-        // TODO correctly account for music screen source
-        source: slice.source,
-        /*QueueItemSource.rawId(
-                type: isInPlaylist
-                    ? QueueItemSourceType.playlist
-                    : isOnArtistScreen
-                    ? QueueItemSourceType.artist
-                    : isOnGenreScreen
-                    ? QueueItemSourceType.genre
-                    : parentItem != null
-                    ? QueueItemSourceType.album
-                    : QueueItemSourceType.queue,
-                name: parentItem != null
-                    ? QueueItemSourceName(
-                        type: QueueItemSourceNameType.preTranslated,
-                        pretranslatedName:
-                            ((isInPlaylist || isOnArtistScreen || isOnGenreScreen) ? parentItem?.name : item.album) ??
-                            AppLocalizations.of(context)!.placeholderSource,
-                      )
-                    : QueueItemSourceName(type: QueueItemSourceNameType.queue),
-                id: parentItem?.id.raw ?? "",
-                item: parentItem,
-                // we're playing from an album, so we should use the album's normalization gain.
-                contextNormalizationGain: (isInPlaylist || isOnArtistScreen || isOnGenreScreen)
-                    ? null
-                    : parentItem?.normalizationGain,
-              ),*/
-      );
+      await queueService.startSlicePlayback(slice);
 
       if (lazyAddMoreTracksToQueue) {
         unawaited(lazyAddMoreTracks(slice));
@@ -261,9 +233,7 @@ class TrackListTile extends ConsumerWidget {
             : FinampSettingsHelper.finampSettings.itemSwipeActionRightToLeft;
         return await onConfirmPlayableDismiss(
           followUpAction: followUpAction,
-          // This is only used as source, so sort doesn't matter.
-          sourceItem: Genre.fromItem(parentItem ?? item),
-          tracks: [item],
+          item: Track(item, source: QueueItemSource.fromBaseItem(parentItem ?? item)),
         );
       },
       leftSwipeBackground: buildSwipeActionBackground(
@@ -302,36 +272,36 @@ IconData getSwipeActionIcon(ItemSwipeActions action) {
   }
 }
 
-Future<bool> onConfirmPlayableDismiss({
-  required ItemSwipeActions followUpAction,
-  required FinampPlayable sourceItem,
-  required List<BaseItemDto> tracks,
-}) async {
+Future<bool> onConfirmPlayableDismiss({required ItemSwipeActions followUpAction, required FinampPlayable item}) async {
   final queueService = GetIt.instance<QueueService>();
 
-  final sourceItemType = switch (sourceItem) {
+  final sourceItemType = switch (item) {
     AlbumDisc() => "disc",
-    FinampPlayableDto() => BaseItemDtoType.fromItem(sourceItem.item).name,
-    _ => sourceItem.source.name.getLocalized(GlobalSnackbar.requireL10n),
+    FinampPlayableDto itemPlayable => BaseItemDtoType.fromItem(itemPlayable.item).name,
+    _ => item.source.name.getLocalized(GlobalSnackbar.requireL10n),
   };
+
+  final slice = await GetIt.instance<ProviderContainer>().read(
+    getPlayableSliceProvider(item: item, startingOffset: 0).future,
+  );
 
   switch (followUpAction) {
     case ItemSwipeActions.addToNextUp:
-      unawaited(queueService.addToNextUp(items: tracks, source: sourceItem.source));
+      unawaited(queueService.addToNextUp(slice));
       GlobalSnackbar.message(
         (scaffold) => AppLocalizations.of(scaffold)!.confirmAddToNextUp(sourceItemType),
         isConfirmation: true,
       );
       break;
     case ItemSwipeActions.playNext:
-      unawaited(queueService.addNext(items: tracks, source: sourceItem.source));
+      unawaited(queueService.addNext(slice));
       GlobalSnackbar.message(
         (scaffold) => AppLocalizations.of(scaffold)!.confirmPlayNext(sourceItemType),
         isConfirmation: true,
       );
       break;
     case ItemSwipeActions.addToQueue:
-      unawaited(queueService.addToQueue(items: tracks, source: sourceItem.source));
+      unawaited(queueService.addToQueue(slice));
       GlobalSnackbar.message(
         (scaffold) => AppLocalizations.of(scaffold)!.confirmAddToQueue(sourceItemType),
         isConfirmation: true,

@@ -7,7 +7,6 @@ import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/extensions/color_extensions.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/icon_button_with_semantics.dart';
-import 'package:finamp/menus/music_screen_drawer.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/downloads_screen.dart';
@@ -16,6 +15,7 @@ import 'package:finamp/screens/tabs_settings_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/item_by_id_provider.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_providers.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +26,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../extensions/localizations.dart';
 import '../../menus/home_section_menu.dart';
+import '../../screens/album_screen.dart';
+import '../../screens/artist_screen.dart';
+import '../../screens/genre_screen.dart';
 
 class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWidget {
   final List<ContentType> sortedTabs;
@@ -120,19 +123,19 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                   GestureDetector(
                     onTap: () {
                       // open drawer
-                      // Scaffold.of(context).openDrawer();
-                      showFinampMainMenu(context: context);
+                      Scaffold.of(context).openDrawer();
+                      // showFinampMainMenu(context: context);
                     },
-                    onSecondaryTap: ref.watch(pollingDownloadsSyncingProvider)
+                    onSecondaryTap: ref.watch(isDownloadingOrSyncingPollingProvider)
                         ? () {
-                            if (ref.read(pollingDownloadsSyncingProvider)) {
+                            if (ref.read(isDownloadingOrSyncingPollingProvider)) {
                               Navigator.of(context).pushNamed(DownloadsScreen.routeName);
                             }
                           }
                         : null,
-                    onDoubleTap: ref.watch(pollingDownloadsSyncingProvider)
+                    onDoubleTap: ref.watch(isDownloadingOrSyncingPollingProvider)
                         ? () {
-                            if (ref.read(pollingDownloadsSyncingProvider)) {
+                            if (ref.read(isDownloadingOrSyncingPollingProvider)) {
                               Navigator.of(context).pushNamed(DownloadsScreen.routeName);
                             }
                           }
@@ -148,7 +151,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                               : null,
                         ),
                         Positioned(bottom: -4, right: -2, child: Icon(statusIcon, size: 16)),
-                        if (ref.watch(pollingDownloadsSyncingProvider))
+                        if (ref.watch(isDownloadingOrSyncingPollingProvider))
                           Positioned(
                             bottom: statusIcon != null ? -6 : 1,
                             right: statusIcon != null ? -4 : 3,
@@ -212,7 +215,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                 singleTabConfig?.getTitle(context.l10n) ??
                                     finampUserHelper.currentUser?.currentView?.name ??
                                     appName,
-                                style: TextStyle(fontSize: 22),
+                                style: TextStyle(fontSize: 20),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               );
@@ -231,17 +234,51 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                         refreshTab();
                       },
                     ),
-                  IconButtonWithSemantics(
-                    label: context.l10n.search,
-                    icon: TablerIcons.search,
-                    iconSize: 28.0,
-                    onPressed: () {
-                      if (onSearch != null) {
-                        onSearch!();
-                      }
-                    },
-                  ),
+                  if (singleTabConfig == null || singleTabConfig?.base is TabsHomeSection)
+                    IconButtonWithSemantics(
+                      label: context.l10n.search,
+                      icon: TablerIcons.search,
+                      iconSize: 28.0,
+                      onPressed: () {
+                        if (onSearch != null) {
+                          onSearch!();
+                        }
+                      },
+                    ),
+                  if (singleTabConfig?.base case CollectionHomeSection collection)
+                    IconButtonWithSemantics(
+                      label: singleTabConfig!.getTitle(context.l10n),
+                      icon: TablerIcons.external_link,
+                      iconSize: 28.0,
+                      onPressed: () async {
+                        final item = await ref.read(itemByIdProvider(collection.itemId).future);
+                        if (item == null || !context.mounted) return;
+                        if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.track) {
+                          return;
+                        } else if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.collection) {
+                          // nop, we're already there
+                          return;
+                        }
+                        await Navigator.pushNamed(context, switch (BaseItemDtoType.fromItem(item)) {
+                          BaseItemDtoType.album => AlbumScreen.routeName,
+                          BaseItemDtoType.playlist => AlbumScreen.routeName,
+                          BaseItemDtoType.genre => GenreScreen.routeName,
+                          BaseItemDtoType.artist => ArtistScreen.routeName,
+                          _ => AlbumScreen.routeName,
+                        }, arguments: item);
+                      },
+                    ),
                 ],
+                Builder(
+                  builder: (context) => MediaQuery.widthOf(context) > 600
+                      ? IconButtonWithSemantics(
+                          label: context.l10n.settings,
+                          icon: TablerIcons.settings,
+                          iconSize: 28.0,
+                          onPressed: () => Navigator.pushNamed(context, SettingsScreen.routeName),
+                        )
+                      : SizedBox.shrink(),
+                ),
                 IconButtonWithSemantics(
                   label: context.l10n.globalMenu,
                   icon: TablerIcons.dots,
@@ -325,7 +362,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                       ),
                                     );
                                   }
-                                  if (userInfo.value == null) {
+                                  if (userInfo.value == null && userInfo.isLoading) {
                                     return SizedBox(
                                       width: 24,
                                       height: 24,
@@ -351,7 +388,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
   }
 }
 
-final pollingDownloadsSyncingProvider = Provider((Ref ref) {
+final isDownloadingOrSyncingPollingProvider = Provider((Ref ref) {
   final downloadsService = GetIt.instance<DownloadsService>();
   // Schedule this provider to be re-polled in 4 seconds
   Timer(Duration(seconds: 4), ref.invalidateSelf);

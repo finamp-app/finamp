@@ -24,10 +24,11 @@ import '../../services/downloads_service.dart';
 import '../../services/finamp_settings_helper.dart';
 import '../../services/music_screen_provider.dart';
 import '../AlbumScreen/track_list_tile.dart';
-import '../first_page_progress_indicator.dart';
-import '../new_page_progress_indicator.dart';
 import 'alphabet_item_list.dart';
+import 'first_page_progress_indicator.dart';
 import 'item_wrapper.dart';
+import 'new_page_error_indicator.dart';
+import 'new_page_progress_indicator.dart';
 
 // this is used to allow refreshing the music screen from other parts of the app, e.g. after deleting items from the server
 final musicScreenRefreshStream = StreamController<void>.broadcast();
@@ -133,6 +134,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         case FinampPlayable playable:
           sortName = playable.source.name.getLocalized(context.l10n);
         case LatestQueues queue:
+        case UnavailableHomeSectionPlayable():
           // TODO: Handle this case.
           throw UnsupportedError("This shouldn't happen.");
       }
@@ -213,6 +215,11 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     // TODO test error cases?
   }
 
+  void _retry() {
+    if (!context.mounted) return;
+    ref.read(pageControl.notifier).retry();
+  }
+
   PagedContentProvider get pageControl => pagedContentProvider(widget.displayable);
 
   @override
@@ -223,41 +230,62 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
       scrollToLetter(letterToSearch!);
     }
 
-    final emptyListIndicator = Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
-      child: Column(
-        children: [
-          Text(
-            AppLocalizations.of(context)!.emptyFilteredListTitle,
-            style: TextStyle(fontSize: 24),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          if (widget.sortConfig.genreFilter != null && widget.contentType != ContentType.genres)
+    final Widget emptyListIndicator;
+    if (widget.displayable is UnavailableHomeSectionPlayable) {
+      emptyListIndicator = Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+        child: Text(
+          AppLocalizations.of(context)!.notAvailableInOfflineMode,
+          style: TextStyle(fontSize: 24),
+          textAlign: TextAlign.center,
+        ),
+      );
+    } else if (widget.displayable case FinampSortable sortable when sortable.sortConfig.filters.isNotEmpty) {
+      emptyListIndicator = Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+        child: Column(
+          children: [
             Text(
-              AppLocalizations.of(context)!.genreNoItems(widget.contentType?.name ?? ""),
-              style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
-            )
-          else ...[
-            Text(
-              AppLocalizations.of(context)!.emptyFilteredListSubtitle,
-              style: TextStyle(fontSize: 16),
+              AppLocalizations.of(context)!.emptyFilteredListTitle,
+              style: TextStyle(fontSize: 24),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            CTAMedium(
-              icon: TablerIcons.filter_x,
-              text: AppLocalizations.of(context)!.resetFiltersButton,
-              onPressed: () {
-                FinampSetters.setOnlyShowFavorites(DefaultSettings.onlyShowFavorites);
-                FinampSetters.setOnlyShowFullyDownloaded(DefaultSettings.onlyShowFullyDownloaded);
-              },
-            ),
+            if (widget.sortConfig.genreFilter != null && widget.contentType != ContentType.genres)
+              Text(
+                AppLocalizations.of(context)!.genreNoItems(widget.contentType?.name ?? ""),
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              )
+            else ...[
+              Text(
+                AppLocalizations.of(context)!.emptyFilteredListSubtitle,
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              CTAMedium(
+                icon: TablerIcons.filter_x,
+                text: AppLocalizations.of(context)!.resetFiltersButton,
+                onPressed: () {
+                  FinampSetters.setOnlyShowFavorites(DefaultSettings.onlyShowFavorites);
+                  FinampSetters.setOnlyShowFullyDownloaded(DefaultSettings.onlyShowFullyDownloaded);
+                },
+              ),
+            ],
           ],
-        ],
-      ),
-    );
+        ),
+      );
+    } else {
+      emptyListIndicator = Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+        child: Text(
+          AppLocalizations.of(context)!.emptyFilteredListTitle,
+          style: TextStyle(fontSize: 24),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
     final itemPadding = calculateItemCollectionCardWidth(ref).$2;
     var tabContent =
         ref.watch(finampSettingsProvider.contentViewType) == ContentViewType.list ||
@@ -315,8 +343,10 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                               showFavoriteIconOnlyWhenFilterDisabled: true,
                             ),
                             PlayableQueue() => QueueRestoreTile(info: item.queue),
-                            LatestQueues() || PrecalculatedPlayable() || MusicScreenPlayable<FinampPlayableDto>() =>
-                              throw UnsupportedError("Unsupported type $item"),
+                            LatestQueues() ||
+                            PrecalculatedPlayable() ||
+                            MusicScreenPlayable<FinampPlayableDto>() ||
+                            UnavailableHomeSectionPlayable() => throw UnsupportedError("Unsupported type $item"),
                           },
                         );
                       },
@@ -326,6 +356,8 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                 firstPageProgressIndicatorBuilder: (_) => const FirstPageProgressIndicator(),
                 newPageProgressIndicatorBuilder: (_) => const NewPageProgressIndicator(),
                 noItemsFoundIndicatorBuilder: (_) => emptyListIndicator,
+                newPageErrorIndicatorBuilder: (_) => NewPageErrorIndicator(onTap: _retry),
+                firstPageErrorIndicatorBuilder: (_) => FirstPageErrorIndicator(onTap: _retry),
                 noMoreItemsIndicatorBuilder: (_) => SizedBox(height: TrackListItemTile.defaultTileHeight / 2),
                 invisibleItemsThreshold: 70,
               ),
@@ -379,6 +411,8 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
               noMoreItemsIndicatorBuilder: (_) => SizedBox(
                 height: MediaQuery.paddingOf(context).bottom + ref.watch(finampSettingsProvider.gridImageSize) / 2,
               ),
+              newPageErrorIndicatorBuilder: (_) => NewPageErrorIndicator(onTap: _retry),
+              firstPageErrorIndicatorBuilder: (_) => FirstPageErrorIndicator(onTap: _retry),
               invisibleItemsThreshold: 70,
             ),
             gridDelegate: MusicScreenGridLayout(ref: ref, contentType: widget.contentType!),

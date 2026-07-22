@@ -5,6 +5,7 @@ import 'package:finamp/components/MusicScreen/item_collection_list_tile.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/album_menu.dart';
 import 'package:finamp/menus/artist_menu.dart';
+import 'package:finamp/menus/collection_menu.dart';
 import 'package:finamp/menus/genre_menu.dart';
 import 'package:finamp/menus/playlist_menu.dart';
 import 'package:finamp/menus/track_menu.dart';
@@ -36,7 +37,7 @@ class ItemWrapper extends ConsumerStatefulWidget {
     this.adaptiveAdditionalInfoSortBy,
     this.showFavoriteIconOnlyWhenFilterDisabled = false,
     this.interactive = true,
-    this.forceText = false,
+    this.forHomeScreen = false,
     this.source,
   });
 
@@ -51,8 +52,8 @@ class ItemWrapper extends ConsumerStatefulWidget {
   /// this widget in a grid view.
   final bool isGrid;
 
-  /// Forces text to be shown in grid mode, even if showTextOnGridView is false
-  final bool forceText;
+  /// Apply home screen specific styling, like grid sizing or forcing text to be shown
+  final bool forHomeScreen;
 
   /// If a genre filter is specified, it will propagate down to for example the ArtistScreen,
   /// showing only tracks and albums of that artist that match the genre filter
@@ -152,7 +153,7 @@ class _ItemCollectionWrapperState extends ConsumerState<ItemWrapper> {
       onLongPressStart: (details) => widget.interactive ? openItemMenu(context: context, item: widget.item) : null,
       onSecondaryTapDown: (details) => widget.interactive ? openItemMenu(context: context, item: widget.item) : null,
       child: widget.isGrid
-          ? ItemCard(item: mutableItem, onTap: onTap, forceText: widget.forceText)
+          ? ItemCard(item: mutableItem, onTap: onTap, forHomeScreen: widget.forHomeScreen)
           : ItemCollectionListTile(
               item: mutableItem,
               onTap: onTap,
@@ -173,19 +174,22 @@ void openItemMenu({
 
   switch (BaseItemDtoType.fromItem(item)) {
     case BaseItemDtoType.artist:
-      await showModalArtistMenu(context: context, baseItem: item, queueInfo: queueInfo);
+      await showModalArtistMenu(context: context, item: item, queueInfo: queueInfo);
       break;
     case BaseItemDtoType.genre:
-      await showModalGenreMenu(context: context, baseItem: item, queueInfo: queueInfo);
+      await showModalGenreMenu(context: context, item: item, queueInfo: queueInfo);
       break;
     case BaseItemDtoType.playlist:
-      await showModalPlaylistMenu(context: context, baseItem: item, queueInfo: queueInfo);
+      await showModalPlaylistMenu(context: context, item: item, queueInfo: queueInfo);
       break;
     case BaseItemDtoType.track:
       await showModalTrackMenu(context: context, item: item, queueInfo: queueInfo);
       break;
     case BaseItemDtoType.album:
-      await showModalAlbumMenu(context: context, item: Album.fromItem(item), queueInfo: queueInfo);
+      await showModalAlbumMenu(context: context, album: Album.fromItem(item), queueInfo: queueInfo);
+      break;
+    case BaseItemDtoType.collection:
+      await showModalCollectionMenu(context: context, item: item, queueInfo: queueInfo);
       break;
     default:
       // Do nothing for unsupported item types

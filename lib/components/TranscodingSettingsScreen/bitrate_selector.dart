@@ -52,8 +52,9 @@ class _BitrateSelectorState extends ConsumerState<BitrateSelector> {
               enabled
                   ? AppLocalizations.of(context)!.kiloBitsPerSecondLabel(currentBitrate ~/ 1000)
                   : AppLocalizations.of(context)!.losslessNoBitrate,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
+            SizedBox(height: 12),
           ],
         ),
       ],

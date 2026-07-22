@@ -146,7 +146,7 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
               titleSpacing: 0,
               flexibleSpace: AlbumScreenContentFlexibleSpaceBar(
                 parentItem: widget.parent,
-                items: queueChildren,
+                items: isLoading ? null : queueChildren,
                 controller: sortAndFilterController,
               ),
               actions: actions,
@@ -182,19 +182,18 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
                 OverflowMenuButton(
                   onPressed: () => showModalAlbumMenu(
                     context: context,
-                    item: AlbumDisc(widget.parent, tracks: childrenOfThisDisc),
+                    album: AlbumDisc(widget.parent, tracks: childrenOfThisDisc),
                   ),
                   label: AppLocalizations.of(context)!.moreActionsOnAlbumDisc,
                 ),
               ],
               onTap: () => showModalAlbumMenu(
                 context: context,
-                item: AlbumDisc(widget.parent, tracks: childrenOfThisDisc),
+                album: AlbumDisc(widget.parent, tracks: childrenOfThisDisc),
               ),
               onDismiss: (followUpAction) => onConfirmPlayableDismiss(
                 followUpAction: followUpAction,
-                sourceItem: AlbumDisc(widget.parent, tracks: childrenOfThisDisc),
-                tracks: childrenOfThisDisc,
+                item: AlbumDisc(widget.parent, tracks: childrenOfThisDisc),
               ),
               sectionContentSliver: TracksSliverList(
                 childrenForList: childrenOfThisDisc,

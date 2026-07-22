@@ -28,7 +28,7 @@ class GlobalSnackbar {
   static final GlobalKey<ScaffoldMessengerState> rawMaterialAppScaffoldKey = LabeledGlobalKey("MaterialApp Scaffold");
 
   /// Prefer using state and localization getters.  Avoid directly accessing context.
-  /// @Deprecated("Prefer using state and localization getters.  Avoid directly accessing context.")
+  @Deprecated("Prefer using state and localization getters.  Avoid directly accessing context.")
   static final GlobalKey<NavigatorState> rawMaterialAppNavigatorKey = LabeledGlobalKey("MaterialApp Navigator");
 
   static ScaffoldMessengerState? get scaffoldState => rawMaterialAppScaffoldKey.currentState;

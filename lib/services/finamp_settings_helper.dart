@@ -131,6 +131,7 @@ class FinampSettingsHelper {
     FinampSetters.setUseSystemAccentColor(DefaultSettings.useSystemAccentColor);
     FinampSetters.setContentViewType(DefaultSettings.contentViewType);
     finampSettingsTemp.gridImageSize = DefaultSettings.gridImageSize;
+    finampSettingsTemp.homeScreenImageSize = DefaultSettings.homeScreenImageSize;
     finampSettingsTemp.showTextOnGridView = DefaultSettings.showTextOnGridView;
     FinampSetters.setUseCoverAsBackground(DefaultSettings.useCoverAsBackground);
     finampSettingsTemp.showArtistChipImage = DefaultSettings.showArtistChipImage;
@@ -145,7 +146,6 @@ class FinampSettingsHelper {
   static void resetHomeScreenSettings() {
     FinampSettings finampSettingsTemp = finampSettings;
 
-    //TODO reset to default home screen
     finampSettingsTemp.homeScreenConfiguration = DefaultSettings.homeScreenConfiguration;
 
     Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", finampSettingsTemp);
@@ -286,7 +286,6 @@ class FinampSettingsHelper {
     void Function() resetFunction, {
     bool isGlobal = false,
   }) {
-    // TODO: Replace the following Strings with localization
     return IconButton(
       onPressed: () async {
         await showDialog(

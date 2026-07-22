@@ -5,6 +5,7 @@ import 'package:balanced_text/balanced_text.dart';
 import 'package:finamp/components/AlbumScreen/download_button.dart';
 import 'package:finamp/components/Buttons/cta_small.dart';
 import 'package:finamp/components/HomeScreen/home_screen_quick_action_button.dart';
+import 'package:finamp/components/HomeScreen/quick_action_editor.dart';
 import 'package:finamp/components/HomeScreen/show_all_button.dart';
 import 'package:finamp/components/MusicScreen/item_card.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
@@ -31,6 +32,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:logging/logging.dart';
 
 import '../../extensions/localizations.dart';
+import '../../services/finamp_user_helper.dart';
 import '../../services/music_providers.dart';
 
 final _homeScreenLogger = Logger("HomeScreen");
@@ -55,6 +57,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
       final displayable = await ref.watch(resolveSectionProvider(section).future);
       ref.read(pagedContentProvider(displayable).notifier).refresh();
     }
+    ref.invalidate(UserInfoProviders.userInfoProvider);
   }
 
   @override
@@ -66,7 +69,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
       child: CustomScrollView(
         slivers: [
           if (ref.watch(finampSettingsProvider.homeScreenConfiguration).actions.isNotEmpty)
-            SliverPadding(padding: const EdgeInsets.only(top: 16.0)),
+            SliverPadding(padding: const EdgeInsets.only(top: 10.0)),
           SliverLayoutBuilder(
             builder: (context, constraints) {
               final double maxWidth = isDesktop ? 800.0 : 600.0;
@@ -115,6 +118,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
                       } else {
                         buttonWidth = verticalButtonWidth;
                       }
+                      //TODO possibly use CustomMultiChildLayout instead of Wrap to allow actions to stretch in height to fill each row, in case of multi-line actions
                       return HomeScreenQuickActionButton(
                         width: buttonWidth,
                         text: action.getTitle(context.l10n),
@@ -130,7 +134,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
               );
             },
           ),
-          const SliverPadding(padding: EdgeInsets.only(top: 8)),
+          const SliverPadding(padding: EdgeInsets.only(top: 4)),
           SliverMainAxisGroup(
             slivers: ref
                 .watch(finampSettingsProvider.homeScreenConfiguration)
@@ -214,55 +218,9 @@ class HomeScreenSection extends ConsumerWidget {
               onPressed: () async {
                 final queueService = GetIt.instance<QueueService>();
                 final playable = sectionDisplayable as FinampPlayable;
-                // TODO restore gradual queue buildup?
-                await queueService.startPlayback(
-                  items: (await ref.read(getPlayerSliceProvider(item: playable, startingOffset: 0).future)).items,
-                  source: playable.source,
-                  order: FinampPlaybackOrder.linear,
+                await queueService.startSlicePlayback(
+                  await ref.read(getPlayableSliceProvider(item: playable, startingOffset: 0).future),
                 );
-
-                /*
-                        final source = QueueItemSource.rawId(
-                          type: QueueItemSourceType.homeScreenSection,
-                          name: QueueItemSourceName(
-                            type: QueueItemSourceNameType.homeScreenSection,
-                            localizationParameter: sectionInfo.presetType?.name,
-                            pretranslatedName: sectionInfo.getTitle(context),
-                          ),
-                          id: sectionInfo.toLocalisedString(context),
-                        );
-                        // only add loaded items at first, to ensure order (for random sections) is the same, and to improve responsiveness
-                        final initialItems = await ref.read(
-                          loadHomeSectionItemsProvider(
-                            sectionInfo: sectionInfo,
-                            startIndex: 0,
-                            limit: homeScreenSectionItemLimit,
-                          ).future,
-                        );
-                        await queueService.startPlayback(
-                          items: initialItems ?? [],
-                          source: source,
-                          order: FinampPlaybackOrder.linear,
-                        );
-                        var items = (await ref.read(
-                          loadHomeSectionItemsProvider(
-                            sectionInfo: sectionInfo,
-                            // skipping existing items in randomized sections isn't needed since the order will be different
-                            startIndex: homeScreenSectionItemLimit,
-                            limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
-                          ).future,
-                        ));
-                        await queueService.addToQueue(
-                          // ensure we only add exactly [trackShuffleItemCount] items in total, since we fetched more tracks initially
-                          items:
-                              items
-                                  ?.take(
-                                    FinampSettingsHelper.finampSettings.trackShuffleItemCount -
-                                        (initialItems?.length ?? 0),
-                                  )
-                                  .toList() ??
-                              [],
-                        );*/
               },
               label: AppLocalizations.of(context)!.playButtonLabel,
               icon: TablerIcons.player_play,
@@ -274,11 +232,8 @@ class HomeScreenSection extends ConsumerWidget {
                       final queueService = GetIt.instance<QueueService>();
                       final playable = sectionDisplayable as FinampPlayable;
                       // TODO better shuffling?  need to think about shuffle all versus shuffle first
-                      // TODO restore gradual queue buildup?
-                      await queueService.startPlayback(
-                        items: (await ref.read(getPlayerSliceProvider(item: playable, startingOffset: 0).future)).items,
-                        source: playable.source,
-                        order: FinampPlaybackOrder.shuffled,
+                      await queueService.startSlicePlayback(
+                        (await ref.read(getPlayableSliceProvider(item: playable, startingOffset: 0).future)).shuffle(),
                       );
                     },
               label: sectionInfo.sortConfig.sortBy == SortBy.random
@@ -363,7 +318,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
           : Center(child: Text(context.l10n.failedToLoadSectionMissingItem, maxLines: 1));
     }
     final displayable = asyncDisplayable.value!;
-    if (displayable is FinampSortable && (displayable as FinampSortable).sortConfig != sectionInfo.sortConfig) {
+    if (displayable is UnavailableHomeSectionPlayable) {
       assert(isOffline);
       return Center(child: Text(context.l10n.notAvailableInOfflineMode, maxLines: 1));
     }
@@ -375,7 +330,20 @@ class HomeScreenSectionContent extends ConsumerWidget {
         return _buildHorizontalSkeletonLoader(ref);
       } else if (pageState.error != null) {
         _homeScreenLogger.severe("Error loading items: ${pageState.error}", pageState.error);
-        return Center(child: Text(context.l10n.errorLoadingItems, maxLines: 1));
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 30,
+          children: [
+            Text(context.l10n.errorLoadingItems, maxLines: 1),
+            CTASmall(
+              icon: TablerIcons.refresh,
+              text: context.l10n.retry,
+              onPressed: () {
+                ref.read(pagedContentProvider(displayable).notifier).retry();
+              },
+            ),
+          ],
+        );
       } else {
         ref.read(pagedContentProvider(displayable).notifier).fetchHomeScreenItems();
         return _buildHorizontalSkeletonLoader(ref);
@@ -386,7 +354,12 @@ class HomeScreenSectionContent extends ConsumerWidget {
           : Center(child: Text(context.l10n.noItemsAvailable, maxLines: 1));
     } else {
       return SizedBox(
-        height: calculateItemCollectionCardHeight(ref: ref, sectionInfo: sectionInfo, itemType: null),
+        height: calculateItemCollectionCardHeight(
+          ref: ref,
+          sectionInfo: sectionInfo,
+          itemType: null,
+          forHomeScreen: true,
+        ),
         child: ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(dragDevices: PointerDeviceKind.values.toSet()),
           child: ListView.separated(
@@ -411,7 +384,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
                     key: ValueKey(item.item.id),
                     item: item.item,
                     isGrid: true,
-                    forceText: true,
+                    forHomeScreen: true,
                     interactive: interactive,
                     source: displayable.source,
                   );
@@ -419,6 +392,7 @@ class HomeScreenSectionContent extends ConsumerWidget {
                   return HomeScreenQueueTile(key: ValueKey(queue.queue.creation), info: queue.queue);
                 case LatestQueues():
                 case PrecalculatedPlayable():
+                case UnavailableHomeSectionPlayable():
                 case MusicScreenPlayable<FinampPlayableDto>():
                   throw UnsupportedError("Unexpected item ${items[index]} in home screen section");
               }
@@ -439,7 +413,12 @@ class HomeScreenSectionContent extends ConsumerWidget {
         ? Colors.grey.shade400
         : Colors.grey.shade700;
     return SizedBox(
-      height: calculateItemCollectionCardHeight(ref: ref, sectionInfo: sectionInfo, itemType: null),
+      height: calculateItemCollectionCardHeight(
+        ref: ref,
+        sectionInfo: sectionInfo,
+        itemType: null,
+        forHomeScreen: true,
+      ),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: skeletonCount + 1, // Show [skeletonCount] skeleton items
@@ -455,8 +434,8 @@ class HomeScreenSectionContent extends ConsumerWidget {
             cardHeight = queuesHomeSectionHeight;
             showText = false;
           } else {
-            cardWidth = calculateItemCollectionCardWidth(ref).$1;
-            cardHeight = calculateItemCollectionCardWidth(ref).$1;
+            cardWidth = calculateItemCollectionCardWidth(ref, forHomeScreen: true).$1;
+            cardHeight = calculateItemCollectionCardWidth(ref, forHomeScreen: true).$1;
             showText = true;
           }
           return Column(
