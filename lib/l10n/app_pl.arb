@@ -1673,5 +1673,10 @@
     "applyFilterOnGenreChipTapTitle": "Zastosuj filtr przy karty gatunku",
     "@applyFilterOnGenreChipTapTitle": {
         "description": "Title for the setting that controls if taps on genre chips should apply a genre filter to the current screen or should redirect to the GenreScreen."
-    }
+    },
+    "startupErrorWorkaround": "Aby obejść ten błąd, możesz wyczyścić dane aplikacji, aby ją zresetować. Pamiętaj jednak, że w takim przypadku wszystkie Twoje ustawienia i pobrane pliki zostaną usunięte.",
+    "@startupErrorWorkaround": {
+        "description": "The subtitle for how to manually recover from a startup error"
+    },
+    "appearsOnAlbums": "Znajduje się w"
 }
