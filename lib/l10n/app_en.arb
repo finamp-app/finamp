@@ -3623,6 +3623,14 @@
     "@playOnDisconnected": {
         "description": "Snackbar message shown after the user manually disconnected from a remote device."
     },
+    "playOnStopAndDisconnect": "Stop and disconnect",
+    "@playOnStopAndDisconnect": {
+        "description": "Tooltip for the button on a connected remote device's tile that stops its playback (clearing its queue) and disconnects, returning control to this device."
+    },
+    "playOnStoppedAndDisconnected": "Stopped and disconnected",
+    "@playOnStoppedAndDisconnected": {
+        "description": "Snackbar message shown after the user stopped a remote device's playback and disconnected from it."
+    },
     "playOnDeviceListError": "Error: {error}",
     "@playOnDeviceListError": {
         "description": "Error message shown in the device sheet when the list of remote devices could not be loaded.",

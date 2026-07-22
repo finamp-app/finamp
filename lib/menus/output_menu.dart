@@ -218,6 +218,7 @@ class _OutputTargetListState extends State<OutputTargetList> {
   String? switchingToRoute;
   String? _connectingToSessionId;
   bool _disconnecting = false;
+  bool _stoppingRemote = false;
   StreamSubscription<SessionInfo?>? _remoteStateSubscription;
 
   @override
@@ -438,6 +439,24 @@ class _OutputTargetListState extends State<OutputTargetList> {
     }
   }
 
+  /// Stops playback on the connected remote and fully disconnects, leaving this
+  /// device's own queue restored but paused (or cleared if there was none).
+  Future<void> _stopAndDisconnect() async {
+    setState(() {
+      _stoppingRemote = true;
+    });
+    try {
+      await _remoteSessionService.stopAndDisconnect(restoreLocalQueue: true);
+      GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnStoppedAndDisconnected);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _stoppingRemote = false;
+        });
+      }
+    }
+  }
+
   /// The kind of device Finamp is running on, for the "This phone" /
   /// "This tablet" / "This computer" label of the local playback entry.
   String _thisDeviceType(BuildContext context) {
@@ -473,8 +492,21 @@ class _OutputTargetListState extends State<OutputTargetList> {
   Widget _sessionTile(BuildContext context, SessionInfo session) {
     final isConnected = _remoteSessionService.isRemote && _remoteSessionService.activeSessionId == session.id;
     final nowPlayingItem = session.nowPlayingItem;
+
+    // While connected, offer an explicit "stop & disconnect" action that stops
+    // the remote (clearing its queue) and returns to this device.
+    Widget? trailing;
+    if (isConnected) {
+      trailing = IconButton(
+        icon: const Icon(TablerIcons.player_stop_filled),
+        color: Theme.of(context).colorScheme.error,
+        tooltip: AppLocalizations.of(context)!.playOnStopAndDisconnect,
+        onPressed: _stoppingRemote ? null : _stopAndDisconnect,
+      );
+    }
+
     return ToggleableListTile(
-      isLoading: _connectingToSessionId == session.id,
+      isLoading: _connectingToSessionId == session.id || (isConnected && _stoppingRemote),
       title: _sessionDisplayName(session),
       subtitle: session.client ?? AppLocalizations.of(context)!.deviceType("unknown"),
       // Surface what the device is currently playing (so the user knows what
@@ -505,10 +537,12 @@ class _OutputTargetListState extends State<OutputTargetList> {
               child: Icon(TablerIcons.cast),
             ),
       icon: isConnected ? TablerIcons.device_speaker_filled : TablerIcons.device_speaker,
+      trailing: trailing,
       state: isConnected,
       onToggle: (bool currentState) async {
         // Already connected to this session: nothing to do. Disconnecting is
-        // done by selecting another device (or the local one).
+        // done via the stop button, or by selecting another device (or the
+        // local one).
         if (!isConnected) {
           await _connect(session);
         }

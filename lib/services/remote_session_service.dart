@@ -114,6 +114,18 @@ class RemoteSessionService {
   bool _adoptScheduled = false;
   bool _adoptInProgress = false;
 
+  /// The local queue as it was just before connecting, captured so a
+  /// migrate-back (or stop-and-disconnect) can restore this device's own queue
+  /// instead of keeping the adopted remote one. Null when there was no local
+  /// queue.
+  FinampStorableQueueInfo? _preConnectQueue;
+
+  /// How the current session was connected: true if we pushed our queue to the
+  /// remote (migrate), false if we attached to and adopted its queue. Only the
+  /// adopt case restores the pre-connect local queue on disconnect; the migrate
+  /// case keeps playing our own queue (with any progress made on the remote).
+  bool _connectedViaMigrate = false;
+
   /// True while this service is applying a remote-initiated update to the
   /// local queue/player. QueueService uses this to avoid pushing those changes
   /// straight back to the remote.
@@ -202,6 +214,13 @@ class RemoteSessionService {
     } else if (wasPlaying) {
       await _audioHandler.pause(disableFade: true, localOnly: true);
     }
+
+    // Snapshot this device's own queue before it gets replaced/pushed, so a
+    // stop-and-disconnect can restore it paused, and a migrate-back can restore
+    // it when we adopted a foreign queue. Captured in both modes; whether it's
+    // used on a plain disconnect is keyed on how we connected (see [disconnect]).
+    _connectedViaMigrate = migrateQueue;
+    _preConnectQueue = _queueService.captureQueueSnapshot();
 
     _activeSessionId = sessionId;
     _lastKnownPositionTicks = null;
@@ -300,19 +319,33 @@ class RemoteSessionService {
     unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
   }
 
-  /// Stops the remote session's playback entirely and returns control to
-  /// local playback, without migrating the remote position back. Used when
-  /// the connection is being torn down completely (e.g. logout), where
-  /// [disconnect]'s pause-and-continue-locally behavior would be wrong.
-  Future<void> stopAndDisconnect() async {
+  /// Stops the remote session's playback entirely (clearing its queue) and
+  /// returns control to local playback, without migrating the remote position
+  /// back. When [restoreLocalQueue] is true (the "stop & disconnect" action),
+  /// this device's own pre-connect queue is restored paused, or cleared if
+  /// there was none, so the phone doesn't silently keep the orphaned mirror.
+  /// Logout passes false: it clears the local queue itself right after.
+  Future<void> stopAndDisconnect({bool restoreLocalQueue = false}) async {
     if (!isRemote) return;
     _log.info("Stopping remote session $_activeSessionId and disconnecting");
+    final preConnectQueue = _preConnectQueue;
     try {
       await stop();
     } catch (e) {
       _log.warning("Failed to stop remote before disconnecting: $e");
     }
     _teardown();
+    if (restoreLocalQueue) {
+      if (preConnectQueue != null) {
+        // Restore this device's own queue, paused (the remote was stopped, so
+        // there's nothing to resume).
+        await _queueService.loadSavedQueue(preConnectQueue, beginPlayingOverride: false);
+      } else {
+        // Nothing was playing here before: clear the mirror so playback fully
+        // stops on this device too.
+        await _queueService.stopAndClearQueue();
+      }
+    }
     unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
   }
 
@@ -326,6 +359,8 @@ class RemoteSessionService {
     _lastPushedQueueIds = [];
     _suppressAdoptUntil = DateTime.fromMillisecondsSinceEpoch(0);
     _seededVolumeLevel = null;
+    _preConnectQueue = null;
+    _connectedViaMigrate = false;
     _sessionStream.add(null);
   }
 

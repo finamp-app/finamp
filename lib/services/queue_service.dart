@@ -347,6 +347,15 @@ class QueueService {
     }
   }
 
+  /// Snapshots the current queue (with position) for later restoration via
+  /// [loadSavedQueue], e.g. before a remote session replaces the local queue.
+  /// Returns null when there's nothing playing, so callers can distinguish
+  /// "restore this" from "there was nothing to restore".
+  FinampStorableQueueInfo? captureQueueSnapshot() {
+    if (getQueue().currentTrack == null) return null;
+    return _saveCurrentQueue(withPosition: true);
+  }
+
   FinampStorableQueueInfo _saveCurrentQueue({bool withPosition = false}) {
     final queueToSave = getQueue();
     List<int> shuffleIndices = [..._latestShuffleIndices];
@@ -452,6 +461,11 @@ class QueueService {
     FinampStorableQueueInfo info, {
     Map<jellyfin_models.BaseItemId, jellyfin_models.BaseItemDto>? existingItems,
     bool isReload = false,
+    // When non-null, overrides whether playback begins after loading, instead
+    // of the autoplay-restored-queue setting. Used when restoring the
+    // pre-connect queue on a remote disconnect, where the caller decides
+    // whether to resume (migrate-back) or stay paused (stop-and-disconnect).
+    bool? beginPlayingOverride,
   }) async {
     final playbackHistoryService = GetIt.instance<PlaybackHistoryService>();
     if (_savedQueueState == SavedQueueState.loading) {
@@ -595,9 +609,11 @@ class QueueService {
               ? Duration(milliseconds: info.currentTrackSeek!)
               : null,
           order: order == null ? FinampPlaybackOrder.linear : FinampPlaybackOrder.shuffled,
-          beginPlaying: isReload
-              ? (_audioHandler.playbackState.valueOrNull?.playing ?? false)
-              : (FinampSettingsHelper.finampSettings.autoplayRestoredQueue && droppedTracks == 0),
+          beginPlaying:
+              beginPlayingOverride ??
+              (isReload
+                  ? (_audioHandler.playbackState.valueOrNull?.playing ?? false)
+                  : (FinampSettingsHelper.finampSettings.autoplayRestoredQueue && droppedTracks == 0)),
           source: info.source.withItem(idMap[jellyfin_models.BaseItemId(info.source.id)]),
         );
       }
