@@ -324,6 +324,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                       tabType: tabType,
                       defaultArtistType: ref.watch(finampSettingsProvider.defaultArtistType),
                       refreshTab: refreshTab,
+                      singleTabConfig: widget.singleTabConfig,
                     ),
                     Expanded(
                       // Prevent track highlight background from showing on header

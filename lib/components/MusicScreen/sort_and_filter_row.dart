@@ -557,6 +557,7 @@ mixin _SortAndFilterMenuEntriesMixin<T extends ConsumerStatefulWidget> on Consum
         ItemFilterType.isUnplayed => currentConfig.filters.contains(ItemFilter(type: ItemFilterType.isUnplayed)),
         ItemFilterType.startsWithCharacter ||
         ItemFilterType.genreFilter ||
+        ItemFilterType.artistFilter ||
         ItemFilterType.searchTerm => throw UnsupportedError("Filter type $option should not be toggleable"),
       },
       onToggle: (currentState) async {
@@ -573,6 +574,7 @@ mixin _SortAndFilterMenuEntriesMixin<T extends ConsumerStatefulWidget> on Consum
               newFilters.add(ItemFilter(type: ItemFilterType.isUnplayed));
             case ItemFilterType.startsWithCharacter:
             case ItemFilterType.genreFilter:
+            case ItemFilterType.artistFilter:
             case ItemFilterType.searchTerm:
               throw UnsupportedError("Filter type $option should not be toggleable");
           }

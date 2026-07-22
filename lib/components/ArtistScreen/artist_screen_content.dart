@@ -12,6 +12,7 @@ import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/services/artist_content_provider.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -66,6 +67,64 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
     ref.invalidate(getPerformingArtistTracksProvider);
     ref.invalidate(getArtistTracksProvider);
     _disabledTrackFilters.clear();
+  }
+
+  void openSeeAll(
+    ContentType tabContentType, {
+    bool doOverride = true,
+    CuratedItemSelectionType? itemSelectionType,
+    BaseItemDto? genreFilter,
+  }) {
+    bool isFavoriteOverride = false;
+    SortBy? sortByOverride;
+    SortOrder? sortOrderOverride;
+
+    if (doOverride && ref.read(finampSettingsProvider.genreListsInheritSorting) && itemSelectionType != null) {
+      switch (itemSelectionType) {
+        case CuratedItemSelectionType.mostPlayed:
+          sortByOverride = itemSelectionType.getSortBy();
+          sortOrderOverride = SortOrder.descending;
+          isFavoriteOverride = false;
+        case CuratedItemSelectionType.favorites:
+          sortByOverride = SortBy.random;
+          sortOrderOverride = SortOrder.ascending;
+          isFavoriteOverride = true;
+        case CuratedItemSelectionType.random:
+          sortByOverride = itemSelectionType.getSortBy();
+          sortOrderOverride = SortOrder.ascending;
+          isFavoriteOverride = false;
+        case CuratedItemSelectionType.latestReleases:
+          sortByOverride = itemSelectionType.getSortBy();
+          sortOrderOverride = SortOrder.descending;
+          isFavoriteOverride = false;
+        case CuratedItemSelectionType.recentlyAdded:
+          sortByOverride = itemSelectionType.getSortBy();
+          sortOrderOverride = SortOrder.descending;
+          isFavoriteOverride = false;
+        case CuratedItemSelectionType.recentlyPlayed:
+          sortByOverride = itemSelectionType.getSortBy();
+          sortOrderOverride = SortOrder.descending;
+          isFavoriteOverride = false;
+      }
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute<MusicScreen>(
+        builder: (context) => MusicScreen(
+          singleTabConfig: HomeScreenSectionConfiguration(
+            base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: tabContentType),
+            customSectionTitle: widget.parent.name,
+            sortConfig: SortAndFilterController.trackSettings(tabContentType).resolveConfig().copyWith(
+              sortBy: sortByOverride,
+              sortOrder: sortOrderOverride,
+              favoriteFilter: isFavoriteOverride ? true : null,
+              genreFilter: genreFilter,
+              artistFilter: widget.parent,
+            ),
+          ),
+          allowFilters: (filter) => filter.type != ItemFilterType.artistFilter,
+        ),
+      ),
+    );
   }
 
   @override
@@ -231,6 +290,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                         parent: widget.parent,
                         tracks: topTracks,
                         childrenForQueue: topTracks,
+                        lazyAddMoreTracksToQueue: true,
                         tracksText: type.toLocalisedSectionTitle(context, artistCuratedItemSelectionType),
                         isOnArtistScreen: true,
                         genreFilter: sortConfig.genreFilter,
@@ -245,6 +305,11 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                           clickedCuratedItemSelectionType = type;
                           FinampSetters.setArtistCuratedItemSelectionType(type);
                         },
+                        seeAllCallbackFunction: () => openSeeAll(
+                          ContentType.tracks,
+                          itemSelectionType: artistCuratedItemSelectionType,
+                          genreFilter: sortConfig.genreFilter,
+                        ),
                       ),
                     );
                   }

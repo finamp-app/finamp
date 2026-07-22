@@ -810,7 +810,7 @@
     "@moveAddToQueue": {
         "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
     },
-    "confirmPlayNext": "{type, select, track{Track} album{Album} artist{Artist} playlist{Playlist} genre{Genre} other{Item}} will play next",
+    "confirmPlayNext": "{type, select, track{Track} album{Album} artist{Artist} playlist{Playlist} genre{Genre} disc{Disc} other{Item}} will play next",
     "@confirmPlayNext": {
         "description": "A confirmation message that is shown after successfully adding a track to the front of the \"Next Up\" queue",
         "placeholders": {
@@ -819,7 +819,7 @@
             }
         }
     },
-    "confirmAddToNextUp": "Added {type, select, track{Track} album{album} artist{artist} playlist{playlist} genre{genre} disc{disc} other{item}} to Next Up",
+    "confirmAddToNextUp": "Added {type, select, track{track} album{album} artist{artist} playlist{playlist} genre{genre} disc{disc} other{item}} to Next Up",
     "@confirmAddToNextUp": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the \"Next Up\" queue",
         "placeholders": {
@@ -3402,7 +3402,16 @@
     },
     "genreFilter": "Genre: {name}",
     "@genreFilter": {
-        "description": "Name of genrefilter",
+        "description": "Name of genreFilter",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "artistFilter": "Artist: {name}",
+  "@artistFilter": {
+    "description": "Name of artistFilter",
         "placeholders": {
             "name": {
                 "type": "String"

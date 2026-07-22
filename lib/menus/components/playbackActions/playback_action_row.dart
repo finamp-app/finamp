@@ -18,12 +18,14 @@ class PlaybackActionRow extends ConsumerStatefulWidget {
     this.popContext = true,
     this.compactLayout = false,
     this.queueItem,
+    this.trackCount,
   });
 
   final FinampPlayable item;
   final bool popContext;
   final bool compactLayout;
   final FinampQueueItem? queueItem;
+  final int? trackCount;
 
   @override
   ConsumerState<PlaybackActionRow> createState() => _PlaybackActionRowState();
@@ -45,6 +47,7 @@ class _PlaybackActionRowState extends ConsumerState<PlaybackActionRow> {
       compactLayout: widget.compactLayout,
       preferPrependingToNextUp: ref.watch(finampSettingsProvider.preferNextUpPrepending),
       queueItem: widget.queueItem,
+      trackCount: widget.trackCount,
     );
 
     // initial page for regular playback action row

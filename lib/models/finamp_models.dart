@@ -4395,22 +4395,20 @@ enum ItemFilterType {
   @HiveField(4)
   searchTerm(String),
   @HiveField(5)
-  isUnplayed(Null);
+  isUnplayed(Null),
+  @HiveField(6)
+  artistFilter(BaseItemDto);
 
   const ItemFilterType(this.extraType);
 
   final Type extraType;
-
-  bool get isArtistGenre => switch (this) {
-    genreFilter => true,
-    _ => false,
-  };
 
   IconData get icon => switch (this) {
     isFavorite => TablerIcons.heart,
     isFullyDownloaded => TablerIcons.download,
     startsWithCharacter => TablerIcons.abc,
     genreFilter => TablerIcons.tag,
+    artistFilter => TablerIcons.user,
     searchTerm => TablerIcons.list_search,
     isUnplayed => TablerIcons.headphones_off,
   };
@@ -4451,6 +4449,8 @@ class ItemFilter {
         return l10n.isUnplayedFilter;
       case ItemFilterType.genreFilter:
         return l10n.genreFilter(extraBaseItem.name ?? "");
+      case ItemFilterType.artistFilter:
+        return l10n.artistFilter(extraBaseItem.name ?? "");
       case ItemFilterType.startsWithCharacter:
         return l10n.startsWithFilter(extraString.toUpperCase());
       case ItemFilterType.searchTerm:
@@ -4498,6 +4498,9 @@ class SortAndFilterConfiguration {
 
   BaseItemDto? get genreFilter => filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter)?.extraBaseItem;
 
+  BaseItemDto? get artistFilter =>
+      filters.firstWhereOrNull((x) => x.type == ItemFilterType.artistFilter)?.extraBaseItem;
+
   bool get favoritesFilter => filters.firstWhereOrNull((x) => x.type == ItemFilterType.isFavorite) != null;
 
   SortAndFilterConfiguration copyWith({
@@ -4505,6 +4508,7 @@ class SortAndFilterConfiguration {
     SortOrder? sortOrder,
     Set<ItemFilter>? filters,
     BaseItemDto? genreFilter,
+    BaseItemDto? artistFilter,
     bool? favoriteFilter,
     bool? onlyShowFullyDownloadedFilter,
     String? searchQuery,
@@ -4513,6 +4517,10 @@ class SortAndFilterConfiguration {
     if (genreFilter != null) {
       processedFilters.removeWhere((x) => x.type == ItemFilterType.genreFilter);
       processedFilters.add(ItemFilter(type: ItemFilterType.genreFilter, extras: genreFilter));
+    }
+    if (artistFilter != null) {
+      processedFilters.removeWhere((x) => x.type == ItemFilterType.artistFilter);
+      processedFilters.add(ItemFilter(type: ItemFilterType.artistFilter, extras: artistFilter));
     }
     if (favoriteFilter != null) {
       processedFilters.removeWhere((x) => x.type == ItemFilterType.isFavorite);

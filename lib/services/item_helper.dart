@@ -55,6 +55,7 @@ Future<List<BaseItemDto>> loadChildTracksFromBaseItem({
             artist: item,
             libraryFilter: finampUserHelper.currentUser?.currentViewId,
             genreFilter: sortConfig.genreFilter?.id,
+            onlyFavorites: sortConfig.favoritesFilter,
           ).future,
         );
         break;
@@ -64,6 +65,7 @@ Future<List<BaseItemDto>> loadChildTracksFromBaseItem({
           includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
           limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
           genreFilter: item.id,
+          isFavorite: sortConfig.favoritesFilter,
           sortBy: "Random", // important, as we load limited tracks and otherwise would always get the same
         );
         break;
@@ -74,6 +76,7 @@ Future<List<BaseItemDto>> loadChildTracksFromBaseItem({
           sortBy: "ParentIndexNumber,IndexNumber,SortName",
           sortOrder: null,
           genreFilter: sortConfig.genreFilter?.id,
+          isFavorite: sortConfig.favoritesFilter,
           // filters: settings.onlyShowFavorites ? "IsFavorite" : null,
         );
     }
@@ -127,6 +130,7 @@ Future<List<BaseItemDto>?> loadChildTracksOffline({
         viewFilter: finampUserHelper.currentUser?.currentView?.id,
         genreFilter: item.id,
         nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
+        onlyFavorites: sortConfig.favoritesFilter,
       )).map((e) => e.baseItem!).toList();
       items.shuffle();
       if (items.length - 1 > settings.trackShuffleItemCount) {
@@ -143,6 +147,7 @@ Future<List<BaseItemDto>?> loadChildTracksOffline({
           artist: item,
           libraryFilter: finampUserHelper.currentUser?.currentViewId,
           genreFilter: sortConfig.genreFilter?.id,
+          onlyFavorites: sortConfig.favoritesFilter,
         ).future,
       );
       items = sortArtistTracks(items);

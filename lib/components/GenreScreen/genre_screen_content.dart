@@ -4,6 +4,8 @@ import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/GenreScreen/genre_count_column.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/curated_item_filter_row.dart';
+import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
+import 'package:finamp/services/genre_screen_provider.dart';
 import 'package:finamp/components/curated_item_sections.dart';
 import 'package:finamp/components/favorite_button.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
@@ -103,7 +105,8 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
               genreFilter: widget.parent,
             ),
           ),
-          allowFilters: (filter) => !filter.type.isArtistGenre,
+          allowFilters: (filter) =>
+              filter.type != ItemFilterType.artistFilter && filter.type != ItemFilterType.genreFilter,
         ),
       ),
     );
@@ -290,7 +293,12 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 10)),
         SliverToBoxAdapter(
-          child: PlaybackActionRow(compactLayout: true, item: Genre.fromItem(widget.parent), popContext: false),
+          child: PlaybackActionRow(
+            compactLayout: true,
+            item: Genre.fromItem(widget.parent),
+            popContext: false,
+            trackCount: trackCount,
+          ),
         ),
         if (!isLoading)
           ...genreItemSectionsOrder.map((type) {
@@ -302,6 +310,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                     parent: widget.parent,
                     tracks: tracks,
                     childrenForQueue: tracks,
+                    lazyAddMoreTracksToQueue: true,
                     tracksText: (genreCuratedItemSelectionTypeTracks != null)
                         ? genreCuratedItemSelectionTypeTracks.toLocalisedSectionTitle(context, BaseItemDtoType.track)
                         : loc.tracks,

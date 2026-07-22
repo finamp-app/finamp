@@ -3765,6 +3765,8 @@ class ItemFilterTypeAdapter extends TypeAdapter<ItemFilterType> {
         return ItemFilterType.searchTerm;
       case 5:
         return ItemFilterType.isUnplayed;
+      case 6:
+        return ItemFilterType.artistFilter;
       default:
         return ItemFilterType.isFavorite;
     }
@@ -3785,6 +3787,8 @@ class ItemFilterTypeAdapter extends TypeAdapter<ItemFilterType> {
         writer.writeByte(4);
       case ItemFilterType.isUnplayed:
         writer.writeByte(5);
+      case ItemFilterType.artistFilter:
+        writer.writeByte(6);
     }
   }
 
@@ -9751,6 +9755,7 @@ const _$ItemFilterTypeEnumMap = {
   ItemFilterType.genreFilter: 'genreFilter',
   ItemFilterType.searchTerm: 'searchTerm',
   ItemFilterType.isUnplayed: 'isUnplayed',
+  ItemFilterType.artistFilter: 'artistFilter',
 };
 
 SortAndFilterConfiguration _$SortAndFilterConfigurationFromJson(

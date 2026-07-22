@@ -11,9 +11,13 @@ import 'package:finamp/menus/components/overflow_menu_button.dart';
 import 'package:finamp/menus/track_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/services/artist_content_provider.dart';
 import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/feedback_helper.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/music_screen_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -53,6 +57,8 @@ class TrackListTile extends ConsumerWidget {
 
     /// The parent item which will be played with starting index [index] on tap.
     required this.parentPlayable,
+    this.lazyAddMoreTracksToQueue = false,
+    this.selectedFilter,
 
     /// Index of the track in whatever parent this widget is in. Used to start
     /// the audio service at a certain index, such as when selecting the middle
@@ -73,11 +79,14 @@ class TrackListTile extends ConsumerWidget {
 
     this.allowDismiss = true,
     this.highlightCurrentTrack = true,
+    this.genreFilter,
     this.playbackProgress,
   });
 
   final BaseItemDto item;
   final FinampPlayable parentPlayable;
+  final bool lazyAddMoreTracksToQueue;
+  final CuratedItemSelectionType? selectedFilter;
   final int? index;
   final bool showIndex;
   final bool showCover;
@@ -87,11 +96,14 @@ class TrackListTile extends ConsumerWidget {
   final SortBy? adaptiveAdditionalInfoSortBy;
   final bool allowDismiss;
   final bool highlightCurrentTrack;
+  final BaseItemDto? genreFilter;
   final double? playbackProgress;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool playable;
+    final finampUserHelper = GetIt.instance<FinampUserHelper>();
+    final library = finampUserHelper.currentUser?.currentView;
     if (ref.watch(finampSettingsProvider.isOffline)) {
       playable = ref.watch(
         GetIt.instance<DownloadsService>()
@@ -100,6 +112,84 @@ class TrackListTile extends ConsumerWidget {
       );
     } else {
       playable = true;
+    }
+
+    // We lazyload more tracks here if the user starts a queue from one of the top tracks sections
+    // because for performance-reasons, we first only fetch the data for the 5 tracks we really need
+    Future<void> lazyAddMoreTracks(PlayableSlice slice) async {
+      if (parentItem == null || selectedFilter == null) return;
+
+      final baseItemType = BaseItemDtoType.fromItem(parentItem!);
+      final SortBy sortBy = selectedFilter!.getSortBy();
+      final queueService = GetIt.instance<QueueService>();
+      final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+      List<BaseItemDto> allTracks;
+
+      // Load track data
+      if (baseItemType == BaseItemDtoType.artist) {
+        allTracks = await ref.read(
+          getArtistTracksProvider(
+            artist: parentItem!,
+            libraryFilter: library?.id,
+            genreFilter: genreFilter?.id,
+            onlyFavorites: selectedFilter == CuratedItemSelectionType.favorites,
+          ).future,
+        );
+      } else if (baseItemType == BaseItemDtoType.genre) {
+        final bool isOffline = ref.read(finampSettingsProvider.isOffline);
+
+        if (isOffline) {
+          final downloadsService = GetIt.instance<DownloadsService>();
+          final List<DownloadStub> fetchedItems = await downloadsService.getAllTracks(
+            viewFilter: library?.id,
+            nullableViewFilters: ref.read(finampSettingsProvider.showDownloadsWithUnknownLibrary),
+            onlyFavorites: (selectedFilter == CuratedItemSelectionType.favorites)
+                ? ref.read(finampSettingsProvider.trackOfflineFavorites)
+                : false,
+            genreFilter: genreFilter?.id,
+          );
+          allTracks = fetchedItems.map((e) => e.baseItem).nonNulls.toList();
+        } else {
+          allTracks =
+              await jellyfinApiHelper.getItems(
+                parentItem: library,
+                genreFilter: genreFilter?.id,
+                sortBy: sortBy.jellyfinName(ContentType.tracks),
+                sortOrder: "Descending",
+                isFavorite: (selectedFilter == CuratedItemSelectionType.favorites) ? true : null,
+                limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+                includeItemTypes: BaseItemDtoType.track.jellyfinName,
+              ) ??
+              [];
+        }
+      } else {
+        return;
+      }
+
+      // Build a fast lookup set of already-present track IDs
+      final resolved = await slice.resolve();
+      final Set<String> childIds = resolved.items.map((track) => track.id.raw).where((id) => id.isNotEmpty).toSet();
+
+      // Filter out tracks that are already in "children" and then sort according to the selected filter
+      List<BaseItemDto> remainingTracks = allTracks.where((track) => !childIds.contains(track.id.raw)).toList();
+      remainingTracks = sortItems(remainingTracks, sortBy, SortOrder.descending);
+
+      // Append to queue
+      await queueService.addToQueue(
+        PlayableSlice.simple(
+          remainingTracks,
+          QueueItemSource.rawId(
+            type: QueueItemSourceType.album,
+            name: QueueItemSourceName(
+              type: QueueItemSourceNameType.preTranslated,
+              pretranslatedName: parentItem?.name ?? item.album ?? AppLocalizations.of(context)!.placeholderSource,
+            ),
+            id: parentItem?.id.raw ?? "",
+            item: parentItem,
+            contextNormalizationGain: null,
+          ),
+        ),
+      );
     }
 
     Future<void> trackListTileOnTap(bool playable) async {
@@ -120,6 +210,10 @@ class TrackListTile extends ConsumerWidget {
 
       // start linear playback of album from the given index
       await queueService.startSlicePlayback(slice);
+
+      if (lazyAddMoreTracksToQueue) {
+        unawaited(lazyAddMoreTracks(slice));
+      }
     }
 
     return TrackListItem(
@@ -544,6 +638,7 @@ class TrackListItemTile extends ConsumerWidget {
     this.showAlbum = true,
     this.adaptiveAdditionalInfoSortBy,
     this.highlightCurrentTrack = true,
+    this.genreFilter,
     this.playbackProgress,
     this.onRemoveFromList,
   });
@@ -560,6 +655,7 @@ class TrackListItemTile extends ConsumerWidget {
   final SortBy? adaptiveAdditionalInfoSortBy;
   final bool highlightCurrentTrack;
   final void Function() onTap;
+  final BaseItemDto? genreFilter;
   final double? playbackProgress;
   final void Function()? onRemoveFromList;
 

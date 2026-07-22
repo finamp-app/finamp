@@ -16,6 +16,7 @@ class TracksSection extends ConsumerStatefulWidget {
     required this.parent,
     this.tracks,
     this.childrenForQueue,
+    this.lazyAddMoreTracksToQueue = false,
     required this.tracksText,
     this.seeAllCallbackFunction,
     this.genreFilter,
@@ -31,6 +32,7 @@ class TracksSection extends ConsumerStatefulWidget {
   final BaseItemDto parent;
   final List<BaseItemDto>? tracks;
   final List<BaseItemDto>? childrenForQueue;
+  final bool lazyAddMoreTracksToQueue;
   final String tracksText;
   final VoidCallback? seeAllCallbackFunction;
   final BaseItemDto? genreFilter;
@@ -190,6 +192,8 @@ class _TracksSectionState extends ConsumerState<TracksSection> {
                   TracksSliverList(
                     childrenForList: widget.tracks!,
                     childrenForQueue: widget.childrenForQueue!,
+                    lazyAddMoreTracksToQueue: widget.lazyAddMoreTracksToQueue,
+                    selectedFilter: widget.selectedFilter,
                     adaptiveAdditionalInfoSortBy: widget.selectedFilter?.getSortBy(),
                     parent: widget.parent,
                   )
