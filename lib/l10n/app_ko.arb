@@ -2092,5 +2092,74 @@
     "albumScreen": "앨범 화면",
     "@albumScreen": {
         "description": "Name for the view/screen that shows albums"
+    },
+    "downloadAllPlaylistsSettingWarning": "주의: 라이브러리 출처와 관계없이 모든 플레이리스트의 모든 항목들을 다운로드 합니다.",
+    "lyricsEmptyStateLoading": "가사 불러오는 중...",
+    "@lyricsEmptyStateLoading": {
+        "description": "Message shown while lyrics are being loaded"
+    },
+    "lyricsEmptyStateNoLyrics": "가사를 찾을 수 없습니다",
+    "@lyricsEmptyStateNoLyrics": {
+        "description": "Message shown when no lyrics are available for the current track"
+    },
+    "lyricsMissingLyricLinePlaceholder": "가사 누락 구간",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "showCoversOnAlbumScreenSubtitle": "앨범 화면에서 각 곡들의 앨범 커버를 구분하여 보여줍니다.",
+    "@showCoversOnAlbumScreenSubtitle": {
+        "description": "Subtitle for the setting that controls if album covers are shown for each track separately on the album screen"
+    },
+    "artistScreen": "아티스트 화면",
+    "@artistScreen": {
+        "description": "Name for the view/screen that shows artists"
+    },
+    "applyFilterOnGenreChipTapTitle": "장르 탭에 필터 적용",
+    "@applyFilterOnGenreChipTapTitle": {
+        "description": "Title for the setting that controls if taps on genre chips should apply a genre filter to the current screen or should redirect to the GenreScreen."
+    },
+    "applyFilterOnGenreChipTapSubtitle": "기본적으로 장르를 누르면 장르 화면이 열리고 , 길게 누르면 아티스트나 재생 목록이 해당 장르로 필터링됩니다. 이 기능을 활성화하면 두 동작이 반전됩니다.",
+    "@applyFilterOnGenreChipTapSubtitle": {
+        "description": "Subtitle for the setting that controls if taps on genres should apply a genre filter to the current screen or should redirect to the GenreScreen."
+    },
+    "applyFilterOnGenreChipTapPrompt": "장르 필터 적용됨",
+    "@applyFilterOnGenreChipTapPrompt": {
+        "description": "A snackbar that is shown to the user if a genre filter was applied due to their selected settings"
+    },
+    "applyFilterOnGenreChipTapPromptButton": "장르 열기",
+    "@applyFilterOnGenreChipTapPromptButton": {
+        "description": "The button for the snackbar that is shown to the user if a genre filter was applied due to their selected settings"
+    },
+    "genreScreen": "장르 화면",
+    "@genreScreen": {
+        "description": "Name for the view/screen that shows genres"
+    },
+    "emptyFilteredListTitle": "항목이 없습니다",
+    "@emptyFilteredListTitle": {
+        "description": "Message shown when a list of items is filtered and no items match the filter"
+    },
+    "emptyFilteredListSubtitle": "필터 조건에 맞는 항목이 없습니다. 필터를 끄거나 검색 조건을 바꿔보세요.",
+    "@emptyFilteredListSubtitle": {
+        "description": "Message shown when a list of items is filtered and no items match the filter"
+    },
+    "resetFiltersButton": "필터 초기화",
+    "@resetFiltersButton": {
+        "description": "Button to reset filters on a list of items"
+    },
+    "resetSettingsPromptGlobal": "모든 설정을 기본 값으로 초기화 하시겠습니까?",
+    "@resetSettingsPromptGlobal": {
+        "description": "Prompt which gets shown when the user is about to reset all settings to their default values"
+    },
+    "resetSettingsPromptGlobalConfirm": "모든 설정 초기화",
+    "@resetSettingsPromptGlobalConfirm": {
+        "description": "A differently worded Confirm button to prevent the user from instandly clicking confirm because they are about to reset all settings to their default value"
+    },
+    "resetSettingsPromptLocal": "이 설정들을 기본값으로 초기화 하시겠습니까?",
+    "@resetSettingsPromptLocal": {
+        "description": "Prompt which gets shown when the user is about to reset all settings in the current settings window to their default values"
+    },
+    "genericCancel": "취소",
+    "@genericCancel": {
+        "description": "Used when the user stops an action from taking place inside a popup dialog window"
     }
 }
