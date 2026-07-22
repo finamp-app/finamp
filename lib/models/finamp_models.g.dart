@@ -1864,19 +1864,22 @@ class QuickActionConfigAdapter extends TypeAdapter<QuickActionConfig> {
       action: fields[0] as FinampQuickActions,
       itemId: fields[1] as BaseItemId?,
       itemName: fields[2] as String?,
+      itemTypes: (fields[3] as Set?)?.cast<BaseItemDtoType>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, QuickActionConfig obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.action)
       ..writeByte(1)
       ..write(obj.itemId)
       ..writeByte(2)
-      ..write(obj.itemName);
+      ..write(obj.itemName)
+      ..writeByte(3)
+      ..write(obj.itemTypes);
   }
 
   @override
@@ -2000,6 +2003,99 @@ class ContentViewTypeAdapter extends TypeAdapter<ContentViewType> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ContentViewTypeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class BaseItemDtoTypeAdapter extends TypeAdapter<BaseItemDtoType> {
+  @override
+  final typeId = 127;
+
+  @override
+  BaseItemDtoType read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return BaseItemDtoType.noItem;
+      case 1:
+        return BaseItemDtoType.album;
+      case 2:
+        return BaseItemDtoType.artist;
+      case 3:
+        return BaseItemDtoType.playlist;
+      case 4:
+        return BaseItemDtoType.genre;
+      case 5:
+        return BaseItemDtoType.track;
+      case 6:
+        return BaseItemDtoType.library;
+      case 7:
+        return BaseItemDtoType.folder;
+      case 8:
+        return BaseItemDtoType.musicVideo;
+      case 9:
+        return BaseItemDtoType.audioBook;
+      case 10:
+        return BaseItemDtoType.tvEpisode;
+      case 11:
+        return BaseItemDtoType.video;
+      case 12:
+        return BaseItemDtoType.movie;
+      case 13:
+        return BaseItemDtoType.trailer;
+      case 14:
+        return BaseItemDtoType.collection;
+      case 15:
+        return BaseItemDtoType.unknown;
+      default:
+        return BaseItemDtoType.noItem;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, BaseItemDtoType obj) {
+    switch (obj) {
+      case BaseItemDtoType.noItem:
+        writer.writeByte(0);
+      case BaseItemDtoType.album:
+        writer.writeByte(1);
+      case BaseItemDtoType.artist:
+        writer.writeByte(2);
+      case BaseItemDtoType.playlist:
+        writer.writeByte(3);
+      case BaseItemDtoType.genre:
+        writer.writeByte(4);
+      case BaseItemDtoType.track:
+        writer.writeByte(5);
+      case BaseItemDtoType.library:
+        writer.writeByte(6);
+      case BaseItemDtoType.folder:
+        writer.writeByte(7);
+      case BaseItemDtoType.musicVideo:
+        writer.writeByte(8);
+      case BaseItemDtoType.audioBook:
+        writer.writeByte(9);
+      case BaseItemDtoType.tvEpisode:
+        writer.writeByte(10);
+      case BaseItemDtoType.video:
+        writer.writeByte(11);
+      case BaseItemDtoType.movie:
+        writer.writeByte(12);
+      case BaseItemDtoType.trailer:
+        writer.writeByte(13);
+      case BaseItemDtoType.collection:
+        writer.writeByte(14);
+      case BaseItemDtoType.unknown:
+        writer.writeByte(15);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BaseItemDtoTypeAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
@@ -3675,21 +3771,7 @@ class FinampQuickActionsAdapter extends TypeAdapter<FinampQuickActions> {
       case 9:
         return FinampQuickActions.playSpecificItem;
       case 10:
-        return FinampQuickActions.playRandomPlaylist;
-      case 11:
-        return FinampQuickActions.playRandomArtist;
-      case 12:
-        return FinampQuickActions.playRandomGenre;
-      case 13:
-        return FinampQuickActions.playRandomFavoriteAlbum;
-      case 14:
-        return FinampQuickActions.playRandomFavoriteTrack;
-      case 15:
-        return FinampQuickActions.playRandomFavoritePlaylist;
-      case 16:
-        return FinampQuickActions.playRandomFavoriteArtist;
-      case 17:
-        return FinampQuickActions.playRandomFavoriteGenre;
+        return FinampQuickActions.playRandomItem;
       default:
         return FinampQuickActions.shuffleTracks;
     }
@@ -3718,22 +3800,8 @@ class FinampQuickActionsAdapter extends TypeAdapter<FinampQuickActions> {
         writer.writeByte(8);
       case FinampQuickActions.playSpecificItem:
         writer.writeByte(9);
-      case FinampQuickActions.playRandomPlaylist:
+      case FinampQuickActions.playRandomItem:
         writer.writeByte(10);
-      case FinampQuickActions.playRandomArtist:
-        writer.writeByte(11);
-      case FinampQuickActions.playRandomGenre:
-        writer.writeByte(12);
-      case FinampQuickActions.playRandomFavoriteAlbum:
-        writer.writeByte(13);
-      case FinampQuickActions.playRandomFavoriteTrack:
-        writer.writeByte(14);
-      case FinampQuickActions.playRandomFavoritePlaylist:
-        writer.writeByte(15);
-      case FinampQuickActions.playRandomFavoriteArtist:
-        writer.writeByte(16);
-      case FinampQuickActions.playRandomFavoriteGenre:
-        writer.writeByte(17);
     }
   }
 
@@ -9807,6 +9875,9 @@ QuickActionConfig _$QuickActionConfigFromJson(Map<String, dynamic> json) =>
         const BaseItemIdConverter().fromJson,
       ),
       itemName: json['itemName'] as String?,
+      itemTypes: (json['itemTypes'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$BaseItemDtoTypeEnumMap, e))
+          .toSet(),
     );
 
 Map<String, dynamic> _$QuickActionConfigToJson(QuickActionConfig instance) =>
@@ -9819,6 +9890,9 @@ Map<String, dynamic> _$QuickActionConfigToJson(QuickActionConfig instance) =>
           case final value?)
         'itemId': value,
       if (instance.itemName case final value?) 'itemName': value,
+      if (instance.itemTypes?.map((e) => _$BaseItemDtoTypeEnumMap[e]!).toList()
+          case final value?)
+        'itemTypes': value,
     };
 
 const _$FinampQuickActionsEnumMap = {
@@ -9827,15 +9901,8 @@ const _$FinampQuickActionsEnumMap = {
   FinampQuickActions.browsePlaybackHistory: 'browsePlaybackHistory',
   FinampQuickActions.playRandomAlbum: 'playRandomAlbum',
   FinampQuickActions.playRandomTrack: 'playRandomTrack',
-  FinampQuickActions.playRandomPlaylist: 'playRandomPlaylist',
-  FinampQuickActions.playRandomArtist: 'playRandomArtist',
-  FinampQuickActions.playRandomGenre: 'playRandomGenre',
+  FinampQuickActions.playRandomItem: 'playRandomItem',
   FinampQuickActions.playRandomFavoriteItem: 'playRandomFavoriteItem',
-  FinampQuickActions.playRandomFavoriteAlbum: 'playRandomFavoriteAlbum',
-  FinampQuickActions.playRandomFavoriteTrack: 'playRandomFavoriteTrack',
-  FinampQuickActions.playRandomFavoritePlaylist: 'playRandomFavoritePlaylist',
-  FinampQuickActions.playRandomFavoriteArtist: 'playRandomFavoriteArtist',
-  FinampQuickActions.playRandomFavoriteGenre: 'playRandomFavoriteGenre',
   FinampQuickActions.playPreviousQueue: 'playPreviousQueue',
   FinampQuickActions.configureOutput: 'configureOutput',
   FinampQuickActions.surpriseMe: 'surpriseMe',

@@ -1832,29 +1832,46 @@ enum DownloadItemStatus {
 
 /// The type of a BaseItemDto as determined from its type field.
 /// Enumerated by Isar, do not modify order or delete existing entries
+@HiveType(typeId: 127)
 enum BaseItemDtoType {
   // TODO we should probably only have the types we care about
   // track, album, artist, playlist, library, collection.
   // Others should map to one if close enough, else throw.
+  @HiveField(0)
   noItem(null, true, null, null),
+  @HiveField(1)
   album("MusicAlbum", false, [track], DownloadItemType.collection),
+  @HiveField(2)
   artist("MusicArtist", true, [album, track], DownloadItemType.collection),
+  @HiveField(3)
   playlist("Playlist", true, [track], DownloadItemType.collection),
+  @HiveField(4)
   genre("MusicGenre", true, [album, track], DownloadItemType.collection),
+  @HiveField(5)
   track("Audio", false, [], DownloadItemType.track),
+  @HiveField(6)
   library("CollectionFolder", true, [album, track], DownloadItemType.collection),
+  @HiveField(7)
   folder("Folder", true, null, DownloadItemType.collection),
+  @HiveField(8)
   musicVideo("MusicVideo", false, [], DownloadItemType.track),
+  @HiveField(9)
   audioBook("AudioBook", false, [], DownloadItemType.track),
+  @HiveField(10)
   tvEpisode("Episode", false, [], DownloadItemType.track),
+  @HiveField(11)
   video("Video", false, [], DownloadItemType.track),
+  @HiveField(12)
   movie("Movie", false, [], DownloadItemType.track),
+  @HiveField(13)
   trailer("Trailer", false, [], DownloadItemType.track),
   //!!! apparently a typo in the API docs, "BoxSet" returns an invalid result (i.e. all libraries), but "BoxSets" returns the correct thing. at least for some requests?
+  @HiveField(14)
   collection("BoxSet", true, [
     album, track, playlist, artist, genre, audioBook,
     // collection,
   ], DownloadItemType.collection),
+  @HiveField(15)
   unknown(null, true, null, DownloadItemType.collection);
 
   // All possible types in Jellyfin as of 10.9:
@@ -4315,44 +4332,38 @@ enum HomeScreenSectionPresetType {
 @HiveType(typeId: 121)
 enum FinampQuickActions {
   @HiveField(0)
-  shuffleTracks,
+  shuffleTracks(true),
   @HiveField(1)
-  browseRecentQueues,
+  browseRecentQueues(true),
   @HiveField(2)
-  browsePlaybackHistory,
+  browsePlaybackHistory(true),
   @HiveField(3)
-  playRandomAlbum,
+  @Deprecated("Use playRandomItem instead")
+  playRandomAlbum(false),
   @HiveField(4)
-  playRandomTrack,
+  @Deprecated("Use playRandomItem instead")
+  playRandomTrack(false),
   @HiveField(10)
-  playRandomPlaylist,
-  @HiveField(11)
-  playRandomArtist,
-  @HiveField(12)
-  playRandomGenre,
+  playRandomItem(true),
   @HiveField(5)
-  playRandomFavoriteItem,
-  @HiveField(13)
-  playRandomFavoriteAlbum,
-  @HiveField(14)
-  playRandomFavoriteTrack,
-  @HiveField(15)
-  playRandomFavoritePlaylist,
-  @HiveField(16)
-  playRandomFavoriteArtist,
-  @HiveField(17)
-  playRandomFavoriteGenre,
+  playRandomFavoriteItem(true),
   @HiveField(6)
-  playPreviousQueue,
+  playPreviousQueue(true),
   @HiveField(7)
-  configureOutput,
+  configureOutput(true),
   @HiveField(8)
-  surpriseMe,
+  surpriseMe(true),
   @HiveField(9)
-  playSpecificItem;
+  playSpecificItem(true);
   //TODO support album/artist shuffle (requires queue support)
 
+  final bool showToUser;
+
+  const FinampQuickActions(this.showToUser);
+
   bool get editable => switch (this) {
+    FinampQuickActions.playRandomItem => true,
+    FinampQuickActions.playRandomFavoriteItem => true,
     FinampQuickActions.playSpecificItem => true,
     _ => false,
   };
@@ -4371,9 +4382,12 @@ enum FinampQuickActions {
       case FinampQuickActions.browsePlaybackHistory:
         return AppLocalizations.of(context)!.browsePlaybackHistoryActionDescription;
       case FinampQuickActions.playRandomAlbum:
-        return AppLocalizations.of(context)!.playRandomAlbumActionDescription;
+        return "deprecated";
       case FinampQuickActions.playRandomTrack:
-        return AppLocalizations.of(context)!.playRandomTrackActionDescription;
+        return "deprecated";
+      case FinampQuickActions.playRandomItem:
+        //TODO how to reflect the selected item types here?
+        return AppLocalizations.of(context)!.playRandomItemActionDescription;
       case FinampQuickActions.playRandomFavoriteItem:
         return AppLocalizations.of(context)!.playRandomFavoriteItemActionDescription;
       case FinampQuickActions.playPreviousQueue:
@@ -4384,22 +4398,6 @@ enum FinampQuickActions {
         return AppLocalizations.of(context)!.playSpecificItemActionDescription;
       case FinampQuickActions.surpriseMe:
         return AppLocalizations.of(context)!.surpriseMeActionDescription;
-      case FinampQuickActions.playRandomPlaylist:
-        return AppLocalizations.of(context)!.playRandomPlaylistActionDescription;
-      case FinampQuickActions.playRandomArtist:
-        return AppLocalizations.of(context)!.playRandomArtistActionDescription;
-      case FinampQuickActions.playRandomGenre:
-        return AppLocalizations.of(context)!.playRandomGenreActionDescription;
-      case FinampQuickActions.playRandomFavoriteAlbum:
-        return AppLocalizations.of(context)!.playRandomFavoriteAlbumActionDescription;
-      case FinampQuickActions.playRandomFavoriteTrack:
-        return AppLocalizations.of(context)!.playRandomFavoriteTrackActionDescription;
-      case FinampQuickActions.playRandomFavoritePlaylist:
-        return AppLocalizations.of(context)!.playRandomFavoritePlaylistActionDescription;
-      case FinampQuickActions.playRandomFavoriteArtist:
-        return AppLocalizations.of(context)!.playRandomFavoriteArtistActionDescription;
-      case FinampQuickActions.playRandomFavoriteGenre:
-        return AppLocalizations.of(context)!.playRandomFavoriteGenreActionDescription;
     }
   }
 
@@ -4410,15 +4408,8 @@ enum FinampQuickActions {
       FinampQuickActions.browsePlaybackHistory => TablerIcons.clock,
       FinampQuickActions.playRandomAlbum => TablerIcons.album,
       FinampQuickActions.playRandomTrack => TablerIcons.music,
-      FinampQuickActions.playRandomPlaylist => TablerIcons.playlist,
-      FinampQuickActions.playRandomArtist => TablerIcons.user,
-      FinampQuickActions.playRandomGenre => TablerIcons.category,
+      FinampQuickActions.playRandomItem => TablerIcons.help_hexagon,
       FinampQuickActions.playRandomFavoriteItem => TablerIcons.heart_question,
-      FinampQuickActions.playRandomFavoriteAlbum => TablerIcons.album,
-      FinampQuickActions.playRandomFavoriteTrack => TablerIcons.music_heart,
-      FinampQuickActions.playRandomFavoritePlaylist => TablerIcons.playlist,
-      FinampQuickActions.playRandomFavoriteArtist => TablerIcons.user_heart,
-      FinampQuickActions.playRandomFavoriteGenre => TablerIcons.category,
       FinampQuickActions.playPreviousQueue => TablerIcons.restore,
       FinampQuickActions.configureOutput => TablerIcons.device_speaker,
       FinampQuickActions.playSpecificItem => TablerIcons.music_pin,
@@ -4666,8 +4657,10 @@ class QuickActionConfig {
   final BaseItemId? itemId;
   @HiveField(2)
   final String? itemName;
+  @HiveField(3)
+  final Set<BaseItemDtoType>? itemTypes;
 
-  const QuickActionConfig({required this.action, this.itemId, this.itemName});
+  const QuickActionConfig({required this.action, this.itemId, this.itemName, this.itemTypes});
 
   String getTitle(AppLocalizations l10n) {
     switch (action) {
@@ -4678,9 +4671,11 @@ class QuickActionConfig {
       case FinampQuickActions.browsePlaybackHistory:
         return l10n.playbackHistory;
       case FinampQuickActions.playRandomAlbum:
-        return l10n.randomAlbumAction;
+        return "deprecated";
       case FinampQuickActions.playRandomTrack:
-        return l10n.randomTrackAction;
+        return "deprecated";
+      case FinampQuickActions.playRandomItem:
+        return l10n.randomItemAction;
       case FinampQuickActions.playRandomFavoriteItem:
         return l10n.randomFavoriteAction;
       case FinampQuickActions.playPreviousQueue:
@@ -4691,22 +4686,6 @@ class QuickActionConfig {
         return l10n.playSpecificItemAction(itemName ?? "finamp_placeholder");
       case FinampQuickActions.surpriseMe:
         return l10n.surpriseMeAction;
-      case FinampQuickActions.playRandomPlaylist:
-        return l10n.randomPlaylistAction;
-      case FinampQuickActions.playRandomArtist:
-        return l10n.randomArtistAction;
-      case FinampQuickActions.playRandomGenre:
-        return l10n.randomGenreAction;
-      case FinampQuickActions.playRandomFavoriteAlbum:
-        return l10n.randomFavoriteAlbumAction;
-      case FinampQuickActions.playRandomFavoriteTrack:
-        return l10n.randomFavoriteTrackAction;
-      case FinampQuickActions.playRandomFavoritePlaylist:
-        return l10n.randomFavoritePlaylistAction;
-      case FinampQuickActions.playRandomFavoriteArtist:
-        return l10n.randomFavoriteArtistAction;
-      case FinampQuickActions.playRandomFavoriteGenre:
-        return l10n.randomFavoriteGenreAction;
     }
   }
 

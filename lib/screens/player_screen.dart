@@ -25,6 +25,7 @@ import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/theme_provider.dart';
+import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -256,7 +257,7 @@ class _PlayerScreenContent extends ConsumerWidget {
                 centerTitle: true,
                 toolbarHeight: toolbarHeight,
                 title: PlayerScreenAppBarTitle(maxLines: maxToolbarLines),
-                leadingWidth: 40.0 * appbarActions.length,
+                leadingWidth: (isDesktop ? 40.0 : 48.0) * appbarActions.length,
                 leading: Row(children: appbarActions),
                 actions: [],
                 titleSpacing: 0.0,

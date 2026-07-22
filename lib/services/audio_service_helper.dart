@@ -244,7 +244,7 @@ class AudioServiceHelper {
     }
   }
 
-  Future<void> playRandomItem({bool favoritesOnly = false, List<BaseItemDtoType>? limitItemTypes}) async {
+  Future<void> playRandomItem({bool favoritesOnly = false, Set<BaseItemDtoType>? limitItemTypes}) async {
     // get random favorite (any item type)
     final randomFavorite = (await _jellyfinApiHelper.getItems(
       parentItem: limitItemTypes?.contains(BaseItemDtoType.playlist) ?? false
@@ -256,13 +256,13 @@ class AudioServiceHelper {
       isFavorite: favoritesOnly,
       includeItemTypes:
           (limitItemTypes ??
-                  [
+                  {
                     BaseItemDtoType.track,
                     BaseItemDtoType.album,
                     BaseItemDtoType.artist,
                     BaseItemDtoType.genre,
                     BaseItemDtoType.playlist,
-                  ])
+                  })
               .map((e) => e.jellyfinName)
               .join(","),
       sortBy: SortBy.random.jellyfinName(null),

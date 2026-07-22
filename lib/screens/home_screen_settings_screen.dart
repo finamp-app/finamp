@@ -103,6 +103,12 @@ class QuickActionsSelector extends ConsumerWidget {
                     title: _ResponsiveListTile(
                       index: index,
                       title: action.getTitle(context.l10n),
+                      subtitleWidgets: action.itemTypes
+                          ?.map(
+                            (itemType) =>
+                                Text(itemType.localized(context.l10n), style: TextTheme.of(context).labelSmall),
+                          )
+                          .toList(),
                       key: ValueKey("quick-action-$action"),
                       useInlineLayout: useInlineLayout,
                       actions: [
@@ -540,11 +546,13 @@ class _ResponsiveListTile extends StatelessWidget {
     required this.index,
     required this.title,
     required this.actions,
+    this.subtitleWidgets = const [],
     this.useInlineLayout = false,
   });
 
   final int index;
   final String title;
+  final List<Widget>? subtitleWidgets;
   final List<SimpleButton> actions;
   final bool useInlineLayout;
 
@@ -557,7 +565,25 @@ class _ResponsiveListTile extends StatelessWidget {
         children: [
           ReorderableDragStartListener(index: index, key: ValueKey(tileKey), child: const Icon(Icons.drag_handle)),
           const SizedBox(width: 8.0),
-          Expanded(child: Text(title)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(title),
+                if (subtitleWidgets?.isNotEmpty ?? false)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2.0),
+                    child: DefaultTextStyle(
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall!.copyWith(color: ColorScheme.of(context).onSurface.withOpacity(0.6)),
+                      child: Row(mainAxisSize: MainAxisSize.min, spacing: 8.0, children: subtitleWidgets ?? []),
+                    ),
+                  ),
+              ],
+            ),
+          ),
           const SizedBox(width: 28.0),
           Row(mainAxisSize: MainAxisSize.min, spacing: 12.0, children: actions),
           const SizedBox(width: 16.0),
@@ -570,15 +596,105 @@ class _ResponsiveListTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ReorderableDragStartListener(index: index, key: ValueKey(tileKey), child: const Icon(Icons.drag_handle)),
             const SizedBox(width: 8.0),
-            Expanded(child: Text(title)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(title),
+                  if (subtitleWidgets?.isNotEmpty ?? false)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: DefaultTextStyle(
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall!.copyWith(color: ColorScheme.of(context).onSurface.withOpacity(0.6)),
+                        child: Row(mainAxisSize: MainAxisSize.min, spacing: 8.0, children: subtitleWidgets ?? []),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 8.0),
         Wrap(alignment: WrapAlignment.spaceEvenly, spacing: 12.0, runSpacing: 8.0, children: actions),
       ],
+    );
+  }
+}
+
+class TargetItemTypesSelector extends ConsumerStatefulWidget {
+  const TargetItemTypesSelector({super.key, required this.notifier, required this.initialValue});
+
+  final ValueNotifier<Set<BaseItemDtoType>> notifier;
+  final Set<BaseItemDtoType> initialValue;
+
+  @override
+  ConsumerState<TargetItemTypesSelector> createState() => _TargetItemTypesSelectorState();
+}
+
+class _TargetItemTypesSelectorState extends ConsumerState<TargetItemTypesSelector> {
+  late Set<BaseItemDtoType> selected;
+
+  @override
+  void initState() {
+    selected = Set.of(widget.initialValue);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final itemTypes = BaseItemDtoType.values
+        .where((itemType) => ContentType.values.any((contentType) => contentType.itemType == itemType))
+        .toList();
+    return Wrap(
+      spacing: 6.0,
+      runSpacing: 6.0,
+      children: itemTypes.map((itemType) {
+        final isSelected = selected.contains(itemType);
+        return Theme(
+          data: Theme.of(context).copyWith(
+            splashColor: ColorScheme.of(context).primary.withOpacity(0.15),
+            highlightColor: ColorScheme.of(context).primary.withOpacity(0.05),
+          ),
+          child: FilterChip(
+            label: Text(itemType.localized(context.l10n)),
+            selected: isSelected,
+            selectedColor: Color.alphaBlend(ColorScheme.of(context).primary.withOpacity(0.15), Colors.transparent),
+            backgroundColor: Colors.transparent,
+            side: BorderSide(
+              color: isSelected
+                  ? ColorScheme.of(context).primary.withOpacity(0.5)
+                  : ColorScheme.of(context).outline.withOpacity(0.3),
+              width: 1.25,
+            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+            showCheckmark: false,
+            onSelected: (selected) {
+              setState(() {
+                if (selected) {
+                  this.selected.add(itemType);
+                } else {
+                  this.selected.remove(itemType);
+                  if (this.selected.isEmpty) {
+                    FeedbackHelper.feedback(FeedbackType.warning);
+                    this.selected.add(itemType);
+                  }
+                }
+                widget.notifier.value = Set.of(this.selected);
+              });
+            },
+            labelPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+            padding: EdgeInsets.zero,
+            visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
+          ),
+        );
+      }).toList(),
     );
   }
 }

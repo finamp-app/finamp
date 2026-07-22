@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
@@ -52,7 +53,8 @@ class QuickActionConfigMenu extends ConsumerStatefulWidget {
 
 class QuickActionConfigMenuState extends ConsumerState<QuickActionConfigMenu> {
   FinampQuickActions? selected;
-  final ValueNotifier<BaseItemDto?> notifier = ValueNotifier(null);
+  final ValueNotifier<BaseItemDto?> itemNotifier = ValueNotifier(null);
+  final ValueNotifier<Set<BaseItemDtoType>> itemTypesNotifier = ValueNotifier(const {});
 
   @override
   void initState() {
@@ -87,6 +89,7 @@ class QuickActionConfigMenuState extends ConsumerState<QuickActionConfigMenu> {
             children: [
               Text(switch (selected) {
                 FinampQuickActions.playSpecificItem => context.l10n.selectAnItem,
+                //TODO add more strings
                 _ => context.l10n.homeScreenQuickActionPickerMenuTitle,
               }, style: Theme.of(context).textTheme.titleMedium),
             ],
@@ -105,82 +108,108 @@ class QuickActionConfigMenuState extends ConsumerState<QuickActionConfigMenu> {
   }
 
   List<Widget> _buildSelector() {
-    return FinampQuickActions.values.map<Widget>((quickAction) {
-      return Consumer(
-        builder: (context, ref, child) {
-          final currentActions = ref.watch(finampSettingsProvider.homeScreenConfiguration).actions;
-          return ChoiceMenuOption(
-            title: QuickActionConfig(action: quickAction).getTitle(context.l10n),
-            description: quickAction.getDescription(context),
-            badges: [
-              // // similar mode is recommended
-              // if (preset == RadioMode.similar && radioModeOptionAvailabilityStatus.isAvailable)
-              //   Icon(TablerIcons.star, size: 14.0),
-            ],
-            enabled: currentActions.where((action) => action.action == quickAction).isEmpty,
-            icon: quickAction.getIcon(),
-            isInactive: false,
-            isSelected: quickAction == widget.initialValue?.action,
-            onSelect: () async {
-              //TODO ideally rebuild with check and then pop after delay
-              // FeedbackHelper.feedback(FeedbackType.selection);
-              // await Future<void>.delayed(const Duration(milliseconds: 400));
-              // Navigator.of(context).pop(preset);
-              if (quickAction.editable) {
-                setState(() {
-                  selected = quickAction;
-                });
-              } else {
-                if (context.mounted) {
-                  FeedbackHelper.feedback(FeedbackType.selection);
-                  Navigator.of(context).pop(QuickActionConfig(action: quickAction));
-                }
-              }
-            },
-          );
+    return FinampQuickActions.values.where((x) => x.showToUser).map<Widget>((quickAction) {
+      return ChoiceMenuOption(
+        title: QuickActionConfig(action: quickAction).getTitle(context.l10n),
+        description: quickAction.getDescription(context),
+        badges: [
+          // // similar mode is recommended
+          // if (preset == RadioMode.similar && radioModeOptionAvailabilityStatus.isAvailable)
+          //   Icon(TablerIcons.star, size: 14.0),
+        ],
+        enabled: true,
+        icon: quickAction.getIcon(),
+        isInactive: false,
+        isSelected: quickAction == widget.initialValue?.action,
+        onSelect: () async {
+          //TODO ideally rebuild with check and then pop after delay
+          // FeedbackHelper.feedback(FeedbackType.selection);
+          // await Future<void>.delayed(const Duration(milliseconds: 400));
+          // Navigator.of(context).pop(preset);
+          if (quickAction.editable) {
+            setState(() {
+              selected = quickAction;
+            });
+          } else {
+            if (context.mounted) {
+              FeedbackHelper.feedback(FeedbackType.selection);
+              Navigator.of(context).pop(QuickActionConfig(action: quickAction));
+            }
+          }
         },
       );
     }).toList();
   }
 
   List<Widget> _buildItemSelector({required double height}) {
-    // This is currently the only editable type
-    assert(selected == FinampQuickActions.playSpecificItem);
+    assert(selected?.editable ?? false);
     return [
-      ChoiceMenuOption(
-        title: context.l10n.back,
-        enabled: true,
-        icon: TablerIcons.chevron_left,
-        isInactive: false,
-        isSelected: false,
-        onSelect: () => setState(() {
-          selected = null;
-        }),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: SimpleButton(
+          text: context.l10n.back,
+          icon: TablerIcons.chevron_left,
+          onPressed: () => setState(() {
+            selected = null;
+          }),
+        ),
       ),
-      GlobalSearchBox(notifier, height: height, initialItem: widget.initialValue?.itemId, showTracks: true),
       SizedBox(height: 20.0),
-      ValueListenableBuilder(
-        valueListenable: notifier,
-        builder: (context, value, _) {
-          return CTAMedium(
-            text: context.l10n.save,
-            icon: TablerIcons.device_floppy,
-            disabled: value == null,
-            onPressed: () {
-              if (context.mounted && value != null) {
-                FeedbackHelper.feedback(FeedbackType.selection);
-                Navigator.of(context).pop(
-                  QuickActionConfig(
-                    action: FinampQuickActions.playSpecificItem,
-                    itemId: value.id,
-                    itemName: value.name,
-                  ),
-                );
-              }
+      ...switch (selected) {
+        FinampQuickActions.playSpecificItem => [
+          GlobalSearchBox(itemNotifier, height: height, initialItem: widget.initialValue?.itemId, showTracks: true),
+          SizedBox(height: 20.0),
+          ValueListenableBuilder(
+            valueListenable: itemNotifier,
+            builder: (context, value, _) {
+              return CTAMedium(
+                text: context.l10n.save,
+                icon: TablerIcons.device_floppy,
+                disabled: value == null,
+                onPressed: () {
+                  if (context.mounted && value != null) {
+                    FeedbackHelper.feedback(FeedbackType.selection);
+                    Navigator.of(
+                      context,
+                    ).pop(QuickActionConfig(action: selected!, itemId: value.id, itemName: value.name));
+                  }
+                },
+              );
             },
-          );
-        },
-      ),
+          ),
+        ],
+        FinampQuickActions.playRandomItem || FinampQuickActions.playRandomFavoriteItem => [
+          TargetItemTypesSelector(
+            notifier: itemTypesNotifier,
+            initialValue:
+                widget.initialValue?.itemTypes ??
+                const {
+                  BaseItemDtoType.track,
+                  BaseItemDtoType.album,
+                  BaseItemDtoType.artist,
+                  BaseItemDtoType.genre,
+                  BaseItemDtoType.playlist,
+                },
+          ),
+          SizedBox(height: 20.0),
+          ValueListenableBuilder(
+            valueListenable: itemTypesNotifier,
+            builder: (context, value, _) {
+              return CTAMedium(
+                text: context.l10n.save,
+                icon: TablerIcons.device_floppy,
+                onPressed: () {
+                  if (context.mounted) {
+                    FeedbackHelper.feedback(FeedbackType.selection);
+                    Navigator.of(context).pop(QuickActionConfig(action: selected!, itemTypes: value));
+                  }
+                },
+              );
+            },
+          ),
+        ],
+        _ => [],
+      },
     ];
   }
 }

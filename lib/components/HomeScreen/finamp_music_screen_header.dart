@@ -140,13 +140,14 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                                 }
                               }
                             : null,
-                        onDoubleTap: ref.watch(isDownloadingOrSyncingPollingProvider)
+                        onLongPress: ref.watch(isDownloadingOrSyncingPollingProvider)
                             ? () {
                                 if (ref.read(isDownloadingOrSyncingPollingProvider)) {
                                   Navigator.of(context).pushNamed(DownloadsScreen.routeName);
                                 }
                               }
                             : null,
+                        onDoubleTap: () => Navigator.of(context).pushNamed(SettingsScreen.routeName),
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [

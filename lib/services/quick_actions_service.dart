@@ -37,38 +37,11 @@ class QuickActionsService {
       case FinampQuickActions.browsePlaybackHistory:
         await Navigator.pushNamed(context, PlaybackHistoryScreen.routeName);
         break;
-      case FinampQuickActions.playRandomAlbum:
-        await audioServiceHelper.playRandomItem(limitItemTypes: [BaseItemDtoType.album]);
-        break;
-      case FinampQuickActions.playRandomTrack:
-        await audioServiceHelper.playRandomItem(limitItemTypes: [BaseItemDtoType.track]);
-        break;
-      case FinampQuickActions.playRandomPlaylist:
-        await audioServiceHelper.playRandomItem(limitItemTypes: [BaseItemDtoType.playlist]);
-        break;
-      case FinampQuickActions.playRandomArtist:
-        await audioServiceHelper.playRandomItem(limitItemTypes: [BaseItemDtoType.artist]);
-        break;
-      case FinampQuickActions.playRandomGenre:
-        await audioServiceHelper.playRandomItem(limitItemTypes: [BaseItemDtoType.genre]);
+      case FinampQuickActions.playRandomItem:
+        await audioServiceHelper.playRandomItem(limitItemTypes: action.itemTypes);
         break;
       case FinampQuickActions.playRandomFavoriteItem:
-        await audioServiceHelper.playRandomItem(favoritesOnly: true);
-        break;
-      case FinampQuickActions.playRandomFavoriteAlbum:
-        await audioServiceHelper.playRandomItem(favoritesOnly: true, limitItemTypes: [BaseItemDtoType.album]);
-        break;
-      case FinampQuickActions.playRandomFavoriteTrack:
-        await audioServiceHelper.playRandomItem(favoritesOnly: true, limitItemTypes: [BaseItemDtoType.track]);
-        break;
-      case FinampQuickActions.playRandomFavoritePlaylist:
-        await audioServiceHelper.playRandomItem(favoritesOnly: true, limitItemTypes: [BaseItemDtoType.playlist]);
-        break;
-      case FinampQuickActions.playRandomFavoriteArtist:
-        await audioServiceHelper.playRandomItem(favoritesOnly: true, limitItemTypes: [BaseItemDtoType.artist]);
-        break;
-      case FinampQuickActions.playRandomFavoriteGenre:
-        await audioServiceHelper.playRandomItem(favoritesOnly: true, limitItemTypes: [BaseItemDtoType.genre]);
+        await audioServiceHelper.playRandomItem(favoritesOnly: true, limitItemTypes: action.itemTypes);
         break;
       case FinampQuickActions.playPreviousQueue:
         {
@@ -114,6 +87,10 @@ class QuickActionsService {
         break;
       case FinampQuickActions.surpriseMe:
         await audioServiceHelper.startSurpriseMeMix();
+        break;
+      case FinampQuickActions.playRandomAlbum:
+      case FinampQuickActions.playRandomTrack:
+        // deprecated, nop
         break;
     }
   }
