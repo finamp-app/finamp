@@ -184,7 +184,7 @@
     "shuffleAllTrackCount": "Maksymalna ilość losowych utworów",
     "useCoverAsBackgroundSubtitle": "Określa czy używać rozmytego obrazu na ekranie odtwarzacza.",
     "sleepTimerTooltip": "Wyłącznik czasowy",
-    "showTextOnGridViewSubtitle": "Określa czy wyświetlać tekst (tytuł, wykonawca itp.) na siatce elementów.",
+    "showTextOnGridViewSubtitle": "Określa czy wyświetlać tekst (tytuł, wykonawca itp.) na siatce elementów. Tekst na ekranie głównym jest zawsze wyświetlany, niezależnie od tego ustawienia.",
     "viewType": "Widok",
     "responseError401": "{error} Kod {statusCode}. To najprawdopodobniej oznacza, że użyłeś/aś nieprawidłowej nazwy użytkownika lub hasła.",
     "@responseError401": {
@@ -211,7 +211,7 @@
     "disableGestureSubtitle": "Czy wyłączyć gesty.",
     "minutes": "Minuty",
     "bufferDuration": "Długość bufora",
-    "bufferDurationSubtitle": "Ile odtwarzacz powinien buforować, w sekundach. Wymaga ponownego uruchomienia.",
+    "bufferDurationSubtitle": "Czas buforowania w sekundach. Wymaga ponownego uruchomienia.",
     "removeFromPlaylistTooltip": "Usuń z tej playlisty",
     "removeFromPlaylistTitle": "Usuń z Listy Odtwarzania",
     "removedFromPlaylist": "Usunięto z listy odtwarzania.",
@@ -1678,5 +1678,31 @@
     "@startupErrorWorkaround": {
         "description": "The subtitle for how to manually recover from a startup error"
     },
-    "appearsOnAlbums": "Znajduje się w"
+    "appearsOnAlbums": "Znajduje się w",
+    "specialDownloads": "Specjalne",
+    "@specialDownloads": {
+        "description": "Title for the special downloads section on the downloads screen."
+    },
+    "libraryDownloads": "Biblioteki",
+    "@libraryDownloads": {
+        "description": "Title for the library downloads section on the downloads screen."
+    },
+    "noItemsDownloaded": "Nie pobrano żadnych plików.",
+    "@noItemsDownloaded": {
+        "description": "Shown on the downloads screen for sections without any downloaded items."
+    },
+    "removeFavorite": "Usuń Polubienie",
+    "addFavorite": "Dodaj do ulubionych",
+    "startRadio": "Utwórz Radio",
+    "@startRadio": {
+        "description": "Menu label for starting a radio from a playlist, album, etc."
+    },
+    "stopAndClearQueue": "Zatrzymaj odtwarzanie i wyczyść kolejkę",
+    "@stopAndClearQueue": {
+        "description": "Label for a button that stops playback and removes all tracks from the queue."
+    },
+    "createPlaylistFromCurrentQueue": "Zapisz Kolejkę jako Playlistę",
+    "@createPlaylistFromCurrentQueue": {
+        "description": "Label for a button that adds the current queue to an existing or new playlist."
+    }
 }
