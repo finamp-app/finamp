@@ -540,15 +540,15 @@ class JellyfinApiHelper {
     );
     final httpClient = ChopperClient().httpClient; // http? where we're going, we don't need http
     final response = await httpClient.get(requestUrl);
-    final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
 
-    if (response.statusCode == 200) {
-      PublicSystemInfoResult publicSystemInfoResult = PublicSystemInfoResult.fromJson(responseJson);
-
-      return publicSystemInfoResult;
-    } else {
+    if (response.statusCode != 200) {
       return Future.error(response);
     }
+
+    final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
+    PublicSystemInfoResult publicSystemInfoResult = PublicSystemInfoResult.fromJson(responseJson);
+
+    return publicSystemInfoResult;
   }
 
   /// Fetch all public users from the server.

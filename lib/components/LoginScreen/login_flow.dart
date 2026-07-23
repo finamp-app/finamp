@@ -9,6 +9,7 @@ import 'package:finamp/services/server_client_discovery_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
+import 'package:chopper/chopper.dart' show ChopperHttpException;
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 
@@ -263,15 +264,31 @@ class ServerState {
       try {
         publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
       } catch (error) {
-        if (ClientCertificateInstaller.isSupported &&
-            error is ClientException &&
-            error.message.contains("TLSV1_ALERT_CERTIFICATE_REQUIRED")) {
-          clientCertificateRequired = true;
-          // Found server requiring mTLS certificate, no need to try other protocols/ports.
-          return;
-        } else {
-          serverStateLogger.severe("Error loading server info: $error");
+        if (ClientCertificateInstaller.isSupported) {
+          if (error is ClientException && error.message.contains("TLSV1_ALERT_CERTIFICATE_REQUIRED")) {
+            clientCertificateRequired = true;
+            // Found server requiring mTLS certificate, no need to try other protocols/ports.
+            return;
+          }
+          if (error is ChopperHttpException && error.response.statusCode >= 400 && error.response.statusCode < 500) {
+            clientCertificateRequired = true;
+            return;
+          }
+          // Some reverse proxies reject without client cert at HTTP level.
+          try {
+            final statusCode = (error as dynamic).statusCode as int?;
+            if (statusCode != null && statusCode >= 400 && statusCode < 500) {
+              clientCertificateRequired = true;
+              return;
+            }
+          } catch (_) {}
+          // Non-JSON response body (HTML error page).
+          if (error is FormatException) {
+            clientCertificateRequired = true;
+            return;
+          }
         }
+        serverStateLogger.severe("Error loading server info: $error");
       }
       if (this.baseUrlToTest != baseUrl) {
         throw Exception("Server URL changed while testing");
