@@ -4,6 +4,7 @@ import 'package:finamp/components/AlbumScreen/album_screen_content_flexible_spac
 import 'package:finamp/components/AlbumScreen/download_button.dart';
 import 'package:finamp/components/AlbumScreen/playlist_edit_button.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
+import 'package:finamp/components/AlbumScreen/track_selection_bar.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/components/favorite_button.dart';
@@ -20,6 +21,7 @@ import 'package:finamp/services/album_screen_provider.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/permission_providers.dart';
 import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/services/track_selection_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -82,6 +84,10 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
     final displayChildren = allTracks ?? [];
     final queueChildren = playableTracks ?? [];
 
+    // Multi-select is scoped to this album/playlist.
+    final selectionScope = widget.parent.id.toString();
+    final isSelecting = ref.watch(trackSelectionProvider(selectionScope).select((s) => s.isSelecting));
+
     void onDelete(BaseItemDto item) {
       // This is pretty inefficient (has to search through whole list) but
       // TracksSliverList gets passed some weird split version of children to
@@ -135,6 +141,15 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
                 },
               ),
             ];
+
+            if (isSelecting) {
+              return SliverAppBar(
+                pinned: true,
+                leading: trackSelectionCloseButton(selectionScope),
+                title: trackSelectionTitle(selectionScope),
+                actions: trackSelectionAppBarActions(selectionScope, queueChildren),
+              );
+            }
 
             return SliverAppBar(
               title: (!parentIsPlaylist) ? Text(widget.parent.name ?? AppLocalizations.of(context)!.unknownName) : null,
@@ -202,6 +217,7 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
                 onRemoveFromList: onDelete,
                 adaptiveAdditionalInfoSortBy: (parentIsPlaylist) ? sortSetting.sortBy : null,
                 forceAlbumArtists: (parentIsPlaylist && sortSetting.sortBy == SortBy.albumArtist),
+                selectionScope: selectionScope,
               ),
             ),
             SliverToBoxAdapter(child: SizedBox(height: 16.0)),
@@ -214,6 +230,7 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
             onRemoveFromList: onDelete,
             adaptiveAdditionalInfoSortBy: (parentIsPlaylist) ? sortSetting.sortBy : null,
             forceAlbumArtists: (parentIsPlaylist && sortSetting.sortBy == SortBy.albumArtist),
+            selectionScope: selectionScope,
           )
         else
           SliverFillRemaining(child: Center(child: CircularProgressIndicator.adaptive())),
@@ -231,6 +248,7 @@ class TracksSliverList extends ConsumerStatefulWidget {
     this.onRemoveFromList,
     this.forceAlbumArtists = false,
     this.adaptiveAdditionalInfoSortBy,
+    this.selectionScope,
   });
 
   final List<BaseItemDto> childrenForList;
@@ -240,6 +258,7 @@ class TracksSliverList extends ConsumerStatefulWidget {
   final BaseItemDtoCallback? onRemoveFromList;
   final bool forceAlbumArtists;
   final SortBy? adaptiveAdditionalInfoSortBy;
+  final String? selectionScope;
 
   @override
   ConsumerState<TracksSliverList> createState() => _TracksSliverListState();
@@ -307,6 +326,7 @@ class _TracksSliverListState extends ConsumerState<TracksSliverList> {
           },
           forceAlbumArtists: widget.forceAlbumArtists,
           adaptiveAdditionalInfoSortBy: widget.adaptiveAdditionalInfoSortBy,
+          selectionScope: widget.selectionScope,
           // TODO should we be passing and leveraging a proper parent playable?
           parentPlayable: PrecalculatedPlayable(
             source: QueueItemSource.fromBaseItem(widget.parent),
