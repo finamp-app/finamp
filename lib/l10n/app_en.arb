@@ -3576,5 +3576,126 @@
     "clientCertificateRequired": "Client certificate required",
     "@clientCertificateRequired": {
         "description": "Message shown on the server selection screen when the server requires a client certificate to be provided."
+    },
+    "playOnEmptyQueue": "No items in queue",
+    "@playOnEmptyQueue": {
+        "description": "Snackbar message shown when the user tries to hand off playback to a remote device but the local queue is empty."
+    },
+    "playOnPlayingOnDevice": "Playing on {deviceName}",
+    "@playOnPlayingOnDevice": {
+        "description": "Snackbar message shown after playback was successfully handed off to a remote device.",
+        "placeholders": {
+            "deviceName": {
+                "type": "String",
+                "example": "Living Room"
+            }
+        }
+    },
+    "playOnConnectFailed": "Connect failed: {error}",
+    "@playOnConnectFailed": {
+        "description": "Snackbar message shown when handing off playback to a remote device fails.",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "SocketException"
+            }
+        }
+    },
+    "playOnRemoteDeviceFallback": "remote device",
+    "@playOnRemoteDeviceFallback": {
+        "description": "Generic fallback name used in place of a remote device's name when the server did not report one."
+    },
+    "playOnConnectedTo": "Connected to {deviceName}",
+    "@playOnConnectedTo": {
+        "description": "Header in the device sheet shown while remote-controlling a device, naming the connected device.",
+        "placeholders": {
+            "deviceName": {
+                "type": "String",
+                "example": "Living Room"
+            }
+        }
+    },
+    "playOnDisconnect": "Disconnect",
+    "@playOnDisconnect": {
+        "description": "Button in the device sheet that stops remote-controlling the connected device and returns control to this device."
+    },
+    "playOnDisconnected": "Disconnected",
+    "@playOnDisconnected": {
+        "description": "Snackbar message shown after the user manually disconnected from a remote device."
+    },
+    "playOnStopAndDisconnect": "Stop and disconnect",
+    "@playOnStopAndDisconnect": {
+        "description": "Tooltip for the button on a connected remote device's tile that stops its playback (clearing its queue) and disconnects, returning control to this device."
+    },
+    "playOnStoppedAndDisconnected": "Stopped and disconnected",
+    "@playOnStoppedAndDisconnected": {
+        "description": "Snackbar message shown after the user stopped a remote device's playback and disconnected from it."
+    },
+    "playOnAdoptQueue": "Play this queue here",
+    "@playOnAdoptQueue": {
+        "description": "Tooltip for the button on a remote device's tile that pulls the device's current queue onto this device and plays it here, without connecting to (controlling) that device."
+    },
+    "playOnQueueAdopted": "Playing {deviceName}'s queue here",
+    "@playOnQueueAdopted": {
+        "description": "Snackbar message shown after pulling a remote device's queue onto this device.",
+        "placeholders": {
+            "deviceName": {
+                "type": "String",
+                "example": "Living Room"
+            }
+        }
+    },
+    "playOnDeviceListError": "Error: {error}",
+    "@playOnDeviceListError": {
+        "description": "Error message shown in the device sheet when the list of remote devices could not be loaded.",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "SocketException"
+            }
+        }
+    },
+    "playOnNoDevicesFound": "No devices found",
+    "@playOnNoDevicesFound": {
+        "description": "Message shown in the device sheet when no controllable remote devices are available."
+    },
+    "playOnUnknownDevice": "Unknown device",
+    "@playOnUnknownDevice": {
+        "description": "Fallback name for a remote device in the device list when the server did not report a name."
+    },
+    "playOnRemoteDeviceDisconnected": "Remote device disconnected",
+    "@playOnRemoteDeviceDisconnected": {
+        "description": "Snackbar message shown when the connection to the remote device was lost and Finamp automatically returned to local playback."
+    },
+    "playOnThisDevice": "{deviceType, select, phone{This phone} tablet{This tablet} computer{This computer} other{This device}}",
+    "@playOnThisDevice": {
+        "placeholders": {
+            "deviceType": {
+                "type": "String"
+            }
+        },
+        "description": "Entry in the output menu's remote device list representing local playback on this device. The placeholder is the kind of device Finamp is running on."
+    },
+    "playOnSessionActivePromptTitle": "Device is already playing",
+    "@playOnSessionActivePromptTitle": {
+        "description": "Title of the dialog shown when connecting to a remote device that is already playing something."
+    },
+    "playOnSessionActivePromptBody": "{deviceName} is already playing something. You can control its current playback, or replace its queue with the queue on this device.",
+    "@playOnSessionActivePromptBody": {
+        "description": "Body of the dialog shown when connecting to a remote device that is already playing something.",
+        "placeholders": {
+            "deviceName": {
+                "type": "String",
+                "example": "Living Room"
+            }
+        }
+    },
+    "playOnAttachAction": "Control playback",
+    "@playOnAttachAction": {
+        "description": "Dialog action that connects to the remote device while keeping its current playback and queue."
+    },
+    "playOnMigrateAction": "Play my queue",
+    "@playOnMigrateAction": {
+        "description": "Dialog action that connects to the remote device and replaces its queue with this device's queue."
     }
 }

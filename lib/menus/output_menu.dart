@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
+import 'package:finamp/components/album_image.dart';
 import 'package:finamp/components/Shortcuts/global_shortcut_manager.dart';
 import 'package:finamp/components/Shortcuts/music_control_shortcuts.dart';
 import 'package:finamp/components/global_snackbar.dart';
@@ -10,10 +11,14 @@ import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/components/toggleable_list_tile.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/jellyfin_api.dart' as jellyfin_api;
+import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/services/remote_session_service.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/material.dart';
@@ -43,13 +48,23 @@ Future<void> showOutputMenu({required BuildContext context, bool usePlayerTheme 
         // ),
         Consumer(
           builder: (context, ref, child) {
-            return VolumeSlider(
-              initialValue: (ref.watch(finampSettingsProvider.currentVolume) * 100).floor() / 100.0,
-              onChange: (double currentValue) async {
-                final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
-                audioHandler.setVolume(currentValue);
+            final localVolume = (ref.watch(finampSettingsProvider.currentVolume) * 100).floor() / 100.0;
+            // While connected to a remote session, the slider reflects and
+            // controls the remote client's volume (if it reports one);
+            // MusicPlayerBackgroundTask.setVolume routes to the remote.
+            return StreamBuilder<SessionInfo?>(
+              stream: GetIt.instance<RemoteSessionService>().getRemoteStateStream(),
+              builder: (context, snapshot) {
+                final remoteSession = GetIt.instance<RemoteSessionService>();
+                return VolumeSlider(
+                  initialValue: remoteSession.isRemote ? (remoteSession.remoteVolume ?? 1.0) : localVolume,
+                  onChange: (double currentValue) async {
+                    final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+                    audioHandler.setVolume(currentValue);
+                  },
+                  forceLoading: true,
+                );
               },
-              forceLoading: true,
             );
           },
         ),
@@ -86,24 +101,23 @@ Future<void> showOutputMenu({required BuildContext context, bool usePlayerTheme 
             child: SliverList(delegate: SliverChildListDelegate.fixed(menuEntries)),
           ),
         ),
-        if (Platform.isAndroid)
+        // One combined device list: native audio outputs (Android) and remote
+        // Jellyfin sessions this device can cast to / control (Play On /
+        // Connect; not available in offline mode).
+        if (Platform.isAndroid || !FinampSettingsHelper.finampSettings.isOffline)
           SliverStickyHeader(
             header: Padding(
               padding: const EdgeInsets.only(top: 10.0, bottom: 8.0, left: 16.0, right: 16.0),
               child: Text(
                 AppLocalizations.of(context)!.outputMenuDevicesSectionTitle,
-                // AppLocalizations.of(context)!.outputMenuDevicesSectionTitle,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
-            sliver: MenuMask(
-              height: OutputMenuHeader.defaultHeight,
-              child: OutputTargetList(), // Pass the outputRoutes
-            ),
+            sliver: MenuMask(height: OutputMenuHeader.defaultHeight, child: OutputTargetList()),
           ),
       ];
       // TODO better estimate, how to deal with lag getting playlists?
-      var stackHeight = MediaQuery.heightOf(context) * (Platform.isAndroid ? 0.65 : 0.4);
+      var stackHeight = MediaQuery.heightOf(context) * (Platform.isAndroid ? 0.75 : 0.55);
       return (stackHeight, menu);
     },
   );
@@ -172,6 +186,14 @@ class OutputMenuHeader extends ConsumerWidget {
   }
 }
 
+/// One combined list of playback targets: the device's native audio outputs
+/// (Android output switcher routes) and the remote Jellyfin sessions this
+/// device can hand playback off to / control (Play On / Connect), the latter
+/// distinguished only by their cast icon. Local outputs and remote control
+/// are mutually exclusive: while connected to a remote session the native
+/// routes are replaced by a single synthetic "this device" tile that migrates
+/// playback back; that tile also stands in on platforms without native
+/// routes.
 class OutputTargetList extends StatefulWidget {
   const OutputTargetList({super.key});
 
@@ -181,52 +203,141 @@ class OutputTargetList extends StatefulWidget {
 
 class _OutputTargetListState extends State<OutputTargetList> {
   final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+  final _remoteSessionService = GetIt.instance<RemoteSessionService>();
+
+  // Native routes and remote sessions load independently, so the (fast,
+  // local) routes can be shown immediately while the (slow, server
+  // round-trip) session list is still loading. Null = still loading.
+  List<FinampOutputRoute>? _routes;
+  List<SessionInfo>? _sessions;
+
+  /// Discards results of superseded loads (the list is reloaded on remote
+  /// state changes and after switching routes).
+  int _loadGeneration = 0;
+
   String? switchingToRoute;
+  String? _connectingToSessionId;
+  String? _adoptingSessionId;
+  bool _disconnecting = false;
+  bool _stoppingRemote = false;
+  StreamSubscription<SessionInfo?>? _remoteStateSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTargets();
+    // Reload when the connected session changes (e.g. auto-disconnect while
+    // the menu is open): the list content depends on remote state (native
+    // routes are hidden while remote).
+    _remoteStateSubscription = _remoteSessionService.getRemoteStateStream().distinct((a, b) => a?.id == b?.id).listen((
+      _,
+    ) {
+      if (mounted) {
+        setState(_loadTargets);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _remoteStateSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _loadTargets() {
+    final generation = ++_loadGeneration;
+    _routes = null;
+    _sessions = FinampSettingsHelper.finampSettings.isOffline ? [] : null;
+    unawaited(
+      audioHandler
+          .getRoutes() // empty off-Android
+          .then((routes) {
+            if (mounted && generation == _loadGeneration) setState(() => _routes = routes);
+          })
+          .catchError((Object e) {
+            GlobalSnackbar.error(e);
+            if (mounted && generation == _loadGeneration) setState(() => _routes = []);
+          }),
+    );
+    if (_sessions == null) {
+      unawaited(
+        _loadSessions().then((sessions) {
+          if (mounted && generation == _loadGeneration) setState(() => _sessions = sessions);
+        }),
+      );
+    }
+  }
+
+  /// Loads the remote sessions this device can control. A failure shouldn't
+  /// take the native outputs down with it, so it surfaces as a snackbar and
+  /// an empty list.
+  Future<List<SessionInfo>> _loadSessions() async {
+    try {
+      final myDeviceId = (await jellyfin_api.getDeviceInfo()).id;
+      return (await GetIt.instance<JellyfinApiHelper>().getSessions())
+          .where((s) => s.supportsRemoteControl && s.deviceId != myDeviceId)
+          .toList();
+    } catch (e) {
+      GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnDeviceListError(e.toString()));
+      return [];
+    }
+  }
+
+  Future<void> _selectRoute(FinampOutputRoute route) async {
+    setState(() {
+      switchingToRoute = route.name;
+    });
+    try {
+      await audioHandler.setOutputToRoute(route);
+    } finally {
+      if (mounted) {
+        setState(() {
+          switchingToRoute = null;
+          _loadTargets();
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    Future<List<FinampOutputRoute>> outputRoutes = audioHandler.getRoutes();
-    return FutureBuilder(
-      future: outputRoutes,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              if (index == snapshot.data!.length) {
-                return openOsOutputOptionsButton(context);
-              }
-              final route = snapshot.data![index];
-              if (route.isSelected) {
-                switchingToRoute = null; // Reset switching state if route is selected
-              }
-              return OutputSelectorTile(
-                routeInfo: route,
-                isLoading: switchingToRoute == route.name,
-                onSelect: ({bool loading = false, bool value = false}) {
-                  setState(() {
-                    switchingToRoute = loading ? route.name : null;
-                    outputRoutes = audioHandler.getRoutes();
-                  });
-                },
-              );
-            }, childCount: snapshot.data!.length + 1),
-          );
-        } else if (snapshot.hasError) {
-          GlobalSnackbar.error(snapshot.error);
-          return const SliverToBoxAdapter(child: Center(heightFactor: 3.0, child: Icon(Icons.error, size: 64)));
-        } else {
-          return SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              if (index == 1) {
-                return openOsOutputOptionsButton(context);
-              } else {
-                return const Center(child: CircularProgressIndicator.adaptive());
-              }
-            }, childCount: 2),
-          );
-        }
-      },
-    );
+    final routes = _routes;
+    final sessions = _sessions;
+    if (routes == null) {
+      return SliverList(
+        delegate: SliverChildListDelegate.fixed([
+          const Center(child: CircularProgressIndicator.adaptive()),
+          if (Platform.isAndroid) openOsOutputOptionsButton(context),
+        ]),
+      );
+    }
+    // Local output routes and remote control are mutually exclusive:
+    // while a remote session is connected, the synthetic "this device"
+    // tile is the single local option (tapping it migrates playback
+    // back). It also stands in when there are no native routes
+    // (non-Android).
+    final showRoutes = !_remoteSessionService.isRemote && routes.isNotEmpty;
+    final targets = <Widget>[
+      if (!showRoutes) _thisDeviceTile(context),
+      if (showRoutes)
+        ...routes.map(
+          (route) => OutputSelectorTile(
+            routeInfo: route,
+            isSelected: route.isSelected,
+            isLoading: switchingToRoute == route.name,
+            onSelect: () => _selectRoute(route),
+          ),
+        ),
+      // Remote sessions get appended as soon as the server responds.
+      if (sessions == null)
+        const Center(
+          child: Padding(padding: EdgeInsets.all(12.0), child: CircularProgressIndicator.adaptive()),
+        )
+      else
+        ...sessions.map((session) => _sessionTile(context, session)),
+      if (Platform.isAndroid && !_remoteSessionService.isRemote) openOsOutputOptionsButton(context),
+    ];
+    return SliverList(delegate: SliverChildListDelegate.fixed(targets));
   }
 
   Widget openOsOutputOptionsButton(BuildContext context) {
@@ -249,14 +360,252 @@ class _OutputTargetListState extends State<OutputTargetList> {
       ),
     );
   }
+
+  String _sessionDisplayName(SessionInfo session) =>
+      session.deviceName ?? session.client ?? AppLocalizations.of(context)!.playOnUnknownDevice;
+
+  Future<void> _connect(SessionInfo session) async {
+    final queueService = GetIt.instance<QueueService>();
+    final hasLocalQueue = queueService.getQueue().currentTrack != null;
+    final remoteIsPlaying = session.nowPlayingItem != null;
+
+    // If the target is already playing something, let the user choose between
+    // just controlling that playback and migrating the local queue over
+    // (overriding the remote queue).
+    bool migrateQueue;
+    if (remoteIsPlaying && hasLocalQueue) {
+      final migrateChoice = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(AppLocalizations.of(context)!.playOnSessionActivePromptTitle),
+          content: Text(AppLocalizations.of(context)!.playOnSessionActivePromptBody(_sessionDisplayName(session))),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(AppLocalizations.of(context)!.playOnAttachAction),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(AppLocalizations.of(context)!.playOnMigrateAction),
+            ),
+          ],
+        ),
+      );
+      if (migrateChoice == null) return; // cancelled
+      migrateQueue = migrateChoice;
+    } else {
+      // Only one side has a queue (or neither): migrate ours if we have one,
+      // otherwise attach to whatever the remote has.
+      migrateQueue = hasLocalQueue;
+    }
+
+    setState(() {
+      _connectingToSessionId = session.id;
+    });
+    try {
+      await _remoteSessionService.connect(session, migrateQueue: migrateQueue);
+      GlobalSnackbar.message(
+        (context) => migrateQueue
+            ? AppLocalizations.of(context)!.playOnPlayingOnDevice(_sessionDisplayName(session))
+            : AppLocalizations.of(context)!.playOnConnectedTo(_sessionDisplayName(session)),
+      );
+    } catch (e) {
+      GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnConnectFailed(e.toString()));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _connectingToSessionId = null;
+        });
+      }
+    }
+  }
+
+  Future<void> _disconnect() async {
+    setState(() {
+      _disconnecting = true;
+    });
+    try {
+      await _remoteSessionService.disconnect();
+      GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnDisconnected);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _disconnecting = false;
+        });
+      }
+    }
+  }
+
+  /// Stops playback on the connected remote and fully disconnects, leaving this
+  /// device's own queue restored but paused (or cleared if there was none).
+  Future<void> _stopAndDisconnect() async {
+    setState(() {
+      _stoppingRemote = true;
+    });
+    try {
+      await _remoteSessionService.stopAndDisconnect(restoreLocalQueue: true);
+      GlobalSnackbar.message((context) => AppLocalizations.of(context)!.playOnStoppedAndDisconnected);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _stoppingRemote = false;
+        });
+      }
+    }
+  }
+
+  /// Pulls a remote device's queue onto this device and plays it here, without
+  /// connecting to or controlling that device.
+  Future<void> _adoptQueue(SessionInfo session) async {
+    setState(() {
+      _adoptingSessionId = session.id;
+    });
+    try {
+      await _remoteSessionService.adoptQueueFrom(session);
+      GlobalSnackbar.message(
+        (context) => AppLocalizations.of(context)!.playOnQueueAdopted(_sessionDisplayName(session)),
+      );
+    } catch (e) {
+      GlobalSnackbar.error(e);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _adoptingSessionId = null;
+        });
+      }
+    }
+  }
+
+  /// The kind of device Finamp is running on, for the "This phone" /
+  /// "This tablet" / "This computer" label of the local playback entry.
+  String _thisDeviceType(BuildContext context) {
+    if (isDesktop) return "computer";
+    return MediaQuery.sizeOf(context).shortestSide >= 600 ? "tablet" : "phone";
+  }
+
+  Widget _thisDeviceTile(BuildContext context) {
+    final isLocal = !_remoteSessionService.isRemote;
+    return ToggleableListTile(
+      isLoading: _disconnecting,
+      title: AppLocalizations.of(context)!.playOnThisDevice(_thisDeviceType(context)),
+      subtitle: AppLocalizations.of(context)!.deviceType("speaker"),
+      leading: Container(
+        padding: const EdgeInsets.all(16.0),
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+        child: Icon(isDesktop ? TablerIcons.device_laptop : TablerIcons.device_mobile),
+      ),
+      icon: isLocal ? TablerIcons.device_speaker_filled : TablerIcons.device_speaker,
+      state: isLocal,
+      onToggle: (bool currentState) async {
+        // Tapping the local device while connected pauses the remote and
+        // migrates playback back to this device.
+        if (!isLocal) {
+          await _disconnect();
+        }
+      },
+      confirmationFeedback: false,
+      enabled: true,
+    );
+  }
+
+  Widget _sessionTile(BuildContext context, SessionInfo session) {
+    final isConnected = _remoteSessionService.isRemote && _remoteSessionService.activeSessionId == session.id;
+    final nowPlayingItem = session.nowPlayingItem;
+    final themeColor = Theme.of(context).colorScheme.primary;
+
+    // While connected, offer an explicit "stop & disconnect" action that stops
+    // the remote (clearing its queue) and returns to this device. For a device
+    // that's playing but not connected, offer to pull its queue onto this
+    // device and play it here, without connecting to (controlling) it.
+    Widget? trailing;
+    if (isConnected) {
+      trailing = IconButton(
+        icon: const Icon(TablerIcons.player_stop_filled),
+        color: Theme.of(context).colorScheme.error,
+        tooltip: AppLocalizations.of(context)!.playOnStopAndDisconnect,
+        onPressed: _stoppingRemote ? null : _stopAndDisconnect,
+      );
+    } else if (nowPlayingItem != null) {
+      trailing = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(TablerIcons.transfer_in),
+            color: themeColor,
+            tooltip: AppLocalizations.of(context)!.playOnAdoptQueue,
+            onPressed: _adoptingSessionId == session.id ? null : () => _adoptQueue(session),
+          ),
+          Icon(TablerIcons.device_speaker, size: 36.0, color: themeColor),
+        ],
+      );
+    }
+
+    return ToggleableListTile(
+      isLoading:
+          _connectingToSessionId == session.id || _adoptingSessionId == session.id || (isConnected && _stoppingRemote),
+      title: _sessionDisplayName(session),
+      subtitle: session.client ?? AppLocalizations.of(context)!.deviceType("unknown"),
+      // Surface what the device is currently playing (so the user knows what
+      // they would take over) through its album art; a small cast badge keeps
+      // the tile recognizable as a remote (cast) target. Idle devices keep
+      // the plain cast icon.
+      leading: nowPlayingItem != null
+          ? Stack(
+              children: [
+                AlbumImage(item: nowPlayingItem),
+                Positioned(
+                  right: 2.0,
+                  bottom: 2.0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2.0),
+                    decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(4.0)),
+                    child: const Icon(TablerIcons.cast, size: 14.0, color: Colors.white),
+                  ),
+                ),
+              ],
+            )
+          : Container(
+              padding: const EdgeInsets.all(16.0),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              // The icon marks the tile as a remote (cast) target; the
+              // connection state is conveyed by the tile's active state, not
+              // the icon.
+              child: Icon(TablerIcons.cast),
+            ),
+      icon: isConnected ? TablerIcons.device_speaker_filled : TablerIcons.device_speaker,
+      trailing: trailing,
+      state: isConnected,
+      onToggle: (bool currentState) async {
+        // Already connected to this session: nothing to do. Disconnecting is
+        // done via the stop button, or by selecting another device (or the
+        // local one).
+        if (!isConnected) {
+          await _connect(session);
+        }
+      },
+      confirmationFeedback: false,
+      enabled: true,
+    );
+  }
 }
 
 class OutputSelectorTile extends StatelessWidget {
-  const OutputSelectorTile({super.key, required this.routeInfo, this.isLoading = false, this.onSelect});
+  const OutputSelectorTile({
+    super.key,
+    required this.routeInfo,
+    required this.isSelected,
+    this.isLoading = false,
+    required this.onSelect,
+  });
 
   final FinampOutputRoute routeInfo;
+  final bool isSelected;
   final bool isLoading;
-  final void Function({bool loading, bool value})? onSelect;
+  final Future<void> Function() onSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -280,14 +629,9 @@ class OutputSelectorTile extends StatelessWidget {
           _ => TablerIcons.volume,
         }),
       ),
-      icon: routeInfo.isSelected ? TablerIcons.device_speaker_filled : TablerIcons.device_speaker,
-      state: routeInfo.isSelected,
-      onToggle: (bool currentState) async {
-        final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
-        onSelect?.call(loading: true, value: currentState);
-        await audioHandler.setOutputToRoute(routeInfo);
-        onSelect?.call(loading: false, value: true);
-      },
+      icon: isSelected ? TablerIcons.device_speaker_filled : TablerIcons.device_speaker,
+      state: isSelected,
+      onToggle: (bool currentState) => onSelect(),
       confirmationFeedback: false,
       enabled: true,
     );

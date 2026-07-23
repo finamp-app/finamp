@@ -323,6 +323,35 @@ abstract class JellyfinApi extends ChopperService {
   @Post(path: "/Sessions/Playing/Stopped")
   Future<dynamic> playbackStatusStopped(@Body() PlaybackProgressInfo playbackProgressInfo);
 
+  @FactoryConverter(response: JsonConverter.responseFactory)
+  @Get(path: "/Sessions")
+  Future<dynamic> getSessions({@Query() String? controllableByUserId});
+
+  @FactoryConverter(request: JsonConverter.requestFactory)
+  @Post(path: "/Sessions/{sessionId}/Playing", optionalBody: true)
+  Future<dynamic> sendPlayToSession({
+    @Path() required String sessionId,
+    @Query() required String playCommand,
+    @Query() required String itemIds,
+    @Query() int? startIndex,
+    @Query() int? startPositionTicks,
+  });
+
+  @FactoryConverter(request: JsonConverter.requestFactory)
+  @Post(path: "/Sessions/{sessionId}/Playing/{command}", optionalBody: true)
+  Future<dynamic> sendPlaystateCommand({
+    @Path() required String sessionId,
+    @Path() required String command,
+    @Query() int? seekPositionTicks,
+  });
+
+  @FactoryConverter(request: JsonConverter.requestFactory)
+  @Post(path: "/Sessions/{sessionId}/Command")
+  Future<dynamic> sendGeneralCommand({
+    @Path() required String sessionId,
+    @Body() required Map<String, dynamic> command,
+  });
+
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
   @Get(path: "/Playlists/{playlistId}/Items")
   Future<dynamic> getPlaylistItems({

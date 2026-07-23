@@ -763,6 +763,69 @@ class JellyfinApiHelper {
     }
   }
 
+  /// Gets the list of active sessions on the server (for remote control / "Play On").
+  Future<List<SessionInfo>> getSessions() async {
+    assert(_verifyCallable());
+    final response = await jellyfinApi.getSessions(controllableByUserId: _finampUserHelper.currentUser!.id);
+    final sessions = (response as List<dynamic>).map((e) => SessionInfo.fromJson(e as Map<String, dynamic>)).toList();
+    for (final s in sessions) {
+      _jellyfinApiHelperLogger.info(
+        "Session: ${s.deviceName} / ${s.client} / remoteControl=${s.supportsRemoteControl}",
+      );
+    }
+    return sessions;
+  }
+
+  /// Tells another Jellyfin session to start playing the given items (Play On / Connect).
+  /// [startPositionTicks] (Jellyfin ticks = milliseconds * 10000) sets the start
+  /// offset of the first item, so the remote resumes from where we were playing.
+  Future<void> sendPlayToSession({
+    required String sessionId,
+    required List<BaseItemId> itemIds,
+    String playCommand = "PlayNow",
+    int startIndex = 0,
+    int? startPositionTicks,
+  }) async {
+    assert(_verifyCallable());
+    await jellyfinApi.sendPlayToSession(
+      sessionId: sessionId,
+      playCommand: playCommand,
+      itemIds: itemIds.map((id) => id.toString()).join(","),
+      startIndex: startIndex,
+      startPositionTicks: startPositionTicks,
+    );
+  }
+
+  /// Sends a playstate command (PlayPause, Pause, Unpause, NextTrack,
+  /// PreviousTrack, Seek, Stop) to another Jellyfin session (Play On / Connect).
+  /// For "Seek", pass [seekPositionTicks] (Jellyfin ticks = milliseconds * 10000).
+  Future<void> sendPlaystateCommand({
+    required String sessionId,
+    required String command,
+    int? seekPositionTicks,
+  }) async {
+    assert(_verifyCallable());
+    await jellyfinApi.sendPlaystateCommand(
+      sessionId: sessionId,
+      command: command,
+      seekPositionTicks: seekPositionTicks,
+    );
+  }
+
+  /// Sends a general command (e.g. SetVolume, SetRepeatMode) to another
+  /// Jellyfin session (Play On / Connect).
+  Future<void> sendGeneralCommandToSession({
+    required String sessionId,
+    required String name,
+    Map<String, String>? arguments,
+  }) async {
+    assert(_verifyCallable());
+    await jellyfinApi.sendGeneralCommand(
+      sessionId: sessionId,
+      command: {"Name": name, "Arguments": arguments ?? <String, String>{}},
+    );
+  }
+
   /// Gets an item from a user's library.
   Future<BaseItemDto> getItemById(BaseItemId itemId) async {
     assert(_verifyCallable());

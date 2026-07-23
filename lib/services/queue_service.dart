@@ -21,6 +21,7 @@ import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/playback_history_service.dart';
 import 'package:finamp/services/radio_service_helper.dart';
+import 'package:finamp/services/remote_session_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -182,6 +183,15 @@ class QueueService {
 
   ProviderSubscription<AlbumImageInfo>? _latestAlbumImage;
 
+  /// The connected remote session ("Play On" / Connect controller), if local
+  /// queue changes should be forwarded to it. Null when not connected, or when
+  /// the current change originates from the remote itself (echo prevention).
+  RemoteSessionService? get _remoteSessionIfConnected {
+    if (!GetIt.instance.isRegistered<RemoteSessionService>()) return null;
+    final remote = GetIt.instance<RemoteSessionService>();
+    return remote.isRemote && !remote.isApplyingRemoteUpdate ? remote : null;
+  }
+
   void _buildQueueFromNativePlayerQueue({bool logUpdate = true, int? indexOverride}) {
     final playbackHistoryService = GetIt.instance<PlaybackHistoryService>();
 
@@ -337,6 +347,15 @@ class QueueService {
     }
   }
 
+  /// Snapshots the current queue (with position) for later restoration via
+  /// [loadSavedQueue], e.g. before a remote session replaces the local queue.
+  /// Returns null when there's nothing playing, so callers can distinguish
+  /// "restore this" from "there was nothing to restore".
+  FinampStorableQueueInfo? captureQueueSnapshot() {
+    if (getQueue().currentTrack == null) return null;
+    return _saveCurrentQueue(withPosition: true);
+  }
+
   FinampStorableQueueInfo _saveCurrentQueue({bool withPosition = false}) {
     final queueToSave = getQueue();
     List<int> shuffleIndices = [..._latestShuffleIndices];
@@ -442,6 +461,11 @@ class QueueService {
     FinampStorableQueueInfo info, {
     Map<jellyfin_models.BaseItemId, jellyfin_models.BaseItemDto>? existingItems,
     bool isReload = false,
+    // When non-null, overrides whether playback begins after loading, instead
+    // of the autoplay-restored-queue setting. Used when restoring the
+    // pre-connect queue on a remote disconnect, where the caller decides
+    // whether to resume (migrate-back) or stay paused (stop-and-disconnect).
+    bool? beginPlayingOverride,
   }) async {
     final playbackHistoryService = GetIt.instance<PlaybackHistoryService>();
     if (_savedQueueState == SavedQueueState.loading) {
@@ -585,9 +609,11 @@ class QueueService {
               ? Duration(milliseconds: info.currentTrackSeek!)
               : null,
           order: order == null ? FinampPlaybackOrder.linear : FinampPlaybackOrder.shuffled,
-          beginPlaying: isReload
-              ? (_audioHandler.playbackState.valueOrNull?.playing ?? false)
-              : (FinampSettingsHelper.finampSettings.autoplayRestoredQueue && droppedTracks == 0),
+          beginPlaying:
+              beginPlayingOverride ??
+              (isReload
+                  ? (_audioHandler.playbackState.valueOrNull?.playing ?? false)
+                  : (FinampSettingsHelper.finampSettings.autoplayRestoredQueue && droppedTracks == 0)),
           source: info.source.withItem(idMap[jellyfin_models.BaseItemId(info.source.id)]),
         );
       }
@@ -819,7 +845,7 @@ class QueueService {
         // Server activity reporting: pause() sends a progress update (paused state)
         // rather than a stop event; when the new queue starts, onTrackChanged fires
         // and correctly reports the old track stopped + new track started.
-        await _audioHandler.pause();
+        await _audioHandler.pause(localOnly: true);
       }
       await _audioHandler.clearFinampQueueItems();
 
@@ -864,15 +890,51 @@ class QueueService {
       // this will run _queueFromConcatenatingAudioSource();
       await setPlaybackOrder(order, shuffleOrder: shuffleOrder);
 
-      if (beginPlaying) {
+      final remoteSession = _remoteSessionIfConnected;
+      if (remoteSession != null) {
+        // Hand the new queue off to the connected remote session instead of
+        // starting local playback; the local player stays a paused mirror.
+        // The remote always starts playing (the PlayTo API can't hand a
+        // queue off without starting playback).
+        await remoteSession.pushQueueToRemote(startPosition: initialSeekPosition);
+      } else if (beginPlaying) {
         // don't await this, because it will not return until playback is finished
-        unawaited(_audioHandler.play(disableFade: true));
+        unawaited(_audioHandler.play(disableFade: true, localOnly: true));
       } else if (!Platform.isAndroid && !Platform.isIOS) {
-        unawaited(_audioHandler.pause(disableFade: true));
+        unawaited(_audioHandler.pause(disableFade: true, localOnly: true));
       }
     } catch (e) {
       _queueServiceLogger.severe("Error while initializing queue: $e", e);
     }
+  }
+
+  /// Replaces the local queue with the queue adopted from a connected remote
+  /// session (Play On / Connect). Uses the remoteClient queue source since the
+  /// real source of a remote queue is unknown, and goes through the regular
+  /// queue replacement path so the queue is persisted for restore.
+  /// Replaces the local queue with a queue coming from a remote session. When
+  /// controlling a remote (mirror), [beginPlaying] is false — the local player
+  /// is a paused mirror. When pulling a queue onto this device without
+  /// connecting ("Adopt queue"), pass [beginPlaying] true to start playback
+  /// here.
+  Future<void> replaceQueueFromRemote({
+    required List<jellyfin_models.BaseItemDto> items,
+    required int startIndex,
+    Duration? startPosition,
+    bool beginPlaying = false,
+  }) async {
+    await _replaceWholeQueue(
+      itemList: items,
+      source: QueueItemSource(
+        name: const QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
+        type: QueueItemSourceType.remoteClient,
+        id: items[startIndex.clamp(0, items.length - 1)].id,
+        item: items[startIndex.clamp(0, items.length - 1)],
+      ),
+      initialIndex: startIndex,
+      initialSeekPosition: startPosition,
+      beginPlaying: beginPlaying,
+    );
   }
 
   Future<void> reloadQueue({bool archiveQueue = false}) async {
@@ -903,8 +965,29 @@ class QueueService {
     }
   }
 
-  Future<void> stopAndClearQueue() async {
+  /// Stops playback and clears the queue. While controlling a remote session,
+  /// the remote queue is stopped too but the connection is kept, so the next
+  /// queue started locally plays on the remote again; [disconnectRemote]
+  /// additionally tears the connection down (e.g. on logout).
+  Future<void> stopAndClearQueue({bool disconnectRemote = false}) async {
     queueServiceLogger.info("Stopping playback");
+
+    // If we're controlling a remote session, stop it first (before clearing
+    // local state, so nothing gets echoed to the remote and the commands
+    // below hit the local player). Deliberately not using
+    // _remoteSessionIfConnected: stopping is a user command, not an echo,
+    // and must reach the remote even while a remote-initiated update is
+    // being applied to the local queue.
+    if (GetIt.instance.isRegistered<RemoteSessionService>()) {
+      final remoteSession = GetIt.instance<RemoteSessionService>();
+      if (remoteSession.isRemote) {
+        if (disconnectRemote) {
+          await remoteSession.stopAndDisconnect();
+        } else {
+          await remoteSession.stopRemote();
+        }
+      }
+    }
 
     archiveSavedQueue();
     if (_savedQueueState == SavedQueueState.pendingSave) {
@@ -958,6 +1041,9 @@ class QueueService {
       await _audioHandler.appendFinampQueueItems(queueItems);
 
       _buildQueueFromNativePlayerQueue(); // update internal queues
+
+      // Forward the addition to a connected remote session.
+      unawaited(_remoteSessionIfConnected?.sendItemsToRemoteQueue(items.map((e) => e.id).toList(), asNext: false));
     } catch (e) {
       _queueServiceLogger.severe(e);
       rethrow;
@@ -994,6 +1080,9 @@ class QueueService {
       await _audioHandler.insertFinampQueueItems(adjustedQueueIndex + offset, queueItems);
 
       _buildQueueFromNativePlayerQueue(); // update internal queues
+
+      // Forward the addition to a connected remote session.
+      unawaited(_remoteSessionIfConnected?.sendItemsToRemoteQueue(items.map((e) => e.id).toList(), asNext: true));
     } catch (e) {
       _queueServiceLogger.severe(e);
       rethrow;
@@ -1032,6 +1121,11 @@ class QueueService {
       await _audioHandler.insertFinampQueueItems(adjustedQueueIndex + offset, queueItems);
 
       _buildQueueFromNativePlayerQueue(); // update internal queues
+
+      // Forward the addition to a connected remote session. The remote can
+      // only prepend right after the current track, so next-up ordering may
+      // differ slightly; the periodic queue sync reconciles that.
+      unawaited(_remoteSessionIfConnected?.sendItemsToRemoteQueue(items.map((e) => e.id).toList(), asNext: true));
     } catch (e) {
       _queueServiceLogger.severe(e);
       rethrow;
@@ -1090,10 +1184,20 @@ class QueueService {
     }
 
     _buildQueueFromNativePlayerQueue(); // update internal queues
+
+    // Forward the followup items to a connected remote session.
+    unawaited(_remoteSessionIfConnected?.sendItemsToRemoteQueue(items.map((e) => e.id).toList(), asNext: false));
   }
 
-  Future<void> skipByOffset(int offset) async {
-    await _audioHandler.skipByOffset(offset);
+  Future<void> skipByOffset(int offset, {Duration position = Duration.zero}) async {
+    // While connected to a remote session, queue navigation (e.g. tapping a
+    // track in the queue list) targets the remote; the local mirror follows
+    // via the remote state updates.
+    final remoteSession = _remoteSessionIfConnected;
+    if (remoteSession != null) {
+      return remoteSession.skipByOffset(offset);
+    }
+    await _audioHandler.skipByOffset(offset, position: position);
   }
 
   Future<void> removeAtOffset(int offset) async {
@@ -1101,6 +1205,10 @@ class QueueService {
 
     await _audioHandler.removeFinampQueueItemAt(adjustedQueueIndex);
     _buildQueueFromNativePlayerQueue();
+
+    // No incremental "remove" command exists for remote sessions, so re-send
+    // the queue to keep the remote in sync.
+    unawaited(_remoteSessionIfConnected?.resyncQueueToRemote());
   }
 
   /// This function removes all upcoming radio tracks.
@@ -1140,6 +1248,9 @@ class QueueService {
         }
       }
       _buildQueueFromNativePlayerQueue();
+      // No incremental "remove" command exists for remote sessions, so re-send
+      // the queue to keep the remote in sync (same as removeAtOffset).
+      unawaited(_remoteSessionIfConnected?.resyncQueueToRemote());
     });
   }
 
@@ -1175,6 +1286,10 @@ class QueueService {
     }
 
     _buildQueueFromNativePlayerQueue();
+
+    // No incremental "reorder" command exists for remote sessions, so re-send
+    // the queue to keep the remote in sync.
+    unawaited(_remoteSessionIfConnected?.resyncQueueToRemote());
   }
 
   Future<void> clearNextUp() async {
@@ -1190,6 +1305,8 @@ class QueueService {
     }
 
     _buildQueueFromNativePlayerQueue(); // update internal queues
+
+    unawaited(_remoteSessionIfConnected?.resyncQueueToRemote());
   }
 
   FinampQueueInfo getQueue() {
@@ -1317,6 +1434,9 @@ class QueueService {
 
     FinampSetters.setLoopMode(loopMode);
     _queueServiceLogger.fine("Loop mode set to ${FinampSettingsHelper.finampSettings.loopMode}");
+
+    // Forward the repeat mode to a connected remote session.
+    unawaited(_remoteSessionIfConnected?.setRemoteRepeatMode(mode));
   }
 
   FinampLoopMode get loopMode => _loopMode;
@@ -1353,12 +1473,17 @@ class QueueService {
 
   FinampPlaybackOrder get playbackOrder => _playbackOrder;
 
-  Future<void> togglePlaybackOrder() {
+  Future<void> togglePlaybackOrder() async {
     if (_playbackOrder == FinampPlaybackOrder.shuffled) {
-      return setPlaybackOrder(FinampPlaybackOrder.linear);
+      await setPlaybackOrder(FinampPlaybackOrder.linear);
     } else {
-      return setPlaybackOrder(FinampPlaybackOrder.shuffled);
+      await setPlaybackOrder(FinampPlaybackOrder.shuffled);
     }
+    // The local order is authoritative while a remote session is connected:
+    // re-send the queue in its new effective order rather than shuffling on
+    // the remote (SetShuffleQueue), whose order we could neither predict nor
+    // keep in sync with the local queue.
+    unawaited(_remoteSessionIfConnected?.resyncQueueToRemote());
   }
 
   void toggleLoopMode() {
