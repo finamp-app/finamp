@@ -57,6 +57,12 @@ extension type LibraryId._(String raw) {
     allLibraryPlaceholder => null,
     _ => this as BaseItemId,
   };
+
+  BaseItemId? resolve2(WidgetRef ref) => switch (this) {
+    currentLibraryPlaceholder => ref.watch(FinampUserHelper.finampCurrentUserProvider)?.currentViewId,
+    allLibraryPlaceholder => null,
+    _ => this as BaseItemId,
+  };
 }
 
 // These get saved into home screen configuration and cannot be modified.

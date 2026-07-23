@@ -23,12 +23,12 @@ class AudioServiceHelper {
 
   /// Shuffles every track in the user's current view.
   Future<void> shuffleAll({required bool onlyShowFavorites, BaseItemDto? genreFilter, int? itemCount}) async {
-    List<jellyfin_models.BaseItemDto>? items = await getShuffleAllTracks(
+    List<jellyfin_models.BaseItemDto>? items = (await getShuffleAllTracks(
       onlyShowFavorites: onlyShowFavorites,
       library: _finampUserHelper.currentUser!.currentView!,
       genreFilter: genreFilter,
       itemCount: itemCount,
-    );
+    ))?.$1;
 
     if (items != null) {
       QueueItemSource source = (genreFilter != null)
@@ -47,25 +47,25 @@ class AudioServiceHelper {
                 type: onlyShowFavorites ? QueueItemSourceNameType.yourLikes : QueueItemSourceNameType.shuffleAll,
               ),
               id: "shuffleAll",
+              library: _finampUserHelper.currentUser!.currentView!.id,
             );
 
       await _queueService.startPlayback(items: items, source: source, order: FinampPlaybackOrder.shuffled);
     }
   }
 
-  Future<List<BaseItemDto>?> getShuffleAllTracks({
+  Future<(List<BaseItemDto>, int)?> getShuffleAllTracks({
     required bool onlyShowFavorites,
     required BaseItemDto library,
     BaseItemDto? genreFilter,
     int? itemCount,
   }) async {
-    List<jellyfin_models.BaseItemDto>? items;
     if (FinampSettingsHelper.finampSettings.isOffline) {
       // If offline, get a shuffled list of tracks from _downloadsHelper.
       // This is a bit inefficient since we have to get all of the tracks and
       // shuffle them before making a sublist, but I couldn't think of a better
       // way.
-      items = (await _isarDownloader.getAllTracks(
+      final items = (await _isarDownloader.getAllTracks(
         viewFilter: library.id,
         genreFilter: genreFilter?.id,
         onlyFavorites: onlyShowFavorites,
@@ -74,11 +74,12 @@ class AudioServiceHelper {
       items.shuffle();
       final count = itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount;
       if (items.length - 1 > count) {
-        items = items.sublist(0, count);
+        return (items.sublist(0, count), items.length);
       }
+      return (items, items.length);
     } else {
       // If online, get all audio items from the user's view
-      items = await _jellyfinApiHelper.getItems(
+      final record = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
         parentItem: library,
         includeItemTypes: "Audio",
         filters: onlyShowFavorites ? "IsFavorite" : null,
@@ -86,8 +87,8 @@ class AudioServiceHelper {
         sortBy: "Random",
         genreFilter: genreFilter?.id,
       );
+      return (record.items ?? [], record.totalRecordCount);
     }
-    return items;
   }
 
   /// Start instant mix from item.

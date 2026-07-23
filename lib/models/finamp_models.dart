@@ -2089,6 +2089,7 @@ class QueueItemSource {
     required this.id,
     this.item,
     this.contextNormalizationGain,
+    this.library,
   });
 
   /*factory QueueItemSource.fromPlayableItem(
@@ -2119,6 +2120,7 @@ class QueueItemSource {
     BaseItemDto baseItem, {
     QueueItemSourceType? type,
     QueueItemSourceNameType? nameType,
+    BaseItemId? library,
   }) {
     final defaultType = switch (BaseItemDtoType.fromItem(baseItem)) {
       BaseItemDtoType.album => QueueItemSourceType.album,
@@ -2135,6 +2137,14 @@ class QueueItemSource {
       _ => baseItem.normalizationGain,
     };
 
+    switch (BaseItemDtoType.fromItem(baseItem)) {
+      case BaseItemDtoType.artist:
+      case BaseItemDtoType.genre:
+        library ??= GetIt.instance<FinampUserHelper>().currentUser?.currentViewId;
+      case _:
+        break;
+    }
+
     return QueueItemSource(
       type: type ?? defaultType,
       name: nameType != null
@@ -2146,6 +2156,7 @@ class QueueItemSource {
       id: baseItem.id,
       item: baseItem,
       contextNormalizationGain: gain,
+      library: library,
     );
   }
 
@@ -2157,6 +2168,7 @@ class QueueItemSource {
       id: id,
       item: item,
       contextNormalizationGain: contextNormalizationGain,
+      library: library,
     );
   }
 
@@ -2166,6 +2178,7 @@ class QueueItemSource {
     required BaseItemId id,
     this.item,
     this.contextNormalizationGain,
+    this.library,
   }) : id = id.raw;
 
   @HiveField(0)
@@ -2182,6 +2195,9 @@ class QueueItemSource {
 
   @HiveField(4)
   final double? contextNormalizationGain;
+
+  @HiveField(5)
+  final BaseItemId? library;
 
   bool get wantsItem => item == null && RegExp(r'^[0-9a-f]{32}$').matchAsPrefix(id) != null;
 
@@ -2368,7 +2384,7 @@ class FinampQueueOrder {
   BaseItemDto? sourceLibrary;
 }
 
-@HiveType(typeId: 59)
+//@HiveType(typeId: 59)
 class FinampQueueInfo {
   FinampQueueInfo({
     required this.id,
@@ -2381,28 +2397,20 @@ class FinampQueueInfo {
     required this.sourceLibrary,
   });
 
-  @HiveField(0)
   List<FinampQueueItem> previousTracks;
 
-  @HiveField(1)
   FinampQueueItem? currentTrack;
 
-  @HiveField(2)
   List<FinampQueueItem> nextUp;
 
-  @HiveField(3)
   List<FinampQueueItem> queue;
 
-  @HiveField(4)
   QueueItemSource source;
 
-  @HiveField(5)
   SavedQueueState saveState;
 
-  @HiveField(6)
   String id;
 
-  @HiveField(7)
   BaseItemDto? sourceLibrary;
 
   int get currentTrackIndex => previousTracks.length + (currentTrack == null ? 0 : 1);

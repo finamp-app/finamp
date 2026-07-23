@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:finamp/components/album_image.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/queue_restore_menu.dart';
@@ -250,7 +252,8 @@ double calculateItemCollectionCardHeight({
   final BaseItemDtoType resolvedItemType;
   switch (sectionInfo?.base) {
     case QueuesHomeSection():
-      return queuesHomeSectionHeight * MediaQuery.textScalerOf(ref.context).scale(16.0) / 16.0;
+      // This overscales due to multiplying by whole height instead of just text, so never scale down to avoid clipping
+      return queuesHomeSectionHeight * max(1.0, MediaQuery.textScalerOf(ref.context).scale(16.0) / 16.0);
     case null:
       resolvedItemType = itemType!;
     case TabsHomeSection base:

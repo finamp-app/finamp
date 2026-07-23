@@ -42,7 +42,6 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(FinampHomeScreenConfigurationAdapter());
     registerAdapter(FinampLoopModeAdapter());
     registerAdapter(FinampPlaybackOrderAdapter());
-    registerAdapter(FinampQueueInfoAdapter());
     registerAdapter(FinampQueueItemAdapter());
     registerAdapter(FinampQueueOrderAdapter());
     registerAdapter(FinampQuickActionsAdapter());
@@ -156,7 +155,6 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(FinampHomeScreenConfigurationAdapter());
     registerAdapter(FinampLoopModeAdapter());
     registerAdapter(FinampPlaybackOrderAdapter());
-    registerAdapter(FinampQueueInfoAdapter());
     registerAdapter(FinampQueueItemAdapter());
     registerAdapter(FinampQueueOrderAdapter());
     registerAdapter(FinampQuickActionsAdapter());
