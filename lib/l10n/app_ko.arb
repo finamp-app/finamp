@@ -2161,5 +2161,17 @@
     "genericCancel": "취소",
     "@genericCancel": {
         "description": "Used when the user stops an action from taking place inside a popup dialog window"
+    },
+    "itemDeletedSnackbar": "{deviceType, select, device{클라이언트} server{서버} other{미식별 기기}} 에서 {itemType, select, album{앨범} playlist{플레이리스트} artist{아티스트} genre{장르} track{트랙} library{라이브러리} other{아이템}} 삭제됨",
+    "@itemDeletedSnackbar": {
+        "description": "Used whenever item gets deleted from the device or server, message in snackbar"
+    },
+    "allowDeleteFromServerTitle": "서버쪽 삭제를 허용",
+    "@allowDeleteFromServerTitle": {
+        "description": "Title for the setting that controls if items can be deleted from the server"
+    },
+    "allowDeleteFromServerSubtitle": "(삭제가 가능한 경우) 서버 파일 시스템에서 항목을 영구적으로 삭제하는 옵션을 활성화 또는 비활성화 합니다.",
+    "@allowDeleteFromServerSubtitle": {
+        "description": "Subtitle for the setting that controls if items can be deleted from the server"
     }
 }
