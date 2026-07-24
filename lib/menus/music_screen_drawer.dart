@@ -12,6 +12,7 @@ import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/screens/downloads_screen.dart';
 import 'package:finamp/screens/logs_screen.dart';
 import 'package:finamp/screens/playback_history_screen.dart';
+import 'package:finamp/screens/player_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
 import 'package:finamp/screens/settings_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
@@ -284,6 +285,11 @@ class MusicScreenDrawer extends ConsumerWidget {
                         leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.auto_delete)),
                         title: Text(AppLocalizations.of(context)!.queuesScreen),
                         onTap: () => Navigator.of(context).pushNamed(QueueRestoreScreen.routeName),
+                      ),
+                      ListTile(
+                        leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(TablerIcons.player_play)),
+                        title: Text(AppLocalizations.of(context)!.playerScreen),
+                        onTap: () => Navigator.of(context).pushNamed(PlayerScreen.routeName),
                       ),
                       const Divider(),
                     ]),
