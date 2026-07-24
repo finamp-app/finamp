@@ -387,7 +387,7 @@
             }
         }
     },
-    "editItemTitle": "Edit {itemType, select, playlist{Playlist} other{}}",
+    "editItemTitle": "Ubah {itemType, select, playlist{Playlist} other{}}",
     "@editItemTitle": {
         "placeholders": {
             "itemType": {
@@ -427,7 +427,7 @@
             }
         }
     },
-    "transcoding": "Transcoding",
+    "transcoding": "Transkode",
     "downloadLocations": "Lokasi Unduhan",
     "audioService": "Layanan Audio",
     "interactions": "Interaksi",
@@ -651,7 +651,7 @@
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
     },
-    "playbackModeTranscoding": "Transcoding",
+    "playbackModeTranscoding": "Mentranskode",
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
     },
@@ -1554,7 +1554,7 @@
     "@downloadBitrateSubtitle": {
         "description": "subtitle for Download Bitrate settings slider"
     },
-    "transcodeHint": "Transcode?",
+    "transcodeHint": "Transkode?",
     "@transcodeHint": {
         "description": "Initial text in downloads dropdown when 'Enable Transcoded Downloads' is set to ask."
     },
@@ -2273,59 +2273,59 @@
     },
     "preferLocalNetworkTargetAddressLocalSettingTitle": "Alamat jaringan lokal",
     "preferLocalNetworkTargetAddressLocalSettingDescription": "Alamat target server Jellyfin di dalam jaringan lokal Anda",
-    "preferLocalNetworkEnableSwitchTitle": "Prefer Local Network",
-    "preferLocalNetworkEnableSwitchDescription": "Whether or not to use a different address when you are in the local network of your jellyfin server",
+    "preferLocalNetworkEnableSwitchTitle": "Utamakan jaringan lokal",
+    "preferLocalNetworkEnableSwitchDescription": "Gunakan alamat berbeda saat berada di jaringan lokal server Jellyfin",
     "preferLocalNetworkPublicAddressSettingTitle": "Public Address",
-    "preferLocalNetworkPublicAddressSettingDescription": "The primary address used to connect to your Jellyfin server",
+    "preferLocalNetworkPublicAddressSettingDescription": "Alamat utama yang digunakan untuk terhubung ke server Jellyfin Anda",
     "networkSettingsTitle": "Network",
     "@networkSettingsTitle": {
         "description": "Title for the network settings screen"
     },
-    "downloadPaused": "Downloading paused because device is not connected to WiFi",
+    "downloadPaused": "Unduhan dijeda karena perangkat tidak terhubung dengan WiFi",
     "@downloadPaused": {
         "description": "Gets shown in the snackbar if loosing wifi connection while downloads are running and the 'requireWifiForDownloads' is enabled"
     },
-    "missingSchemaError": "Url needs to start with http(s)://",
+    "missingSchemaError": "Url harus dimulai dengan http(s)://",
     "@missingSchemaError": {
         "description": "Snackbar message when the user changes their home/public address but it doesn't start with http"
     },
-    "testConnectionButtonLabel": "Test both connections",
+    "testConnectionButtonLabel": "Uji kedua koneksi",
     "@testConnectionButtonLabel": {
         "description": "Button to test the public and local url inside the network settings tab"
     },
-    "ping": "{status, select, true_true{Both reachable} true_false{FAILED to reach local address} false_true{FAILED to reach public address} false_false{FAILED to reach both} other{unknown}}",
+    "ping": "{status, select, true_true{Keduanya bisa dicapai} true_false{GAGAL mencapai alamat lokal} false_true{GAGAL mencapai alamat publik} false_false{GAGAL mencapai keduanya} other{Tidak Diketahui}}",
     "@ping": {
         "description": "Gets shown in the Snackbar when using the Test Connection Button inside the Network Settings. true means reachable, false means unreachable. the first value is for the public address, the second value is fot the home address."
     },
-    "autoReloadQueueTitle": "Automatically Reload Queue",
+    "autoReloadQueueTitle": "Otomatis Memuat Ulang Antrian",
     "@autoReloadQueueTitle": {
         "description": "Title for the setting that controls if the queue is automatically reloaded when the source changes"
     },
-    "autoReloadQueueSubtitle": "Automatically reload the queue when the source changes (i.e. offline mode enabled or server address switch). If disabled, Finamp will prompt you instead.",
+    "autoReloadQueueSubtitle": "Otomatis Memuat Ulang Antrian ketika sumber berubah (misalnya, mode luring diaktifkan atau alamat server berubah). Jika nonaktif, Finamp akan memunculkan prompt kepada Anda.",
     "@autoReloadQueueSubtitle": {
         "description": "Subtitle for the setting that controls if the queue is automatically reloaded when the source changes"
     },
-    "clearQueueOnStopEventTitle": "Clear Queue On External Stop",
+    "clearQueueOnStopEventTitle": "Bersihkan Antrian Saat Berhenti Eksternal",
     "@clearQueueOnStopEventTitle": {
         "description": "Title for the setting that controls if OS stop commands clear the queue."
     },
-    "clearQueueOnStopEventSubtitle": "Clear the queue and close the player if a 'stop' command is received from the OS. In-app stop actions will always close the player and clear the queue.",
+    "clearQueueOnStopEventSubtitle": "Bersihkan antrian dan tutup pemutar musik jika sebuah perintah 'stop' diterima dari OS. Tindakan stop dari dalam aplikasi akan selalu menutup pemutar dan membersihkan antrian.",
     "@clearQueueOnStopEventSubtitle": {
         "description": "Subtitle for the setting that controls if OS stop commands clear the queue."
     },
-    "radioModeMenuTitle": "Choose Radio Mode",
+    "radioModeMenuTitle": "Pilih Mode Radio",
     "@radioModeMenuTitle": {
         "description": "Title for menu that allows users to choose the radio mode."
     },
-    "loopingOverriddenByRadioSubtitle": "Queue looping is disabled while radio is enabled",
+    "loopingOverriddenByRadioSubtitle": "Pengulangan antrean dinonaktifkan saat mode radio aktif",
     "@loopingOverriddenByRadioSubtitle": {
         "description": "Subtitle displayed in the radio menu to show that queue looping is disabled while radio mode is enabled."
     },
-    "radioFailedSubtitle": "No more radio tracks found. Try changing the mode.",
+    "radioFailedSubtitle": "Tidak ada lagi trek radio yang ditemukan. Coba ubah mode.",
     "@radioFailedSubtitle": {
         "description": "Subtitle displayed in the radio menu to show that no radio tracks could be generated."
     },
-    "radioModeOptionName": "{option, select, reshuffle{Reshuffle} random{Random} similar{Similar} continuous{Continuous} albumMix{Album Mix} other{{option}}}",
+    "radioModeOptionName": "{option, select, reshuffle{Campur Ulang} random{Acak} similar{Mirip} continuous{Berlanjut} albumMix{Mix Album} other{{option}}}",
     "@radioModeOptionName": {
         "placeholders": {
             "option": {
@@ -2335,7 +2335,7 @@
         },
         "description": "Radio mode names in radio mode/algorithm dropdown"
     },
-    "radioModeOptionTitle": "{option, select, reshuffle{Reshuffle Mode} random{Random Mode} similar{Similar Mode} continuous{Continuous Mode} albumMix{Album Mix} other{{option}}} Enabled",
+    "radioModeOptionTitle": "{option, select, reshuffle{Mode Campur Ulang} random{Mode Acak} similar{Mode Mirip} continuous{Mode Berlanjut} albumMix{Mix Album} other{{option}}} Aktif",
     "@radioModeOptionTitle": {
         "placeholders": {
             "option": {
@@ -2349,35 +2349,35 @@
     "@radioModeActiveTitle": {
         "description": "Title displayed in the queue to show that radio mode is enabled and active."
     },
-    "radioModeDisabledTitle": "Radio Disabled",
+    "radioModeDisabledTitle": "Radio Dinonaktifkan",
     "@radioModeDisabledTitle": {
         "description": "Title displayed in the queue to show that radio mode is disabled."
     },
-    "radioModeInactiveTitle": "Radio Paused",
+    "radioModeInactiveTitle": "Radio Dijeda",
     "@radioModeInactiveTitle": {
         "description": "Title displayed in the queue to show that the radio is enabled but not active."
     },
-    "radioModeEnableButtonTitle": "Enable Radio",
+    "radioModeEnableButtonTitle": "Nyalakan Radio",
     "@radioModeEnableButtonTitle": {
         "description": "Title for the option that enables radio mode."
     },
-    "radioModeDisableButtonTitle": "Disable Radio",
+    "radioModeDisableButtonTitle": "Nonaktifkan Radio",
     "@radioModeDisableButtonTitle": {
         "description": "Title for the option that disables radio mode."
     },
-    "radioModeDisableButtonSubtitle": "Switches back to the previous loop mode",
+    "radioModeDisableButtonSubtitle": "Beralih kembali ke mode perulangan sebelumnya",
     "@radioModeDisableButtonSubtitle": {
         "description": "Subtitle for the option that disables radio mode."
     },
-    "radioModeEnabledSubtitle": "Tap to configure",
+    "radioModeEnabledSubtitle": "Ketuk untuk mengatur",
     "@radioModeEnabledSubtitle": {
         "description": "Subtitle displayed in the queue to show when radio mode is enabled."
     },
-    "radioModeDisabledSubtitle": "Tap to enable",
+    "radioModeDisabledSubtitle": "Ketuk untuk menyalakan",
     "@radioModeDisabledSubtitle": {
         "description": "Subtitle displayed in the queue to show that radio mode is disabled."
     },
-    "radioModeDescription": "{mode, select, reshuffle{Continuously reshuffle queue} random{Append tracks randomly from the initial selection} similar{Append based on the original queue} continuous{Append based on the current track} albumMix{Append similar albums} other{}}",
+    "radioModeDescription": "{mode, select, reshuffle{Acak ulang antrian secara terus-menerus} random{Tambahkan trek secara acak dari pilihan awal} similar{Tambahkan berdasarkan antrian awal} continuous{Tambahkan berdasarkan trek saat ini} albumMix{Tambahkan album yang mirip} other{}}",
     "@radioModeDescription": {
         "placeholders": {
             "mode": {
@@ -2387,11 +2387,11 @@
         },
         "description": "Subtitle displayed in the queue to describe what the radio is doing if enabled"
     },
-    "radioModeUnavailableWhileOfflineDescription": "Unavailable while offline",
+    "radioModeUnavailableWhileOfflineDescription": "Tidak tersedia saat offline",
     "@radioModeUnavailableWhileOfflineDescription": {
         "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
     },
-    "radioModeUnavailableWhileOfflineSubtitle": "{modeName} unavailable while offline",
+    "radioModeUnavailableWhileOfflineSubtitle": "{modeName} tidak tersedia saat offline",
     "@radioModeUnavailableWhileOfflineSubtitle": {
         "placeholders": {
             "modeName": {
@@ -2401,11 +2401,11 @@
         },
         "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
     },
-    "radioModeUnavailableForSourceItemDescription": "Unavailable for this queue source",
+    "radioModeUnavailableForSourceItemDescription": "Tidak tersedia untuk sumber antrian ini",
     "@radioModeUnavailableForSourceItemDescription": {
         "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
     },
-    "radioModeUnavailableForSourceItemSubtitle": "{modeName} unavailable for this queue source",
+    "radioModeUnavailableForSourceItemSubtitle": "{modeName} tidak tersedia untuk sumber antrian ini",
     "@radioModeUnavailableForSourceItemSubtitle": {
         "placeholders": {
             "modeName": {
@@ -2415,11 +2415,11 @@
         },
         "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
     },
-    "radioModeUnavailableQueueEmptyDescription": "Unavailable because the queue is empty",
+    "radioModeUnavailableQueueEmptyDescription": "Tidak tersedia karena antrian kosong",
     "@radioModeUnavailableQueueEmptyDescription": {
         "description": "Shown as the subtitle for radio modes when the queue is empty."
     },
-    "radioModeUnavailableQueueEmptySubtitle": "{modeName} unavailable because the queue is empty",
+    "radioModeUnavailableQueueEmptySubtitle": "{modeName} tidak tersedia karena antrian kosong",
     "@radioModeUnavailableQueueEmptySubtitle": {
         "placeholders": {
             "modeName": {
@@ -2429,7 +2429,7 @@
         },
         "description": "Shown as the subtitle for radio modes when the queue is empty."
     },
-    "radioModeRandomUnavailableNotDownloadedDescription": "Unavailable because '{sourceName}' isn't downloaded",
+    "radioModeRandomUnavailableNotDownloadedDescription": "Tidak tersedia karena '{sourceName}' belum diunduh",
     "@radioModeRandomUnavailableNotDownloadedDescription": {
         "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
         "placeholders": {
@@ -2438,7 +2438,7 @@
             }
         }
     },
-    "radioModeRandomUnavailableNotDownloadedSubtitle": "{modeName} unavailable because '{sourceName}' isn't downloaded",
+    "radioModeRandomUnavailableNotDownloadedSubtitle": "{modeName} tidak tersedia karena '{sourceName}' belum diunduh",
     "@radioModeRandomUnavailableNotDownloadedSubtitle": {
         "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
         "placeholders": {
@@ -2451,11 +2451,11 @@
             }
         }
     },
-    "radioModeRandomUnavailableNotDownloadedGenericDescription": "Unavailable because source is not downloaded",
+    "radioModeRandomUnavailableNotDownloadedGenericDescription": "Tidak tersedia karena sumber belum diunduh",
     "@radioModeRandomUnavailableNotDownloadedGenericDescription": {
         "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
     },
-    "radioModeRandomUnavailableNotDownloadedGenericSubtitle": "{modeName} unavailable because source is not downloaded",
+    "radioModeRandomUnavailableNotDownloadedGenericSubtitle": "{modeName} tidak tersedia karena sumber belum diunduh",
     "@radioModeRandomUnavailableNotDownloadedGenericSubtitle": {
         "placeholders": {
             "modeName": {
@@ -2465,15 +2465,15 @@
         },
         "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
     },
-    "radioNoTracksFound": "Couldn't start radio because no suitable tracks were found.",
+    "radioNoTracksFound": "Tidak dapat memulai radio karena tidak ada trek sesuai yang ditemukan.",
     "@radioNoTracksFound": {
         "description": "Shown when the user tries to start radio mode but no suitable tracks were found to start the radio with."
     },
-    "loopingUnavailableWhileRadioActiveWarning": "Changing the loop mode is not available while radio is active, as the queue will continue endlessly.",
+    "loopingUnavailableWhileRadioActiveWarning": "Mengubah perulangan tidak tersedia saat radio aktif, karena antrian akan berlanjut selamanya.",
     "@loopingUnavailableWhileRadioActiveWarning": {
         "description": "Warning message when trying to change the loop mode while radio is active."
     },
-    "autoReloadPrompt": "Reload queue to apply new {type, select, network{network settings} transcoding{transcoding settings} other{settings}}",
+    "autoReloadPrompt": "Muat ulang antrian untuk memasang {type, select, network{pengaturan jaringan} transcoding{pengaturan transcoding} other{pengaturan}} baru",
     "@autoReloadPrompt": {
         "description": "Prompt shown when the queue needs to be reloaded after changing network settings",
         "placeholders": {
@@ -2482,7 +2482,7 @@
             }
         }
     },
-    "autoReloadPromptMissingTracks": "{amountUndownloadedTracks, plural, =1{1 track} other{{amountUndownloadedTracks} tracks}} will be removed from the queue because they aren't downloaded.",
+    "autoReloadPromptMissingTracks": "{amountUndownloadedTracks, plural, =1{1 trek} other{{amountUndownloadedTracks} trek}} akan dihapus dari antrian karena belum diunduh.",
     "@autoReloadPromptMissingTracks": {
         "description": "Additional prompt text shown when the queue needs to be reloaded after changing network settings and some undownloaded tracks are in the queue",
         "placeholders": {
@@ -2491,31 +2491,31 @@
             }
         }
     },
-    "menuButtonLabel": "More actions",
+    "menuButtonLabel": "Lebih banyak aksi",
     "@menuButtonLabel": {
         "description": "Generic label for menu buttons shown throughout the app. Used for the album, artist, playlist, etc. menus"
     },
-    "autoReloadPromptReloadButton": "Reload",
+    "autoReloadPromptReloadButton": "Muat Ulang",
     "@autoReloadPromptReloadButton": {
         "description": "Button title for reloading the queue after network settings change"
     },
-    "notImplementedYet": "Not implemented yet.",
+    "notImplementedYet": "Masih belum diterapkan.",
     "@notImplementedYet": {
         "description": "Message shown when a feature is not implemented yet"
     },
-    "automaticOfflineModeOverrideActiveTitle": "Automatic switching paused",
+    "automaticOfflineModeOverrideActiveTitle": "Perubahan otomatis dijeda",
     "@automaticOfflineModeOverrideActiveTitle": {
         "description": "Title for the label shown below the offline mode toggle when automatic offline mode switching is paused"
     },
-    "automaticOfflineModeOverrideActiveSubtitle": "Tap here to resume",
+    "automaticOfflineModeOverrideActiveSubtitle": "Ketuk disini untuk melanjutkan",
     "@automaticOfflineModeOverrideActiveSubtitle": {
         "description": "Subtitle for the label shown below the offline mode toggle when automatic offline mode switching is paused"
     },
-    "sleepTimerFinishLastTrack": "Finish Last Track?",
+    "sleepTimerFinishLastTrack": "Selesaikan Trek Akhir?",
     "@sleepTimerFinishLastTrack": {
         "description": "Option for the sleep timer that will finish the last track before stopping playback."
     },
-    "sleepTimerAfterCurrentTrack": "After Current Track",
+    "sleepTimerAfterCurrentTrack": "Setelah Trek Ini",
     "@sleepTimerAfterCurrentTrack": {
         "description": "Option for the sleep timer that will stop playback after the current track finishes."
     },
@@ -2523,19 +2523,19 @@
     "@sleepTimerStartTimer": {
         "description": "Label for the button that starts the sleep timer"
     },
-    "syncPlaybackSpeedAndPitchLabel": "Sync Speed & Pitch",
+    "syncPlaybackSpeedAndPitchLabel": "Sinkronkan Kecepatan & Nada",
     "@syncPlaybackSpeedAndPitchLabel": {
         "description": "Label for the checkbox that toggled is the pitch is adjusted along with the playback speed, or if the pitch is kept constant. Shown in the speed submenu on the track menu"
     },
-    "serverSharingMenuTitle": "Local Network Server Sharing",
+    "serverSharingMenuTitle": "Berbagi Server Jaringan Lokal",
     "@serverSharingMenuTitle": {
         "description": "Title for the server sharing menu that allows the user to share their server address with other devices on the local network"
     },
-    "serverSharingMenuButtonTitle": "Share Server",
+    "serverSharingMenuButtonTitle": "Bagikan Server",
     "@serverSharingMenuButtonTitle": {
         "description": "Title for the button in the drawer that opens the server sharing menu"
     },
-    "serverSharingMenuConfirmationDialogText": "Are you sure you want to enable server sharing even though you're in Offline Mode? This will cause Finamp to send data over the local network.",
+    "serverSharingMenuConfirmationDialogText": "Apakah anda yakin ingin mengaktifkan berbagi server meskipun anda berada dalam Mode Luring? Tindakan ini akan membuat Finamp mengirimkan data melalui jaringan lokal.",
     "@serverSharingMenuConfirmationDialogText": {
         "description": "Dialog text shown when enabling server sharing while offline mode is enabled"
     },
@@ -2627,7 +2627,7 @@
     "@autoExpandPlayerScreenSubtitle": {
         "description": "Subtitle for the setting that controls if the player screen is opened directly after starting a new queue"
     },
-    "discordRPCSettingTitle": "Discord RPC",
+    "discordRPCSettingTitle": "RPC Discord",
     "@discordRPCSettingTitle": {
         "description": "Title for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
     },
@@ -3525,5 +3525,53 @@
                 "example": "syncingLocal"
             }
         }
+    },
+    "clientCertificate": "Sertifikat Client mTLS (SSL)",
+    "@clientCertificate": {
+        "description": "Title for the setting that allows managing SSL client certificates used for authentication"
+    },
+    "clientCertificateUnavailable": "Tidak ada sertifikat, autentikasi client dinonaktifkan",
+    "@clientCertificateUnavailable": {
+        "description": "Message shown when the user has no SSL client certificate available to use."
+    },
+    "clientCertificateInstalled": "Sertifikat dipasang",
+    "@clientCertificateInstalled": {
+        "description": "Message shown when the user has successfully installed an SSL client certificate."
+    },
+    "importClientCertificate": "Impor Sertifikat",
+    "@importClientCertificate": {
+        "description": "Label for the button to import a new SSL client certificate."
+    },
+    "removeClientCertificate": "Hapus Sertifikat",
+    "@removeClientCertificate": {
+        "description": "Label for the button to remove the currently installed SSL client certificate."
+    },
+    "clientCertificatePasswordTitle": "Kata Sandi Sertifikat",
+    "@clientCertificatePasswordTitle": {
+        "description": "Title of the dialog prompting the user to enter the password for the client certificate being imported."
+    },
+    "clientCertificatePasswordHint": "Kata Sandi",
+    "@clientCertificatePasswordHint": {
+        "description": "Hint text for the password input field when importing a client certificate."
+    },
+    "clientCertificateDeleteConfirm": "Hapus sertifikat yang terpasang? Autentikasi Client akan dinonaktifkan.",
+    "@clientCertificateDeleteConfirm": {
+        "description": "Confirmation prompt shown before removing the installed client certificate."
+    },
+    "clientCertificateImportSuccess": "Sertifikat berhasil diimpor",
+    "@clientCertificateImportSuccess": {
+        "description": "Message shown after successfully importing a client certificate."
+    },
+    "clientCertificateImportError": "Gagal mengimpor sertifikat",
+    "@clientCertificateImportError": {
+        "description": "Error message shown when importing a client certificate fails."
+    },
+    "clientCertificateRequired": "Sertifikat Client diperlukan",
+    "@clientCertificateRequired": {
+        "description": "Message shown on the server selection screen when the server requires a client certificate to be provided."
+    },
+    "clientCertificateDescription": "Sebuah sertifikat klien TLS (.p12 atau .pfx) digunakan untuk mengautentikasi perangkat ini dengan server Jellyfin anda. Hanya diperlukan jika server anda diatur untuk Mutual TLS.",
+    "@clientCertificateDescription": {
+        "description": "Explanatory text in the client certificate settings menu describing what a client certificate is used for"
     }
 }
