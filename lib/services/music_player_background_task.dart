@@ -1114,6 +1114,10 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
             _audioServiceBackgroundTaskLogger.info("Setting volume to $volume from dbus.");
             await _volume.setInternalVolume(volume);
           }
+          break;
+        case CustomPlaybackActions.toggleLoopMode:
+          final queueService = GetIt.instance<QueueService>();
+          return queueService.toggleLoopMode();
       }
     } catch (e) {
       _audioServiceBackgroundTaskLogger.severe("Custom action '$name' not found.", e);
@@ -1303,6 +1307,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   SequenceState get sequenceState => _player.sequenceState;
   double get volume => (_volume._internalVolume * 100).roundToDouble() / 100;
   bool get paused => !_player.playing;
+  bool get shuffled => _player.shuffleModeEnabled;
   Duration get playbackPosition => _player.position;
 
   void onQueueServiceAvailable() {

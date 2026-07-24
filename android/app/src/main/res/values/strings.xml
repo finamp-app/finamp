@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Circular Widget -->
+    <string name="circular_widget_label">Album Art</string>
+    <string name="circular_widget_desc">Current album art with minimum media controls.</string>
+    <!-- Rectangular Widget -->
+    <string name="rectangular_widget_label">Now Playing</string>
+    <string name="rectangular_widget_desc">Current track info with access to media controls.</string>
+
+    <!-- Content Descriptions for accessibility -->
+    <string name="play_description">Play music</string>
+    <string name="pause_description">Pause music</string>
+    <string name="next_description">Skip next track</string>
+    <string name="previous_description">Skip previous track</string>
+    <string name="shuffle_description">Toggle shuffle on</string>
+    <string name="unshuffle_description">Toggle shuffle off</string>
+    <string name="repeat_track_description">Repeat track</string>
+    <string name="repeat_queue_description">Repeat queue</string>
+    <string name="repeat_none_description">Repeat off</string>
+    <string name="favorite_description">Toggle favorite on</string>
+    <string name="unfavorite_description">Toggle favorite off</string>
+    <string name="album_art_description">Now playing: %1$s by %2$s. Launch Finamp</string>
+    <string name="launch_description">Launch Finamp</string>
+</resources>

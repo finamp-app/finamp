@@ -1,0 +1,13 @@
+<appwidget-provider
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:initialLayout="@layout/glance_default_loading_layout"
+    android:previewImage="@drawable/circular_widget_preview"
+    android:description="@string/circular_widget_desc"
+    android:minWidth="109dp"
+    android:minHeight="115dp"
+    android:minResizeWidth="108dp"
+    android:minResizeHeight="56dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:resizeMode="vertical|horizontal" >
+</appwidget-provider>

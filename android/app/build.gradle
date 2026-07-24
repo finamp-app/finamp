@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.10"
 }
 
 def localProperties = new Properties()
@@ -18,9 +19,23 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+configurations.all {
+    resolutionStrategy {
+        force "androidx.glance:glance-appwidget:1.1.1"
+    }
+}
+
 android {
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
+
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+       kotlinCompilerExtensionVersion = "1.5.15"
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -97,4 +112,5 @@ dependencies {
     implementation 'androidx.mediarouter:mediarouter:1.8.1'
     implementation "androidx.core:core-splashscreen:1.2.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
+    implementation "androidx.glance:glance-appwidget:1.1.1"
 }
