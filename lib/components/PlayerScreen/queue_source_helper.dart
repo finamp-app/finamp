@@ -17,7 +17,6 @@ import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
-import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -84,23 +83,22 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
         );
       }
     case QueueItemSourceType.radio:
-      final radioSource = GetIt.instance<QueueService>().getQueue().source;
-      if (radioSource.item == null) {
+      if (source.item == null) {
         break;
       }
-      switch (BaseItemDtoType.fromItem(radioSource.item!)) {
+      switch (BaseItemDtoType.fromItem(source.item!)) {
         case BaseItemDtoType.track:
-          showModalTrackMenu(context: context, item: radioSource.item!);
+          showModalTrackMenu(context: context, item: source.item!);
           break;
         case BaseItemDtoType.album:
         case BaseItemDtoType.playlist:
-          Navigator.of(context).pushNamed(AlbumScreen.routeName, arguments: radioSource.item);
+          Navigator.of(context).pushNamed(AlbumScreen.routeName, arguments: source.item);
           break;
         case BaseItemDtoType.artist:
-          Navigator.of(context).pushNamed(ArtistScreen.routeName, arguments: radioSource.item);
+          Navigator.of(context).pushNamed(ArtistScreen.routeName, arguments: source.item);
           break;
         case BaseItemDtoType.genre:
-          Navigator.of(context).pushNamed(GenreScreen.routeName, arguments: radioSource.item);
+          Navigator.of(context).pushNamed(GenreScreen.routeName, arguments: source.item);
           break;
         case BaseItemDtoType.collection:
           Navigator.of(context).push(
@@ -108,11 +106,11 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
               builder: (context) => MusicScreen(
                 singleTabConfig: HomeScreenSectionConfiguration(
                   base: CollectionHomeSection(
-                    itemId: radioSource.item!.id,
+                    itemId: source.item!.id,
                     libraryId: GetIt.instance<FinampUserHelper>().currentUser!.currentViewId!,
                     contentType: ContentType.mixed,
                   ),
-                  customSectionTitle: radioSource.item!.name ?? AppLocalizations.of(context)!.unknownName,
+                  customSectionTitle: source.item!.name ?? AppLocalizations.of(context)!.unknownName,
                   sortConfig: SortAndFilterConfiguration.defaultSort,
                 ),
               ),

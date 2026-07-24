@@ -75,7 +75,7 @@ Future<void> showQueueRestoreMenu({required BuildContext context, required Finam
                     ),
                     overflow: TextOverflow.ellipsis,
                     softWrap: true,
-                    maxLines: 2,
+                    maxLines: 1,
                   ),
                   if (queueInfo.currentTrack != null && currentTrack?.name != null)
                     IconAndText(

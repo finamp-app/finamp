@@ -134,6 +134,7 @@ Future<void> maybeAddRadioTracks() async {
               startingIndex: 0,
               source: QueueItemSource.rawId(
                 type: QueueItemSourceType.radio,
+                // TODO should the source vary per radio type?
                 name: currentQueue.source.item != null
                     ? QueueItemSourceName(
                         type: QueueItemSourceNameType.radio,
@@ -141,6 +142,7 @@ Future<void> maybeAddRadioTracks() async {
                       )
                     : QueueItemSourceName(type: QueueItemSourceNameType.radio),
                 id: currentQueue.source.item?.id.raw ?? currentQueue.source.id,
+                item: currentQueue.source.item,
               ),
               shuffleState: SliceShuffleState.linear,
             ),
@@ -212,8 +214,7 @@ Future<void> startRadioPlayback(BaseItemDto source) async {
 
   await GetIt.instance<QueueService>().startPlayback(
     items: tracksToAdd.toList(),
-    source: QueueItemSource.fromBaseItem(source),
-    customTrackSource: QueueItemSource(
+    source: QueueItemSource(
       type: QueueItemSourceType.radio,
       name: QueueItemSourceName(type: QueueItemSourceNameType.radio, localizationParameter: source.name ?? ""),
       id: source.id,
@@ -385,12 +386,14 @@ Future<List<BaseItemDto>> generateRadioTracks(
       pagedSources.add(currentQueue.source);
     }*/
 
-    List<BaseItemDto> queueTracks;
-    List<BaseItemDto> sourceTracks;
-    int sourceTracksLength;
+    final List<BaseItemDto> queueTracks;
+    List<BaseItemDto> sourceTracks = [];
+    int sourceTracksLength = 0;
 
     QueueItemSource? source;
-    if ([
+    if (forNewQueue) {
+      source = QueueItemSource.fromBaseItem(overrideSeedItem!, type: QueueItemSourceType.radio);
+    } else if ([
       QueueItemSourceType.genre,
       QueueItemSourceType.allTracks,
       QueueItemSourceType.favorites,
@@ -398,12 +401,6 @@ Future<List<BaseItemDto>> generateRadioTracks(
     ].contains(currentQueue.source.type)) {
       source = currentQueue.source;
     }
-    if (forNewQueue) {
-      source = QueueItemSource.fromBaseItem(overrideSeedItem!, type: QueueItemSourceType.radio);
-    }
-
-    // TODO why is the queue coming back with the wrong source on subsequent radio source calls?
-    print("ZZZZZZZZ queue source ${currentQueue.source} ${currentQueue.source.type} ours $source");
 
     final isGenre =
         source?.type == QueueItemSourceType.genre ||
@@ -420,40 +417,33 @@ Future<List<BaseItemDto>> generateRadioTracks(
           .toList();
     }
 
-    if (source == null) {
-      sourceTracks = [];
-      sourceTracksLength = 0;
-    } else if (source.type != QueueItemSourceType.radio || isGenre) {
-      final library = GetIt.instance<FinampUserHelper>().currentUser?.views.values.firstWhereOrNull(
-        (x) => x.id == source!.library,
-      );
-      if (library == null) {
-        sourceTracks = [];
-        sourceTracksLength = 0;
-      } else {
-        final record = await GetIt.instance<AudioServiceHelper>().getShuffleAllTracks(
-          onlyShowFavorites: source.type == QueueItemSourceType.favorites,
-          library: library,
-          itemCount: 50,
-          genreFilter: isGenre ? source.item : null,
+    if (source != null) {
+      if (source.type != QueueItemSourceType.radio || isGenre) {
+        final library = GetIt.instance<FinampUserHelper>().currentUser?.views.values.firstWhereOrNull(
+          (x) => x.id == source!.library,
         );
-        if (record == null) {
-          sourceTracks = [];
-          sourceTracksLength = 0;
-        } else {
-          sourceTracks = record.$1;
-          sourceTracksLength = record.$2;
-          // Rebalance to still pull a reasonable amount of tracks from the queue if present, even with shuffleAll.
-          sourceTracksLength = min(record.$2, max(queueTracks.length * 3, 500));
+        if (library != null) {
+          final record = await GetIt.instance<AudioServiceHelper>().getShuffleAllTracks(
+            onlyShowFavorites: source.type == QueueItemSourceType.favorites,
+            library: library,
+            itemCount: 50,
+            genreFilter: isGenre ? source.item : null,
+          );
+          if (record != null) {
+            sourceTracks = record.$1;
+            sourceTracksLength = record.$2;
+            // Rebalance to still pull a reasonable amount of tracks from the queue if present, even with shuffleAll.
+            sourceTracksLength = min(record.$2, max(queueTracks.length * 3, 500));
+          }
         }
+      } else {
+        sourceTracks = (await loadChildTracksFromBaseItem(
+          item: actualSeed!,
+          sortConfig: SortAndFilterConfiguration.defaultForItem(actualSeed),
+        )).map((item) => item).toList();
+        // Rebalance to still pull a reasonable amount of tracks from the queue if present, even with shuffleAll.
+        sourceTracksLength = sourceTracks.length;
       }
-    } else {
-      sourceTracks = (await loadChildTracksFromBaseItem(
-        item: actualSeed!,
-        sortConfig: SortAndFilterConfiguration.defaultForItem(actualSeed),
-      )).map((item) => item).toList();
-      // Rebalance to still pull a reasonable amount of tracks from the queue if present, even with shuffleAll.
-      sourceTracksLength = sourceTracks.length;
     }
 
     // If all tracks have been fetched, integrate into queue so we can do proper random with potential duplicates

@@ -283,7 +283,6 @@ class QueueListTile extends StatelessWidget {
   final FinampQueueItem queueItem;
   final BaseItemDto? parentItem;
   final int? listIndex;
-  final bool isCurrentTrack;
   final bool isInPlaylist;
   final bool allowReorder;
   final bool highlightCurrentTrack;
@@ -299,7 +298,6 @@ class QueueListTile extends StatelessWidget {
     required this.queueItem,
     required this.listIndex,
     required this.onTap,
-    required this.isCurrentTrack,
     required this.isInPlaylist,
     required this.allowReorder,
     this.highlightCurrentTrack = false,
@@ -435,7 +433,11 @@ class TrackListItem extends ConsumerWidget {
     final bool showAlbum = baseItem.albumId != parentItem?.id;
 
     final isCurrentlyPlaying = ref.watch(
-      currentTrackProvider.select((queueItem) => queueItem.valueOrNull?.baseItemId == baseItem.id),
+      currentTrackProvider.select(
+        (playingItem) => queueItem != null
+            ? queueItem!.id == playingItem.valueOrNull?.id
+            : playingItem.valueOrNull?.baseItemId == baseItem.id,
+      ),
     );
 
     var listCard = Padding(

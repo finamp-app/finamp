@@ -477,7 +477,6 @@ class _PreviousTracksListState extends State<PreviousTracksList> with TickerProv
                   onRemoveFromList: () {
                     unawaited(_queueService.removeAtOffset(indexOffset));
                   },
-                  isCurrentTrack: false,
                 );
               },
             );
@@ -564,7 +563,6 @@ class _NextUpTracksListState extends State<NextUpTracksList> {
                       await _queueService.skipByOffset(indexOffset);
                       scrollToKey(key: widget.previousTracksHeaderKey, duration: const Duration(milliseconds: 500));
                     },
-                    isCurrentTrack: false,
                   );
                 },
               ),
@@ -655,7 +653,6 @@ class _QueueTracksListState extends ConsumerState<QueueTracksList> {
                     await _queueService.skipByOffset(indexOffset);
                     scrollToKey(key: widget.previousTracksHeaderKey, duration: const Duration(milliseconds: 500));
                   },
-                  isCurrentTrack: false,
                 );
               },
             );
