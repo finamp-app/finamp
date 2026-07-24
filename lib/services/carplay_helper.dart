@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
@@ -9,6 +10,7 @@ import 'package:finamp/services/music_providers.dart';
 import 'package:finamp/services/music_screen_provider.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_carplay/flutter_carplay.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
@@ -184,21 +186,49 @@ class CarPlayHelper {
     _templateSubscriptions.clear();
   }
 
+  /// Loads up to [limit] items by subscribing to the paged provider and
+  /// requesting more pages until it has enough or the list is exhausted,
+  /// rather than reaching into the notifier for a one-shot slice.
   Future<List<BaseItemDto>> _loadPagedItems(FinampPagedPlayable<FinampPlayableDto> request, int limit) async {
-    _templateSubscriptions.add(providerRef.listen(pagedContentProvider(request), (_, _) {}));
-    final (cached, pending) = providerRef.read(pagedContentProvider(request).notifier).loadSlice(0, limit);
-    final items = pending == null ? cached : cached + (await pending);
-    if (items.isEmpty) {
-      // A failed page load resolves to empty. Rethrow so it doesn't render as an empty library.
-      final error = providerRef.read(pagedContentProvider(request)).error;
-      if (error != null) {
-        // Reset the failed pages like the main UI retry button so the next tap refetches cleanly.
-        providerRef.read(pagedContentProvider(request).notifier).retry();
-        throw error;
+    final provider = pagedContentProvider(request);
+    final completer = Completer<List<FinampDisplayableOrPlayable>>();
+
+    // Retain the paged data so it survives for later taps, until the next root
+    // rebuild releases it.
+    _templateSubscriptions.add(providerRef.listen(provider, (_, _) {}));
+
+    // Drive the load on a private subscription so a root rebuild closing the
+    // retained subscriptions cannot strand this pending load.
+    ProviderSubscription? driver;
+    driver = providerRef.listen<PagingState<int, FinampDisplayableOrPlayable>>(provider, fireImmediately: true, (
+      _,
+      next,
+    ) {
+      if (completer.isCompleted || next.isLoading) return;
+      final items = next.items ?? [];
+      if (items.length < limit && next.hasNextPage && next.error == null) {
+        providerRef.read(provider.notifier).newPage(pageSize: limit - items.length);
+        return;
       }
+      // Surface an error only when nothing is cached, so a partial page still
+      // renders rather than showing an empty library.
+      if (next.error != null && items.isEmpty) {
+        completer.completeError(next.error!);
+      } else {
+        completer.complete(items);
+      }
+      driver?.close();
+    });
+
+    try {
+      final items = await completer.future;
+      // pagedContentProvider isn't generic enough to express that children here are always FinampPlayableDto.
+      return items.take(limit).map((x) => (x as FinampPlayableDto).item).toList();
+    } catch (_) {
+      // Reset the failed pages like the main UI retry button so the next tap refetches cleanly.
+      providerRef.read(provider.notifier).retry();
+      rethrow;
     }
-    // pagedContentProvider isn't generic enough to express that children here are always FinampPlayableDto.
-    return items.map((x) => (x as FinampPlayableDto).item).toList();
   }
 
   Future<void> _startSliceFromPlayable(FinampPlayable playable, {int index = 0, bool shuffled = false}) async {
@@ -341,8 +371,10 @@ class CarPlayHelper {
   }
 
   Future<void> setCarplayRootTemplate() async {
-    // A root rebuild discards the navigation stack, so release its paged requests.
+    // A root rebuild discards the navigation stack, so release its paged
+    // requests and clear any push guard left set by an abandoned load.
     _closeTemplateSubscriptions();
+    _isPushingPageUpdate = false;
 
     // Check if user is logged in first
     if (!isUserLoggedIn) {

@@ -1272,9 +1272,7 @@ class JellyfinApiHelper {
         stack.contains('initState ') ||
         stack.contains('didUpdateWidget') ||
         stack.contains('new QueueService') ||
-        stack.contains('PagingController.notifyPageRequestListeners') ||
-        stack.contains('carplay_helper') ||
-        stack.contains('package:flutter_carplay/')) {
+        stack.contains('PagingController.notifyPageRequestListeners')) {
       return true;
     }
     _jellyfinApiHelperLogger.warning("_verifyCallable failed in phase ${SchedulerBinding.instance.schedulerPhase}");
