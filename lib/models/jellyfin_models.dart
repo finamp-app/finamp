@@ -1503,6 +1503,7 @@ class BaseItemDto with RunTimeTickDuration {
     this.audio,
     this.normalizationGain,
     this.hasLyrics,
+    this.albumNormalizationGain,
   });
 
   /// Gets or sets the name.
@@ -2105,6 +2106,9 @@ class BaseItemDto with RunTimeTickDuration {
   @HiveField(152)
   bool? hasLyrics;
 
+  @HiveField(153)
+  double? albumNormalizationGain;
+
   /// Custom helper field to determine if the BaseItemDto was created in offline mode
   bool? finampOffline;
 
@@ -2199,6 +2203,7 @@ class BaseItemDto with RunTimeTickDuration {
         other.mediaSources?.length == mediaSources?.length &&
         other.mediaStreams?.length == mediaStreams?.length &&
         other.normalizationGain == normalizationGain &&
+        other.albumNormalizationGain == albumNormalizationGain &&
         other.playlistItemId == playlistItemId;
   }
 

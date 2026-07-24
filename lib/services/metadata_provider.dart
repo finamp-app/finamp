@@ -24,7 +24,7 @@ class MetadataProvider {
   LyricDto? lyrics;
   bool isDownloaded;
   bool qualifiesForPlaybackSpeedControl;
-  double? parentNormalizationGain;
+  double? albumNormalizationGain;
 
   MetadataProvider({
     required this.item,
@@ -32,7 +32,7 @@ class MetadataProvider {
     this.lyrics,
     this.isDownloaded = false,
     this.qualifiesForPlaybackSpeedControl = false,
-    this.parentNormalizationGain,
+    this.albumNormalizationGain,
   });
 
   MediaSourceInfo get mediaSourceInfo => playbackInfo.mediaSources!.first;
@@ -186,7 +186,7 @@ final AutoDisposeFutureProviderFamily<MetadataProvider?, BaseItemDto> metadataPr
         item: item,
         playbackInfo: playbackInfo,
         isDownloaded: localPlaybackInfo != null,
-        parentNormalizationGain: parent?.normalizationGain,
+        albumNormalizationGain: parent?.normalizationGain,
       );
 
       for (final genre in item.genres ?? []) {
