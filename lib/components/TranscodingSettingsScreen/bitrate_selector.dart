@@ -31,8 +31,8 @@ class _BitrateSelectorState extends ConsumerState<BitrateSelector> {
           children: [
             Slider(
               min: 64,
-              max: 320,
-              value: (currentBitrate / 1000).clamp(64, 320),
+              max: 510,
+              value: (currentBitrate / 1000).clamp(64, 512),
               divisions: 8,
               label: AppLocalizations.of(context)!.kiloBitsPerSecondLabel(currentBitrate ~/ 1000),
               onChanged: enabled
