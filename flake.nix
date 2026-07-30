@@ -50,7 +50,7 @@
             "arm64-v8a"
           ];
           includeNDK = true;
-          ndkVersions = [ "27.0.12077973" ];
+          ndkVersions = [ "28.2.13676358" ];
           cmakeVersions = [ "3.22.1" ];
         };
         androidSdk = androidComposition.androidsdk;
