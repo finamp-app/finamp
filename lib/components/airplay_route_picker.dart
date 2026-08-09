@@ -5,13 +5,11 @@ import 'package:flutter/services.dart';
 
 /// A native AirPlay route picker button.
 ///
-/// The `flutter_to_airplay` pub package only ships an iOS implementation, so
-/// its `AirPlayRoutePickerView` renders a "Only iOS is supported" placeholder
-/// on macOS. This widget wraps the same native view type on both platforms:
-/// [UiKitView] on iOS and [AppKitView] on macOS (backed by the native
-/// AVRoutePickerView registered in MainFlutterWindow.swift). Both sides share
-/// the `flutter_to_airplay#<id>` method channel contract for the show/close
-/// picker callbacks.
+/// Backed by the `flutter_to_airplay` plugin, which registers the native
+/// `airplay_route_picker_view` platform view on both iOS and macOS. This widget
+/// embeds it with a [UiKitView] on iOS and an [AppKitView] on macOS, sharing the
+/// `flutter_to_airplay#<id>` method channel contract for the show/close picker
+/// callbacks.
 class AirPlayRoutePicker extends StatefulWidget {
   const AirPlayRoutePicker({
     super.key,
