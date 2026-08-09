@@ -1,3 +1,4 @@
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/screens/layout_settings_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -17,6 +18,7 @@ class _AccessibilitySettingsScreenState extends State<AccessibilitySettingsScree
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.accessibility),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(
             context,

@@ -1,15 +1,16 @@
 import 'dart:io';
 
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:path/path.dart' as path_helper;
 import 'package:provider/provider.dart';
 import 'package:uuid/v4.dart';
-
-import '../components/AddDownloadLocationScreen/app_directory_location_form.dart';
-import '../components/AddDownloadLocationScreen/custom_download_location_form.dart';
-import '../models/finamp_models.dart';
-import '../services/finamp_settings_helper.dart';
+import 'package:finamp/components/AddDownloadLocationScreen/app_directory_location_form.dart';
+import 'package:finamp/components/AddDownloadLocationScreen/custom_download_location_form.dart';
+import 'package:finamp/components/confirmation_prompt_dialog.dart';
+import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 
 class AddDownloadLocationScreen extends StatefulWidget {
   const AddDownloadLocationScreen({super.key});
@@ -54,6 +55,7 @@ class _AddDownloadLocationScreenState extends State<AddDownloadLocationScreen> w
         return Scaffold(
           appBar: AppBar(
             title: Text(AppLocalizations.of(context)!.addDownloadLocation),
+            leading: FinampAppBarBackButton(),
             bottom: TabBar(controller: _tabController, tabs: tabs),
           ),
           floatingActionButton: FloatingActionButton(

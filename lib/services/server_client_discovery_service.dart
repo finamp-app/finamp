@@ -38,21 +38,29 @@ class JellyfinServerClientDiscovery {
       _discoverySocket.broadcastEnabled = true; // important to allow sending to broadcast address
       _discoverySocket.multicastHops = 5; // to account for weird network setups
 
-      _discoverySocket.listen((event) {
-        if (event == RawSocketEvent.read) {
-          final datagram = _discoverySocket.receive();
-          if (datagram != null) {
-            _clientDiscoveryLogger.finest("Received datagram: ${utf8.decode(datagram.data)}");
-            final response = ClientDiscoveryResponse.fromJson(
-              jsonDecode(utf8.decode(datagram.data)) as Map<String, dynamic>,
-            );
-            _clientDiscoveryLogger.fine(
-              "Received discovery response from ${datagram.address}:${datagram.port}: ${jsonEncode(response)}",
-            );
-            onServerFound(response);
+      _discoverySocket.listen(
+        (event) {
+          if (event == RawSocketEvent.read) {
+            final datagram = _discoverySocket.receive();
+            if (datagram != null) {
+              _clientDiscoveryLogger.finest("Received datagram: ${utf8.decode(datagram.data)}");
+              final response = ClientDiscoveryResponse.fromJson(
+                jsonDecode(utf8.decode(datagram.data)) as Map<String, dynamic>,
+              );
+              _clientDiscoveryLogger.fine(
+                "Received discovery response from ${datagram.address}:${datagram.port}: ${jsonEncode(response)}",
+              );
+              onServerFound(response);
+            }
           }
-        }
-      });
+        },
+        onError: (Object error) {
+          _clientDiscoveryLogger.severe("Discovery socket error: $error");
+        },
+        onDone: () {
+          _clientDiscoveryLogger.finest("Discovery socket closed");
+        },
+      );
 
       // Send discovery message repeatedly to scan for local servers (because UDP is unreliable)
       do {

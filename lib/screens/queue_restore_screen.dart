@@ -1,3 +1,4 @@
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce/hive.dart';
@@ -19,7 +20,7 @@ class QueueRestoreScreen extends StatelessWidget {
     queueList.sort((x, y) => y.creation - x.creation);
 
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.queuesScreen)),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.queuesScreen), leading: FinampAppBarBackButton()),
       body: ListView.builder(
         padding: const EdgeInsets.only(top: 10.0, bottom: 200.0),
         itemCount: queueList.length,

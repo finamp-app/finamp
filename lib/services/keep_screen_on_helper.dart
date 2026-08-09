@@ -95,9 +95,6 @@ class KeepScreenOnHelper {
         case BatteryState.unknown:
           _isPluggedIn = false;
           break;
-        default:
-          // Do nothing
-          break;
       }
     }
 

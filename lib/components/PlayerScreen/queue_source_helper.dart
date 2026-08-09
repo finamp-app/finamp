@@ -11,12 +11,14 @@ import 'package:finamp/screens/artist_screen.dart';
 import 'package:finamp/screens/downloads_screen.dart';
 import 'package:finamp/screens/genre_screen.dart';
 import 'package:finamp/screens/music_screen.dart';
+import 'package:finamp/services/album_screen_provider.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
-import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
 void navigateToSource(BuildContext context, QueueItemSource source) {
@@ -42,13 +44,17 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
       break;
     case QueueItemSourceType.allTracks:
     case QueueItemSourceType.favorites:
-      Navigator.of(context).pushNamed(
-        MusicScreen.routeName,
-        arguments: FinampSettingsHelper.finampSettings.showTabs.entries
-            .where((element) => element.value == true)
-            .map((e) => e.key)
-            .toList()
-            .indexOf(TabContentType.tracks),
+      Navigator.of(context).push(
+        MaterialPageRoute<MusicScreen>(
+          builder: (context) => MusicScreen(
+            singleTabConfig: HomeScreenSectionConfiguration(
+              base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: ContentType.tracks),
+              sortConfig: source.type == QueueItemSourceType.favorites
+                  ? SortAndFilterConfiguration.defaultSort.copyWith(favoriteFilter: true)
+                  : SortAndFilterConfiguration.defaultSort,
+            ),
+          ),
+        ),
       );
       break;
     case QueueItemSourceType.track:
@@ -56,25 +62,60 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
       if (source.item != null) {
         showModalTrackMenu(context: context, item: source.item!);
       }
+    case QueueItemSourceType.collection:
+    case QueueItemSourceType.collectionMix:
+      if (source.item != null) {
+        // showModalCollectionMenu(context: context, item: source.item!);
+        Navigator.of(context).push(
+          MaterialPageRoute<MusicScreen>(
+            builder: (context) => MusicScreen(
+              singleTabConfig: HomeScreenSectionConfiguration(
+                base: CollectionHomeSection(
+                  itemId: source.item!.id,
+                  libraryId: GetIt.instance<FinampUserHelper>().currentUser!.currentViewId!,
+                  contentType: ContentType.mixed,
+                ),
+                customSectionTitle: source.item!.name ?? AppLocalizations.of(context)!.unknownName,
+                sortConfig: SortAndFilterConfiguration.defaultSort,
+              ),
+            ),
+          ),
+        );
+      }
     case QueueItemSourceType.radio:
-      final radioSource = GetIt.instance<QueueService>().getQueue().source;
-      if (radioSource.item == null) {
+      if (source.item == null) {
         break;
       }
-      switch (BaseItemDtoType.fromItem(radioSource.item!)) {
+      switch (BaseItemDtoType.fromItem(source.item!)) {
         case BaseItemDtoType.track:
-          showModalTrackMenu(context: context, item: radioSource.item!);
+          showModalTrackMenu(context: context, item: source.item!);
           break;
         case BaseItemDtoType.album:
         case BaseItemDtoType.playlist:
-          Navigator.of(context).pushNamed(AlbumScreen.routeName, arguments: radioSource.item);
+          Navigator.of(context).pushNamed(AlbumScreen.routeName, arguments: source.item);
           break;
         case BaseItemDtoType.artist:
-          Navigator.of(context).pushNamed(ArtistScreen.routeName, arguments: radioSource.item);
+          Navigator.of(context).pushNamed(ArtistScreen.routeName, arguments: source.item);
           break;
         case BaseItemDtoType.genre:
-          Navigator.of(context).pushNamed(GenreScreen.routeName, arguments: radioSource.item);
+          Navigator.of(context).pushNamed(GenreScreen.routeName, arguments: source.item);
           break;
+        case BaseItemDtoType.collection:
+          Navigator.of(context).push(
+            MaterialPageRoute<MusicScreen>(
+              builder: (context) => MusicScreen(
+                singleTabConfig: HomeScreenSectionConfiguration(
+                  base: CollectionHomeSection(
+                    itemId: source.item!.id,
+                    libraryId: GetIt.instance<FinampUserHelper>().currentUser!.currentViewId!,
+                    contentType: ContentType.mixed,
+                  ),
+                  customSectionTitle: source.item!.name ?? AppLocalizations.of(context)!.unknownName,
+                  sortConfig: SortAndFilterConfiguration.defaultSort,
+                ),
+              ),
+            ),
+          );
         case BaseItemDtoType.noItem:
         case BaseItemDtoType.library:
         case BaseItemDtoType.folder:
@@ -87,6 +128,14 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
         case BaseItemDtoType.unknown:
           break;
       }
+      break;
+    case QueueItemSourceType.homeScreenSection:
+      final sectionInfo = FinampSettingsHelper.finampSettings.homeScreenConfiguration.sections.singleWhere(
+        (section) => section.id == source.id,
+      );
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute<MusicScreen>(builder: (context) => MusicScreen(singleTabConfig: sectionInfo)));
       break;
     case QueueItemSourceType.downloads:
       Navigator.of(context).pushNamed(DownloadsScreen.routeName);
@@ -155,6 +204,16 @@ Future<bool> removeFromPlaylist(
 }
 
 Future<bool> addItemsToPlaylist(BuildContext context, List<BaseItemDto> items, BaseItemDto parent) async {
+  // Albums and playlists do not seem to add in the correct order, so manually fetch and add all children instead of
+  // relying on server to do that.
+  if (items.length == 1 &&
+      [BaseItemDtoType.album, BaseItemDtoType.playlist].contains(BaseItemDtoType.fromItem(items.first))) {
+    final children = await GetIt.instance<ProviderContainer>().read(
+      getAlbumOrPlaylistTracksProvider(items.first).future,
+    );
+    items = children.$1;
+  }
+
   //TODO request server to return the new playlist item id
   await GetIt.instance<JellyfinApiHelper>().addItemstoPlaylist(
     playlistId: parent.id,
@@ -187,6 +246,6 @@ bool queueItemInPlaylist(FinampQueueItem? queueItem) {
   }
   final baseItem = queueItem.baseItem;
   return [QueueItemSourceType.playlist, QueueItemSourceType.nextUpPlaylist].contains(queueItem.source.type) &&
-      baseItem?.playlistItemId != null &&
-      !playlistRemovalsCache.contains(queueItem.source.id + (baseItem?.playlistItemId ?? ""));
+      baseItem.playlistItemId != null &&
+      !playlistRemovalsCache.contains(queueItem.source.id + (baseItem.playlistItemId ?? ""));
 }

@@ -22,6 +22,9 @@ import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../models/music_slices.dart';
+import 'audio_service_helper.dart';
+
 final _radioLogger = Logger("Radio");
 final _radioRandom = Random();
 
@@ -126,16 +129,23 @@ Future<void> maybeAddRadioTracks() async {
           );
           _radioCacheStateStream.add(localResult);
           await queueService.addToQueue(
-            items: tracksToAdd.toList(),
-            source: QueueItemSource.rawId(
-              type: QueueItemSourceType.radio,
-              name: currentQueue.source.item != null
-                  ? QueueItemSourceName(
-                      type: QueueItemSourceNameType.radio,
-                      localizationParameter: currentQueue.source.item?.name ?? "",
-                    )
-                  : QueueItemSourceName(type: QueueItemSourceNameType.radio),
-              id: currentQueue.source.item?.id.raw ?? currentQueue.source.id,
+            BasePlayableSlice(
+              items: tracksToAdd.toList(),
+              startingIndex: 0,
+              source: QueueItemSource.rawId(
+                type: QueueItemSourceType.radio,
+                // TODO should the source vary per radio type?
+                name: QueueItemSourceName(
+                  type: QueueItemSourceNameType.radio,
+                  localizationParameter:
+                      currentQueue.source.item?.name ??
+                      currentQueue.source.name.getLocalized(GlobalSnackbar.requireL10n),
+                ),
+                id: currentQueue.source.item?.id.raw ?? currentQueue.source.id,
+                item: currentQueue.source.item,
+                library: currentQueue.source.library,
+              ),
+              shuffleState: SliceShuffleState.linear,
             ),
           );
           _radioLogger.finer(
@@ -164,7 +174,7 @@ Future<void> startRadioPlayback(BaseItemDto source) async {
   };
 
   invalidateRadioCache(); // we're starting a new queue, any older state is invalid now
-  var localResult = _radioCacheStateStream.value!.copyWith(generating: true);
+  var localResult = _radioCacheStateStream.value!.copyWith(generating: true, failed: false);
   _radioCacheStateStream.add(localResult);
 
   List<BaseItemDto> generatedTracks = [];
@@ -205,12 +215,12 @@ Future<void> startRadioPlayback(BaseItemDto source) async {
 
   await GetIt.instance<QueueService>().startPlayback(
     items: tracksToAdd.toList(),
-    source: QueueItemSource.fromBaseItem(source),
-    customTrackSource: QueueItemSource(
+    source: QueueItemSource(
       type: QueueItemSourceType.radio,
       name: QueueItemSourceName(type: QueueItemSourceNameType.radio, localizationParameter: source.name ?? ""),
       id: source.id,
       item: source,
+      library: GetIt.instance<FinampUserHelper>().currentUser?.currentViewId,
     ),
     skipRadioCacheInvalidation: true,
   );
@@ -257,9 +267,12 @@ Future<void> withRadioLock(Future<void> Function() action) async {
   invalidateRadioCache();
   var localResult = _radioCacheStateStream.value!.copyWith(queueing: true);
   _radioCacheStateStream.add(localResult);
-  await action();
-  if (identical(localResult, _radioCacheStateStream.value)) {
-    _radioCacheStateStream.add(localResult.copyWith(queueing: false));
+  try {
+    await action();
+  } finally {
+    if (identical(localResult, _radioCacheStateStream.value)) {
+      _radioCacheStateStream.add(localResult.copyWith(queueing: false));
+    }
   }
 }
 
@@ -307,7 +320,10 @@ Future<List<BaseItemDto>> generateRadioTracks(
     // Items originally in the currently playing source (or manually added)
     final originalQueue =
         (actualSeed != null
-                ? (await loadChildTracksFromBaseItem(baseItem: actualSeed)).map((item) => item).toList()
+                ? (await loadChildTracksFromBaseItem(
+                    item: actualSeed,
+                    sortConfig: SortAndFilterConfiguration.defaultForItem(actualSeed),
+                  )).map((item) => item).toList()
                 : <BaseItemDto>[])
             // if the queue is purely made up of radio modes (i.e. after using the "Start Radio" option in the menu), we don't filter out radio tracks
             .followedBy(
@@ -338,29 +354,135 @@ Future<List<BaseItemDto>> generateRadioTracks(
         "Random radio mode selected but the provided item '${overrideSeedItem?.name}' is not downloaded or the queue is empty. Availability status: $randomModeAvailabilityStatus. Returning empty track list.",
       );
     }
-    final queueWithoutRadioTracks = currentQueue.fullQueue
-        .whereNot((e) => e.source.type == QueueItemSourceType.radio)
-        .toList();
-    // Items originally in the currently playing source (or manually added)
-    final originalQueue =
-        (actualSeed != null
-                ? (await loadChildTracksFromBaseItem(baseItem: actualSeed)).map((item) => item).toList()
-                : <BaseItemDto>[])
-            // if the queue is purely made up of radio modes (i.e. after using the "Start Radio" option in the menu), we don't filter out radio tracks
-            .followedBy(
-              (forNewQueue ? <FinampQueueItem>[] : queueWithoutRadioTracks)
-                  .where(
-                    (e) => !FinampSettingsHelper.finampSettings.isOffline || e.item.extras?["isDownloaded"] == true,
-                  )
-                  .map((e) => e.baseItem)
-                  .nonNulls,
-            )
-            .toList();
-    return List.generate(max(25, minNumTracks), (index) {
+
+    // TODO consider more advanced algorithm
+    //  find all unique genre, shuffleall sources
+    // validate we have more than trackShuffleLimit genre tracks, else remove
+    //   - if queue original source is radio, always include.
+    // get queue with all tracks that have matching sources removed
+    // randomly choose track source based on queue size, genre child ratios, and giving shufleall max(500,otheritemsize*2) children
+    //   - Need to check if childCount is good, otherwise might need to fetch -> totalRecordCount
+    // if childCount <100, just fetch all and graft onto local queue due to random vs shuffle being detectable.
+    //    - target grabbing 100 tracks?  Maybe 25*source + 25
+    // fetch all the new tracks, then shuffle and and return
+
+    // If forNewQueue, use separate branch to ignore main queue body.
+
+    // final queueSources = currentQueue.fullQueue.map((x) => x.source).followedBy([currentQueue.source]).toSet();
+    // final potentialPagedSources = queueSources
+    //     .where(
+    //       (x) => [
+    //         QueueItemSourceType.genre,
+    //         QueueItemSourceType.allTracks,
+    //         QueueItemSourceType.favorites,
+    //       ].contains(x.type),
+    //     )
+    //     .toSet();
+    // final pagedSources = potentialPagedSources.where((source) {
+    //   if (source.type != QueueItemSourceType.genre) return true;
+    //   final count = currentQueue.fullQueue.where((x) => x.source == source).length;
+    //   return count >= FinampSettingsHelper.finampSettings.trackShuffleItemCount - 10;
+    // }).toSet();
+
+    // if (currentQueue.source.type == QueueItemSourceType.radio) {
+    //   pagedSources.add(currentQueue.source);
+    // }
+
+    final List<BaseItemDto> queueTracks;
+    List<BaseItemDto> sourceTracks = [];
+    int sourceTracksLength = 0;
+
+    QueueItemSource? source;
+    if (forNewQueue) {
+      source = QueueItemSource.fromBaseItem(overrideSeedItem!, type: QueueItemSourceType.radio);
+    } else if ([
+      QueueItemSourceType.genre,
+      QueueItemSourceType.allTracks,
+      QueueItemSourceType.favorites,
+      QueueItemSourceType.radio,
+    ].contains(currentQueue.source.type)) {
+      source = currentQueue.source;
+    }
+
+    final isGenre =
+        source?.type == QueueItemSourceType.genre ||
+        (source?.type == QueueItemSourceType.radio && BaseItemDtoType.fromItem(source!.item!) == BaseItemDtoType.genre);
+
+    assert(source?.type != QueueItemSourceType.radio || source?.item != null);
+
+    if (forNewQueue) {
+      queueTracks = [];
+    } else {
+      queueTracks = currentQueue.fullQueue
+          .where((x) => x.source != source && x.source.type != QueueItemSourceType.radio)
+          .map((x) => x.baseItem)
+          .toList();
+    }
+
+    if (source != null) {
+      if (source.type != QueueItemSourceType.radio || isGenre) {
+        final library = GetIt.instance<FinampUserHelper>().currentUser?.views.values.firstWhereOrNull(
+          (x) => x.id == source!.library,
+        );
+        if (library != null) {
+          final record = await GetIt.instance<AudioServiceHelper>().getShuffleAllTracks(
+            onlyShowFavorites: source.type == QueueItemSourceType.favorites,
+            library: library,
+            itemCount: 50,
+            genreFilter: isGenre ? source.item : null,
+          );
+          if (record != null) {
+            sourceTracks = record.$1;
+            sourceTracksLength = record.$2;
+            // Rebalance to still pull a reasonable amount of tracks from the queue if present, even with shuffleAll.
+            // This will increase the chance of tracks being randomly pulled from the existing queue,
+            // even if there are a ton of tracks of the server
+            sourceTracksLength = min(record.$2, max(queueTracks.length * 3, 500));
+          }
+        }
+      } else {
+        // sourceTracks is expected to be randomized, but this might load in order.
+        // however, this will also load all tracks, so they will be immediately copied into queueTracks and drawn
+        // from randomly regardkless.
+        sourceTracks = (await loadChildTracksFromBaseItem(
+          item: actualSeed!,
+          sortConfig: SortAndFilterConfiguration.defaultForItem(actualSeed),
+        )).map((item) => item).toList();
+        sourceTracksLength = sourceTracks.length;
+      }
+    }
+
+    // If all tracks have been fetched, integrate into queue so we can do proper random with potential duplicates
+    if (sourceTracks.length >= sourceTracksLength) {
+      queueTracks.addAll(sourceTracks);
+      sourceTracks = [];
+      sourceTracksLength = 0;
+    }
+
+    if (queueTracks.isEmpty && sourceTracks.isEmpty) {
+      return [];
+    }
+
+    final output = <BaseItemDto>[];
+    int sourceTracksIndex = 0;
+    for (int i = 0; i < max(25, minNumTracks); i++) {
       // Pick a random item to add, duplicates possible!
-      int nextIndex = _radioRandom.nextInt(originalQueue.length);
-      return originalQueue[nextIndex];
-    });
+      int nextIndex = _radioRandom.nextInt(queueTracks.length + sourceTracksLength);
+      if (nextIndex < queueTracks.length) {
+        output.add(queueTracks[nextIndex]);
+      } else {
+        // Just go through source tracks in order, relying on server shuffle for randomness
+        // This avoids generating excessive duplicates by overweighing the returned values
+        if (sourceTracksIndex < sourceTracks.length) {
+          output.add(sourceTracks[sourceTracksIndex]);
+          sourceTracksIndex++;
+        } else {
+          break;
+        }
+      }
+    }
+
+    return output;
   }
 
   /// Adds tracks which are similar to the queue source, with a slightly randomized order
@@ -368,6 +490,9 @@ Future<List<BaseItemDto>> generateRadioTracks(
   Future<List<BaseItemDto>> similarMode() async {
     if (actualSeed == null) {
       throw Exception("No seed item available for radio generation. Aborting.");
+    }
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      throw Exception("Not available offline.");
     }
     // extra tracks to randomly choose from to introduce non-determinism
     final randomnessExtraTracks = 8 + (minNumTracks * 0.5).ceil();
@@ -381,7 +506,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
       // since the base item never changes
       repetitionThresholdTracks: currentQueue.trackCount,
       // don't use old queue to filter out tracks if we're starting a new queue
-      ignoreDuplicatesFromQueue: forNewQueue,
+      disableDuplicateFiltering: forNewQueue,
     );
   }
 
@@ -389,6 +514,9 @@ Future<List<BaseItemDto>> generateRadioTracks(
   Future<List<BaseItemDto>> continuousMode() async {
     if (actualSeed == null) {
       throw Exception("No seed item available for radio generation. Aborting.");
+    }
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      throw Exception("Not available offline.");
     }
     // extra tracks to randomly choose from to introduce non-determinism
     final randomnessExtraTracks = 5 + (minNumTracks * 1.5).ceil();
@@ -408,7 +536,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
         // filter out recent tracks within 90 minutes
         repetitionThresholdTracks: currentQueue.getTrackCountWithinDuration(Duration(minutes: 90)),
         // don't use old queue to filter out tracks if we're starting a new queue
-        ignoreDuplicatesFromQueue: forNewQueue,
+        disableDuplicateFiltering: forNewQueue,
       );
       if (continuousTracksSample.isEmpty) {
         _radioLogger.warning("Failed to find similar track to ${continuousTracks.last.name}. Aborting.");
@@ -488,7 +616,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
               similarAlbums = await providers.read(
                 getPerformingArtistAlbumsProvider(
                   artist: artist,
-                  libraryFilter: currentQueue.sourceLibrary,
+                  libraryFilter: currentQueue.sourceLibrary?.id,
                   sortBy: SortBy.random,
                 ).future,
               );
@@ -496,7 +624,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
               similarAlbums = await providers.read(
                 getArtistAlbumsProvider(
                   artist: artist,
-                  libraryFilter: currentQueue.sourceLibrary,
+                  libraryFilter: currentQueue.sourceLibrary?.id,
                   sortBy: SortBy.random,
                 ).future,
               );
@@ -507,7 +635,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
             // just fetch a random album from the library
             if (FinampSettingsHelper.finampSettings.isOffline) {
               similarAlbums = (await downloadsService.getAllCollections(
-                baseTypeFilter: BaseItemDtoType.album,
+                includeItemTypes: [BaseItemDtoType.album],
                 fullyDownloaded: false,
                 viewFilter: finampUserHelper.currentUser?.currentViewId,
                 nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
@@ -518,7 +646,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
                     parentItem: currentQueue.sourceLibrary,
                     recursive: true,
                     includeItemTypes: [BaseItemDtoType.album.name].join(","),
-                    sortBy: SortBy.random.jellyfinName(TabContentType.albums),
+                    sortBy: SortBy.random.jellyfinName(ContentType.albums),
                   )) ??
                   [];
             }
@@ -612,7 +740,10 @@ Future<List<BaseItemDto>> generateRadioTracks(
         }
         _radioLogger.finer("Selected album '${selectedAlbum.name}' for album mix radio.");
         // load tracks from the selected album
-        final albumTracks = await loadChildTracksFromBaseItem(baseItem: selectedAlbum);
+        final albumTracks = await loadChildTracksFromBaseItem(
+          item: selectedAlbum,
+          sortConfig: SortAndFilterConfiguration.defaultForItem(selectedAlbum),
+        );
         // we add all tracks at once to preserve the album as a unit
         return albumTracks;
       } else {
@@ -653,7 +784,7 @@ Future<List<BaseItemDto>> _getSimilarTracks({
   required int randomnessExtraTracks,
   required int repetitionThresholdTracks,
   required int maxAttempts,
-  bool ignoreDuplicatesFromQueue = false,
+  bool disableDuplicateFiltering = false,
 }) async {
   const skippedTracks = 1; // extra track to exclude the current track
   const filterExtraTracks = 10; // extra tracks in case duplicates are removed
@@ -685,7 +816,7 @@ Future<List<BaseItemDto>> _getSimilarTracks({
       final originalTrackCount = filteredSample.length;
       // filter out duplicate tracks, including upcoming ones
       final recentlyPlayedIds =
-          (ignoreDuplicatesFromQueue
+          (disableDuplicateFiltering
                   ? <BaseItemDto>[]
                   : queueService
                         .getQueue()

@@ -1,6 +1,5 @@
 {
     "password": "Lozinka",
-    "@password": {},
     "startMixNoTracksAlbum": "Dugo pritisnite album da biste ga dodali ili uklonili iz kreatora miksa pre nego što započnete miks",
     "@startMixNoTracksAlbum": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
@@ -80,7 +79,6 @@
         "description": "Label for button shown during the login process that allows the user to change the app language"
     },
     "serverUrl": "URL servera",
-    "@serverUrl": {},
     "serverUrlHint": "e.g. demo.jellyfin.org/stable",
     "@serverUrlHint": {
         "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
@@ -146,92 +144,44 @@
         "description": "Label for the login button."
     },
     "logs": "Dnevnik",
-    "@logs": {},
     "next": "Dalje",
-    "@next": {},
     "selectMusicLibraries": "Izaberite Muzičke Biblioteke",
     "@selectMusicLibraries": {
         "description": "App bar title for library select screen"
     },
-    "couldNotFindLibraries": "Nije moguće pronaći nijednu biblioteku.",
-    "@couldNotFindLibraries": {
-        "description": "Error message when the user does not have any libraries"
-    },
     "unknownName": "Nepoznato Ime",
-    "@unknownName": {},
     "tracks": "Numere",
-    "@tracks": {},
     "albums": "Albumi",
-    "@albums": {},
     "artists": "Umetnici",
-    "@artists": {},
     "startMix": "Započni Mix",
-    "@startMix": {},
     "startMixNoTracksArtist": "Dugo pritisnite izvođača da biste ga dodali ili uklonili iz kreatora miksa pre nego što započnete miks",
     "@startMixNoTracksArtist": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
     },
     "music": "Muzika",
-    "@music": {},
     "clear": "Očisti",
-    "@clear": {},
     "shuffleAll": "Promešaj sve",
-    "@shuffleAll": {},
     "downloads": "Preuzimanja",
-    "@downloads": {},
     "settings": "Podešavanja",
-    "@settings": {},
     "offlineMode": "Oflajn mod",
-    "@offlineMode": {},
     "sortOrder": "Redosled sortiranja",
-    "@sortOrder": {},
     "sortBy": "Sortiraj po",
-    "@sortBy": {},
     "title": "Naslov",
-    "@title": {},
     "album": "Album",
-    "@album": {},
     "albumArtist": "Umetnik Albuma",
-    "@albumArtist": {},
     "artist": "Umetnik",
-    "@artist": {},
     "budget": "Budžet",
-    "@budget": {},
     "communityRating": "Ocena Zajednice",
-    "@communityRating": {},
     "criticRating": "Ocena Kritičara",
-    "@criticRating": {},
     "dateAdded": "Datum dodavanja",
-    "@dateAdded": {},
     "datePlayed": "Datum odigravanja",
-    "@datePlayed": {},
     "playCount": "Broj reprodukcija",
-    "@playCount": {},
     "premiereDate": "Datum premijere",
-    "@premiereDate": {},
     "productionYear": "Godina produkcije",
-    "@productionYear": {},
     "name": "Ime",
-    "@name": {},
     "random": "Nasumično",
-    "@random": {},
     "revenue": "Prihod",
-    "@revenue": {},
-    "syncDownloadedPlaylists": "Sinhronizuj preuzete plejliste",
-    "@syncDownloadedPlaylists": {},
-    "downloadMissingImages": "Preuzmi slike koje nedostaju",
-    "@downloadMissingImages": {},
-    "downloadedMissingImages": "{count, plural, =0{Nije pronađena nijedna slika koja nedostaje} =1{Preuzeta je 1 slika koja nedostaje} other{Preuzete su {count} slike koje nedostaju}}",
-    "@downloadedMissingImages": {
-        "description": "Message that shows when the user downloads missing images",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "activeDownloads": "Aktivna preuzimanja",
-    "@activeDownloads": {},
     "downloadCount": "{count, plural, =1{1 preuzimanje} other{{count} preuzimanja}}",
     "@downloadCount": {
         "placeholders": {
@@ -273,9 +223,7 @@
         "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
     },
     "username": "Korisničko ime",
-    "@username": {},
     "genres": "Žanrovi",
-    "@genres": {},
     "loginFlowLocalNetworkServersScanningForServers": "Skeniranje za serverima...",
     "@loginFlowLocalNetworkServersScanningForServers": {
         "description": "Text shown while servers are being discovered via UDP broadcasts"
@@ -297,19 +245,11 @@
         "description": "Heading for the account selection step during the login flow."
     },
     "playlists": "Plejliste",
-    "@playlists": {},
     "startMixNoTracksGenre": "Dugo pritisnite žanr da biste ga dodali ili uklonili iz kreatora miksa pre nego što započnete miks",
     "@startMixNoTracksGenre": {
         "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
     },
-    "deleteDownloadsConfirmButtonText": "Obriši",
-    "@deleteDownloadsConfirmButtonText": {
-        "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-    },
     "activeDownloadsTitle": "Aktivna preuzimanja",
-    "@activeDownloadsTitle": {},
     "noActiveDownloads": "Nema aktivnih preuzimanja.",
-    "@noActiveDownloads": {},
-    "error": "Greška",
-    "@error": {}
+    "error": "Greška"
 }

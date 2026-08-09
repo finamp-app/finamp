@@ -2,28 +2,30 @@ import 'dart:async';
 
 import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/GenreScreen/genre_count_column.dart';
-import 'package:finamp/components/MusicScreen/item_collection_wrapper.dart';
+import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/curated_item_filter_row.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
-import 'package:finamp/menus/components/playbackActions/playback_actions.dart';
 import 'package:finamp/services/genre_screen_provider.dart';
 import 'package:finamp/components/curated_item_sections.dart';
 import 'package:finamp/components/favorite_button.dart';
-import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
+import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/music_screen.dart';
-import 'package:finamp/services/audio_service_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
-import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/services/genre_screen_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../extensions/localizations.dart';
 import '../../models/finamp_models.dart';
 import '../../models/jellyfin_models.dart';
 import '../../services/finamp_settings_helper.dart';
 import '../../services/jellyfin_api_helper.dart';
 import '../AlbumScreen/download_button.dart';
+import '../MusicScreen/sort_and_filter_row.dart';
 import '../padded_custom_scrollview.dart';
 
 class GenreScreenContent extends ConsumerStatefulWidget {
@@ -57,11 +59,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
     super.dispose();
   }
 
-  void openSeeAll(
-    TabContentType tabContentType, {
-    bool doOverride = true,
-    CuratedItemSelectionType? itemSelectionType,
-  }) {
+  void openSeeAll(ContentType tabContentType, {bool doOverride = true, CuratedItemSelectionType? itemSelectionType}) {
     bool isFavoriteOverride = false;
     SortBy? sortByOverride;
     SortOrder? sortOrderOverride;
@@ -95,13 +93,20 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
       }
     }
     Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<MusicScreen>(
         builder: (context) => MusicScreen(
-          genreFilter: widget.parent,
-          tabTypeFilter: tabContentType,
-          sortByOverrideInit: sortByOverride,
-          sortOrderOverrideInit: sortOrderOverride,
-          isFavoriteOverrideInit: isFavoriteOverride,
+          singleTabConfig: HomeScreenSectionConfiguration(
+            base: TabsHomeSection(libraryId: currentLibraryPlaceholder, contentType: tabContentType),
+            customSectionTitle: widget.parent.name,
+            sortConfig: SortAndFilterController.trackSettings(tabContentType).resolveConfig().copyWith(
+              sortBy: sortByOverride,
+              sortOrder: sortOrderOverride,
+              favoriteFilter: isFavoriteOverride ? true : null,
+              genreFilter: widget.parent,
+            ),
+          ),
+          allowFilters: (filter) =>
+              filter.type != ItemFilterType.artistFilter && filter.type != ItemFilterType.genreFilter,
         ),
       ),
     );
@@ -203,6 +208,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
           title: Text(widget.parent.name ?? AppLocalizations.of(context)!.unknownName),
           pinned: true,
           centerTitle: false,
+          leading: FinampAppBarBackButton(),
           actions: [
             FavoriteButton(item: widget.parent),
             if (!isLoading)
@@ -237,7 +243,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                       count: albumCount,
                       label: AppLocalizations.of(context)!.albums,
                       onTap: () {
-                        openSeeAll(TabContentType.albums, doOverride: false);
+                        openSeeAll(ContentType.albums, doOverride: false);
                       },
                       textColor: countsTextColor,
                       subtitleColor: countsSubtitleColor,
@@ -253,7 +259,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                       count: trackCount,
                       label: AppLocalizations.of(context)!.tracks,
                       onTap: () {
-                        openSeeAll(TabContentType.tracks, doOverride: false);
+                        openSeeAll(ContentType.tracks, doOverride: false);
                       },
                       textColor: countsTextColor,
                       subtitleColor: countsSubtitleColor,
@@ -267,11 +273,12 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                     padding: const EdgeInsets.only(left: 4),
                     child: buildCountColumn(
                       count: artistCount,
-                      label: (ref.read(finampSettingsProvider.defaultArtistType) == ArtistType.albumArtist)
-                          ? AppLocalizations.of(context)!.albumArtists
-                          : AppLocalizations.of(context)!.performingArtists,
+                      label: ref
+                          .watch(finampSettingsProvider.defaultArtistType)
+                          .tabType
+                          .toLocalisedString(context.l10n),
                       onTap: () {
-                        openSeeAll(TabContentType.artists, doOverride: false);
+                        openSeeAll(ref.watch(finampSettingsProvider.defaultArtistType).tabType, doOverride: false);
                       },
                       textColor: countsTextColor,
                       subtitleColor: countsSubtitleColor,
@@ -285,7 +292,14 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
           ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 10)),
-        SliverToBoxAdapter(child: PlaybackActionRow(compactLayout: true, item: widget.parent, popContext: false)),
+        SliverToBoxAdapter(
+          child: PlaybackActionRow(
+            compactLayout: true,
+            item: Genre.fromItem(widget.parent),
+            popContext: false,
+            trackCount: trackCount,
+          ),
+        ),
         if (!isLoading)
           ...genreItemSectionsOrder.map((type) {
             switch (type) {
@@ -296,12 +310,13 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                     parent: widget.parent,
                     tracks: tracks,
                     childrenForQueue: tracks,
+                    lazyAddMoreTracksToQueue: true,
                     tracksText: (genreCuratedItemSelectionTypeTracks != null)
                         ? genreCuratedItemSelectionTypeTracks.toLocalisedSectionTitle(context, BaseItemDtoType.track)
                         : loc.tracks,
                     isOnGenreScreen: true,
                     seeAllCallbackFunction: () =>
-                        openSeeAll(TabContentType.tracks, itemSelectionType: genreCuratedItemSelectionTypeTracks),
+                        openSeeAll(ContentType.tracks, itemSelectionType: genreCuratedItemSelectionTypeTracks),
                     includeFilterRow: true,
                     customFilterOrder: genreCuratedItemSectionFilterOrder,
                     selectedFilter: genreCuratedItemSelectionTypeTracks,
@@ -325,7 +340,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                         : loc.albums,
                     items: albums,
                     seeAllCallbackFunction: () =>
-                        openSeeAll(TabContentType.albums, itemSelectionType: genreCuratedItemSelectionTypeAlbums),
+                        openSeeAll(ContentType.albums, itemSelectionType: genreCuratedItemSelectionTypeAlbums),
                     includeFilterRowFor: BaseItemDtoType.album,
                     customFilterOrder: genreCuratedItemSectionFilterOrder,
                     selectedFilter: genreCuratedItemSelectionTypeAlbums,
@@ -345,8 +360,11 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                         ? genreCuratedItemSelectionTypeArtists.toLocalisedSectionTitle(context, BaseItemDtoType.artist)
                         : loc.artists,
                     items: artists,
-                    seeAllCallbackFunction: () =>
-                        openSeeAll(TabContentType.artists, itemSelectionType: genreCuratedItemSelectionTypeArtists),
+                    // TODO should there be an album artist option?
+                    seeAllCallbackFunction: () => openSeeAll(
+                      ContentType.performingArtists,
+                      itemSelectionType: genreCuratedItemSelectionTypeArtists,
+                    ),
                     genreFilter: widget.parent,
                     includeFilterRowFor: BaseItemDtoType.artist,
                     customFilterOrder: genreCuratedItemSectionFilterOrder,
@@ -374,7 +392,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                       fontWeight: FontWeight.w500,
                       icon: Icons.chevron_right,
                       iconPosition: IconPosition.end,
-                      onPressed: () => openSeeAll(TabContentType.playlists, doOverride: false),
+                      onPressed: () => openSeeAll(ContentType.playlists, doOverride: false),
                     ),
                   ],
                 ),

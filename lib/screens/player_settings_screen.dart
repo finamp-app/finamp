@@ -1,24 +1,25 @@
+import 'package:collection/collection.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/screens/customization_settings_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../components/LayoutSettingsScreen/player_screen_minimum_cover_padding_editor.dart';
+import '../extensions/localizations.dart';
+import '../models/finamp_models.dart';
 import '../services/finamp_settings_helper.dart';
 
-class PlayerSettingsScreen extends StatefulWidget {
+class PlayerSettingsScreen extends ConsumerWidget {
   const PlayerSettingsScreen({super.key});
   static const routeName = "/settings/player";
-  @override
-  State<PlayerSettingsScreen> createState() => _PlayerSettingsScreenState();
-}
 
-class _PlayerSettingsScreenState extends State<PlayerSettingsScreen> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.playerScreen),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(
             context,
@@ -28,8 +29,41 @@ class _PlayerSettingsScreenState extends State<PlayerSettingsScreen> {
       ),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 200.0),
-        children: const [
+        children: [
           ShowFeatureChipsToggle(),
+          if (ref.watch(finampSettingsProvider.featureChipsConfiguration).enabled)
+            ReorderableListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(), // Disable scrolling on inner list
+              buildDefaultDragHandles: false,
+              children:
+                  Set.of(
+                    ref
+                        .read(finampSettingsProvider.featureChipsConfiguration)
+                        .features
+                        .followedBy(FinampFeatureChipType.values),
+                  ).mapIndexed((index, feature) {
+                    return FeatureChipToggle(
+                      key: ValueKey(feature),
+                      feature: feature,
+                      index: index,
+                      canBeReordered: ref
+                          .read(finampSettingsProvider.featureChipsConfiguration)
+                          .features
+                          .contains(feature),
+                    );
+                  }).toList(),
+              onReorderItem: (oldIndex, newIndex) {
+                final oldFeatureChipsConfig = ref.read(finampSettingsProvider.featureChipsConfiguration);
+                final oldFeatures = List.of(oldFeatureChipsConfig.features);
+
+                // move all values below newIndex down by one
+                final oldFeature = oldFeatures[oldIndex];
+                oldFeatures.removeAt(oldIndex);
+                oldFeatures.insert(newIndex, oldFeature);
+                FinampSetters.setFeatureChipsConfiguration(oldFeatureChipsConfig.copyWith(features: oldFeatures));
+              },
+            ),
           ShowAlbumReleaseDateOnPlayerScreenToggle(),
           PlayerScreenMinimumCoverPaddingEditor(),
           SuppressPlayerPaddingSwitch(),
@@ -97,6 +131,40 @@ class ShowFeatureChipsToggle extends ConsumerWidget {
           FinampSettingsHelper.finampSettings.featureChipsConfiguration.copyWith(enabled: value),
         );
       },
+    );
+  }
+}
+
+class FeatureChipToggle extends ConsumerWidget {
+  const FeatureChipToggle({super.key, required this.feature, required this.index, required this.canBeReordered});
+
+  final FinampFeatureChipType feature;
+  final int index;
+  final bool canBeReordered;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final subtitle = context.l10n.featureChipDescription(feature.name);
+    return Padding(
+      padding: const EdgeInsets.only(left: 40.0),
+      child: SwitchListTile.adaptive(
+        title: Text(context.l10n.featureChipName(feature.name)),
+        subtitle: subtitle == "null" ? null : Text(subtitle),
+        secondary: canBeReordered
+            ? ReorderableDragStartListener(index: index, child: const Icon(Icons.drag_handle))
+            : null,
+        value: ref.watch(finampSettingsProvider.featureChipsConfiguration).features.contains(feature),
+        onChanged: (value) {
+          final config = FinampSettingsHelper.finampSettings.featureChipsConfiguration;
+          final feat = List.of(config.features);
+          if (value) {
+            feat.add(feature);
+          } else {
+            feat.remove(feature);
+          }
+          FinampSetters.setFeatureChipsConfiguration(config.copyWith(features: feat));
+        },
+      ),
     );
   }
 }

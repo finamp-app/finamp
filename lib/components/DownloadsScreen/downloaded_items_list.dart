@@ -12,16 +12,24 @@ import '../album_image.dart';
 import 'item_file_size.dart';
 
 class DownloadedItemsTitle extends StatelessWidget {
-  const DownloadedItemsTitle({super.key, required this.title});
+  const DownloadedItemsTitle({super.key, required this.title, this.action});
 
   final String title;
+
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 4),
-        child: Text(title, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+            if (action != null) action!,
+          ],
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:finamp/components/AlbumScreen/download_button.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -26,6 +27,7 @@ class _DownloadsSettingsScreenState extends State<DownloadsSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.downloadSettings),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetDownloadSettings),
         ],

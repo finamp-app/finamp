@@ -15,16 +15,44 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:http/http.dart' hide Response;
 import 'package:logging/logging.dart';
 
+import '../l10n/app_localizations_en.dart';
+
+typedef _QueueFunction = void Function(BuildContext);
+
 @Deprecated("Use GlobalSnackbar.error(dynamic error) instead")
 void errorSnackbar(dynamic error, BuildContext context) => GlobalSnackbar.error(error);
 
 class GlobalSnackbar {
-  static final GlobalKey<ScaffoldMessengerState> materialAppScaffoldKey = LabeledGlobalKey("MaterialApp Scaffold");
-  static final GlobalKey<NavigatorState> materialAppNavigatorKey = LabeledGlobalKey("MaterialApp Navigator");
+  /// Prefer using state and localization getters.  Avoid directly accessing context.
+  @Deprecated("Prefer using state and localization getters.  Avoid directly accessing context.")
+  static final GlobalKey<ScaffoldMessengerState> rawMaterialAppScaffoldKey = LabeledGlobalKey("MaterialApp Scaffold");
+
+  /// Prefer using state and localization getters.  Avoid directly accessing context.
+  @Deprecated("Prefer using state and localization getters.  Avoid directly accessing context.")
+  static final GlobalKey<NavigatorState> rawMaterialAppNavigatorKey = LabeledGlobalKey("MaterialApp Navigator");
+
+  static ScaffoldMessengerState? get scaffoldState => rawMaterialAppScaffoldKey.currentState;
+  static NavigatorState? get navigatorState => rawMaterialAppNavigatorKey.currentState;
+  static AppLocalizations? get _contextL10n {
+    final context = rawMaterialAppNavigatorKey.currentContext;
+    if (context != null && context.mounted) {
+      final localization = AppLocalizations.of(context);
+      if (localization != null) {
+        _localizationsCache = localization;
+      }
+      return localization;
+    }
+    return null;
+  }
+
+  static final englishL10n = AppLocalizationsEn();
+  static AppLocalizations? _localizationsCache;
+
+  static AppLocalizations get requireL10n => _contextL10n ?? _localizationsCache ?? englishL10n;
 
   static final _logger = Logger("GlobalSnackbar");
 
-  static final List<Function> _queue = [];
+  static final List<_QueueFunction> _queue = [];
 
   static Timer? _timer;
 
@@ -34,25 +62,29 @@ class GlobalSnackbar {
   /// It is possible for some GlobalSnackbar methods to be called before app
   /// startup completes.  If this happens, we delay executing the function
   /// until the MaterialApp has been set up.
-  static void _enqueue(Function func) {
-    if (materialAppScaffoldKey.currentState != null && (materialAppScaffoldKey.currentContext?.mounted ?? false)) {
+  static void _enqueue(_QueueFunction func) {
+    // We want to specifically use the navigator context here because it is the innermost object of the MaterialApp and
+    // has all global context present.  The scaffold context is missing most global state.
+    final enqueueContext = rawMaterialAppNavigatorKey.currentContext;
+    if (scaffoldState != null && (enqueueContext?.mounted ?? false)) {
       // Schedule snackbar creation for as soon as possible outside of build()
       SchedulerBinding.instance.scheduleTask(() {
-        if (materialAppScaffoldKey.currentState == null || !(materialAppScaffoldKey.currentContext?.mounted ?? false)) {
+        if (scaffoldState == null || !scaffoldState!.mounted || !(enqueueContext?.mounted ?? false)) {
           _logger.warning("Global Snackbar context unmounted during async gap.");
           _enqueue(func);
         } else {
-          func();
+          func(enqueueContext!);
         }
       }, Priority.touch);
     } else {
       _queue.add(func);
       _timer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (materialAppScaffoldKey.currentState != null && (materialAppScaffoldKey.currentContext?.mounted ?? false)) {
+        final timerContext = rawMaterialAppNavigatorKey.currentContext;
+        if (scaffoldState != null && (timerContext?.mounted ?? false)) {
           timer.cancel();
           _timer = null;
           for (var queuedFunc in _queue) {
-            queuedFunc();
+            queuedFunc(timerContext!);
           }
           _queue.clear();
         }
@@ -62,8 +94,8 @@ class GlobalSnackbar {
 
   static void dismissAllSnackbars() {
     FeedbackHelper.feedback(FeedbackType.selection);
-    if (materialAppScaffoldKey.currentState != null) {
-      materialAppScaffoldKey.currentState!.clearSnackBars();
+    if (scaffoldState != null) {
+      scaffoldState!.clearSnackBars();
     }
     _activeErrorKeys.clear();
     _queue.clear();
@@ -72,15 +104,16 @@ class GlobalSnackbar {
   }
 
   /// Show a snackbar to the user using the local context
-  static void showPrebuilt(SnackBar snackbar) => _enqueue(() => _showPrebuilt(snackbar));
+  static void showPrebuilt(SnackBar snackbar) => _enqueue((_) => _showPrebuilt(snackbar));
   static void _showPrebuilt(SnackBar snackbar) {
-    materialAppScaffoldKey.currentState!.showSnackBar(snackbar);
+    scaffoldState!.showSnackBar(snackbar);
   }
 
   /// Show a snackbar to the user using the global context
-  static void show(SnackBar Function(BuildContext scaffold) snackbar) => _enqueue(() => _show(snackbar));
-  static void _show(SnackBar Function(BuildContext scaffold) snackbar) {
-    materialAppScaffoldKey.currentState!.showSnackBar(snackbar(materialAppScaffoldKey.currentContext!));
+  static void show(SnackBar Function(BuildContext scaffold) snackbar) =>
+      _enqueue((context) => _show(context, snackbar));
+  static void _show(BuildContext context, SnackBar Function(BuildContext scaffold) snackbar) {
+    scaffoldState!.showSnackBar(snackbar(context));
   }
 
   /// Show a localized message to the user using the global context
@@ -88,18 +121,30 @@ class GlobalSnackbar {
     String Function(BuildContext scaffold) message, {
     bool isConfirmation = false,
     SnackBarAction Function(BuildContext scaffold)? action,
-  }) => _enqueue(() => _message(message, isConfirmation, action));
+  }) => _enqueue((context) => _message(context, message, isConfirmation, action));
   static void _message(
+    BuildContext context,
     String Function(BuildContext scaffold) message,
     bool isConfirmation,
     SnackBarAction Function(BuildContext scaffold)? action,
   ) {
-    BuildContext context = materialAppScaffoldKey.currentContext!;
     var text = message(context);
     _logger.info("Displaying message: $text");
-    materialAppScaffoldKey.currentState!.showSnackBar(
+    scaffoldState!.showSnackBar(
       SnackBar(
-        content: GestureDetector(onLongPress: showSnackbarOptionsMenu, child: Text(text)),
+        content: GestureDetector(
+          onLongPress: () {
+            if (context.mounted) {
+              showSnackbarOptionsMenu(context);
+            }
+          },
+          onSecondaryTap: () {
+            if (context.mounted) {
+              showSnackbarOptionsMenu(context);
+            }
+          },
+          child: Text(text),
+        ),
         actionOverflowThreshold: 0.5,
         duration: (isConfirmation && action == null) ? const Duration(milliseconds: 1500) : const Duration(seconds: 4),
         action: action?.call(context),
@@ -109,8 +154,8 @@ class GlobalSnackbar {
   }
 
   /// Show an unlocalized error message to the user
-  static void error(dynamic event) => _enqueue(() => _error(event));
-  static void _error(dynamic event) {
+  static void error(dynamic event) => _enqueue((context) => _error(context, event));
+  static void _error(BuildContext context, dynamic event) {
     // Suppress common transient network error "Failed host lookup"
     bool suppressError = false;
     if (event is SocketException || event is ClientException) {
@@ -132,7 +177,6 @@ class GlobalSnackbar {
     }
 
     _logger.warning("Displaying error: $event", event);
-    BuildContext context = materialAppScaffoldKey.currentContext!;
     String errorText;
     if (event is Response) {
       if (event.statusCode == 401) {
@@ -168,10 +212,19 @@ class GlobalSnackbar {
 
     // give immediate feedback that something went wrong
     FeedbackHelper.feedback(FeedbackType.warning);
-    final controller = materialAppScaffoldKey.currentState!.showSnackBar(
+    final controller = scaffoldState!.showSnackBar(
       SnackBar(
         content: GestureDetector(
-          onLongPress: showSnackbarOptionsMenu,
+          onLongPress: () {
+            if (context.mounted) {
+              showSnackbarOptionsMenu(context);
+            }
+          },
+          onSecondaryTap: () {
+            if (context.mounted) {
+              showSnackbarOptionsMenu(context);
+            }
+          },
           child: Text(AppLocalizations.of(context)!.anErrorHasOccured),
         ),
         action: SnackBarAction(
@@ -183,7 +236,7 @@ class GlobalSnackbar {
               content: Text(errorText),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.of(context).maybePop(),
                   child: Text(MaterialLocalizations.of(context).closeButtonLabel),
                 ),
               ],
@@ -210,13 +263,13 @@ class GlobalSnackbar {
     (String, String) Function(BuildContext scaffold) message, {
     bool isConfirmation = false,
     SnackBarAction Function(BuildContext scaffold)? action,
-  }) => _enqueue(() => _popup(message, isConfirmation, action));
+  }) => _enqueue((context) => _popup(context, message, isConfirmation, action));
   static void _popup(
+    BuildContext context,
     (String, String) Function(BuildContext scaffold) message,
     bool isConfirmation,
     SnackBarAction Function(BuildContext scaffold)? action,
   ) {
-    BuildContext context = materialAppScaffoldKey.currentContext!;
     var text = message(context);
     _logger.info("Displaying message: $text");
     showDialog<void>(
@@ -226,7 +279,7 @@ class GlobalSnackbar {
         content: Text(text.$2),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).maybePop(),
             child: Text(MaterialLocalizations.of(context).closeButtonLabel),
           ),
         ],
@@ -235,8 +288,7 @@ class GlobalSnackbar {
   }
 
   static const snackbarOptionsRoute = "/snackbar-options";
-  static Future<void> showSnackbarOptionsMenu() async {
-    if (materialAppScaffoldKey.currentContext == null) return;
+  static Future<void> showSnackbarOptionsMenu(BuildContext context) async {
     FeedbackHelper.feedback(FeedbackType.selection);
 
     // Normal menu entries, excluding headers
@@ -268,8 +320,8 @@ class GlobalSnackbar {
       return (stackHeight, menu);
     }
 
-    await showThemedBottomSheet(
-      context: materialAppScaffoldKey.currentContext!,
+    await showThemedBottomSheet<void>(
+      context: context,
       routeName: snackbarOptionsRoute,
       minDraggableHeight: 0.15,
       buildSlivers: getMenuProperties,

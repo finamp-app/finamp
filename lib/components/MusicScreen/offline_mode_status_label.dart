@@ -21,17 +21,20 @@ class OfflineModeStatusLabel extends ConsumerWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
-      child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        contentPadding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
-        tileColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-        autofocus: false,
-        title: Text(AppLocalizations.of(context)!.automaticOfflineModeOverrideActiveTitle),
-        subtitle: Text(AppLocalizations.of(context)!.automaticOfflineModeOverrideActiveSubtitle),
-        onTap: () {
-          FinampSetters.setAutoOfflineListenerActive(true);
-        },
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Material(
+        color: Colors.transparent,
+        child: ListTile(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          contentPadding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+          tileColor: ColorScheme.of(context).tertiary.withOpacity(0.2),
+          autofocus: false,
+          title: Text(AppLocalizations.of(context)!.automaticOfflineModeOverrideActiveTitle),
+          subtitle: Text(AppLocalizations.of(context)!.automaticOfflineModeOverrideActiveSubtitle),
+          onTap: () {
+            FinampSetters.setAutoOfflineListenerActive(true);
+          },
+        ),
       ),
     );
   }

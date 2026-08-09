@@ -14,6 +14,8 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../extensions/localizations.dart';
+
 enum _MenuPage { minutes, tracks, currentTrack }
 
 class SleepTimerMenu extends StatefulWidget {
@@ -213,7 +215,7 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                                 _updateControllers();
                               });
                             },
-                            label: '${(newSleepTimer.secondsLength / 60).round()} min',
+                            label: context.l10n.timerMinutes((newSleepTimer.secondsLength / 60).round()),
                             autofocus: false,
                             focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
                           ),
@@ -388,7 +390,7 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                                 _updateControllers();
                               });
                             },
-                            label: '${newSleepTimer.tracksLength} tracks',
+                            label: context.l10n.timerTracks(newSleepTimer.tracksLength),
                             autofocus: false,
                             focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
                           ),

@@ -19,7 +19,7 @@ class DownloadLocationListTile extends ConsumerWidget {
 
     return ListTile(
       title: Text(downloadLocation.name),
-      subtitle: Text(downloadLocation.currentPath, maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: Text(downloadLocation.currentPath),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

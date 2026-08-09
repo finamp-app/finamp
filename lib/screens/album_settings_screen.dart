@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,6 +18,7 @@ class _AlbumSettingsScreenState extends State<AlbumSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.albumScreen),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetAlbumSettings),
         ],

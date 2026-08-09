@@ -1,13 +1,12 @@
+import 'package:finamp/components/ArtistScreen/artist_screen_content.dart';
+import 'package:finamp/components/now_playing_bar.dart';
+import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
-import '../components/ArtistScreen/artist_screen_content.dart';
-import '../components/now_playing_bar.dart';
-import '../models/jellyfin_models.dart';
-
-class ArtistScreen extends ConsumerStatefulWidget {
+class ArtistScreen extends ConsumerWidget {
   const ArtistScreen({super.key, this.widgetArtist, this.genreFilter});
 
   static const routeName = "/music/artist";
@@ -19,27 +18,16 @@ class ArtistScreen extends ConsumerStatefulWidget {
   final BaseItemDto? genreFilter;
 
   @override
-  _ArtistScreenState createState() => _ArtistScreenState();
-}
-
-class _ArtistScreenState extends ConsumerState<ArtistScreen> {
-  final _finampUserHelper = GetIt.instance<FinampUserHelper>();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final BaseItemDto artist = widget.widgetArtist ?? ModalRoute.settingsOf(context)!.arguments as BaseItemDto;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final BaseItemDto artist = widgetArtist ?? ModalRoute.settingsOf(context)!.arguments as BaseItemDto;
+    final finampUserHelper = GetIt.instance<FinampUserHelper>();
 
     return Scaffold(
       extendBody: true,
       body: ArtistScreenContent(
         parent: artist,
-        library: _finampUserHelper.currentUser?.currentView,
-        genreFilter: widget.genreFilter,
+        library: finampUserHelper.currentUser?.currentView,
+        genreFilter: genreFilter,
       ),
       bottomNavigationBar: const NowPlayingBar(),
     );

@@ -1,4 +1,5 @@
 import 'package:finamp/components/InteractionSettingsScreen/FastScrollSelector.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/InteractionSettingsScreen/auto_expand_player_screen.dart';
 import 'package:finamp/components/InteractionSettingsScreen/item_swipe_action_dropdown_list_tile.dart';
 import 'package:finamp/components/InteractionSettingsScreen/keep_screen_on_dropdown_list_tile.dart';
@@ -23,6 +24,7 @@ class _InteractionSettingsScreenState extends State<InteractionSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.interactions),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(
             context,

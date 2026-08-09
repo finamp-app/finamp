@@ -5,6 +5,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../extensions/localizations.dart';
 import '../../models/jellyfin_models.dart';
 import '../../screens/album_screen.dart';
 import '../../services/downloads_service.dart';
@@ -90,7 +91,7 @@ class ReleaseDate extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 1.0),
         child: Text(
-          releaseDate ?? "Unknown",
+          releaseDate ?? context.l10n.unknown,
           overflow: TextOverflow.ellipsis,
           softWrap: false,
           style: TextStyle(color: color ?? Theme.of(context).textTheme.bodySmall!.color ?? Colors.white),

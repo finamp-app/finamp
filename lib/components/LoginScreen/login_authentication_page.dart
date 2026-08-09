@@ -47,8 +47,9 @@ class _LoginAuthenticationPageState extends State<LoginAuthenticationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 120),
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32.0),
         child: Center(
           child: Column(

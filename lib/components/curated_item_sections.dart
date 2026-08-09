@@ -9,6 +9,7 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 
 class TracksSection extends ConsumerStatefulWidget {
   const TracksSection({
@@ -16,6 +17,7 @@ class TracksSection extends ConsumerStatefulWidget {
     required this.parent,
     this.tracks,
     this.childrenForQueue,
+    this.lazyAddMoreTracksToQueue = false,
     required this.tracksText,
     this.seeAllCallbackFunction,
     this.genreFilter,
@@ -31,6 +33,7 @@ class TracksSection extends ConsumerStatefulWidget {
   final BaseItemDto parent;
   final List<BaseItemDto>? tracks;
   final List<BaseItemDto>? childrenForQueue;
+  final bool lazyAddMoreTracksToQueue;
   final String tracksText;
   final VoidCallback? seeAllCallbackFunction;
   final BaseItemDto? genreFilter;
@@ -143,7 +146,7 @@ class _TracksSectionState extends ConsumerState<TracksSection> {
                       Expanded(
                         child: Text(
                           widget.tracksText,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                         ),
                       ),
                     ],
@@ -190,10 +193,10 @@ class _TracksSectionState extends ConsumerState<TracksSection> {
                   TracksSliverList(
                     childrenForList: widget.tracks!,
                     childrenForQueue: widget.childrenForQueue!,
+                    lazyAddMoreTracksToQueue: widget.lazyAddMoreTracksToQueue,
+                    selectedFilter: widget.selectedFilter,
                     adaptiveAdditionalInfoSortBy: widget.selectedFilter?.getSortBy(),
                     parent: widget.parent,
-                    isOnArtistScreen: widget.isOnArtistScreen,
-                    isOnGenreScreen: widget.isOnGenreScreen,
                   )
                 else
                   SliverToBoxAdapter(
@@ -230,6 +233,7 @@ class CollectionsSection extends ConsumerStatefulWidget {
     this.selectedFilter,
     this.disabledFilters,
     this.onFilterSelected,
+    this.sortAndFilterRow,
   });
 
   final BaseItemDto parent;
@@ -243,6 +247,7 @@ class CollectionsSection extends ConsumerStatefulWidget {
   final CuratedItemSelectionType? selectedFilter;
   final List<CuratedItemSelectionType>? disabledFilters;
   final void Function(CuratedItemSelectionType type)? onFilterSelected;
+  final SortAndFilterRow? sortAndFilterRow;
 
   @override
   ConsumerState<CollectionsSection> createState() => _ItemsSectionState();
@@ -344,7 +349,7 @@ class _ItemsSectionState extends ConsumerState<CollectionsSection> {
                       Expanded(
                         child: Text(
                           widget.itemsText,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                         ),
                       ),
                     ],
@@ -378,6 +383,7 @@ class _ItemsSectionState extends ConsumerState<CollectionsSection> {
       sliver: _showItems
           ? SliverMainAxisGroup(
               slivers: [
+                if (widget.sortAndFilterRow != null) SliverToBoxAdapter(child: widget.sortAndFilterRow),
                 if (widget.includeFilterRowFor != null)
                   buildCuratedItemFilterRow(
                     ref: ref,

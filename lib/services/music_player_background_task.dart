@@ -12,7 +12,6 @@ import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/services/current_track_metadata_provider.dart';
 import 'package:finamp/services/favorite_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
-import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/radio_service_helper.dart' as RadioServiceHelper;
@@ -28,6 +27,7 @@ import 'package:rxdart/rxdart.dart';
 
 import 'android_auto_helper.dart';
 import 'finamp_settings_helper.dart';
+import 'ios_helpers.dart';
 import 'metadata_provider.dart';
 
 enum FadeDirection { fadeIn, fadeOut, none }
@@ -984,9 +984,9 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
     return [
       MediaItem(
-        id: MediaItemId(contentType: TabContentType.albums, parentType: MediaItemParentType.rootCollection).toString(),
+        id: MediaItemId(contentType: ContentType.albums, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.albums ?? TabContentType.albums.toString(),
+        title: _appLocalizations?.albums ?? ContentType.albums.toString(),
         playable: false,
         extras: {
           "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": albumsBrowsableHint,
@@ -994,9 +994,12 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         },
       ),
       MediaItem(
-        id: MediaItemId(contentType: TabContentType.artists, parentType: MediaItemParentType.rootCollection).toString(),
+        id: MediaItemId(
+          contentType: ContentType.performingArtists,
+          parentType: MediaItemParentType.rootCollection,
+        ).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.artists ?? TabContentType.artists.toString(),
+        title: _appLocalizations?.artists ?? ContentType.performingArtists.toString(),
         playable: false,
         extras: {
           "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": artistsBrowsableHint,
@@ -1012,24 +1015,21 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         playable: false,
       ),
       MediaItem(
-        id: MediaItemId(
-          contentType: TabContentType.playlists,
-          parentType: MediaItemParentType.rootCollection,
-        ).toString(),
+        id: MediaItemId(contentType: ContentType.playlists, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.playlists ?? TabContentType.playlists.toString(),
+        title: _appLocalizations?.playlists ?? ContentType.playlists.toString(),
         playable: false,
       ),
       MediaItem(
-        id: MediaItemId(contentType: TabContentType.genres, parentType: MediaItemParentType.rootCollection).toString(),
+        id: MediaItemId(contentType: ContentType.genres, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.genres ?? TabContentType.genres.toString(),
+        title: _appLocalizations?.genres ?? ContentType.genres.toString(),
         playable: false,
       ),
       MediaItem(
-        id: MediaItemId(contentType: TabContentType.tracks, parentType: MediaItemParentType.rootCollection).toString(),
+        id: MediaItemId(contentType: ContentType.tracks, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.tracks ?? TabContentType.tracks.toString(),
+        title: _appLocalizations?.tracks ?? ContentType.tracks.toString(),
         playable: false,
       ),
     ];
@@ -1054,7 +1054,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       // return await _androidAutoHelper.getRecentItems();
       // return playlists for now
       return await _androidAutoHelper.getMediaItems(
-        MediaItemId(contentType: TabContentType.playlists, parentType: MediaItemParentType.rootCollection),
+        MediaItemId(contentType: ContentType.playlists, parentType: MediaItemParentType.rootCollection),
       );
     } else {
       try {
@@ -1135,6 +1135,12 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           RadioServiceHelper.toggleRadio();
         case CustomPlaybackActions.toggleFavorite:
           return toggleFavoriteStatusOfCurrentTrack();
+        case CustomPlaybackActions.dbusVolume:
+          final volume = extras?["value"] as double?;
+          if (volume != null) {
+            _audioServiceBackgroundTaskLogger.info("Setting volume to $volume from dbus.");
+            await _volume.setInternalVolume(volume);
+          }
       }
     } catch (e) {
       _audioServiceBackgroundTaskLogger.severe("Custom action '$name' not found.", e);
@@ -1157,31 +1163,10 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     }
 
     bool isFavorite = currentItem.userData?.isFavorite ?? false;
-    if (GlobalSnackbar.materialAppScaffoldKey.currentContext != null) {
-      // get current favorite status from the provider
-      isFavorite = ref.read(isFavoriteProvider(currentItem));
-      // update favorite status with the value returned by the provider
-      isFavorite = ref.read(isFavoriteProvider(currentItem).notifier).updateFavorite(!isFavorite);
-    } else {
-      // fallback if we can't find the context
-      final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
-      if (isFavorite) {
-        await jellyfinApiHelper.removeFavorite(currentItem.id);
-      } else {
-        await jellyfinApiHelper.addFavorite(currentItem.id);
-      }
-      isFavorite = !isFavorite;
-      final newUserData = currentItem.userData;
-      if (newUserData != null) {
-        newUserData.isFavorite = isFavorite;
-      }
-      currentItem.userData = newUserData;
-      mediaItem.add(
-        mediaItem.valueOrNull?.copyWith(
-          extras: {...mediaItem.valueOrNull?.extras ?? {}, "itemJson": currentItem.toJson()},
-        ),
-      );
-    }
+    // get current favorite status from the provider
+    isFavorite = ref.read(isFavoriteProvider(currentItem));
+    // update favorite status with the value returned by the provider
+    isFavorite = ref.read(isFavoriteProvider(currentItem).notifier).updateFavorite(!isFavorite);
     return refreshPlaybackStateAndMediaNotification();
   }
 
@@ -1210,14 +1195,16 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         if (_loudnessEnhancerEffect != null) {
           _loudnessEnhancerEffect.setTargetGain(effectiveGainChange);
         } else {
-          final newVolume =
-              iosBaseVolumeGainFactor *
-              pow(
-                10.0,
-                effectiveGainChange / 20.0,
-              ); // https://sound.stackexchange.com/questions/38722/convert-db-value-to-linear-scale
-          _volumeNormalizationLogger.finer("new volume: $newVolume");
-          _volume.setReplayGainVolume(newVolume);
+          num linearGainVolumeFactor = pow(
+            10.0,
+            (effectiveGainChange + FinampSettingsHelper.finampSettings.volumeNormalizationIOSBaseGain) / 20.0,
+          ); // https://sound.stackexchange.com/questions/38722/convert-db-value-to-linear-scale
+          if (Platform.isLinux || Platform.isWindows) {
+            // counter mpv's cubic root volume scaling, so that the perceived volume change actually matches what we're aiming for
+            linearGainVolumeFactor = pow(linearGainVolumeFactor, 1 / 3).clamp(0.0, 1.0).toDouble();
+          }
+          _volumeNormalizationLogger.finer("new volume: $linearGainVolumeFactor");
+          _volume.setReplayGainVolume(linearGainVolumeFactor.toDouble());
         }
       } else {
         if (_loudnessEnhancerEffect != null) {
@@ -1265,15 +1252,14 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     jellyfin_models.BaseItemDto? currentItem;
     bool isFavorite = false;
 
+    // Sync playback state to iOS for CarPlay Now Playing screen
+    IosPlaybackStateSync.setPlaybackState(isPlaying: _player.playing);
+
     if (mediaItem.valueOrNull?.extras?["itemJson"] != null) {
       currentItem = jellyfin_models.BaseItemDto.fromJson(
         mediaItem.valueOrNull?.extras!["itemJson"] as Map<String, dynamic>,
       );
-      if (GlobalSnackbar.materialAppScaffoldKey.currentContext != null) {
-        isFavorite = GetIt.instance<ProviderContainer>().read(isFavoriteProvider(currentItem));
-      } else {
-        isFavorite = currentItem.userData?.isFavorite ?? false;
-      }
+      isFavorite = GetIt.instance<ProviderContainer>().read(isFavoriteProvider(currentItem));
     }
 
     final radioEnabled = FinampSettingsHelper.finampSettings.radioEnabled;
@@ -1291,13 +1277,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           MediaControl.custom(
             name: CustomPlaybackActions.toggleFavorite.name,
             androidIcon: isFavorite ? "drawable/baseline_heart_filled_24" : "drawable/baseline_heart_24",
-            label: isFavorite
-                ? (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                      ? AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.removeFavorite
-                      : "Remove Favorite")
-                : (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                      ? AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)!.addFavorite
-                      : "Add Favorite"),
+            label: isFavorite ? GlobalSnackbar.requireL10n.removeFavorite : GlobalSnackbar.requireL10n.addFavorite,
           ),
         if (FinampSettingsHelper.finampSettings.showShuffleButtonOnMediaNotification)
           //TODO eventually we probably want separate settings for this, and not store them as individual booleans in Hive
@@ -1306,16 +1286,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
                   name: CustomPlaybackActions.radio.name,
                   androidIcon: radioActive ? "drawable/tabler_icons_radio_24" : "drawable/tabler_icons_radio_off_24",
                   label: radioActive
-                      ? (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                            ? AppLocalizations.of(
-                                GlobalSnackbar.materialAppScaffoldKey.currentContext!,
-                              )!.radioModeActiveTitle
-                            : "Radio active")
-                      : (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                            ? AppLocalizations.of(
-                                GlobalSnackbar.materialAppScaffoldKey.currentContext!,
-                              )!.radioModeInactiveTitle
-                            : "Radio paused"),
+                      ? GlobalSnackbar.requireL10n.radioModeActiveTitle
+                      : GlobalSnackbar.requireL10n.radioModeInactiveTitle,
                 )
               : MediaControl.custom(
                   name: CustomPlaybackActions.shuffle.name,
@@ -1323,16 +1295,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
                       ? "drawable/baseline_shuffle_on_24"
                       : "drawable/baseline_shuffle_24",
                   label: _player.shuffleModeEnabled
-                      ? (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                            ? AppLocalizations.of(
-                                GlobalSnackbar.materialAppScaffoldKey.currentContext!,
-                              )!.playbackOrderShuffledButtonLabel
-                            : "Shuffle enabled")
-                      : (GlobalSnackbar.materialAppScaffoldKey.currentContext != null
-                            ? AppLocalizations.of(
-                                GlobalSnackbar.materialAppScaffoldKey.currentContext!,
-                              )!.playbackOrderLinearButtonLabel
-                            : "Shuffle disabled"),
+                      ? GlobalSnackbar.requireL10n.playbackOrderShuffledButtonLabel
+                      : GlobalSnackbar.requireL10n.playbackOrderLinearButtonLabel,
                 ),
         if (FinampSettingsHelper.finampSettings.showStopButtonOnMediaNotification)
           MediaControl.stop.copyWith(androidIcon: "drawable/baseline_stop_24"),
@@ -1381,7 +1345,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           FinampSettingsHelper.finampSettings.volumeNormalizationMode != VolumeNormalizationMode.hybrid) {
         return;
       }
-      if (previous?.valueOrNull?.parentNormalizationGain != next.valueOrNull?.parentNormalizationGain) {
+      if (previous?.valueOrNull?.albumNormalizationGain != next.valueOrNull?.albumNormalizationGain) {
         _applyVolumeNormalization(mediaItem.valueOrNull);
       }
     });
@@ -1445,17 +1409,17 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
       queryParameters.addAll({
         "audioCodec": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec,
+        "playSessionId": mediaItem.extras!["playSessionId"] as String? ?? "",
         // Ideally we'd switch between 44.1/48kHz depending on the source is,
         // realistically it doesn't matter too much
         // default to 44100, only use 48000 for opus because opus doesn't support 44100
-        "playSessionId": mediaItem.extras!["playSessionId"] as String? ?? "",
-        "audioSampleRate": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.codec == 'opus'
-            ? '48000'
-            : '44100',
-        "maxAudioBitDepth": "16",
-        "audioBitRate": FinampSettingsHelper.finampSettings.transcodeBitrate.toString(),
+        "audioSampleRate": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.sampleRate.toString(),
         "segmentContainer": FinampSettingsHelper.finampSettings.transcodingStreamingFormat.container,
       });
+
+      if (!FinampSettingsHelper.finampSettings.transcodingStreamingFormat.lossless) {
+        queryParameters.addAll({"audioBitRate": FinampSettingsHelper.finampSettings.transcodeBitrate.toString()});
+      }
 
       if (FinampSettingsHelper.finampSettings.multichannelHandlingSetting ==
               MultichannelHandlingSetting.stereoDownmixAll ||
@@ -1610,18 +1574,13 @@ double? getGainForCurrentPlayback(MediaItem currentTrack, jellyfin_models.BaseIt
     case VolumeNormalizationMode.hybrid
         when GetIt.instance<QueueService>().getQueue().isCurrentlyPlayingTracksFromSameAlbum():
     case VolumeNormalizationMode.albumBased:
-      // final parentNormalizationGain = providerContainer.read(currentTrackMetadataProvider).valueOrNull?.parentNormalizationGain;
-      // includeLyrics is always true - fetch the metadataRequest directly.
-      // Requires that provided arguments are the only fields of request,
-      // along with `includeLyrics` always being true in currentTrackMetadataProvider
-      // Otherwise, use code commented above
-      final parentNormalizationGain = providerContainer
-          .read(metadataProvider(baseItem))
-          .valueOrNull
-          ?.parentNormalizationGain;
+      // metadataProvider is still used for Jellyfin <12.0
+      final albumNormalizationGain =
+          baseItem.albumNormalizationGain ??
+          providerContainer.read(metadataProvider(baseItem)).valueOrNull?.albumNormalizationGain;
 
       effectiveGainChange =
-          parentNormalizationGain ??
+          albumNormalizationGain ??
           (currentTrack.extras?["contextNormalizationGain"] as double?) ??
           baseItem.normalizationGain;
       break;

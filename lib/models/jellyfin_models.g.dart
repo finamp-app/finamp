@@ -1315,7 +1315,6 @@ class BaseItemDtoAdapter extends TypeAdapter<BaseItemDto> {
       albumArtist: fields[77] as String?,
       albumArtists: (fields[78] as List?)?.cast<NameIdPair>(),
       seasonName: fields[79] as String?,
-      mediaStreams: (fields[80] as List?)?.cast<MediaStream>(),
       partCount: (fields[81] as num?)?.toInt(),
       imageTags: (fields[82] as Map?)?.cast<dynamic, String>(),
       backdropImageTags: (fields[83] as List?)?.cast<String>(),
@@ -1388,6 +1387,7 @@ class BaseItemDtoAdapter extends TypeAdapter<BaseItemDto> {
       audio: fields[150] as String?,
       normalizationGain: (fields[151] as num?)?.toDouble(),
       hasLyrics: fields[152] as bool?,
+      albumNormalizationGain: (fields[153] as num?)?.toDouble(),
     );
   }
 
@@ -1555,8 +1555,6 @@ class BaseItemDtoAdapter extends TypeAdapter<BaseItemDto> {
       ..write(obj.albumArtists)
       ..writeByte(79)
       ..write(obj.seasonName)
-      ..writeByte(80)
-      ..write(obj.mediaStreams)
       ..writeByte(81)
       ..write(obj.partCount)
       ..writeByte(82)
@@ -1700,7 +1698,9 @@ class BaseItemDtoAdapter extends TypeAdapter<BaseItemDto> {
       ..writeByte(151)
       ..write(obj.normalizationGain)
       ..writeByte(152)
-      ..write(obj.hasLyrics);
+      ..write(obj.hasLyrics)
+      ..writeByte(153)
+      ..write(obj.albumNormalizationGain);
   }
 
   @override
@@ -3840,9 +3840,6 @@ BaseItemDto _$BaseItemDtoFromJson(Map json) => BaseItemDto(
       ?.map((e) => NameIdPair.fromJson(Map<String, dynamic>.from(e as Map)))
       .toList(),
   seasonName: json['SeasonName'] as String?,
-  mediaStreams: (json['MediaStreams'] as List<dynamic>?)
-      ?.map((e) => MediaStream.fromJson(Map<String, dynamic>.from(e as Map)))
-      .toList(),
   partCount: (json['PartCount'] as num?)?.toInt(),
   imageTags: (json['ImageTags'] as Map?)?.map(
     (k, e) => MapEntry(k, e as String),
@@ -3929,6 +3926,7 @@ BaseItemDto _$BaseItemDtoFromJson(Map json) => BaseItemDto(
   audio: json['Audio'] as String?,
   normalizationGain: (json['NormalizationGain'] as num?)?.toDouble(),
   hasLyrics: json['HasLyrics'] as bool?,
+  albumNormalizationGain: (json['AlbumNormalizationGain'] as num?)?.toDouble(),
 )..finampOffline = json['FinampOffline'] as bool?;
 
 Map<String, dynamic> _$BaseItemDtoToJson(
@@ -4047,8 +4045,6 @@ Map<String, dynamic> _$BaseItemDtoToJson(
   if (instance.albumArtists?.map((e) => e.toJson()).toList() case final value?)
     'AlbumArtists': value,
   if (instance.seasonName case final value?) 'SeasonName': value,
-  if (instance.mediaStreams?.map((e) => e.toJson()).toList() case final value?)
-    'MediaStreams': value,
   if (instance.partCount case final value?) 'PartCount': value,
   if (instance.imageTags case final value?) 'ImageTags': value,
   if (instance.backdropImageTags case final value?) 'BackdropImageTags': value,
@@ -4134,6 +4130,8 @@ Map<String, dynamic> _$BaseItemDtoToJson(
   if (instance.audio case final value?) 'Audio': value,
   if (instance.normalizationGain case final value?) 'NormalizationGain': value,
   if (instance.hasLyrics case final value?) 'HasLyrics': value,
+  if (instance.albumNormalizationGain case final value?)
+    'AlbumNormalizationGain': value,
   if (instance.finampOffline case final value?) 'FinampOffline': value,
 };
 

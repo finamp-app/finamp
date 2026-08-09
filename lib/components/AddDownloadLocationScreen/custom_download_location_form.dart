@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../extensions/localizations.dart';
 import '../../models/finamp_models.dart';
 
 class CustomDownloadLocationForm extends StatefulWidget {
@@ -57,7 +58,7 @@ class _CustomDownloadLocationFormState extends State<CustomDownloadLocationForm>
                             IconButton(
                               icon: const Icon(Icons.folder),
                               onPressed: () async {
-                                String? newPath = await FilePicker.platform.getDirectoryPath();
+                                String? newPath = await FilePicker.getDirectoryPath();
 
                                 if (newPath != null) {
                                   setState(() {
@@ -105,7 +106,7 @@ class _CustomDownloadLocationFormState extends State<CustomDownloadLocationForm>
             },
           ),
           TextFormField(
-            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.name),
+            decoration: InputDecoration(labelText: context.l10n.nameRequired),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return AppLocalizations.of(context)!.required;

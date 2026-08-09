@@ -70,6 +70,8 @@ PODS:
     - DKImagePickerController/PhotoGallery
     - Flutter
   - Flutter (1.0.0)
+  - flutter_carplay (1.1.0):
+    - Flutter
   - flutter_discord_rpc (0.0.1):
     - Flutter
   - flutter_native_splash (2.4.3):
@@ -123,6 +125,7 @@ DEPENDENCIES:
   - DKImagePickerController (= 4.3.4)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
+  - flutter_carplay (from `.symlinks/plugins/flutter_carplay/ios`)
   - flutter_discord_rpc (from `.symlinks/plugins/flutter_discord_rpc/ios`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_to_airplay (from `.symlinks/plugins/flutter_to_airplay/ios`)
@@ -170,6 +173,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/file_picker/ios"
   Flutter:
     :path: Flutter
+  flutter_carplay:
+    :path: ".symlinks/plugins/flutter_carplay/ios"
   flutter_discord_rpc:
     :path: ".symlinks/plugins/flutter_discord_rpc/ios"
   flutter_native_splash:
@@ -200,38 +205,39 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/wakelock_plus/ios"
 
 SPEC CHECKSUMS:
-  app_links: 585674be3c6661708e6cd794ab4f39fb9d8356f9
-  app_set_id: 0e0db3830db2bca1b67eecec1e2ab80b2bec48fa
-  audio_service: cab6c1a0eaf01b5a35b567e11fa67d3cc1956910
-  audio_session: 19e9480dbdd4e5f6c4543826b2e8b0e4ab6145fe
-  background_downloader: a05c77d32a0d70615b9c04577aa203535fc924ff
-  battery_plus: 34f72fa2afeeea83bbae306c72a25828d3ec727a
-  connectivity_plus: 2a701ffec2c0ae28a48cf7540e279787e77c447d
+  app_links: 3dbc685f76b1693c66a6d9dd1e9ab6f73d97dc0a
+  app_set_id: b40d083ce275bb3b915e35177907df514eb5d428
+  audio_service: aa99a6ba2ae7565996015322b0bb024e1d25c6fd
+  audio_session: 9bb7f6c970f21241b19f5a3658097ae459681ba0
+  background_downloader: 50e91d979067b82081aba359d7d916b3ba5fadad
+  battery_plus: b42253f6d2dde71712f8c36fef456d99121c5977
+  connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
   CropViewController: 58fb440f30dac788b129d2a1f24cffdcb102669c
-  device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
+  device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
   DKCamera: a902b66921fca14b7a75266feb8c7568aa7caa71
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
-  file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
+  file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_discord_rpc: e1c342f29ceb9dd76cdc01db59a70c93bb4d9ec5
-  flutter_native_splash: df59bb2e1421aa0282cb2e95618af4dcb0c56c29
-  flutter_to_airplay: 3194fe6e4ca6ba1d9529c3c4194c32b9610d990f
-  gaimon: 266fec2cd27726df54a6694c14fc9e3f2a415c33
-  isar_flutter_libs: b69f437aeab9c521821c3f376198c4371fa21073
-  just_audio: a42c63806f16995daf5b219ae1d679deb76e6a79
+  flutter_carplay: 0e3f943484e00399dac7f599715ae6761288f0db
+  flutter_discord_rpc: 0572e8227ea730c5afe5876a37c08c728ce95f3a
+  flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
+  flutter_to_airplay: 06ecea4c4458e28e1bfeff6741de84b79aa28821
+  gaimon: ce0b5c042363ed957bb92ee755c361903d3ce0ef
+  isar_flutter_libs: 9fc2cfb928c539e1b76c481ba5d143d556d94920
+  just_audio: 4e391f57b79cad2b0674030a00453ca5ce817eed
   Mux-Stats-AVPlayer: 1b1a877e5d8b57ca22e0717fa0a4eefef7529c40
   Mux-Stats-Core: 53902e414f077b2239ea10d909a4cf072c0d4d5c
-  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
-  path_provider_foundation: 0b743cbb62d8e47eab856f09262bb8c1ddcfe6ba
-  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
+  path_provider_foundation: bb55f6dbba17d0dccd6737fe6f7f34fbd0376880
+  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   SDWebImage: c0de394d7cf7f9838aed1fd6bb6037654a4572e4
-  share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
-  shared_preferences_foundation: 5086985c1d43c5ba4d5e69a4e8083a389e2909e6
-  sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
+  share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
+  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
+  sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
-  url_launcher_ios: bb13df5870e8c4234ca12609d04010a21be43dfa
-  wakelock_plus: 76957ab028e12bfa4e66813c99e46637f367fc7e
+  url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
+  wakelock_plus: e29112ab3ef0b318e58cfa5c32326458be66b556
 
 PODFILE CHECKSUM: 52031673b3f7489cc4caeaba0722424a3708adb4
 

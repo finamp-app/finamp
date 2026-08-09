@@ -15,6 +15,7 @@ import 'package:finamp/menus/components/menu_item_info_header.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/models/music_models.dart';
 import 'package:flutter/material.dart';
 
 const Duration playlistMenuDefaultAnimationDuration = Duration(milliseconds: 750);
@@ -24,21 +25,22 @@ const playlistMenuRouteName = "/playlist-menu";
 
 Future<void> showModalPlaylistMenu({
   required BuildContext context,
-  required BaseItemDto baseItem,
+  required BaseItemDto item,
   FinampStorableQueueInfo? queueInfo,
 }) async {
+  final playableItem = Playlist.fromItem(item);
   // Normal menu entries, excluding headers
   List<HideableMenuEntry> getMenuEntries(BuildContext context) {
     return [
       if (queueInfo != null) RestoreQueueMenuEntry(queueInfo: queueInfo),
-      AddToPlaylistMenuEntry(item: baseItem),
-      InstantMixMenuEntry(baseItem: baseItem),
-      MixBuilderMenuEntry(baseItem: baseItem),
-      StartRadioMenuEntry(baseItem: baseItem),
-      AdaptiveDownloadLockDeleteMenuEntry(baseItem: baseItem),
-      ToggleFavoriteMenuEntry(baseItem: baseItem),
-      EditItemMenuEntry(baseItem: baseItem),
-      DeleteFromServerMenuEntry(baseItem: baseItem),
+      AddToPlaylistMenuEntry(item: playableItem),
+      InstantMixMenuEntry(baseItem: item),
+      MixBuilderMenuEntry(baseItem: item),
+      StartRadioMenuEntry(baseItem: item),
+      AdaptiveDownloadLockDeleteMenuEntry(baseItem: item),
+      ToggleFavoriteMenuEntry(baseItem: item),
+      EditItemMenuEntry(baseItem: item),
+      DeleteFromServerMenuEntry(baseItem: item),
     ];
   }
 
@@ -47,10 +49,10 @@ Future<void> showModalPlaylistMenu({
     final stackHeight = ThemedBottomSheet.calculateStackHeight(context: context, menuEntries: menuEntries);
 
     List<Widget> menu = [
-      SliverPersistentHeader(delegate: MenuItemInfoSliverHeader(item: baseItem), pinned: true),
+      SliverPersistentHeader(delegate: MenuItemInfoSliverHeader(item: playableItem), pinned: true),
       MenuMask(
         height: MenuItemInfoSliverHeader.defaultHeight,
-        child: SliverToBoxAdapter(child: PlaybackActionRow(item: baseItem)),
+        child: SliverToBoxAdapter(child: PlaybackActionRow(item: playableItem)),
       ),
       MenuMask(
         height: MenuItemInfoSliverHeader.defaultHeight,
@@ -66,7 +68,7 @@ Future<void> showModalPlaylistMenu({
 
   await showThemedBottomSheet(
     context: context,
-    item: baseItem,
+    item: item,
     routeName: playlistMenuRouteName,
     buildSlivers: (context) => getMenuProperties(context),
   );

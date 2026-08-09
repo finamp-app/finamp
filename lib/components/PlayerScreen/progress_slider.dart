@@ -147,6 +147,10 @@ class _ProgressSliderDuration extends StatelessWidget {
           printDuration(currentPosition),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             height: 0.5, // reduce line height
+            fontFeatures: const [
+              // fixed-width digits
+              FontFeature.tabularFigures(),
+            ],
           ),
         ),
         Text(
@@ -157,6 +161,10 @@ class _ProgressSliderDuration extends StatelessWidget {
           ),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             height: 0.5, // reduce line height
+            fontFeatures: const [
+              // fixed-width digits
+              FontFeature.tabularFigures(),
+            ],
           ),
         ),
       ],

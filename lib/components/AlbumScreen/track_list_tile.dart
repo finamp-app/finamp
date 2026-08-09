@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:finamp/components/AddToPlaylistScreen/add_to_playlist_button.dart';
-import 'package:finamp/components/MusicScreen/music_screen_tab_view.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/extensions/string.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -11,19 +11,29 @@ import 'package:finamp/menus/components/overflow_menu_button.dart';
 import 'package:finamp/menus/track_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/services/artist_content_provider.dart';
 import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
-import 'package:finamp/services/item_helper.dart';
+import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/music_screen_provider.dart';
+import 'package:finamp/services/media_state_stream.dart';
+import 'package:finamp/services/music_player_background_task.dart';
+import 'package:finamp/services/radio_service_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mini_music_visualizer/mini_music_visualizer.dart';
 
+import '../../extensions/localizations.dart';
+import '../../models/music_models.dart';
+import '../../models/music_slices.dart';
 import '../../services/audio_service_helper.dart';
 import '../../services/downloads_service.dart';
 import '../../services/finamp_settings_helper.dart';
+import '../../services/music_providers.dart';
 import '../../services/queue_service.dart';
 import '../../services/theme_provider.dart';
 import '../album_image.dart';
@@ -49,15 +59,16 @@ class TrackListTile extends ConsumerWidget {
     super.key,
     required this.item,
 
-    /// Children that are related to this list tile, such as the other tracks in
-    /// the album. This is used to give the audio service all the tracks for the
-    /// item. If null, only this track will be given to the audio service.
-    this.children,
+    /// The parent item which will be played with starting index [index] on tap.
+    required this.parentPlayable,
+    this.lazyAddMoreTracksToQueue = false,
+    this.selectedFilter,
 
     /// Index of the track in whatever parent this widget is in. Used to start
     /// the audio service at a certain index, such as when selecting the middle
     /// track in an album.  Will be -1 if we are offline and the track is not downloaded.
     this.index,
+
     this.parentItem,
 
     // if leading index number should be shown
@@ -66,17 +77,10 @@ class TrackListTile extends ConsumerWidget {
     this.showCover = true,
 
     /// Whether we are in the tracks tab, as opposed to a playlist/album
-    this.isTrack = false,
     this.onRemoveFromList,
     this.adaptiveAdditionalInfoSortBy,
     this.forceAlbumArtists = false,
 
-    /// Whether this widget is being displayed in a playlist. If true, will show
-    /// the remove from playlist button.
-    this.isInPlaylist = false,
-    this.isOnArtistScreen = false,
-    this.isOnGenreScreen = false,
-    this.isShownInSearchOrHistory = false,
     this.allowDismiss = true,
     this.highlightCurrentTrack = true,
     this.genreFilter,
@@ -84,19 +88,16 @@ class TrackListTile extends ConsumerWidget {
   });
 
   final BaseItemDto item;
-  final List<BaseItemDto>? children;
+  final FinampPlayable parentPlayable;
+  final bool lazyAddMoreTracksToQueue;
+  final CuratedItemSelectionType? selectedFilter;
   final int? index;
   final bool showIndex;
   final bool showCover;
-  final bool isTrack;
   final BaseItemDto? parentItem;
   final VoidCallback? onRemoveFromList;
   final bool forceAlbumArtists;
   final SortBy? adaptiveAdditionalInfoSortBy;
-  final bool isInPlaylist;
-  final bool isOnArtistScreen;
-  final bool isOnGenreScreen;
-  final bool isShownInSearchOrHistory;
   final bool allowDismiss;
   final bool highlightCurrentTrack;
   final BaseItemDto? genreFilter;
@@ -105,6 +106,8 @@ class TrackListTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool playable;
+    final finampUserHelper = GetIt.instance<FinampUserHelper>();
+    final library = finampUserHelper.currentUser?.currentView;
     if (ref.watch(finampSettingsProvider.isOffline)) {
       playable = ref.watch(
         GetIt.instance<DownloadsService>()
@@ -115,113 +118,137 @@ class TrackListTile extends ConsumerWidget {
       playable = true;
     }
 
-    Future<void> trackListTileOnTap(bool playable) async {
-      final queueService = GetIt.instance<QueueService>();
-      final audioServiceHelper = GetIt.instance<AudioServiceHelper>();
+    // We lazyload more tracks here if the user starts a queue from one of the top tracks sections
+    // because for performance-reasons, we first only fetch the data for the 5 tracks we really need
+    Future<void> lazyAddMoreTracks(PlayableSlice slice) async {
+      if (parentItem == null || selectedFilter == null) return;
 
-      if (!playable) return;
-      if (children != null) {
-        // start linear playback of album from the given index
-        await queueService.startPlayback(
-          items: children!,
-          startingIndex: index,
-          order: FinampPlaybackOrder.linear,
-          source: QueueItemSource.rawId(
-            type: isInPlaylist
-                ? QueueItemSourceType.playlist
-                : isOnArtistScreen
-                ? QueueItemSourceType.artist
-                : isOnGenreScreen
-                ? QueueItemSourceType.genre
-                : parentItem != null
-                ? QueueItemSourceType.album
-                : QueueItemSourceType.queue,
-            name: parentItem != null
-                ? QueueItemSourceName(
-                    type: QueueItemSourceNameType.preTranslated,
-                    pretranslatedName:
-                        ((isInPlaylist || isOnArtistScreen || isOnGenreScreen) ? parentItem?.name : item.album) ??
-                        AppLocalizations.of(context)!.placeholderSource,
-                  )
-                : QueueItemSourceName(type: QueueItemSourceNameType.queue),
+      final baseItemType = BaseItemDtoType.fromItem(parentItem!);
+      final SortBy sortBy = selectedFilter!.getSortBy();
+      final queueService = GetIt.instance<QueueService>();
+      final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+      List<BaseItemDto> allTracks;
+
+      // Load track data
+      if (baseItemType == BaseItemDtoType.artist) {
+        allTracks = await ref.read(
+          getArtistTracksProvider(
+            artist: parentItem!,
+            libraryFilter: library?.id,
+            genreFilter: genreFilter?.id,
+            onlyFavorites: selectedFilter == CuratedItemSelectionType.favorites,
+          ).future,
+        );
+      } else if (baseItemType == BaseItemDtoType.genre) {
+        final bool isOffline = ref.read(finampSettingsProvider.isOffline);
+
+        if (isOffline) {
+          final downloadsService = GetIt.instance<DownloadsService>();
+          final List<DownloadStub> fetchedItems = await downloadsService.getAllTracks(
+            viewFilter: library?.id,
+            nullableViewFilters: ref.read(finampSettingsProvider.showDownloadsWithUnknownLibrary),
+            onlyFavorites: (selectedFilter == CuratedItemSelectionType.favorites)
+                ? ref.read(finampSettingsProvider.trackOfflineFavorites)
+                : false,
+            genreFilter: parentItem?.id,
+          );
+          allTracks = fetchedItems.map((e) => e.baseItem).nonNulls.toList();
+        } else {
+          allTracks =
+              await jellyfinApiHelper.getItems(
+                parentItem: library,
+                genreFilter: parentItem?.id,
+                sortBy: sortBy.jellyfinName(ContentType.tracks),
+                sortOrder: "Descending",
+                isFavorite: (selectedFilter == CuratedItemSelectionType.favorites) ? true : null,
+                limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+                includeItemTypes: BaseItemDtoType.track.jellyfinName,
+              ) ??
+              [];
+        }
+      } else {
+        return;
+      }
+
+      // Build a fast lookup set of already-present track IDs
+      final resolved = await slice.resolve();
+      final Set<String> childIds = resolved.items.map((track) => track.id.raw).where((id) => id.isNotEmpty).toSet();
+
+      // Filter out tracks that are already in "children" and then sort according to the selected filter
+      List<BaseItemDto> remainingTracks = allTracks.where((track) => !childIds.contains(track.id.raw)).toList();
+      remainingTracks = sortItems(remainingTracks, sortBy, SortOrder.descending);
+
+      // Append to queue
+      await queueService.addToQueue(
+        PlayableSlice.simple(
+          remainingTracks,
+          QueueItemSource.rawId(
+            type: QueueItemSourceType.album,
+            name: QueueItemSourceName(
+              type: QueueItemSourceNameType.preTranslated,
+              pretranslatedName: parentItem?.name ?? item.album ?? AppLocalizations.of(context)!.placeholderSource,
+            ),
             id: parentItem?.id.raw ?? "",
             item: parentItem,
-            // we're playing from an album, so we should use the album's normalization gain.
-            contextNormalizationGain: (isInPlaylist || isOnArtistScreen || isOnGenreScreen)
-                ? null
-                : parentItem?.normalizationGain,
+            contextNormalizationGain: null,
           ),
-        );
-      } else {
-        // TODO put in a real offline tracks implementation
-        if (FinampSettingsHelper.finampSettings.isOffline) {
-          final settings = FinampSettingsHelper.finampSettings;
-          final downloadsService = GetIt.instance<DownloadsService>();
-          final finampUserHelper = GetIt.instance<FinampUserHelper>();
+        ),
+      );
+    }
 
-          // get all downloaded tracks in order
-          List<DownloadStub> offlineItems;
-          // If we're on the tracks tab, just get all of the downloaded items
-          offlineItems = await downloadsService.getAllTracks(
-            // nameFilter: widget.searchTerm,
-            viewFilter: finampUserHelper.currentUser?.currentView?.id,
-            nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
-            onlyFavorites: settings.onlyShowFavorites && settings.trackOfflineFavorites,
-            genreFilter: genreFilter,
-          );
+    Future<void> trackListTileOnTap(bool playable) async {
+      final queueService = GetIt.instance<QueueService>();
 
-          var items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
-          var sortBy = settings.tabSortBy[TabContentType.tracks];
-          if ([SortBy.playCount, SortBy.datePlayed].contains(sortBy)) {
-            sortBy = SortBy.sortName;
-          }
+      if (!playable) return;
 
-          items = sortItems(items, sortBy, settings.tabSortOrder[TabContentType.tracks]);
+      if (parentPlayable case InstantMix mix) {
+        // TODO we should be handling this via slices
+        final audioServiceHelper = GetIt.instance<AudioServiceHelper>();
+        await audioServiceHelper.startInstantMixForItem(mix.item);
+        return;
+      }
 
-          int startingIndex = isShownInSearchOrHistory
-              ? items.indexWhere((element) => element.id == item.id)
-              : index ?? 0;
-          //!!! limit the amount of tracks to prevent freezing and crashing for many tracks
-          if (items.length > QueueService.maxInitialQueueItems) {
-            // take 10% of the maximum before the index, and the rest after the index
-            final firstTrackIndex = startingIndex - (QueueService.maxInitialQueueItems ~/ 10);
-            final lastTrackIndex =
-                startingIndex + (QueueService.maxInitialQueueItems - (QueueService.maxInitialQueueItems ~/ 10));
-            // update the initial index
-            if (firstTrackIndex > 0) {
-              startingIndex = startingIndex - firstTrackIndex;
-            } else {
-              startingIndex = startingIndex;
-            }
-            items = items.sublist(
-              firstTrackIndex >= 0 ? firstTrackIndex : 0,
-              lastTrackIndex <= items.length ? lastTrackIndex : items.length,
-            );
-          }
-
-          await queueService.startPlayback(
-            items: items,
-            startingIndex: startingIndex,
-            source: QueueItemSource(
-              name: QueueItemSourceName(
-                type: item.name != null ? QueueItemSourceNameType.mix : QueueItemSourceNameType.instantMix,
+      final FinampPlayable sourcedParent;
+      if (parentPlayable case MusicScreenPlayable musicScreen) {
+        sourcedParent = MusicScreenPlayable(
+          tab: musicScreen.tab,
+          library: musicScreen.library,
+          source: QueueItemSource.rawId(
+            type: musicScreen.source.type,
+            name: switch (musicScreen.source.name.type) {
+              QueueItemSourceNameType.yourLikes || QueueItemSourceNameType.musicScreenTracks => QueueItemSourceName(
+                type: musicScreen.source.name.type,
                 localizationParameter: item.name ?? "",
               ),
-              type: QueueItemSourceType.allTracks,
-              id: item.id,
-              item: item,
-            ),
-          );
-        } else {
-          if (FinampSettingsHelper.finampSettings.startInstantMixForIndividualTracks) {
-            await audioServiceHelper.startInstantMixForItem(item);
-          } else {
-            await queueService.startPlayback(
-              items: await loadChildTracks(item: item, genreFilter: genreFilter),
-              source: QueueItemSource.fromBaseItem(item),
-            );
-          }
-        }
+              _ => musicScreen.source.name,
+            },
+            item: item,
+            id: "allTracks-${item.id}",
+          ),
+          sortConfig: musicScreen.sortConfig,
+        );
+      } else {
+        sourcedParent = parentPlayable;
+      }
+
+      PlayableSlice slice = await ref.watch(
+        getPlayableSliceProvider(item: sourcedParent, startingOffset: index!).future,
+      );
+
+      // avoid radio eagerly adding new tracks from cache (or requesting new tracks) before lazy loading of additional tracks completes
+      final previousRadioState = FinampSettingsHelper.finampSettings.radioEnabled;
+      FinampSetters.setRadioEnabled(false);
+      invalidateRadioCache();
+
+      // start linear playback of album from the given index
+      await queueService.startSlicePlayback(slice);
+
+      if (lazyAddMoreTracksToQueue) {
+        unawaited(
+          lazyAddMoreTracks(slice).whenComplete(() {
+            FinampSetters.setRadioEnabled(previousRadioState);
+          }),
+        );
       }
     }
 
@@ -233,16 +260,18 @@ class TrackListTile extends ConsumerWidget {
       showArtists: (forceAlbumArtists || parentItem?.isArtist != true),
       forceAlbumArtists: forceAlbumArtists,
       adaptiveAdditionalInfoSortBy: adaptiveAdditionalInfoSortBy,
-      isInPlaylist: isInPlaylist,
       highlightCurrentTrack: highlightCurrentTrack,
       onRemoveFromList: onRemoveFromList,
       onTap: trackListTileOnTap,
-      confirmDismiss: (direction) => onConfirmPlayableDismiss(
-        context: context,
-        direction: direction,
-        sourceItem: parentItem ?? item,
-        tracks: [item],
-      ),
+      confirmDismiss: (direction) async {
+        var followUpAction = (direction == DismissDirection.startToEnd)
+            ? FinampSettingsHelper.finampSettings.itemSwipeActionLeftToRight
+            : FinampSettingsHelper.finampSettings.itemSwipeActionRightToLeft;
+        return await onConfirmPlayableDismiss(
+          followUpAction: followUpAction,
+          item: Track(item, source: QueueItemSource.fromBaseItem(parentItem ?? item)),
+        );
+      },
       leftSwipeBackground: buildSwipeActionBackground(
         context: context,
         direction: DismissDirection.startToEnd,
@@ -261,7 +290,7 @@ class TrackListTile extends ConsumerWidget {
         showCover ? TrackListItemFeatures.cover : null,
         TrackListItemFeatures.duration,
         TrackListItemFeatures.addToPlaylistOrFavorite,
-        playable && allowDismiss ? TrackListItemFeatures.swipeable : null,
+        playable && allowDismiss ? TrackListItemFeatures.swipeableInTrackList : null,
       ].nonNulls.toList(),
     );
   }
@@ -279,79 +308,36 @@ IconData getSwipeActionIcon(ItemSwipeActions action) {
   }
 }
 
-Future<bool> onConfirmPlayableDismiss({
-  required BuildContext context,
-  required DismissDirection direction,
-  required PlayableItem sourceItem,
-  required List<BaseItemDto> tracks,
-}) async {
-  var followUpAction = (direction == DismissDirection.startToEnd)
-      ? FinampSettingsHelper.finampSettings.itemSwipeActionLeftToRight
-      : FinampSettingsHelper.finampSettings.itemSwipeActionRightToLeft;
-
+Future<bool> onConfirmPlayableDismiss({required ItemSwipeActions followUpAction, required FinampPlayable item}) async {
   final queueService = GetIt.instance<QueueService>();
 
-  final sourceItemType = switch (sourceItem) {
+  final sourceItemType = switch (item) {
     AlbumDisc() => "disc",
-    BaseItemDto() => BaseItemDtoType.fromPlayableItem(sourceItem).name,
+    FinampPlayableDto itemPlayable => BaseItemDtoType.fromItem(itemPlayable.item).name,
+    _ => item.source.name.getLocalized(GlobalSnackbar.requireL10n),
   };
+
+  final slice = await GetIt.instance<ProviderContainer>().read(
+    getPlayableSliceProvider(item: item, startingOffset: 0).future,
+  );
 
   switch (followUpAction) {
     case ItemSwipeActions.addToNextUp:
-      unawaited(
-        queueService.addToNextUp(
-          items: tracks,
-          source: QueueItemSource.rawId(
-            type: QueueItemSourceType.nextUp,
-            name: QueueItemSourceName(
-              type: QueueItemSourceNameType.preTranslated,
-              pretranslatedName: AppLocalizations.of(context)!.queue,
-            ),
-            id: BaseItemDto.fromPlayableItem(sourceItem).id.raw,
-            item: BaseItemDto.fromPlayableItem(sourceItem),
-          ),
-        ),
-      );
+      unawaited(queueService.addToNextUp(slice));
       GlobalSnackbar.message(
         (scaffold) => AppLocalizations.of(scaffold)!.confirmAddToNextUp(sourceItemType),
         isConfirmation: true,
       );
       break;
     case ItemSwipeActions.playNext:
-      unawaited(
-        queueService.addNext(
-          items: tracks,
-          source: QueueItemSource.rawId(
-            type: QueueItemSourceType.nextUp,
-            name: QueueItemSourceName(
-              type: QueueItemSourceNameType.preTranslated,
-              pretranslatedName: AppLocalizations.of(context)!.queue,
-            ),
-            id: BaseItemDto.fromPlayableItem(sourceItem).id.raw,
-            item: BaseItemDto.fromPlayableItem(sourceItem),
-          ),
-        ),
-      );
+      unawaited(queueService.addNext(slice));
       GlobalSnackbar.message(
         (scaffold) => AppLocalizations.of(scaffold)!.confirmPlayNext(sourceItemType),
         isConfirmation: true,
       );
       break;
     case ItemSwipeActions.addToQueue:
-      unawaited(
-        queueService.addToQueue(
-          items: tracks,
-          source: QueueItemSource.rawId(
-            type: QueueItemSourceType.queue,
-            name: QueueItemSourceName(
-              type: QueueItemSourceNameType.preTranslated,
-              pretranslatedName: AppLocalizations.of(context)!.queue,
-            ),
-            id: BaseItemDto.fromPlayableItem(sourceItem).id.raw,
-            item: BaseItemDto.fromPlayableItem(sourceItem),
-          ),
-        ),
-      );
+      unawaited(queueService.addToQueue(slice));
       GlobalSnackbar.message(
         (scaffold) => AppLocalizations.of(scaffold)!.confirmAddToQueue(sourceItemType),
         isConfirmation: true,
@@ -371,7 +357,7 @@ Widget buildSwipeActionBackground({
   double? iconSize,
 }) {
   final icon = getSwipeActionIcon(action);
-  final label = action.toLocalisedString(context);
+  final label = action.toLocalisedString(context.l10n);
 
   final children = [
     Icon(icon, color: Theme.of(context).colorScheme.secondary, size: iconSize ?? 28.0),
@@ -381,7 +367,7 @@ Widget buildSwipeActionBackground({
   ];
 
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+    padding: const EdgeInsets.symmetric(horizontal: 12.0),
     child: Row(children: direction == DismissDirection.startToEnd ? children : children.reversed.toList()),
   );
 }
@@ -401,7 +387,6 @@ class QueueListTile extends StatelessWidget {
   final FinampQueueItem queueItem;
   final BaseItemDto? parentItem;
   final int? listIndex;
-  final bool isCurrentTrack;
   final bool isInPlaylist;
   final bool allowReorder;
   final bool highlightCurrentTrack;
@@ -417,7 +402,6 @@ class QueueListTile extends StatelessWidget {
     required this.queueItem,
     required this.listIndex,
     required this.onTap,
-    required this.isCurrentTrack,
     required this.isInPlaylist,
     required this.allowReorder,
     this.highlightCurrentTrack = false,
@@ -433,7 +417,6 @@ class QueueListTile extends StatelessWidget {
       parentItem: parentItem,
       listIndex: listIndex,
       actualIndex: item.indexNumber,
-      isInPlaylist: isInPlaylist,
       highlightCurrentTrack: highlightCurrentTrack,
       onRemoveFromList: onRemoveFromList,
       // This must be in ListTile instead of parent GestureDetector to
@@ -448,7 +431,8 @@ class QueueListTile extends StatelessWidget {
         TrackListItemFeatures.cover,
         TrackListItemFeatures.duration,
         TrackListItemFeatures.addToPlaylistOrFavorite,
-        TrackListItemFeatures.swipeable,
+        TrackListItemFeatures.swipeableInTrackList,
+        TrackListItemFeatures.swipeableInQueue,
         allowReorder ? TrackListItemFeatures.dragHandle : null,
       ].nonNulls.toList(),
     );
@@ -478,7 +462,6 @@ class EditListTile extends StatelessWidget {
       baseItem: item,
       listIndex: listIndex,
       actualIndex: item.indexNumber,
-      isInPlaylist: false,
       highlightCurrentTrack: false,
       onRemoveFromList: onRemoveOrRestore,
       onTap: onTap,
@@ -492,7 +475,7 @@ class EditListTile extends StatelessWidget {
         TrackListItemFeatures.cover,
         TrackListItemFeatures.dragHandle,
         TrackListItemFeatures.fullyDraggable,
-        TrackListItemFeatures.swipeable,
+        TrackListItemFeatures.swipeableInTrackList,
         restoreInsteadOfRemove ? TrackListItemFeatures.restoreButton : TrackListItemFeatures.removeFromListButton,
       ].nonNulls.toList(),
     );
@@ -508,7 +491,6 @@ class TrackListItem extends ConsumerWidget {
   final bool showArtists;
   final bool forceAlbumArtists;
   final SortBy? adaptiveAdditionalInfoSortBy;
-  final bool isInPlaylist;
   final bool highlightCurrentTrack;
   final Widget leftSwipeBackground;
   final Widget rightSwipeBackground;
@@ -529,7 +511,6 @@ class TrackListItem extends ConsumerWidget {
     required this.features,
     this.parentItem,
     this.queueItem,
-    this.isInPlaylist = false,
     this.showArtists = true,
     this.forceAlbumArtists = false,
     this.adaptiveAdditionalInfoSortBy,
@@ -556,7 +537,11 @@ class TrackListItem extends ConsumerWidget {
     final bool showAlbum = baseItem.albumId != parentItem?.id;
 
     final isCurrentlyPlaying = ref.watch(
-      currentTrackProvider.select((queueItem) => queueItem.valueOrNull?.baseItemId == baseItem.id),
+      currentTrackProvider.select(
+        (playingItem) => queueItem != null
+            ? queueItem!.id == playingItem.valueOrNull?.id
+            : playingItem.valueOrNull?.baseItemId == baseItem.id,
+      ),
     );
 
     var listCard = Padding(
@@ -590,7 +575,6 @@ class TrackListItem extends ConsumerWidget {
             await showModalTrackMenu(
               context: context,
               item: baseItem,
-              isInPlaylist: isInPlaylist,
               parentItem: parentItem,
               onRemoveFromList: onRemoveFromList,
               confirmPlaylistRemoval: false,
@@ -610,15 +594,20 @@ class TrackListItem extends ConsumerWidget {
           onSecondaryTapDown: features.contains(TrackListItemFeatures.fullyDraggable)
               ? null
               : (details) => menuCallback(),
-          child: features.contains(TrackListItemFeatures.swipeable) && !ref.watch(finampSettingsProvider.disableGesture)
+          child:
+              (features.contains(TrackListItemFeatures.swipeableInTrackList) ||
+                      features.contains(TrackListItemFeatures.swipeableInQueue)) &&
+                  !ref.watch(finampSettingsProvider.disableGesture)
               ? Dismissible(
                   key: Key(listIndex.toString()),
-                  direction: getAllowedDismissDirection(
-                    swipeLeftEnabled:
-                        ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight) != ItemSwipeActions.nothing,
-                    swipeRightEnabled:
-                        ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft) != ItemSwipeActions.nothing,
-                  ),
+                  direction: features.contains(TrackListItemFeatures.swipeableInQueue)
+                      ? DismissDirection.endToStart
+                      : getAllowedDismissDirection(
+                          swipeLeftEnabled:
+                              ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight) != ItemSwipeActions.nothing,
+                          swipeRightEnabled:
+                              ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft) != ItemSwipeActions.nothing,
+                        ),
                   dismissThresholds: const {DismissDirection.startToEnd: 0.65, DismissDirection.endToStart: 0.65},
                   // no background, dismissing really dismisses here
                   confirmDismiss: confirmDismiss,
@@ -673,9 +662,10 @@ enum TrackListItemFeatures {
   addToPlaylistOrFavorite,
   dragHandle,
   fullyDraggable,
-  swipeable,
+  swipeableInTrackList,
   removeFromListButton,
   restoreButton,
+  swipeableInQueue,
 }
 
 class TrackListItemTile extends ConsumerWidget {
@@ -693,6 +683,7 @@ class TrackListItemTile extends ConsumerWidget {
     this.showAlbum = true,
     this.adaptiveAdditionalInfoSortBy,
     this.highlightCurrentTrack = true,
+    this.genreFilter,
     this.playbackProgress,
     this.onRemoveFromList,
   });
@@ -709,20 +700,20 @@ class TrackListItemTile extends ConsumerWidget {
   final SortBy? adaptiveAdditionalInfoSortBy;
   final bool highlightCurrentTrack;
   final void Function() onTap;
+  final BaseItemDto? genreFilter;
   final double? playbackProgress;
   final void Function()? onRemoveFromList;
 
   static const double defaultTileHeight = 60.0;
   static const double defaultTitleGap = 10.0;
-  static const double albumCoverCornerRadius = 8.0;
+  static const double albumCoverBorderRadius = 8.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final highlightTrack = isCurrentTrack && highlightCurrentTrack;
     final isOnDesktop = Platform.isMacOS || Platform.isWindows || Platform.isLinux;
     final tileAdditionalInfoType =
-        ref.watch(finampSettingsProvider.tileAdditionalInfoType(TabContentType.tracks)) ??
-        TileAdditionalInfoType.adaptive;
+        ref.watch(finampSettingsProvider.tileAdditionalInfoType(ContentType.tracks)) ?? TileAdditionalInfoType.adaptive;
 
     bool showPlayCount = tileAdditionalInfoType == TileAdditionalInfoType.playCount;
     bool showReleaseDate = tileAdditionalInfoType == TileAdditionalInfoType.dateReleased;
@@ -755,9 +746,11 @@ class TrackListItemTile extends ConsumerWidget {
     final String artistsString;
     if (forceAlbumArtists || (baseItem.artists?.isEmpty ?? true)) {
       artistsString =
-          baseItem.albumArtists?.map((e) => e.name).joinNonNull(", ") ?? AppLocalizations.of(context)!.unknownArtist;
+          baseItem.albumArtists?.sortedBy((e) => e.name ?? '').map((e) => e.name).joinNonNull(", ") ??
+          AppLocalizations.of(context)!.unknownArtist;
     } else {
-      artistsString = baseItem.artists?.joinNonNull(", ") ?? AppLocalizations.of(context)!.unknownArtist;
+      artistsString =
+          baseItem.artists?.sortedBy((e) => e).joinNonNull(", ") ?? AppLocalizations.of(context)!.unknownArtist;
     }
     final downloadedIndicator = DownloadedIndicator(
       item: DownloadStub.fromItem(item: baseItem, type: DownloadItemType.track),
@@ -769,6 +762,10 @@ class TrackListItemTile extends ConsumerWidget {
         (showDateAdded || showDateLastPlayed);
 
     final showPlaybackProgress = !highlightCurrentTrack && playbackProgress != null && playbackProgress! < 0.99;
+
+    final isCurrentlyPlaying = ref.watch(
+      mediaStateProvider.select((x) => x.playbackState.playing || x.fadeDirection == FadeDirection.fadeOut),
+    );
 
     final tileLead = Row(
       mainAxisSize: MainAxisSize.min,
@@ -788,24 +785,46 @@ class TrackListItemTile extends ConsumerWidget {
                 : const EdgeInsets.only(left: 6.0, right: 0.0),
             child: Container(
               constraints: const BoxConstraints(minWidth: 22.0),
-              child: Text(
-                features.contains(TrackListItemFeatures.listIndex)
-                    ? ((listIndex ?? 0) + 1).toString()
-                    : actualIndex.toString(),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.clip,
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              child: isCurrentTrack && isCurrentlyPlaying && !features.contains(TrackListItemFeatures.cover)
+                  ? MiniMusicVisualizer(
+                      animate: true,
+                      color: Theme.of(context).colorScheme.secondary,
+                      width: 4,
+                      height: 15,
+                      radius: 2,
+                    )
+                  : Text(
+                      features.contains(TrackListItemFeatures.listIndex)
+                          ? ((listIndex ?? 0) + 1).toString()
+                          : actualIndex.toString(),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.clip,
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
             ),
           ),
         if (features.contains(TrackListItemFeatures.cover))
-          AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverCornerRadius)),
+          isCurrentTrack && isCurrentlyPlaying
+              ? Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      foregroundDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(albumCoverBorderRadius),
+                        color: Colors.black.withOpacity(0.4),
+                      ),
+                      child: AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverBorderRadius)),
+                    ),
+                    MiniMusicVisualizer(animate: true, color: Colors.white, width: 4, height: 15, radius: 2),
+                  ],
+                )
+              : AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverBorderRadius)),
       ],
     );
     final tileTitle = ConstrainedBox(
@@ -827,7 +846,10 @@ class TrackListItemTile extends ConsumerWidget {
                 height: 1.1,
               ),
               overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+              // It would be better to increase tile height instead of clamping titles to one line and hoping things
+              // now fit, but getting the tile height scaling correct across all widgets is difficult.
+              // TODO properly scale track list tile height
+              maxLines: MediaQuery.textScalerOf(context).scale(15.5) > 15.5 * 1.11 ? 1 : 2,
             ),
           ),
           Flexible(
@@ -1016,11 +1038,11 @@ class TrackListItemTile extends ConsumerWidget {
       hasOverflowed: (BoxConstraints constraints) => constraints.maxWidth > 750,
       builder: (context, showOverflowMenu) {
         return ListTile(
-          visualDensity: const VisualDensity(horizontal: 0.0, vertical: 0.5),
+          visualDensity: const VisualDensity(horizontal: 0.0, vertical: 1.0),
           minVerticalPadding: 0.0,
           horizontalTitleGap: defaultTitleGap,
           contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(albumCoverCornerRadius)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(albumCoverBorderRadius)),
           tileColor: highlightTrack ? Theme.of(context).colorScheme.surfaceContainer : Colors.transparent,
           leading: tileLead,
           title: tileTitle,
@@ -1036,7 +1058,7 @@ class TrackListItemTile extends ConsumerWidget {
                     printDuration(baseItem.runTimeTicksDuration(), leadingZeroes: false),
                     semanticsLabel: durationLabelString,
                     textAlign: TextAlign.end,
-                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6)),
                   ),
                 if (features.contains(TrackListItemFeatures.addToPlaylistOrFavorite))
                   Semantics(
@@ -1120,7 +1142,7 @@ class TrackListItemTile extends ConsumerWidget {
                       decoration: ShapeDecoration(
                         color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.1),
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(albumCoverCornerRadius)),
+                          borderRadius: BorderRadius.all(Radius.circular(albumCoverBorderRadius)),
                         ),
                       ),
                     ),

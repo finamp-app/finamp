@@ -1,9 +1,11 @@
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
+import '../extensions/localizations.dart';
 import '../models/finamp_models.dart';
 import '../services/finamp_settings_helper.dart';
 
@@ -20,6 +22,7 @@ class _LyricsSettingsScreenState extends State<LyricsSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.lyricsScreen),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetLyricsSettings),
         ],
@@ -68,7 +71,7 @@ class LyricsAlignmentSelector extends ConsumerWidget {
                 .map(
                   (e) => DropdownMenuEntry<LyricsAlignment>(
                     value: e,
-                    label: e.toLocalisedString(context),
+                    label: e.toLocalisedString(context.l10n),
                     leadingIcon: switch (e) {
                       LyricsAlignment.start => Icon(
                         Directionality.of(context) == TextDirection.rtl
@@ -108,7 +111,7 @@ class LyricsFontSizeSelector extends ConsumerWidget {
           Text(AppLocalizations.of(context)!.lyricsFontSizeSubtitle),
           FinampSettingsDropdown<LyricsFontSize>(
             dropdownItems: LyricsFontSize.values
-                .map((e) => DropdownMenuEntry<LyricsFontSize>(value: e, label: e.toLocalisedString(context)))
+                .map((e) => DropdownMenuEntry<LyricsFontSize>(value: e, label: e.toLocalisedString(context.l10n)))
                 .toList(),
             selectedValue: ref.watch(finampSettingsProvider.lyricsFontSize),
             onSelected: FinampSetters.setLyricsFontSize.ifNonNull,

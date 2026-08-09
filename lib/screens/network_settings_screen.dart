@@ -1,5 +1,6 @@
 import 'package:finamp/components/Buttons/cta_medium.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/NetworkSettingsScreen/active_network_display.dart';
 import 'package:finamp/components/NetworkSettingsScreen/auto_offline_selector.dart';
 import 'package:finamp/components/NetworkSettingsScreen/prefer_local_network_address_selector.dart';
@@ -31,6 +32,7 @@ class _NetworkSettingsScreenState extends State<NetworkSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.networkSettingsTitle),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetNetworkSettings),
         ],
