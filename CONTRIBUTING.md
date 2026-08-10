@@ -58,3 +58,19 @@ Some of the designs in there are already outdated or still a work in progress. W
 Finamp uses Weblate to manage translations: **https://hosted.weblate.org/engage/finamp/**
 
 Feel free to add new languages if yours isn't there yet. If you have any questions, such as the context of a string, you can ask in the [Translation Discussions](https://github.com/jmshrv/finamp/discussions/categories/translations).
+
+## Development Standards and AI / LLM Usage
+
+Here are some guidelines that will help you work with our maintainers and contributors. Please read them before contributing.
+
+Think about the problem you are trying to solve, and document it before starting work. We like to see why you are making a change, not just the change itself. If you are unsure, please join our Discord server and discuss with other contributors and maintainers.
+
+After you have written the code, test it to make sure everything is working as expected. We like to see screenshots and/or videos of your work, especially when it is related to the UI/UX or playback functions.
+
+We want to keep the codebase healthy, maintainable and focused, therefore we may be picky about what features we choose to take on. Please understand that we have limited resources, and please discuss with maintainers before starting your implementation.
+
+AI usage is expected to be clearly disclosed, including what tool and what model is used. You should however not include Co-authored by tags. We want to ensure human contributors receive the credits. You should also think through what you are being fed by AI tools, and not blindly echo their output.
+
+We want PRs to be scoped and focused. If a PR starts getting too large, we may ask you to split the PR into multiple smaller ones.
+
+Code quality will be judged manually on a case-by-case basis during review. You should strive to produce high quality code.
