@@ -974,8 +974,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     // Choose browsing mode hints based on user settings.
     // - flat: respect the app-wide list/grid setting for albums; category for artists
     // - letterFirst: list for both (letter nodes render as a list)
-    final isLetterFirst = FinampSettingsHelper.finampSettings.androidAutoBrowsingMode ==
-        AndroidAutoBrowsingMode.letterFirst;
+    final isLetterFirst =
+        FinampSettingsHelper.finampSettings.androidAutoBrowsingMode == AndroidAutoBrowsingMode.letterFirst;
     final isGridView = FinampSettingsHelper.finampSettings.contentViewType == ContentViewType.grid;
 
     // 1=list, 2=grid, 4=category
@@ -1007,10 +1007,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         },
       ),
       MediaItem(
-        id: MediaItemId(
-          contentType: TabContentType.albums,
-          parentType: MediaItemParentType.recentlyPlayed,
-        ).toString(),
+        id: MediaItemId(contentType: ContentType.albums, parentType: MediaItemParentType.recentlyPlayed).toString(),
         title: _appLocalizations?.recentlyPlayedAlbums ?? 'Recently Played Albums',
         playable: false,
       ),

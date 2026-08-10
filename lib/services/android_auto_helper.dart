@@ -63,8 +63,33 @@ class AndroidAutoHelper {
 
   /// Letters used for the "Browse by Letter" nodes.
   static const List<String> _alphabet = [
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '#',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+    '#',
   ];
 
   /// Returns the letter nodes A–Z plus a '#' bucket for the Browse-by-Letter view.
@@ -101,13 +126,10 @@ class AndroidAutoHelper {
       final List<BaseItemDto> allItems = [];
       for (final downloadedParent in await _downloadsService.getAllCollections()) {
         if (allItems.length >= offlineModeLimit) break;
-        if (downloadedParent.baseItem != null &&
-            downloadedParent.baseItemType == itemId.contentType.itemType) {
+        if (downloadedParent.baseItem != null && downloadedParent.baseItemType == itemId.contentType.itemType) {
           final name = downloadedParent.baseItem?.name ?? '';
           final firstChar = name.isNotEmpty ? name[0].toUpperCase() : '';
-          final matches = nameFilter == '#'
-              ? !RegExp(r'[A-Za-z]').hasMatch(firstChar)
-              : firstChar == nameFilter;
+          final matches = nameFilter == '#' ? !RegExp(r'[A-Za-z]').hasMatch(firstChar) : firstChar == nameFilter;
           if (matches) allItems.add(downloadedParent.baseItem!);
         }
       }
@@ -116,9 +138,7 @@ class AndroidAutoHelper {
       return (page, sorted.length);
     }
 
-    final parentItem = itemId.contentType == TabContentType.playlists
-        ? null
-        : _finampUserHelper.currentUser?.currentView;
+    final parentItem = itemId.contentType == ContentType.playlists ? null : _finampUserHelper.currentUser?.currentView;
 
     // Jellyfin's NameStartsWith doesn't support '#'; for that bucket we fetch
     // a large page without a name filter and discard alphabetic starters client-side.
@@ -127,16 +147,14 @@ class AndroidAutoHelper {
         parentItem: parentItem,
         sortBy: sortBy.jellyfinName(itemId.contentType),
         sortOrder: sortOrder.toString(),
-        includeItemTypes: itemId.contentType.itemType.jellyfinName,
+        includeItemTypes: itemId.contentType.itemType!.jellyfinName,
         startIndex: pageStart,
         limit: 500,
       );
-      final all = (result.items ?? [])
-          .where((i) {
-            final fc = (i.name?.isNotEmpty ?? false) ? i.name![0].toUpperCase() : '';
-            return !RegExp(r'[A-Za-z]').hasMatch(fc);
-          })
-          .toList();
+      final all = (result.items ?? []).where((i) {
+        final fc = (i.name?.isNotEmpty ?? false) ? i.name![0].toUpperCase() : '';
+        return !RegExp(r'[A-Za-z]').hasMatch(fc);
+      }).toList();
       final page = all.take(_pageSize).toList();
       return (page, all.length);
     }
@@ -145,7 +163,7 @@ class AndroidAutoHelper {
       parentItem: parentItem,
       sortBy: sortBy.jellyfinName(itemId.contentType),
       sortOrder: sortOrder.toString(),
-      includeItemTypes: itemId.contentType.itemType.jellyfinName,
+      includeItemTypes: itemId.contentType.itemType!.jellyfinName,
       startIndex: pageStart,
       limit: _pageSize,
       nameStartsWith: nameFilter,
@@ -164,9 +182,7 @@ class AndroidAutoHelper {
       return [
         MediaItem(
           id: 'recently_played_offline',
-          title: AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)
-                  ?.androidAutoNotAvailableOffline ??
-              'Not available offline',
+          title: GlobalSnackbar.requireL10n.androidAutoNotAvailableOffline,
           playable: false,
         ),
       ];
@@ -210,10 +226,7 @@ class AndroidAutoHelper {
       final itemsById = <String, BaseItemDto>{
         for (final item in itemsResult.items ?? <BaseItemDto>[]) item.id.raw: item,
       };
-      final sortedItems = orderedIds
-          .map((id) => itemsById[id.raw])
-          .whereType<BaseItemDto>()
-          .toList();
+      final sortedItems = orderedIds.map((id) => itemsById[id.raw]).whereType<BaseItemDto>().toList();
 
       final List<MediaItem> mediaItems = [];
       for (final item in sortedItems) {
@@ -244,8 +257,7 @@ class AndroidAutoHelper {
       final List<BaseItemDto> allItems = [];
       for (final downloadedParent in await _downloadsService.getAllCollections()) {
         if (allItems.length >= offlineModeLimit) break;
-        if (downloadedParent.baseItem != null &&
-            downloadedParent.baseItemType == itemId.contentType.itemType) {
+        if (downloadedParent.baseItem != null && downloadedParent.baseItemType == itemId.contentType.itemType) {
           allItems.add(downloadedParent.baseItem!);
         }
       }
@@ -254,15 +266,13 @@ class AndroidAutoHelper {
       return (page, sorted.length);
     }
 
-    final parentItem = itemId.contentType == TabContentType.playlists
-        ? null
-        : _finampUserHelper.currentUser?.currentView;
+    final parentItem = itemId.contentType == ContentType.playlists ? null : _finampUserHelper.currentUser?.currentView;
 
     final result = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
       parentItem: parentItem,
       sortBy: sortBy.jellyfinName(itemId.contentType),
       sortOrder: sortOrder.toString(),
-      includeItemTypes: itemId.contentType.itemType.jellyfinName,
+      includeItemTypes: itemId.contentType.itemType!.jellyfinName,
       startIndex: pageStart,
       limit: _pageSize,
     );
@@ -778,8 +788,8 @@ class AndroidAutoHelper {
           // When browsing artists by letter, mark them as non-playable so
           // Android Auto calls getChildren (showing their albums) rather than
           // starting an instant mix.
-          final isPlayableOverride = itemId.contentType == TabContentType.artists
-              ? ({BaseItemDto? item, TabContentType? contentType}) => false
+          final isPlayableOverride = itemId.contentType == ContentType.performingArtists
+              ? ({BaseItemDto? item, ContentType? contentType}) => false
               : _isPlayable;
           final mediaItem = await queueService.generateMediaItem(
             item,
@@ -793,31 +803,29 @@ class AndroidAutoHelper {
         if (pageStart + items.length < totalCount) {
           final nextStart = pageStart + _pageSize;
           final remaining = totalCount - nextStart;
-          mediaItems.add(MediaItem(
-            id: MediaItemId(
-              contentType: itemId.contentType,
-              parentType: MediaItemParentType.rootCollection,
-              nameFilter: nameFilter,
-              pageStartIndex: nextStart,
-            ).toString(),
-            title: AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)
-                    ?.androidAutoMoreItems(remaining) ??
-                "$remaining more items",
-            playable: false,
-          ));
+          mediaItems.add(
+            MediaItem(
+              id: MediaItemId(
+                contentType: itemId.contentType,
+                parentType: MediaItemParentType.rootCollection,
+                nameFilter: nameFilter,
+                pageStartIndex: nextStart,
+              ).toString(),
+              title: GlobalSnackbar.requireL10n.androidAutoMoreItems(remaining),
+              playable: false,
+            ),
+          );
         }
 
         return mediaItems;
       }
 
       // --- Flat paginated list (nameFilter == null) ---
-      if (itemId.contentType == TabContentType.tracks) {
+      if (itemId.contentType == ContentType.tracks) {
         mediaItems.add(
           MediaItem(
             id: QueueItemSourceNameType.shuffleAll.name,
-            title:
-                AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)?.shuffleAll ??
-                "Shuffle All Tracks",
+            title: GlobalSnackbar.requireL10n.shuffleAll,
             playable: true,
           ),
         );
@@ -825,11 +833,12 @@ class AndroidAutoHelper {
 
       // Albums, Artists, and Tracks support letter browsing.
       // If letterFirst, return the A–Z index immediately; otherwise fall through to flat list.
-      final supportsLetterBrowse = itemId.contentType == TabContentType.albums ||
-          itemId.contentType == TabContentType.artists ||
-          itemId.contentType == TabContentType.tracks;
-      final isLetterFirst = FinampSettingsHelper.finampSettings.androidAutoBrowsingMode ==
-          AndroidAutoBrowsingMode.letterFirst;
+      final supportsLetterBrowse =
+          itemId.contentType == ContentType.albums ||
+          itemId.contentType == ContentType.performingArtists ||
+          itemId.contentType == ContentType.tracks;
+      final isLetterFirst =
+          FinampSettingsHelper.finampSettings.androidAutoBrowsingMode == AndroidAutoBrowsingMode.letterFirst;
       if (supportsLetterBrowse && isLetterFirst) {
         return _getLetterNodes(itemId);
       }
@@ -837,17 +846,17 @@ class AndroidAutoHelper {
       // For flat list mode: "Browse by Letter" node only on first page, if supported.
       final pageStart = itemId.pageStartIndex ?? 0;
       if (pageStart == 0 && supportsLetterBrowse && !isLetterFirst) {
-        mediaItems.add(MediaItem(
-          id: MediaItemId(
-            contentType: itemId.contentType,
-            parentType: MediaItemParentType.rootCollection,
-            nameFilter: _letterRootNameFilter,
-          ).toString(),
-          title: AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)
-                  ?.androidAutoBrowseByLetter ??
-              'Browse by Letter',
-          playable: false,
-        ));
+        mediaItems.add(
+          MediaItem(
+            id: MediaItemId(
+              contentType: itemId.contentType,
+              parentType: MediaItemParentType.rootCollection,
+              nameFilter: _letterRootNameFilter,
+            ).toString(),
+            title: GlobalSnackbar.requireL10n.androidAutoBrowseByLetter,
+            playable: false,
+          ),
+        );
       }
 
       final (items, totalCount) = await _fetchRootPage(itemId);
@@ -868,17 +877,17 @@ class AndroidAutoHelper {
         final nextStart = pageStart + _pageSize;
         final remaining = totalCount - nextStart;
         if (remaining > 0) {
-          mediaItems.add(MediaItem(
-            id: MediaItemId(
-              contentType: itemId.contentType,
-              parentType: MediaItemParentType.rootCollection,
-              pageStartIndex: nextStart,
-            ).toString(),
-            title: AppLocalizations.of(GlobalSnackbar.materialAppScaffoldKey.currentContext!)
-                    ?.androidAutoMoreItems(remaining) ??
-                "$remaining more items",
-            playable: false,
-          ));
+          mediaItems.add(
+            MediaItem(
+              id: MediaItemId(
+                contentType: itemId.contentType,
+                parentType: MediaItemParentType.rootCollection,
+                pageStartIndex: nextStart,
+              ).toString(),
+              title: GlobalSnackbar.requireL10n.androidAutoMoreItems(remaining),
+              playable: false,
+            ),
+          );
         }
       }
 
