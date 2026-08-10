@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/Buttons/finamp_extended_floating_action_button.dart';
@@ -17,7 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:finamp/components/airplay_route_picker.dart';
+import 'package:flutter_to_airplay/flutter_to_airplay.dart';
 import 'package:get_it/get_it.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
@@ -86,10 +87,10 @@ class _LyricsScreenContentState extends ConsumerState<_LyricsScreenContent> {
           title: PlayerScreenAppBarTitle(maxLines: maxLines),
           leading: FinampAppBarBackButton(dismissDirection: AxisDirection.left),
           actions: [
-            if (AirPlayRoutePicker.isSupported)
+            if (Platform.isIOS || Platform.isMacOS)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: AirPlayRoutePicker(
+                child: AirPlayRoutePickerView(
                   tintColor: IconTheme.of(context).color ?? Colors.white,
                   activeTintColor: jellyfinBlueColor,
                   onShowPickerView: () => FeedbackHelper.feedback(FeedbackType.selection),

@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:finamp/components/airplay_route_picker.dart';
+import 'package:flutter_to_airplay/flutter_to_airplay.dart';
 import 'package:get_it/get_it.dart';
 
 const outputMenuRouteName = "/output-menu";
@@ -165,7 +165,7 @@ class OutputMenuHeader extends ConsumerWidget {
               ),
             ),
           ),
-          if (AirPlayRoutePicker.isSupported)
+          if (Platform.isIOS || Platform.isMacOS)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: AnimatedSwitcher(
@@ -173,7 +173,7 @@ class OutputMenuHeader extends ConsumerWidget {
                 switchOutCurve: const Threshold(0.0),
                 child: Consumer(
                   builder: (context, ref, child) {
-                    return AirPlayRoutePicker(
+                    return AirPlayRoutePickerView(
                       key: ValueKey(ref.watch(localThemeProvider).primary),
                       tintColor: ref.watch(localThemeProvider).primary,
                       activeTintColor: jellyfinBlueColor,
@@ -194,7 +194,7 @@ class OutputMenuHeader extends ConsumerWidget {
                 audioHandler.showOutputSwitcherDialog();
               },
             ),
-          if (!Platform.isAndroid && !AirPlayRoutePicker.isSupported) SizedBox(width: 32, height: 8),
+          if (!Platform.isAndroid && !Platform.isIOS && !Platform.isMacOS) SizedBox(width: 32, height: 8),
         ],
       ),
     );
