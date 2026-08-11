@@ -627,8 +627,14 @@ class JellyfinInterceptor implements Interceptor {
     // If baseUrlTemp is set, we're setting up a new user and should use it instead.
     Uri baseUri = baseUrlTemp ?? Uri.parse(finampUserHelper.currentUser!.baseURL);
 
-    // Add the request path on to the baseUrl
-    baseUri = baseUri.replace(pathSegments: baseUri.pathSegments.followedBy(request.uri.pathSegments));
+    // Join base + request path without Uri.replace(pathSegments:), which
+    // is easy to misuse and harder to reason about for opaque hosts.
+    final base = baseUri.toString().replaceAll(RegExp(r'/+$'), '');
+    final reqPath = request.uri.path.startsWith('/') ? request.uri.path : '/${request.uri.path}';
+    baseUri = Uri.parse('$base$reqPath');
+    if (request.uri.hasQuery) {
+      baseUri = baseUri.replace(query: request.uri.query);
+    }
 
     // Preserve an existing multipart/form-data or other explicit Content-Type (e.g., for file uploads)
     // Do NOT force a Content-Type here; let Chopper/converters set JSON, and leave
@@ -653,7 +659,12 @@ class JellyfinSpecificInterceptor implements Interceptor {
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
 
     Uri baseUri = Uri.parse(url);
-    baseUri = baseUri.replace(pathSegments: baseUri.pathSegments.followedBy(request.uri.pathSegments));
+    final base = baseUri.toString().replaceAll(RegExp(r'/+$'), '');
+    final reqPath = request.uri.path.startsWith('/') ? request.uri.path : '/${request.uri.path}';
+    baseUri = Uri.parse('$base$reqPath');
+    if (request.uri.hasQuery) {
+      baseUri = baseUri.replace(query: request.uri.query);
+    }
 
     return request.copyWith(
       uri: baseUri,

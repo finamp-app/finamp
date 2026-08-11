@@ -5,11 +5,13 @@ import 'package:finamp/components/HomeScreen/finamp_music_screen_header.dart';
 import 'package:finamp/components/MusicScreen/offline_mode_status_label.dart';
 import 'package:finamp/components/MusicScreen/offline_mode_switch_list_tile.dart';
 import 'package:finamp/components/MusicScreen/view_list_tile.dart';
+import 'package:finamp/components/external_search_button.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/screens/downloads_screen.dart';
+import 'package:finamp/screens/external_search_screen.dart';
 import 'package:finamp/screens/logs_screen.dart';
 import 'package:finamp/screens/playback_history_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
@@ -146,6 +148,15 @@ class MusicScreenDrawer extends ConsumerWidget {
                         ),
                         title: Text(AppLocalizations.of(context)!.downloads, style: TextStyle(fontSize: 15.0)),
                         onTap: () => Navigator.of(context).pushNamed(DownloadsScreen.routeName),
+                        dense: true,
+                      ),
+                      ListTile(
+                        leading: const Padding(
+                          padding: EdgeInsets.only(left: 2.0, right: 12.0),
+                          child: ExternalSearchLeadingIcon(),
+                        ),
+                        title: Text(AppLocalizations.of(context)!.externalSearch, style: TextStyle(fontSize: 15.0)),
+                        onTap: () => Navigator.of(context).pushNamed(ExternalSearchScreen.routeName),
                         dense: true,
                       ),
                       ListTile(

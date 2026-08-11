@@ -134,5 +134,8 @@ app.*.map.json
 # generated localization files
 **/lib/l10n/*.dart
 
+# Personal mobile installer outputs (scripts/build-mobile-installers.sh)
+/dist/
+
 # Integration testing artifacts
 integration_test/testing

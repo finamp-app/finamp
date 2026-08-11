@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
+import 'package:finamp/components/external_search_button.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/extensions/color_extensions.dart';
@@ -265,6 +266,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                         }
                       },
                     ),
+                  const ExternalSearchButton(),
                   if (singleTabConfig?.base case CollectionHomeSection collection)
                     IconButtonWithSemantics(
                       label: singleTabConfig!.getTitle(context.l10n),

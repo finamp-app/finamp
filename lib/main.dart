@@ -26,6 +26,7 @@ import 'package:finamp/screens/login_screen.dart';
 import 'package:finamp/screens/lyrics_settings_screen.dart';
 import 'package:finamp/screens/network_settings_screen.dart';
 import 'package:finamp/screens/playback_history_screen.dart';
+import 'package:finamp/screens/external_search_screen.dart';
 import 'package:finamp/screens/playback_reporting_settings_screen.dart';
 import 'package:finamp/screens/player_settings_screen.dart';
 import 'package:finamp/screens/playlist_edit_screen.dart';
@@ -989,6 +990,7 @@ class FinampApp extends ConsumerWidget {
         GenreSettingsScreen.routeName: (context) => const GenreSettingsScreen(),
         NetworkSettingsScreen.routeName: (context) => const NetworkSettingsScreen(),
         AccessibilitySettingsScreen.routeName: (context) => const AccessibilitySettingsScreen(),
+        ExternalSearchScreen.routeName: (context) => const ExternalSearchScreen(),
         PlaylistEditScreen.routeName: (context) =>
             PlaylistEditScreen(playlist: ModalRoute.settingsOf(context)!.arguments as BaseItemDto),
         //ShowAllScreen.routeName: (context) => const ShowAllScreen(),

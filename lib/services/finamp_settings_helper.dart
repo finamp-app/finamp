@@ -49,6 +49,12 @@ class FinampSettingsHelper {
     Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", newFinampSettings);
   }
 
+  /// True when a Music Finder base URL is stored (set only after health check).
+  static bool get hasMusicFinderServer {
+    final url = finampSettings.musicFinderServerUrl?.trim();
+    return url != null && url.isNotEmpty;
+  }
+
   static void resetTabsSettings() {
     FinampSettings finampSettingsTemp = finampSettings;
     finampSettingsTemp.tabOrder = DefaultSettings.tabOrder;

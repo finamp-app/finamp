@@ -1298,6 +1298,14 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setMusicFinderServerUrl(String? musicFinderServerUrl) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.musicFinderServerUrl = musicFinderServerUrl;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1741,6 +1749,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ProviderListenable<bool> get verboseLogging => finampSettingsProvider.select(
     (value) => value.requireValue.verboseLogging,
   );
+  ProviderListenable<String?> get musicFinderServerUrl =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.musicFinderServerUrl,
+      );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

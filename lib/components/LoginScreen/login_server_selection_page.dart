@@ -7,6 +7,7 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/client_certificate_installer.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/jellyfin_server_url.dart';
 import 'package:finamp/services/server_client_discovery_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -333,18 +334,25 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
               onEditingComplete: () => node.nextFocus(),
               onChanged: (value) async {
                 widget.serverState.manualServer = null;
-                widget.serverState.baseUrl = value;
-                if (formKey.currentState?.validate() == true) {
-                  widget.serverState.onBaseUrlChanged(value);
+                final normalized = JellyfinServerUrl.normalize(value);
+                widget.serverState.baseUrl = normalized;
+                if (formKey.currentState?.validate() ?? false) {
+                  widget.serverState.onBaseUrlChanged(normalized);
                 }
               },
               validator: (value) {
-                if (value?.isEmpty == true) {
-                  return AppLocalizations.of(context)!.emptyServerUrl;
-                }
-                return null;
+                final localizations = AppLocalizations.of(context)!;
+                final normalized = value == null ? value : JellyfinServerUrl.normalize(value);
+                return JellyfinServerUrl.validate(
+                  normalized,
+                  empty: localizations.emptyServerUrl,
+                  mustStartWithHttp: localizations.urlStartWithHttps,
+                  noTrailingSlash: localizations.urlTrailingSlash,
+                  userInfoTypo: localizations.urlUserInfoTypo,
+                );
               },
-              onSaved: (newValue) => widget.serverState.baseUrl = newValue,
+              onSaved: (newValue) => widget.serverState.baseUrl =
+                  newValue == null ? newValue : JellyfinServerUrl.normalize(newValue),
             ),
           ],
         ),

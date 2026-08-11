@@ -94,6 +94,14 @@
     "@emptyServerUrl": {
         "description": "Error message that shows when the user submits a login without a server URL"
     },
+    "urlStartWithHttps": "URL must start with http:// or https://",
+    "@urlStartWithHttps": {
+        "description": "Error message that shows when the user submits a server URL that doesn't start with http:// or https://"
+    },
+    "urlTrailingSlash": "URL must not include a trailing slash",
+    "@urlTrailingSlash": {
+        "description": "Error message that shows when the user submits a server URL that ends with a trailing slash"
+    },
     "connectingToServer": "Connecting to server…",
     "@connectingToServer": {
         "description": "Text shown while the connection to the specified server is attempted"
@@ -149,6 +157,10 @@
     "loginFlowSelectAUser": "Select a user",
     "@loginFlowSelectAUser": {
         "description": "Heading for the list of users that the user can select from during the login flow."
+    },
+    "urlUserInfoTypo": "Hostname looks wrong (@ instead of .). Use http://jellyfin.example.ts.net:8096 — not jellyfin@example…",
+    "@urlUserInfoTypo": {
+        "description": "Error when the server URL contains user@host, usually a MagicDNS typo where @ was used instead of ."
     },
     "username": "Username",
     "usernameHint": "Enter your username",
@@ -3716,5 +3728,134 @@
                 "example": "Never Gonna Give You Up"
             }
         }
+    },
+  "externalSearch": "Music Finder",
+  "@externalSearch": {
+    "description": "Title and tooltip for the Music Finder (skull) entry points"
+  },
+  "song": "Song",
+  "@song": {
+    "description": "Label for the song name field on the external search screen"
+  },
+  "searchButtonLabel": "Search",
+  "@searchButtonLabel": {
+    "description": "Label for the search submit button on the external search screen"
+  },
+  "externalSearchSubmitted": "Search criteria: {criteria}",
+  "@externalSearchSubmitted": {
+    "description": "Snackbar shown after submitting an external search (stub until API is wired)",
+    "placeholders": {
+      "criteria": {
+        "type": "String",
+        "example": "Song: Hello, Artist: Adele"
+      }
     }
+  },
+  "musicFinderServerUrl": "Music Finder Server URL",
+  "@musicFinderServerUrl": {
+    "description": "Label for the external Music Finder server URL field"
+  },
+  "connectButtonLabel": "Connect",
+  "@connectButtonLabel": {
+    "description": "Label for the Connect button on the external search screen"
+  },
+  "connectingButtonLabel": "Connecting...",
+  "@connectingButtonLabel": {
+    "description": "Busy label while probing the Music Finder server"
+  },
+  "musicFinderConnectFailed": "Could not connect to Music Finder server",
+  "@musicFinderConnectFailed": {
+    "description": "Error when the Music Finder URL does not return HTTP 200"
+  },
+  "musicFinderServerSheetTitle": "Music Finder server",
+  "@musicFinderServerSheetTitle": {
+    "description": "Title for the Music Finder server setup bottom sheet"
+  },
+  "musicFinderServerSheetSubtitle": "Enter your Music Finder URL, then connect. After a successful check it is stored privately and never shown again.",
+  "@musicFinderServerSheetSubtitle": {
+    "description": "Subtitle explaining the server setup sheet; URL is treated as a secret after connect"
+  },
+  "musicFinderChangeServer": "Change server",
+  "@musicFinderChangeServer": {
+    "description": "AppBar tooltip to reopen Music Finder server setup"
+  },
+  "musicFinderShowUrl": "Show URL",
+  "@musicFinderShowUrl": {
+    "description": "Tooltip to reveal the Music Finder URL field while typing"
+  },
+  "musicFinderHideUrl": "Hide URL",
+  "@musicFinderHideUrl": {
+    "description": "Tooltip to obscure the Music Finder URL field while typing"
+  },
+  "musicFinderServerUnavailable": "Music Finder server is unreachable",
+  "@musicFinderServerUnavailable": {
+    "description": "Shown when External Search cannot reach the configured server"
+  },
+  "searchingButtonLabel": "Searching...",
+  "@searchingButtonLabel": {
+    "description": "Busy label while Music Finder search is in progress"
+  },
+  "musicFinderIdentity": "Identity",
+  "@musicFinderIdentity": {},
+  "musicFinderDiagnostics": "Diagnostics",
+  "@musicFinderDiagnostics": {
+    "description": "Debug-only expandable section for Music Finder status and warnings"
+  },
+  "musicFinderWarnings": "Warnings",
+  "@musicFinderWarnings": {},
+  "musicFinderAlreadyOwned": "Already in library: {artist} — {title} (score {score})",
+  "@musicFinderAlreadyOwned": {
+    "placeholders": {
+      "artist": {"type": "String"},
+      "title": {"type": "String"},
+      "score": {"type": "String"}
+    }
+  },
+  "musicFinderChooseArtist": "Multiple artists below auto-pick threshold — choose one:",
+  "@musicFinderChooseArtist": {},
+  "musicFinderContinueWithArtist": "Continue with selected artist",
+  "@musicFinderContinueWithArtist": {},
+  "musicFinderSelectedArtist": "Selected: {name} ({source}, {scorePercent}%)",
+  "@musicFinderSelectedArtist": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "source": {"type": "String"},
+      "scorePercent": {"type": "String"}
+    }
+  },
+  "musicFinderRecordingHint": "Recording hint",
+  "@musicFinderRecordingHint": {},
+  "musicFinderResults": "Results",
+  "@musicFinderResults": {
+    "description": "Heading for External Search result list"
+  },
+  "musicFinderScore": "Score",
+  "@musicFinderScore": {},
+  "musicFinderTitle": "Title",
+  "@musicFinderTitle": {},
+  "musicFinderAddSelected": "Add to Library",
+  "@musicFinderAddSelected": {
+    "description": "Primary action to add selected External Search results to the library"
+  },
+  "musicFinderAddingLabel": "Adding...",
+  "@musicFinderAddingLabel": {},
+  "musicFinderJumpToTop": "Jump to top",
+  "@musicFinderJumpToTop": {},
+  "musicFinderJumpToBottom": "Jump to bottom",
+  "@musicFinderJumpToBottom": {},
+  "musicFinderScrollUp": "Scroll up",
+  "@musicFinderScrollUp": {},
+  "musicFinderScrollDown": "Scroll down",
+  "@musicFinderScrollDown": {},
+  "musicFinderNoCandidates": "No results found.",
+  "@musicFinderNoCandidates": {},
+  "musicFinderAddResults": "Add results",
+  "@musicFinderAddResults": {},
+  "musicFinderAddSummary": "Added {ok} of {total} to library",
+  "@musicFinderAddSummary": {
+    "placeholders": {
+      "ok": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  }
 }

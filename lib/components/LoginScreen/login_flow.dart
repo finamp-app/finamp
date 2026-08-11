@@ -5,6 +5,7 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/view_selector.dart';
 import 'package:finamp/services/client_certificate_installer.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/jellyfin_server_url.dart';
 import 'package:finamp/services/server_client_discovery_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -238,8 +239,8 @@ class ServerState {
 
       String baseUrlToTest = baseUrl;
 
-      // We trim the base url in case the user accidentally added some trailing whitespace
-      baseUrlToTest = baseUrlToTest.trim();
+      // Trim/normalize (fixes jellyfin@tailnet → jellyfin.tailnet MagicDNS typo)
+      baseUrlToTest = JellyfinServerUrl.normalize(baseUrlToTest);
 
       if (!(baseUrlToTest.startsWith("http://") || baseUrlToTest.startsWith("https://"))) {
         // use https by default

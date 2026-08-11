@@ -211,6 +211,7 @@ flutter:
     - images/finamp_cropped.png
     - images/finamp_cropped.svg
     - images/jellyfin-icon-transparent.png
+    - images/external_search_icon.png
     - assets/icon/icon_square_bg-black.png # preview image for Discord RPC Fallback Icon Setting
     - assets/icon/icon_combined.png # preview image for Discord RPC Fallback Icon Setting
     - assets/icon/icon_square_bg-white.png # preview image for Discord RPC Fallback Icon Setting

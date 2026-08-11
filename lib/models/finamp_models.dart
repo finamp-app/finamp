@@ -274,6 +274,7 @@ class DefaultSettings {
   static const duckOnAudioInterruption = true;
   static const forceAudioOffloadingOnAndroid = false;
   static const verboseLogging = false;
+  static const String? musicFinderServerUrl = null;
   static const previousTracksPersistenceMode = PreviousTracksPersistenceMode.persistent;
   static final homeScreenConfiguration = FinampHomeScreenConfiguration(
     actions: [
@@ -456,6 +457,7 @@ class FinampSettings {
     required this.homeScreenImageSize,
     this.useAndroidGainEffect = DefaultSettings.useAndroidGainEffect,
     required this.deviceId,
+    this.musicFinderServerUrl,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -948,6 +950,11 @@ class FinampSettings {
   /// release builds otherwise cap at INFO.
   @HiveField(153, defaultValue: DefaultSettings.verboseLogging)
   bool verboseLogging = DefaultSettings.verboseLogging;
+
+  /// Base URL for the external Music Finder service (non-Jellyfin).
+  /// Treated as a secret: never display in UI after a successful health check.
+  @HiveField(154)
+  String? musicFinderServerUrl;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
