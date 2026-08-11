@@ -25,6 +25,7 @@ class MetadataProvider {
   bool isDownloaded;
   bool qualifiesForPlaybackSpeedControl;
   double? albumNormalizationGain;
+  List<BaseItemPerson>? people;
 
   MetadataProvider({
     required this.item,
@@ -33,6 +34,7 @@ class MetadataProvider {
     this.isDownloaded = false,
     this.qualifiesForPlaybackSpeedControl = false,
     this.albumNormalizationGain,
+    this.people,
   });
 
   MediaSourceInfo get mediaSourceInfo => playbackInfo.mediaSources!.first;
@@ -187,7 +189,20 @@ final AutoDisposeFutureProviderFamily<MetadataProvider?, BaseItemDto> metadataPr
         playbackInfo: playbackInfo,
         isDownloaded: localPlaybackInfo != null,
         albumNormalizationGain: parent?.normalizationGain,
+        people: item.people,
       );
+
+      final chipConfig = ref.watch(finampSettingsProvider.featureChipsConfiguration);
+      if (!ref.watch(finampSettingsProvider.isOffline) &&
+          chipConfig.enabled &&
+          chipConfig.features.contains(FinampFeatureChipType.additionalPeople)) {
+        try {
+          final withPeople = await jellyfinApiHelper.getItems(itemIds: [item.id], fields: "People");
+          metadata.people = withPeople?.firstOrNull?.people;
+        } catch (e) {
+          metadataProviderLogger.warning("Failed to fetch people for '${item.name}' (${item.id})", e);
+        }
+      }
 
       for (final genre in item.genres ?? []) {
         if (MetadataProvider.speedControlGenres.contains(genre.toLowerCase())) {

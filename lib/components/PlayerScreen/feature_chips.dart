@@ -120,8 +120,9 @@ class FeatureState {
         );
       }
 
-      if (feature == FinampFeatureChipType.additionalPeople && (currentTrack?.baseItem.people?.isNotEmpty ?? false)) {
-        currentTrack?.baseItem.people?.forEach((person) {
+      final people = metadata?.people ?? currentTrack?.baseItem.people;
+      if (feature == FinampFeatureChipType.additionalPeople && (people?.isNotEmpty ?? false)) {
+        people?.forEach((person) {
           features.add(FeatureProperties(type: feature, text: "${person.role ?? person.type}: ${person.name}"));
         });
       }
