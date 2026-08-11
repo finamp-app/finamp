@@ -275,6 +275,7 @@ class AndroidAutoHelper {
       includeItemTypes: itemId.contentType.itemType!.jellyfinName,
       startIndex: pageStart,
       limit: _pageSize,
+      artistType: itemId.contentType == ContentType.albumArtists ? ArtistType.albumArtist : null,
     );
     return (result.items ?? [], result.totalRecordCount);
   }
@@ -322,11 +323,7 @@ class AndroidAutoHelper {
         )).toList().map((e) => e.baseItem).whereNotNull().toList();
         artistAlbums.sort((a, b) => (a.premiereDate ?? "").compareTo(b.premiereDate ?? ""));
 
-        final List<BaseItemDto> allTracks = [];
-        for (var album in artistAlbums) {
-          allTracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
-        }
-        return allTracks;
+        return artistAlbums;
       } else {
         var downloadedParent = await _downloadsService.getCollectionInfo(id: itemId.itemId);
         if (downloadedParent != null && downloadedParent.baseItem != null) {
@@ -520,7 +517,7 @@ class AndroidAutoHelper {
     } else if (searchQuery.extras?["android.intent.extra.artist"] != null &&
         searchQuery.extras?["android.intent.extra.title"] == null) {
       // if only artist is provided, search for artist
-      itemType = ContentType.performingArtists.itemType;
+      itemType = ContentType.albumArtists.itemType;
       enhancedQuery = searchQuery.extras?["android.intent.extra.artist"] as String?;
     } else {
       // if no metadata is provided, search for tracks *and* playlists, preferring playlists
@@ -684,19 +681,24 @@ class AndroidAutoHelper {
           order: FinampPlaybackOrder
               .linear, //TODO add a setting that sets the default (because Android Auto doesn't give use the prompt as an extra), or use the current order?
         );
-      } else if (itemType == ContentType.performingArtists.itemType) {
+      } else if (itemType == ContentType.albumArtists.itemType) {
         if (FinampSettingsHelper.finampSettings.isOffline) {
-          final parentBaseItems = await getBaseItems(
+          final artistAlbums = await getBaseItems(
             MediaItemId(
-              contentType: ContentType.performingArtists,
+              contentType: ContentType.albumArtists,
               parentType: MediaItemParentType.collection,
               parentId: selectedResult.id,
               itemId: selectedResult.id,
             ),
           );
 
+          final List<BaseItemDto> allTracks = [];
+          for (final album in artistAlbums) {
+            allTracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
+          }
+
           await queueService.startPlayback(
-            items: parentBaseItems,
+            items: allTracks,
             source: QueueItemSource(
               type: QueueItemSourceType.artist,
               name: QueueItemSourceName(
@@ -785,17 +787,11 @@ class AndroidAutoHelper {
         final pageStart = itemId.pageStartIndex ?? 0;
 
         for (final item in items) {
-          // When browsing artists by letter, mark them as non-playable so
-          // Android Auto calls getChildren (showing their albums) rather than
-          // starting an instant mix.
-          final isPlayableOverride = itemId.contentType == ContentType.performingArtists
-              ? ({BaseItemDto? item, ContentType? contentType}) => false
-              : _isPlayable;
           final mediaItem = await queueService.generateMediaItem(
             item,
             parentType: MediaItemParentType.collection,
             parentId: item.parentId,
-            isPlayable: isPlayableOverride,
+            isPlayable: _isPlayable,
           );
           mediaItems.add(mediaItem);
         }
@@ -831,11 +827,24 @@ class AndroidAutoHelper {
         );
       }
 
+      if (itemId.contentType == ContentType.albumArtists &&
+          itemId.parentType == MediaItemParentType.collection &&
+          itemId.itemId != null) {
+        final instantMixId = MediaItemId(
+          contentType: ContentType.albumArtists,
+          parentType: MediaItemParentType.instantMix,
+          itemId: itemId.itemId,
+        );
+        mediaItems.add(
+          MediaItem(id: instantMixId.toString(), title: GlobalSnackbar.requireL10n.instantMix, playable: true),
+        );
+      }
+
       // Albums, Artists, and Tracks support letter browsing.
       // If letterFirst, return the A–Z index immediately; otherwise fall through to flat list.
       final supportsLetterBrowse =
           itemId.contentType == ContentType.albums ||
-          itemId.contentType == ContentType.performingArtists ||
+          itemId.contentType == ContentType.albumArtists ||
           itemId.contentType == ContentType.tracks;
       final isLetterFirst =
           FinampSettingsHelper.finampSettings.androidAutoBrowsingMode == AndroidAutoBrowsingMode.letterFirst;
@@ -914,15 +923,42 @@ class AndroidAutoHelper {
     // queue service should be initialized by time we get here
     final queueService = GetIt.instance<QueueService>();
 
-    // shouldn't happen, but just in case
-    if (!_isPlayable(contentType: itemId.contentType)) {
-      _androidAutoHelperLogger.warning(
-        "Tried to play from media id with non-playable item type ${itemId.parentType.name}",
-      );
-      return;
-    }
-
     if (itemId.parentType == MediaItemParentType.instantMix) {
+      if (itemId.contentType == ContentType.albumArtists) {
+        final parentItem = await getParentFromId(itemId.itemId!);
+        if (FinampSettingsHelper.finampSettings.isOffline) {
+          final artistAlbums = await getBaseItems(
+            MediaItemId(
+              contentType: ContentType.albumArtists,
+              parentType: MediaItemParentType.collection,
+              itemId: itemId.itemId,
+            ),
+          );
+          final List<BaseItemDto> allTracks = [];
+          for (final album in artistAlbums) {
+            allTracks.addAll(await _downloadsService.getCollectionTracks(album, playable: true));
+          }
+          return await queueService.startPlayback(
+            items: allTracks,
+            source: QueueItemSource(
+              type: QueueItemSourceType.artist,
+              name: QueueItemSourceName(
+                type: QueueItemSourceNameType.preTranslated,
+                pretranslatedName: parentItem?.name,
+              ),
+              id: itemId.itemId!,
+              item: parentItem,
+            ),
+            order: FinampPlaybackOrder.linear,
+          );
+        } else {
+          if (parentItem == null) {
+            _androidAutoHelperLogger.warning("Could not resolve artist item for instant mix: ${itemId.itemId}");
+            return;
+          }
+          return await audioServiceHelper.startInstantMixForArtists([parentItem]);
+        }
+      }
       if (FinampSettingsHelper.finampSettings.isOffline) {
         List<DownloadStub> offlineItems;
         // If we're on the tracks tab, just get all of the downloaded items
@@ -957,6 +993,14 @@ class AndroidAutoHelper {
       }
     }
 
+    // shouldn't happen, but just in case
+    if (!_isPlayable(contentType: itemId.contentType)) {
+      _androidAutoHelperLogger.warning(
+        "Tried to play from media id with non-playable item type ${itemId.parentType.name}",
+      );
+      return;
+    }
+
     if (itemId.parentType != MediaItemParentType.collection || itemId.itemId == null) {
       _androidAutoHelperLogger.warning(
         "Tried to play from media id with invalid parent type '${itemId.parentType.name}' or null id",
@@ -965,26 +1009,6 @@ class AndroidAutoHelper {
     }
     // get all tracks of current parent
     final parentItem = await getParentFromId(itemId.itemId!);
-
-    // start instant mix for artists
-    if (itemId.contentType.isArtist) {
-      if (FinampSettingsHelper.finampSettings.isOffline || parentItem == null) {
-        final parentBaseItems = await getBaseItems(itemId);
-
-        return await queueService.startPlayback(
-          items: parentBaseItems,
-          source: QueueItemSource(
-            type: QueueItemSourceType.artist,
-            name: QueueItemSourceName(type: QueueItemSourceNameType.preTranslated, pretranslatedName: parentItem?.name),
-            id: parentItem?.id ?? itemId.parentId!,
-            item: parentItem,
-          ),
-          order: FinampPlaybackOrder.linear,
-        );
-      } else {
-        return await audioServiceHelper.startInstantMixForArtists([parentItem]);
-      }
-    }
 
     final parentBaseItems = await getBaseItems(itemId);
 
@@ -1244,7 +1268,7 @@ class AndroidAutoHelper {
     try {
       searchResultExactQuery = await _getResults(
         searchTerm: searchQuery.rawQuery.trim(),
-        itemTypes: [ContentType.performingArtists.itemType].nonNulls.toList(),
+        itemTypes: [ContentType.albumArtists.itemType].nonNulls.toList(),
         limit: hasArtistMetadata ? (limit / 2).round() : limit,
       );
     } catch (e) {
@@ -1254,7 +1278,7 @@ class AndroidAutoHelper {
       try {
         searchResultAdjustedQuery = await _getResults(
           searchTerm: (searchQuery.extras!["android.intent.extra.artist"] as String).trim(),
-          itemTypes: [ContentType.performingArtists.itemType].nonNulls.toList(),
+          itemTypes: [ContentType.albumArtists.itemType].nonNulls.toList(),
           limit: limit - (searchResultExactQuery?.length ?? 0),
         );
       } catch (e) {
@@ -1441,13 +1465,11 @@ class AndroidAutoHelper {
   }
 
   // albums, playlists, and tracks should play when clicked
-  // clicking artists starts an instant mix, so they are technically playable
-  // genres has subcategories, so it should be browsable but not playable
+  // artists and genres have subcategories, so they should be browsable but not playable
   bool _isPlayable({BaseItemDto? item, ContentType? contentType}) {
     final tabContentType = ContentType.fromItemType(item?.type ?? contentType?.itemType?.jellyfinName ?? "Audio");
     return tabContentType == ContentType.albums ||
         tabContentType == ContentType.playlists ||
-        tabContentType.isArtist ||
         tabContentType == ContentType.tracks;
   }
 }
