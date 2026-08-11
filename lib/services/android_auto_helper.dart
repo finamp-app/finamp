@@ -52,12 +52,6 @@ class AndroidAutoHelper {
     return await _jellyfinApiHelper.getItemById(parentId);
   }
 
-  /// Android Auto content style hint values.
-  /// See https://developer.android.com/training/cars/media#default-content-style
-  static const int _contentStyleList = 1;
-  static const int _contentStyleGrid = 2;
-  static const int _contentStyleCategory = 4;
-
   /// Sentinel nameFilter value used to identify the "Browse by Letter" index node.
   static const String _letterRootNameFilter = 'letter_root';
 
@@ -106,8 +100,8 @@ class AndroidAutoHelper {
         playable: false,
         extras: const {
           // Items filtered by letter should render as a list (no grid).
-          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": _contentStyleList,
-          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": _contentStyleList,
+          AndroidContentStyle.browsableHintKey: AndroidContentStyle.listItemHintValue,
+          AndroidContentStyle.playableHintKey: AndroidContentStyle.listItemHintValue,
         },
       );
     }).toList();

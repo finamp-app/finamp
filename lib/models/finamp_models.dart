@@ -2824,7 +2824,7 @@ enum MediaItemParentType {
   recentlyPlayed,
 }
 
-@JsonSerializable(converters: [BaseItemIdConverter()])
+@JsonSerializable(converters: [BaseItemIdConverter()], includeIfNull: false)
 @HiveType(typeId: 69)
 class MediaItemId {
   MediaItemId({

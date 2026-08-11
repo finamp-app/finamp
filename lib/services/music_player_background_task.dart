@@ -979,8 +979,12 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     final isGridView = FinampSettingsHelper.finampSettings.contentViewType == ContentViewType.grid;
 
     // 1=list, 2=grid, 4=category
-    final albumsBrowsableHint = isLetterFirst ? 1 : (isGridView ? 2 : 1);
-    final artistsBrowsableHint = isLetterFirst ? 1 : 4; // artists always category in flat mode
+    final albumsBrowsableHint = isLetterFirst
+        ? AndroidContentStyle.listItemHintValue
+        : (isGridView ? AndroidContentStyle.gridItemHintValue : AndroidContentStyle.listItemHintValue);
+    final artistsBrowsableHint = isLetterFirst
+        ? AndroidContentStyle.listItemHintValue
+        : AndroidContentStyle.categoryGridItemHintValue; // artists always category in flat mode
 
     return [
       MediaItem(
@@ -989,8 +993,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         title: _appLocalizations?.albums ?? ContentType.albums.toString(),
         playable: false,
         extras: {
-          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": albumsBrowsableHint,
-          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
+          AndroidContentStyle.browsableHintKey: albumsBrowsableHint,
+          AndroidContentStyle.playableHintKey: AndroidContentStyle.categoryGridItemHintValue,
         },
       ),
       MediaItem(
@@ -1002,8 +1006,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         title: _appLocalizations?.artists ?? ContentType.albumArtists.toString(),
         playable: false,
         extras: {
-          "android.media.browse.CONTENT_STYLE_BROWSABLE_HINT": artistsBrowsableHint,
-          "android.media.browse.CONTENT_STYLE_PLAYABLE_HINT": 4,
+          AndroidContentStyle.browsableHintKey: artistsBrowsableHint,
+          AndroidContentStyle.playableHintKey: AndroidContentStyle.categoryGridItemHintValue,
         },
       ),
       MediaItem(
