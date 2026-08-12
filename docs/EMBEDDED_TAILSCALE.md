@@ -30,11 +30,19 @@ Toggle off to use the normal LAN / public HTTP client again.
 - Flutter with **Dart ≥ 3.10.4** (this branch bumps `sdk: ^3.10.4`)
 - **Go 1.25+** on `PATH` (Go 1.26 recommended). The first build compiles the
   native tsnet asset; later builds are cached.
+- **Rust / rustup** on `PATH` (Finamp’s `flutter_discord_rpc` builds via Cargokit;
+  iOS needs `rustup target add aarch64-apple-ios`)
 - Xcode (iOS/macOS) / Android NDK via Flutter
+- On **Xcode 16.2** (iOS 18.2 SDK), keep plugin caps in `pubspec.yaml` so the
+  tree does not pull iOS 26-only APIs that still support Finamp’s **iOS 14+**
+  deployment target:
+  - `device_info_plus: ">=12.1.0 <12.4.0"`
+  - `connectivity_plus: ">=7.0.0 <7.3.0"`
 
 ```bash
 # Dev MacBook — Finamp repo
 go version   # expect go1.25+
+rustc --version
 flutter pub get
 flutter run
 ```
