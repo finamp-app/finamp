@@ -62,6 +62,11 @@
 		<string>Required for debugging</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>I don't know why this permission is being requested, you should probably deny it. If you can, create a GitHub issue with a screenshot of this message.</string>
+		<key>NSUserActivityTypes</key>
+		<array>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).browsing</string>
+			<string>NSUserActivityTypeBrowsingWeb</string>
+		</array>
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>audio</string>
@@ -99,7 +104,7 @@
 						<key>UISceneClassName</key>
 						<string>UIWindowScene</string>
 						<key>UISceneDelegateClassName</key>
-						<string>FlutterSceneDelegate</string>
+						<string>SceneDelegate</string>
 						<key>UISceneConfigurationName</key>
 						<string>flutter</string>
 						<key>UISceneStoryboardFile</key>

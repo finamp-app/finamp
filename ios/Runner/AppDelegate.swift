@@ -81,12 +81,12 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
             return sceneConfig
         }
 
-        // Main window: FlutterSceneDelegate (UIScene migration).
+        // Main window: SceneDelegate (FlutterSceneDelegate + empty-activity guard).
         let sceneConfig = UISceneConfiguration(
             name: "flutter",
             sessionRole: connectingSceneSession.role
         )
-        sceneConfig.delegateClass = FlutterSceneDelegate.self
+        sceneConfig.delegateClass = SceneDelegate.self
         sceneConfig.storyboard = UIStoryboard(name: "Main", bundle: nil)
         return sceneConfig
     }

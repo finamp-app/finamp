@@ -23,6 +23,11 @@ WireGuard-over-UDP from inside Finamp and leaves the OS routing table alone.
 When the toggle is on, app launch calls `Tailscale.up()` again so MagicDNS
 works without reopening Settings (saved credentials / auth key flow).
 
+Until tsnet reports running (after auth key / interactive login), Chopper falls
+back to the platform HTTP client — MagicDNS names like `*.ts.net` will fail
+with `Failed host lookup` until login finishes. Prefer an **auth key** over
+interactive login on iOS sideloads (fewer Safari/autofill edge cases).
+
 Toggle off to use the normal LAN / public HTTP client again.
 
 ## Build requirements

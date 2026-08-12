@@ -235,12 +235,15 @@ class CarPlayHelper {
       driver.close();
     }
 
-    // Stop paging and settle the caller with whatever is cached
+    // Stop paging and settle the caller with whatever is cached.
+    // Close the driver first: closing can synchronously fire the listener,
+    // which may already complete the completer — complete-after-close avoids
+    // "Bad state: Future already completed".
     void cancel() {
+      driver?.close();
       if (!completer.isCompleted) {
         completer.complete(providerRef.read(provider).items ?? []);
       }
-      driver?.close();
     }
 
     _pendingLoadCancellers.add(cancel);
