@@ -14,6 +14,10 @@ import 'finamp_settings_helper.dart';
 /// [send] to either the default [IOClient] or [Tailscale.instance.http.client]
 /// based on the current [FinampSettings.useEmbeddedTailscale] flag and whether
 /// tsnet is up.
+///
+/// Do **not** use this from background isolates — Hive settings are not open
+/// there. [JellyfinApi.create] passes a plain [IOClient] when `inForeground`
+/// is false.
 class FinampHttpClient extends http.BaseClient {
   FinampHttpClient({Duration connectionTimeout = const Duration(seconds: 10)})
     : _default = IOClient(
@@ -24,7 +28,14 @@ class FinampHttpClient extends http.BaseClient {
   final _log = Logger('FinampHttpClient');
 
   http.Client get _active {
-    final useTs = FinampSettingsHelper.finampSettings.useEmbeddedTailscale;
+    bool useTs;
+    try {
+      useTs = FinampSettingsHelper.finampSettings.useEmbeddedTailscale;
+    } catch (e) {
+      // Background isolate (or pre-Hive): never touch Tailscale / Hive here.
+      _log.warning('settings unavailable ($e); using default client');
+      return _default;
+    }
     if (!useTs) return _default;
     if (!EmbeddedTailscaleService.isRunning) {
       _log.warning(

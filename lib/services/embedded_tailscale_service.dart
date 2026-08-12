@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tailscale/tailscale.dart';
 
 /// Lifecycle wrapper around [package:tailscale] userspace tsnet.
@@ -12,10 +13,16 @@ import 'package:tailscale/tailscale.dart';
 /// Keeps the node state directory under application support and marks it
 /// excluded from iCloud backup on iOS (leaked WireGuard keys can impersonate
 /// the node).
+///
+/// **Auth keys only on iOS:** calling [up] without an auth key while the node
+/// is in `NeedsLogin` makes tsnet run `StartLoginInteractive`, which opens an
+/// auth sheet that can abort the process with an empty `NSUserActivity`.
+/// Prefer a reusable auth key from the Tailscale admin console.
 class EmbeddedTailscaleService {
   EmbeddedTailscaleService._();
 
   static final _log = Logger('EmbeddedTailscaleService');
+  static const _authKeyPrefsKey = 'embedded_tailscale_auth_key';
   static bool _initialized = false;
   static TailscaleStatus? _lastStatus;
   static Object? _lastError;
@@ -39,22 +46,66 @@ class EmbeddedTailscaleService {
     _log.info('Initialized tsnet stateDir=${stateDir.path}');
   }
 
-  /// Bring the node up. Prefer [authKey] for unattended join; otherwise an
-  /// interactive login URL may appear on [TailscaleStatus.authUrl].
+  static Future<String?> loadStoredAuthKey() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = prefs.getString(_authKeyPrefsKey)?.trim();
+    if (key == null || key.isEmpty) return null;
+    return key;
+  }
+
+  static Future<void> storeAuthKey(String? authKey) async {
+    final prefs = await SharedPreferences.getInstance();
+    final trimmed = authKey?.trim() ?? '';
+    if (trimmed.isEmpty) {
+      await prefs.remove(_authKeyPrefsKey);
+    } else {
+      await prefs.setString(_authKeyPrefsKey, trimmed);
+    }
+  }
+
+  /// Bring the node up. Prefer [authKey] for unattended join.
+  ///
+  /// On iOS, refuses to start without an auth key (stored or argument) so
+  /// tsnet never enters interactive login. On other platforms, empty auth
+  /// key may resume an already-registered node or surface [authUrl].
   static Future<TailscaleStatus> up({
     String? authKey,
     String hostname = 'finamp',
     bool ephemeral = false,
+    bool allowInteractiveLogin = false,
   }) async {
     await ensureInitialized();
     _lastError = null;
+
+    var key = authKey?.trim();
+    if (key == null || key.isEmpty) {
+      key = await loadStoredAuthKey();
+    }
+
+    if ((key == null || key.isEmpty) &&
+        !allowInteractiveLogin &&
+        (Platform.isIOS || Platform.isAndroid)) {
+      _log.warning(
+        'up() skipped: no auth key (interactive Tailscale login disabled '
+        'on mobile to avoid NSUserActivity crashes)',
+      );
+      _lastStatus = TailscaleStatus.stopped;
+      throw StateError(
+        'Embedded Tailscale needs an auth key. Paste a tskey-auth-… key '
+        'from the Tailscale admin console, then Connect.',
+      );
+    }
+
     try {
       final status = await Tailscale.instance.up(
         hostname: hostname,
-        authKey: authKey,
+        authKey: key,
         ephemeral: ephemeral,
       );
       _lastStatus = status;
+      if (key != null && key.isNotEmpty) {
+        await storeAuthKey(key);
+      }
       _log.info(
         'up() → state=${status.state} ipv4=${status.ipv4} '
         'needsLogin=${status.needsLogin}',
@@ -77,6 +128,7 @@ class EmbeddedTailscaleService {
   static Future<void> logout() async {
     if (!_initialized) return;
     await Tailscale.instance.logout();
+    await storeAuthKey(null);
     _lastStatus = TailscaleStatus.stopped;
   }
 

@@ -2333,7 +2333,7 @@
             "ip": { "type": "String" }
         }
     },
-    "embeddedTailscaleStatusNeedsLogin": "Needs login — use an auth key or open the login URL",
+    "embeddedTailscaleStatusNeedsLogin": "Needs login — paste an auth key and Connect",
     "embeddedTailscaleStatusNeedsApproval": "Waiting for machine approval in the Tailscale admin console",
     "embeddedTailscaleStatusOther": "State: {state}",
     "@embeddedTailscaleStatusOther": {
@@ -2343,9 +2343,12 @@
     },
     "embeddedTailscaleErrorTitle": "Error",
     "embeddedTailscaleAuthKeyLabel": "Auth key (optional)",
+    "embeddedTailscaleAuthKeyLabelRequired": "Auth key (required)",
     "embeddedTailscaleAuthKeyHint": "tskey-auth-…",
+    "embeddedTailscaleAuthKeyRequired": "Paste a Tailscale auth key (tskey-auth-…) before enabling. Interactive browser login is disabled on mobile.",
     "embeddedTailscaleConnectButton": "Connect / reconnect",
     "embeddedTailscaleConnectSubtitle": "Bring the node up with the auth key if provided, otherwise reuse saved credentials",
+    "embeddedTailscaleConnectSubtitleRequired": "Bring the node up with the auth key (saved for next launch)",
     "embeddedTailscaleOpenLogin": "Open login URL",
     "embeddedTailscaleOpenLoginSubtitle": "Complete interactive Tailscale login in the browser",
     "embeddedTailscaleLoginClipboardHint": "Complete Tailscale login from the Tailscale admin / auth flow for this node",

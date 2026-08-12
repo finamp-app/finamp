@@ -13,20 +13,22 @@ WireGuard-over-UDP from inside Finamp and leaves the OS routing table alone.
 ## User flow
 
 1. Settings → **Embedded Tailscale**
-2. Enable **Connect via embedded Tailscale**
-3. Paste a Tailscale **auth key** (recommended) or complete interactive login
+2. Paste a Tailscale **auth key** (`tskey-auth-…` from the admin console).
+   On **iOS/Android**, an auth key is **required** — interactive browser login
+   is disabled (it can abort the app via an empty `NSUserActivity` / autofill
+   path). Prefer a reusable / tagged key.
+3. Enable **Connect via embedded Tailscale** (or tap Connect)
 4. Set the Jellyfin server URL to a MagicDNS name, e.g.
    `https://jellyfin.tailnet.ts.net:8096`
    (the login screen still normalizes the common `jellyfin@tailnet` typo)
 5. Jellyfin API calls (Chopper) go through `Tailscale.instance.http.client`
 
-When the toggle is on, app launch calls `Tailscale.up()` again so MagicDNS
-works without reopening Settings (saved credentials / auth key flow).
+When the toggle is on and an auth key was saved, app launch calls
+`Tailscale.up(authKey: …)` again so MagicDNS works without reopening Settings.
 
-Until tsnet reports running (after auth key / interactive login), Chopper falls
-back to the platform HTTP client — MagicDNS names like `*.ts.net` will fail
-with `Failed host lookup` until login finishes. Prefer an **auth key** over
-interactive login on iOS sideloads (fewer Safari/autofill edge cases).
+Until tsnet reports running, Chopper falls back to the platform HTTP client —
+MagicDNS names like `*.ts.net` will fail with `Failed host lookup` until the
+node is up.
 
 Toggle off to use the normal LAN / public HTTP client again.
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -29,6 +30,10 @@ class _EmbeddedTailscaleSettingsScreenState
   String? _error;
   bool _busy = false;
 
+  /// Interactive browser login is unsafe on iOS sideloads (empty NSUserActivity
+  /// abort). Auth keys only.
+  bool get _requireAuthKey => Platform.isIOS || Platform.isAndroid;
+
   @override
   void initState() {
     super.initState();
@@ -37,13 +42,22 @@ class _EmbeddedTailscaleSettingsScreenState
   }
 
   Future<void> _bootstrap() async {
+    final stored = await EmbeddedTailscaleService.loadStoredAuthKey();
+    if (stored != null && mounted) {
+      _authKeyController.text = stored;
+    }
     if (!FinampSettingsHelper.finampSettings.useEmbeddedTailscale) return;
     try {
       await EmbeddedTailscaleService.ensureInitialized();
       _attachStateListener();
       if (_status == null || _status!.state == NodeState.stopped) {
+        if (_requireAuthKey && (stored == null || stored.isEmpty)) {
+          return;
+        }
         setState(() => _busy = true);
-        final status = await EmbeddedTailscaleService.up();
+        final status = await EmbeddedTailscaleService.up(
+          authKey: stored,
+        );
         if (mounted) {
           setState(() {
             _status = status;
@@ -83,9 +97,16 @@ class _EmbeddedTailscaleSettingsScreenState
     });
     try {
       if (enabled) {
+        final key = _authKeyController.text.trim();
+        if (_requireAuthKey && key.isEmpty) {
+          FinampSetters.setUseEmbeddedTailscale(false);
+          setState(() {
+            _error = AppLocalizations.of(context)!.embeddedTailscaleAuthKeyRequired;
+          });
+          return;
+        }
         await EmbeddedTailscaleService.ensureInitialized();
         _attachStateListener();
-        final key = _authKeyController.text.trim();
         final status = await EmbeddedTailscaleService.up(
           authKey: key.isEmpty ? null : key,
         );
@@ -97,6 +118,9 @@ class _EmbeddedTailscaleSettingsScreenState
         }
       }
     } catch (e) {
+      if (enabled) {
+        FinampSetters.setUseEmbeddedTailscale(false);
+      }
       if (mounted) setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -109,9 +133,16 @@ class _EmbeddedTailscaleSettingsScreenState
       _error = null;
     });
     try {
+      final key = _authKeyController.text.trim();
+      if (_requireAuthKey && key.isEmpty) {
+        setState(() {
+          _error = AppLocalizations.of(context)!.embeddedTailscaleAuthKeyRequired;
+        });
+        return;
+      }
       await EmbeddedTailscaleService.ensureInitialized();
       _attachStateListener();
-      final key = _authKeyController.text.trim();
+      FinampSetters.setUseEmbeddedTailscale(true);
       final status = await EmbeddedTailscaleService.up(
         authKey: key.isEmpty ? null : key,
       );
@@ -198,8 +229,16 @@ class _EmbeddedTailscaleSettingsScreenState
               obscureText: true,
               autocorrect: false,
               enableSuggestions: false,
+              smartDashesType: SmartDashesType.disabled,
+              smartQuotesType: SmartQuotesType.disabled,
+              // Avoid iOS password autofill sheets that create empty
+              // NSUserActivity and abort the process.
+              autofillHints: const [],
+              keyboardType: TextInputType.visiblePassword,
               decoration: InputDecoration(
-                labelText: l10n.embeddedTailscaleAuthKeyLabel,
+                labelText: _requireAuthKey
+                    ? l10n.embeddedTailscaleAuthKeyLabelRequired
+                    : l10n.embeddedTailscaleAuthKeyLabel,
                 hintText: l10n.embeddedTailscaleAuthKeyHint,
                 border: const OutlineInputBorder(),
               ),
@@ -207,12 +246,16 @@ class _EmbeddedTailscaleSettingsScreenState
           ),
           ListTile(
             title: Text(l10n.embeddedTailscaleConnectButton),
-            subtitle: Text(l10n.embeddedTailscaleConnectSubtitle),
+            subtitle: Text(
+              _requireAuthKey
+                  ? l10n.embeddedTailscaleConnectSubtitleRequired
+                  : l10n.embeddedTailscaleConnectSubtitle,
+            ),
             trailing: const Icon(Icons.login),
-            enabled: !_busy && enabled,
-            onTap: _busy || !enabled ? null : _connectWithKey,
+            enabled: !_busy,
+            onTap: _busy ? null : _connectWithKey,
           ),
-          if (_status?.needsLogin ?? false)
+          if (!_requireAuthKey && (_status?.needsLogin ?? false))
             ListTile(
               title: Text(l10n.embeddedTailscaleOpenLogin),
               subtitle: Text(l10n.embeddedTailscaleOpenLoginSubtitle),

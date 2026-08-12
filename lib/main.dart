@@ -238,7 +238,15 @@ Future<void> _setupEmbeddedTailscale() async {
   if (!FinampSettingsHelper.finampSettings.useEmbeddedTailscale) return;
   try {
     await EmbeddedTailscaleService.ensureInitialized();
-    final status = await EmbeddedTailscaleService.up();
+    final key = await EmbeddedTailscaleService.loadStoredAuthKey();
+    if (key == null || key.isEmpty) {
+      _mainLog.info(
+        'Embedded Tailscale enabled but no auth key stored; '
+        'open Settings → Embedded Tailscale and paste a tskey-auth-… key',
+      );
+      return;
+    }
+    final status = await EmbeddedTailscaleService.up(authKey: key);
     _mainLog.info(
       'Embedded Tailscale up: state=${status.state} ipv4=${status.ipv4}',
     );

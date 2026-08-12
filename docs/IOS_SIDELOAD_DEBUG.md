@@ -44,11 +44,16 @@ iOS aborts with:
 
 `Caller did not provide an activityType, and this process does not have a NSUserActivityTypes in its Info.plist.`
 
-Seen during **keyboard autofill** / tsnet interactive login — not Tailscale itself.
+Seen during **keyboard autofill** / tsnet **interactive** login — not MagicDNS
+itself. Declaring `NSUserActivityTypes` alone is **not** enough when
+`activityType` is literally empty.
 
-**Fix on this fork:** `NSUserActivityTypes` in Debug, Profile, and Release Info
-plists; phone UI uses `SceneDelegate` (guards empty `activityType`). Debug/Profile
-omit Siri/`IN*` keys (no Siri entitlement on personal team).
+**Fix on this fork:**
+- `NSUserActivityTypes` in Debug/Profile/Release Info plists
+- `FinampNSUserActivityGuard.m` remaps empty `initWithActivityType:` values
+- `SceneDelegate` ignores empty continue activities
+- Mobile embedded Tailscale is **auth-key only** (no `StartLoginInteractive`)
+- Auth-key field disables autofill hints
 
 Hang lines like `Hang detected: 0.48s (debugger attached, not reporting)` are
 debugger noise while `flutter run` is attached — not the crash.
