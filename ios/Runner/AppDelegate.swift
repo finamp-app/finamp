@@ -53,6 +53,10 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
 
     // Tell iOS to dispatch media intents to this AppDelegate (in-app intent handling, iOS 14+)
     override func application(_ application: UIApplication, handlerFor intent: INIntent) -> Any? {
+        // Sideload Debug/Profile omit INIntentsSupported (no Siri entitlement).
+        guard Bundle.main.object(forInfoDictionaryKey: "INIntentsSupported") != nil else {
+            return nil
+        }
         if intent is INPlayMediaIntent {
             return self
         }
@@ -217,6 +221,11 @@ extension AppDelegate {
         continue userActivity: NSUserActivity,
         restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
+        // Empty activityType + missing NSUserActivityTypes → NSInvalidArgumentException.
+        guard !userActivity.activityType.isEmpty else {
+            return false
+        }
+
         // Check if this is a Siri media intent
         if userActivity.activityType == NSStringFromClass(INPlayMediaIntent.self) ||
            userActivity.activityType == "INPlayMediaIntent" {

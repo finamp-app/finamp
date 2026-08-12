@@ -34,9 +34,22 @@ point Release at `RunnerDebug.entitlements` (not the default).
 |------|-----------------|---------|
 | `RunnerDebug.entitlements` | Empty (no CarPlay / Siri) | — |
 | `Runner.entitlements` | — | CarPlay + Siri |
-| `Info-Debug.plist` / `Info-Profile.plist` | No CarPlay scene; `FlutterSceneDelegate` | — |
-| `Info-Release.plist` | — | CarPlay + `FlutterSceneDelegate` |
+| `Info-Debug.plist` / `Info-Profile.plist` | No CarPlay scene; **no Siri/`IN*` keys**; `FlutterSceneDelegate` | — |
+| `Info-Release.plist` | — | CarPlay + Siri intents + `NSUserActivityTypes` |
 | `Debug.xcconfig` / `Release.xcconfig` | Defaults + optional `Local.xcconfig` | Same file used by Profile |
+
+## Crash: `NSUserActivity` / empty `activityType`
+
+If Debug/Profile declare `INIntentsSupported` / Siri usage **without** a Siri
+entitlement and `NSUserActivityTypes`, iOS can abort with:
+
+`Caller did not provide an activityType, and this process does not have a NSUserActivityTypes in its Info.plist.`
+
+That is **not** Tailscale. Fix: omit Siri/intent keys from sideload Info plists
+(Release keeps them + `NSUserActivityTypes`).
+
+Hang lines like `Hang detected: 0.48s (debugger attached, not reporting)` are
+debugger noise while `flutter run` is attached — not the crash.
 
 ## Local overrides (gitignored)
 
