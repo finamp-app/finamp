@@ -19,6 +19,7 @@ import 'package:finamp/screens/accessibility_settings_screen.dart';
 import 'package:finamp/screens/album_settings_screen.dart';
 import 'package:finamp/screens/artist_settings_screen.dart';
 import 'package:finamp/screens/downloads_settings_screen.dart';
+import 'package:finamp/screens/embedded_tailscale_settings_screen.dart';
 import 'package:finamp/screens/genre_settings_screen.dart';
 import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/screens/interaction_settings_screen.dart';
@@ -40,6 +41,7 @@ import 'package:finamp/services/dbus_manager.dart';
 import 'package:finamp/services/discord_rpc.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/downloads_service_backend.dart';
+import 'package:finamp/services/embedded_tailscale_service.dart';
 import 'package:finamp/services/finamp_logs_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -151,6 +153,8 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
     _mainLog.info("Installed client certificate");
     await _setupFinampUserHelper();
     _mainLog.info("Setup user helper");
+    await _setupEmbeddedTailscale();
+    _mainLog.info("Setup embedded Tailscale");
     await _setupJellyfinApiData();
     _mainLog.info("setup jellyfin api");
     _setupOfflineListenLogHelper();
@@ -225,6 +229,21 @@ Future<void> _setupEdgeToEdgeOverlayStyle() async {
     // screen as it does not have an AppBar. To fix this, we set the
     // brightness to dark manually on startup.
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark));
+  }
+}
+
+/// Bring up userspace tsnet when the setting is already enabled (e.g. after
+/// app relaunch) so Chopper MagicDNS calls work before opening Settings.
+Future<void> _setupEmbeddedTailscale() async {
+  if (!FinampSettingsHelper.finampSettings.useEmbeddedTailscale) return;
+  try {
+    await EmbeddedTailscaleService.ensureInitialized();
+    final status = await EmbeddedTailscaleService.up();
+    _mainLog.info(
+      'Embedded Tailscale up: state=${status.state} ipv4=${status.ipv4}',
+    );
+  } catch (e, st) {
+    _mainLog.warning('Embedded Tailscale failed to start on launch', e, st);
   }
 }
 
@@ -988,6 +1007,8 @@ class FinampApp extends ConsumerWidget {
         ArtistSettingsScreen.routeName: (context) => const ArtistSettingsScreen(),
         GenreSettingsScreen.routeName: (context) => const GenreSettingsScreen(),
         NetworkSettingsScreen.routeName: (context) => const NetworkSettingsScreen(),
+        EmbeddedTailscaleSettingsScreen.routeName: (context) =>
+            const EmbeddedTailscaleSettingsScreen(),
         AccessibilitySettingsScreen.routeName: (context) => const AccessibilitySettingsScreen(),
         PlaylistEditScreen.routeName: (context) =>
             PlaylistEditScreen(playlist: ModalRoute.settingsOf(context)!.arguments as BaseItemDto),

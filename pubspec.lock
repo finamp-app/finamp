@@ -1813,6 +1813,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1+1"
+  tailscale:
+    dependency: "direct main"
+    description:
+      name: tailscale
+      sha256: adeb58eed87f733d749d889a577763b8b1d296649301f33f28de71e0831bf11c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.0"
   term_glyph:
     dependency: transitive
     description:

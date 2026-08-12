@@ -2318,6 +2318,40 @@
     "@networkSettingsTitle": {
         "description": "Title for the network settings screen"
     },
+    "embeddedTailscaleSettingsTitle": "Embedded Tailscale",
+    "@embeddedTailscaleSettingsTitle": {
+        "description": "Settings screen for in-app Tailscale tsnet"
+    },
+    "embeddedTailscaleEnableTitle": "Connect via embedded Tailscale",
+    "embeddedTailscaleEnableSubtitle": "Route Jellyfin API traffic through userspace Tailscale (tsnet). Works alongside ExpressVPN because it is not a system VPN.",
+    "embeddedTailscaleStatusTitle": "Node status",
+    "embeddedTailscaleStatusDisconnected": "Disconnected",
+    "embeddedTailscaleStatusBusy": "Working…",
+    "embeddedTailscaleStatusRunning": "Running ({ip})",
+    "@embeddedTailscaleStatusRunning": {
+        "placeholders": {
+            "ip": { "type": "String" }
+        }
+    },
+    "embeddedTailscaleStatusNeedsLogin": "Needs login — use an auth key or open the login URL",
+    "embeddedTailscaleStatusNeedsApproval": "Waiting for machine approval in the Tailscale admin console",
+    "embeddedTailscaleStatusOther": "State: {state}",
+    "@embeddedTailscaleStatusOther": {
+        "placeholders": {
+            "state": { "type": "String" }
+        }
+    },
+    "embeddedTailscaleErrorTitle": "Error",
+    "embeddedTailscaleAuthKeyLabel": "Auth key (optional)",
+    "embeddedTailscaleAuthKeyHint": "tskey-auth-…",
+    "embeddedTailscaleConnectButton": "Connect / reconnect",
+    "embeddedTailscaleConnectSubtitle": "Bring the node up with the auth key if provided, otherwise reuse saved credentials",
+    "embeddedTailscaleOpenLogin": "Open login URL",
+    "embeddedTailscaleOpenLoginSubtitle": "Complete interactive Tailscale login in the browser",
+    "embeddedTailscaleLoginClipboardHint": "Complete Tailscale login from the Tailscale admin / auth flow for this node",
+    "embeddedTailscaleLoginCopied": "Login hint copied to clipboard",
+    "embeddedTailscaleLogoutTitle": "Log out / reset node",
+    "embeddedTailscaleLogoutSubtitle": "Revoke this node and wipe the local WireGuard key",
     "downloadPaused": "Downloading paused because device is not connected to WiFi",
     "@downloadPaused": {
         "description": "Gets shown in the snackbar if loosing wifi connection while downloads are running and the 'requireWifiForDownloads' is enabled"

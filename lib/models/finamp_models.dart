@@ -274,6 +274,8 @@ class DefaultSettings {
   static const duckOnAudioInterruption = true;
   static const forceAudioOffloadingOnAndroid = false;
   static const verboseLogging = false;
+  /// Route Jellyfin HTTP through in-process Tailscale tsnet (coexists with ExpressVPN).
+  static const useEmbeddedTailscale = false;
   static const previousTracksPersistenceMode = PreviousTracksPersistenceMode.persistent;
   static final homeScreenConfiguration = FinampHomeScreenConfiguration(
     actions: [
@@ -450,6 +452,7 @@ class FinampSettings {
     this.duckOnAudioInterruption = DefaultSettings.duckOnAudioInterruption,
     this.forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid,
     this.verboseLogging = DefaultSettings.verboseLogging,
+    this.useEmbeddedTailscale = DefaultSettings.useEmbeddedTailscale,
     this.previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode,
     required this.homeScreenConfiguration,
     required this.gridImageSize,
@@ -948,6 +951,13 @@ class FinampSettings {
   /// release builds otherwise cap at INFO.
   @HiveField(153, defaultValue: DefaultSettings.verboseLogging)
   bool verboseLogging = DefaultSettings.verboseLogging;
+
+  /// When true, Jellyfin API HTTP goes through embedded Tailscale tsnet
+  /// (`package:tailscale`) instead of the default [HttpClient]. Opt-in so
+  /// LAN users are unaffected; enables MagicDNS reachability alongside a
+  /// system VPN such as ExpressVPN.
+  @HiveField(154, defaultValue: DefaultSettings.useEmbeddedTailscale)
+  bool useEmbeddedTailscale = DefaultSettings.useEmbeddedTailscale;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(

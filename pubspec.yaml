@@ -18,7 +18,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 0.9.25+126
 
 environment:
-  sdk: ^3.9.0
+  sdk: ^3.10.4
 
 dependencies:
   flutter:
@@ -30,6 +30,9 @@ dependencies:
   json_annotation: ^4.8.1
   chopper: ^8.0.0
   get_it: ^8.2.0
+  # Embedded Tailscale (userspace tsnet) for MagicDNS without a system VPN.
+  # Requires Go 1.25+ on PATH at build time (see docs/EMBEDDED_TAILSCALE.md).
+  tailscale: ^0.8.0
   # just_audio: ^0.10.5
   just_audio:
     # TODO switch back to official just_audio once https://github.com/ryanheise/just_audio/pull/1555 is merged

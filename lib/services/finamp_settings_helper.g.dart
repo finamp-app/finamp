@@ -1298,6 +1298,14 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setUseEmbeddedTailscale(bool newUseEmbeddedTailscale) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.useEmbeddedTailscale = newUseEmbeddedTailscale;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1741,6 +1749,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ProviderListenable<bool> get verboseLogging => finampSettingsProvider.select(
     (value) => value.requireValue.verboseLogging,
   );
+  ProviderListenable<bool> get useEmbeddedTailscale =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.useEmbeddedTailscale,
+      );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,
