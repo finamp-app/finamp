@@ -9,22 +9,21 @@ import AVFoundation
 let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadlessExecution: true)
 
 @main
-@objc class AppDelegate: FlutterAppDelegate, INPlayMediaIntentHandling {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate, INPlayMediaIntentHandling {
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // Start the shared engine and register plugins with it for CarPlay
+        // Shared engine for CarPlay (Release/Profile). Phone UI uses the implicit
+        // Flutter engine from FlutterSceneDelegate / didInitializeImplicitFlutterEngine.
         flutterEngine.run()
         GeneratedPluginRegistrant.register(with: flutterEngine)
 
-        // Set up method channel for playback state sync to MPNowPlayingInfoCenter
+        // Method channels for CarPlay / Siri on the shared engine.
         // TODO: This is a workaround because audio_service doesn't set playbackState on iOS.
         // Consider contributing a fix to audio_service to set MPNowPlayingInfoCenter.playbackState on iOS.
-        setupPlaybackStateChannel()
-
-        // Set up method channel for Siri media intent handling
-        setupSiriIntentChannel()
+        setupPlaybackStateChannel(binaryMessenger: flutterEngine.binaryMessenger)
+        setupSiriIntentChannel(binaryMessenger: flutterEngine.binaryMessenger)
 
         // Exclude the documents and support folders from iCloud backup since we keep songs there.
         if let documentsDir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
@@ -43,6 +42,13 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
         }
             
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+
+    /// Phone UI engine (Flutter UIScene / FlutterSceneDelegate).
+    func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+        GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+        setupPlaybackStateChannel(binaryMessenger: engineBridge.applicationRegistrar.messenger())
+        setupSiriIntentChannel(binaryMessenger: engineBridge.applicationRegistrar.messenger())
     }
 
     // Tell iOS to dispatch media intents to this AppDelegate (in-app intent handling, iOS 14+)
@@ -71,12 +77,12 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
             return sceneConfig
         }
 
-        // For the main app window scene, return configuration with SceneDelegate
+        // Main window: FlutterSceneDelegate (UIScene migration).
         let sceneConfig = UISceneConfiguration(
-            name: "Default Configuration",
+            name: "flutter",
             sessionRole: connectingSceneSession.role
         )
-        sceneConfig.delegateClass = SceneDelegate.self
+        sceneConfig.delegateClass = FlutterSceneDelegate.self
         sceneConfig.storyboard = UIStoryboard(name: "Main", bundle: nil)
         return sceneConfig
     }
@@ -97,13 +103,13 @@ private func setExcludeFromiCloudBackup(_ dir: URL, isExcluded: Bool) throws {
 // playback is started from the phone. Consider contributing a fix upstream to audio_service.
 
 extension AppDelegate {
-    func setupPlaybackStateChannel() {
+    func setupPlaybackStateChannel(binaryMessenger: FlutterBinaryMessenger) {
         let channel = FlutterMethodChannel(
             name: "\(Bundle.main.bundleIdentifier!)/playback_state",
-            binaryMessenger: flutterEngine.binaryMessenger
+            binaryMessenger: binaryMessenger
         )
 
-        channel.setMethodCallHandler { [weak self] (call, result) in
+        channel.setMethodCallHandler { (call, result) in
             switch call.method {
             case "setPlaybackState":
                 guard let args = call.arguments as? [String: Any],
@@ -130,10 +136,10 @@ extension AppDelegate {
 private var siriIntentChannel: FlutterMethodChannel?
 
 extension AppDelegate {
-    func setupSiriIntentChannel() {
+    func setupSiriIntentChannel(binaryMessenger: FlutterBinaryMessenger) {
         siriIntentChannel = FlutterMethodChannel(
             name: "\(Bundle.main.bundleIdentifier!)/siri_intent",
-            binaryMessenger: flutterEngine.binaryMessenger
+            binaryMessenger: binaryMessenger
         )
     }
 

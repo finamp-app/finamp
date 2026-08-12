@@ -67,3 +67,4 @@ flutter run
 
 - Copilot task: https://github.com/itdir/finamp/tasks/5fd20a6a-e3ee-44ab-82d3-8a34c7646131
 - Plan: `~/.cursor/plans/finamp_embedded_tsnet_5fd20a6a.plan.md`
+- Personal-team Debug installs: [IOS_SIDELOAD_DEBUG.md](IOS_SIDELOAD_DEBUG.md)
