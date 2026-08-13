@@ -111,9 +111,26 @@ class JellyfinApiHelper {
     }
   }
 
-  /// Runs the given function in a background isolate, supplying a valid API instance.
+  /// Whether library/API work must stay on the main isolate.
+  ///
+  /// Background isolates use a plain [IOClient] (no Hive / no tsnet). MagicDNS
+  /// and embedded Tailscale require [FinampHttpClient] on the main isolate —
+  /// otherwise getItems fails while Network → Test (main isolate) still passes.
+  bool get _mustUseMainIsolateHttp {
+    if (FinampHttpClient.requiresTsnetHttp()) return true;
+    final url = baseUrlTemp?.toString() ?? _finampUserHelper.currentUser?.baseURL;
+    if (url == null) return false;
+    final uri = Uri.tryParse(url);
+    return uri != null && FinampHttpClient.looksLikeTailnetHost(uri);
+  }
+
+  /// Runs [func] on a worker isolate when safe; otherwise on the main-isolate
+  /// [jellyfinApi] ([FinampHttpClient]).
   Future<T> runInIsolate<T>(Future<T> Function(jellyfin_api.JellyfinApi) func) async {
-    if (_workerIsolatePort == null) {
+    if (_workerIsolatePort == null || _mustUseMainIsolateHttp) {
+      if (_mustUseMainIsolateHttp && _workerIsolatePort != null) {
+        _jellyfinApiHelperLogger.fine('Skipping API worker isolate; using FinampHttpClient on main isolate');
+      }
       return func(jellyfinApi);
     }
     ReceivePort port = ReceivePort();

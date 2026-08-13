@@ -28,8 +28,20 @@ WireGuard-over-UDP from inside Finamp and leaves the OS routing table alone.
 5. Set the Jellyfin server URL to a MagicDNS name, e.g.
    `https://jellyfin.tailnet.ts.net:8096`
    (the login screen still normalizes the common `jellyfin@tailnet` typo)
-6. Jellyfin API calls (Chopper) and **Network → Test both connections** go
-   through `FinampHttpClient` / tsnet when embedded Tailscale is Running.
+6. Jellyfin API calls (Chopper), library `getItems`, cover-art cache downloads,
+   Music Finder HTTP, and **Network → Test both connections** go through
+   `FinampHttpClient` / tsnet when embedded Tailscale is Running.
+
+Library browsing uses a background isolate with a plain `IOClient` when
+Tailscale is **off**. When Embedded Tailscale is on (or the active URL is
+MagicDNS / `100.x`), those calls stay on the **main isolate** so they use
+`FinampHttpClient`. Otherwise you can pass Network Test while albums fail to
+load.
+
+**Not routed through FinampHttpClient** (OS / media stacks): streaming playback
+(`just_audio` URI fetch) and `background_downloader` file downloads. Prefer
+LAN or a reachable public URL for those until a dedicated tsnet media path
+exists; downloaded tracks still play offline.
 
 When the toggle is on, app launch calls `EmbeddedTailscaleService.up()` which
 resumes persisted credentials (falling back to the stored auth key only if

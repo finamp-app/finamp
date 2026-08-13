@@ -189,10 +189,18 @@ class PagedContent extends _$PagedContent {
   }
 
   void retry() {
+    var invalidated = false;
     for (var provider in _dependencies) {
       if (ref.read(provider).hasError) {
         ref.invalidate(provider);
+        invalidated = true;
       }
+    }
+    // If nothing to invalidate (or deps empty), force a full reload so Retry
+    // is never a no-op after a library fetch failure.
+    if (!invalidated) {
+      refresh();
+      return;
     }
     switch (request) {
       case FinampPlayableDto item:
