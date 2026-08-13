@@ -237,19 +237,19 @@ Future<void> _setupEdgeToEdgeOverlayStyle() async {
 Future<void> _setupEmbeddedTailscale() async {
   if (!FinampSettingsHelper.finampSettings.useEmbeddedTailscale) return;
   try {
-    await EmbeddedTailscaleService.ensureInitialized();
-    final key = await EmbeddedTailscaleService.loadStoredAuthKey();
-    if (key == null || key.isEmpty) {
-      _mainLog.info(
-        'Embedded Tailscale enabled but no auth key stored; '
-        'open Settings → Embedded Tailscale and paste a tskey-auth-… key',
-      );
-      return;
-    }
-    final status = await EmbeddedTailscaleService.up(authKey: key);
+    // Resume from persisted node state when possible; falls back to stored
+    // auth key only if resume fails / needsLogin (see EmbeddedTailscaleService.up).
+    final status = await EmbeddedTailscaleService.up();
     _mainLog.info(
-      'Embedded Tailscale up: state=${status.state} ipv4=${status.ipv4}',
+      'Embedded Tailscale up: state=${status.state} ipv4=${status.ipv4} '
+      'isRunning=${status.isRunning}',
     );
+    if (!status.isRunning) {
+      _mainLog.warning(
+        'Embedded Tailscale enabled but not Running after launch bring-up; '
+        'MagicDNS will fail until Connect succeeds in Settings',
+      );
+    }
   } catch (e, st) {
     _mainLog.warning('Embedded Tailscale failed to start on launch', e, st);
   }

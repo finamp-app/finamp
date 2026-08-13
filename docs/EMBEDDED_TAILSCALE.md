@@ -17,22 +17,23 @@ WireGuard-over-UDP from inside Finamp and leaves the OS routing table alone.
    On **iOS/Android**, an auth key is **required** — interactive browser login
    is disabled (it can abort the app via an empty `NSUserActivity` / autofill
    path). Prefer a reusable / tagged key.
-3. Enable **Connect via embedded Tailscale** (or tap Connect). Finamp sets
-   `TSNET_FORCE_LOGIN=1` in native `+load` and again before `up()` so tsnet
-   actually uses the auth key (upstream otherwise logs `Ignoring authkey`
-   when state is `NoState`).
-4. Confirm Xcode/console shows `[FINAMP] TSNET_FORCE_LOGIN=1 (native +load)`
-   and **not** `Ignoring authkey`. Status should become **Running** with a
-   tailnet IP. Until then MagicDNS names like `*.ts.net` will fail lookup and
-   downloads may pause (“Connection interrupted”).
+3. Enable **Connect via embedded Tailscale** (or tap Connect). First connect
+   uses the auth key (and briefly sets `TSNET_FORCE_LOGIN=1` so tsnet does not
+   ignore the key on `NoState`). Later app launches **resume from disk without
+   re-submitting the key** — that is what makes MagicDNS work immediately
+   without opening Settings.
+4. Status should become **Running** with a tailnet IP. Until then MagicDNS
+   names like `*.ts.net` will fail lookup and downloads may pause
+   (“Connection interrupted”).
 5. Set the Jellyfin server URL to a MagicDNS name, e.g.
    `https://jellyfin.tailnet.ts.net:8096`
    (the login screen still normalizes the common `jellyfin@tailnet` typo)
 6. Jellyfin API calls (Chopper) and **Network → Test both connections** go
    through `FinampHttpClient` / tsnet when embedded Tailscale is Running.
 
-When the toggle is on and an auth key was saved, app launch calls
-`Tailscale.up(authKey: …)` again so MagicDNS works without reopening Settings.
+When the toggle is on, app launch calls `EmbeddedTailscaleService.up()` which
+resumes persisted credentials (falling back to the stored auth key only if
+resume fails or returns `needsLogin`).
 
 Toggle off to use the normal LAN / public HTTP client again.
 

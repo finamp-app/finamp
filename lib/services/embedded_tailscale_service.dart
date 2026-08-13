@@ -16,20 +16,22 @@ import 'package:tailscale/tailscale.dart';
 /// excluded from iCloud backup on iOS (leaked WireGuard keys can impersonate
 /// the node).
 ///
-/// **Auth keys only on iOS:** calling [up] without an auth key while the node
-/// is in `NeedsLogin` makes tsnet run `StartLoginInteractive`, which opens an
-/// auth sheet that can abort the process with an empty `NSUserActivity`.
-/// Prefer a reusable auth key from the Tailscale admin console.
+/// **Connect strategy:**
+/// 1. Prefer [up] **without** an auth key so persisted credentials reconnect
+///    (package:tailscale’s normal cold-start path).
+/// 2. Only if that fails or returns [NodeState.needsLogin], enroll with a
+///    stored/pasted auth key and `TSNET_FORCE_LOGIN=1` (needed when tsnet
+///    would otherwise ignore AuthKey on `NoState`).
 ///
-/// **TSNET_FORCE_LOGIN:** upstream tsnet ignores `AuthKey` when local backend
-/// state is `NoState` unless `TSNET_FORCE_LOGIN=1`. We set that in-process
-/// before [up] whenever an auth key is present so MagicDNS can come up.
+/// Always passing an auth key + FORCE_LOGIN on every launch breaks auto-connect
+/// (one-time keys, and StartLoginInteractive instead of resume).
 class EmbeddedTailscaleService {
   EmbeddedTailscaleService._();
 
   static final _log = Logger('EmbeddedTailscaleService');
   static const _authKeyPrefsKey = 'embedded_tailscale_auth_key';
   static bool _initialized = false;
+  static String? _stateDirPath;
   static TailscaleStatus? _lastStatus;
   static Object? _lastError;
 
@@ -41,15 +43,13 @@ class EmbeddedTailscaleService {
   /// Ensure [Tailscale.init] has been called with a backup-excluded state dir.
   static Future<void> ensureInitialized() async {
     if (_initialized) return;
-    // Before loading/starting the Go runtime: tsnet ignores AuthKey on NoState
-    // unless this is set (see upstream tsnet "Ignoring authkey" log).
-    _enableTsnetForceLogin();
     final support = await getApplicationSupportDirectory();
     final stateDir = Directory(p.join(support.path, 'embedded_tailscale'));
     if (!await stateDir.exists()) {
       await stateDir.create(recursive: true);
     }
     await _excludeFromBackup(stateDir);
+    _stateDirPath = stateDir.path;
     Tailscale.init(stateDir: stateDir.path);
     _initialized = true;
     _log.info('Initialized tsnet stateDir=${stateDir.path}');
@@ -72,16 +72,15 @@ class EmbeddedTailscaleService {
     }
   }
 
-  /// Bring the node up. Prefer [authKey] for unattended join.
+  /// Bring the node up.
   ///
-  /// On iOS, refuses to start without an auth key (stored or argument) so
-  /// tsnet never enters interactive login. On other platforms, empty auth
-  /// key may resume an already-registered node or surface [authUrl].
+  /// By default resumes from disk when possible. Pass [forceEnroll] / a fresh
+  /// [authKey] to register (or re-register) with the control plane.
   static Future<TailscaleStatus> up({
     String? authKey,
     String hostname = 'finamp',
     bool ephemeral = false,
-    bool allowInteractiveLogin = false,
+    bool forceEnroll = false,
   }) async {
     await ensureInitialized();
     _lastError = null;
@@ -91,13 +90,26 @@ class EmbeddedTailscaleService {
       key = await loadStoredAuthKey();
     }
 
-    if ((key == null || key.isEmpty) &&
-        !allowInteractiveLogin &&
-        (Platform.isIOS || Platform.isAndroid)) {
-      _log.warning(
-        'up() skipped: no auth key (interactive Tailscale login disabled '
-        'on mobile to avoid NSUserActivity crashes)',
+    if (!forceEnroll) {
+      final resumed = await _tryResume(
+        hostname: hostname,
+        ephemeral: ephemeral,
       );
+      if (resumed != null) {
+        if (resumed.isRunning) {
+          return resumed;
+        }
+        if (!resumed.needsLogin) {
+          // needsMachineAuth or other stable non-running state
+          return resumed;
+        }
+        _log.info(
+          'Resume reached needsLogin; will enroll with auth key if available',
+        );
+      }
+    }
+
+    if (key == null || key.isEmpty) {
       _lastStatus = TailscaleStatus.stopped;
       throw StateError(
         'Embedded Tailscale needs an auth key. Paste a tskey-auth-… key '
@@ -105,12 +117,46 @@ class EmbeddedTailscaleService {
       );
     }
 
-    if (key != null && key.isNotEmpty) {
-      // Without this, tsnet logs: "Authkey is set; but state is NoState.
-      // Ignoring authkey." and MagicDNS never works.
-      _enableTsnetForceLogin();
-    }
+    return _enrollWithAuthKey(
+      key: key,
+      hostname: hostname,
+      ephemeral: ephemeral,
+    );
+  }
 
+  /// Resume without auth key (persisted node identity). Returns null if the
+  /// native stack rejects the call (typically no state on disk).
+  static Future<TailscaleStatus?> _tryResume({
+    required String hostname,
+    required bool ephemeral,
+  }) async {
+    _clearTsnetForceLogin();
+    try {
+      final status = await Tailscale.instance.up(
+        hostname: hostname,
+        ephemeral: ephemeral,
+      );
+      _lastStatus = status;
+      _log.info(
+        'Resume up() → state=${status.state} ipv4=${status.ipv4} '
+        'isRunning=${status.isRunning}',
+      );
+      return status;
+    } catch (e, st) {
+      _log.info('Resume without auth key failed (will try enroll if key): $e');
+      _log.fine('Resume stack', e, st);
+      return null;
+    }
+  }
+
+  static Future<TailscaleStatus> _enrollWithAuthKey({
+    required String key,
+    required String hostname,
+    required bool ephemeral,
+  }) async {
+    // Without this, tsnet logs: "Authkey is set; but state is NoState.
+    // Ignoring authkey." on first enrollment.
+    _enableTsnetForceLogin();
     try {
       final status = await Tailscale.instance.up(
         hostname: hostname,
@@ -118,24 +164,25 @@ class EmbeddedTailscaleService {
         ephemeral: ephemeral,
       );
       _lastStatus = status;
-      if (key != null && key.isNotEmpty) {
-        await storeAuthKey(key);
-      }
+      await storeAuthKey(key);
       _log.info(
-        'up() → state=${status.state} ipv4=${status.ipv4} '
+        'Enroll up() → state=${status.state} ipv4=${status.ipv4} '
         'needsLogin=${status.needsLogin} isRunning=${status.isRunning}',
       );
-      if (!status.isRunning && (key != null && key.isNotEmpty)) {
+      if (!status.isRunning) {
         _log.warning(
-          'tsnet did not reach Running after auth-key up() '
+          'tsnet did not reach Running after auth-key enroll '
           '(state=${status.state}). MagicDNS will fail until Running.',
         );
       }
       return status;
     } catch (e, st) {
       _lastError = e;
-      _log.severe('up() failed', e, st);
+      _log.severe('enroll up() failed', e, st);
       rethrow;
+    } finally {
+      // Do not leave FORCE_LOGIN set for the rest of the process lifetime.
+      _clearTsnetForceLogin();
     }
   }
 
@@ -175,40 +222,65 @@ class EmbeddedTailscaleService {
     });
   }
 
-  /// Sets `TSNET_FORCE_LOGIN=1` in the current process so Go tsnet honors
-  /// [Server.AuthKey] when backend state is `NoState` / not `NeedsLogin`.
   static void _enableTsnetForceLogin() {
+    _setEnv('TSNET_FORCE_LOGIN', '1');
+    _log.info('Set TSNET_FORCE_LOGIN=1 for auth-key enrollment');
+  }
+
+  static void _clearTsnetForceLogin() {
+    _unsetEnv('TSNET_FORCE_LOGIN');
+  }
+
+  static void _setEnv(String key, String value) {
     if (kIsWeb) return;
     try {
-      final lib = (Platform.isAndroid || Platform.isLinux)
-          ? ffi.DynamicLibrary.open('libc.so')
-          : ffi.DynamicLibrary.process();
+      final lib = _libc;
       final setenv = lib.lookupFunction<
         ffi.Int32 Function(ffi.Pointer<Utf8>, ffi.Pointer<Utf8>, ffi.Int32),
         int Function(ffi.Pointer<Utf8>, ffi.Pointer<Utf8>, int)
       >('setenv');
-      final key = 'TSNET_FORCE_LOGIN'.toNativeUtf8();
-      final value = '1'.toNativeUtf8();
+      final k = key.toNativeUtf8();
+      final v = value.toNativeUtf8();
       try {
-        final rc = setenv(key, value, 1);
+        final rc = setenv(k, v, 1);
         if (rc != 0) {
-          _log.warning('setenv(TSNET_FORCE_LOGIN) returned $rc');
-        } else {
-          _log.info('Set TSNET_FORCE_LOGIN=1 for auth-key enrollment');
+          _log.warning('setenv($key) returned $rc');
         }
       } finally {
-        malloc.free(key);
-        malloc.free(value);
+        malloc.free(k);
+        malloc.free(v);
       }
     } catch (e, st) {
-      _log.severe('Failed to set TSNET_FORCE_LOGIN', e, st);
+      _log.severe('Failed to setenv($key)', e, st);
     }
   }
+
+  static void _unsetEnv(String key) {
+    if (kIsWeb) return;
+    try {
+      final lib = _libc;
+      final unsetenv = lib.lookupFunction<
+        ffi.Int32 Function(ffi.Pointer<Utf8>),
+        int Function(ffi.Pointer<Utf8>)
+      >('unsetenv');
+      final k = key.toNativeUtf8();
+      try {
+        unsetenv(k);
+      } finally {
+        malloc.free(k);
+      }
+    } catch (e, st) {
+      _log.warning('Failed to unsetenv($key)', e, st);
+    }
+  }
+
+  static ffi.DynamicLibrary get _libc => (Platform.isAndroid || Platform.isLinux)
+      ? ffi.DynamicLibrary.open('libc.so')
+      : ffi.DynamicLibrary.process();
 
   static Future<void> _excludeFromBackup(Directory dir) async {
     if (kIsWeb || !Platform.isIOS) return;
     try {
-      // NSURLIsExcludedFromBackupKey via xattr (same effect as Foundation API).
       await Process.run('xattr', [
         '-w',
         'com.apple.MobileBackup',

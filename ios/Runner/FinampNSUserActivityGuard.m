@@ -6,12 +6,12 @@
 // in Info.plist is necessary but NOT sufficient — empty types still abort.
 // Remap empty types to a declared reverse-DNS id before Foundation raises.
 //
-// Also sets TSNET_FORCE_LOGIN=1 early so Go tsnet honors AuthKey when backend
-// state is NoState (otherwise: "Ignoring authkey").
+// Do NOT set TSNET_FORCE_LOGIN here — that must only apply during first-time
+// auth-key enrollment. Always-on FORCE_LOGIN breaks resume from persisted
+// credentials on later launches (auto-connect).
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
-#include <stdlib.h>
 
 static id (*finamp_orig_initWithActivityType)(id, SEL, NSString *);
 
@@ -33,10 +33,6 @@ static id finamp_initWithActivityType(id self, SEL _cmd, NSString *activityType)
 @implementation FinampNSUserActivityGuard
 
 + (void)load {
-  // Must run before package:tailscale's Go tsnet Start() reads envknob.
-  setenv("TSNET_FORCE_LOGIN", "1", 1);
-  NSLog(@"[FINAMP] TSNET_FORCE_LOGIN=1 (native +load)");
-
   Method method = class_getInstanceMethod([NSUserActivity class],
                                           @selector(initWithActivityType:));
   if (method == NULL) {

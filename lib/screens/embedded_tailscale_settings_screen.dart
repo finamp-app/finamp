@@ -50,10 +50,9 @@ class _EmbeddedTailscaleSettingsScreenState
     try {
       await EmbeddedTailscaleService.ensureInitialized();
       _attachStateListener();
-      if (_status == null || _status!.state == NodeState.stopped) {
-        if (_requireAuthKey && (stored == null || stored.isEmpty)) {
-          return;
-        }
+      // Bring up if we have no live Running node (covers cold start missed
+      // by main(), or status left in starting/needsLogin/stopped).
+      if (_status?.isRunning != true) {
         setState(() => _busy = true);
         final status = await EmbeddedTailscaleService.up(
           authKey: stored,
@@ -143,8 +142,10 @@ class _EmbeddedTailscaleSettingsScreenState
       await EmbeddedTailscaleService.ensureInitialized();
       _attachStateListener();
       FinampSetters.setUseEmbeddedTailscale(true);
+      // Explicit Connect with a key: enroll if resume is not already Running.
       final status = await EmbeddedTailscaleService.up(
         authKey: key.isEmpty ? null : key,
+        forceEnroll: key.isNotEmpty && EmbeddedTailscaleService.isRunning != true,
       );
       if (mounted) setState(() => _status = status);
     } catch (e) {
