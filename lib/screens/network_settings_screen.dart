@@ -23,6 +23,7 @@ class NetworkSettingsScreen extends StatefulWidget {
 }
 
 class _NetworkSettingsScreenState extends State<NetworkSettingsScreen> {
+  final GlobalKey<PublicAddressSelectorState> publicAddressKey = GlobalKey(debugLabel: "publicAddressKey");
   final GlobalKey<LocalNetworkAddressSelectorState> localNetworkAddressKey = GlobalKey(
     debugLabel: "localNetworkAddressKey",
   );
@@ -43,7 +44,7 @@ class _NetworkSettingsScreenState extends State<NetworkSettingsScreen> {
           AutoOfflineSelector(),
           Divider(),
           ActiveNetworkDisplay(),
-          PublicAddressSelector(),
+          PublicAddressSelector(key: publicAddressKey),
           LocalNetworkSelector(),
           LocalNetworkAddressSelector(key: localNetworkAddressKey),
           SizedBox(height: 32.0),
@@ -54,11 +55,9 @@ class _NetworkSettingsScreenState extends State<NetworkSettingsScreen> {
                 text: AppLocalizations.of(context)!.testConnectionButtonLabel,
                 icon: TablerIcons.plug_connected,
                 onPressed: () async {
-                  // Ensure any pending edits in the local network address field are committed first
-                  final widgetState = localNetworkAddressKey.currentState;
-                  if (widgetState != null) {
-                    await widgetState.commitIfChanged();
-                  }
+                  // Commit both URL fields (public only saved on submit/unfocus before).
+                  await publicAddressKey.currentState?.commitIfChanged();
+                  await localNetworkAddressKey.currentState?.commitIfChanged();
                   final [public, private] = await Future.wait([
                     GetIt.instance<JellyfinApiHelper>().pingPublicServer(),
                     GetIt.instance<JellyfinApiHelper>().pingLocalServer(),

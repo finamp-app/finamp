@@ -22,6 +22,7 @@ import '../models/finamp_models.dart' as finamp_models;
 import '../models/jellyfin_models.dart';
 import 'downloads_service.dart';
 import 'downloads_service_backend.dart';
+import 'embedded_tailscale_service.dart';
 import 'finamp_http_client.dart';
 import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
@@ -1068,12 +1069,12 @@ class JellyfinApiHelper {
     }
   }
 
-  Future<bool> _pingSpecificServer(String url) async {
+  Future<bool> _pingSpecificServer(String url, {Duration timeout = const Duration(seconds: 3)}) async {
     // Use FinampHttpClient so MagicDNS public URLs work when embedded
     // Tailscale is up (plain IOClient cannot resolve *.ts.net).
     final client = ChopperClient(
       baseUrl: Uri.tryParse(url),
-      client: FinampHttpClient(connectionTimeout: const Duration(seconds: 3)),
+      client: FinampHttpClient(connectionTimeout: timeout),
       interceptors: [jellyfin_api.JellyfinSpecificInterceptor(url), HttpAggregateLoggingInterceptor()],
       converter: JsonConverter(),
     );
@@ -1081,7 +1082,7 @@ class JellyfinApiHelper {
     final Request $request = Request('GET', Uri.parse("/System/Endpoint"), client.baseUrl);
 
     try {
-      Response<dynamic> response = await client.send<dynamic, dynamic>($request);
+      Response<dynamic> response = await client.send<dynamic, dynamic>($request).timeout(timeout);
       if (response.statusCode != 200) return false;
       final body = response.bodyOrThrow as Map<String, dynamic>;
       // If IsInNetwork doesn't exist -> return false
@@ -1090,6 +1091,8 @@ class JellyfinApiHelper {
     } catch (e) {
       Logger("Ayoo").severe(e);
       return false;
+    } finally {
+      client.dispose();
     }
   }
 
@@ -1102,7 +1105,15 @@ class JellyfinApiHelper {
   Future<bool> pingPublicServer() async {
     FinampUser? user = GetIt.instance<FinampUserHelper>().currentUser;
     if (user == null) return false;
-    return await _pingSpecificServer(user.publicAddress);
+    final uri = Uri.tryParse(user.publicAddress);
+    final tailnet = uri != null && FinampHttpClient.looksLikeTailnetHost(uri);
+    if (tailnet && FinampSettingsHelper.finampSettings.useEmbeddedTailscale) {
+      await EmbeddedTailscaleService.ensureRunning();
+    }
+    return await _pingSpecificServer(
+      user.publicAddress,
+      timeout: tailnet ? const Duration(seconds: 15) : const Duration(seconds: 3),
+    );
   }
 
   Future<bool> pingActiveServer() async {

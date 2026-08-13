@@ -40,6 +40,39 @@ class EmbeddedTailscaleService {
   static bool get isRunning => _lastStatus?.isRunning ?? false;
   static Uri? get authUrl => _lastStatus?.authUrl;
 
+  static Future<bool>? _ensureRunningInFlight;
+
+  /// Resume tsnet if the node dropped (common after Wi‑Fi ↔ cellular).
+  ///
+  /// Concurrent callers share one in-flight attempt.
+  static Future<bool> ensureRunning({Duration timeout = const Duration(seconds: 12)}) {
+    if (isRunning) return Future.value(true);
+    return _ensureRunningInFlight ??= _ensureRunningBody(timeout: timeout).whenComplete(() {
+      _ensureRunningInFlight = null;
+    });
+  }
+
+  static Future<bool> _ensureRunningBody({required Duration timeout}) async {
+    if (isRunning) return true;
+    try {
+      await up();
+    } catch (e, st) {
+      _log.warning('ensureRunning up() failed', e, st);
+    }
+    if (isRunning) return true;
+    final deadline = DateTime.now().add(timeout);
+    while (DateTime.now().isBefore(deadline) && !isRunning) {
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+      try {
+        await refreshStatus();
+      } catch (_) {}
+    }
+    if (!isRunning) {
+      _log.warning('ensureRunning: still not Running (state=${lastStatus?.state})');
+    }
+    return isRunning;
+  }
+
   /// Ensure [Tailscale.init] has been called with a backup-excluded state dir.
   static Future<void> ensureInitialized() async {
     if (_initialized) return;
@@ -58,8 +91,7 @@ class EmbeddedTailscaleService {
 
   static Future<String?> loadStoredAuthKey() => FinampSecrets.loadAuthKey();
 
-  static Future<void> storeAuthKey(String? authKey) =>
-      FinampSecrets.storeAuthKey(authKey);
+  static Future<void> storeAuthKey(String? authKey) => FinampSecrets.storeAuthKey(authKey);
 
   /// Bring the node up.
   ///
@@ -80,10 +112,7 @@ class EmbeddedTailscaleService {
     }
 
     if (!forceEnroll) {
-      final resumed = await _tryResume(
-        hostname: hostname,
-        ephemeral: ephemeral,
-      );
+      final resumed = await _tryResume(hostname: hostname, ephemeral: ephemeral);
       if (resumed != null) {
         if (resumed.isRunning) {
           return resumed;
@@ -92,9 +121,7 @@ class EmbeddedTailscaleService {
           // needsMachineAuth or other stable non-running state
           return resumed;
         }
-        _log.info(
-          'Resume reached needsLogin; will enroll with auth key if available',
-        );
+        _log.info('Resume reached needsLogin; will enroll with auth key if available');
       }
     }
 
@@ -106,25 +133,15 @@ class EmbeddedTailscaleService {
       );
     }
 
-    return _enrollWithAuthKey(
-      key: key,
-      hostname: hostname,
-      ephemeral: ephemeral,
-    );
+    return _enrollWithAuthKey(key: key, hostname: hostname, ephemeral: ephemeral);
   }
 
   /// Resume without auth key (persisted node identity). Returns null if the
   /// native stack rejects the call (typically no state on disk).
-  static Future<TailscaleStatus?> _tryResume({
-    required String hostname,
-    required bool ephemeral,
-  }) async {
+  static Future<TailscaleStatus?> _tryResume({required String hostname, required bool ephemeral}) async {
     _clearTsnetForceLogin();
     try {
-      final status = await Tailscale.instance.up(
-        hostname: hostname,
-        ephemeral: ephemeral,
-      );
+      final status = await Tailscale.instance.up(hostname: hostname, ephemeral: ephemeral);
       _lastStatus = status;
       _log.info(
         'Resume up() → state=${status.state} ipv4=${status.ipv4} '
@@ -147,11 +164,7 @@ class EmbeddedTailscaleService {
     // Ignoring authkey." on first enrollment.
     _enableTsnetForceLogin();
     try {
-      final status = await Tailscale.instance.up(
-        hostname: hostname,
-        authKey: key,
-        ephemeral: ephemeral,
-      );
+      final status = await Tailscale.instance.up(hostname: hostname, authKey: key, ephemeral: ephemeral);
       _lastStatus = status;
       await storeAuthKey(key);
       _log.info(
@@ -197,9 +210,7 @@ class EmbeddedTailscaleService {
   }
 
   /// Listen for lifecycle state changes; refreshes [lastStatus] on each event.
-  static StreamSubscription<NodeState> listenState(
-    void Function(TailscaleStatus status) onData,
-  ) {
+  static StreamSubscription<NodeState> listenState(void Function(TailscaleStatus status) onData) {
     return Tailscale.instance.onStateChange.listen((_) async {
       try {
         final status = await Tailscale.instance.status();
@@ -224,10 +235,11 @@ class EmbeddedTailscaleService {
     if (kIsWeb) return;
     try {
       final lib = _libc;
-      final setenv = lib.lookupFunction<
-        ffi.Int32 Function(ffi.Pointer<Utf8>, ffi.Pointer<Utf8>, ffi.Int32),
-        int Function(ffi.Pointer<Utf8>, ffi.Pointer<Utf8>, int)
-      >('setenv');
+      final setenv = lib
+          .lookupFunction<
+            ffi.Int32 Function(ffi.Pointer<Utf8>, ffi.Pointer<Utf8>, ffi.Int32),
+            int Function(ffi.Pointer<Utf8>, ffi.Pointer<Utf8>, int)
+          >('setenv');
       final k = key.toNativeUtf8();
       final v = value.toNativeUtf8();
       try {
@@ -248,10 +260,9 @@ class EmbeddedTailscaleService {
     if (kIsWeb) return;
     try {
       final lib = _libc;
-      final unsetenv = lib.lookupFunction<
-        ffi.Int32 Function(ffi.Pointer<Utf8>),
-        int Function(ffi.Pointer<Utf8>)
-      >('unsetenv');
+      final unsetenv = lib.lookupFunction<ffi.Int32 Function(ffi.Pointer<Utf8>), int Function(ffi.Pointer<Utf8>)>(
+        'unsetenv',
+      );
       final k = key.toNativeUtf8();
       try {
         unsetenv(k);
@@ -263,19 +274,13 @@ class EmbeddedTailscaleService {
     }
   }
 
-  static ffi.DynamicLibrary get _libc => (Platform.isAndroid || Platform.isLinux)
-      ? ffi.DynamicLibrary.open('libc.so')
-      : ffi.DynamicLibrary.process();
+  static ffi.DynamicLibrary get _libc =>
+      (Platform.isAndroid || Platform.isLinux) ? ffi.DynamicLibrary.open('libc.so') : ffi.DynamicLibrary.process();
 
   static Future<void> _excludeFromBackup(Directory dir) async {
     if (kIsWeb || !Platform.isIOS) return;
     try {
-      await Process.run('xattr', [
-        '-w',
-        'com.apple.MobileBackup',
-        '1',
-        dir.path,
-      ]);
+      await Process.run('xattr', ['-w', 'com.apple.MobileBackup', '1', dir.path]);
     } catch (e) {
       _log.warning('Could not exclude Tailscale state from backup: $e');
     }
