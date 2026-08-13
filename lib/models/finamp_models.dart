@@ -277,6 +277,14 @@ class DefaultSettings {
   /// Route Jellyfin HTTP through in-process Tailscale tsnet (coexists with ExpressVPN).
   static const useEmbeddedTailscale = false;
   static const String? musicFinderServerUrl = null;
+  /// Sideload OTA: auto (scheduled) or manual (check on demand).
+  static const sideloadUpdateMode = SideloadUpdateMode.auto;
+  /// Minutes from local midnight for Auto OTA (default 3:33 AM → 213).
+  static const sideloadAutoUpdateMinutes = 3 * 60 + 33;
+  /// Allow Auto OTA downloads on cellular (default Wi‑Fi / unmetered only).
+  static const sideloadAllowCellular = false;
+  /// Optional override for latest.json URL (null = baked default).
+  static const String? sideloadManifestUrl = null;
   static const previousTracksPersistenceMode = PreviousTracksPersistenceMode.persistent;
   static final homeScreenConfiguration = FinampHomeScreenConfiguration(
     actions: [
@@ -461,6 +469,10 @@ class FinampSettings {
     this.useAndroidGainEffect = DefaultSettings.useAndroidGainEffect,
     required this.deviceId,
     this.musicFinderServerUrl,
+    this.sideloadUpdateMode = DefaultSettings.sideloadUpdateMode,
+    this.sideloadAutoUpdateMinutes = DefaultSettings.sideloadAutoUpdateMinutes,
+    this.sideloadAllowCellular = DefaultSettings.sideloadAllowCellular,
+    this.sideloadManifestUrl = DefaultSettings.sideloadManifestUrl,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -974,6 +986,20 @@ class FinampSettings {
   /// [hiveReadMusicFinderServerUrl] for upgrade.
   @HiveField(155)
   String? musicFinderServerUrl;
+
+  /// Auto vs manual sideload OTA (fork-only).
+  @HiveField(156, defaultValue: DefaultSettings.sideloadUpdateMode)
+  SideloadUpdateMode sideloadUpdateMode = DefaultSettings.sideloadUpdateMode;
+
+  /// Local time-of-day for Auto OTA as minutes from midnight (default 3:33 → 213).
+  @HiveField(157, defaultValue: DefaultSettings.sideloadAutoUpdateMinutes)
+  int sideloadAutoUpdateMinutes = DefaultSettings.sideloadAutoUpdateMinutes;
+
+  @HiveField(158, defaultValue: DefaultSettings.sideloadAllowCellular)
+  bool sideloadAllowCellular = DefaultSettings.sideloadAllowCellular;
+
+  @HiveField(159)
+  String? sideloadManifestUrl;
 
   /// Tolerant Hive upgrade: field 154 was bool (tsnet) or String? (music-finder).
   static bool hiveReadUseEmbeddedTailscale(Object? field154, Object? field155) {
@@ -4059,6 +4085,16 @@ enum PreviousTracksPersistenceMode {
   /// Override state to be expanded on open
   @HiveField(2)
   initiallyExpanded,
+}
+
+/// Sideload OTA update mode (fork channel).
+@HiveType(typeId: 128)
+enum SideloadUpdateMode {
+  @HiveField(0)
+  auto,
+
+  @HiveField(1)
+  manual,
 }
 
 sealed class HomeScreenSectionBase {

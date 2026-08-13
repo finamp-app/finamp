@@ -14,6 +14,7 @@ import 'package:finamp/screens/interaction_settings_screen.dart';
 import 'package:finamp/screens/language_selection_screen.dart';
 import 'package:finamp/screens/layout_settings_screen.dart';
 import 'package:finamp/screens/network_settings_screen.dart';
+import 'package:finamp/screens/sideload_updates_settings_screen.dart';
 import 'package:finamp/screens/playback_reporting_settings_screen.dart';
 import 'package:finamp/screens/transcoding_settings_screen.dart';
 import 'package:finamp/screens/view_selector.dart';
@@ -161,6 +162,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: Text(AppLocalizations.of(context)!.embeddedTailscaleSettingsTitle),
             onTap: () =>
                 Navigator.of(context).pushNamed(EmbeddedTailscaleSettingsScreen.routeName),
+          ),
+          ListTile(
+            leading: const Icon(Icons.system_update_alt),
+            title: Text(AppLocalizations.of(context)!.sideloadUpdatesSettingsTitle),
+            onTap: () =>
+                Navigator.of(context).pushNamed(SideloadUpdatesSettingsScreen.routeName),
           ),
           ListTile(
             leading: const Icon(Icons.music_note),

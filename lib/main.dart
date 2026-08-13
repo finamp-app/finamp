@@ -26,6 +26,7 @@ import 'package:finamp/screens/interaction_settings_screen.dart';
 import 'package:finamp/screens/login_screen.dart';
 import 'package:finamp/screens/lyrics_settings_screen.dart';
 import 'package:finamp/screens/network_settings_screen.dart';
+import 'package:finamp/screens/sideload_updates_settings_screen.dart';
 import 'package:finamp/screens/playback_history_screen.dart';
 import 'package:finamp/screens/external_search_screen.dart';
 import 'package:finamp/screens/playback_reporting_settings_screen.dart';
@@ -57,6 +58,7 @@ import 'package:finamp/services/offline_listen_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
 import 'package:finamp/services/playon_service.dart';
 import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/services/sideload_update_service.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:finamp/services/ui_overlay_setter_observer.dart';
 import 'package:finamp/services/widget_bindings_observer_provider.dart';
@@ -492,6 +494,7 @@ Future<void> _setupPlaybackServices() async {
   audioHandler.onQueueServiceAvailable(); // breaking circular dependency
   GetIt.instance.registerSingleton(PlaybackHistoryService());
   GetIt.instance.registerSingleton(AudioServiceHelper());
+  GetIt.instance.registerSingleton(SideloadUpdateService());
 
   if (Platform.isIOS) {
     GetIt.instance.registerSingleton<CarPlayHelper>(CarPlayHelper());
@@ -499,6 +502,34 @@ Future<void> _setupPlaybackServices() async {
 
   // Begin to restore queue
   unawaited(queueService.performInitialQueueLoad().catchError((dynamic x) => GlobalSnackbar.error(x)));
+
+  // Sideload OTA: sync Android WorkManager + catch up if Auto window was missed.
+  unawaited(_sideloadOtaCatchUp());
+}
+
+Future<void> _sideloadOtaCatchUp() async {
+  try {
+    final service = GetIt.instance<SideloadUpdateService>();
+    await service.syncNativeSchedule();
+    final result = await service.catchUpIfNeeded();
+    if (result == null) return;
+    if (result.outcome == SideloadCheckOutcome.installed) {
+      GlobalSnackbar.message(
+        (context) => result.message ?? 'Finamp updated to ${result.manifest?.version}',
+      );
+    } else if (result.outcome == SideloadCheckOutcome.updateAvailable && Platform.isIOS) {
+      // Banner only — user opens Settings → Updates for SideStore/USB actions.
+      GlobalSnackbar.message(
+        (context) =>
+            'Update available: ${result.manifest?.version ?? ''}. Open Settings → Updates.',
+      );
+    } else if (result.outcome == SideloadCheckOutcome.needPermission ||
+        result.outcome == SideloadCheckOutcome.needUserConfirm) {
+      GlobalSnackbar.message((context) => result.message ?? 'Finish Updates setup in Settings');
+    }
+  } catch (e, st) {
+    _mainLog.warning('Sideload OTA catch-up failed', e, st);
+  }
 }
 
 /// Migrates the old DownloadLocations list to a map
@@ -1037,6 +1068,8 @@ class FinampApp extends ConsumerWidget {
         NetworkSettingsScreen.routeName: (context) => const NetworkSettingsScreen(),
         EmbeddedTailscaleSettingsScreen.routeName: (context) =>
             const EmbeddedTailscaleSettingsScreen(),
+        SideloadUpdatesSettingsScreen.routeName: (context) =>
+            const SideloadUpdatesSettingsScreen(),
         AccessibilitySettingsScreen.routeName: (context) => const AccessibilitySettingsScreen(),
         ExternalSearchScreen.routeName: (context) => const ExternalSearchScreen(),
         PlaylistEditScreen.routeName: (context) =>

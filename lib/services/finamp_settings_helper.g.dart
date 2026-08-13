@@ -1314,6 +1314,38 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setSideloadUpdateMode(SideloadUpdateMode newSideloadUpdateMode) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.sideloadUpdateMode = newSideloadUpdateMode;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setSideloadAutoUpdateMinutes(int newSideloadAutoUpdateMinutes) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.sideloadAutoUpdateMinutes = newSideloadAutoUpdateMinutes;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setSideloadAllowCellular(bool newSideloadAllowCellular) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.sideloadAllowCellular = newSideloadAllowCellular;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setSideloadManifestUrl(String? newSideloadManifestUrl) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.sideloadManifestUrl = newSideloadManifestUrl;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1761,6 +1793,18 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       .select((value) => value.requireValue.useEmbeddedTailscale);
   ProviderListenable<String?> get musicFinderServerUrl => finampSettingsProvider
       .select((value) => value.requireValue.musicFinderServerUrl);
+  ProviderListenable<SideloadUpdateMode> get sideloadUpdateMode =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.sideloadUpdateMode,
+      );
+  ProviderListenable<int> get sideloadAutoUpdateMinutes =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.sideloadAutoUpdateMinutes,
+      );
+  ProviderListenable<bool> get sideloadAllowCellular => finampSettingsProvider
+      .select((value) => value.requireValue.sideloadAllowCellular);
+  ProviderListenable<String?> get sideloadManifestUrl => finampSettingsProvider
+      .select((value) => value.requireValue.sideloadManifestUrl);
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

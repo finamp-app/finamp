@@ -66,8 +66,10 @@ android {
             // minifyEnabled false
         }
         profile {
-            if (signingConfigs.hasProperty('profile')) {
-                signingConfig signingConfigs.profile
+            // Prefer the same upload keystore as release so OTA self-updates
+            // stay signature-compatible across publishes.
+            if (keystorePropertiesFile.exists() && keystoreProperties['storeFile']) {
+                signingConfig signingConfigs.release
             }
             applicationIdSuffix '.profile'
             // minifyEnabled true // avoid dexing issues
@@ -97,4 +99,5 @@ dependencies {
     implementation 'androidx.mediarouter:mediarouter:1.8.1'
     implementation "androidx.core:core-splashscreen:1.2.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
+    implementation "androidx.work:work-runtime-ktx:2.9.1"
 }

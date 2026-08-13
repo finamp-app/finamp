@@ -3894,5 +3894,41 @@
       "ok": {"type": "int"},
       "total": {"type": "int"}
     }
+  },
+  "sideloadUpdatesSettingsTitle": "Updates",
+  "@sideloadUpdatesSettingsTitle": {
+    "description": "Settings screen for sideload OTA updates"
+  },
+  "sideloadCurrentVersion": "Current version",
+  "sideloadUpdateModeAuto": "Automatic updates",
+  "sideloadUpdateModeAutoSubtitle": "Check at the scheduled time and install silently on Android when setup is complete",
+  "sideloadUpdateModeManualSubtitle": "Only check when you tap Check now",
+  "sideloadAutoUpdateTime": "Auto update time",
+  "sideloadAllowCellular": "Allow cellular downloads",
+  "sideloadAllowCellularSubtitle": "By default updates download on Wi‑Fi only",
+  "sideloadCheckNow": "Check now",
+  "sideloadCheckNowAndroidSubtitle": "Fetch latest.json and install if newer",
+  "sideloadCheckNowIosSubtitle": "Fetch latest.json; install via SideStore or USB",
+  "sideloadSetupStatus": "Android setup",
+  "sideloadAllowUnknownApps": "Allow Install unknown apps",
+  "sideloadCompleteOneTimeSetup": "Complete one-time setup",
+  "sideloadCompleteOneTimeSetupSubtitle": "If adb installed this build, tap once through the system Install sheet so Finamp becomes installer of record",
+  "sideloadLastWorkerRun": "Background worker",
+  "sideloadIosInstallPaths": "iOS install",
+  "sideloadIosNoSilentInstall": "Personal Apple team builds cannot silent-install. Use SideStore or USB (./scripts/install-ios-profile.sh).",
+  "sideloadUpdateAvailableTitle": "Update available",
+  "sideloadOpenSideStoreSource": "Open SideStore source",
+  "sideloadDownloadIpa": "Download IPA",
+  "sideloadUsbInstallHint": "Or on a Mac: ./scripts/install-ios-profile.sh",
+  "sideloadManifestUrlOptional": "Manifest URL (optional)",
+  "sideloadReleaseNotes": "Release notes",
+  "sideloadUnknownAppsAllowed": "Install unknown apps: allowed",
+  "sideloadUnknownAppsBlocked": "Install unknown apps: not allowed",
+  "sideloadInstallerOfRecordOk": "Installer of record: Finamp (silent Auto OK)",
+  "sideloadInstallerOfRecordOther": "Installer of record: {installer} (one confirmed Install may be required)",
+  "@sideloadInstallerOfRecordOther": {
+    "placeholders": {
+      "installer": {"type": "String"}
+    }
   }
 }

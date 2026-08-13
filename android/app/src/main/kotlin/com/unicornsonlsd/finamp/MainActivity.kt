@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.mediarouter.app.SystemOutputSwitcherDialogController
 import androidx.mediarouter.media.MediaRouter
 import com.ryanheise.audioservice.AudioServiceActivity
+import com.unicornsonlsd.finamp.sideload.SideloadUpdateChannel
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +46,7 @@ class MainActivity : AudioServiceActivity() {
     }
 
     private lateinit var mediaRouter: MediaRouter
+    private var sideloadUpdateChannel: SideloadUpdateChannel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         updateIntent(intent)
@@ -69,6 +71,15 @@ class MainActivity : AudioServiceActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        sideloadUpdateChannel = SideloadUpdateChannel(applicationContext) { intent ->
+            startActivity(intent)
+        }.also { channel ->
+            channel.ensureReceiver()
+            MethodChannel(
+                flutterEngine.dartExecutor.binaryMessenger,
+                SideloadUpdateChannel.CHANNEL,
+            ).setMethodCallHandler(channel)
+        }
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             CLIENT_CERT_CHANNEL,

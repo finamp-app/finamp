@@ -98,3 +98,22 @@ If install fails with a vague *Unable to Install* message, check the Mac console
 
 `ios/Flutter/Local.xcconfig` is gitignored (see `Local.xcconfig.example`).  
 `android/key.properties` + `*.jks` are already gitignored; release mode generates a local keystore automatically.
+
+## Sideload OTA (Profile channel)
+
+For recurring updates without USB every time, use the **Profile** publish pipeline
+and in-app **Settings → Updates**:
+
+```bash
+# Dev MacBook — builds Profile APK + IPA, latest.json, uploads sideload-latest
+./scripts/publish-sideload-release.sh
+```
+
+- Android Auto mode can silent-install after one-time “Install unknown apps” +
+  installer-of-record setup.
+- iOS personal team: notify + SideStore / USB only (no silent install).
+- Do **not** publish the `*.debug` APK into `sideload-latest` — OTA targets
+  `…finamp.profile`.
+
+Full checklist, versioning (`0.9.25-sideload.N+build`), Bitwarden keystore
+backup name, and private-repo notes: [SIDELOAD_OTA.md](SIDELOAD_OTA.md).
