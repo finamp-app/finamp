@@ -43,11 +43,21 @@ Toggle off to use the normal LAN / public HTTP client again.
 | Field | Typical value | Wi‑Fi at home | Cellular |
 |-------|---------------|---------------|----------|
 | **Local** | LAN IP / `.local` | Should pass | Fails (expected — not on LAN) |
-| **Public** | MagicDNS `*.ts.net` | Passes when tsnet Running | Passes when tsnet Running |
+| **Public** | MagicDNS `*.ts.net` (or `100.x` CGNAT) | Passes when tsnet Running | Passes when tsnet Running |
 
-If Public fails while Embedded Tailscale shows Running, rebuild with a build
-that routes the network ping through `FinampHttpClient` (older builds used a
-plain `IOClient` and always failed MagicDNS in that test).
+The public URL is saved on keyboard submit, unfocus, Test, and when you leave
+the screen. Older builds only saved on the keyboard **Done** key, so leaving
+Network settings discarded a typed MagicDNS name and showed the login/LAN
+address again — Test on cellular then pinged LAN and both checks failed.
+
+**Cellular:** Local failing is expected. Public should pass if Embedded
+Tailscale is **Running** and the public field is actually `*.ts.net` (not the
+LAN IP). After a radio switch, Finamp resumes tsnet and allows up to 15s for
+the public ping (LAN pings stay at 3s).
+
+If Public still fails while Embedded Tailscale shows Running, confirm the
+public field is MagicDNS, then rebuild. Older builds used a plain `IOClient`
+for that test and always failed MagicDNS.
 
 ## Build requirements
 
