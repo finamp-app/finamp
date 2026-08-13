@@ -27,20 +27,18 @@ class FinampHttpClient extends http.BaseClient {
   final http.Client _default;
   final _log = Logger('FinampHttpClient');
 
-  http.Client get _active {
-    bool useTs;
+  bool get _useEmbeddedTs {
     try {
-      useTs = FinampSettingsHelper.finampSettings.useEmbeddedTailscale;
+      return FinampSettingsHelper.finampSettings.useEmbeddedTailscale;
     } catch (e) {
-      // Background isolate (or pre-Hive): never touch Tailscale / Hive here.
-      _log.warning('settings unavailable ($e); using default client');
-      return _default;
+      _log.warning('settings unavailable ($e); assuming embedded TS off');
+      return false;
     }
-    if (!useTs) return _default;
+  }
+
+  http.Client get _active {
+    if (!_useEmbeddedTs) return _default;
     if (!EmbeddedTailscaleService.isRunning) {
-      _log.warning(
-        'useEmbeddedTailscale is on but tsnet is not running; using default client',
-      );
       return _default;
     }
     try {
@@ -51,8 +49,35 @@ class FinampHttpClient extends http.BaseClient {
     }
   }
 
+  static bool _looksLikeMagicDns(Uri uri) {
+    final host = uri.host.toLowerCase();
+    return host.endsWith('.ts.net') || host.endsWith('.ts.net.');
+  }
+
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
+    if (_useEmbeddedTs &&
+        !EmbeddedTailscaleService.isRunning &&
+        _looksLikeMagicDns(request.url)) {
+      _log.warning(
+        'MagicDNS request while tsnet is not Running: ${request.url} '
+        '(status=${EmbeddedTailscaleService.lastStatus?.state}). '
+        'Connect with an auth key under Settings → Embedded Tailscale.',
+      );
+      return Future.error(
+        http.ClientException(
+          'Embedded Tailscale is not connected (node not Running). '
+          'Open Settings → Embedded Tailscale, paste a tskey-auth-… key, '
+          'and Connect before using MagicDNS URLs like ${request.url.host}.',
+          request.url,
+        ),
+      );
+    }
+    if (_useEmbeddedTs && !EmbeddedTailscaleService.isRunning) {
+      _log.warning(
+        'useEmbeddedTailscale is on but tsnet is not running; using default client',
+      );
+    }
     return _active.send(request);
   }
 

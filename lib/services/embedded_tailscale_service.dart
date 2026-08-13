@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:ffi' as ffi;
 import 'dart:io';
 
+import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
@@ -18,6 +20,10 @@ import 'package:tailscale/tailscale.dart';
 /// is in `NeedsLogin` makes tsnet run `StartLoginInteractive`, which opens an
 /// auth sheet that can abort the process with an empty `NSUserActivity`.
 /// Prefer a reusable auth key from the Tailscale admin console.
+///
+/// **TSNET_FORCE_LOGIN:** upstream tsnet ignores `AuthKey` when local backend
+/// state is `NoState` unless `TSNET_FORCE_LOGIN=1`. We set that in-process
+/// before [up] whenever an auth key is present so MagicDNS can come up.
 class EmbeddedTailscaleService {
   EmbeddedTailscaleService._();
 
@@ -96,6 +102,12 @@ class EmbeddedTailscaleService {
       );
     }
 
+    if (key != null && key.isNotEmpty) {
+      // Without this, tsnet logs: "Authkey is set; but state is NoState.
+      // Ignoring authkey." and MagicDNS never works.
+      _enableTsnetForceLogin();
+    }
+
     try {
       final status = await Tailscale.instance.up(
         hostname: hostname,
@@ -108,8 +120,14 @@ class EmbeddedTailscaleService {
       }
       _log.info(
         'up() → state=${status.state} ipv4=${status.ipv4} '
-        'needsLogin=${status.needsLogin}',
+        'needsLogin=${status.needsLogin} isRunning=${status.isRunning}',
       );
+      if (!status.isRunning && (key != null && key.isNotEmpty)) {
+        _log.warning(
+          'tsnet did not reach Running after auth-key up() '
+          '(state=${status.state}). MagicDNS will fail until Running.',
+        );
+      }
       return status;
     } catch (e, st) {
       _lastError = e;
@@ -152,6 +170,36 @@ class EmbeddedTailscaleService {
         _log.warning('status() after state change failed', e, st);
       }
     });
+  }
+
+  /// Sets `TSNET_FORCE_LOGIN=1` in the current process so Go tsnet honors
+  /// [Server.AuthKey] when backend state is `NoState` / not `NeedsLogin`.
+  static void _enableTsnetForceLogin() {
+    if (kIsWeb) return;
+    try {
+      final lib = (Platform.isAndroid || Platform.isLinux)
+          ? ffi.DynamicLibrary.open('libc.so')
+          : ffi.DynamicLibrary.process();
+      final setenv = lib.lookupFunction<
+        ffi.Int32 Function(ffi.Pointer<Utf8>, ffi.Pointer<Utf8>, ffi.Int32),
+        int Function(ffi.Pointer<Utf8>, ffi.Pointer<Utf8>, int)
+      >('setenv');
+      final key = 'TSNET_FORCE_LOGIN'.toNativeUtf8();
+      final value = '1'.toNativeUtf8();
+      try {
+        final rc = setenv(key, value, 1);
+        if (rc != 0) {
+          _log.warning('setenv(TSNET_FORCE_LOGIN) returned $rc');
+        } else {
+          _log.info('Set TSNET_FORCE_LOGIN=1 for auth-key enrollment');
+        }
+      } finally {
+        malloc.free(key);
+        malloc.free(value);
+      }
+    } catch (e, st) {
+      _log.severe('Failed to set TSNET_FORCE_LOGIN', e, st);
+    }
   }
 
   static Future<void> _excludeFromBackup(Directory dir) async {

@@ -33,6 +33,7 @@ dependencies:
   # Embedded Tailscale (userspace tsnet) for MagicDNS without a system VPN.
   # Requires Go 1.25+ on PATH at build time (see docs/EMBEDDED_TAILSCALE.md).
   tailscale: ^0.8.0
+  ffi: ^2.1.0
   # just_audio: ^0.10.5
   just_audio:
     # TODO switch back to official just_audio once https://github.com/ryanheise/just_audio/pull/1555 is merged
