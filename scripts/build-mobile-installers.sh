@@ -227,16 +227,19 @@ install_ios_hint() {
 Do NOT copy the .ipa via Finder and tap it — development IPAs will show
 "Unable to Install Finamp / Please try again later."
 
-With the phone USB-connected, on Dev MacBook:
+Day-to-day Profile (in-place, keeps Trust):
+  ./scripts/install-ios-profile.sh
+
+Do NOT use: flutter install   # uninstalls first; wipes personal-team Trust
+
+IPA (USB-connected), on Dev MacBook:
 1. Xcode → Window → Devices and Simulators → select iPhone → (+) under Installed Apps
    → choose: $DIST_DIR/finamp-ios-development.ipa
-   OR:
+   OR in-place (preferred over uninstall):
    TMP=\$(mktemp -d) && unzip -q "$DIST_DIR/finamp-ios-development.ipa" -d "\$TMP" \\
      && xcrun devicectl device install app --device 00008020-0004484921F0002E "\$TMP/Payload/Runner.app"
-2. On iPhone: Settings → General → VPN & Device Management → trust your developer certificate.
-
-Or install live from source (also registers the device for new bundle ids):
-  flutter run --release -d 00008020-0004484921F0002E
+2. On iPhone: Settings → General → VPN & Device Management → trust your developer certificate
+   once, then leave at least one app from this personal team installed.
 EOF
 }
 

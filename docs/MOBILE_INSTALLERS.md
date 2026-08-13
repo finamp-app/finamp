@@ -79,7 +79,18 @@ Use one of these instead (phone USB-connected):
 - Apple Configurator 2 → Add → that IPA
 - Or from source: `flutter run --release -d <iphone-device-id>`
 
-Then on iPhone: **Settings → General → VPN & Device Management** → trust the developer certificate.
+Then on iPhone: **Settings → General → VPN & Device Management** → trust the developer certificate **once**. Leave Finamp (or another app from the same personal team) installed so that profile stays.
+
+Day-to-day Profile upgrades (no debugger, no Untrusted Developer loop):
+
+```bash
+# Dev MacBook — in-place install; do not use flutter install
+./scripts/install-ios-profile.sh
+```
+
+`flutter install` **uninstalls** the old copy first. If that was the last app
+from team `F3E25E64U6`, iOS drops the trusted developer profile and the next
+launch asks you to Trust again. Details: [IOS_SIDELOAD_DEBUG.md](IOS_SIDELOAD_DEBUG.md).
 
 If install fails with a vague *Unable to Install* message, check the Mac console/`devicectl` log. A common build bug is every embedded framework sharing the app bundle id (`DuplicateIdentifier`) — the installer script avoids that by only changing the Runner target’s bundle id.
 

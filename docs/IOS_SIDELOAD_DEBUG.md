@@ -6,7 +6,26 @@ those capabilities (or a CarPlay `UIScene` without the entitlement) makes iOS
 
 ## Prefer Profile (smooth launch)
 
-Use **Profile**, not Debug, for day-to-day device testing:
+Use **Profile**, not Debug, for day-to-day device testing.
+
+For a **detached** install (no Xcode/debugger) that **does not uninstall** the
+existing app — required so iOS keeps the trusted personal-team profile:
+
+```bash
+# Dev MacBook
+./scripts/install-ios-profile.sh
+# optional: IOS_DEVICE=<udid> SKIP_BUILD=1 ./scripts/install-ios-profile.sh
+```
+
+That runs `flutter build ios --profile` then
+`xcrun devicectl device install app` (in-place upgrade).
+
+**Do not** use `flutter install` for these drops. It uninstalls the old copy
+first (`Uninstalling old version…`). If Finamp is the only app signed with
+personal team `F3E25E64U6`, iOS **removes** the developer management profile
+and the next launch shows **Untrusted Developer** again.
+
+`flutter run --profile` is fine when you want an attached session:
 
 ```bash
 # Dev MacBook
@@ -75,8 +94,27 @@ Debug and Profile do **not** hardcode team/bundle in `project.pbxproj`.
 
 ## Trust developer
 
-Expected once per reinstall / new signing identity — not every launch.
-Settings → General → VPN & Device Management → trust your Apple ID.
+Trust is **per developer certificate on the device**, not per app version.
+
+1. Install Finamp (or any other app signed with the **same** personal team).
+2. **Settings → General → VPN & Device Management** → your Apple ID → **Trust**.
+3. Leave **at least one** app from that team on the device at all times.
+
+A one-time **Settings → Privacy & Security → Developer Mode** prompt is
+separate from Untrusted Developer.
+
+You should **not** need to re-trust after each Profile drop if installs are
+in-place (`./scripts/install-ios-profile.sh`). Re-trust is expected if:
+
+- you deleted Finamp **and** every other app from this personal team, or
+- the signing identity/certificate actually changed (new Apple ID, new cert).
+
+Optional: keep a tiny second Xcode app on the phone signed with `F3E25E64U6`
+so uninstalling Finamp does not wipe the profile.
+
+Free personal teams cannot permanently “accept this Apple ID forever” with no
+app installed. TestFlight / App Store (paid Apple Developer Program) never
+show Untrusted Developer.
 
 ## UIScene
 
