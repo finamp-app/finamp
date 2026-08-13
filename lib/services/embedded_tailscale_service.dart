@@ -7,8 +7,9 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tailscale/tailscale.dart';
+
+import 'finamp_secrets.dart';
 
 /// Lifecycle wrapper around [package:tailscale] userspace tsnet.
 ///
@@ -29,7 +30,6 @@ class EmbeddedTailscaleService {
   EmbeddedTailscaleService._();
 
   static final _log = Logger('EmbeddedTailscaleService');
-  static const _authKeyPrefsKey = 'embedded_tailscale_auth_key';
   static bool _initialized = false;
   static String? _stateDirPath;
   static TailscaleStatus? _lastStatus;
@@ -43,6 +43,7 @@ class EmbeddedTailscaleService {
   /// Ensure [Tailscale.init] has been called with a backup-excluded state dir.
   static Future<void> ensureInitialized() async {
     if (_initialized) return;
+    await FinampSecrets.ensureInitialized();
     final support = await getApplicationSupportDirectory();
     final stateDir = Directory(p.join(support.path, 'embedded_tailscale'));
     if (!await stateDir.exists()) {
@@ -55,22 +56,10 @@ class EmbeddedTailscaleService {
     _log.info('Initialized tsnet stateDir=${stateDir.path}');
   }
 
-  static Future<String?> loadStoredAuthKey() async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = prefs.getString(_authKeyPrefsKey)?.trim();
-    if (key == null || key.isEmpty) return null;
-    return key;
-  }
+  static Future<String?> loadStoredAuthKey() => FinampSecrets.loadAuthKey();
 
-  static Future<void> storeAuthKey(String? authKey) async {
-    final prefs = await SharedPreferences.getInstance();
-    final trimmed = authKey?.trim() ?? '';
-    if (trimmed.isEmpty) {
-      await prefs.remove(_authKeyPrefsKey);
-    } else {
-      await prefs.setString(_authKeyPrefsKey, trimmed);
-    }
-  }
+  static Future<void> storeAuthKey(String? authKey) =>
+      FinampSecrets.storeAuthKey(authKey);
 
   /// Bring the node up.
   ///

@@ -74,12 +74,18 @@ flutter run
 
 - Node WireGuard private key lives under application support
   (`…/embedded_tailscale/`). Do not back this directory up to iCloud.
+- **Auth keys** are stored with `flutter_secure_storage` (iOS/macOS Keychain,
+  Android EncryptedSharedPreferences / Keystore)—not plain SharedPreferences.
+  Older plaintext prefs copies are migrated once and deleted.
+  On the stacked `feat/music-finder` branch the Music Finder server URL uses
+  the same secure store.
 - Prefer short-lived or tagged auth keys from the Tailscale admin console.
 - Use **Log out / reset node** before handing a device away.
 
 ## Scope / non-goals
 
-- Music Finder / External Search is **not** on this branch (personal fork work).
+- Music Finder / External Search is **not** on this branch (personal fork work
+  lives on `feat/music-finder`, which inherits this branch).
 - Audio streaming (`just_audio`) may still use the platform HTTP stack; if
   streams fail over MagicDNS while API works, a follow-up must route media
   fetches through the same client.
