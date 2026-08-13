@@ -41,6 +41,9 @@ class EmbeddedTailscaleService {
   /// Ensure [Tailscale.init] has been called with a backup-excluded state dir.
   static Future<void> ensureInitialized() async {
     if (_initialized) return;
+    // Before loading/starting the Go runtime: tsnet ignores AuthKey on NoState
+    // unless this is set (see upstream tsnet "Ignoring authkey" log).
+    _enableTsnetForceLogin();
     final support = await getApplicationSupportDirectory();
     final stateDir = Directory(p.join(support.path, 'embedded_tailscale'));
     if (!await stateDir.exists()) {

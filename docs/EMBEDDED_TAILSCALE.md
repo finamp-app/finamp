@@ -18,11 +18,13 @@ WireGuard-over-UDP from inside Finamp and leaves the OS routing table alone.
    is disabled (it can abort the app via an empty `NSUserActivity` / autofill
    path). Prefer a reusable / tagged key.
 3. Enable **Connect via embedded Tailscale** (or tap Connect). Finamp sets
-   `TSNET_FORCE_LOGIN=1` in-process so tsnet actually uses the auth key
-   (upstream otherwise logs `Ignoring authkey` when state is `NoState`).
-4. Wait until status shows **Running** with a tailnet IP. Until then MagicDNS
-   names like `*.ts.net` will fail lookup and downloads may pause
-   (“Connection interrupted”).
+   `TSNET_FORCE_LOGIN=1` in native `+load` and again before `up()` so tsnet
+   actually uses the auth key (upstream otherwise logs `Ignoring authkey`
+   when state is `NoState`).
+4. Confirm Xcode/console shows `[FINAMP] TSNET_FORCE_LOGIN=1 (native +load)`
+   and **not** `Ignoring authkey`. Status should become **Running** with a
+   tailnet IP. Until then MagicDNS names like `*.ts.net` will fail lookup and
+   downloads may pause (“Connection interrupted”).
 5. Set the Jellyfin server URL to a MagicDNS name, e.g.
    `https://jellyfin.tailnet.ts.net:8096`
    (the login screen still normalizes the common `jellyfin@tailnet` typo)
