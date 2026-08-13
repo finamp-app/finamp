@@ -965,7 +965,9 @@ class FinampSettings {
   bool useEmbeddedTailscale = DefaultSettings.useEmbeddedTailscale;
 
   /// Base URL for the external Music Finder service (non-Jellyfin).
-  /// Treated as a secret: never display in UI after a successful health check.
+  ///
+  /// **Legacy Hive field only** — new writes go to [FinampSecrets]
+  /// (Keychain/Keystore). Cleared after one-time migration at startup.
   ///
   /// Field **155** on the stacked `feat/music-finder` branch. Older
   /// music-finder-only builds stored this at 154 as a [String]; see

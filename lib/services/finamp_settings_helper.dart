@@ -12,6 +12,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../models/finamp_models.dart';
 import '../models/jellyfin_models.dart';
+import 'finamp_secrets.dart';
 
 part 'finamp_settings_helper.g.dart';
 
@@ -49,11 +50,8 @@ class FinampSettingsHelper {
     Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", newFinampSettings);
   }
 
-  /// True when a Music Finder base URL is stored (set only after health check).
-  static bool get hasMusicFinderServer {
-    final url = finampSettings.musicFinderServerUrl?.trim();
-    return url != null && url.isNotEmpty;
-  }
+  /// True when a Music Finder base URL is stored in encrypted secure storage.
+  static bool get hasMusicFinderServer => FinampSecrets.hasMusicFinderServer;
 
   static void resetTabsSettings() {
     FinampSettings finampSettingsTemp = finampSettings;

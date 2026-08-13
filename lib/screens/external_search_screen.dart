@@ -7,13 +7,14 @@ import 'package:finamp/l10n/app_localizations.dart';
 import '../components/ExternalSearch/music_finder_server_sheet.dart';
 import '../components/now_playing_bar.dart';
 import '../models/music_finder_models.dart';
-import '../services/finamp_settings_helper.dart';
+import '../services/finamp_secrets.dart';
 import '../services/music_finder_client.dart';
 
 /// External Music Finder search against a self-hosted Music Finder service.
 ///
-/// Entry points are hidden until Settings stores a URL after a successful
-/// health check. Opening this route without a reachable server pops back.
+/// The Music Finder base URL is stored encrypted ([FinampSecrets]). Opening
+/// this route without a reachable server prompts to reconnect without wiping
+/// the saved URL.
 class ExternalSearchScreen extends StatefulWidget {
   const ExternalSearchScreen({Key? key}) : super(key: key);
 
@@ -63,8 +64,7 @@ class _ExternalSearchScreenState extends State<ExternalSearchScreen> {
     _artistController.addListener(_onFieldChanged);
     _albumController.addListener(_onFieldChanged);
 
-    final savedUrl =
-        FinampSettingsHelper.finampSettings.musicFinderServerUrl?.trim();
+    final savedUrl = FinampSecrets.musicFinderServerUrl?.trim();
     if (savedUrl == null || savedUrl.isEmpty) {
       // Always allow entry via the skull button; prompt to connect.
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -132,7 +132,9 @@ class _ExternalSearchScreenState extends State<ExternalSearchScreen> {
   }
 
   Future<void> _leaveBecauseServerUnavailable() async {
-    // Clear the secret before any URL entry UI can appear.
+    // Keep the Hive URL — a failed health check (offline, MagicDNS not up yet,
+    // server restart) must not wipe the secret; that looked like "URL does not
+    // persist between launches."
     setState(() {
       _serverUrl = null;
       _isConnected = false;
@@ -142,7 +144,6 @@ class _ExternalSearchScreenState extends State<ExternalSearchScreen> {
       _selectedUrls.clear();
       _selectedArtistId = null;
     });
-    FinampSetters.setMusicFinderServerUrl(null);
 
     if (!mounted) {
       return;
@@ -167,7 +168,7 @@ class _ExternalSearchScreenState extends State<ExternalSearchScreen> {
     }
 
     if (connectedUrl != null && connectedUrl.isNotEmpty) {
-      FinampSetters.setMusicFinderServerUrl(connectedUrl);
+      await FinampSecrets.setMusicFinderServerUrl(connectedUrl);
       setState(() {
         _serverUrl = connectedUrl;
         _isConnected = true;
@@ -208,7 +209,7 @@ class _ExternalSearchScreenState extends State<ExternalSearchScreen> {
         _addResult = null;
         _selectedUrls.clear();
       });
-      FinampSetters.setMusicFinderServerUrl(connectedUrl);
+      await FinampSecrets.setMusicFinderServerUrl(connectedUrl);
       return;
     }
 

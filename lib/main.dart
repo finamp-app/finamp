@@ -44,6 +44,7 @@ import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/downloads_service_backend.dart';
 import 'package:finamp/services/embedded_tailscale_service.dart';
 import 'package:finamp/services/finamp_logs_helper.dart';
+import 'package:finamp/services/finamp_secrets.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/ios_helpers.dart';
@@ -148,6 +149,7 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
     _migrateFeatureChips();
     _migrateDeviceId();
     await _migrateThemeModeLocale();
+    await _migrateSecretsToSecureStorage();
     _mainLog.info("Completed applicable migrations");
     await _trustAndroidUserCerts();
     await ClientCertificateInstaller().installClientCertificate();
@@ -787,6 +789,23 @@ Future<void> _migrateThemeModeLocale() async {
 void _migrateDeviceId() {
   if (FinampSettingsHelper.finampSettings.deviceId == "unset") {
     FinampSetters.setDeviceId(const Uuid().v4());
+  }
+}
+
+/// Move Tailscale auth key + Music Finder URL into Keychain/Keystore and
+/// clear plaintext Hive / SharedPreferences copies.
+Future<void> _migrateSecretsToSecureStorage() async {
+  await FinampSecrets.ensureInitialized();
+
+  final hiveUrl =
+      FinampSettingsHelper.finampSettings.musicFinderServerUrl?.trim();
+  if (hiveUrl != null && hiveUrl.isNotEmpty) {
+    if (!FinampSecrets.hasMusicFinderServer) {
+      await FinampSecrets.setMusicFinderServerUrl(hiveUrl);
+      _mainLog.info('Migrated Music Finder URL from Hive to secure storage');
+    }
+    // Wipe plaintext Hive field regardless (URL now lives only in Keychain).
+    FinampSetters.setMusicFinderServerUrl(null);
   }
 }
 

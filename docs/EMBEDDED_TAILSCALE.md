@@ -74,6 +74,10 @@ flutter run
 
 - Node WireGuard private key lives under application support
   (`…/embedded_tailscale/`). Do not back this directory up to iCloud.
+- **Auth keys** and the **Music Finder server URL** are stored with
+  `flutter_secure_storage` (iOS/macOS Keychain, Android EncryptedSharedPreferences /
+  Keystore)—not Hive or plain SharedPreferences. Older plaintext copies are
+  migrated once at startup and deleted.
 - Prefer short-lived or tagged auth keys from the Tailscale admin console.
 - Use **Log out / reset node** before handing a device away.
 
