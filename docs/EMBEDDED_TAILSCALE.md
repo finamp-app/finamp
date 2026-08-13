@@ -28,12 +28,24 @@ WireGuard-over-UDP from inside Finamp and leaves the OS routing table alone.
 5. Set the Jellyfin server URL to a MagicDNS name, e.g.
    `https://jellyfin.tailnet.ts.net:8096`
    (the login screen still normalizes the common `jellyfin@tailnet` typo)
-6. Jellyfin API calls (Chopper) go through `Tailscale.instance.http.client`
+6. Jellyfin API calls (Chopper) and **Network → Test both connections** go
+   through `FinampHttpClient` / tsnet when embedded Tailscale is Running.
 
 When the toggle is on and an auth key was saved, app launch calls
 `Tailscale.up(authKey: …)` again so MagicDNS works without reopening Settings.
 
 Toggle off to use the normal LAN / public HTTP client again.
+
+### Network settings vs Tailscale
+
+| Field | Typical value | Wi‑Fi at home | Cellular |
+|-------|---------------|---------------|----------|
+| **Local** | LAN IP / `.local` | Should pass | Fails (expected — not on LAN) |
+| **Public** | MagicDNS `*.ts.net` | Passes when tsnet Running | Passes when tsnet Running |
+
+If Public fails while Embedded Tailscale shows Running, rebuild with a build
+that routes the network ping through `FinampHttpClient` (older builds used a
+plain `IOClient` and always failed MagicDNS in that test).
 
 ## Build requirements
 

@@ -13,7 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_user_certificates_android/flutter_user_certificates_android.dart';
 import 'package:get_it/get_it.dart';
-import 'package:http/io_client.dart' as http;
 import 'package:isar/isar.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
@@ -23,6 +22,7 @@ import '../models/finamp_models.dart' as finamp_models;
 import '../models/jellyfin_models.dart';
 import 'downloads_service.dart';
 import 'downloads_service_backend.dart';
+import 'finamp_http_client.dart';
 import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
 import 'jellyfin_api.dart' as jellyfin_api;
@@ -1069,9 +1069,11 @@ class JellyfinApiHelper {
   }
 
   Future<bool> _pingSpecificServer(String url) async {
+    // Use FinampHttpClient so MagicDNS public URLs work when embedded
+    // Tailscale is up (plain IOClient cannot resolve *.ts.net).
     final client = ChopperClient(
       baseUrl: Uri.tryParse(url),
-      client: http.IOClient(HttpClient()..connectionTimeout = const Duration(seconds: 3)),
+      client: FinampHttpClient(connectionTimeout: const Duration(seconds: 3)),
       interceptors: [jellyfin_api.JellyfinSpecificInterceptor(url), HttpAggregateLoggingInterceptor()],
       converter: JsonConverter(),
     );
