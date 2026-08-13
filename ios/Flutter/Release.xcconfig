@@ -1,2 +1,7 @@
 #include "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
+// Upstream defaults; Local.xcconfig (gitignored) overrides for personal sideload.
+// Used by Release and Profile targets.
+DEVELOPMENT_TEAM=PFNS8PTRM7
+PRODUCT_BUNDLE_IDENTIFIER=com.unicornsonlsd.finamp-ios
+#include? "Local.xcconfig"

@@ -2,25 +2,23 @@
 //  SceneDelegate.swift
 //  Runner
 //
-//  Required by flutter_carplay plugin
+//  Flutter UIScene lifecycle. Subclasses FlutterSceneDelegate so we can ignore
+//  empty NSUserActivity types (iOS can abort when activityType is blank —
+//  seen with keyboard autofill during tsnet interactive login). Info.plist must
+//  also declare NSUserActivityTypes (Debug/Profile/Release).
 //
 
-import UIKit
 import Flutter
+import UIKit
 
 @available(iOS 13.0, *)
 @objc(SceneDelegate)
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    var window: UIWindow?
-
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = scene as? UIWindowScene else { return }
-
-        window = UIWindow(windowScene: windowScene)
-
-        let controller = FlutterViewController.init(engine: flutterEngine, nibName: nil, bundle: nil)
-        controller.loadDefaultSplashScreenView()
-        window?.rootViewController = controller
-        window?.makeKeyAndVisible()
+class SceneDelegate: FlutterSceneDelegate {
+  open override func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+    guard !userActivity.activityType.isEmpty else {
+      NSLog("[FINAMP] Ignoring NSUserActivity with empty activityType")
+      return
     }
+    super.scene(scene, continue: userActivity)
+  }
 }

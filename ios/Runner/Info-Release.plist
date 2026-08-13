@@ -23,7 +23,7 @@
 						<key>UISceneClassName</key>
 						<string>UIWindowScene</string>
 						<key>UISceneDelegateClassName</key>
-						<string>FlutterSceneDelegate</string>
+						<string>SceneDelegate</string>
 						<key>UISceneConfigurationName</key>
 						<string>flutter</string>
 						<key>UISceneStoryboardFile</key>
@@ -88,6 +88,11 @@
 		<string>I don't know why this permission is being requested, you should probably deny it. If you can, create a GitHub issue with a screenshot of this message.</string>
 		<key>NSSiriUsageDescription</key>
 		<string>Finamp uses Siri to play music via voice commands like "Play [track/artist] on Finamp".</string>
+		<key>NSUserActivityTypes</key>
+		<array>
+			<string>INPlayMediaIntent</string>
+			<string>INSearchForMediaIntent</string>
+		</array>
 		<key>INIntentsSupported</key>
 		<array>
 			<string>INPlayMediaIntent</string>

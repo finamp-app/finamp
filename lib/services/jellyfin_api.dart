@@ -7,10 +7,12 @@ import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/http_aggregate_logging_interceptor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:http/io_client.dart' as http;
+import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../models/jellyfin_models.dart';
+import 'finamp_http_client.dart';
 import 'finamp_user_helper.dart';
 import 'jellyfin_api_helper.dart';
 
@@ -577,13 +579,18 @@ abstract class JellyfinApi extends ChopperService {
   static JellyfinApi create({required bool inForeground}) {
     final chopperHttpLogLevel = Level.body; //TODO allow changing the log level in settings (and a debug config file?)
 
+    // Background isolates do not open Hive; FinampHttpClient reads settings
+    // from Hive and would throw HiveError: Box not found. Also tsnet's HTTP
+    // client is main-isolate / process-bound — use a plain IOClient off-UI.
+    final http.Client httpClient = inForeground
+        ? FinampHttpClient()
+        : IOClient(HttpClient()..connectionTimeout = const Duration(seconds: 10));
+
     final client = ChopperClient(
-      client: http.IOClient(
-        HttpClient()
-          ..connectionTimeout = const Duration(
-            seconds: 10,
-          ), // if we don't get a response by then, it's probably not worth it to wait any longer. this prevents the server connection test from taking too long
-      ),
+      // When useEmbeddedTailscale is on and tsnet is up, FinampHttpClient
+      // delegates to package:tailscale's http.Client (MagicDNS / WireGuard
+      // in-process). Otherwise the default IOClient is used.
+      client: httpClient,
       // The first part of the URL is now here
       services: [
         // The generated implementation

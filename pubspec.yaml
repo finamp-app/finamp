@@ -18,7 +18,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 0.9.25+126
 
 environment:
-  sdk: ^3.9.0
+  sdk: ^3.10.4
 
 dependencies:
   flutter:
@@ -30,6 +30,10 @@ dependencies:
   json_annotation: ^4.8.1
   chopper: ^8.0.0
   get_it: ^8.2.0
+  # Embedded Tailscale (userspace tsnet) for MagicDNS without a system VPN.
+  # Requires Go 1.25+ on PATH at build time (see docs/EMBEDDED_TAILSCALE.md).
+  tailscale: ^0.8.0
+  ffi: ^2.1.0
   # just_audio: ^0.10.5
   just_audio:
     # TODO switch back to official just_audio once https://github.com/ryanheise/just_audio/pull/1555 is merged
@@ -88,7 +92,9 @@ dependencies:
     git:
       url: https://github.com/jfly/flutter_user_certificates_android.git
       ref: db81e4ff3222a7db1308ed03c4bc3142c0d271d5
-  device_info_plus: ^12.1.0
+  # Cap below 12.4: isiOSAppOnVision needs iOS 26 SDK (Xcode 16.2 is iOS 18.2).
+  # Runtime still supports Finamp's iOS 14+ deployment target.
+  device_info_plus: ">=12.1.0 <12.4.0"
   package_info_plus: ^9.0.0
   octo_image: ^2.0.0
   # Main split view package does not seem actively maintained.  Use fork with ability to specify
@@ -140,7 +146,9 @@ dependencies:
   build: ^2.4.2
   source_gen: ^2.0.0
   web_socket_channel: ^3.0.2
-  connectivity_plus: ^7.0.0
+  # Cap below 7.3: isUltraConstrained (satellite) needs iOS 26 SDK.
+  # Runtime still supports Finamp's iOS 14+ deployment target.
+  connectivity_plus: ">=7.0.0 <7.3.0"
   progress_border: ^0.1.5
   visibility_detector: ^0.4.0+2
   gaimon: ^1.4.0

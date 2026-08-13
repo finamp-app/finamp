@@ -17,6 +17,9 @@ class $ImagesGen {
   /// File path: images/album_white.png
   AssetGenImage get albumWhite => const AssetGenImage('images/album_white.png');
 
+  /// File path: images/external_search_icon.png
+  AssetGenImage get externalSearchIcon => const AssetGenImage('images/external_search_icon.png');
+
   /// File path: images/finamp.png
   AssetGenImage get finamp => const AssetGenImage('images/finamp.png');
 
@@ -30,7 +33,14 @@ class $ImagesGen {
   AssetGenImage get jellyfinIconTransparent => const AssetGenImage('images/jellyfin-icon-transparent.png');
 
   /// List of all assets
-  List<dynamic> get values => [albumWhite, finamp, finampCroppedPng, finampCroppedSvg, jellyfinIconTransparent];
+  List<dynamic> get values => [
+    albumWhite,
+    externalSearchIcon,
+    finamp,
+    finampCroppedPng,
+    finampCroppedSvg,
+    jellyfinIconTransparent,
+  ];
 }
 
 class $AssetsIconGen {

@@ -8,6 +8,7 @@ import 'package:finamp/menus/server_sharing_menu.dart';
 import 'package:finamp/screens/accessibility_settings_screen.dart';
 import 'package:finamp/screens/audio_service_settings_screen.dart';
 import 'package:finamp/screens/downloads_settings_screen.dart';
+import 'package:finamp/screens/embedded_tailscale_settings_screen.dart';
 import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/screens/interaction_settings_screen.dart';
 import 'package:finamp/screens/language_selection_screen.dart';
@@ -154,6 +155,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             leading: const Icon(Icons.wifi),
             title: Text(AppLocalizations.of(context)!.networkSettingsTitle),
             onTap: () => Navigator.of(context).pushNamed(NetworkSettingsScreen.routeName),
+          ),
+          ListTile(
+            leading: const Icon(Icons.vpn_lock),
+            title: Text(AppLocalizations.of(context)!.embeddedTailscaleSettingsTitle),
+            onTap: () =>
+                Navigator.of(context).pushNamed(EmbeddedTailscaleSettingsScreen.routeName),
           ),
           ListTile(
             leading: const Icon(Icons.music_note),

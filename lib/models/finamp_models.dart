@@ -274,6 +274,8 @@ class DefaultSettings {
   static const duckOnAudioInterruption = true;
   static const forceAudioOffloadingOnAndroid = false;
   static const verboseLogging = false;
+  /// Route Jellyfin HTTP through in-process Tailscale tsnet (coexists with ExpressVPN).
+  static const useEmbeddedTailscale = false;
   static const String? musicFinderServerUrl = null;
   static const previousTracksPersistenceMode = PreviousTracksPersistenceMode.persistent;
   static final homeScreenConfiguration = FinampHomeScreenConfiguration(
@@ -451,6 +453,7 @@ class FinampSettings {
     this.duckOnAudioInterruption = DefaultSettings.duckOnAudioInterruption,
     this.forceAudioOffloadingOnAndroid = DefaultSettings.forceAudioOffloadingOnAndroid,
     this.verboseLogging = DefaultSettings.verboseLogging,
+    this.useEmbeddedTailscale = DefaultSettings.useEmbeddedTailscale,
     this.previousTracksPersistenceMode = DefaultSettings.previousTracksPersistenceMode,
     required this.homeScreenConfiguration,
     required this.gridImageSize,
@@ -955,6 +958,14 @@ class FinampSettings {
   /// Treated as a secret: never display in UI after a successful health check.
   @HiveField(154)
   String? musicFinderServerUrl;
+
+  /// When true, Jellyfin API HTTP goes through embedded Tailscale tsnet
+  /// (`package:tailscale`) instead of the default [HttpClient]. Opt-in so
+  /// LAN users are unaffected; enables MagicDNS reachability alongside a
+  /// system VPN such as ExpressVPN.
+  /// Field 155: Music Finder already occupied 154 on this stack.
+  @HiveField(155, defaultValue: DefaultSettings.useEmbeddedTailscale)
+  bool useEmbeddedTailscale = DefaultSettings.useEmbeddedTailscale;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(

@@ -62,17 +62,10 @@
 		<string>Required for debugging</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>I don't know why this permission is being requested, you should probably deny it. If you can, create a GitHub issue with a screenshot of this message.</string>
-		<key>NSSiriUsageDescription</key>
-		<string>Finamp uses Siri to play music via voice commands like "Play [track/artist] on Finamp".</string>
-		<key>INIntentsSupported</key>
+		<key>NSUserActivityTypes</key>
 		<array>
-			<string>INPlayMediaIntent</string>
-			<string>INSearchForMediaIntent</string>
-		</array>
-		<key>INSupportedMediaCategories</key>
-		<array>
-			<string>INMediaCategoryGeneral</string>
-			<string>INMediaCategoryMusic</string>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).browsing</string>
+			<string>NSUserActivityTypeBrowsingWeb</string>
 		</array>
 		<key>UIBackgroundModes</key>
 		<array>
@@ -105,22 +98,15 @@
 			<false/>
 			<key>UISceneConfigurations</key>
 			<dict>
-				<key>CPTemplateApplicationSceneSessionRoleApplication</key>
-				<array>
-					<dict>
-						<key>UISceneConfigurationName</key>
-						<string>CarPlay Configuration</string>
-						<key>UISceneDelegateClassName</key>
-						<string>$(PRODUCT_MODULE_NAME).CarPlaySceneDelegate</string>
-					</dict>
-				</array>
 				<key>UIWindowSceneSessionRoleApplication</key>
 				<array>
 					<dict>
-						<key>UISceneConfigurationName</key>
-						<string>Default Configuration</string>
+						<key>UISceneClassName</key>
+						<string>UIWindowScene</string>
 						<key>UISceneDelegateClassName</key>
-						<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+						<string>SceneDelegate</string>
+						<key>UISceneConfigurationName</key>
+						<string>flutter</string>
 						<key>UISceneStoryboardFile</key>
 						<string>Main</string>
 					</dict>

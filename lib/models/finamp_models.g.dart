@@ -438,6 +438,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? false
             : fields[143] as bool,
         verboseLogging: fields[153] == null ? false : fields[153] as bool,
+        useEmbeddedTailscale: fields[155] == null ? false : fields[155] as bool,
         previousTracksPersistenceMode: fields[145] == null
             ? PreviousTracksPersistenceMode.persistent
             : fields[145] as PreviousTracksPersistenceMode,
@@ -474,7 +475,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(148)
+      ..writeByte(149)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -770,7 +771,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(153)
       ..write(obj.verboseLogging)
       ..writeByte(154)
-      ..write(obj.musicFinderServerUrl);
+      ..write(obj.musicFinderServerUrl)
+      ..writeByte(155)
+      ..write(obj.useEmbeddedTailscale);
   }
 
   @override
