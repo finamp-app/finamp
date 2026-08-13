@@ -1298,17 +1298,17 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setMusicFinderServerUrl(String? newMusicFinderServerUrl) {
+  static void setUseEmbeddedTailscale(bool newUseEmbeddedTailscale) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.musicFinderServerUrl = newMusicFinderServerUrl;
+    finampSettingsTemp.useEmbeddedTailscale = newUseEmbeddedTailscale;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setUseEmbeddedTailscale(bool newUseEmbeddedTailscale) {
+  static void setMusicFinderServerUrl(String? newMusicFinderServerUrl) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.useEmbeddedTailscale = newUseEmbeddedTailscale;
+    finampSettingsTemp.musicFinderServerUrl = newMusicFinderServerUrl;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -1757,10 +1757,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ProviderListenable<bool> get verboseLogging => finampSettingsProvider.select(
     (value) => value.requireValue.verboseLogging,
   );
-  ProviderListenable<String?> get musicFinderServerUrl => finampSettingsProvider
-      .select((value) => value.requireValue.musicFinderServerUrl);
   ProviderListenable<bool> get useEmbeddedTailscale => finampSettingsProvider
       .select((value) => value.requireValue.useEmbeddedTailscale);
+  ProviderListenable<String?> get musicFinderServerUrl => finampSettingsProvider
+      .select((value) => value.requireValue.musicFinderServerUrl);
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,
