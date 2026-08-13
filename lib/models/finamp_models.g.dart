@@ -438,7 +438,10 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? false
             : fields[143] as bool,
         verboseLogging: fields[153] == null ? false : fields[153] as bool,
-        useEmbeddedTailscale: fields[155] == null ? false : fields[155] as bool,
+        useEmbeddedTailscale: FinampSettings.hiveReadUseEmbeddedTailscale(
+          fields[154],
+          fields[155],
+        ),
         previousTracksPersistenceMode: fields[145] == null
             ? PreviousTracksPersistenceMode.persistent
             : fields[145] as PreviousTracksPersistenceMode,
@@ -451,7 +454,10 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             : (fields[150] as num).toInt(),
         useAndroidGainEffect: fields[149] == null ? true : fields[149] as bool,
         deviceId: fields[152] == null ? 'unset' : fields[152] as String,
-        musicFinderServerUrl: fields[154] as String?,
+        musicFinderServerUrl: FinampSettings.hiveReadMusicFinderServerUrl(
+          fields[154],
+          fields[155],
+        ),
       )
       ..sortBy = fields[7] as SortBy?
       ..sortOrder = fields[8] as SortOrder?
@@ -771,9 +777,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(153)
       ..write(obj.verboseLogging)
       ..writeByte(154)
-      ..write(obj.musicFinderServerUrl)
+      ..write(obj.useEmbeddedTailscale)
       ..writeByte(155)
-      ..write(obj.useEmbeddedTailscale);
+      ..write(obj.musicFinderServerUrl);
   }
 
   @override

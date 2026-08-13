@@ -80,9 +80,9 @@ flutter run
 ## Scope / non-goals
 
 - On the stacked `feat/music-finder` branch, Music Finder + External Search are
-  present; Hive `useEmbeddedTailscale` is **`@HiveField(155)`** because
-  `musicFinderServerUrl` already uses **154**. On the standalone
-  `feat/embedded-tsnet` branch the toggle remains field **154**.
+  present. Hive **`useEmbeddedTailscale` stays `@HiveField(154)`** (same as
+  standalone `feat/embedded-tsnet`); `musicFinderServerUrl` is **`@HiveField(155)`**.
+  Tolerant reads accept a legacy String at 154 from older music-finder-only builds.
 - Audio streaming (`just_audio`) may still use the platform HTTP stack; if
   streams fail over MagicDNS while API works, a follow-up must route media
   fetches through the same client.

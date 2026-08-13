@@ -954,18 +954,39 @@ class FinampSettings {
   @HiveField(153, defaultValue: DefaultSettings.verboseLogging)
   bool verboseLogging = DefaultSettings.verboseLogging;
 
-  /// Base URL for the external Music Finder service (non-Jellyfin).
-  /// Treated as a secret: never display in UI after a successful health check.
-  @HiveField(154)
-  String? musicFinderServerUrl;
-
   /// When true, Jellyfin API HTTP goes through embedded Tailscale tsnet
   /// (`package:tailscale`) instead of the default [HttpClient]. Opt-in so
   /// LAN users are unaffected; enables MagicDNS reachability alongside a
   /// system VPN such as ExpressVPN.
-  /// Field 155: Music Finder already occupied 154 on this stack.
-  @HiveField(155, defaultValue: DefaultSettings.useEmbeddedTailscale)
+  ///
+  /// Field **154** matches standalone `feat/embedded-tsnet` (bool). Keep it
+  /// here so devices that already ran tsnet do not crash on upgrade.
+  @HiveField(154, defaultValue: DefaultSettings.useEmbeddedTailscale)
   bool useEmbeddedTailscale = DefaultSettings.useEmbeddedTailscale;
+
+  /// Base URL for the external Music Finder service (non-Jellyfin).
+  /// Treated as a secret: never display in UI after a successful health check.
+  ///
+  /// Field **155** on the stacked `feat/music-finder` branch. Older
+  /// music-finder-only builds stored this at 154 as a [String]; see
+  /// [hiveReadMusicFinderServerUrl] for upgrade.
+  @HiveField(155)
+  String? musicFinderServerUrl;
+
+  /// Tolerant Hive upgrade: field 154 was bool (tsnet) or String? (music-finder).
+  static bool hiveReadUseEmbeddedTailscale(Object? field154, Object? field155) {
+    if (field154 is bool) return field154;
+    if (field155 is bool) return field155;
+    return DefaultSettings.useEmbeddedTailscale;
+  }
+
+  /// Tolerant Hive upgrade: Music Finder URL may still live at 154 from
+  /// pre-stack builds.
+  static String? hiveReadMusicFinderServerUrl(Object? field154, Object? field155) {
+    if (field155 is String) return field155;
+    if (field154 is String) return field154;
+    return null;
+  }
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
