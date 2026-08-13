@@ -18,6 +18,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../models/jellyfin_models.dart';
 import 'downloads_service.dart';
+import 'finamp_http_client.dart';
 import 'finamp_settings_helper.dart';
 import 'jellyfin_api_helper.dart';
 
@@ -69,7 +70,11 @@ final Map<String?, AlbumImageRequest> albumRequestsCache = {};
 // the cached file actually exists when transitioning between non-precached items with identical images.
 final Map<String?, FileInfo?> _playerImageCache = {};
 
-final _imageCache = DefaultCacheManager();
+/// Same on-disk key as [DefaultCacheManager], but fetches via [FinampHttpClient]
+/// so MagicDNS cover art works when embedded Tailscale is up.
+final CacheManager _imageCache = CacheManager(
+  Config(DefaultCacheManager.key, fileService: HttpFileService(httpClient: FinampHttpClient())),
+);
 
 const _infiniteHeight = 999999;
 
@@ -143,7 +148,11 @@ albumImageProvider = Provider.autoDispose.family<AlbumImageInfo, AlbumImageReque
       return AlbumImageInfo.empty(request);
     }
 
-    if (request.fullQuality) {
+    // NetworkImage uses dart:io HttpClient and cannot resolve MagicDNS. When
+    // embedded Tailscale is needed, fetch via FinampHttpClient + file cache.
+    final mustUseFinampHttp = FinampHttpClient.requiresTsnetHttp(imageUrl);
+
+    if (request.fullQuality || mustUseFinampHttp) {
       // If we want full quality player images, retrieve them via the image cache instead of linking directly.
       // In most cases, the initial null value will only be seen by the precache logic.
       Future.sync(() async {
@@ -156,15 +165,19 @@ albumImageProvider = Provider.autoDispose.family<AlbumImageInfo, AlbumImageReque
           await _imageCache.store.putFile(cacheObject);
         }
         _playerImageCache[key] = imageFile;
-        ref.state = AlbumImageInfo(
-          FileImage(imageFile.file, scale: 0.25),
-          request,
-          Uri.file(imageFile.file.path),
-          fullQuality: true,
-        );
+        ImageProvider image = FileImage(imageFile.file, scale: 0.25);
+        if (!request.fullQuality && request.maxWidth != null && request.maxHeight != null) {
+          image = ResizeImage(
+            image,
+            width: request.maxWidth! * 2,
+            height: request.maxHeight! * 2,
+            policy: ResizeImagePolicy.fit,
+          );
+        }
+        ref.state = AlbumImageInfo(image, request, Uri.file(imageFile.file.path), fullQuality: request.fullQuality);
       });
       // Temporary result for the frame or so the cache loads
-      return AlbumImageInfo(null, request, null, fullQuality: true);
+      return AlbumImageInfo(null, request, null, fullQuality: request.fullQuality);
     } else {
       // Allow drawing albums up to 4X intrinsic size by setting scale
       return AlbumImageInfo(

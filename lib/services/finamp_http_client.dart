@@ -16,8 +16,10 @@ import 'finamp_settings_helper.dart';
 /// tsnet is up.
 ///
 /// Do **not** use this from background isolates — Hive settings are not open
-/// there. [JellyfinApi.create] passes a plain [IOClient] when `inForeground`
-/// is false.
+/// there, and tsnet's [http.Client] is main-isolate. Prefer
+/// [requiresTsnetHttp] / [JellyfinApiHelper.runInIsolate] (which stays on the
+/// main isolate when embedded Tailscale is needed) instead of
+/// [JellyfinApi.create] with `inForeground: false`.
 class FinampHttpClient extends http.BaseClient {
   FinampHttpClient({Duration connectionTimeout = const Duration(seconds: 10)})
     : _default = IOClient(HttpClient()..connectionTimeout = connectionTimeout);
@@ -25,14 +27,16 @@ class FinampHttpClient extends http.BaseClient {
   final http.Client _default;
   final _log = Logger('FinampHttpClient');
 
-  bool get _useEmbeddedTs {
+  /// Whether Settings → Embedded Tailscale is enabled (Hive; main isolate only).
+  static bool get useEmbeddedTailscaleEnabled {
     try {
       return FinampSettingsHelper.finampSettings.useEmbeddedTailscale;
-    } catch (e) {
-      _log.warning('settings unavailable ($e); assuming embedded TS off');
+    } catch (_) {
       return false;
     }
   }
+
+  bool get _useEmbeddedTs => useEmbeddedTailscaleEnabled;
 
   http.Client get _active {
     if (!_useEmbeddedTs) return _default;
@@ -55,6 +59,13 @@ class FinampHttpClient extends http.BaseClient {
     if (ip == null || ip.type != InternetAddressType.IPv4) return false;
     final b = ip.rawAddress;
     return b[0] == 100 && b[1] >= 64 && b[1] <= 127;
+  }
+
+  /// True when requests must use this client on the main isolate (not a plain
+  /// [IOClient] / [NetworkImage] / background isolate).
+  static bool requiresTsnetHttp([Uri? uri]) {
+    if (useEmbeddedTailscaleEnabled) return true;
+    return uri != null && looksLikeTailnetHost(uri);
   }
 
   @override

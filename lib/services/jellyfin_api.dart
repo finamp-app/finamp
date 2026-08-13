@@ -579,17 +579,15 @@ abstract class JellyfinApi extends ChopperService {
   static JellyfinApi create({required bool inForeground}) {
     final chopperHttpLogLevel = Level.body; //TODO allow changing the log level in settings (and a debug config file?)
 
-    // Background isolates do not open Hive; FinampHttpClient reads settings
-    // from Hive and would throw HiveError: Box not found. Also tsnet's HTTP
-    // client is main-isolate / process-bound — use a plain IOClient off-UI.
+    // Foreground: FinampHttpClient (tsnet when embedded Tailscale is Running).
+    // Background isolates: plain IOClient only — Hive + tsnet are main-isolate.
+    // JellyfinApiHelper.runInIsolate skips the worker when tsnet/MagicDNS is
+    // needed so getItems/etc. still use FinampHttpClient.
     final http.Client httpClient = inForeground
         ? FinampHttpClient()
         : IOClient(HttpClient()..connectionTimeout = const Duration(seconds: 10));
 
     final client = ChopperClient(
-      // When useEmbeddedTailscale is on and tsnet is up, FinampHttpClient
-      // delegates to package:tailscale's http.Client (MagicDNS / WireGuard
-      // in-process). Otherwise the default IOClient is used.
       client: httpClient,
       // The first part of the URL is now here
       services: [
