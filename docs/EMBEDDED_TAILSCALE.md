@@ -28,8 +28,9 @@ WireGuard-over-UDP from inside Finamp and leaves the OS routing table alone.
 5. Set the Jellyfin server URL to a MagicDNS name, e.g.
    `https://jellyfin.tailnet.ts.net:8096`
    (the login screen still normalizes the common `jellyfin@tailnet` typo)
-6. Jellyfin API calls (Chopper) and **Network → Test both connections** go
-   through `FinampHttpClient` / tsnet when embedded Tailscale is Running.
+6. Jellyfin API calls (Chopper), **Music Finder** health/search/add, and
+   **Network → Test both connections** go through `FinampHttpClient` / tsnet
+   when embedded Tailscale is Running.
 
 When the toggle is on, app launch calls `EmbeddedTailscaleService.up()` which
 resumes persisted credentials (falling back to the stored auth key only if
@@ -86,7 +87,7 @@ flutter run
 - This stacked branch includes Music Finder + External Search. Hive
   `useEmbeddedTailscale` is `@HiveField(154)`; legacy plaintext
   `musicFinderServerUrl` was `@HiveField(155)` and is cleared after migration
-  into secure storage.
+  into secure storage. Music Finder HTTP uses `FinampHttpClient` (tsnet).
 - Audio streaming (`just_audio`) may still use the platform HTTP stack; if
   streams fail over MagicDNS while API works, a follow-up must route media
   fetches through the same client.

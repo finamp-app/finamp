@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:http/http.dart' as http;
 
 import '../components/ExternalSearch/music_finder_server_sheet.dart';
 import '../components/now_playing_bar.dart';
@@ -222,7 +223,8 @@ class _ExternalSearchScreenState extends State<ExternalSearchScreen> {
     if (error is TimeoutException ||
         error is SocketException ||
         error is HandshakeException ||
-        error is HttpException) {
+        error is HttpException ||
+        error is http.ClientException) {
       return true;
     }
     if (error is MusicFinderException) {

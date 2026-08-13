@@ -1,11 +1,22 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+
+import 'package:http/http.dart' as http;
+import 'package:logging/logging.dart';
 
 import '../models/music_finder_models.dart';
+import 'finamp_http_client.dart';
 
 /// HTTP client for a self-hosted Music Finder service (non-Jellyfin).
+///
+/// Uses [FinampHttpClient] so MagicDNS hosts (`*.ts.net`) go through embedded
+/// Tailscale when it is Running.
 class MusicFinderClient {
+  MusicFinderClient({http.Client? client})
+    : _client = client ?? FinampHttpClient();
+
+  final http.Client _client;
+  final _log = Logger('MusicFinderClient');
+
   Uri _apiUri(String baseUrl, String path) {
     final root = baseUrl.endsWith("/")
         ? baseUrl.substring(0, baseUrl.length - 1)
@@ -18,8 +29,8 @@ class MusicFinderClient {
     try {
       final response = await _getJson(baseUrl, "/api/health");
       return response.statusCode == 200;
-    } catch (_) {
-      // Timeouts, DNS, TLS, socket, format — treat as unreachable.
+    } catch (e) {
+      _log.warning('Music Finder health check failed: $e');
       return false;
     }
   }
@@ -67,24 +78,10 @@ class MusicFinderClient {
 
   Future<_JsonResponse> _getJson(String baseUrl, String path) async {
     final uri = _apiUri(baseUrl, path);
-    final client = HttpClient();
-    client.connectionTimeout = const Duration(seconds: 10);
-    try {
-      final request = await client.getUrl(uri);
-      final httpResponse =
-          await request.close().timeout(const Duration(seconds: 15));
-      final text = await httpResponse.transform(utf8.decoder).join();
-      Map<String, dynamic> json = {};
-      if (text.isNotEmpty) {
-        final decoded = jsonDecode(text);
-        if (decoded is Map<String, dynamic>) {
-          json = decoded;
-        }
-      }
-      return _JsonResponse(statusCode: httpResponse.statusCode, json: json);
-    } finally {
-      client.close(force: true);
-    }
+    final response = await _client
+        .get(uri)
+        .timeout(const Duration(seconds: 15));
+    return _parse(response);
   }
 
   Future<_JsonResponse> _postJson(
@@ -93,31 +90,31 @@ class MusicFinderClient {
     Map<String, dynamic> body,
   ) async {
     final uri = _apiUri(baseUrl, path);
-    final client = HttpClient();
-    client.connectionTimeout = const Duration(seconds: 15);
     try {
-      final request = await client.postUrl(uri);
-      request.headers.contentType =
-          ContentType("application", "json", charset: "utf-8");
-      request.add(utf8.encode(jsonEncode(body)));
-      final httpResponse =
-          await request.close().timeout(const Duration(seconds: 60));
-      final text = await httpResponse.transform(utf8.decoder).join();
-      Map<String, dynamic> json = {};
-      if (text.isNotEmpty) {
-        final decoded = jsonDecode(text);
-        if (decoded is Map<String, dynamic>) {
-          json = decoded;
-        } else if (decoded is Map) {
-          json = Map<String, dynamic>.from(decoded);
-        }
-      }
-      return _JsonResponse(statusCode: httpResponse.statusCode, json: json);
+      final response = await _client
+          .post(
+            uri,
+            headers: const {"Content-Type": "application/json; charset=utf-8"},
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 60));
+      return _parse(response);
     } on FormatException catch (e) {
       throw MusicFinderException("Invalid JSON response: $e");
-    } finally {
-      client.close(force: true);
     }
+  }
+
+  _JsonResponse _parse(http.Response response) {
+    Map<String, dynamic> json = {};
+    if (response.body.isNotEmpty) {
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map<String, dynamic>) {
+        json = decoded;
+      } else if (decoded is Map) {
+        json = Map<String, dynamic>.from(decoded);
+      }
+    }
+    return _JsonResponse(statusCode: response.statusCode, json: json);
   }
 }
 
