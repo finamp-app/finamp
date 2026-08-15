@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
@@ -31,6 +33,7 @@ class _MusicScreenState extends State<MusicScreen>
   bool _showShuffleFab = false;
   TextEditingController textEditingController = TextEditingController();
   String? searchQuery;
+  Timer? _searchDebounce;
   final _musicScreenLogger = Logger("MusicScreen");
 
   TabController? _tabController;
@@ -39,7 +42,21 @@ class _MusicScreenState extends State<MusicScreen>
   final _finampUserHelper = GetIt.instance<FinampUserHelper>();
   final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
+  // Debounce search input so we only issue one query once the user pauses
+  // typing, instead of firing (and largely wasting) a network request on every
+  // keystroke.
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 350), () {
+      if (!mounted) return;
+      setState(() {
+        searchQuery = value;
+      });
+    });
+  }
+
   void _stopSearching() {
+    _searchDebounce?.cancel();
     setState(() {
       textEditingController.clear();
       searchQuery = null;
@@ -89,6 +106,7 @@ class _MusicScreenState extends State<MusicScreen>
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _tabController?.dispose();
     super.dispose();
   }
@@ -191,9 +209,7 @@ class _MusicScreenState extends State<MusicScreen>
                       ? TextField(
                           controller: textEditingController,
                           autofocus: true,
-                          onChanged: (value) => setState(() {
-                            searchQuery = value;
-                          }),
+                          onChanged: (value) => _onSearchChanged(value),
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: MaterialLocalizations.of(context)
@@ -226,10 +242,13 @@ class _MusicScreenState extends State<MusicScreen>
                               Icons.cancel,
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
-                            onPressed: () => setState(() {
-                              textEditingController.clear();
-                              searchQuery = null;
-                            }),
+                            onPressed: () {
+                              _searchDebounce?.cancel();
+                              setState(() {
+                                textEditingController.clear();
+                                searchQuery = null;
+                              });
+                            },
                             tooltip: AppLocalizations.of(context)!.clear,
                           )
                         ]
