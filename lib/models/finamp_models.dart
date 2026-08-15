@@ -310,6 +310,7 @@ class DefaultSettings {
   static int get gridImageSize => isDesktop ? gridImageSizeDesktop : gridImageSizeMobile;
   static const useAndroidGainEffect = true;
   static const ClientCertificate? clientCertificate = null;
+  static const androidAutoBrowsingMode = AndroidAutoBrowsingMode.flat;
 }
 
 @HiveType(typeId: 28)
@@ -456,6 +457,7 @@ class FinampSettings {
     required this.homeScreenImageSize,
     this.useAndroidGainEffect = DefaultSettings.useAndroidGainEffect,
     required this.deviceId,
+    this.androidAutoBrowsingMode = DefaultSettings.androidAutoBrowsingMode,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -948,6 +950,9 @@ class FinampSettings {
   /// release builds otherwise cap at INFO.
   @HiveField(153, defaultValue: DefaultSettings.verboseLogging)
   bool verboseLogging = DefaultSettings.verboseLogging;
+
+  @HiveField(154, defaultValue: DefaultSettings.androidAutoBrowsingMode)
+  AndroidAutoBrowsingMode androidAutoBrowsingMode = DefaultSettings.androidAutoBrowsingMode;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
@@ -2815,12 +2820,21 @@ enum MediaItemParentType {
   rootCollection,
   @HiveField(2)
   instantMix,
+  @HiveField(3)
+  recentlyPlayed,
 }
 
-@JsonSerializable(converters: [BaseItemIdConverter()])
+@JsonSerializable(converters: [BaseItemIdConverter()], includeIfNull: false)
 @HiveType(typeId: 69)
 class MediaItemId {
-  MediaItemId({required this.contentType, required this.parentType, this.itemId, this.parentId});
+  MediaItemId({
+    required this.contentType,
+    required this.parentType,
+    this.itemId,
+    this.parentId,
+    this.nameFilter,
+    this.pageStartIndex,
+  });
 
   @HiveField(0)
   ContentType contentType;
@@ -2833,6 +2847,14 @@ class MediaItemId {
 
   @HiveField(3)
   BaseItemId? parentId;
+
+  /// Letter prefix for Android Auto letter-based browsing (e.g. "A", "B", "#").
+  @HiveField(4)
+  String? nameFilter;
+
+  /// Page offset for Android Auto letter-based browsing pagination.
+  @HiveField(5)
+  int? pageStartIndex;
 
   factory MediaItemId.fromJson(Map<String, dynamic> json) => _$MediaItemIdFromJson(json);
 
@@ -4780,4 +4802,12 @@ class ClientCertificate {
 
   @HiveField(1)
   final String password;
+}
+
+@HiveType(typeId: 128)
+enum AndroidAutoBrowsingMode {
+  @HiveField(0)
+  flat,
+  @HiveField(1)
+  letterFirst,
 }

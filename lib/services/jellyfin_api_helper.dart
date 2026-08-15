@@ -18,8 +18,8 @@ import 'package:isar/isar.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../models/finamp_models.dart' hide ContentType;
 import '../models/finamp_models.dart' as finamp_models;
+import '../models/finamp_models.dart' hide ContentType;
 import '../models/jellyfin_models.dart';
 import 'downloads_service.dart';
 import 'downloads_service_backend.dart';
@@ -215,6 +215,7 @@ class JellyfinApiHelper {
     bool? isFavorite,
     int? startIndex,
     int? limit,
+    String? nameStartsWith,
   }) async {
     final response = await _fetchGetItemsResponse(
       parentItem: parentItem,
@@ -233,6 +234,7 @@ class JellyfinApiHelper {
       isFavorite: isFavorite,
       startIndex: startIndex,
       limit: limit,
+      nameStartsWith: nameStartsWith,
     );
     return response;
   }

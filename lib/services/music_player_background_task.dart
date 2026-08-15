@@ -971,20 +971,48 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
   /// Returns the top-level browsable categories for use in a media browser.
   List<MediaItem> _getRootMenu() {
+    // Choose browsing mode hints based on user settings.
+    // - flat: respect the app-wide list/grid setting for albums; category for artists
+    // - letterFirst: list for both (letter nodes render as a list)
+    final isLetterFirst =
+        FinampSettingsHelper.finampSettings.androidAutoBrowsingMode == AndroidAutoBrowsingMode.letterFirst;
+    final isGridView = FinampSettingsHelper.finampSettings.contentViewType == ContentViewType.grid;
+
+    // 1=list, 2=grid, 4=category
+    final albumsBrowsableHint = isLetterFirst
+        ? AndroidContentStyle.listItemHintValue
+        : (isGridView ? AndroidContentStyle.gridItemHintValue : AndroidContentStyle.listItemHintValue);
+    final artistsBrowsableHint = isLetterFirst
+        ? AndroidContentStyle.listItemHintValue
+        : AndroidContentStyle.categoryGridItemHintValue; // artists always category in flat mode
+
     return [
       MediaItem(
         id: MediaItemId(contentType: ContentType.albums, parentType: MediaItemParentType.rootCollection).toString(),
         // ignore: deprecated_member_use_from_same_package
         title: _appLocalizations?.albums ?? ContentType.albums.toString(),
         playable: false,
+        extras: {
+          AndroidContentStyle.browsableHintKey: albumsBrowsableHint,
+          AndroidContentStyle.playableHintKey: AndroidContentStyle.categoryGridItemHintValue,
+        },
       ),
       MediaItem(
         id: MediaItemId(
-          contentType: ContentType.performingArtists,
+          contentType: ContentType.albumArtists,
           parentType: MediaItemParentType.rootCollection,
         ).toString(),
         // ignore: deprecated_member_use_from_same_package
-        title: _appLocalizations?.artists ?? ContentType.performingArtists.toString(),
+        title: _appLocalizations?.artists ?? ContentType.albumArtists.toString(),
+        playable: false,
+        extras: {
+          AndroidContentStyle.browsableHintKey: artistsBrowsableHint,
+          AndroidContentStyle.playableHintKey: AndroidContentStyle.categoryGridItemHintValue,
+        },
+      ),
+      MediaItem(
+        id: MediaItemId(contentType: ContentType.albums, parentType: MediaItemParentType.recentlyPlayed).toString(),
+        title: _appLocalizations?.recentlyPlayedAlbums ?? 'Recently Played Albums',
         playable: false,
       ),
       MediaItem(
