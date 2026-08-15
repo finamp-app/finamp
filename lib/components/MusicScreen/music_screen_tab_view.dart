@@ -77,6 +77,10 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
 
   // This function just lets us easily set stuff to the getItems call we want.
   Future<void> _getPage(int pageKey) async {
+    // Capture the term this request is being issued for, so that once the
+    // (slow) response comes back we can tell whether the user has since typed
+    // a different search.
+    final searchTerm = widget.searchTerm?.trim();
     try {
       final sortOrder =
           widget.sortOrder?.toString() ?? SortOrder.ascending.toString();
@@ -105,7 +109,7 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
                         ? "ProductionYear,PremiereDate"
                         : "SortName"),
         sortOrder: sortOrder,
-        searchTerm: widget.searchTerm?.trim(),
+        searchTerm: searchTerm,
         // If this is the genres tab, tell getItems to get genres.
         isGenres: widget.tabContentType == TabContentType.genres,
         filters: widget.isFavourite ? "IsFavorite" : null,
@@ -113,10 +117,26 @@ class _MusicScreenTabViewState extends State<MusicScreenTabView>
         limit: _pageSize,
       );
 
+      if (!mounted) return;
+
+      // Append the results first. This is important even when the search term
+      // has since changed: the pagination controller coalesces refreshes for
+      // the same page key and won't issue a new request until the current one
+      // completes by appending, so dropping the result without appending would
+      // leave the list stuck on a loading indicator forever.
       if (newItems!.length < _pageSize) {
         _pagingController.appendLastPage(newItems);
       } else {
         _pagingController.appendPage(newItems, pageKey + newItems.length);
+      }
+
+      // If the search term changed while we were awaiting, these results are
+      // stale. Now that the request has completed, a refresh will actually
+      // fetch the current term (which the coalescing prevented earlier).
+      final currentSearch = widget.searchTerm?.trim();
+      if (searchTerm != currentSearch) {
+        _pagingController.refresh();
+        return;
       }
       if (letterToSearch != null) {
         scrollToLetter(letterToSearch);
