@@ -11,6 +11,7 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/music_screen_drawer.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/music_models.dart';
+import 'package:finamp/screens/universal_search_screen.dart';
 import 'package:finamp/services/audio_service_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -236,17 +237,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
           singleTabConfig: widget.singleTabConfig,
           sortedTabs: sortedTabs.toList(),
           tabController: _tabController,
-          onSearch: () => setState(() {
-            isSearching = true;
-            if (_tabController != null &&
-                !_tabController!.indexIsChanging &&
-                sortedTabs.elementAt(_tabController!.index) == ContentType.home) {
-              // we can't search on the home tab yet
-              _tabController!.index = sortedTabs.toList().indexWhere(
-                (ContentType tabType) => tabType != ContentType.home,
-              );
-            }
-          }),
+          onSearch: () => Navigator.of(context).pushNamed(UniversalSearchScreen.routeName),
           onStopSearch: _stopSearching,
           onUpdateSearchQuery: (value) {
             setState(() {
