@@ -56,7 +56,7 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> {
       return IconButton(
         icon: Icon(isFav ? Icons.favorite : Icons.favorite_outline, size: widget.size ?? 24.0),
         color: widget.color ?? IconTheme.of(context).color,
-        disabledColor: (widget.color ?? IconTheme.of(context).color)!.withOpacity(0.3),
+        disabledColor: (widget.color ?? IconTheme.of(context).color)!.withValues(alpha: 0.3),
         visualDensity: widget.visualDensity ?? VisualDensity.compact,
         tooltip: AppLocalizations.of(context)!.favorite,
         onPressed: isOffline

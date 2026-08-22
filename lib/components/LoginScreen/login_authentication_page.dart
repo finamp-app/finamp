@@ -122,7 +122,7 @@ class _LoginAuthenticationPageState extends State<LoginAuthenticationPage> {
               initialValue: username,
               onSaved: (newValue) => username = newValue,
               validator: (value) {
-                if (value?.isEmpty == true) {
+                if (value?.isEmpty ?? false) {
                   return AppLocalizations.of(context)!.usernameValidationMissingUsername;
                 }
                 return null;

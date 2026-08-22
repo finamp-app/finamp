@@ -108,7 +108,7 @@ class TrackNameContent extends ConsumerWidget {
             Flexible(
               child: ArtistChips(
                 baseItem: trackBaseItemDto,
-                backgroundColor: IconTheme.of(context).color!.withOpacity(0.1),
+                backgroundColor: IconTheme.of(context).color!.withValues(alpha: 0.1),
               ),
             ),
             AddToPlaylistButton(item: trackBaseItemDto, queueItem: currentTrack),
@@ -119,7 +119,7 @@ class TrackNameContent extends ConsumerWidget {
             constraints: const BoxConstraints(maxWidth: 280),
             child: AlbumChips(
               baseItem: trackBaseItemDto,
-              backgroundColor: IconTheme.of(context).color!.withOpacity(0.1),
+              backgroundColor: IconTheme.of(context).color!.withValues(alpha: 0.1),
               key: trackBaseItemDto.album == null ? null : ValueKey("${trackBaseItemDto.album}-album"),
             ),
           ),

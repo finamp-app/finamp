@@ -216,7 +216,7 @@ class QuickConnectSection extends StatelessWidget {
                   AppLocalizations.of(context)!.loginFlowQuickConnectInstructions,
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
                     fontWeight: FontWeight.w300,
-                    color: Theme.of(context).textTheme.bodySmall!.color!.withOpacity(0.9),
+                    color: Theme.of(context).textTheme.bodySmall!.color!.withValues(alpha: 0.9),
                   ),
                   textAlign: TextAlign.center,
                 ),

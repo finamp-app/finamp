@@ -14,9 +14,9 @@ Widget buildCountColumn({
     child: Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: backgroundColor ?? Colors.white.withOpacity(0.1),
+        color: backgroundColor ?? Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: borderColor ?? Colors.black.withOpacity(0.2), width: 1),
+        border: Border.all(color: borderColor ?? Colors.black.withValues(alpha: 0.2), width: 1),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

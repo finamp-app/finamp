@@ -27,9 +27,9 @@ part 'downloads_service_backend.g.dart';
 
 /// This determines the target directory for new downloads, during migrations from the old download system, and during repairs.
 /// Must not be changed without migrations. Additionally, directory cleaning in downloads repair should cover all folders ever used.
-const FINAMP_BASE_DOWNLOAD_DIRECTORY = "songs";
+const finampBaseDownloadDirectory = "songs";
 
-const FINAMP_BASE_IMAGES_DIRECTORY = "images";
+const finampBaseImagesDirectory = "images";
 
 class IsarPersistentStorage implements PersistentStorage {
   final _isar = GetIt.instance<Isar>();
@@ -312,7 +312,7 @@ class IsarTaskQueue implements TaskQueue {
             .where()
             .stateEqualTo(DownloadItemState.enqueued)
             .filter()
-            .allOf(_activeDownloads, (q, element) => q.not().isarIdEqualTo(element))
+            .allOf<int, dynamic>(_activeDownloads, (q, element) => q.not().isarIdEqualTo(element))
             .limit(20)
             .findAllSync();
         if (nextTasks.isEmpty || !_downloadsService.allowDownloads || FinampSettingsHelper.finampSettings.isOffline) {
@@ -498,7 +498,7 @@ class DownloadsDeleteService {
             .where()
             .typeEqualTo(type)
             .filter()
-            .allOf(_activeDeletes, (q, value) => q.not().idEqualTo(value))
+            .allOf<int, dynamic>(_activeDeletes, (q, value) => q.not().idEqualTo(value))
             .sortByAge() // Try to process oldest deletes first as they are more likely to be deletable
             .limit(_batchSize)
             .findAllSync();
@@ -763,7 +763,7 @@ class DownloadsSyncService {
             .where()
             .typeEqualTo(type)
             .filter()
-            .allOf(_activeSyncs, (q, value) => q.not().idEqualTo(value))
+            .allOf<int, dynamic>(_activeSyncs, (q, value) => q.not().idEqualTo(value))
             .sortByAge() // Prioritize required nodes
             .limit(_batchSize)
             .findAllSync();
@@ -1199,7 +1199,7 @@ class DownloadsSyncService {
         ? <int>[]
         : _isar.downloadItems
               .where()
-              .anyOf(missingChildIds, (q, int id) => q.isarIdEqualTo(id))
+              .anyOf<int, dynamic>(missingChildIds, (q, int id) => q.isarIdEqualTo(id))
               .isarIdProperty()
               .findAllSync();
     // This is only used for IsarLink.update, which only cares about ID, so stubs are fine
@@ -1248,7 +1248,7 @@ class DownloadsSyncService {
           .then((value) => value == null ? null : DownloadStub.fromItem(item: value, type: type));
       _downloadsService.resetConnectionErrors();
       itemFetch.complete(item);
-      return itemFetch.future;
+      return item;
     } catch (e) {
       // Retries should try connecting again instead of re-using error
       unawaited(_metadataCache.remove(id));
@@ -1592,7 +1592,7 @@ class DownloadsSyncService {
       }
     } else {
       fileName = item.id.raw;
-      subDirectory = FINAMP_BASE_DOWNLOAD_DIRECTORY;
+      subDirectory = finampBaseDownloadDirectory;
     }
 
     if (downloadLocation.baseDirectory.baseDirectory == BaseDirectory.root) {
@@ -1680,7 +1680,7 @@ class DownloadsSyncService {
     assert(downloadItem.type == DownloadItemType.image && downloadItem.syncDownloadLocation != null);
     var downloadLocation = downloadItem.syncDownloadLocation!;
 
-    String subDirectory = FINAMP_BASE_IMAGES_DIRECTORY;
+    String subDirectory = finampBaseImagesDirectory;
 
     if (downloadLocation.useHumanReadableNames) {
       if (path_helper.split(downloadLocation.currentPath).lastOrNull?.toLowerCase() != "finamp") {

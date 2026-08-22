@@ -198,8 +198,8 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
     }
 
     final countsTextColor = IconTheme.of(context).color;
-    final countsSubtitleColor = IconTheme.of(context).color!.withOpacity(0.6);
-    final countsBorderColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.2);
+    final countsSubtitleColor = IconTheme.of(context).color!.withValues(alpha: 0.6);
+    final countsBorderColor = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
     final countsBackgroundColor = Theme.of(context).colorScheme.surface;
 
     return PaddedCustomScrollview(

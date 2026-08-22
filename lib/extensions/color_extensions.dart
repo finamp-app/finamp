@@ -5,8 +5,8 @@ extension AtContrast on Color {
   static const double _tolerance = 0.05;
 
   static Color getContrastiveTintedTextColor({required Color onBackground}) {
-    final whiteTinted = Color.alphaBlend(onBackground.withOpacity(0.05), Colors.white);
-    final blackTinted = Color.alphaBlend(onBackground.withOpacity(0.3), Colors.black);
+    final whiteTinted = Color.alphaBlend(onBackground.withValues(alpha: 0.05), Colors.white);
+    final blackTinted = Color.alphaBlend(onBackground.withValues(alpha: 0.3), Colors.black);
     final contrasts = {
       'white': whiteTinted.contrastAgainst(onBackground),
       'black': blackTinted.contrastAgainst(onBackground),

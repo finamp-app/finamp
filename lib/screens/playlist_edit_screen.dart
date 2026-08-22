@@ -240,7 +240,7 @@ class _PlaylistEditScreenState extends ConsumerState<PlaylistEditScreen> {
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         final shouldDiscard = await _confirmDiscardChanges();
-        if (shouldDiscard && mounted) Navigator.of(context).pop();
+        if (shouldDiscard && context.mounted) Navigator.of(context).pop();
       },
       child: Scaffold(
         body: PaddedCustomScrollview(
@@ -306,13 +306,10 @@ class _PlaylistEditScreenState extends ConsumerState<PlaylistEditScreen> {
             else ...[
               SliverReorderableList(
                 autoScrollerVelocityScalar: 20.0,
-                onReorder: (oldIndex, newIndex) {
+                onReorderItem: (oldIndex, newIndex) {
                   if (!mounted) return;
                   setState(() {
-                    playlistTracks.insert(
-                      newIndex < oldIndex ? newIndex : newIndex - 1,
-                      playlistTracks.removeAt(oldIndex),
-                    );
+                    playlistTracks.insert(newIndex, playlistTracks.removeAt(oldIndex));
                   });
                 },
                 onReorderStart: (_) => FeedbackHelper.feedback(FeedbackType.selection),
@@ -377,8 +374,7 @@ class _HeaderSection extends ConsumerWidget {
     required this.onNameChanged,
     required this.onVisibilityChanged,
     required this.onSubmit,
-    Key? key,
-  }) : super(key: key);
+  });
 
   final GlobalKey<FormState> formKey;
   final double coverSize;
@@ -403,7 +399,7 @@ class _HeaderSection extends ConsumerWidget {
           margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
           decoration: BoxDecoration(
-            color: ColorScheme.of(context).primary.withOpacity(0.25),
+            color: ColorScheme.of(context).primary.withValues(alpha: 0.25),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
@@ -433,7 +429,7 @@ class _HeaderSection extends ConsumerWidget {
                                 fit: BoxFit.cover,
                                 width: coverSize,
                                 height: coverSize,
-                                errorBuilder: (_, __, ___) => const ColoredBox(color: Colors.black26),
+                                errorBuilder: (_, _, _) => const ColoredBox(color: Colors.black26),
                               ),
                             )
                           else
@@ -476,8 +472,8 @@ class _HeaderSection extends ConsumerWidget {
                               floatingLabelBehavior: FloatingLabelBehavior.never,
                               filled: true,
                               fillColor: Theme.brightnessOf(context) == Brightness.dark
-                                  ? Colors.black.withOpacity(0.8)
-                                  : Colors.white.withOpacity(0.8),
+                                  ? Colors.black.withValues(alpha: 0.8)
+                                  : Colors.white.withValues(alpha: 0.8),
                               border: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(6),

@@ -131,7 +131,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
             : "");
 
     switch (widget.initialState.base) {
-      case QueuesHomeSection section:
+      case QueuesHomeSection():
         selectedSectionType = _SectionType.queue;
       case TabsHomeSection section:
         selectedSectionType = _SectionType.tab;
@@ -145,7 +145,6 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
         collectionTitle = initialTitle;
         collectionLibrary = section.libraryId;
     }
-    ;
 
     searchListener.addListener(() {
       setState(() {
@@ -530,7 +529,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
                 hintText: context.l10n.egFavoriteTracks,
                 filled: true,
                 fillColor: Color.alphaBlend(
-                  ColorScheme.of(context).onSurface.withOpacity(0.1),
+                  ColorScheme.of(context).onSurface.withValues(alpha: 0.1),
                   ColorScheme.of(context).surface,
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),

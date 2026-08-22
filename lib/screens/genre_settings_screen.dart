@@ -53,9 +53,8 @@ class _GenreSettingsScreenState extends ConsumerState<GenreSettingsScreen> {
                     ),
                   );
                 },
-                onReorder: (oldIndex, newIndex) {
+                onReorderItem: (oldIndex, newIndex) {
                   setState(() {
-                    if (oldIndex < newIndex) newIndex -= 1;
                     final currentOrder = List.of(FinampSettingsHelper.finampSettings.genreItemSectionsOrder);
                     final movedItem = currentOrder.removeAt(oldIndex);
                     currentOrder.insert(newIndex, movedItem);
@@ -108,9 +107,8 @@ class _GenreSettingsScreenState extends ConsumerState<GenreSettingsScreen> {
                     ),
                   );
                 },
-                onReorder: (oldIndex, newIndex) {
+                onReorderItem: (oldIndex, newIndex) {
                   setState(() {
-                    if (oldIndex < newIndex) newIndex -= 1;
                     final currentOrder = List.of(FinampSettingsHelper.finampSettings.genreItemSectionFilterChipOrder);
                     final movedItem = currentOrder.removeAt(oldIndex);
                     currentOrder.insert(newIndex, movedItem);

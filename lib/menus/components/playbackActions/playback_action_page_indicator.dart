@@ -19,8 +19,8 @@ class PlaybackActionPageIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final textColorSelected = TextStyle(fontSize: 13.0, color: Theme.of(context).colorScheme.onPrimary);
     final textColor = TextStyle(fontSize: 13.0, color: Theme.of(context).colorScheme.onSurface);
-    final buttonColorSelected = Theme.of(context).colorScheme.primary.withOpacity(0.9);
-    final buttonColor = Theme.of(context).colorScheme.primary.withOpacity(0.1);
+    final buttonColorSelected = Theme.of(context).colorScheme.primary.withValues(alpha: 0.9);
+    final buttonColor = Theme.of(context).colorScheme.primary.withValues(alpha: 0.1);
 
     return Padding(
       padding: compactLayout ? EdgeInsets.only(top: 4.0) : EdgeInsets.only(bottom: 4.0),

@@ -69,7 +69,7 @@ class MusicScreenDrawer extends ConsumerWidget {
                               56,
                               56,
                               overrideColor: ref.watch(finampSettingsProvider.isOffline)
-                                  ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
+                                  ? TextTheme.of(context).bodyMedium?.color?.withValues(alpha: 0.6)
                                   : null,
                             ),
                             SizedBox(height: 8),

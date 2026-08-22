@@ -257,7 +257,7 @@ class _QuickConnectInputFieldState extends State<QuickConnectInputField> {
                   width: 48,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(
                       color: index == text.length && _focusNode.hasFocus
@@ -274,7 +274,7 @@ class _QuickConnectInputFieldState extends State<QuickConnectInputField> {
                         fontWeight: hasDigit ? FontWeight.w600 : FontWeight.w200,
                         color: hasDigit
                             ? Theme.of(context).textTheme.bodyLarge?.color
-                            : Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.4),
+                            : Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.4),
                       ),
                     ),
                   ),

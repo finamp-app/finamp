@@ -28,7 +28,7 @@ class _TrackShuffleItemCountEditorState extends ConsumerState<TrackShuffleItemCo
       title: Text(AppLocalizations.of(context)!.shuffleAllTrackCount),
       subtitle: Text(AppLocalizations.of(context)!.shuffleAllTrackCountSubtitle),
       trailing: SizedBox(
-        width: 50 * MediaQuery.textScaleFactorOf(context),
+        width: MediaQuery.textScalerOf(context).scale(50),
         child: TextField(
           controller: _controller,
           textAlign: TextAlign.center,

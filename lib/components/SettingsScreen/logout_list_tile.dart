@@ -53,7 +53,7 @@ class LogoutListTile extends ConsumerWidget {
 
                     final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
-                    await jellyfinApiHelper.logoutCurrentUser().onError((_, __) {});
+                    await jellyfinApiHelper.logoutCurrentUser().onError((_, _) {});
 
                     if (!context.mounted) return;
 

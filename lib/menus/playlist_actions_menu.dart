@@ -50,7 +50,7 @@ Future<void> showPlaylistActionsMenu({
                 leading: AspectRatio(
                   aspectRatio: 1.0,
                   child: DecoratedBox(
-                    decoration: BoxDecoration(color: themeColor.withOpacity(0.3)),
+                    decoration: BoxDecoration(color: themeColor.withValues(alpha: 0.3)),
                     child: const Center(child: Icon(TablerIcons.heart, size: 36.0, color: Colors.white)),
                   ),
                 ),

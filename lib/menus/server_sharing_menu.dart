@@ -74,7 +74,7 @@ class ServerSharingMenuControls extends ConsumerStatefulWidget {
   const ServerSharingMenuControls({super.key});
 
   @override
-  _ServerSharingMenuControlsState createState() => _ServerSharingMenuControlsState();
+  ConsumerState<ServerSharingMenuControls> createState() => _ServerSharingMenuControlsState();
 }
 
 class _ServerSharingMenuControlsState extends ConsumerState<ServerSharingMenuControls> {

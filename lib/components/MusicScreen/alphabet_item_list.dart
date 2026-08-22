@@ -65,7 +65,7 @@ class _AlphabetListState extends ConsumerState<AlphabetList> {
       decoration: widget.inGridMode
           ? BoxDecoration(
               borderRadius: BorderRadius.circular(12.0),
-              color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.75),
+              color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.75),
             )
           : null,
       padding: EdgeInsets.only(top: 10, bottom: _bottomPadding / 2, right: 3 + MediaQuery.paddingOf(context).right),
@@ -136,7 +136,7 @@ class _AlphabetListState extends ConsumerState<AlphabetList> {
                       width: MediaQuery.widthOf(context) / 3,
                       height: MediaQuery.widthOf(context) / 3,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor.withOpacity(0.85),
+                        color: Theme.of(context).cardColor.withValues(alpha: 0.85),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: FittedBox(child: Text(_currentSelected!, style: const TextStyle(fontSize: 120))),

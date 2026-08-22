@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+// FadeWidget is not exported by octo_image's public API.
+// ignore: implementation_imports
 import 'package:octo_image/src/image/fade_widget.dart';
 import 'package:uuid/v4.dart';
 
@@ -192,7 +194,7 @@ class _AlbumImageState extends ConsumerState<AlbumImage> {
             createRectTween: (begin, end) => RectTween(begin: begin, end: end),
             child: image,
             placeholderBuilder: (context, heroSize, child) => image,
-            flightShuttleBuilder: (_, __, ___, ____, _____) => largeImage,
+            flightShuttleBuilder: (_, _, _, _, _) => largeImage,
           ),
         ),
       );
@@ -219,7 +221,7 @@ class BareAlbumImage extends ConsumerWidget {
     return Container(color: Theme.of(context).cardColor);
   }
 
-  static Widget defaultErrorBuilder(BuildContext context, _, __) {
+  static Widget defaultErrorBuilder(BuildContext context, _, _) {
     return const _AlbumImageErrorPlaceholder();
   }
 
@@ -343,7 +345,7 @@ class _ZoomedImage extends StatelessWidget {
         Positioned.fill(
           child: IgnorePointer(
             child: Container(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), child: SizedBox.expand()),
             ),
           ),

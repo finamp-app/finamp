@@ -299,7 +299,7 @@ class _BufferSizeListTileState extends State<DownloadSizeWarningCutoffTile> {
       title: Text(AppLocalizations.of(context)!.downloadSizeWarningCutoff),
       subtitle: Text(AppLocalizations.of(context)!.downloadSizeWarningCutoffSubtitle),
       trailing: SizedBox(
-        width: 50 * MediaQuery.textScaleFactorOf(context),
+        width: MediaQuery.textScalerOf(context).scale(50),
         child: TextField(
           controller: _controller,
           textAlign: TextAlign.center,

@@ -334,12 +334,12 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
               onChanged: (value) async {
                 widget.serverState.manualServer = null;
                 widget.serverState.baseUrl = value;
-                if (formKey.currentState?.validate() == true) {
+                if (formKey.currentState?.validate() ?? false) {
                   widget.serverState.onBaseUrlChanged(value);
                 }
               },
               validator: (value) {
-                if (value?.isEmpty == true) {
+                if (value?.isEmpty ?? false) {
                   return AppLocalizations.of(context)!.emptyServerUrl;
                 }
                 return null;

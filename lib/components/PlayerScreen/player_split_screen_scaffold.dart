@@ -119,8 +119,7 @@ Widget buildPlayerSplitScreenScaffold(BuildContext context, Widget? widget) {
                               controller: HeroController(),
                               child: ScaffoldMessenger(
                                 child: Navigator(
-                                  pages: const [MaterialPage(child: PlayerScreen())],
-                                  onPopPage: (_, _) => false,
+                                  pages: const [MaterialPage(canPop: false, child: PlayerScreen())],
                                   onGenerateRoute: (x) {
                                     GlobalSnackbar.navigatorState!.pushNamed(x.name!, arguments: x.arguments);
                                     return EmptyRoute();

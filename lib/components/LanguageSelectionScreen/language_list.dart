@@ -8,27 +8,33 @@ import 'package:locale_names/locale_names.dart';
 
 import '../padded_custom_scrollview.dart';
 
-class LanguageList extends StatelessWidget {
+class LanguageList extends ConsumerWidget {
   const LanguageList({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final locales = SplayTreeMap<String?, Locale>.fromIterable(
       AppLocalizations.supportedLocales,
       key: (element) => (element as Locale).toLanguageTag(),
       value: (element) => element as Locale,
     );
-    return PaddedCustomScrollview(
-      slivers: [
-        const SliverList(delegate: SliverChildListDelegate.fixed([LanguageListTile(), Divider()])),
-        SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
-            final locale = locales.values.elementAt(index);
+    final localeFromSettings = ref.watch(finampSettingsProvider.locale);
 
-            return LanguageListTile(locale: locale);
-          }, childCount: locales.length),
-        ),
-      ],
+    return RadioGroup<Locale?>(
+      groupValue: localeFromSettings,
+      onChanged: FinampSetters.setLocale,
+      child: PaddedCustomScrollview(
+        slivers: [
+          const SliverList(delegate: SliverChildListDelegate.fixed([LanguageListTile(), Divider()])),
+          SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final locale = locales.values.elementAt(index);
+
+              return LanguageListTile(locale: locale);
+            }, childCount: locales.length),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -51,8 +57,6 @@ class LanguageListTile extends ConsumerWidget {
             )
           : null,
       value: locale,
-      groupValue: localeFromSettings,
-      onChanged: (_) => FinampSetters.setLocale(locale),
     );
   }
 }

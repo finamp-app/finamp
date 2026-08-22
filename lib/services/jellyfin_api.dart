@@ -21,23 +21,23 @@ const String defaultFields = "ChildCount,DateCreated,DateLastMediaAdded,Etag,Gen
 @ChopperApi()
 abstract class JellyfinApi extends ChopperService {
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/System/Info/Public")
+  @GET(path: "/System/Info/Public")
   Future<dynamic> getPublicServerInfo();
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Users/Public")
+  @GET(path: "/Users/Public")
   Future<dynamic> getPublicUsers();
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/QuickConnect/Enabled")
+  @GET(path: "/QuickConnect/Enabled")
   Future<dynamic> getQuickConnectState();
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Post(path: "/QuickConnect/Initiate")
+  @POST(path: "/QuickConnect/Initiate")
   Future<dynamic> initiateQuickConnect();
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/QuickConnect/Connect")
+  @GET(path: "/QuickConnect/Connect")
   Future<dynamic> updateQuickConnect({@Query("Secret") required String secret});
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
@@ -48,15 +48,15 @@ abstract class JellyfinApi extends ChopperService {
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Post(path: "/Users/AuthenticateWithQuickConnect")
+  @POST(path: "/Users/AuthenticateWithQuickConnect")
   Future<dynamic> authenticateWithQuickConnect(@Body() Map<String, String> quickConnectInfo);
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Post(path: "/Users/AuthenticateByName")
+  @POST(path: "/Users/AuthenticateByName")
   Future<dynamic> authenticateViaName(@Body() Map<String, String> usernameAndPassword);
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Items/{id}/Images/Primary")
+  @GET(path: "/Items/{id}/Images/Primary")
   Future<dynamic> getAlbumPrimaryImage({@Path() required BaseItemId id, @Query() String format = "webp"});
 
   @POST(path: "/Items/{itemId}/Images/Primary")
@@ -75,15 +75,15 @@ abstract class JellyfinApi extends ChopperService {
   Future<dynamic> getUserById(@Path() String id);
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Users/{id}/Views")
+  @GET(path: "/Users/{id}/Views")
   Future<dynamic> getViews(@Path() String id);
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Delete(path: "/Items/{id}")
+  @DELETE(path: "/Items/{id}")
   Future<dynamic> deleteItem(@Path() BaseItemId id);
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Users/{userId}/Items")
+  @GET(path: "/Users/{userId}/Items")
   Future<dynamic> getItems({
     /// The user id supplied as query parameter.
     @Path() required String userId,
@@ -186,7 +186,7 @@ abstract class JellyfinApi extends ChopperService {
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Users/{userId}/Items/Latest")
+  @GET(path: "/Users/{userId}/Items/Latest")
   Future<dynamic> getLatestItems({
     /// The user id supplied as query parameter.
     @Path() required String userId,
@@ -224,7 +224,7 @@ abstract class JellyfinApi extends ChopperService {
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Items/{id}/InstantMix")
+  @GET(path: "/Items/{id}/InstantMix")
   Future<dynamic> getInstantMix({
     @Path() required BaseItemId id,
     @Query() required String userId,
@@ -246,7 +246,7 @@ abstract class JellyfinApi extends ChopperService {
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Users/{userId}/Items/{itemId}")
+  @GET(path: "/Users/{userId}/Items/{itemId}")
   Future<dynamic> getItemById({
     /// User id.
     @Path() required String userId,
@@ -256,7 +256,7 @@ abstract class JellyfinApi extends ChopperService {
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Playlists/{playlistId}/Users/{userId}")
+  @GET(path: "/Playlists/{playlistId}/Users/{userId}")
   Future<dynamic> getPlaylistUser({
     /// User id.
     @Path() required String userId,
@@ -266,7 +266,7 @@ abstract class JellyfinApi extends ChopperService {
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Playlists/{playlistId}/Users")
+  @GET(path: "/Playlists/{playlistId}/Users")
   Future<dynamic> getPlaylistUsers({
     /// User id.
     @Path() required String userId,
@@ -276,7 +276,7 @@ abstract class JellyfinApi extends ChopperService {
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Items/{id}/PlaybackInfo")
+  @GET(path: "/Items/{id}/PlaybackInfo")
   Future<dynamic> getPlaybackInfo({@Path() required BaseItemId id, @Query() required String userId});
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
@@ -287,7 +287,7 @@ abstract class JellyfinApi extends ChopperService {
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory)
-  @Post(path: "/Items/{itemId}")
+  @POST(path: "/Items/{itemId}")
   Future<dynamic> updateItem({
     /// The item id.
     @Path() required BaseItemId itemId,
@@ -295,7 +295,7 @@ abstract class JellyfinApi extends ChopperService {
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory)
-  @Post(path: "/Sessions/Capabilities", optionalBody: true)
+  @POST(path: "/Sessions/Capabilities", optionalBody: true)
   Future<dynamic> updateCapabilities({
     @Query() required String playableMediaTypes,
     @Query() required String supportedCommands,
@@ -304,26 +304,26 @@ abstract class JellyfinApi extends ChopperService {
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory)
-  @Post(path: "/Sessions/Capabilities/Full")
+  @POST(path: "/Sessions/Capabilities/Full")
   Future<dynamic> updateCapabilitiesFull(
     // @Query() required String id,
     @Body() ClientCapabilities clientCapabilities,
   );
 
   @FactoryConverter(request: JsonConverter.requestFactory)
-  @Post(path: "/Sessions/Playing")
+  @POST(path: "/Sessions/Playing")
   Future<dynamic> startPlayback(@Body() PlaybackProgressInfo playbackProgressInfo);
 
   @FactoryConverter(request: JsonConverter.requestFactory)
-  @Post(path: "/Sessions/Playing/Progress")
+  @POST(path: "/Sessions/Playing/Progress")
   Future<dynamic> playbackStatusUpdate(@Body() PlaybackProgressInfo playbackProgressInfo);
 
   @FactoryConverter(request: JsonConverter.requestFactory)
-  @Post(path: "/Sessions/Playing/Stopped")
+  @POST(path: "/Sessions/Playing/Stopped")
   Future<dynamic> playbackStatusStopped(@Body() PlaybackProgressInfo playbackProgressInfo);
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Playlists/{playlistId}/Items")
+  @GET(path: "/Playlists/{playlistId}/Items")
   Future<dynamic> getPlaylistItems({
     @Path() required BaseItemId playlistId,
     @Query("UserId") required String userId,
@@ -335,7 +335,7 @@ abstract class JellyfinApi extends ChopperService {
 
   /// Creates a new playlist.
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Post(path: "/Playlists")
+  @POST(path: "/Playlists")
   Future<dynamic> createNewPlaylist({
     /// The create playlist payload.
     @Body() required NewPlaylist newPlaylist,
@@ -343,7 +343,7 @@ abstract class JellyfinApi extends ChopperService {
 
   /// Adds items to a playlist.
   @FactoryConverter(request: JsonConverter.requestFactory)
-  @Post(path: "/Playlists/{playlistId}/Items", optionalBody: true)
+  @POST(path: "/Playlists/{playlistId}/Items", optionalBody: true)
   Future<Response<dynamic>> addItemsToPlaylist({
     /// The playlist id.
     @Path() required BaseItemId playlistId,
@@ -357,7 +357,7 @@ abstract class JellyfinApi extends ChopperService {
 
   /// Remove items from a playlist.
   @FactoryConverter(request: JsonConverter.requestFactory)
-  @Delete(path: "/Playlists/{playlistId}/Items", optionalBody: true)
+  @DELETE(path: "/Playlists/{playlistId}/Items", optionalBody: true)
   Future<Response<dynamic>> removeItemsFromPlaylist({
     /// The playlist id.
     @Path() required BaseItemId playlistId,
@@ -368,15 +368,15 @@ abstract class JellyfinApi extends ChopperService {
 
   /// updates or gets propertys of a Playlist
   @FactoryConverter(request: JsonConverter.requestFactory)
-  @Post(path: "/Playlists/{playlistId}")
+  @POST(path: "/Playlists/{playlistId}")
   Future<dynamic> updatePlaylist({@Path() required BaseItemId playlistId, @Body() required NewPlaylist playlist});
 
   @FactoryConverter(response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Playlists/{playlistId}")
+  @GET(path: "/Playlists/{playlistId}")
   Future<dynamic> getPlaylist({@Path() required BaseItemId playlistId});
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Artists")
+  @GET(path: "/Artists")
   Future<dynamic> getArtists({
     /// Specify this to localize the search to a specific item or folder. Omit
     /// to use the root.
@@ -438,7 +438,7 @@ abstract class JellyfinApi extends ChopperService {
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Artists/AlbumArtists")
+  @GET(path: "/Artists/AlbumArtists")
   Future<dynamic> getAlbumArtists({
     @Query("IncludeItemTypes") String? includeItemTypes,
     @Query("ParentId") BaseItemId? parentId,
@@ -486,7 +486,7 @@ abstract class JellyfinApi extends ChopperService {
 
   /// Gets all genres from a given item, folder, or the entire library.
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Genres")
+  @GET(path: "/Genres")
   Future<dynamic> getGenres({
     /// Optional. If specified, results will be filtered based on the item type.
     /// This allows multiple, comma delimeted.
@@ -538,7 +538,7 @@ abstract class JellyfinApi extends ChopperService {
 
   /// Marks an item as a favorite.
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Post(path: "/Users/{userId}/FavoriteItems/{itemId}", optionalBody: true)
+  @POST(path: "/Users/{userId}/FavoriteItems/{itemId}", optionalBody: true)
   Future<dynamic> addFavorite({
     /// User id.
     @Path() required String userId,
@@ -549,7 +549,7 @@ abstract class JellyfinApi extends ChopperService {
 
   /// Unmarks item as a favorite.
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Delete(path: "/Users/{userId}/FavoriteItems/{itemId}")
+  @DELETE(path: "/Users/{userId}/FavoriteItems/{itemId}")
   Future<dynamic> removeFavorite({
     /// User id.
     @Path() required String userId,
@@ -560,7 +560,7 @@ abstract class JellyfinApi extends ChopperService {
 
   /// Requests lyrics for a track.
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
-  @Get(path: "/Audio/{itemId}/Lyrics")
+  @GET(path: "/Audio/{itemId}/Lyrics")
   Future<dynamic> getLyrics({
     /// The item id.
     @Path() required BaseItemId itemId,
@@ -568,10 +568,10 @@ abstract class JellyfinApi extends ChopperService {
 
   /// Reports that a session has ended.
   @FactoryConverter(request: JsonConverter.requestFactory)
-  @Post(path: "/Sessions/Logout", optionalBody: true)
+  @POST(path: "/Sessions/Logout", optionalBody: true)
   Future<Response<dynamic>> logout();
 
-  @Get(path: "/System/Endpoint", optionalBody: true)
+  @GET(path: "/System/Endpoint", optionalBody: true)
   Future<Response<dynamic>> pingServer();
 
   static JellyfinApi create({required bool inForeground, required bool verboseLogging}) {

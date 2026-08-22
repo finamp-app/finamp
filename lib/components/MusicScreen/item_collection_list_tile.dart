@@ -100,7 +100,7 @@ class ItemCollectionListTile extends ConsumerWidget {
       if (meta == null) return null;
 
       final textTheme = Theme.of(context).textTheme.bodyMedium!;
-      final color = textTheme.color!.withOpacity(0.7);
+      final color = textTheme.color!.withValues(alpha: 0.7);
 
       return WidgetSpan(
         alignment: PlaceholderAlignment.baseline,
@@ -146,7 +146,7 @@ class ItemCollectionListTile extends ConsumerWidget {
         return TextSpan(
           text: ReleaseDateHelper.autoFormat(item) ?? l10n.noReleaseDate,
           style: TextStyle(
-            color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+            color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.75),
             fontSize: 13,
             fontWeight: FontWeight.w400,
           ),
@@ -156,7 +156,7 @@ class ItemCollectionListTile extends ConsumerWidget {
         case SortBy.runtime:
           return TextSpan(
             text: printDuration(item.runTimeTicksDuration()),
-            style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7)),
+            style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7)),
           );
         case SortBy.dateCreated:
           return WidgetSpan(
@@ -165,7 +165,7 @@ class ItemCollectionListTile extends ConsumerWidget {
             child: RelativeDateTimeTextFromString(
               dateString: item.dateCreated,
               fallback: l10n.noDateAdded,
-              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7)),
+              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7)),
               disableTextScaling: true,
             ),
           );
@@ -212,7 +212,7 @@ class ItemCollectionListTile extends ConsumerWidget {
           if (downloadedIndicator.isVisible(ref) || item.isExplicit)
             WidgetSpan(child: SizedBox(width: (additionalInfo != null) ? 5.0 : 2.0)),
           if (additionalInfo != null) ...[
-            if (additionalInfoIcon != null) additionalInfoIcon,
+            ?additionalInfoIcon,
             additionalInfo,
             if ((itemType == BaseItemDtoType.album && albumShowsYearAndDurationInstead) || subtitle != null) ...[
               const WidgetSpan(child: SizedBox(width: 10.0)),
@@ -221,7 +221,7 @@ class ItemCollectionListTile extends ConsumerWidget {
                     ? printDuration(item.runTimeTicksDuration())
                     : subtitle,
                 style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.6),
+                  color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.6),
                   fontSize: 13,
                   fontWeight: FontWeight.w300,
                 ),
@@ -231,7 +231,7 @@ class ItemCollectionListTile extends ConsumerWidget {
             TextSpan(
               text: subtitle,
               style: TextStyle(
-                color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+                color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.75),
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
                 overflow: TextOverflow.ellipsis,
@@ -308,15 +308,15 @@ class ItemCollectionListTile extends ConsumerWidget {
             themeOverride: (imageTheme) {
               return imageTheme.copyWith(
                 colorScheme: imageTheme.colorScheme.copyWith(
-                  surfaceContainer: imageTheme.colorScheme.primary.withOpacity(
-                    imageTheme.brightness == Brightness.dark ? 0.35 : 0.3,
+                  surfaceContainer: imageTheme.colorScheme.primary.withValues(
+                    alpha: imageTheme.brightness == Brightness.dark ? 0.35 : 0.3,
                   ),
                 ),
                 textTheme: imageTheme.textTheme.copyWith(
                   bodyLarge: imageTheme.textTheme.bodyLarge?.copyWith(
                     color: Color.alphaBlend(
-                      (imageTheme.colorScheme.secondary.withOpacity(
-                        imageTheme.brightness == Brightness.light ? 0.5 : 0.1,
+                      (imageTheme.colorScheme.secondary.withValues(
+                        alpha: imageTheme.brightness == Brightness.light ? 0.5 : 0.1,
                       )),
                       imageTheme.textTheme.bodyLarge?.color ??
                           (imageTheme.brightness == Brightness.light ? Colors.black : Colors.white),

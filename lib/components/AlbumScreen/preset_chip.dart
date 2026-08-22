@@ -7,7 +7,7 @@ import 'package:get_it/get_it.dart';
 
 const _radius = Radius.circular(4);
 const _borderRadius = BorderRadius.all(_radius);
-final _defaultBackgroundColour = Colors.white.withOpacity(0.1);
+final _defaultBackgroundColour = Colors.white.withValues(alpha: 0.1);
 const _spacing = 8.0;
 
 enum PresetTypes { speed }
@@ -77,8 +77,8 @@ class _PresetChipsState extends State<PresetChips> {
 
     return PresetChip(
       value: stringValue,
-      backgroundColour: widget.mainColour?.withOpacity(
-        value == widget.activeValue
+      backgroundColour: widget.mainColour?.withValues(
+        alpha: value == widget.activeValue
             ? 0.6
             : (value == widget.defaultValue)
             ? 0.3
