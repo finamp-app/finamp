@@ -104,7 +104,7 @@ class DownloadDialog extends ConsumerStatefulWidget {
       );
     } else {
       if (!context.mounted) return;
-      await showDialog(
+      await showDialog<void>(
         context: context,
         builder: (context) => DownloadDialog._build(
           item: item,

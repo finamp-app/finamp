@@ -1,5 +1,4 @@
 import 'package:finamp/models/finamp_models.dart';
-import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,14 +16,13 @@ final currentAlbumImageProvider = Provider<FinampImage>((ref) {
     current: true,
   );
   for (final itemToPrecache in precacheItems) {
-    BaseItemDto? base = itemToPrecache.baseItem;
-    if (base != null) {
-      final request = AlbumImageRequest(item: base);
-      // full quality player images are cached immediately upon albumImageProvider creation, so we don't need to
-      // resolve the provider like we would to initiate caching with a NetworkImage
-      ref.listen(albumImageProvider(request), (_, latest) {});
-      // TODO maybe we still want to resolve the images to make sure the decoded image is already in memory?
-      /*var image = ref.watch(albumImageProvider(request)).image;
+    final base = itemToPrecache.baseItem;
+    final request = AlbumImageRequest(item: base);
+    // full quality player images are cached immediately upon albumImageProvider creation, so we don't need to
+    // resolve the provider like we would to initiate caching with a NetworkImage
+    ref.listen(albumImageProvider(request), (_, latest) {});
+    // TODO maybe we still want to resolve the images to make sure the decoded image is already in memory?
+    /*var image = ref.watch(albumImageProvider(request)).image;
       if (image != null) {
         // Cache the returned image
         var stream = image.resolve(const ImageConfiguration(devicePixelRatio: 1.0));
@@ -34,7 +32,6 @@ final currentAlbumImageProvider = Provider<FinampImage>((ref) {
         });
         stream.addListener(listener);
       }*/
-    }
   }
 
   final currentTrack = ref.watch(currentTrackProvider).value?.baseItem;

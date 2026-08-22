@@ -74,7 +74,7 @@ class SimpleButton extends StatelessWidget {
     final iconWidget = Icon(
       icon,
       size: iconSize,
-      color: (disabled || inactive) ? iconColor?.withOpacity(0.5) : iconColor,
+      color: (disabled || inactive) ? iconColor?.withValues(alpha: 0.5) : iconColor,
       weight: 1.5,
     );
 

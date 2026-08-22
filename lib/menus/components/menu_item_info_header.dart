@@ -182,7 +182,7 @@ class TrackInfo extends ConsumerWidget {
           child: ArtistChips(
             baseItem: item,
             backgroundColor:
-                IconTheme.of(context).color?.withOpacity(0.1) ??
+                IconTheme.of(context).color?.withValues(alpha: 0.1) ??
                 Theme.of(context).textTheme.bodyMedium?.color ??
                 Colors.white,
             color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
@@ -192,7 +192,7 @@ class TrackInfo extends ConsumerWidget {
           AlbumChips(
             baseItem: item,
             backgroundColor:
-                IconTheme.of(context).color?.withOpacity(0.1) ??
+                IconTheme.of(context).color?.withValues(alpha: 0.1) ??
                 Theme.of(context).textTheme.bodyMedium?.color ??
                 Colors.white,
             key: item.album == null ? null : ValueKey("${item.album}-album"),
@@ -256,7 +256,7 @@ class AlbumInfo extends ConsumerWidget {
             artistType: ArtistType.albumArtist, // show only album artist for albums
             baseItem: baseItem,
             backgroundColor:
-                IconTheme.of(context).color?.withOpacity(0.1) ??
+                IconTheme.of(context).color?.withValues(alpha: 0.1) ??
                 Theme.of(context).textTheme.bodyMedium?.color ??
                 Colors.white,
             color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white,
@@ -690,8 +690,8 @@ Widget _getGenericMenuInfo(
         clipBehavior: Clip.antiAlias,
         decoration: ShapeDecoration(
           color: Theme.brightnessOf(context) == Brightness.dark
-              ? Colors.black.withOpacity(0.25)
-              : Colors.white.withOpacity(0.15),
+              ? Colors.black.withValues(alpha: 0.25)
+              : Colors.white.withValues(alpha: 0.15),
           shape: shape,
         ),
         child: GestureDetector(

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:chopper/chopper.dart' as chopper;
-import 'package:chopper/src/chopper_log_record.dart';
 import 'package:logging/logging.dart';
 
 /// A logger that aggregates the request and response logs from Chopper.
@@ -15,7 +14,7 @@ class ChopperAggregateLogger implements Logger {
 
   final Map<chopper.Request, StringBuffer> _requests = HashMap();
 
-  final Map<chopper.Response, StringBuffer> _responses = HashMap();
+  final Map<chopper.Response<dynamic>, StringBuffer> _responses = HashMap();
 
   @override
   String get name => _delegate.name;
@@ -39,7 +38,7 @@ class ChopperAggregateLogger implements Logger {
 
   @override
   void log(Level logLevel, Object? message, [Object? error, StackTrace? stackTrace, Zone? zone]) {
-    if (message is ChopperLogRecord) {
+    if (message is chopper.ChopperLogRecord) {
       if (message.request != null) {
         _requests[message.request]?.writeln(message.message);
         return;
@@ -59,11 +58,11 @@ class ChopperAggregateLogger implements Logger {
     info(_requests.remove(request)?.toString().trim());
   }
 
-  void onStartResponse(chopper.Response response) {
+  void onStartResponse(chopper.Response<dynamic> response) {
     _responses[response] = StringBuffer();
   }
 
-  void onEndResponse(chopper.Response response) {
+  void onEndResponse(chopper.Response<dynamic> response) {
     info(_responses.remove(response)?.toString().trim());
   }
 

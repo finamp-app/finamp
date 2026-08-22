@@ -48,8 +48,8 @@ class NowPlayingBar extends ConsumerWidget {
         blurRadius: 12.0,
         spreadRadius: 8.0,
         color: Theme.brightnessOf(context) == Brightness.light
-            ? darkColorScheme.surface.withOpacity(0.15)
-            : darkColorScheme.surface.withOpacity(0.7),
+            ? darkColorScheme.surface.withValues(alpha: 0.15)
+            : darkColorScheme.surface.withValues(alpha: 0.7),
       ),
     ],
   );
@@ -60,14 +60,14 @@ class NowPlayingBar extends ConsumerWidget {
 
   Color getProgressBackgroundColor(WidgetRef ref) {
     return Color.alphaBlend(
-      getProgressForegroundColor(ref).withOpacity(0.75),
+      getProgressForegroundColor(ref).withValues(alpha: 0.75),
       // this is an approximation, the actual background has the blurred cover image
       ref.watch(brightnessProvider) == Brightness.dark ? Colors.black : Colors.white,
     );
   }
 
   Widget buildLoadingQueueBar(WidgetRef ref, void Function()? retryCallback) {
-    final progressBackgroundColor = getProgressBackgroundColor(ref).withOpacity(0.5);
+    final progressBackgroundColor = getProgressBackgroundColor(ref).withValues(alpha: 0.5);
     var context = ref.context;
 
     return SimpleGestureDetector(
@@ -84,11 +84,11 @@ class NowPlayingBar extends ConsumerWidget {
           child: Material(
             shadowColor: ColorScheme.of(
               context,
-            ).primary.withOpacity(Theme.brightnessOf(context) == Brightness.light ? 0.75 : 0.3),
+            ).primary.withValues(alpha: Theme.brightnessOf(context) == Brightness.light ? 0.75 : 0.3),
             borderRadius: BorderRadius.circular(12.0),
             clipBehavior: Clip.antiAlias,
             color: Theme.brightnessOf(context) == Brightness.dark
-                ? IconTheme.of(context).color!.withOpacity(0.1)
+                ? IconTheme.of(context).color!.withValues(alpha: 0.1)
                 : Theme.of(context).cardColor,
             elevation: 8.0,
             child: Container(
@@ -177,7 +177,7 @@ class NowPlayingBar extends ConsumerWidget {
     final elapsedPartBackgroundColor = getProgressForegroundColor(ref);
     final remainingPartBackgroundColor = getProgressBackgroundColor(ref);
     final averageBackgroundColor = Color.alphaBlend(
-      elapsedPartBackgroundColor.withOpacity(0.5),
+      elapsedPartBackgroundColor.withValues(alpha: 0.5),
       remainingPartBackgroundColor,
     );
     Color primaryTextColor = AtContrast.getContrastiveTintedTextColor(onBackground: averageBackgroundColor);
@@ -229,11 +229,11 @@ class NowPlayingBar extends ConsumerWidget {
                 child: Material(
                   shadowColor: ColorScheme.of(
                     context,
-                  ).primary.withOpacity(Theme.brightnessOf(context) == Brightness.light ? 0.75 : 0.3),
+                  ).primary.withValues(alpha: Theme.brightnessOf(context) == Brightness.light ? 0.75 : 0.3),
                   borderRadius: BorderRadius.circular(12.0),
                   clipBehavior: Clip.antiAlias,
                   color: Theme.brightnessOf(context) == Brightness.dark
-                      ? IconTheme.of(context).color!.withOpacity(0.1)
+                      ? IconTheme.of(context).color!.withValues(alpha: 0.1)
                       : Theme.of(context).cardColor,
                   elevation: 8.0,
                   // If we have a media item and the player hasn't finished, show
@@ -400,7 +400,7 @@ class NowPlayingBar extends ConsumerWidget {
                                                             style: TextStyle(
                                                               fontSize: 14,
                                                               fontWeight: FontWeight.w400,
-                                                              color: primaryTextColor.withOpacity(0.8),
+                                                              color: primaryTextColor.withValues(alpha: 0.8),
                                                               fontFeatures: const [
                                                                 // fixed-width digits
                                                                 FontFeature.tabularFigures(),
@@ -412,7 +412,7 @@ class NowPlayingBar extends ConsumerWidget {
                                                             Text(
                                                               '/',
                                                               style: TextStyle(
-                                                                color: primaryTextColor.withOpacity(0.8),
+                                                                color: primaryTextColor.withValues(alpha: 0.8),
                                                                 fontSize: 14,
                                                                 fontWeight: FontWeight.w400,
                                                                 fontFeatures: const [
@@ -428,7 +428,7 @@ class NowPlayingBar extends ConsumerWidget {
                                                                   ? "${currentTrack.item.duration?.inHours.toString()}:${((currentTrack.item.duration?.inMinutes ?? 0) % 60).toString().padLeft(2, '0')}:${((currentTrack.item.duration?.inSeconds ?? 0) % 60).toString().padLeft(2, '0')}"
                                                                   : "${currentTrack.item.duration?.inMinutes.toString()}:${((currentTrack.item.duration?.inSeconds ?? 0) % 60).toString().padLeft(2, '0')}",
                                                               style: TextStyle(
-                                                                color: primaryTextColor.withOpacity(0.8),
+                                                                color: primaryTextColor.withValues(alpha: 0.8),
                                                                 fontSize: 14,
                                                                 fontWeight: FontWeight.w400,
                                                                 fontFeatures: const [
@@ -471,7 +471,7 @@ class NowPlayingBar extends ConsumerWidget {
                                             children: [
                                               AudioFadeProgressVisualizerContainer(
                                                 key: const Key("AlbumArtAudioFadeProgressVisualizer"),
-                                                color: primaryTextColor.withOpacity(0.5),
+                                                color: primaryTextColor.withValues(alpha: 0.5),
                                                 width: albumImageSize,
                                                 height: albumImageSize,
                                                 borderRadius: BorderRadius.circular(12.0),

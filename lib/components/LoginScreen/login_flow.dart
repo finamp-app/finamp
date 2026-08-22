@@ -56,9 +56,9 @@ class _LoginFlowState extends State<LoginFlow> {
         key: loginNavigatorKey,
         initialRoute: LoginSplashPage.routeName,
         onGenerateRoute: (RouteSettings settings) {
-          Route route;
+          Route<void> route;
 
-          Route createRoute(Widget page) => PageRouteBuilder(
+          Route<void> createRoute(Widget page) => PageRouteBuilder<void>(
             pageBuilder: (context, animation, secondaryAnimation) => page,
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               if (MediaQuery.disableAnimationsOf(context)) {

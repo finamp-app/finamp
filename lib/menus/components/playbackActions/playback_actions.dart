@@ -6,7 +6,6 @@ import 'package:finamp/menus/components/playbackActions/playback_action.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
-import 'package:finamp/services/item_helper.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -599,7 +598,7 @@ class ShuffleAlbumsPlaybackAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final queueService = GetIt.instance<QueueService>();
-    assert(item is Genre || item is Artist || (item is FinampSortable<Album> && item is FinampPlayable));
+    assert(item is Genre || item is Artist || item is FinampSortable<Album>);
 
     return PlaybackAction(
       icon: TablerIcons.arrows_shuffle,
@@ -640,7 +639,7 @@ class ShuffleAlbumsNextPlaybackAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final queueService = GetIt.instance<QueueService>();
-    assert(item is Genre || item is Artist || (item is FinampSortable<Album> && item is FinampPlayable));
+    assert(item is Genre || item is Artist || item is FinampSortable<Album>);
 
     return PlaybackAction(
       icon: TablerIcons.corner_right_down,
@@ -684,7 +683,7 @@ class ShuffleAlbumsToNextUpPlaybackAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final queueService = GetIt.instance<QueueService>();
-    assert(item is Genre || item is Artist || (item is FinampSortable<Album> && item is FinampPlayable));
+    assert(item is Genre || item is Artist || item is FinampSortable<Album>);
 
     return PlaybackAction(
       icon: TablerIcons.corner_right_down_double,
@@ -731,7 +730,7 @@ class ShuffleAlbumsToQueuePlaybackAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final queueService = GetIt.instance<QueueService>();
-    assert(item is Genre || item is Artist || (item is FinampSortable<Album> && item is FinampPlayable));
+    assert(item is Genre || item is Artist || item is FinampSortable<Album>);
 
     return PlaybackAction(
       icon: TablerIcons.playlist,

@@ -29,7 +29,7 @@ class _BufferDurationListTileState extends ConsumerState<BufferDurationListTile>
       title: Text(AppLocalizations.of(context)!.bufferDuration),
       subtitle: Text(AppLocalizations.of(context)!.bufferDurationSubtitle),
       trailing: SizedBox(
-        width: 50 * MediaQuery.textScaleFactorOf(context),
+        width: MediaQuery.textScalerOf(context).scale(50),
         child: TextField(
           controller: _controller,
           textAlign: TextAlign.center,

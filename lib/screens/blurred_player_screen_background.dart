@@ -24,8 +24,8 @@ class BlurredPlayerScreenBackground extends ConsumerWidget {
     final imageProvider = finampImage.image;
 
     var overlayColor = Theme.brightnessOf(context) == Brightness.dark
-        ? Colors.black.withOpacity(ui.clampDouble(0.675 * opacityFactor, 0.0, 1.0))
-        : Colors.white.withOpacity(ui.clampDouble(0.75 * opacityFactor, 0.0, 1.0));
+        ? Colors.black.withValues(alpha: ui.clampDouble(0.675 * opacityFactor, 0.0, 1.0))
+        : Colors.white.withValues(alpha: ui.clampDouble(0.75 * opacityFactor, 0.0, 1.0));
 
     Widget placeholderBuilder(_) => localBlurhash != null
         ? SizedBox.expand(
@@ -55,7 +55,7 @@ class BlurredPlayerScreenBackground extends ConsumerWidget {
                 color: overlayColor,
                 colorBlendMode: BlendMode.srcOver,
                 filterQuality: FilterQuality.none,
-                errorBuilder: (x, _, __) => placeholderBuilder(x),
+                errorBuilder: (x, _, _) => placeholderBuilder(x),
                 placeholderBuilder: placeholderBuilder,
                 imageBuilder: (context, child) {
                   var image = ImageFiltered(

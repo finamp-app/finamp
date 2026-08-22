@@ -170,6 +170,9 @@ class TrackListTile extends ConsumerWidget {
         return;
       }
 
+      if (!context.mounted) return;
+      final placeholderSource = AppLocalizations.of(context)!.placeholderSource;
+
       // Build a fast lookup set of already-present track IDs
       final resolved = await slice.resolve();
       final Set<String> childIds = resolved.items.map((track) => track.id.raw).where((id) => id.isNotEmpty).toSet();
@@ -186,7 +189,7 @@ class TrackListTile extends ConsumerWidget {
             type: QueueItemSourceType.album,
             name: QueueItemSourceName(
               type: QueueItemSourceNameType.preTranslated,
-              pretranslatedName: parentItem?.name ?? item.album ?? AppLocalizations.of(context)!.placeholderSource,
+              pretranslatedName: parentItem?.name ?? item.album ?? placeholderSource,
             ),
             id: parentItem?.id.raw ?? "",
             item: parentItem,
@@ -586,7 +589,7 @@ class TrackListItem extends ConsumerWidget {
         return GestureDetector(
           onTapDown: (_) {
             // Begin precalculating theme for song menu
-            ref.listenManual(finampThemeProvider(ThemeInfo(baseItem)), (_, __) {});
+            ref.listenManual(finampThemeProvider(ThemeInfo(baseItem)), (_, _) {});
           },
           onLongPressStart: features.contains(TrackListItemFeatures.fullyDraggable)
               ? null
@@ -626,15 +629,15 @@ class TrackListItem extends ConsumerWidget {
             themeOverride: (imageTheme) {
               return imageTheme.copyWith(
                 colorScheme: imageTheme.colorScheme.copyWith(
-                  surfaceContainer: imageTheme.colorScheme.primary.withOpacity(
-                    imageTheme.brightness == Brightness.dark ? 0.35 : 0.3,
+                  surfaceContainer: imageTheme.colorScheme.primary.withValues(
+                    alpha: imageTheme.brightness == Brightness.dark ? 0.35 : 0.3,
                   ),
                 ),
                 textTheme: imageTheme.textTheme.copyWith(
                   bodyLarge: imageTheme.textTheme.bodyLarge?.copyWith(
                     color: Color.alphaBlend(
-                      (imageTheme.colorScheme.secondary.withOpacity(
-                        imageTheme.brightness == Brightness.light ? 0.5 : 0.1,
+                      (imageTheme.colorScheme.secondary.withValues(
+                        alpha: imageTheme.brightness == Brightness.light ? 0.5 : 0.1,
                       )),
                       imageTheme.textTheme.bodyLarge?.color ??
                           (imageTheme.brightness == Brightness.light ? Colors.black : Colors.white),
@@ -817,7 +820,7 @@ class TrackListItemTile extends ConsumerWidget {
                     Container(
                       foregroundDecoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(albumCoverBorderRadius),
-                        color: Colors.black.withOpacity(0.4),
+                        color: Colors.black.withValues(alpha: 0.4),
                       ),
                       child: AlbumImage(item: baseItem, borderRadius: BorderRadius.circular(albumCoverBorderRadius)),
                     ),
@@ -921,7 +924,7 @@ class TrackListItemTile extends ConsumerWidget {
                     TextSpan(
                       text: AppLocalizations.of(context)!.playCountValue(baseItem.userData?.playCount ?? 0),
                       style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+                        color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.75),
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                       ),
@@ -947,7 +950,7 @@ class TrackListItemTile extends ConsumerWidget {
                         dateString: baseItem.userData?.lastPlayedDate,
                         fallback: AppLocalizations.of(context)!.noDateLastPlayed,
                         style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+                          color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.75),
                           fontSize: 13,
                           fontWeight: FontWeight.w400,
                         ),
@@ -959,7 +962,7 @@ class TrackListItemTile extends ConsumerWidget {
                     TextSpan(
                       text: (ReleaseDateHelper.autoFormat(baseItem) ?? AppLocalizations.of(context)!.noReleaseDate),
                       style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+                        color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.75),
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                       ),
@@ -974,7 +977,7 @@ class TrackListItemTile extends ConsumerWidget {
                           child: Icon(
                             TablerIcons.calendar_plus,
                             size: Theme.of(context).textTheme.bodyMedium!.fontSize! + 1,
-                            color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+                            color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.75),
                           ),
                         ),
                       ),
@@ -989,7 +992,7 @@ class TrackListItemTile extends ConsumerWidget {
                         dateString: baseItem.dateCreated,
                         fallback: AppLocalizations.of(context)!.noDateAdded,
                         style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+                          color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.75),
                           fontSize: 13,
                           fontWeight: FontWeight.w400,
                         ),
@@ -1001,7 +1004,7 @@ class TrackListItemTile extends ConsumerWidget {
                     TextSpan(
                       text: artistsString,
                       style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+                        color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.75),
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                         overflow: TextOverflow.ellipsis,
@@ -1012,7 +1015,7 @@ class TrackListItemTile extends ConsumerWidget {
                     TextSpan(
                       text: artistsString,
                       style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+                        color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.75),
                         fontSize: 13,
                         fontWeight: FontWeight.w300,
                       ),
@@ -1022,7 +1025,7 @@ class TrackListItemTile extends ConsumerWidget {
                     TextSpan(
                       text: baseItem.album,
                       style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.6),
+                        color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.6),
                         fontSize: 13,
                         fontWeight: FontWeight.w300,
                       ),
@@ -1058,7 +1061,7 @@ class TrackListItemTile extends ConsumerWidget {
                     printDuration(baseItem.runTimeTicksDuration(), leadingZeroes: false),
                     semanticsLabel: durationLabelString,
                     textAlign: TextAlign.end,
-                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6)),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6)),
                   ),
                 if (features.contains(TrackListItemFeatures.addToPlaylistOrFavorite))
                   Semantics(
@@ -1140,7 +1143,7 @@ class TrackListItemTile extends ConsumerWidget {
                     widthFactor: playbackProgress,
                     child: DecoratedBox(
                       decoration: ShapeDecoration(
-                        color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.1),
+                        color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha: 0.1),
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(albumCoverBorderRadius)),
                         ),

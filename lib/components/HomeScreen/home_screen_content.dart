@@ -172,7 +172,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
           ...[
             // monochrome icon
             SliverToBoxAdapter(
-              child: FinampIcon(56, 56, overrideColor: TextTheme.of(context).bodySmall?.color?.withOpacity(0.4)),
+              child: FinampIcon(56, 56, overrideColor: TextTheme.of(context).bodySmall?.color?.withValues(alpha: 0.4)),
             ),
             const SliverPadding(padding: EdgeInsets.only(top: 16)),
             SliverToBoxAdapter(
@@ -182,7 +182,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
                   child: BalancedText(
                     context.l10n.builtWithByTheFinampContributors,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, color: TextTheme.of(context).bodySmall?.color?.withOpacity(0.6)),
+                    style: TextStyle(fontSize: 12, color: TextTheme.of(context).bodySmall?.color?.withValues(alpha: 0.6)),
                   ),
                 ),
               ),

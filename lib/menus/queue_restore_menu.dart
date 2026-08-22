@@ -105,7 +105,7 @@ Future<void> showQueueRestoreMenu({required BuildContext context, required Finam
   }
 
   if (!context.mounted) return;
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     routeName: albumMenuRouteName,
     buildSlivers: (context) => getMenuProperties(context),

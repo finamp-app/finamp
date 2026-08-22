@@ -3,8 +3,6 @@ import 'dart:io';
 
 import 'package:file/file.dart' as cache;
 import 'package:file/local.dart';
-// Directly use LocalFile to avoid touching every cached file on initialization
-import 'package:file/src/backends/local/local_file.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -54,7 +52,7 @@ Future<void> initImageCache() async {
     // Directly create FileInfo from cachentry instead of using CacheStore.getFile because that checks for file existence
     // as it goes, and we do that when the entry is read and can't afford the speed penalty
     _playerImageCache[cacheEntry.key] = FileInfo(
-      LocalFile(const LocalFileSystem(), File(path_helper.join(basePath, cacheEntry.relativePath))),
+      const LocalFileSystem().file(path_helper.join(basePath, cacheEntry.relativePath)),
       FileSource.Cache,
       cacheEntry.validTill,
       cacheEntry.url,
@@ -207,9 +205,6 @@ class CachedImage extends ImageProvider<CachedImage> {
     FileImage() => _base.file.path,
     _ => throw UnsupportedError("Unsupported base image provider $_base"),
   };
-
-  @override
-  ImageStreamCompleter loadBuffer(CachedImage key, DecoderBufferCallback decode) => _base.loadBuffer(key._base, decode);
 
   @override
   ImageStreamCompleter loadImage(CachedImage key, ImageDecoderCallback decode) => _base.loadImage(key._base, decode);

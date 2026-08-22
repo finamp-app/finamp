@@ -45,7 +45,7 @@ class _PlaybackHistoryListTileState extends ConsumerState<PlaybackHistoryListTil
     return GestureDetector(
       onTapDown: (_) {
         // Begin precalculating theme for song menu
-        ref.listenManual(finampThemeProvider(ThemeInfo(baseItem)), (_, __) {});
+        ref.listenManual(finampThemeProvider(ThemeInfo(baseItem)), (_, _) {});
       },
       onLongPressStart: (details) => menuCallback(),
       onSecondaryTapDown: (details) => menuCallback(),

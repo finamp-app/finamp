@@ -89,7 +89,10 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
     ];
 
     return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: widget.iconColor.withOpacity(0.1)),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: widget.iconColor.withValues(alpha: 0.1),
+      ),
       margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
       padding: const EdgeInsets.only(top: 10.0, bottom: 6.0),
       child: Form(
@@ -116,7 +119,7 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                         foregroundColor: active
                             ? Colors.white
                             : Theme.of(context).textTheme.bodySmall?.color ?? Colors.white,
-                        backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(active ? 0.6 : 0.1),
+                        backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: active ? 0.6 : 0.1),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                         minimumSize: Size(42, 52),
                         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
@@ -193,14 +196,14 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                         data: SliderTheme.of(context).copyWith(
                           thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 24 / 2.0),
                           trackHeight: 24.0,
-                          inactiveTrackColor: widget.iconColor.withOpacity(0.3),
-                          activeTrackColor: widget.iconColor.withOpacity(0.6),
-                          showValueIndicator: ShowValueIndicator.always,
+                          inactiveTrackColor: widget.iconColor.withValues(alpha: 0.3),
+                          activeTrackColor: widget.iconColor.withValues(alpha: 0.6),
+                          showValueIndicator: ShowValueIndicator.onDrag,
                           valueIndicatorColor: Color.lerp(Theme.of(context).cardColor, widget.iconColor, 0.6),
                           valueIndicatorTextStyle: Theme.of(context).textTheme.labelLarge,
                           valueIndicatorShape: const RectangularSliderValueIndicatorShape(),
                           tickMarkShape: const RoundSliderTickMarkShape(tickMarkRadius: 1.5),
-                          activeTickMarkColor: widget.iconColor.withOpacity(0.9),
+                          activeTickMarkColor: widget.iconColor.withValues(alpha: 0.9),
                           overlayShape: SliderComponentShape.noOverlay, // get rid of padding
                         ),
                         child: ExcludeSemantics(
@@ -254,7 +257,7 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                               borderSide: BorderSide.none,
                             ),
                             filled: true,
-                            fillColor: widget.iconColor.withOpacity(0.08),
+                            fillColor: widget.iconColor.withValues(alpha: 0.08),
                           ),
                           keyboardType: TextInputType.number,
                           onFieldSubmitted: (val) {
@@ -369,14 +372,14 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                         data: SliderTheme.of(context).copyWith(
                           thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 24 / 2.0),
                           trackHeight: 24.0,
-                          inactiveTrackColor: widget.iconColor.withOpacity(0.3),
-                          activeTrackColor: widget.iconColor.withOpacity(0.6),
-                          showValueIndicator: ShowValueIndicator.always,
+                          inactiveTrackColor: widget.iconColor.withValues(alpha: 0.3),
+                          activeTrackColor: widget.iconColor.withValues(alpha: 0.6),
+                          showValueIndicator: ShowValueIndicator.onDrag,
                           valueIndicatorColor: Color.lerp(Theme.of(context).cardColor, widget.iconColor, 0.6),
                           valueIndicatorTextStyle: Theme.of(context).textTheme.labelLarge,
                           valueIndicatorShape: const RectangularSliderValueIndicatorShape(),
                           tickMarkShape: const RoundSliderTickMarkShape(tickMarkRadius: 1.5),
-                          activeTickMarkColor: widget.iconColor.withOpacity(0.9),
+                          activeTickMarkColor: widget.iconColor.withValues(alpha: 0.9),
                           overlayShape: SliderComponentShape.noOverlay, // get rid of padding
                         ),
                         child: ExcludeSemantics(
@@ -429,7 +432,7 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                               borderSide: BorderSide.none,
                             ),
                             filled: true,
-                            fillColor: widget.iconColor.withOpacity(0.08),
+                            fillColor: widget.iconColor.withValues(alpha: 0.08),
                           ),
                           keyboardType: TextInputType.number,
                           onFieldSubmitted: (val) {

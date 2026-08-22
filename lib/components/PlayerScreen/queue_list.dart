@@ -255,8 +255,8 @@ class _QueueListState extends ConsumerState<QueueList> {
 
     return ScrollbarTheme(
       data: ScrollbarThemeData(
-        thumbColor: WidgetStateProperty.all(Theme.of(context).colorScheme.primary.withOpacity(0.7)),
-        trackColor: WidgetStateProperty.all(Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+        thumbColor: WidgetStateProperty.all(Theme.of(context).colorScheme.primary.withValues(alpha: 0.7)),
+        trackColor: WidgetStateProperty.all(Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
         radius: const Radius.circular(6.0),
         thickness: WidgetStateProperty.all(12.0),
         // thumbVisibility: MaterialStateProperty.all(true),
@@ -431,15 +431,16 @@ class _PreviousTracksListState extends State<PreviousTracksList> with TickerProv
             return SliverReorderableList(
               proxyDecorator: (widget, _, _) => Material(type: MaterialType.transparency, child: widget),
               autoScrollerVelocityScalar: 20.0,
-              onReorder: (oldIndex, newIndex) {
+              onReorderItem: (oldIndex, newIndex) {
+                final serviceNewIndex = oldIndex < newIndex ? newIndex + 1 : newIndex;
                 int draggingOffset = -(_previousTracks!.length - oldIndex);
-                int newPositionOffset = -(_previousTracks!.length - newIndex);
+                int newPositionOffset = -(_previousTracks!.length - serviceNewIndex);
                 if (mounted) {
                   FeedbackHelper.feedback(FeedbackType.heavy);
                   setState(() {
                     // temporarily update internal queue
                     FinampQueueItem tmp = _previousTracks!.removeAt(oldIndex);
-                    _previousTracks!.insert(newIndex < oldIndex ? newIndex : newIndex - 1, tmp);
+                    _previousTracks!.insert(newIndex, tmp);
                     // update external queue to commit changes, results in a rebuild
                     _queueService.reorderByOffset(draggingOffset, newPositionOffset);
                   });
@@ -518,15 +519,16 @@ class _NextUpTracksListState extends State<NextUpTracksList> {
               sliver: SliverReorderableList(
                 proxyDecorator: (widget, _, _) => Material(type: MaterialType.transparency, child: widget),
                 autoScrollerVelocityScalar: 20.0,
-                onReorder: (oldIndex, newIndex) {
+                onReorderItem: (oldIndex, newIndex) {
+                  final serviceNewIndex = oldIndex < newIndex ? newIndex + 1 : newIndex;
                   int draggingOffset = oldIndex + 1;
-                  int newPositionOffset = newIndex + 1;
+                  int newPositionOffset = serviceNewIndex + 1;
                   if (mounted) {
                     FeedbackHelper.feedback(FeedbackType.heavy);
                     setState(() {
                       // temporarily update internal queue
                       FinampQueueItem tmp = _nextUp!.removeAt(oldIndex);
-                      _nextUp!.insert(newIndex < oldIndex ? newIndex : newIndex - 1, tmp);
+                      _nextUp!.insert(newIndex, tmp);
                       // update external queue to commit changes, results in a rebuild
                       _queueService.reorderByOffset(draggingOffset, newPositionOffset);
                     });
@@ -607,9 +609,10 @@ class _QueueTracksListState extends ConsumerState<QueueTracksList> {
             return SliverReorderableList(
               proxyDecorator: (widget, _, _) => Material(type: MaterialType.transparency, child: widget),
               autoScrollerVelocityScalar: 20.0,
-              onReorder: (oldIndex, newIndex) {
+              onReorderItem: (oldIndex, newIndex) {
+                final serviceNewIndex = oldIndex < newIndex ? newIndex + 1 : newIndex;
                 int draggingOffset = oldIndex + (_nextUp?.length ?? 0) + 1;
-                int newPositionOffset = newIndex + (_nextUp?.length ?? 0) + 1;
+                int newPositionOffset = serviceNewIndex + (_nextUp?.length ?? 0) + 1;
                 if (mounted) {
                   // update external queue to commit changes, but don't await it
                   _queueService.reorderByOffset(draggingOffset, newPositionOffset);
@@ -617,7 +620,7 @@ class _QueueTracksListState extends ConsumerState<QueueTracksList> {
                   setState(() {
                     // temporarily update internal queue
                     FinampQueueItem tmp = _queue!.removeAt(oldIndex);
-                    _queue!.insert(newIndex < oldIndex ? newIndex : newIndex - 1, tmp);
+                    _queue!.insert(newIndex, tmp);
                   });
                 }
               },
@@ -720,12 +723,12 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
 
           final elapsedPartBackgroundColor = ColorScheme.of(context).primary;
           final remainingPartBackgroundColor = Color.alphaBlend(
-            elapsedPartBackgroundColor.withOpacity(0.7),
+            elapsedPartBackgroundColor.withValues(alpha: 0.7),
             // this is an approximation, the actual background has the blurred cover image
             ref.watch(brightnessProvider) == Brightness.dark ? Colors.black : Colors.white,
           );
           final averageBackgroundColor = Color.alphaBlend(
-            elapsedPartBackgroundColor.withOpacity(0.5),
+            elapsedPartBackgroundColor.withValues(alpha: 0.5),
             remainingPartBackgroundColor,
           );
           Color primaryTextColor = AtContrast.getContrastiveTintedTextColor(onBackground: averageBackgroundColor);
@@ -756,7 +759,9 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
                       alignment: Alignment.center,
                       children: [
                         if (ref.watch(finampSettingsProvider.showProgressOnNowPlayingBar))
-                          Positioned.fill(child: ColoredBox(color: IconTheme.of(context).color!.withOpacity(0.75))),
+                          Positioned.fill(
+                            child: ColoredBox(color: IconTheme.of(context).color!.withValues(alpha: 0.75)),
+                          ),
                         AlbumImage(borderRadius: BorderRadius.zero, imageListenable: currentAlbumImageProvider),
                         AudioFadeProgressVisualizerContainer(
                           key: const Key("AlbumArtAudioFadeProgressVisualizer"),
@@ -1093,7 +1098,7 @@ class QueueSectionHeader extends ConsumerWidget {
                           iconSize: 28.0,
                           color: info?.order == FinampPlaybackOrder.shuffled
                               ? IconTheme.of(context).color!
-                              : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withOpacity(0.85),
+                              : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withValues(alpha: 0.85),
                           visualDensity: VisualDensity.standard,
                           onPressed: () async {
                             await queueService.togglePlaybackOrder();
@@ -1122,11 +1127,11 @@ class QueueSectionHeader extends ConsumerWidget {
                           },
                           iconSize: 28.0,
                           color: radioEnabled
-                              ? (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withOpacity(0.3)
+                              ? (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withValues(alpha: 0.3)
                               : (info?.loop != FinampLoopMode.none
                                     ? IconTheme.of(context).color!
-                                    : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withOpacity(
-                                        0.85,
+                                    : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withValues(
+                                        alpha: 0.85,
                                       )),
                           visualDensity: VisualDensity.standard,
                           onPressed: () {
@@ -1152,7 +1157,7 @@ class QueueSectionHeader extends ConsumerWidget {
                           iconSize: 28.0,
                           color: currentRadioAvailabilityStatus.isAvailable
                               ? IconTheme.of(context).color!
-                              : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withOpacity(0.85),
+                              : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withValues(alpha: 0.85),
                           visualDensity: VisualDensity.standard,
                           onPressed: () {
                             toggleRadio();
@@ -1231,7 +1236,7 @@ class NextUpSectionHeader extends StatelessWidget {
     final queueService = GetIt.instance<QueueService>();
 
     return Container(
-      // color: Colors.black.withOpacity(0.5),
+      // color: Colors.black.withValues(alpha: 0.5),
       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,

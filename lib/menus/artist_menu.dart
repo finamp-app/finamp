@@ -63,7 +63,7 @@ Future<void> showModalArtistMenu({
     return (stackHeight, menu);
   }
 
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     item: item,
     routeName: artistMenuRouteName,

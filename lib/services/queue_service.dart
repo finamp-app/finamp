@@ -570,7 +570,7 @@ class QueueService {
       int droppedTracks = info.trackCount - loadedTracks;
 
       if (_savedQueueState != SavedQueueState.loading) {
-        return Future.error("Loading of saved Queue was interrupted.");
+        throw "Loading of saved Queue was interrupted.";
       }
 
       if (loadedTracks > 0) {
@@ -762,13 +762,11 @@ class QueueService {
       }
 
       if (initialIndex >= itemList.length) {
-        return Future.error("initialIndex is bigger than the itemList! ($initialIndex >= ${itemList.length})");
+        throw "initialIndex is bigger than the itemList! ($initialIndex >= ${itemList.length})";
       }
 
       if (initialIndex + nextUpLength >= itemList.length) {
-        return Future.error(
-          "nextUpLength is longer than available items! ($nextUpLength >= ${itemList.length - initialIndex})",
-        );
+        throw "nextUpLength is longer than available items! ($nextUpLength >= ${itemList.length - initialIndex})";
       }
 
       _queueServiceLogger.info("Replacing whole queue with ${itemList.length} items.");

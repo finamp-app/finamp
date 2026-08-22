@@ -27,7 +27,7 @@ class DownloadedItemsTitle extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
-            if (action != null) action!,
+            ?action,
           ],
         ),
       ),

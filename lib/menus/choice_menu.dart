@@ -39,7 +39,7 @@ class ChoiceMenuListTile extends ConsumerWidget {
       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: Container(
         decoration: ShapeDecoration(
-          color: themeColor.withOpacity(state ? 0.3 : 0.1),
+          color: themeColor.withValues(alpha: state ? 0.3 : 0.1),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         clipBehavior: Clip.antiAlias,
@@ -70,7 +70,7 @@ class ChoiceMenuListTile extends ConsumerWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 12.0),
                     child: VerticalDivider(
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5),
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
                       thickness: 1.5,
                       indent: compact ? 2.0 : 8.0,
                       endIndent: compact ? 2.0 : 8.0,
@@ -171,7 +171,7 @@ class ChoiceMenuOption extends StatelessWidget {
                           child: Icon(
                             TablerIcons.point_filled,
                             size: 20.0,
-                            color: TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6),
+                            color: TextTheme.of(context).bodyMedium?.color?.withValues(alpha: 0.6),
                           ),
                         ),
                       )

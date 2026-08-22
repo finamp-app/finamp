@@ -297,7 +297,7 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
           color: Theme.of(context).iconTheme.color,
           icon: const Icon(Icons.info),
           tooltip: AppLocalizations.of(context)!.serverUrlInfoButtonTooltip,
-          onPressed: () => showDialog(
+          onPressed: () => showDialog<void>(
             context: context,
             builder: (context) => AlertDialog(
               content: Text(AppLocalizations.of(context)!.internalExternalIpExplanation),
@@ -334,12 +334,12 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
               onChanged: (value) async {
                 widget.serverState.manualServer = null;
                 widget.serverState.baseUrl = value;
-                if (formKey.currentState?.validate() == true) {
+                if (formKey.currentState?.validate() ?? false) {
                   widget.serverState.onBaseUrlChanged(value);
                 }
               },
               validator: (value) {
-                if (value?.isEmpty == true) {
+                if (value?.isEmpty ?? false) {
                   return AppLocalizations.of(context)!.emptyServerUrl;
                 }
                 return null;

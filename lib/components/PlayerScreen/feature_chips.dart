@@ -17,7 +17,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 
-final _defaultBackgroundColour = Colors.white.withOpacity(0.1);
+final _defaultBackgroundColour = Colors.white.withValues(alpha: 0.1);
 final featureLogger = Logger("Features");
 
 class FeatureState {
@@ -237,7 +237,7 @@ class FeatureChips extends ConsumerWidget {
               child: Builder(
                 builder: (context) {
                   return Features(
-                    backgroundColor: IconTheme.of(context).color?.withOpacity(0.1) ?? _defaultBackgroundColour,
+                    backgroundColor: IconTheme.of(context).color?.withValues(alpha: 0.1) ?? _defaultBackgroundColour,
                     features: featureState,
                   );
                 },
@@ -270,7 +270,7 @@ class Features extends StatelessWidget {
           final feature = featureList[index];
 
           return _FeatureContent(
-            backgroundColor: IconTheme.of(context).color?.withOpacity(0.1) ?? _defaultBackgroundColour,
+            backgroundColor: IconTheme.of(context).color?.withValues(alpha: 0.1) ?? _defaultBackgroundColour,
             feature: feature,
             color: color,
           );

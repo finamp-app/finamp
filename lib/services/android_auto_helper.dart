@@ -1,5 +1,4 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:collection/collection.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
@@ -78,7 +77,7 @@ class AndroidAutoHelper {
         final List<BaseItemDto> genreAlbums = (await _downloadsService.getAllCollections(
           includeItemTypes: [BaseItemDtoType.album],
           relatedTo: genreBaseItem,
-        )).toList().map((e) => e.baseItem).whereNotNull().toList();
+        )).toList().map((e) => e.baseItem).nonNulls.toList();
         genreAlbums.sort((a, b) => (a.premiereDate ?? "").compareTo(b.premiereDate ?? ""));
         return genreAlbums;
       } else if (itemId.contentType.isArtist) {
@@ -87,7 +86,7 @@ class AndroidAutoHelper {
         final List<BaseItemDto> artistAlbums = (await _downloadsService.getAllCollections(
           includeItemTypes: [BaseItemDtoType.album],
           relatedTo: artistBaseItem,
-        )).toList().map((e) => e.baseItem).whereNotNull().toList();
+        )).toList().map((e) => e.baseItem).nonNulls.toList();
         artistAlbums.sort((a, b) => (a.premiereDate ?? "").compareTo(b.premiereDate ?? ""));
 
         final List<BaseItemDto> allTracks = [];
@@ -310,7 +309,7 @@ class AndroidAutoHelper {
             onlyFavorites: false,
           );
 
-          searchResult = offlineItems.map((e) => e.baseItem).whereNotNull().toList();
+          searchResult = offlineItems.map((e) => e.baseItem).nonNulls.toList();
         } else {
           searchResult = await jellyfinApiHelper.getItems(
             parentItem: null, // always use global playlists
@@ -480,7 +479,7 @@ class AndroidAutoHelper {
             nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
           );
 
-          var items = offlineItems.map((e) => e.baseItem).whereNotNull().toList();
+          var items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
 
           items = sortItems(
             items,
@@ -570,7 +569,7 @@ class AndroidAutoHelper {
           nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
         );
 
-        var items = offlineItems.map((e) => e.baseItem).whereNotNull().toList();
+        var items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
 
         items = sortItems(
           items,
@@ -1055,7 +1054,7 @@ class AndroidAutoHelper {
           onlyFavorites: false,
         );
       }
-      searchResult = offlineItems.map((e) => e.baseItem).whereNotNull().toList();
+      searchResult = offlineItems.map((e) => e.baseItem).nonNulls.toList();
     } else {
       if (itemTypes.first == BaseItemDtoType.artist) {
         searchResult = await jellyfinApiHelper.getArtists(

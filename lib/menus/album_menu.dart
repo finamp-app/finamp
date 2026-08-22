@@ -74,7 +74,7 @@ Future<void> showModalAlbumMenu({
     return (stackHeight, menu);
   }
 
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     item: baseItem,
     routeName: albumMenuRouteName,

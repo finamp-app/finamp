@@ -56,7 +56,7 @@ Future<void> showModalTrackMenu({
   FinampQueueItem? queueItem,
   QueueItemSource? source,
 }) async {
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     item: item,
     routeName: TrackMenu.routeName,
@@ -442,7 +442,7 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
                     layoutBuilder: (currentChild, previousChildren) {
                       return Stack(
                         alignment: Alignment.topCenter,
-                        children: <Widget>[...previousChildren, if (currentChild != null) currentChild],
+                        children: <Widget>[...previousChildren, ?currentChild],
                       );
                     },
                     transitionBuilder: (child, animation) {
@@ -497,8 +497,8 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
             padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
             child: Divider(
               color: Theme.brightnessOf(context) == Brightness.light
-                  ? Color.alphaBlend(Theme.of(context).primaryColor.withOpacity(0.6), Colors.black26)
-                  : Color.alphaBlend(Theme.of(context).primaryColor.withOpacity(0.8), Colors.white),
+                  ? Color.alphaBlend(Theme.of(context).primaryColor.withValues(alpha: 0.6), Colors.black26)
+                  : Color.alphaBlend(Theme.of(context).primaryColor.withValues(alpha: 0.8), Colors.white),
               indent: 24.0,
               endIndent: 24.0,
               height: 2.0,

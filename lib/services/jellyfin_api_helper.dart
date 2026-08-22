@@ -1171,7 +1171,7 @@ class JellyfinApiHelper {
     List<String> builtPath = List<String>.from(parsedBaseUrl.pathSegments);
     builtPath.addAll(["Items", item.imageId!, "Images", "Primary"]);
     final Map<String, dynamic> queryParams = {
-      if (format != null) "format": format,
+      "format": ?format,
       if (quality != null) "quality": quality.toString(),
       if (maxWidth != null) "MaxWidth": maxWidth.toString(),
       if (maxHeight != null) "MaxHeight": maxHeight.toString(),
@@ -1208,7 +1208,7 @@ class JellyfinApiHelper {
       userInfo: baseUrl.userInfo,
       pathSegments: builtPath,
       queryParameters: {
-        if (format != null) "format": format,
+        "format": ?format,
         if (quality != null) "quality": quality.toString(),
         if (maxWidth != null) "MaxWidth": maxWidth.toString(),
         if (maxHeight != null) "MaxHeight": maxHeight.toString(),

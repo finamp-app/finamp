@@ -14,7 +14,7 @@ import 'package:finamp/services/favorite_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
 import 'package:finamp/services/queue_service.dart';
-import 'package:finamp/services/radio_service_helper.dart' as RadioServiceHelper;
+import 'package:finamp/services/radio_service_helper.dart' as radio_service_helper;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -924,6 +924,12 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
   @override
   Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
+    if (shuffleMode != AudioServiceShuffleMode.all && shuffleMode != AudioServiceShuffleMode.none) {
+      return Future.error(
+        "Unsupported AudioServiceRepeatMode! Received ${shuffleMode.toString()}, requires all or none.",
+      );
+    }
+
     try {
       switch (shuffleMode) {
         case AudioServiceShuffleMode.all:
@@ -933,19 +939,25 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           await _player.setShuffleModeEnabled(false);
           break;
         default:
-          return Future.error(
-            "Unsupported AudioServiceRepeatMode! Received ${shuffleMode.toString()}, requires all or none.",
-          );
+          break;
       }
       _audioServiceBackgroundTaskLogger.info("Set shuffle mode to $shuffleMode");
     } catch (e) {
       _audioServiceBackgroundTaskLogger.severe(e);
-      return Future.error(e);
+      rethrow;
     }
   }
 
   @override
   Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
+    if (repeatMode != AudioServiceRepeatMode.all &&
+        repeatMode != AudioServiceRepeatMode.none &&
+        repeatMode != AudioServiceRepeatMode.one) {
+      return Future.error(
+        "Unsupported AudioServiceRepeatMode! Received ${repeatMode.toString()}, requires all, none, or one.",
+      );
+    }
+
     try {
       switch (repeatMode) {
         case AudioServiceRepeatMode.all:
@@ -958,14 +970,12 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           await _player.setLoopMode(LoopMode.one);
           break;
         default:
-          return Future.error(
-            "Unsupported AudioServiceRepeatMode! Received ${repeatMode.toString()}, requires all, none, or one.",
-          );
+          break;
       }
       _audioServiceBackgroundTaskLogger.info("Set repeat mode to $repeatMode");
     } catch (e) {
       _audioServiceBackgroundTaskLogger.severe(e);
-      return Future.error(e);
+      rethrow;
     }
   }
 
@@ -1098,16 +1108,18 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
   @override
   Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) async {
+    Future<dynamic>? actionFuture;
+
     try {
       final action = CustomPlaybackActions.values.firstWhere((element) => element.name == name);
       switch (action) {
         case CustomPlaybackActions.shuffle:
           final queueService = GetIt.instance<QueueService>();
-          return queueService.togglePlaybackOrder();
+          actionFuture = queueService.togglePlaybackOrder();
         case CustomPlaybackActions.radio:
-          RadioServiceHelper.toggleRadio();
+          radio_service_helper.toggleRadio();
         case CustomPlaybackActions.toggleFavorite:
-          return toggleFavoriteStatusOfCurrentTrack();
+          actionFuture = toggleFavoriteStatusOfCurrentTrack();
         case CustomPlaybackActions.dbusVolume:
           final volume = extras?["value"] as double?;
           if (volume != null) {
@@ -1117,6 +1129,10 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       }
     } catch (e) {
       _audioServiceBackgroundTaskLogger.severe("Custom action '$name' not found.", e);
+    }
+
+    if (actionFuture != null) {
+      return actionFuture;
     }
 
     // only called if no custom action was found
@@ -1237,7 +1253,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
     final radioEnabled = FinampSettingsHelper.finampSettings.radioEnabled;
     final radioActive = GetIt.instance<ProviderContainer>()
-        .read(RadioServiceHelper.currentRadioAvailabilityStatusProvider)
+        .read(radio_service_helper.currentRadioAvailabilityStatusProvider)
         .isAvailable;
 
     return PlaybackState(
