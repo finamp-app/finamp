@@ -28,7 +28,7 @@ class LogoutListTile extends ConsumerWidget {
           : Text(AppLocalizations.of(context)!.logoutButtonSubtitle, style: const TextStyle(color: Colors.red)),
       enabled: !ref.watch(finampSettingsProvider.isOffline),
       onTap: () {
-        showDialog(
+        showDialog<void>(
           context: context,
           builder: (context) => AlertDialog(
             title: Text(AppLocalizations.of(context)!.areYouSure),

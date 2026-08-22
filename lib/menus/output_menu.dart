@@ -31,7 +31,7 @@ Future<void> showOutputMenu({required BuildContext context, bool usePlayerTheme 
 
   FeedbackHelper.feedback(FeedbackType.selection);
 
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     item: queueService.getCurrentTrack()?.baseItem,
     routeName: outputMenuRouteName,

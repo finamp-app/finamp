@@ -310,7 +310,7 @@ Future<PlayableSlice> _fetchFromChildren(
 
 @riverpod
 Future<PlayableSlice> getAlbumShuffledPlayerSlice(Ref ref, {required FinampPlayable item}) async {
-  assert(item is Genre || item is Artist || (item is FinampSortable<Album> && item is FinampPlayable));
+  assert(item is Genre || item is Artist || item is FinampSortable<Album>);
   final albumPlayable =
       switch (item) {
             FinampSortable<Album>() => item,

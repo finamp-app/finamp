@@ -288,7 +288,7 @@ class FinampSettingsHelper {
   }) {
     return IconButton(
       onPressed: () async {
-        await showDialog(
+        await showDialog<void>(
           context: context,
           builder: (context) => ConfirmationPromptDialog(
             promptText: isGlobal

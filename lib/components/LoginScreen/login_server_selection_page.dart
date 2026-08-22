@@ -297,7 +297,7 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
           color: Theme.of(context).iconTheme.color,
           icon: const Icon(Icons.info),
           tooltip: AppLocalizations.of(context)!.serverUrlInfoButtonTooltip,
-          onPressed: () => showDialog(
+          onPressed: () => showDialog<void>(
             context: context,
             builder: (context) => AlertDialog(
               content: Text(AppLocalizations.of(context)!.internalExternalIpExplanation),

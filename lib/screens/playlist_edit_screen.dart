@@ -148,7 +148,7 @@ class _PlaylistEditScreenState extends ConsumerState<PlaylistEditScreen> {
 
   Future<void> _fetchPublicVisibility() async {
     if (_publicVisibility != null) return;
-    final resultPlaylist = await _jellyfinApiHelper.getPlaylist(playlist.id!);
+    final resultPlaylist = await _jellyfinApiHelper.getPlaylist(playlist.id);
     setState(() {
       _publicVisibility = resultPlaylist.openAccess;
       _initialVisibility = _publicVisibility ?? false;
@@ -184,7 +184,7 @@ class _PlaylistEditScreenState extends ConsumerState<PlaylistEditScreen> {
           );
         }
         if (_hasCoverChanged) {
-          await _jellyfinApiHelper.setItemPrimaryImage(itemId: playlist.id!, imageFile: newAlbumImage!);
+          await _jellyfinApiHelper.setItemPrimaryImage(itemId: playlist.id, imageFile: newAlbumImage!);
         }
         musicScreenRefreshStream.add(null); // refresh playlist content
         ref.invalidate(getAlbumOrPlaylistTracksProvider(playlist));

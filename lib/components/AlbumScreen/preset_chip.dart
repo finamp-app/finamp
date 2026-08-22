@@ -33,9 +33,9 @@ class PresetChips extends StatefulWidget {
   final List<double> values;
   final double? defaultValue;
   final double activeValue;
-  final Function()? onTap;
+  final VoidCallback? onTap;
   final Color? mainColour; // used for different background colours
-  final Function(double)? onPresetSelected;
+  final ValueChanged<double>? onPresetSelected;
   final bool showAsDouble;
   final String prefix;
   final double chipWidth;

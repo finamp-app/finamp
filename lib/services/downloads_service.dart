@@ -240,7 +240,7 @@ class DownloadsService {
                   unawaited(
                     File(listener.file!.path)
                         .rename(listener.file!.path.replaceFirst(RegExp(r'\.image$'), extension))
-                        .then((_) => null, onError: (e) => GlobalSnackbar.error(e)),
+                        .then((_) => null, onError: (Object e) => GlobalSnackbar.error(e)),
                   );
                   listener.path = listener.path!.replaceFirst(RegExp(r'\.image$'), extension);
                 }
@@ -671,7 +671,7 @@ class DownloadsService {
       }
     });
     // Allow other tasks to run between these steps, which are both synchronous
-    await Future.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 100));
 
     // Step 2 - Get all items into correct state matching filesystem and downloader.
     _downloadsLogger.info("Starting downloads repair step 2");
@@ -803,7 +803,7 @@ class DownloadsService {
     var imageFilePaths =
         Directory(path_helper.join(FinampSettingsHelper.finampSettings.internalTrackDir.currentPath, "images"))
             .list()
-            .handleError((e) => _downloadsLogger.info("Error while cleaning image directories: $e"))
+            .handleError((Object e) => _downloadsLogger.info("Error while cleaning image directories: $e"))
             .where((event) => event is File)
             .map((event) => path_helper.canonicalize(event.path));
     var filePaths = await imageFilePaths.toSet();
@@ -815,7 +815,7 @@ class DownloadsService {
             .map((e) => e.currentPath)) {
       var trackFilePaths = Directory(path_helper.join(trackBasePath, FINAMP_BASE_DOWNLOAD_DIRECTORY))
           .list()
-          .handleError((e) => _downloadsLogger.info("Error while cleaning track directories: $e"))
+          .handleError((Object e) => _downloadsLogger.info("Error while cleaning track directories: $e"))
           .where((event) => event is File)
           .map((event) => path_helper.canonicalize(event.path));
       filePaths.addAll(await trackFilePaths.toSet());
@@ -1083,7 +1083,7 @@ class DownloadsService {
     unawaited(
       repairAllDownloads().then(
         (value) => null,
-        onError: (error) {
+        onError: (Object error) {
           _downloadsLogger.severe("Error $error in hive migration downloads repair.");
           GlobalSnackbar.show(
             (scaffold) => SnackBar(

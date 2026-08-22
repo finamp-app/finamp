@@ -83,7 +83,7 @@ class IsarPersistentStorage implements PersistentStorage {
     // Isar database gets opened by main
   }
 
-  Future<void> _store(IsarTaskDataType type, String id, dynamic data) async {
+  Future<void> _store(IsarTaskDataType<dynamic> type, String id, dynamic data) async {
     type.check(data); // Verify the data object has the correct type
     String json = jsonEncode(data.toJson());
     _isar.writeTxnSync(() {
@@ -101,7 +101,7 @@ class IsarPersistentStorage implements PersistentStorage {
     return items.map((e) => type.fromJson(jsonDecode(e.jsonData) as Map<String, dynamic>)).toList();
   }
 
-  Future<void> _remove(IsarTaskDataType type, String? id) async {
+  Future<void> _remove(IsarTaskDataType<dynamic> type, String? id) async {
     _isar.writeTxnSync(() {
       if (id != null) {
         _isar.isarTaskDatas.deleteSync(IsarTaskData.getHash(type, id));
@@ -148,7 +148,7 @@ class IsarTaskData<T> {
       jsonData = _toJson(data),
       age = age ?? globalAge++;
 
-  static int getHash(IsarTaskDataType type, String id) => _fastHash(type.name + id);
+  static int getHash(IsarTaskDataType<dynamic> type, String id) => _fastHash(type.name + id);
 
   @ignore
   T get data => type.fromJson(jsonDecode(jsonData) as Map<String, dynamic>);
@@ -328,7 +328,7 @@ class IsarTaskQueue implements TaskQueue {
           }
           while (_activeDownloads.length >= FinampSettingsHelper.finampSettings.maxConcurrentDownloads ||
               _finampUserHelper.currentUser == null) {
-            await Future.delayed(const Duration(milliseconds: 500));
+            await Future<void>.delayed(const Duration(milliseconds: 500));
           }
           await SchedulerBinding.instance.scheduleTask(() {
             _activeDownloads.add(task.isarId);
@@ -382,7 +382,7 @@ class IsarTaskQueue implements TaskQueue {
             // Set priority high to prevent stalling
           }, Priority.animation + 50);
           // This helps prevent choking the method channel, see MemoryTaskQueue
-          await Future.delayed(const Duration(milliseconds: 20));
+          await Future<void>.delayed(const Duration(milliseconds: 20));
         }
       }
     } finally {

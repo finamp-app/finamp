@@ -50,10 +50,8 @@ class PlayerScreenTheme extends StatelessWidget {
             current: true,
           );
           for (final itemToPrecache in precacheItems) {
-            BaseItemDto? base = itemToPrecache.baseItem;
-            if (base != null) {
-              ref.listen(finampThemeProvider(ThemeInfo(base, useLargeImage: true)), (_, __) {});
-            }
+            final base = itemToPrecache.baseItem;
+            ref.listen(finampThemeProvider(ThemeInfo(base, useLargeImage: true)), (_, __) {});
           }
           var theme = Theme.of(context).withColorScheme(ref.watch(localThemeProvider));
           if (themeOverride != null) {

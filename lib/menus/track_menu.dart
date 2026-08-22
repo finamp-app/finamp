@@ -56,7 +56,7 @@ Future<void> showModalTrackMenu({
   FinampQueueItem? queueItem,
   QueueItemSource? source,
 }) async {
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     item: item,
     routeName: TrackMenu.routeName,

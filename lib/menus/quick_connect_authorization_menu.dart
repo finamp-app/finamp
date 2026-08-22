@@ -16,7 +16,7 @@ const quickConnectAuthorizationMenuRouteName = "/quick-connect-authorization-men
 Future<void> showQuickConnectAuthorizationMenu({required BuildContext context}) async {
   FeedbackHelper.feedback(FeedbackType.selection);
 
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     routeName: quickConnectAuthorizationMenuRouteName,
     minDraggableHeight: 0.60,

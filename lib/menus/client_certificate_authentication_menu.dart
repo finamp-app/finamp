@@ -15,7 +15,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 const clientCertificateAuthenticationRouteName = "/client-certificate-authentication-menu";
 
 Future<void> showClientCertificateMenu({required BuildContext context, VoidCallback? onImported}) async {
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     routeName: clientCertificateAuthenticationRouteName,
     minDraggableHeight: 0.3,

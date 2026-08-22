@@ -10,7 +10,7 @@ import 'package:focus_on_it/focus_on_it.dart';
 enum Drag { start, update, end }
 
 class AlphabetList extends ConsumerStatefulWidget {
-  final Function(String) callback;
+  final ValueChanged<String> callback;
 
   final SortOrder sortOrder;
 
@@ -173,7 +173,7 @@ class _AlphabetListState extends ConsumerState<AlphabetList> {
     }
 
     if (state == Drag.end) {
-      Future.delayed(const Duration(milliseconds: 50), () {
+      Future<void>.delayed(const Duration(milliseconds: 50), () {
         if (mounted) {
           setState(() {
             _displayPreview = false;

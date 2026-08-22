@@ -30,7 +30,7 @@ Future<void> showPlaylistActionsMenu({
 
   var playlistsFuture = jellyfinApiHelper.getItems(includeItemTypes: "Playlist", sortBy: "SortName");
 
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     item: items.length == 1 ? items.first : null,
     routeName: playlistActionsMenuRouteName,
