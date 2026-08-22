@@ -21,6 +21,7 @@ import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/playback_history_service.dart';
 import 'package:finamp/services/radio_service_helper.dart';
+import 'package:finamp/services/user_rating_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -181,6 +182,7 @@ class QueueService {
   }
 
   ProviderSubscription<AlbumImageInfo>? _latestAlbumImage;
+  ProviderSubscription<double?>? _currentRatingSubscription;
 
   void _buildQueueFromNativePlayerQueue({bool logUpdate = true, int? indexOverride}) {
     final playbackHistoryService = GetIt.instance<PlaybackHistoryService>();
@@ -280,8 +282,28 @@ class QueueService {
     refreshQueueStream();
     _currentTrackStream.add(_currentTrack);
     var currentMediaItem = _currentTrack?.item;
+
+    _currentRatingSubscription?.close();
+    _currentRatingSubscription = null;
+
     if (currentMediaItem != null) {
       final item = jellyfin_models.BaseItemDto.fromJson(currentMediaItem.extras!["itemJson"] as Map<String, dynamic>);
+
+      void updateRating(double? rating) {
+        currentMediaItem = currentMediaItem?.copyWith(
+          rating: FinampSettingsHelper.finampSettings.showStarRatings
+              ? Rating.newHeartRating((rating ?? 0) >= 10.0)
+              : null,
+        );
+        _audioHandler.mediaItem.add(currentMediaItem);
+      }
+
+      _currentRatingSubscription = _providers.listen<double?>(
+        userRatingProvider(item),
+        (_, rating) => updateRating(rating),
+        fireImmediately: true,
+      );
+
       final artRequest = AlbumImageRequest(item: item);
 
       void updateMediaItem(AlbumImageInfo latest, bool force) async {
@@ -1504,6 +1526,9 @@ class QueueService {
       album: item.album,
       artist: item.artists?.sortedBy((e) => e).join(", ") ?? item.albumArtist,
       title: item.name ?? "unknown",
+      rating: FinampSettingsHelper.finampSettings.showStarRatings
+          ? Rating.newHeartRating((item.userData?.rating ?? 0) >= 10.0)
+          : null,
       extras: {
         //!!! this ID has to be consistent across the transcoding URL and the playback reporting status, otherwise the server won't show that we're transcoding
         "playSessionId": uuid.v4(),

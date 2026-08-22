@@ -463,6 +463,8 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
                 ContentType.genres: ContentViewType.list,
               }
             : (fields[155] as Map).cast<ContentType, ContentViewType>(),
+        showStarRatings: fields[156] == null ? false : fields[156] as bool,
+        allowHalfStarRatings: fields[157] == null ? false : fields[157] as bool,
       )
       ..sortBy = fields[7] as SortBy?
       ..sortOrder = fields[8] as SortOrder?
@@ -486,7 +488,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(149)
+      ..writeByte(151)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -784,7 +786,11 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(154)
       ..write(obj.showQuickActionsBanner)
       ..writeByte(155)
-      ..write(obj.perTabContentViewType);
+      ..write(obj.perTabContentViewType)
+      ..writeByte(156)
+      ..write(obj.showStarRatings)
+      ..writeByte(157)
+      ..write(obj.allowHalfStarRatings);
   }
 
   @override

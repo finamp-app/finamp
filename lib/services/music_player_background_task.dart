@@ -12,8 +12,10 @@ import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/services/current_track_metadata_provider.dart';
 import 'package:finamp/services/favorite_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
 import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/services/user_rating_provider.dart';
 import 'package:finamp/services/radio_service_helper.dart' as RadioServiceHelper;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -300,6 +302,11 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
   MusicPlayerBackgroundTask() {
     _audioServiceBackgroundTaskLogger.info("Starting audio service");
+
+    GetIt.instance<ProviderContainer>().listen<bool>(
+      finampSettingsProvider.showStarRatings,
+      (_, _) => _handleStarRatingSettingChanged(),
+    );
 
     if (Platform.isWindows || Platform.isLinux) {
       _audioServiceBackgroundTaskLogger.info("Initializing media-kit for Windows/Linux");
@@ -1149,6 +1156,27 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     return playbackState.add(event);
   }
 
+  void _handleStarRatingSettingChanged() {
+    final currentMediaItem = mediaItem.valueOrNull;
+
+    if (currentMediaItem?.extras?["itemJson"] != null) {
+      final currentItem = jellyfin_models.BaseItemDto.fromJson(
+        currentMediaItem!.extras!["itemJson"] as Map<String, dynamic>,
+      );
+      final currentRating = GetIt.instance<ProviderContainer>().read(userRatingProvider(currentItem));
+
+      mediaItem.add(
+        currentMediaItem.copyWith(
+          rating: FinampSettingsHelper.finampSettings.showStarRatings
+              ? Rating.newHeartRating((currentRating ?? 0) >= 10.0)
+              : null,
+        ),
+      );
+    }
+
+    unawaited(refreshPlaybackStateAndMediaNotification());
+  }
+
   // triggers when skipping to specific item in android auto queue
   @override
   Future<void> skipToQueueItem(int index) async {
@@ -1274,9 +1302,15 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         if (FinampSettingsHelper.finampSettings.showStopButtonOnMediaNotification)
           MediaControl.stop.copyWith(androidIcon: "drawable/baseline_stop_24"),
       ],
-      systemActions: FinampSettingsHelper.finampSettings.showSeekControlsOnMediaNotification
-          ? const {MediaAction.seek, MediaAction.seekForward, MediaAction.seekBackward}
-          : {},
+      systemActions: {
+        if (FinampSettingsHelper.finampSettings.showSeekControlsOnMediaNotification) ...{
+          MediaAction.seek,
+          MediaAction.seekForward,
+          MediaAction.seekBackward,
+        },
+        if (FinampSettingsHelper.finampSettings.showStarRatings && !FinampSettingsHelper.finampSettings.isOffline)
+          MediaAction.setRating,
+      },
       androidCompactActionIndices: const [0, 1, 2],
       processingState: const {
         ProcessingState.idle: AudioProcessingState.idle,
@@ -1466,12 +1500,44 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     bool isFavorite = currentItem.userData?.isFavorite ?? false;
     switch (rating.getRatingStyle()) {
       case RatingStyle.heart:
-        if (rating.hasHeart() && !isFavorite) {
-          // add favorite
-          await toggleFavoriteStatusOfCurrentTrack();
-        } else if (!rating.hasHeart() && isFavorite) {
-          // remove favorite
-          await toggleFavoriteStatusOfCurrentTrack();
+        if (!FinampSettingsHelper.finampSettings.showStarRatings) {
+          if (rating.hasHeart() && !isFavorite) {
+            await toggleFavoriteStatusOfCurrentTrack();
+          } else if (!rating.hasHeart() && isFavorite) {
+            await toggleFavoriteStatusOfCurrentTrack();
+          }
+          break;
+        }
+
+        if (FinampSettingsHelper.finampSettings.isOffline) {
+          return;
+        }
+
+        final container = GetIt.instance<ProviderContainer>();
+        final provider = userRatingProvider(currentItem);
+        final previousRating = container.read(provider);
+
+        try {
+          final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+          final userData = rating.hasHeart()
+              ? await jellyfinApiHelper.setUserRating(currentItem.id, 10.0)
+              : await jellyfinApiHelper.clearUserRating(currentItem.id);
+
+          container.read(provider.notifier).state = userData.rating;
+
+          final currentMediaItem = mediaItem.valueOrNull;
+          if (currentMediaItem != null) {
+            mediaItem.add(currentMediaItem.copyWith(rating: Rating.newHeartRating((userData.rating ?? 0) >= 10.0)));
+          }
+
+          _audioServiceBackgroundTaskLogger.fine("Updated personal rating from system control: ${userData.rating}");
+        } catch (error, stackTrace) {
+          container.read(provider.notifier).state = previousRating;
+          _audioServiceBackgroundTaskLogger.warning(
+            "Failed to update personal rating from system control",
+            error,
+            stackTrace,
+          );
         }
         break;
       case RatingStyle.thumbUpDown:
