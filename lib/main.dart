@@ -149,6 +149,12 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
     _migrateDeviceId();
     await _migrateThemeModeLocale();
     _mainLog.info("Completed applicable migrations");
+
+    // Initialize FileDownloader singleton with persistent storage.
+    // This must happen before any other file downloader access,
+    // since the storage can only be supplied on the first call.
+    FileDownloader(persistentStorage: IsarPersistentStorage());
+
     await _trustAndroidUserCerts();
     await ClientCertificateInstaller().installClientCertificate();
     _mainLog.info("Installed client certificate");
@@ -243,7 +249,7 @@ Future<void> _setupDownloadsHelper() async {
   await Future.wait(
     FinampSettingsHelper.finampSettings.downloadLocationsMap.values.map((element) => element.updateCurrentPath()),
   );
-  final fileDownloader = FileDownloader(persistentStorage: IsarPersistentStorage());
+  final fileDownloader = FileDownloader();
   await fileDownloader.ready;
   WidgetsFlutterBinding.ensureInitialized();
   // There is additional FileDownloader setup inside downloadsService constructor
