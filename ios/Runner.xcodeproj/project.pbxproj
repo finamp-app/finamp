@@ -3,25 +3,44 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		054164E5BCC2E1EB23712657 /* WidgetState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9219FBC823774B12AD10A148 /* WidgetState.swift */; };
+		070B40D53366E4BA8A1743FE /* FinampWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CD9B0B742DD0DEECC18281 /* FinampWidget.swift */; };
+		0F4C9FF6B236AE6BDBFDAECA /* WidgetIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE857AA5A3AEC4D41C4CFD61 /* WidgetIntents.swift */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		1A7A01C825617F84005D4731 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A7A01C725617F74005D4731 /* libsqlite3.tbd */; };
 		1AB3434A28AEB3BA00B8C792 /* Info-Debug.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AB3434728AEB3BA00B8C792 /* Info-Debug.plist */; };
 		1AB3434B28AEB3BA00B8C792 /* Info-Profile.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AB3434828AEB3BA00B8C792 /* Info-Profile.plist */; };
 		1AB3434C28AEB3BA00B8C792 /* Info-Release.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AB3434928AEB3BA00B8C792 /* Info-Release.plist */; };
 		23119D278A5EBCAEDB53CE23 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB7427A67C90F0206B85CCB6 /* Pods_Runner.framework */; };
+		2BB2C5861FB8AEAA4101C020 /* WidgetState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9219FBC823774B12AD10A148 /* WidgetState.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		4BC6EF751C7CA8D827E2A2A4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0B6060686C82066EF2D8E34 /* Foundation.framework */; };
+		745A066FBC40771E79033371 /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB80671B0553835DCB014714 /* WidgetBridge.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
+		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
+		7D121C6D2BE91DC5C1F3A1F8 /* .appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AFAAE44C4F16859D26B9FB73 /* .appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		D0BA0CE30F4D9A1D0D9BF154 /* WidgetIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE857AA5A3AEC4D41C4CFD61 /* WidgetIntents.swift */; };
+		D629504BCBD803BABCBF9D46 /* FinampWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98C78352A117253BADAE7DBC /* FinampWidgetBundle.swift */; };
 		D7E03F9A2ED4FFB100EEBE11 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E03F982ED4FFAE00EEBE11 /* SceneDelegate.swift */; };
 		D7E03F9B2ED4FFB200EEBE11 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E03F9C2ED4FFAF00EEBE11 /* CarPlaySceneDelegate.swift */; };
-		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C5013B33EF13E8792F9C506C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4795FF057D641372E66641D;
+			remoteInfo = FinampWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
@@ -32,6 +51,17 @@
 			files = (
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E65784F62311C2D84E20576D /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				7D121C6D2BE91DC5C1F3A1F8 /* .appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -119,16 +149,23 @@
 		1AD2DF432921A4DD006B24E3 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		1AD2DF442921A4FA006B24E3 /* szl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = szl; path = szl.lproj/Main.strings; sourceTree = "<group>"; };
 		1AD2DF452921A4FA006B24E3 /* szl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = szl; path = szl.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		28CD9B0B742DD0DEECC18281 /* FinampWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FinampWidget.swift; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
+		9219FBC823774B12AD10A148 /* WidgetState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetState.swift; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C146FB1CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		98C78352A117253BADAE7DBC /* FinampWidgetBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FinampWidgetBundle.swift; sourceTree = "<group>"; };
+		A0B6060686C82066EF2D8E34 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		AFAAE44C4F16859D26B9FB73 /* .appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = .appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB80671B0553835DCB014714 /* WidgetBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetBridge.swift; sourceTree = "<group>"; };
 		CF84AA0DC653871661EC5D9F /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		D71BDC432ED54E31006D7BB7 /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
 		D7E03F982ED4FFAE00EEBE11 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -137,10 +174,18 @@
 		E0FC81896D87FAC6F1E1B2C8 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		FB7427A67C90F0206B85CCB6 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBA6030E2DB170CE0055CBBC /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
-		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
+		FE857AA5A3AEC4D41C4CFD61 /* WidgetIntents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetIntents.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		8FFC59BC3ADD34498044F3CA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4BC6EF751C7CA8D827E2A2A4 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		97C146EB1CF9000F007C117D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -164,11 +209,20 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		20ADBE71E2BA99B268C3D703 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				A0B6060686C82066EF2D8E34 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
 		4ACC266EDBF72BDB7F9715BE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				1A7A01C725617F74005D4731 /* libsqlite3.tbd */,
 				FB7427A67C90F0206B85CCB6 /* Pods_Runner.framework */,
+				20ADBE71E2BA99B268C3D703 /* iOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -193,6 +247,7 @@
 				97C146EF1CF9000F007C117D /* Products */,
 				17DBD18F82197DAAAF6A81C9 /* Pods */,
 				4ACC266EDBF72BDB7F9715BE /* Frameworks */,
+				EC6B40E802AB78A5FEDD188E /* FinampWidget */,
 			);
 			sourceTree = "<group>";
 		};
@@ -200,6 +255,7 @@
 			isa = PBXGroup;
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
+				AFAAE44C4F16859D26B9FB73 /* .appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -221,21 +277,31 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				BB80671B0553835DCB014714 /* WidgetBridge.swift */,
 			);
 			path = Runner;
+			sourceTree = "<group>";
+		};
+		EC6B40E802AB78A5FEDD188E /* FinampWidget */ = {
+			isa = PBXGroup;
+			children = (
+				9219FBC823774B12AD10A148 /* WidgetState.swift */,
+				FE857AA5A3AEC4D41C4CFD61 /* WidgetIntents.swift */,
+				28CD9B0B742DD0DEECC18281 /* FinampWidget.swift */,
+				98C78352A117253BADAE7DBC /* FinampWidgetBundle.swift */,
+			);
+			path = FinampWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 		97C146ED1CF9000F007C117D /* Runner */ = {
-			packageProductDependencies = (
-				78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */,
-			);
 			isa = PBXNativeTarget;
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
 				9C98541034167616AED82644 /* [CP] Check Pods Manifest.lock */,
+				E65784F62311C2D84E20576D /* Embed App Extensions */,
 				9740EEB61CF901F6004384FC /* Run Script */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
@@ -243,23 +309,42 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				EA10DADE9639BB3D0A9BCBCE /* [CP] Embed Pods Frameworks */,
+				B04AFFF1BDDB6ED73FAB098E /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				93CA4F283EE42E12CBFD056C /* PBXTargetDependency */,
+			);
+			name = Runner;
+			packageProductDependencies = (
+				78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */,
+			);
+			productName = Runner;
+			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D4795FF057D641372E66641D /* FinampWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 22F4590A565081BA2985C2F9 /* Build configuration list for PBXNativeTarget "FinampWidgetExtension" */;
+			buildPhases = (
+				647EF703139B889E4636BFD5 /* Sources */,
+				8FFC59BC3ADD34498044F3CA /* Frameworks */,
+				3C75CF58C24419544401024E /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = Runner;
-			productName = Runner;
-			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
-			productType = "com.apple.product-type.application";
+			name = FinampWidgetExtension;
+			productName = FinampWidgetExtension;
+			productReference = AFAAE44C4F16859D26B9FB73 /* .appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		97C146E61CF9000F007C117D /* Project object */ = {
-			packageReferences = (
-				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
-			);
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 1510;
@@ -318,16 +403,27 @@
 				id,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
+			packageReferences = (
+				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */,
+			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
+				D4795FF057D641372E66641D /* FinampWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3C75CF58C24419544401024E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		97C146EC1CF9000F007C117D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -398,6 +494,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		B04AFFF1BDDB6ED73FAB098E /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		EA10DADE9639BB3D0A9BCBCE /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -418,6 +531,17 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		647EF703139B889E4636BFD5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				054164E5BCC2E1EB23712657 /* WidgetState.swift in Sources */,
+				0F4C9FF6B236AE6BDBFDAECA /* WidgetIntents.swift in Sources */,
+				070B40D53366E4BA8A1743FE /* FinampWidget.swift in Sources */,
+				D629504BCBD803BABCBF9D46 /* FinampWidgetBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		97C146EA1CF9000F007C117D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -426,10 +550,22 @@
 				D7E03F9B2ED4FFB200EEBE11 /* CarPlaySceneDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				D7E03F9A2ED4FFB100EEBE11 /* SceneDelegate.swift in Sources */,
+				745A066FBC40771E79033371 /* WidgetBridge.swift in Sources */,
+				2BB2C5861FB8AEAA4101C020 /* WidgetState.swift in Sources */,
+				D0BA0CE30F4D9A1D0D9BF154 /* WidgetIntents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		93CA4F283EE42E12CBFD056C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FinampWidgetExtension;
+			target = D4795FF057D641372E66641D /* FinampWidgetExtension */;
+			targetProxy = C5013B33EF13E8792F9C506C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		97C146FA1CF9000F007C117D /* Main.storyboard */ = {
@@ -590,6 +726,7 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = PFNS8PTRM7;
 				ENABLE_BITCODE = NO;
+				FINAMP_WIDGET_APP_GROUP = group.com.unicornsonlsd.finamp-ios.widget;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -612,6 +749,49 @@
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Profile;
+		};
+		2ADE3ABB8648B6F61131CC47 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = FinampWidget/FinampWidget.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = PFNS8PTRM7;
+				FINAMP_WIDGET_APP_GROUP = group.com.unicornsonlsd.finamp-ios.widget;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FinampWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.unicornsonlsd.finamp-ios.FinampWidget";
+				PRODUCT_NAME = FinampWidgetExtension;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Profile;
+		};
+		3EA712AA0A717D52DD10DB7A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = FinampWidget/FinampWidget.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = PFNS8PTRM7;
+				FINAMP_WIDGET_APP_GROUP = group.com.unicornsonlsd.finamp-ios.widget;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FinampWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.unicornsonlsd.finamp-ios.FinampWidget";
+				PRODUCT_NAME = FinampWidgetExtension;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
 		};
 		97C147031CF9000F007C117D /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -734,6 +914,7 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = PFNS8PTRM7;
 				ENABLE_BITCODE = NO;
+				FINAMP_WIDGET_APP_GROUP = group.com.unicornsonlsd.finamp-ios.widget;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -770,6 +951,7 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = PFNS8PTRM7;
 				ENABLE_BITCODE = NO;
+				FINAMP_WIDGET_APP_GROUP = group.com.unicornsonlsd.finamp-ios.widget;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -793,9 +975,41 @@
 			};
 			name = Release;
 		};
+		98A73D88DEE833DB8B87E335 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = FinampWidget/FinampWidget.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = PFNS8PTRM7;
+				FINAMP_WIDGET_APP_GROUP = group.com.unicornsonlsd.finamp-ios.widget;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FinampWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.unicornsonlsd.finamp-ios.FinampWidget";
+				PRODUCT_NAME = FinampWidgetExtension;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		22F4590A565081BA2985C2F9 /* Build configuration list for PBXNativeTarget "FinampWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				98A73D88DEE833DB8B87E335 /* Release */,
+				3EA712AA0A717D52DD10DB7A /* Debug */,
+				2ADE3ABB8648B6F61131CC47 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		97C146E91CF9000F007C117D /* Build configuration list for PBXProject "Runner" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -817,12 +1031,14 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
 /* Begin XCLocalSwiftPackageReference section */
-		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */ = {
+		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
 		};
 /* End XCLocalSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */ = {
 			isa = XCSwiftPackageProductDependency;

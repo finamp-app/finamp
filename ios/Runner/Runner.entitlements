@@ -6,5 +6,9 @@
 	<true/>
 	<key>com.apple.developer.siri</key>
 	<true/>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>$(FINAMP_WIDGET_APP_GROUP)</string>
+	</array>
 </dict>
 </plist>

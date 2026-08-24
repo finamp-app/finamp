@@ -30,6 +30,7 @@ import 'package:rxdart/rxdart.dart';
 import 'android_auto_helper.dart';
 import 'finamp_settings_helper.dart';
 import 'ios_helpers.dart';
+import 'ios_widget_service.dart';
 import 'metadata_provider.dart';
 
 enum FadeDirection { fadeIn, fadeOut, none }
@@ -307,6 +308,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       finampSettingsProvider.showStarRatings,
       (_, _) => _handleStarRatingSettingChanged(),
     );
+
+    unawaited(IosWidgetService.instance.initialize(audioHandler: this));
 
     if (Platform.isWindows || Platform.isLinux) {
       _audioServiceBackgroundTaskLogger.info("Initializing media-kit for Windows/Linux");
