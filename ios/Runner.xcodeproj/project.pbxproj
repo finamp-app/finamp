@@ -752,17 +752,18 @@
 		};
 		2ADE3ABB8648B6F61131CC47 /* Profile */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = FinampWidget/FinampWidget.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = PFNS8PTRM7;
 				FINAMP_WIDGET_APP_GROUP = group.com.unicornsonlsd.finamp-ios.widget;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FinampWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.unicornsonlsd.finamp-ios.FinampWidget";
 				PRODUCT_NAME = FinampWidgetExtension;
 				SDKROOT = iphoneos;
@@ -774,17 +775,18 @@
 		};
 		3EA712AA0A717D52DD10DB7A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = FinampWidget/FinampWidget.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = PFNS8PTRM7;
 				FINAMP_WIDGET_APP_GROUP = group.com.unicornsonlsd.finamp-ios.widget;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FinampWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.unicornsonlsd.finamp-ios.FinampWidget";
 				PRODUCT_NAME = FinampWidgetExtension;
 				SDKROOT = iphoneos;
@@ -977,17 +979,18 @@
 		};
 		98A73D88DEE833DB8B87E335 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = FinampWidget/FinampWidget.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = PFNS8PTRM7;
 				FINAMP_WIDGET_APP_GROUP = group.com.unicornsonlsd.finamp-ios.widget;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FinampWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.unicornsonlsd.finamp-ios.FinampWidget";
 				PRODUCT_NAME = FinampWidgetExtension;
 				SDKROOT = iphoneos;
