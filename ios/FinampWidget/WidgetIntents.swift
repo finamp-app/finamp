@@ -76,8 +76,10 @@ struct NextTrackIntent: AudioPlaybackIntent {
 @available(iOS 27.0, *)
 struct ToggleFavoriteIntent: AppIntent {
     static let title: LocalizedStringResource = "Toggle Favorite"
+#if compiler(>=6.4)
     static var allowedExecutionTargets: IntentExecutionTargets { .main }
     static var supportedModes: IntentModes { .background }
+#endif
 
     func perform() async throws -> some IntentResult {
         try await FinampWidgetActionDispatcher.perform(.toggleFavorite)
@@ -88,8 +90,10 @@ struct ToggleFavoriteIntent: AppIntent {
 @available(iOS 27.0, *)
 struct SetStarRatingIntent: AppIntent {
     static let title: LocalizedStringResource = "Set Rating"
+#if compiler(>=6.4)
     static var allowedExecutionTargets: IntentExecutionTargets { .main }
     static var supportedModes: IntentModes { .background }
+#endif
 
     @Parameter(title: "Stars")
     var stars: Double
@@ -116,8 +120,10 @@ struct SetStarRatingIntent: AppIntent {
 @available(iOS 27.0, *)
 struct ClearStarRatingIntent: AppIntent {
     static let title: LocalizedStringResource = "Clear Rating"
+#if compiler(>=6.4)
     static var allowedExecutionTargets: IntentExecutionTargets { .main }
     static var supportedModes: IntentModes { .background }
+#endif
 
     func perform() async throws -> some IntentResult {
         try await FinampWidgetActionDispatcher.perform(.clearRating)
