@@ -163,6 +163,7 @@ private struct RatingOrFavoriteView: View {
     let compact: Bool
 
     var body: some View {
+#if compiler(>=6.4)
         if #available(iOS 27.0, *) {
             if state.showStarRatings {
                 StarRatingView(state: state, compact: compact)
@@ -176,13 +177,21 @@ private struct RatingOrFavoriteView: View {
                 .accessibilityLabel(state.isFavorite ? "Remove favorite" : "Add favorite")
             }
         } else {
-            if state.showStarRatings {
-                StarDisplayView(rating: state.starRating, compact: compact)
-            } else {
-                Image(systemName: state.isFavorite ? "heart.fill" : "heart")
-                    .font(compact ? .body : .title3)
-                    .foregroundStyle(.secondary)
-            }
+            readOnlyContent
+        }
+#else
+        readOnlyContent
+#endif
+    }
+
+    @ViewBuilder
+    private var readOnlyContent: some View {
+        if state.showStarRatings {
+            StarDisplayView(rating: state.starRating, compact: compact)
+        } else {
+            Image(systemName: state.isFavorite ? "heart.fill" : "heart")
+                .font(compact ? .body : .title3)
+                .foregroundStyle(.secondary)
         }
     }
 }
@@ -298,6 +307,7 @@ private struct SmallRatingOrFavoriteView: View {
     let state: FinampWidgetState
 
     var body: some View {
+#if compiler(>=6.4)
         if #available(iOS 27.0, *) {
             if state.showStarRatings {
                 let hasRating = state.starRating != nil
@@ -328,21 +338,29 @@ private struct SmallRatingOrFavoriteView: View {
                 )
             }
         } else {
-            if state.showStarRatings {
-                Image(
-                    systemName: state.starRating == nil
-                        ? "star"
-                        : "star.fill"
-                )
-                .foregroundStyle(.secondary)
-            } else {
-                Image(
-                    systemName: state.isFavorite
-                        ? "heart.fill"
-                        : "heart"
-                )
-                .foregroundStyle(.secondary)
-            }
+            readOnlyContent
+        }
+#else
+        readOnlyContent
+#endif
+    }
+
+    @ViewBuilder
+    private var readOnlyContent: some View {
+        if state.showStarRatings {
+            Image(
+                systemName: state.starRating == nil
+                    ? "star"
+                    : "star.fill"
+            )
+            .foregroundStyle(.secondary)
+        } else {
+            Image(
+                systemName: state.isFavorite
+                    ? "heart.fill"
+                    : "heart"
+            )
+            .foregroundStyle(.secondary)
         }
     }
 }
