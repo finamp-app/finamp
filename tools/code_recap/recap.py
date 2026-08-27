@@ -46,7 +46,7 @@ for commit in data:
                 break
 
     commit["total_additions"] = sum([f["additions"] for f in commit["files"]])
-    commit["total_deletions"] = sum([f["additions"] for f in commit["files"]])
+    commit["total_deletions"] = sum([f["deletions"] for f in commit["files"]])
     commit["total_changes"] = commit["total_additions"] + commit["total_deletions"]
     allCommits.append(commit)
 
@@ -54,7 +54,7 @@ for commit in data:
         noTranslationCommit = commit.copy()
         noTranslationCommit["files"] = [ f for f in commit["files"] if not isTranslation(f["path"]) and not isSpam(f["path"]) ]
         noTranslationCommit["total_additions"] = sum([f["additions"] for f in noTranslationCommit["files"]])
-        noTranslationCommit["total_deletions"] = sum([f["additions"] for f in noTranslationCommit["files"]])
+        noTranslationCommit["total_deletions"] = sum([f["deletions"] for f in noTranslationCommit["files"]])
         noTranslationCommit["total_changes"] = noTranslationCommit["total_additions"] + noTranslationCommit["total_deletions"]
         if len(noTranslationCommit["files"]) >= 1:
             commitsNoTranslations.append(noTranslationCommit)
@@ -63,7 +63,7 @@ for commit in data:
     onlyTranslationCommit["files"] = [ f for f in commit["files"] if isTranslation(f["path"]) and not isSpam(f["path"]) ]
     if len(onlyTranslationCommit["files"]) >= 1:
         onlyTranslationCommit["total_additions"] = sum([f["additions"] for f in onlyTranslationCommit["files"]])
-        onlyTranslationCommit["total_deletions"] = sum([f["additions"] for f in onlyTranslationCommit["files"]])
+        onlyTranslationCommit["total_deletions"] = sum([f["deletions"] for f in onlyTranslationCommit["files"]])
         onlyTranslationCommit["total_changes"] = onlyTranslationCommit["total_additions"] + onlyTranslationCommit["total_deletions"]
         commitsOnlyTranslations.append(onlyTranslationCommit.copy())
 
@@ -140,7 +140,7 @@ markdown = f"""
 | *(Lifetime)*  | Authors               |  {(len(authorsBefore) + len(newAuthors)):,}                                                                                 |
 | *(Lifetime)*  | + Additions           |  {(sum(additionsWithin) + sum(additionsBefore)):,} lines                                                                    |
 | *(Lifetime)*  | - Deletions           |  {(sum(deletionsWithin) + sum(deletionsBefore)):,} lines                                                                    |
-| *(Lifetime)*  | Additions per Commit  |  {round(sum(deletions) / len(commitsNoTranslations)):,} lines                                                               |
+| *(Lifetime)*  | Additions per Commit  |  {round(sum(additions) / len(commitsNoTranslations)):,} lines                                                               |
 | *(Lifetime)*  | Deletions per Commit  |  {round(sum(deletions) / len(commitsNoTranslations)):,} lines                                                               |
 | *(Lifetime)*  | Pull Requests Merged  |  {len(pullRequestsBefore + pullRequestsWithin):,}                                                                           |
 | *(Lifetime)*  | Changes Per PR        |  {round(sum(changesPerPullRequestsBefore + changesPerPullRequestsWithin) / len(pullRequestsBefore + pullRequestsWithin)):,} |
