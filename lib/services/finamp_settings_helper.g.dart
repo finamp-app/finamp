@@ -12,7 +12,7 @@ part of 'finamp_settings_helper.dart';
 // **************************************************************************
 
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, unused_element
 
 /// Generated setters for all finampSettings.  Must be directly accessed until
 /// static extension methods are added to dart
@@ -52,14 +52,14 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setShowTabs(TabContentType tabContentType, bool value) {
+  static void setShowTabs(ContentType tabContentType, bool newValue) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     try {
-      finampSettingsTemp.showTabs[tabContentType] = value;
+      finampSettingsTemp.showTabs[tabContentType] = newValue;
     } on UnsupportedError {
       // We were using the default const map directly.  Clone to allow modifications.
       finampSettingsTemp.showTabs = Map.from(finampSettingsTemp.showTabs);
-      finampSettingsTemp.showTabs[tabContentType] = value;
+      finampSettingsTemp.showTabs[tabContentType] = newValue;
     }
     Hive.box<FinampSettings>(
       "FinampSettings",
@@ -77,36 +77,6 @@ extension FinampSetters on FinampSettingsHelper {
   static void setTrackShuffleItemCount(int newTrackShuffleItemCount) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.trackShuffleItemCount = newTrackShuffleItemCount;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setContentViewType(ContentViewType newContentViewType) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.contentViewType = newContentViewType;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setContentGridViewCrossAxisCountPortrait(
-    int newContentGridViewCrossAxisCountPortrait,
-  ) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.contentGridViewCrossAxisCountPortrait =
-        newContentGridViewCrossAxisCountPortrait;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setContentGridViewCrossAxisCountLandscape(
-    int newContentGridViewCrossAxisCountLandscape,
-  ) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.contentGridViewCrossAxisCountLandscape =
-        newContentGridViewCrossAxisCountLandscape;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -144,41 +114,41 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setTabSortBy(TabContentType tabContentType, SortBy sortBy) {
+  static void setTabSortBy(ContentType tabContentType, SortBy newValue) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     try {
-      finampSettingsTemp.tabSortBy[tabContentType] = sortBy;
+      finampSettingsTemp.tabSortBy[tabContentType] = newValue;
     } on UnsupportedError {
       // We were using the default const map directly.  Clone to allow modifications.
       finampSettingsTemp.tabSortBy = Map.from(finampSettingsTemp.tabSortBy);
-      finampSettingsTemp.tabSortBy[tabContentType] = sortBy;
+      finampSettingsTemp.tabSortBy[tabContentType] = newValue;
     }
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setTabSortOrder(
-    TabContentType tabContentType,
-    SortOrder sortOrder,
-  ) {
+  static void setTabSortOrder(ContentType tabContentType, SortOrder newValue) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     try {
-      finampSettingsTemp.tabSortOrder[tabContentType] = sortOrder;
+      finampSettingsTemp.tabSortOrder[tabContentType] = newValue;
     } on UnsupportedError {
       // We were using the default const map directly.  Clone to allow modifications.
       finampSettingsTemp.tabSortOrder = Map.from(
         finampSettingsTemp.tabSortOrder,
       );
-      finampSettingsTemp.tabSortOrder[tabContentType] = sortOrder;
+      finampSettingsTemp.tabSortOrder[tabContentType] = newValue;
     }
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setTabOrder(List<TabContentType> newTabOrder) {
+  static void setTabOrder(List<ContentType> newTabOrder) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    if (finampSettingsTemp.tabOrder == newTabOrder) {
+      newTabOrder = newTabOrder.toList();
+    }
     finampSettingsTemp.tabOrder = newTabOrder;
     Hive.box<FinampSettings>(
       "FinampSettings",
@@ -460,22 +430,6 @@ extension FinampSetters on FinampSettingsHelper {
   static void setDefaultDownloadLocation(String? newDefaultDownloadLocation) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.defaultDownloadLocation = newDefaultDownloadLocation;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setUseFixedSizeGridTiles(bool newUseFixedSizeGridTiles) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.useFixedSizeGridTiles = newUseFixedSizeGridTiles;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setFixedGridTileSize(int newFixedGridTileSize) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.fixedGridTileSize = newFixedGridTileSize;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -882,6 +836,10 @@ extension FinampSetters on FinampSettingsHelper {
     List<GenreItemSections> newGenreItemSectionsOrder,
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    if (finampSettingsTemp.genreItemSectionsOrder ==
+        newGenreItemSectionsOrder) {
+      newGenreItemSectionsOrder = newGenreItemSectionsOrder.toList();
+    }
     finampSettingsTemp.genreItemSectionsOrder = newGenreItemSectionsOrder;
     Hive.box<FinampSettings>(
       "FinampSettings",
@@ -908,6 +866,11 @@ extension FinampSetters on FinampSettingsHelper {
     List<CuratedItemSelectionType> newGenreItemSectionFilterChipOrder,
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    if (finampSettingsTemp.genreItemSectionFilterChipOrder ==
+        newGenreItemSectionFilterChipOrder) {
+      newGenreItemSectionFilterChipOrder = newGenreItemSectionFilterChipOrder
+          .toList();
+    }
     finampSettingsTemp.genreItemSectionFilterChipOrder =
         newGenreItemSectionFilterChipOrder;
     Hive.box<FinampSettings>(
@@ -938,6 +901,11 @@ extension FinampSetters on FinampSettingsHelper {
     List<CuratedItemSelectionType> newArtistItemSectionFilterChipOrder,
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    if (finampSettingsTemp.artistItemSectionFilterChipOrder ==
+        newArtistItemSectionFilterChipOrder) {
+      newArtistItemSectionFilterChipOrder = newArtistItemSectionFilterChipOrder
+          .toList();
+    }
     finampSettingsTemp.artistItemSectionFilterChipOrder =
         newArtistItemSectionFilterChipOrder;
     Hive.box<FinampSettings>(
@@ -949,6 +917,10 @@ extension FinampSetters on FinampSettingsHelper {
     List<ArtistItemSections> newArtistItemSectionsOrder,
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    if (finampSettingsTemp.artistItemSectionsOrder ==
+        newArtistItemSectionsOrder) {
+      newArtistItemSectionsOrder = newArtistItemSectionsOrder.toList();
+    }
     finampSettingsTemp.artistItemSectionsOrder = newArtistItemSectionsOrder;
     Hive.box<FinampSettings>(
       "FinampSettings",
@@ -961,22 +933,6 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.autoSwitchItemCurationType =
         newAutoSwitchItemCurationType;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setPlaylistTracksSortBy(SortBy newPlaylistTracksSortBy) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.playlistTracksSortBy = newPlaylistTracksSortBy;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setPlaylistTracksSortOrder(SortOrder newPlaylistTracksSortOrder) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.playlistTracksSortOrder = newPlaylistTracksSortOrder;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -1042,20 +998,18 @@ extension FinampSetters on FinampSettingsHelper {
   }
 
   static void setTileAdditionalInfoType(
-    TabContentType tabContentType,
-    TileAdditionalInfoType tileAdditionalInfoType,
+    ContentType tabContentType,
+    TileAdditionalInfoType newValue,
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     try {
-      finampSettingsTemp.tileAdditionalInfoType[tabContentType] =
-          tileAdditionalInfoType;
+      finampSettingsTemp.tileAdditionalInfoType[tabContentType] = newValue;
     } on UnsupportedError {
       // We were using the default const map directly.  Clone to allow modifications.
       finampSettingsTemp.tileAdditionalInfoType = Map.from(
         finampSettingsTemp.tileAdditionalInfoType,
       );
-      finampSettingsTemp.tileAdditionalInfoType[tabContentType] =
-          tileAdditionalInfoType;
+      finampSettingsTemp.tileAdditionalInfoType[tabContentType] = newValue;
     }
     Hive.box<FinampSettings>(
       "FinampSettings",
@@ -1097,9 +1051,9 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setPreviousTracksExpaned(bool newPreviousTracksExpaned) {
+  static void setPreviousTracksExpanded(bool newPreviousTracksExpanded) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.previousTracksExpaned = newPreviousTracksExpaned;
+    finampSettingsTemp.previousTracksExpanded = newPreviousTracksExpanded;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -1229,6 +1183,140 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setDuckOnAudioInterruption(bool newDuckOnAudioInterruption) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.duckOnAudioInterruption = newDuckOnAudioInterruption;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setForceAudioOffloadingOnAndroid(
+    bool newForceAudioOffloadingOnAndroid,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.forceAudioOffloadingOnAndroid =
+        newForceAudioOffloadingOnAndroid;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setMultichannelHandlingSetting(
+    MultichannelHandlingSetting newMultichannelHandlingSetting,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.multichannelHandlingSetting =
+        newMultichannelHandlingSetting;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setPreviousTracksPersistenceMode(
+    PreviousTracksPersistenceMode newPreviousTracksPersistenceMode,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.previousTracksPersistenceMode =
+        newPreviousTracksPersistenceMode;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setHomeScreenConfiguration(
+    FinampHomeScreenConfiguration newHomeScreenConfiguration,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.homeScreenConfiguration = newHomeScreenConfiguration;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setGridImageSize(int newGridImageSize) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.gridImageSize = newGridImageSize;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setAmoledTheme(bool newAmoledTheme) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.amoledTheme = newAmoledTheme;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setUseAndroidGainEffect(bool newUseAndroidGainEffect) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.useAndroidGainEffect = newUseAndroidGainEffect;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setHomeScreenImageSize(int newHomeScreenImageSize) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.homeScreenImageSize = newHomeScreenImageSize;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setClientCertificate(ClientCertificate? newClientCertificate) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.clientCertificate = newClientCertificate;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setDeviceId(String newDeviceId) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.deviceId = newDeviceId;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setVerboseLogging(bool newVerboseLogging) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.verboseLogging = newVerboseLogging;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setShowQuickActionsBanner(bool newShowQuickActionsBanner) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.showQuickActionsBanner = newShowQuickActionsBanner;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setPerTabContentViewType(
+    ContentType tabContentType,
+    ContentViewType newValue,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    try {
+      finampSettingsTemp.perTabContentViewType[tabContentType] = newValue;
+    } on UnsupportedError {
+      // We were using the default const map directly.  Clone to allow modifications.
+      finampSettingsTemp.perTabContentViewType = Map.from(
+        finampSettingsTemp.perTabContentViewType,
+      );
+      finampSettingsTemp.perTabContentViewType[tabContentType] = newValue;
+    }
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1252,7 +1340,7 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.androidStopForegroundOnPause,
       );
-  ProviderListenable<bool?> showTabs(TabContentType tabContentType) =>
+  ProviderListenable<bool?> showTabs(ContentType tabContentType) =>
       finampSettingsProvider.select(
         (value) => value.requireValue.showTabs[tabContentType],
       );
@@ -1260,18 +1348,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       .select((value) => value.requireValue.onlyShowFavorites);
   ProviderListenable<int> get trackShuffleItemCount => finampSettingsProvider
       .select((value) => value.requireValue.trackShuffleItemCount);
-  ProviderListenable<ContentViewType> get contentViewType =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.contentViewType,
-      );
-  ProviderListenable<int> get contentGridViewCrossAxisCountPortrait =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.contentGridViewCrossAxisCountPortrait,
-      );
-  ProviderListenable<int> get contentGridViewCrossAxisCountLandscape =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.contentGridViewCrossAxisCountLandscape,
-      );
   ProviderListenable<bool> get showTextOnGridView => finampSettingsProvider
       .select((value) => value.requireValue.showTextOnGridView);
   ProviderListenable<bool> get useCoverAsBackground => finampSettingsProvider
@@ -1281,15 +1357,15 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ProviderListenable<bool> get disableGesture => finampSettingsProvider.select(
     (value) => value.requireValue.disableGesture,
   );
-  ProviderListenable<SortBy?> tabSortBy(TabContentType tabContentType) =>
+  ProviderListenable<SortBy?> tabSortBy(ContentType tabContentType) =>
       finampSettingsProvider.select(
         (value) => value.requireValue.tabSortBy[tabContentType],
       );
-  ProviderListenable<SortOrder?> tabSortOrder(TabContentType tabContentType) =>
+  ProviderListenable<SortOrder?> tabSortOrder(ContentType tabContentType) =>
       finampSettingsProvider.select(
         (value) => value.requireValue.tabSortOrder[tabContentType],
       );
-  ProviderListenable<List<TabContentType>> get tabOrder =>
+  ProviderListenable<List<ContentType>> get tabOrder =>
       finampSettingsProvider.select((value) => value.requireValue.tabOrder);
   ProviderListenable<bool> get showFastScroller => finampSettingsProvider
       .select((value) => value.requireValue.showFastScroller);
@@ -1390,10 +1466,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.defaultDownloadLocation,
       );
-  ProviderListenable<bool> get useFixedSizeGridTiles => finampSettingsProvider
-      .select((value) => value.requireValue.useFixedSizeGridTiles);
-  ProviderListenable<int> get fixedGridTileSize => finampSettingsProvider
-      .select((value) => value.requireValue.fixedGridTileSize);
   ProviderListenable<bool> get allowSplitScreen => finampSettingsProvider
       .select((value) => value.requireValue.allowSplitScreen);
   ProviderListenable<double> get splitScreenPlayerWidth =>
@@ -1575,12 +1647,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.autoSwitchItemCurationType,
       );
-  ProviderListenable<SortBy> get playlistTracksSortBy => finampSettingsProvider
-      .select((value) => value.requireValue.playlistTracksSortBy);
-  ProviderListenable<SortOrder> get playlistTracksSortOrder =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.playlistTracksSortOrder,
-      );
   ProviderListenable<bool> get genreFilterPlaylists => finampSettingsProvider
       .select((value) => value.requireValue.genreFilterPlaylists);
   ProviderListenable<SleepTimer?> get sleepTimer =>
@@ -1601,7 +1667,7 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
         (value) => value.requireValue.hasCompletedDownloadsFileOwnerMigration,
       );
   ProviderListenable<TileAdditionalInfoType?> tileAdditionalInfoType(
-    TabContentType tabContentType,
+    ContentType tabContentType,
   ) => finampSettingsProvider.select(
     (value) => value.requireValue.tileAdditionalInfoType[tabContentType],
   );
@@ -1615,8 +1681,8 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.preferAddingToFavoritesOverPlaylists,
       );
-  ProviderListenable<bool> get previousTracksExpaned => finampSettingsProvider
-      .select((value) => value.requireValue.previousTracksExpaned);
+  ProviderListenable<bool> get previousTracksExpanded => finampSettingsProvider
+      .select((value) => value.requireValue.previousTracksExpanded);
   ProviderListenable<bool> get autoplayRestoredQueue => finampSettingsProvider
       .select((value) => value.requireValue.autoplayRestoredQueue);
   ProviderListenable<bool> get preferNextUpPrepending => finampSettingsProvider
@@ -1654,6 +1720,49 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select((value) => value.requireValue.radioEnabled);
   ProviderListenable<RadioMode> get radioMode =>
       finampSettingsProvider.select((value) => value.requireValue.radioMode);
+  ProviderListenable<bool> get duckOnAudioInterruption => finampSettingsProvider
+      .select((value) => value.requireValue.duckOnAudioInterruption);
+  ProviderListenable<bool> get forceAudioOffloadingOnAndroid =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.forceAudioOffloadingOnAndroid,
+      );
+  ProviderListenable<MultichannelHandlingSetting>
+  get multichannelHandlingSetting => finampSettingsProvider.select(
+    (value) => value.requireValue.multichannelHandlingSetting,
+  );
+  ProviderListenable<PreviousTracksPersistenceMode>
+  get previousTracksPersistenceMode => finampSettingsProvider.select(
+    (value) => value.requireValue.previousTracksPersistenceMode,
+  );
+  ProviderListenable<FinampHomeScreenConfiguration>
+  get homeScreenConfiguration => finampSettingsProvider.select(
+    (value) => value.requireValue.homeScreenConfiguration,
+  );
+  ProviderListenable<int> get gridImageSize => finampSettingsProvider.select(
+    (value) => value.requireValue.gridImageSize,
+  );
+  ProviderListenable<bool> get amoledTheme =>
+      finampSettingsProvider.select((value) => value.requireValue.amoledTheme);
+  ProviderListenable<bool> get useAndroidGainEffect => finampSettingsProvider
+      .select((value) => value.requireValue.useAndroidGainEffect);
+  ProviderListenable<int> get homeScreenImageSize => finampSettingsProvider
+      .select((value) => value.requireValue.homeScreenImageSize);
+  ProviderListenable<ClientCertificate?> get clientCertificate =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.clientCertificate,
+      );
+  ProviderListenable<String> get deviceId =>
+      finampSettingsProvider.select((value) => value.requireValue.deviceId);
+  ProviderListenable<bool> get verboseLogging => finampSettingsProvider.select(
+    (value) => value.requireValue.verboseLogging,
+  );
+  ProviderListenable<bool> get showQuickActionsBanner => finampSettingsProvider
+      .select((value) => value.requireValue.showQuickActionsBanner);
+  ProviderListenable<ContentViewType?> perTabContentViewType(
+    ContentType tabContentType,
+  ) => finampSettingsProvider.select(
+    (value) => value.requireValue.perTabContentViewType[tabContentType],
+  );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,
@@ -1664,6 +1773,19 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       );
   ProviderListenable<Duration> get bufferDuration => finampSettingsProvider
       .select((value) => value.requireValue.bufferDuration);
+}
+
+// Needs import of 'package:collection/collection.dart' in parent file
+class _LengthEqualsIterable<E> extends DelegatingIterable<E> {
+  _LengthEqualsIterable(super.base);
+
+  @override
+  bool operator ==(Object other) {
+    return other is _LengthEqualsIterable && other.length == length;
+  }
+
+  @override
+  int get hashCode => Object.hash(length, '_LengthEqualsIterable');
 }
 
 // **************************************************************************

@@ -1,155 +1,433 @@
 name: Build
 
 on:
+  # Integration tests are slow, so we don't trigger on forks or pull
+  # requests.  To run against one of those, you can trigger manually by
+  # installing github-cli and running
+  # gh workflow run .github/workflows/build.yml --ref <branch name>
+  workflow_dispatch:
   pull_request:
   push:
+    # Trigger on tags OR set branches
+    tags:
+      - '*.*.*'
     branches:
       - main
       - redesign
+
+env:
+  if_condition: &integration_if github.event_name == 'workflow_dispatch' ||
+    (github.event_name == 'push' && github.repository == 'finamp-app/finamp' )
 
 # Due to a flutter bug, flutter build is not generating localizations
 # workaround by always running flutter pub get immediately before building,
 # and performing build for msix:create manually to allow implementing this workaround
 jobs:
-  # test:
-  #   name: Run Tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Clone repository
-  #     uses: actions/checkout@v4
-  #   - uses: actions/setup-java@v4
-  #     with:
-  #       distribution: 'zulu'
-  #       java-version: '17'
-  #   - name: Install dependencies
-  #     run: |
-  #       sudo apt-get update
-  #       sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev
-  #   - name: Set up Flutter
-  #     uses: subosito/flutter-action@v2
-  #     with:
-  #       channel: 'stable'
-  #   - run: flutter doctor
-  #   - run: flutter pub get
-  #   - run: flutter test
   build-android:
     name: Build for Android
     runs-on: ubuntu-latest
     steps:
     - name: Clone repository
-      uses: actions/checkout@v4
-    - uses: actions/setup-java@v4
+      uses: actions/checkout@v6
+    
+    - uses: actions/setup-java@v5
       with:
         distribution: 'zulu'
         java-version: '17'
-    - name: Install dependencies
+  
+    - name: Free up disk space
       run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev
+        # Remove .NET SDKs
+        sudo rm -rf /usr/share/dotnet
+        # Remove Swift toolchain
+        sudo rm -rf /usr/share/swift
+        # Remove Haskell (GHC)
+        sudo rm -rf /usr/local/.ghcup
+        # Remove Julia
+        sudo rm -rf /usr/local/julia*
+        # Remove PowerShell
+        sudo rm -rf /usr/local/share/powershell
+        df -h
+
+    # Use the same flutter setup as the linux build to allow sharing the pub cache and it utilizing the same cache key
+    - name: Determine Flutter stable version
+      uses: subosito/flutter-action@v2
+      id: flutter-version
+      with:
+        architecture: 'x64'
+        channel: 'stable'
+        dry-run: true
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
+        # Prebuilt ARM linux builds are not provided, so build flutter from source
+        channel: master
+        flutter-version: "${{ steps.flutter-version.outputs.VERSION }}"
+        cache: false
+        pub-cache: true
+        # Include arch as linux aarch64 include isar overriding
+        # arch can be removed later once isar aarch64 is easily available on pub.dev and overriding is not needed anymore
+        pub-cache-key: "flutter-pub-:os:-:channel:-:version:-:arch:-:hash:"
+    
+    - name: Gradle cache
+      uses: actions/cache@v5
+      with: 
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        # If exact match is not found, fallback to OS match
+        restore-keys: ${{ runner.os }}-gradle-
+
+    - name: Cache Dart build cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          .dart_tool
+          build
+        key: ${{ runner.os }}-android-dart-build-${{ hashFiles('pubspec.lock') }}
+        restore-keys: ${{ runner.os }}-android-dart-build-
+
     - run: flutter doctor
     - run: flutter pub get
+
     - run: flutter build apk --debug --no-pub
-    - uses: actions/upload-artifact@v4
+
+    - uses: actions/upload-artifact@v6
       with:
         name: finamp-android-debug.apk
         path: build/app/outputs/flutter-apk/app-debug.apk
         compression-level: 0 # no compression
+
     - run: flutter build appbundle --debug --no-pub
+
+    - name: Enable KVM group perms
+      if: *integration_if
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    - name: Run Integration tests on api 36
+      if: *integration_if
+      timeout-minutes: 20
+      # android emulator is flaky so we retry once
+      uses: Wandalen/wretry.action@v3.8.0
+      with:
+        action: reactivecircus/android-emulator-runner@v2
+        # Use the newest supported version of android
+        with: |
+          api-level: 36
+          arch: x86_64
+          profile: pixel
+          disk-size: 5120M
+          script: |
+            adb logcat -c
+            adb logcat *:I &
+            timeout 13m flutter test integration_test/test_cases.dart -d emulator
+
+    - name: Run Integration tests on api 25
+      if: *integration_if
+      timeout-minutes: 20
+      # android emulator is flaky so we retry once
+      uses: Wandalen/wretry.action@v3.8.0
+      with:
+        action: reactivecircus/android-emulator-runner@v2
+        # We can't use the oldest supported version api 24 because it doesn't recognize the certificates
+        # used by the demo server, so we use the second-oldest api 25.
+        with: |
+          api-level: 25
+          arch: x86_64
+          profile: pixel
+          disk-size: 5120M
+          script: |
+            adb logcat -c
+            adb logcat *:I &
+            timeout 13m flutter test integration_test/test_cases.dart -d emulator
+
   build-ios:
     name: Build for iOS
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
-        architecture: x64
+        cache: false
+        pub-cache: true
+
+    - name: Cache CocoaPods
+      uses: actions/cache@v5
+      with:
+        path: |
+          ios/Pods
+          ~/.cocoapods
+        key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+        restore-keys: ${{ runner.os }}-pods-
+
+    - name: Cache Dart build cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          .dart_tool
+          build
+        key: ${{ runner.os }}-dart-build-${{ hashFiles('pubspec.lock') }}
+        restore-keys: ${{ runner.os }}-dart-build-
+
     - run: flutter doctor
     - run: flutter pub get
+
     - run: flutter build ios --release --no-pub --no-codesign
+
+    - name: Start simulator
+      if: *integration_if
+      uses: futureware-tech/simulator-action@v5
+      with:
+        model: 'iPhone 17'
+        os_version: '>= 26.0'
+        wait_for_boot: true
+        erase_before_boot: true
+        boot_timeout_seconds: 360
+
+    - name: Run Integration Tests
+      if: *integration_if
+      run: flutter test integration_test/test_cases.dart -d 'iPhone 17'
+
   build-linux:
     name: Build for Linux
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            arch: x64
+          - os: ubuntu-22.04-arm
+            arch: arm64
     steps:
     - name: Clone repository
-      uses: actions/checkout@v4
-    - uses: actions/setup-java@v4
+      uses: actions/checkout@v6
+
+    - uses: actions/setup-java@v5
+      id: java-version
       with:
         distribution: 'zulu'
         java-version: '17'
+
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev
+        sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev libmpv-dev
+
+    - name: Determine Flutter stable version
+      uses: subosito/flutter-action@v2
+      id: flutter-version
+      with:
+        architecture: 'x64'
+        channel: 'stable'
+        dry-run: true
+
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
+        # Prebuilt ARM linux builds are not provided, so build flutter from source
+        channel: master
+        flutter-version: "${{ steps.flutter-version.outputs.VERSION }}"
+        cache: false
+        pub-cache: true
+        # Include arch as linux aarch64 include isar overriding
+        # arch can be removed later once isar aarch64 is easily available on pub.dev and overriding is not needed anymore
+        pub-cache-key: "flutter-pub-:os:-:channel:-:version:-:arch:-:hash:"
+
+    - name: Cache Dart build cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          .dart_tool
+          build
+        key: ${{ runner.os }}-${{ matrix.arch }}-${{ steps.java-version.outputs.version }}-dart-build-${{ hashFiles('pubspec.lock') }}
+        restore-keys: ${{ runner.os }}-${{ matrix.arch }}-${{ steps.java-version.outputs.version }}-dart-build-
+
     - run: flutter doctor
     - run: flutter pub get
+
+    - name: Clone isar repository
+      if: matrix.arch == 'arm64'
+      uses: actions/checkout@v6
+      with:
+        path: isar
+        repository: Komodo5197/isar-community
+        ref: a602cd8999048faba043f7e1ce7ba92f4d812762
+    
+    - name: Build isar core and inject into cached isar_flutter_libs
+      if: matrix.arch == 'arm64'
+      run: |
+        sh tool/build_linux.sh aarch64
+        mv libisar_linux_arm64.so $HOME/.pub-cache/git/isar_flutter_libs-*/linux/libisar.so
+      working-directory: isar
+    
     - run: flutter build linux --release --no-pub
+    
     # copy icon assets and desktop file next to bundle location for easy including in tar archive
     - run: |
-        cp -r assets/icon/linux/ build/linux/x64/release/icons \
-        && cp assets/finamp.desktop.m4 build/linux/x64/release/ \
-        && cp assets/com.unicornsonlsd.finamp.metainfo.xml build/linux/x64/release/
+        cp -r assets/icon/linux/ build/linux/${{ matrix.arch }}/release/icons \
+        && cp assets/finamp.desktop.m4 build/linux/${{ matrix.arch }}/release/ \
+        && cp assets/com.unicornsonlsd.finamp.metainfo.xml build/linux/${{ matrix.arch }}/release/
+    
+    # Create dynamic names based on architecture
+    - name: Set archive and checksum names
+      run: |
+        # For PR builds, use pr-<number>, else use branch or tag name
+        if [ "${{ github.event.pull_request.number }}" != "" ]; then
+          ref_name="pr-${{ github.event.pull_request.number }}"
+        else
+          ref_name="${{ github.ref_name }}"
+        fi
+        echo "TAR_NAME=finamp-${ref_name}-linux-${{ matrix.arch }}.tar.gz" >> $GITHUB_ENV
+        echo "SHA_NAME=finamp-${ref_name}-linux-${{ matrix.arch }}.tar.gz.sha256sum" >> $GITHUB_ENV
+    
     # archive bundle and generate checksum
     - run: |
-        tar -czf finamp-linux-release.tar.gz --directory build/linux/x64/release/ bundle icons finamp.desktop.m4 com.unicornsonlsd.finamp.metainfo.xml \
-        && sha256sum finamp-linux-release.tar.gz > finamp-linux-release.tar.gz.sha256sum
-    - uses: actions/upload-artifact@v4
+        tar -czf ${TAR_NAME} --directory build/linux/${{ matrix.arch }}/release/ bundle icons finamp.desktop.m4 com.unicornsonlsd.finamp.metainfo.xml \
+        && sha256sum ${TAR_NAME} > ${SHA_NAME}
+
+    - uses: actions/upload-artifact@v6
       with:
-        name: finamp-linux-release.tar.gz
-        path: finamp-linux-release.tar.gz
+        name: ${{ env.TAR_NAME }}
+        path: ${{ env.TAR_NAME }}
         compression-level: 0 # no compression
-    - uses: actions/upload-artifact@v4
+    
+    - uses: actions/upload-artifact@v6
       with:
-        name: finamp-linux-release.tar.gz.sha256sum
-        path: finamp-linux-release.tar.gz.sha256sum
+        name: ${{ env.SHA_NAME }}
+        path: ${{ env.SHA_NAME }}
         compression-level: 0 # no compression
+
+    - name: Upload release archive
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      uses: alexellis/upload-assets@0.4.1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        asset_paths: '["./${{ env.TAR_NAME }}", "./${{ env.SHA_NAME }}"]'
+
+    - name: Run Integration Tests
+      if: *integration_if
+      run: |
+        set +e
+        xvfb-run flutter test integration_test/test_cases.dart -d linux
+        exitcode=$?
+        if [[ $exitcode == 79 ]]; then
+          echo "Potential native crash - attempting to display"
+          timeout 2m xvfb-run flutter run -d linux
+        fi
+        exit $exitcode
+
   build-windows:
     name: Build for Windows
     runs-on: windows-latest
     steps:
     - name: Support longpaths
       run: git config --system core.longpaths true
+
     - name: Clone repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     # - uses: actions/setup-java@v2
     #   with:
     #     distribution: 'zulu'
     #     java-version: '17'
     - name: Set up Rust (for smtc_windows)
       uses: hecrj/setup-rust-action@v2
+
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
+        cache: false
+        pub-cache: true
+
     - run: flutter doctor
     - run: flutter pub get
+
+    - name: Cache Dart build cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          build
+        key: ${{ runner.os }}-dart-build-${{ hashFiles('**/pubspec.yaml') }}
+        restore-keys: ${{ runner.os }}-dart-build-
+
     - run: flutter build windows
+
+    - name: Set archive and msix base name
+      shell: bash
+      run: |
+        # For PR builds, use pr-<number>, else use branch or tag name
+        if [ "${{ github.event.pull_request.number }}" != "" ]; then
+          ref_name="pr-${{ github.event.pull_request.number }}"
+        else
+          ref_name="${{ github.ref_name }}"
+        fi
+        echo "BASE_NAME=Finamp-${ref_name}-Windows" >> $GITHUB_ENV
+
     # TODO pack in redistributables?
-    - uses: actions/upload-artifact@v4
+    # upload original, unzipped directory. GitHub will zip it anyway
+    - uses: actions/upload-artifact@v6
       with:
-        name: finamp-windows
+        name: ${{ env.BASE_NAME }}
         path: build/windows/x64/runner/Release/
-    - run: dart run msix:create --install-certificate false
+
+    - run: |
+        dart run msix:create --install-certificate false
+        # move msix file with correct naming
+        mv build/windows/x64/runner/Release/finamp.msix ./${{ env.BASE_NAME }}.msix
+
     #TODO would be nice to have an old-school installer here that can take the .exe + libraries and install them to the device + create a shortcut
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
-        name: finamp-windows.msix
-        path: build/windows/x64/runner/Release/finamp.msix
+        name: ${{ env.BASE_NAME }}.msix
+        path: ./${{ env.BASE_NAME }}.msix
         compression-level: 0 # no compression
+
+    - name: Prepare release archive
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      run: |
+        # zip folder
+        powershell -Command "Compress-Archive -Path './build/windows/x64/runner/Release/*' -DestinationPath './${{ env.BASE_NAME }}.zip'"
+
+    - name: Upload release archive
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      uses: alexellis/upload-assets@0.4.1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        # upload zip archive here, uploading the raw directory fails
+        asset_paths: '["./${{ env.BASE_NAME }}.msix", "./${{ env.BASE_NAME }}.zip"]'
+
+    - name: Run Integration Tests
+      if: *integration_if
+      shell: bash
+      run: |
+        set +e
+        flutter test integration_test/test_cases.dart -d windows
+        exitcode=$?
+        if [[ $exitcode == 79 ]]; then
+          echo "Potential native crash - attempting to display"
+          timeout 2m flutter run -d windows
+        fi
+        exit $exitcode
+
   # build-macos:
   #   name: Build for macOS
   #   runs-on: macos-latest
   #   steps:
-  #   - uses: actions/checkout@v4
+  #   - uses: actions/checkout@v6
   #   - name: Set up Flutter
   #     uses: subosito/flutter-action@v2
   #     with:

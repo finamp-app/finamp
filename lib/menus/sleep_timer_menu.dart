@@ -14,6 +14,8 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../extensions/localizations.dart';
+
 enum _MenuPage { minutes, tracks, currentTrack }
 
 class SleepTimerMenu extends StatefulWidget {
@@ -23,6 +25,10 @@ class SleepTimerMenu extends StatefulWidget {
   final void Function()? scrollFunction;
   final void Function()? onStartTimer;
   final void Function(double)? onSizeChange;
+
+  static const double durationTypeMenuHeight = 265;
+  static const double tracksTypeMenuHeight = 220;
+  static const double afterCurrentTrackTypeMenuHeight = 140;
 
   @override
   State<SleepTimerMenu> createState() => _SleepTimerMenuState();
@@ -37,10 +43,6 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
   late bool finishTrack;
 
   _MenuPage selectedMode = _MenuPage.minutes;
-
-  static const double durationTypeMenuHeight = 265;
-  static const double tracksTypeMenuHeight = 220;
-  static const double afterCurrentTrackTypeMenuHeight = 140;
 
   @override
   void initState() {
@@ -80,7 +82,11 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
       AppLocalizations.of(context)!.tracks,
       AppLocalizations.of(context)!.sleepTimerAfterCurrentTrack,
     ];
-    final List<double> menuHeights = [durationTypeMenuHeight, tracksTypeMenuHeight, afterCurrentTrackTypeMenuHeight];
+    final List<double> menuHeights = [
+      SleepTimerMenu.durationTypeMenuHeight,
+      SleepTimerMenu.tracksTypeMenuHeight,
+      SleepTimerMenu.afterCurrentTrackTypeMenuHeight,
+    ];
 
     return Container(
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: widget.iconColor.withOpacity(0.1)),
@@ -209,7 +215,7 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                                 _updateControllers();
                               });
                             },
-                            label: '${(newSleepTimer.secondsLength / 60).round()} min',
+                            label: context.l10n.timerMinutes((newSleepTimer.secondsLength / 60).round()),
                             autofocus: false,
                             focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
                           ),
@@ -384,7 +390,7 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                                 _updateControllers();
                               });
                             },
-                            label: '${newSleepTimer.tracksLength} tracks',
+                            label: context.l10n.timerTracks(newSleepTimer.tracksLength),
                             autofocus: false,
                             focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
                           ),
@@ -505,6 +511,7 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                       case _MenuPage.currentTrack:
                         remaining = currentTrackRemainingDuration + queueInfo.getDurationUntil(1);
                     }
+                    remaining = remaining * (1 / GetIt.instance<MusicPlayerBackgroundTask>().speed);
                     final remainText = printDuration(remaining, leadingZeroes: false);
                     final remainingLabelFullHours = (remaining.inHours);
                     final remainingLabelFullMinutes = (remaining.inMinutes) % 60;

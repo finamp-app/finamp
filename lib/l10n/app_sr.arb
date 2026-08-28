@@ -1,315 +1,255 @@
 {
-  "password": "Lozinka",
-  "@password": {},
-  "startMixNoTracksAlbum": "Dugo pritisnite album da biste ga dodali ili uklonili iz kreatora miksa pre nego što započnete miks",
-  "@startMixNoTracksAlbum": {
-    "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
-  },
-  "aboutReleaseNotes": "Pročitajte najnovije beleške o izdanju:",
-  "@aboutReleaseNotes": {
-    "description": "Link to the release notes, shown in the about screen."
-  },
-  "loginFlowServerSelectionHeading": "Poveži se na Jellyfin",
-  "@loginFlowServerSelectionHeading": {
-    "description": "Heading for the server selection step during the login flow."
-  },
-  "downloadedCountUnified": "{trackCount,plural,=1{1 pesma} other{{trackCount} pesme}}, {imageCount,plural,=1{1 slika} other{{imageCount} slike}}\n{syncCount,plural,=1{1 čvor se sinhronizuje} other{{syncCount} čvora se sinhronizuju}}{repairing, plural, =0{} other\n{Trenutno se popravlja}}",
-  "@downloadedCountUnified": {
-    "description": "Display of downloaded track and image count on downloads screen.",
-    "placeholders": {
-      "trackCount": {
-        "type": "int"
-      },
-      "imageCount": {
-        "type": "int"
-      },
-      "syncCount": {
-        "type": "int"
-      },
-      "repairing": {
-        "type": "int"
-      }
-    }
-  },
-  "back": "Nazad",
-  "@back": {
-    "description": "Label for the back button."
-  },
-  "aboutTranslations": "Pomozi sa prevodom Finamp-a na Vaš jezik:",
-  "@aboutTranslations": {
-    "description": "Link to the translation project, shown in the about screen."
-  },
-  "finampTagline": "Jellyfin muzički plejer otvorenog koda",
-  "@finampTagline": {
-    "description": "Tagline / short description for the app"
-  },
-  "about": "O Finamp-u",
-  "@about": {
-    "description": "Label for the about/info button on the settings screen"
-  },
-  "aboutContributionPrompt": "Napravljeno od strane fenomenalnih ljudi u svoje slobodno vreme.\nTi možet biti jedan od njih!",
-  "@aboutContributionPrompt": {
-    "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
-  },
-  "aboutContributionLink": "Doprinesite Finamp-u na GitHub-u:",
-  "@aboutContributionLink": {
-    "description": "Link to the Finamp GitHub repository, shown in the about screen."
-  },
-  "aboutThanks": "Hvala što koristite Finamp!",
-  "@aboutThanks": {
-    "description": "Thank you message shown in the about screen."
-  },
-  "loginFlowWelcomeHeading": "Dobrodošli u",
-  "@loginFlowWelcomeHeading": {
-    "description": "Greeting shown on the login screen. The full message will be 'Welcome to Finamp'."
-  },
-  "loginFlowSlogan": "Vaša muzika, onakva kakvu želite.",
-  "@loginFlowSlogan": {
-    "description": "Slogan shown on the login screen."
-  },
-  "loginFlowGetStarted": "Započnite!",
-  "@loginFlowGetStarted": {
-    "description": "Button label for the login/splash screen."
-  },
-  "viewLogs": "Pogledaj dnevnike",
-  "@viewLogs": {
-    "description": "Label for button shown during the login process that allows the user to view the app logs"
-  },
-  "changeLanguage": "Promeni Jezik",
-  "@changeLanguage": {
-    "description": "Label for button shown during the login process that allows the user to change the app language"
-  },
-  "serverUrl": "URL servera",
-  "@serverUrl": {},
-  "serverUrlHint": "e.g. demo.jellyfin.org/stable",
-  "@serverUrlHint": {
-    "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
-  },
-  "serverUrlInfoButtonTooltip": "Pomoć za URL Servera",
-  "@serverUrlInfoButtonTooltip": {
-    "description": "Tooltip for the button that shows the extra info dialog for which IP to use for remote access, and info on whether or not the user needs to specify a port."
-  },
-  "emptyServerUrl": "URL Servera ne može biti prazan",
-  "@emptyServerUrl": {
-    "description": "Error message that shows when the user submits a login without a server URL"
-  },
-  "connectingToServer": "Povezivanje sa serverom...",
-  "@connectingToServer": {
-    "description": "Text shown while the connection to the specified server is attempted"
-  },
-  "loginFlowLocalNetworkServers": "Serveri na vašoj lokalnoj mreži:",
-  "@loginFlowLocalNetworkServers": {
-    "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
-  },
-  "loginFlowCustomUser": "Prilagođeni Korisnik",
-  "@loginFlowCustomUser": {
-    "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
-  },
-  "loginFlowAuthenticationHeading": "Prijavite se na vaš nalog",
-  "@loginFlowAuthenticationHeading": {
-    "description": "Heading for the authentication step during the login flow."
-  },
-  "backToAccountSelection": "Nazad na Izbor Naloga",
-  "@backToAccountSelection": {
-    "description": "Label for the button that takes the user back to the account selection step during the login flow."
-  },
-  "loginFlowQuickConnectInstructions": "Otvorite Jellyfin aplikaciju ili sajt, kliknite na vašu korisničku ikonicu i izaberite Brzo povezivanje.",
-  "@loginFlowQuickConnectInstructions": {
-    "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
-  },
-  "loginFlowQuickConnectDisabled": "Brzo povezivanje je onemogućeno na ovo serveru.",
-  "@loginFlowQuickConnectDisabled": {
-    "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
-  },
-  "orDivider": "ili",
-  "@orDivider": {
-    "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
-  },
-  "loginFlowSelectAUser": "Izaberite korisnika",
-  "@loginFlowSelectAUser": {
-    "description": "Heading for the list of users that the user can select from during the login flow."
-  },
-  "usernameHint": "Unesite vaše korisničko ime",
-  "@usernameHint": {
-    "description": "Hint text for the username input field."
-  },
-  "usernameValidationMissingUsername": "Molimo vas unesite korisničko ime",
-  "@usernameValidationMissingUsername": {
-    "description": "Error message that shows when the user submits a login without a username"
-  },
-  "passwordHint": "Unesite vašu lozinku",
-  "@passwordHint": {
-    "description": "Hint text for the password input field."
-  },
-  "login": "Prijavite se",
-  "@login": {
-    "description": "Label for the login button."
-  },
-  "logs": "Dnevnik",
-  "@logs": {},
-  "next": "Dalje",
-  "@next": {},
-  "selectMusicLibraries": "Izaberite Muzičke Biblioteke",
-  "@selectMusicLibraries": {
-    "description": "App bar title for library select screen"
-  },
-  "couldNotFindLibraries": "Nije moguće pronaći nijednu biblioteku.",
-  "@couldNotFindLibraries": {
-    "description": "Error message when the user does not have any libraries"
-  },
-  "unknownName": "Nepoznato Ime",
-  "@unknownName": {},
-  "tracks": "Numere",
-  "@tracks": {},
-  "albums": "Albumi",
-  "@albums": {},
-  "artists": "Umetnici",
-  "@artists": {},
-  "startMix": "Započni Mix",
-  "@startMix": {},
-  "startMixNoTracksArtist": "Dugo pritisnite izvođača da biste ga dodali ili uklonili iz kreatora miksa pre nego što započnete miks",
-  "@startMixNoTracksArtist": {
-    "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
-  },
-  "music": "Muzika",
-  "@music": {},
-  "clear": "Očisti",
-  "@clear": {},
-  "shuffleAll": "Promešaj sve",
-  "@shuffleAll": {},
-  "downloads": "Preuzimanja",
-  "@downloads": {},
-  "settings": "Podešavanja",
-  "@settings": {},
-  "offlineMode": "Oflajn mod",
-  "@offlineMode": {},
-  "sortOrder": "Redosled sortiranja",
-  "@sortOrder": {},
-  "sortBy": "Sortiraj po",
-  "@sortBy": {},
-  "title": "Naslov",
-  "@title": {},
-  "album": "Album",
-  "@album": {},
-  "albumArtist": "Umetnik Albuma",
-  "@albumArtist": {},
-  "artist": "Umetnik",
-  "@artist": {},
-  "budget": "Budžet",
-  "@budget": {},
-  "communityRating": "Ocena Zajednice",
-  "@communityRating": {},
-  "criticRating": "Ocena Kritičara",
-  "@criticRating": {},
-  "dateAdded": "Datum dodavanja",
-  "@dateAdded": {},
-  "datePlayed": "Datum odigravanja",
-  "@datePlayed": {},
-  "playCount": "Broj reprodukcija",
-  "@playCount": {},
-  "premiereDate": "Datum premijere",
-  "@premiereDate": {},
-  "productionYear": "Godina produkcije",
-  "@productionYear": {},
-  "name": "Ime",
-  "@name": {},
-  "random": "Nasumično",
-  "@random": {},
-  "revenue": "Prihod",
-  "@revenue": {},
-  "syncDownloadedPlaylists": "Sinhronizuj preuzete plejliste",
-  "@syncDownloadedPlaylists": {},
-  "downloadMissingImages": "Preuzmi slike koje nedostaju",
-  "@downloadMissingImages": {},
-  "downloadedMissingImages": "{count, plural, =0{Nije pronađena nijedna slika koja nedostaje} =1{Preuzeta je 1 slika koja nedostaje} other{Preuzete su {count} slike koje nedostaju}}",
-  "@downloadedMissingImages": {
-    "description": "Message that shows when the user downloads missing images",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "activeDownloads": "Aktivna preuzimanja",
-  "@activeDownloads": {},
-  "downloadCount": "{count, plural, =1{1 preuzimanje} other{{count} preuzimanja}}",
-  "@downloadCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "dlComplete": "{count} završeno",
-  "@dlComplete": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "dlFailed": "{count} neuspešno",
-  "@dlFailed": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "dlEnqueued": "{count} u redu",
-  "@dlEnqueued": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "finamp": "Finamp",
-  "@finamp": {
-    "description": "App name, possibly translated"
-  },
-  "loginFlowQuickConnectPrompt": "Koristi kod za brzo povezivanje",
-  "@loginFlowQuickConnectPrompt": {
-    "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
-  },
-  "username": "Korisničko ime",
-  "@username": {},
-  "genres": "Žanrovi",
-  "@genres": {},
-  "loginFlowLocalNetworkServersScanningForServers": "Skeniranje za serverima...",
-  "@loginFlowLocalNetworkServersScanningForServers": {
-    "description": "Text shown while servers are being discovered via UDP broadcasts"
-  },
-  "backToServerSelection": "Nazad na izbor Servera",
-  "@backToServerSelection": {
-    "description": "Label for the button that takes the user back to the server selection step during the login flow."
-  },
-  "loginFlowNamelessUser": "Neimenovani Korisnik",
-  "@loginFlowNamelessUser": {
-    "description": "Name for a user that doesn't have a name set on the server."
-  },
-  "internalExternalIpExplanation": "Ako želite da budete u mogućnosti da daljinski pristupite svom Jellyfin serveru, morate da koristite svoj spoljni IP.\n\nAko je vaš server na HTTP podrazumevanom portu (80 ili 443) ili Jellyfin-ovom podrazumevanom portu (8096), ne morate da navedete port.\n\nAko je URL tačan, trebalo bi da neke informacije o vašem serveru iskoče ispod polja za unos.",
-  "@internalExternalIpExplanation": {
-    "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
-  },
-  "loginFlowAccountSelectionHeading": "Izaberite vaš nalog",
-  "@loginFlowAccountSelectionHeading": {
-    "description": "Heading for the account selection step during the login flow."
-  },
-  "playlists": "Plejliste",
-  "@playlists": {},
-  "startMixNoTracksGenre": "Dugo pritisnite žanr da biste ga dodali ili uklonili iz kreatora miksa pre nego što započnete miks",
-  "@startMixNoTracksGenre": {
-    "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
-  },
-  "deleteDownloadsConfirmButtonText": "Obriši",
-  "@deleteDownloadsConfirmButtonText": {
-    "description": "Shown in the confirmation dialog for deleting downloaded media from the local device."
-  },
-  "activeDownloadsTitle": "Aktivna preuzimanja",
-  "@activeDownloadsTitle": {},
-  "noActiveDownloads": "Nema aktivnih preuzimanja.",
-  "@noActiveDownloads": {},
-  "error": "Greška",
-  "@error": {}
+    "password": "Lozinka",
+    "startMixNoTracksAlbum": "Dugo pritisnite album da biste ga dodali ili uklonili iz kreatora miksa pre nego što započnete miks",
+    "@startMixNoTracksAlbum": {
+        "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
+    },
+    "aboutReleaseNotes": "Pročitajte najnovije beleške o izdanju:",
+    "@aboutReleaseNotes": {
+        "description": "Link to the release notes, shown in the about screen."
+    },
+    "loginFlowServerSelectionHeading": "Poveži se na Jellyfin",
+    "@loginFlowServerSelectionHeading": {
+        "description": "Heading for the server selection step during the login flow."
+    },
+    "downloadedCountUnified": "{trackCount,plural,=1{1 pesma} other{{trackCount} pesme}}, {imageCount,plural,=1{1 slika} other{{imageCount} slike}}\n{syncCount,plural,=1{1 čvor se sinhronizuje} other{{syncCount} čvora se sinhronizuju}}{repairing, plural, =0{} other\n{Trenutno se popravlja}}",
+    "@downloadedCountUnified": {
+        "description": "Display of downloaded track and image count on downloads screen.",
+        "placeholders": {
+            "trackCount": {
+                "type": "int"
+            },
+            "imageCount": {
+                "type": "int"
+            },
+            "syncCount": {
+                "type": "int"
+            },
+            "repairing": {
+                "type": "int"
+            }
+        }
+    },
+    "back": "Nazad",
+    "@back": {
+        "description": "Label for the back button."
+    },
+    "aboutTranslations": "Pomozi sa prevodom Finamp-a na Vaš jezik:",
+    "@aboutTranslations": {
+        "description": "Link to the translation project, shown in the about screen."
+    },
+    "finampTagline": "Jellyfin muzički plejer otvorenog koda",
+    "@finampTagline": {
+        "description": "Tagline / short description for the app"
+    },
+    "about": "O Finamp-u",
+    "@about": {
+        "description": "Label for the about/info button on the settings screen"
+    },
+    "aboutContributionPrompt": "Napravljeno od strane fenomenalnih ljudi u svoje slobodno vreme.\nTi možet biti jedan od njih!",
+    "@aboutContributionPrompt": {
+        "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
+    },
+    "aboutContributionLink": "Doprinesite Finamp-u na GitHub-u:",
+    "@aboutContributionLink": {
+        "description": "Link to the Finamp GitHub repository, shown in the about screen."
+    },
+    "aboutThanks": "Hvala što koristite Finamp!",
+    "@aboutThanks": {
+        "description": "Thank you message shown in the about screen."
+    },
+    "loginFlowWelcomeHeading": "Dobrodošli u",
+    "@loginFlowWelcomeHeading": {
+        "description": "Greeting shown on the login screen. The full message will be 'Welcome to Finamp'."
+    },
+    "loginFlowSlogan": "Vaša muzika, onakva kakvu želite.",
+    "@loginFlowSlogan": {
+        "description": "Slogan shown on the login screen."
+    },
+    "loginFlowGetStarted": "Započnite!",
+    "@loginFlowGetStarted": {
+        "description": "Button label for the login/splash screen."
+    },
+    "viewLogs": "Pogledaj dnevnike",
+    "@viewLogs": {
+        "description": "Label for button shown during the login process that allows the user to view the app logs"
+    },
+    "changeLanguage": "Promeni Jezik",
+    "@changeLanguage": {
+        "description": "Label for button shown during the login process that allows the user to change the app language"
+    },
+    "serverUrl": "URL servera",
+    "serverUrlHint": "e.g. demo.jellyfin.org/stable",
+    "@serverUrlHint": {
+        "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
+    },
+    "serverUrlInfoButtonTooltip": "Pomoć za URL Servera",
+    "@serverUrlInfoButtonTooltip": {
+        "description": "Tooltip for the button that shows the extra info dialog for which IP to use for remote access, and info on whether or not the user needs to specify a port."
+    },
+    "emptyServerUrl": "URL Servera ne može biti prazan",
+    "@emptyServerUrl": {
+        "description": "Error message that shows when the user submits a login without a server URL"
+    },
+    "connectingToServer": "Povezivanje sa serverom...",
+    "@connectingToServer": {
+        "description": "Text shown while the connection to the specified server is attempted"
+    },
+    "loginFlowLocalNetworkServers": "Serveri na vašoj lokalnoj mreži:",
+    "@loginFlowLocalNetworkServers": {
+        "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
+    },
+    "loginFlowCustomUser": "Prilagođeni Korisnik",
+    "@loginFlowCustomUser": {
+        "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
+    },
+    "loginFlowAuthenticationHeading": "Prijavite se na vaš nalog",
+    "@loginFlowAuthenticationHeading": {
+        "description": "Heading for the authentication step during the login flow."
+    },
+    "backToAccountSelection": "Nazad na Izbor Naloga",
+    "@backToAccountSelection": {
+        "description": "Label for the button that takes the user back to the account selection step during the login flow."
+    },
+    "loginFlowQuickConnectInstructions": "Otvorite Jellyfin aplikaciju ili sajt, kliknite na vašu korisničku ikonicu i izaberite Brzo povezivanje.",
+    "@loginFlowQuickConnectInstructions": {
+        "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
+    },
+    "loginFlowQuickConnectDisabled": "Brzo povezivanje je onemogućeno na ovo serveru.",
+    "@loginFlowQuickConnectDisabled": {
+        "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
+    },
+    "orDivider": "ili",
+    "@orDivider": {
+        "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
+    },
+    "loginFlowSelectAUser": "Izaberite korisnika",
+    "@loginFlowSelectAUser": {
+        "description": "Heading for the list of users that the user can select from during the login flow."
+    },
+    "usernameHint": "Unesite vaše korisničko ime",
+    "@usernameHint": {
+        "description": "Hint text for the username input field."
+    },
+    "usernameValidationMissingUsername": "Molimo vas unesite korisničko ime",
+    "@usernameValidationMissingUsername": {
+        "description": "Error message that shows when the user submits a login without a username"
+    },
+    "passwordHint": "Unesite vašu lozinku",
+    "@passwordHint": {
+        "description": "Hint text for the password input field."
+    },
+    "login": "Prijavite se",
+    "@login": {
+        "description": "Label for the login button."
+    },
+    "logs": "Dnevnik",
+    "next": "Dalje",
+    "selectMusicLibraries": "Izaberite Muzičke Biblioteke",
+    "@selectMusicLibraries": {
+        "description": "App bar title for library select screen"
+    },
+    "unknownName": "Nepoznato Ime",
+    "tracks": "Numere",
+    "albums": "Albumi",
+    "artists": "Umetnici",
+    "startMix": "Započni Mix",
+    "startMixNoTracksArtist": "Dugo pritisnite izvođača da biste ga dodali ili uklonili iz kreatora miksa pre nego što započnete miks",
+    "@startMixNoTracksArtist": {
+        "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
+    },
+    "music": "Muzika",
+    "clear": "Očisti",
+    "shuffleAll": "Promešaj sve",
+    "downloads": "Preuzimanja",
+    "settings": "Podešavanja",
+    "offlineMode": "Oflajn mod",
+    "sortOrder": "Redosled sortiranja",
+    "sortBy": "Sortiraj po",
+    "title": "Naslov",
+    "album": "Album",
+    "albumArtist": "Umetnik Albuma",
+    "artist": "Umetnik",
+    "budget": "Budžet",
+    "communityRating": "Ocena Zajednice",
+    "criticRating": "Ocena Kritičara",
+    "dateAdded": "Datum dodavanja",
+    "datePlayed": "Datum odigravanja",
+    "playCount": "Broj reprodukcija",
+    "premiereDate": "Datum premijere",
+    "productionYear": "Godina produkcije",
+    "name": "Ime",
+    "random": "Nasumično",
+    "revenue": "Prihod",
+    "activeDownloads": "Aktivna preuzimanja",
+    "downloadCount": "{count, plural, =1{1 preuzimanje} other{{count} preuzimanja}}",
+    "@downloadCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlComplete": "{count} završeno",
+    "@dlComplete": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlFailed": "{count} neuspešno",
+    "@dlFailed": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlEnqueued": "{count} u redu",
+    "@dlEnqueued": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "finamp": "Finamp",
+    "@finamp": {
+        "description": "App name, possibly translated"
+    },
+    "loginFlowQuickConnectPrompt": "Koristi kod za brzo povezivanje",
+    "@loginFlowQuickConnectPrompt": {
+        "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
+    },
+    "username": "Korisničko ime",
+    "genres": "Žanrovi",
+    "loginFlowLocalNetworkServersScanningForServers": "Skeniranje za serverima...",
+    "@loginFlowLocalNetworkServersScanningForServers": {
+        "description": "Text shown while servers are being discovered via UDP broadcasts"
+    },
+    "backToServerSelection": "Nazad na izbor Servera",
+    "@backToServerSelection": {
+        "description": "Label for the button that takes the user back to the server selection step during the login flow."
+    },
+    "loginFlowNamelessUser": "Neimenovani Korisnik",
+    "@loginFlowNamelessUser": {
+        "description": "Name for a user that doesn't have a name set on the server."
+    },
+    "internalExternalIpExplanation": "Ako želite da budete u mogućnosti da daljinski pristupite svom Jellyfin serveru, morate da koristite svoj spoljni IP.\n\nAko je vaš server na HTTP podrazumevanom portu (80 ili 443) ili Jellyfin-ovom podrazumevanom portu (8096), ne morate da navedete port.\n\nAko je URL tačan, trebalo bi da neke informacije o vašem serveru iskoče ispod polja za unos.",
+    "@internalExternalIpExplanation": {
+        "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
+    },
+    "loginFlowAccountSelectionHeading": "Izaberite vaš nalog",
+    "@loginFlowAccountSelectionHeading": {
+        "description": "Heading for the account selection step during the login flow."
+    },
+    "playlists": "Plejliste",
+    "startMixNoTracksGenre": "Dugo pritisnite žanr da biste ga dodali ili uklonili iz kreatora miksa pre nego što započnete miks",
+    "@startMixNoTracksGenre": {
+        "description": "Snackbar message that shows when the user presses the instant mix button with no genres selected"
+    },
+    "activeDownloadsTitle": "Aktivna preuzimanja",
+    "noActiveDownloads": "Nema aktivnih preuzimanja.",
+    "error": "Greška"
 }

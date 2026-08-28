@@ -1,419 +1,243 @@
 {
-  "serverUrl": "URL на сървъра",
-  "@serverUrl": {},
-  "emptyServerUrl": "URL адресът на сървъра не може да бъде празен",
-  "@emptyServerUrl": {
-    "description": "Error message that shows when the user submits a login without a server URL"
-  },
-  "username": "Потребителско име",
-  "@username": {},
-  "password": "Парола",
-  "@password": {},
-  "logs": "Логове",
-  "@logs": {},
-  "next": "Следващ",
-  "@next": {},
-  "couldNotFindLibraries": "Не могат да бъдат открити библиотеки.",
-  "@couldNotFindLibraries": {
-    "description": "Error message when the user does not have any libraries"
-  },
-  "unknownName": "Неизвестно Име",
-  "@unknownName": {},
-  "tracks": "Песни",
-  "@tracks": {},
-  "albums": "Албуми",
-  "@albums": {},
-  "artists": "Изпълнители",
-  "@artists": {},
-  "genres": "Жанрове",
-  "@genres": {},
-  "playlists": "Плейлисти",
-  "@playlists": {},
-  "startMix": "Стартирайте разбъркано възпроизвеждане",
-  "@startMix": {},
-  "music": "Музика",
-  "@music": {},
-  "clear": "Изчисти",
-  "@clear": {},
-  "shuffleAll": "Възпроизвеждане в случаен ред",
-  "@shuffleAll": {},
-  "finamp": "Finamp",
-  "@finamp": {},
-  "downloads": "Изтегляния",
-  "@downloads": {},
-  "settings": "Настройки",
-  "@settings": {},
-  "offlineMode": "Офлайн режим",
-  "@offlineMode": {},
-  "sortOrder": "Подредба",
-  "@sortOrder": {},
-  "sortBy": "Подредба по",
-  "@sortBy": {},
-  "album": "Албум",
-  "@album": {},
-  "artist": "Изпълнител",
-  "@artist": {},
-  "albumArtist": "Изпълнител на албума",
-  "@albumArtist": {},
-  "budget": "Бюджет",
-  "@budget": {},
-  "communityRating": "Обществен рейтинг",
-  "@communityRating": {},
-  "criticRating": "Рейтинг на професионалната общност",
-  "@criticRating": {},
-  "dateAdded": "Дата на добавяне",
-  "@dateAdded": {},
-  "datePlayed": "Дата на последно изпълнение",
-  "@datePlayed": {},
-  "playCount": "Брой изпълнения",
-  "@playCount": {},
-  "premiereDate": "Премиерна дата",
-  "@premiereDate": {},
-  "name": "Име",
-  "@name": {},
-  "random": "Произволно",
-  "@random": {},
-  "revenue": "Приходи",
-  "@revenue": {},
-  "dlComplete": "{count} завършено",
-  "@dlComplete": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
+    "serverUrl": "URL на сървъра",
+    "emptyServerUrl": "URL адресът на сървъра не може да бъде празен",
+    "@emptyServerUrl": {
+        "description": "Error message that shows when the user submits a login without a server URL"
+    },
+    "username": "Потребителско име",
+    "password": "Парола",
+    "logs": "Логове",
+    "next": "Следващ",
+    "unknownName": "Неизвестно Име",
+    "tracks": "Песни",
+    "albums": "Албуми",
+    "artists": "Изпълнители",
+    "genres": "Жанрове",
+    "playlists": "Плейлисти",
+    "startMix": "Стартирайте разбъркано възпроизвеждане",
+    "music": "Музика",
+    "clear": "Изчисти",
+    "shuffleAll": "Възпроизвеждане в случаен ред",
+    "finamp": "Finamp",
+    "downloads": "Изтегляния",
+    "settings": "Настройки",
+    "offlineMode": "Офлайн режим",
+    "sortOrder": "Подредба",
+    "sortBy": "Подредба по",
+    "album": "Албум",
+    "artist": "Изпълнител",
+    "albumArtist": "Изпълнител на албума",
+    "budget": "Бюджет",
+    "communityRating": "Обществен рейтинг",
+    "criticRating": "Рейтинг на професионалната общност",
+    "dateAdded": "Дата на добавяне",
+    "datePlayed": "Дата на последно изпълнение",
+    "playCount": "Брой изпълнения",
+    "premiereDate": "Премиерна дата",
+    "name": "Име",
+    "random": "Произволно",
+    "revenue": "Приходи",
+    "dlComplete": "{count} завършено",
+    "@dlComplete": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlFailed": "{count} грешка",
+    "@dlFailed": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlEnqueued": "{count} опашка",
+    "@dlEnqueued": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlRunning": "{count} изпълнява се",
+    "@dlRunning": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "error": "Грешка",
+    "discNumber": "Диск {number}",
+    "@discNumber": {
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "playButtonLabel": "ПУСНИ",
+    "shuffleButtonLabel": "РАЗБЪРКАНО",
+    "required": "Задължително",
+    "playlistUpdated": "Името на списъка за изпълнение е обновено.",
+    "addDownloads": "Добави за изтегляне",
+    "location": "Местоположение",
+    "shareLogs": "Споделете логовете",
+    "logsCopied": "Логове копирани.",
+    "message": "Съобщение",
+    "stackTrace": "Проследяване на стека",
+    "transcoding": "Транскодиране",
+    "downloadLocations": "Местоположение на изтеглянията",
+    "audioService": "Аудио услуга",
+    "layoutAndTheme": "Оформление и тема",
+    "notAvailableInOfflineMode": "Недостъпно в офлайн режим",
+    "logOut": "Излезте от профила си",
+    "areYouSure": "Сигурни ли сте?",
+    "enableTranscoding": "Активиране на транскодирането",
+    "enableTranscodingSubtitle": "Транскодирането на музикалните потоци се осъществява от страна на сървъра.",
+    "bitrate": "Битрейт",
+    "bitrateSubtitle": "По-високият битрейт гарантира висококачествено аудио за сметка на завишен мрежови трафик.",
+    "customLocation": "Персонализирано местоположение",
+    "appDirectory": "Директория на приложението",
+    "addDownloadLocation": "Добавете местоположение за изтегляне",
+    "selectDirectory": "Изберете директория",
+    "unknownError": "Неизвестна грешка",
+    "pathReturnSlashErrorMessage": "Невъзможно е указването на път, използващ \"/\"",
+    "enterLowPriorityStateOnPause": "При пауза, използвай режим на нисък приоритет",
+    "shuffleAllTrackCount": "Разбъркайте всички песни",
+    "shuffleAllTrackCountSubtitle": "Брой песни за зареждане при използване на бутона за разбъркване на всички песни.",
+    "viewType": "Вид преглед",
+    "viewTypeSubtitle": "Вид преглед на плейъра",
+    "list": "Списък",
+    "grid": "Решетка",
+    "landscape": "Пейзажен",
+    "showTextOnGridView": "Показване на текст в решетъчен изглед",
+    "useCoverAsBackground": "Показване на замъглена обложка като фон на плейъра",
+    "theme": "Тема",
+    "system": "Система",
+    "light": "Светла",
+    "dark": "Тъмна",
+    "tabs": "Раздели",
+    "cancelSleepTimer": "Отмяна на таймера?",
+    "yesButtonLabel": "Да",
+    "noButtonLabel": "Не",
+    "minutes": "Минути",
+    "sleepTimerTooltip": "Таймер",
+    "addToPlaylistTooltip": "Добавяне към списъка за изпълнение",
+    "addToPlaylistTitle": "Добавяне към списъка за изпълнение",
+    "newPlaylist": "Нов списък за изпълнение",
+    "createButtonLabel": "Създаване",
+    "playlistCreated": "Списъкът за изпълнение е създаден.",
+    "noItem": "Липсващ файл",
+    "noAlbum": "Липсващ албум",
+    "unknownArtist": "Неизвестен изпълнител",
+    "queue": "Опашка",
+    "addToQueue": "Добавяне към опашката",
+    "goToAlbum": "Отидете в албума",
+    "startingInstantMix": "Стартиране на незабавен микс.",
+    "anErrorHasOccured": "Появи се грешка.",
+    "responseError": "{error} Код на грешката {statusCode}.",
+    "@responseError": {
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Forbidden"
+            },
+            "statusCode": {
+                "type": "int",
+                "example": "403"
+            }
+        }
+    },
+    "removeFromMix": "Премахни от микса",
+    "addToMix": "Добави към микса",
+    "internalExternalIpExplanation": "В случай, че искате да имате достъп до вашия Jellyfin сървър дистанционно, трябва да използвате външния си IP адрес.\n\nВ случай, че сървърът ви работи на HTTP порт (80/443), не е нужно да посочвате такъв. Например ако използвате обратно прокси.",
+    "@internalExternalIpExplanation": {
+        "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
+    },
+    "selectMusicLibraries": "Изберете музикални библиотеки",
+    "@selectMusicLibraries": {
+        "description": "App bar title for library select screen"
+    },
+    "startMixNoTracksArtist": "Натиснете и задръжте върху изпълнител, за да го добавите или премахнете, от разбъркано възпроизвеждане",
+    "@startMixNoTracksArtist": {
+        "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
+    },
+    "startMixNoTracksAlbum": "Натиснете и задръжте върху албум, за да го добавите или премахнете от разбъркано възпроизвеждане",
+    "@startMixNoTracksAlbum": {
+        "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
+    },
+    "productionYear": "Година на издаване",
+    "downloadCount": "{count,plural, =1{{count} изтегляне} other{{count} изтегляне}}",
+    "@downloadCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "errorScreenError": "Възникна грешка при получаване на списъка с грешки! Преинсталирайте приложението и съобщете за проблема на GitHub",
+    "downloadsQueued": "Добавено в изтегляния.",
+    "addButtonLabel": "ДОБАВИ",
+    "applicationLegalese": "Лиценз Mozilla Public License 2.0. Програмният код е достъпен на:\n\ngithub.com/jmshrv/finamp",
+    "trackCount": "{count,plural,=1{{count} Песен} other{{count} Песни}}",
+    "@trackCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "enterLowPriorityStateOnPauseSubtitle": "Известията да бъдат отхвърлени при пауза. Също така позволи на Android да прекрати услугата при пауза.",
+    "customLocationsBuggy": "Персонализираните местоположения са изключително нестабилни, поради проблеми с правата. Обмислям варианти са справяне с проблема, но за сега непрепоръчвам тяхното използване.",
+    "showTextOnGridViewSubtitle": "Дали да се показва или не текст (името на песента, изпълнителя и т.н.), в решетъчен режим.",
+    "useCoverAsBackgroundSubtitle": "Дали да се показва или не, замъглена обложка на албума като фон на плейъра.",
+    "instantMix": "Незабавен микс",
+    "responseError401": "{error} Код на грешката {statusCode}. Това вероятно означава, че сте използвали грешно потребителско име/парола, или вашият клиент вече не е удостоверен.",
+    "@responseError401": {
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Unauthorized"
+            },
+            "statusCode": {
+                "type": "int",
+                "example": "401"
+            }
+        }
+    },
+    "additionalPeople": "",
+    "@additionalPeople": {
+        "description": "Label for the feature chips showing additional people in the credits of a track or album"
+    },
+    "nowPlayingBarTooltip": "",
+    "@nowPlayingBarTooltip": {
+        "description": "Tooltip for the now playing bar at the bottom of the screen"
+    },
+    "codec": "",
+    "@codec": {
+        "description": "Label for the feature chips showing the codec of a track"
+    },
+    "playbackMode": "",
+    "@playbackMode": {
+        "description": "Label for the feature chips showing the playback mode of a track. See [playbackModeLocal], [playbackModeDirectPlaying], and [playbackModeTranscoding]"
+    },
+    "bitDepth": "",
+    "@bitDepth": {
+        "description": "Label for the feature chips showing the bit depth of a track"
+    },
+    "bitRate": "",
+    "@bitRate": {
+        "description": "Label for the feature chips showing the bit rate of a track"
+    },
+    "sampleRate": "",
+    "@sampleRate": {
+        "description": "Label for the feature chips showing the sample rate of a track"
+    },
+    "size": "",
+    "@size": {
+        "description": "Label for the feature chips showing the size (original file size or transcoded size, if available) of a track"
     }
-  },
-  "dlFailed": "{count} грешка",
-  "@dlFailed": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "dlEnqueued": "{count} опашка",
-  "@dlEnqueued": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "dlRunning": "{count} изпълнява се",
-  "@dlRunning": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "failedToGetTrackFromDownloadId": "Неуспех при получаване на песен, посредством ID на изтегляне",
-  "@failedToGetTrackFromDownloadId": {},
-  "error": "Грешка",
-  "@error": {},
-  "discNumber": "Диск {number}",
-  "@discNumber": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "playButtonLabel": "ПУСНИ",
-  "@playButtonLabel": {},
-  "shuffleButtonLabel": "РАЗБЪРКАНО",
-  "@shuffleButtonLabel": {},
-  "required": "Задължително",
-  "@required": {},
-  "updateButtonLabel": "АКТУАЛИЗАЦИЯ",
-  "@updateButtonLabel": {},
-  "playlistUpdated": "Името на списъка за изпълнение е обновено.",
-  "@playlistUpdated": {},
-  "addDownloads": "Добави за изтегляне",
-  "@addDownloads": {},
-  "location": "Местоположение",
-  "@location": {},
-  "shareLogs": "Споделете логовете",
-  "@shareLogs": {},
-  "logsCopied": "Логове копирани.",
-  "@logsCopied": {},
-  "message": "Съобщение",
-  "@message": {},
-  "stackTrace": "Проследяване на стека",
-  "@stackTrace": {},
-  "transcoding": "Транскодиране",
-  "@transcoding": {},
-  "downloadLocations": "Местоположение на изтеглянията",
-  "@downloadLocations": {},
-  "audioService": "Аудио услуга",
-  "@audioService": {},
-  "layoutAndTheme": "Оформление и тема",
-  "@layoutAndTheme": {},
-  "notAvailableInOfflineMode": "Недостъпно в офлайн режим",
-  "@notAvailableInOfflineMode": {},
-  "logOut": "Излезте от профила си",
-  "@logOut": {},
-  "areYouSure": "Сигурни ли сте?",
-  "@areYouSure": {},
-  "enableTranscoding": "Активиране на транскодирането",
-  "@enableTranscoding": {},
-  "enableTranscodingSubtitle": "Транскодирането на музикалните потоци се осъществява от страна на сървъра.",
-  "@enableTranscodingSubtitle": {},
-  "bitrate": "Битрейт",
-  "@bitrate": {},
-  "bitrateSubtitle": "По-високият битрейт гарантира висококачествено аудио за сметка на завишен мрежови трафик.",
-  "@bitrateSubtitle": {},
-  "customLocation": "Персонализирано местоположение",
-  "@customLocation": {},
-  "appDirectory": "Директория на приложението",
-  "@appDirectory": {},
-  "addDownloadLocation": "Добавете местоположение за изтегляне",
-  "@addDownloadLocation": {},
-  "selectDirectory": "Изберете директория",
-  "@selectDirectory": {},
-  "unknownError": "Неизвестна грешка",
-  "@unknownError": {},
-  "pathReturnSlashErrorMessage": "Невъзможно е указването на път, използващ \"/\"",
-  "@pathReturnSlashErrorMessage": {},
-  "directoryMustBeEmpty": "Директорията трябва да е празна",
-  "@directoryMustBeEmpty": {},
-  "enterLowPriorityStateOnPause": "При пауза, използвай режим на нисък приоритет",
-  "@enterLowPriorityStateOnPause": {},
-  "shuffleAllTrackCount": "Разбъркайте всички песни",
-  "@shuffleAllTrackCount": {},
-  "shuffleAllTrackCountSubtitle": "Брой песни за зареждане при използване на бутона за разбъркване на всички песни.",
-  "@shuffleAllTrackCountSubtitle": {},
-  "viewType": "Вид преглед",
-  "@viewType": {},
-  "viewTypeSubtitle": "Вид преглед на плейъра",
-  "@viewTypeSubtitle": {},
-  "list": "Списък",
-  "@list": {},
-  "grid": "Решетка",
-  "@grid": {},
-  "portrait": "Портретен",
-  "@portrait": {},
-  "landscape": "Пейзажен",
-  "@landscape": {},
-  "gridCrossAxisCountSubtitle": "Броят на показваните елементи на ред, когато {value}.",
-  "@gridCrossAxisCountSubtitle": {
-    "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-    "placeholders": {
-      "value": {
-        "type": "String",
-        "example": "landscape"
-      }
-    }
-  },
-  "showTextOnGridView": "Показване на текст в решетъчен изглед",
-  "@showTextOnGridView": {},
-  "useCoverAsBackground": "Показване на замъглена обложка като фон на плейъра",
-  "@useCoverAsBackground": {},
-  "hideTrackArtistsIfSameAsAlbumArtists": "Скриване изпълнителя на песента, ако е същият като изпълнителя на албума",
-  "@hideTrackArtistsIfSameAsAlbumArtists": {},
-  "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Дали да се покаже изпълнителят на песента на екрана, ако не се различава от изпълнителя на албума.",
-  "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
-  "theme": "Тема",
-  "@theme": {},
-  "system": "Система",
-  "@system": {},
-  "light": "Светла",
-  "@light": {},
-  "dark": "Тъмна",
-  "@dark": {},
-  "tabs": "Раздели",
-  "@tabs": {},
-  "cancelSleepTimer": "Отмяна на таймера?",
-  "@cancelSleepTimer": {},
-  "yesButtonLabel": "Да",
-  "@yesButtonLabel": {},
-  "noButtonLabel": "Не",
-  "@noButtonLabel": {},
-  "setSleepTimer": "Задаване на таймер",
-  "@setSleepTimer": {},
-  "minutes": "Минути",
-  "@minutes": {},
-  "invalidNumber": "Невалидно число",
-  "@invalidNumber": {},
-  "sleepTimerTooltip": "Таймер",
-  "@sleepTimerTooltip": {},
-  "addToPlaylistTooltip": "Добавяне към списъка за изпълнение",
-  "@addToPlaylistTooltip": {},
-  "addToPlaylistTitle": "Добавяне към списъка за изпълнение",
-  "@addToPlaylistTitle": {},
-  "newPlaylist": "Нов списък за изпълнение",
-  "@newPlaylist": {},
-  "createButtonLabel": "Създаване",
-  "@createButtonLabel": {},
-  "playlistCreated": "Списъкът за изпълнение е създаден.",
-  "@playlistCreated": {},
-  "noItem": "Липсващ файл",
-  "@noItem": {},
-  "noAlbum": "Липсващ албум",
-  "@noAlbum": {},
-  "unknownArtist": "Неизвестен изпълнител",
-  "@unknownArtist": {},
-  "queue": "Опашка",
-  "@queue": {},
-  "addToQueue": "Добавяне към опашката",
-  "@addToQueue": {},
-  "replaceQueue": "Заменете опашката",
-  "@replaceQueue": {},
-  "goToAlbum": "Отидете в албума",
-  "@goToAlbum": {},
-  "queueReplaced": "Опашката е заменена.",
-  "@queueReplaced": {},
-  "startingInstantMix": "Стартиране на незабавен микс.",
-  "@startingInstantMix": {},
-  "anErrorHasOccured": "Появи се грешка.",
-  "@anErrorHasOccured": {},
-  "responseError": "{error} Код на грешката {statusCode}.",
-  "@responseError": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "example": "Forbidden"
-      },
-      "statusCode": {
-        "type": "int",
-        "example": "403"
-      }
-    }
-  },
-  "removeFromMix": "Премахни от микса",
-  "@removeFromMix": {},
-  "addToMix": "Добави към микса",
-  "@addToMix": {},
-  "internalExternalIpExplanation": "В случай, че искате да имате достъп до вашия Jellyfin сървър дистанционно, трябва да използвате външния си IP адрес.\n\nВ случай, че сървърът ви работи на HTTP порт (80/443), не е нужно да посочвате такъв. Например ако използвате обратно прокси.",
-  "@internalExternalIpExplanation": {
-    "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
-  },
-  "selectMusicLibraries": "Изберете музикални библиотеки",
-  "@selectMusicLibraries": {
-    "description": "App bar title for library select screen"
-  },
-  "startMixNoTracksArtist": "Натиснете и задръжте върху изпълнител, за да го добавите или премахнете, от разбъркано възпроизвеждане",
-  "@startMixNoTracksArtist": {
-    "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
-  },
-  "startMixNoTracksAlbum": "Натиснете и задръжте върху албум, за да го добавите или премахнете от разбъркано възпроизвеждане",
-  "@startMixNoTracksAlbum": {
-    "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
-  },
-  "productionYear": "Година на издаване",
-  "@productionYear": {},
-  "downloadMissingImages": "Изтегляне на липсващите изображения",
-  "@downloadMissingImages": {},
-  "downloadedMissingImages": "{count,plural, =0{Не са открити липсващи изображения} =1{Изтегляне {count} липсващи изображения} other{Изтегляне {count} липсващи изображения}}",
-  "@downloadedMissingImages": {
-    "description": "Message that shows when the user downloads missing images",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "downloadCount": "{count,plural, =1{{count} изтегляне} other{{count} изтегляне}}",
-  "@downloadCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "errorScreenError": "Възникна грешка при получаване на списъка с грешки! Преинсталирайте приложението и съобщете за проблема на GitHub",
-  "@errorScreenError": {},
-  "downloadsDeleted": "Изтеглянията са изтрити.",
-  "@downloadsDeleted": {},
-  "downloadsQueued": "Добавено в изтегляния.",
-  "@downloadsQueued": {},
-  "addButtonLabel": "ДОБАВИ",
-  "@addButtonLabel": {},
-  "applicationLegalese": "Лиценз Mozilla Public License 2.0. Програмният код е достъпен на:\n\ngithub.com/jmshrv/finamp",
-  "@applicationLegalese": {},
-  "trackCount": "{count,plural,=1{{count} Песен} other{{count} Песни}}",
-  "@trackCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "enterLowPriorityStateOnPauseSubtitle": "Известията да бъдат отхвърлени при пауза. Също така позволи на Android да прекрати услугата при пауза.",
-  "@enterLowPriorityStateOnPauseSubtitle": {},
-  "customLocationsBuggy": "Персонализираните местоположения са изключително нестабилни, поради проблеми с правата. Обмислям варианти са справяне с проблема, но за сега непрепоръчвам тяхното използване.",
-  "@customLocationsBuggy": {},
-  "gridCrossAxisCount": "{value} Брой елементи в решетката",
-  "@gridCrossAxisCount": {
-    "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-    "placeholders": {
-      "value": {
-        "type": "String",
-        "example": "Portrait"
-      }
-    }
-  },
-  "showTextOnGridViewSubtitle": "Дали да се показва или не текст (името на песента, изпълнителя и т.н.), в решетъчен режим.",
-  "@showTextOnGridViewSubtitle": {},
-  "useCoverAsBackgroundSubtitle": "Дали да се показва или не, замъглена обложка на албума като фон на плейъра.",
-  "@useCoverAsBackgroundSubtitle": {},
-  "noArtist": "Липсващ изпълнител",
-  "@noArtist": {},
-  "instantMix": "Незабавен микс",
-  "@instantMix": {},
-  "addedToQueue": "Добавено към опашката.",
-  "@addedToQueue": {},
-  "responseError401": "{error} Код на грешката {statusCode}. Това вероятно означава, че сте използвали грешно потребителско име/парола, или вашият клиент вече не е удостоверен.",
-  "@responseError401": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "example": "Unauthorized"
-      },
-      "statusCode": {
-        "type": "int",
-        "example": "401"
-      }
-    }
-  },
-  "redownloadedItems": "{count,plural, =0{Не е необходимо повторно изтегляне.} =1{Повторно изтегляне {count} елемент} other{Повторно изтегляне {count} елементи}}",
-  "@redownloadedItems": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "additionalPeople": "",
-  "@additionalPeople": {
-    "description": "Label for the feature chips showing additional people in the credits of a track or album"
-  },
-  "nowPlayingBarTooltip": "",
-  "@nowPlayingBarTooltip": {
-    "description": "Tooltip for the now playing bar at the bottom of the screen"
-  },
-  "codec": "",
-  "@codec": {
-    "description": "Label for the feature chips showing the codec of a track"
-  },
-  "playbackMode": "",
-  "@playbackMode": {
-    "description": "Label for the feature chips showing the playback mode of a track. See [playbackModeLocal], [playbackModeDirectPlaying], and [playbackModeTranscoding]"
-  },
-  "bitDepth": "",
-  "@bitDepth": {
-    "description": "Label for the feature chips showing the bit depth of a track"
-  },
-  "bitRate": "",
-  "@bitRate": {
-    "description": "Label for the feature chips showing the bit rate of a track"
-  },
-  "sampleRate": "",
-  "@sampleRate": {
-    "description": "Label for the feature chips showing the sample rate of a track"
-  },
-  "size": "",
-  "@size": {
-    "description": "Label for the feature chips showing the size (original file size or transcoded size, if available) of a track"
-  }
 }

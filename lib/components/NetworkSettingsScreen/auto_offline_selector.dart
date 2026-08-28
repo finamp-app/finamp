@@ -1,3 +1,5 @@
+import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
+import 'package:finamp/components/SettingsScreen/subtitle_with_more_info_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,17 +16,32 @@ class AutoOfflineSelector extends ConsumerWidget {
 
     return ListTile(
       title: Text(AppLocalizations.of(context)!.autoOfflineSettingTitle),
-      subtitle: Text(AppLocalizations.of(context)!.autoOfflineSettingDescription),
-      trailing: DropdownButton<AutoOfflineOption>(
-        value: option,
-        items: AutoOfflineOption.values
-            .map((e) => DropdownMenuItem<AutoOfflineOption>(value: e, child: Text(e.toLocalisedString(context))))
-            .toList(),
-        onChanged: (value) {
-          if (value != null) {
-            FinampSetters.setAutoOffline(value);
-          }
-        },
+      subtitle: Column(
+        spacing: 4.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SubtitleWithMoreInfoDialog(
+            subtitle: AppLocalizations.of(context)!.autoOfflineSettingSubtitle,
+            dialogTitle: AppLocalizations.of(context)!.autoOfflineSettingTitle,
+            dialogContent: AppLocalizations.of(context)!.autoOfflineSettingDescription(
+              AppLocalizations.of(context)!.autoOfflineOptionOff,
+              AppLocalizations.of(context)!.autoOfflineOptionNetwork,
+              AppLocalizations.of(context)!.autoOfflineOptionDisconnected,
+              AppLocalizations.of(context)!.autoOfflineOptionUnreachable,
+            ),
+          ),
+          FinampSettingsDropdown<AutoOfflineOption>(
+            dropdownItems: AutoOfflineOption.values
+                .map((e) => DropdownMenuEntry<AutoOfflineOption>(value: e, label: e.toLocalisedString(context)))
+                .toList(),
+            selectedValue: option,
+            onSelected: (value) {
+              if (value != null) {
+                FinampSetters.setAutoOffline(value);
+              }
+            },
+          ),
+        ],
       ),
     );
   }

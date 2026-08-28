@@ -1,3 +1,4 @@
+import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -13,28 +14,29 @@ class DiscordRpcIconSelector extends ConsumerWidget {
 
     return ListTile(
       title: Text(AppLocalizations.of(context)!.discordRPCIconSettingTitle),
-      subtitle: Text(AppLocalizations.of(context)!.discordRPCIconSettingDescription),
-      trailing: DropdownButton<DiscordRpcIcon>(
-        value: option,
-        items: DiscordRpcIcon.values
-            .map(
-              (e) => DropdownMenuItem<DiscordRpcIcon>(
-                value: e,
-                child: Row(
-                  children: [
-                    Image.asset(e.toImage(), width: 32, height: 32),
-                    const SizedBox(width: 12),
-                    Text(e.toLocalisedString(context)),
-                  ],
-                ),
-              ),
-            )
-            .toList(),
-        onChanged: (value) {
-          if (value != null) {
-            FinampSetters.setRpcIcon(value);
-          }
-        },
+      subtitle: Column(
+        spacing: 4.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.discordRPCIconSettingDescription),
+          FinampSettingsDropdown<DiscordRpcIcon>(
+            dropdownItems: DiscordRpcIcon.values
+                .map(
+                  (e) => DropdownMenuEntry<DiscordRpcIcon>(
+                    value: e,
+                    label: e.toLocalisedString(context),
+                    leadingIcon: Image.asset(e.toImage(), width: 32, height: 32),
+                  ),
+                )
+                .toList(),
+            selectedValue: option,
+            onSelected: (value) {
+              if (value != null) {
+                FinampSetters.setRpcIcon(value);
+              }
+            },
+          ),
+        ],
       ),
     );
   }

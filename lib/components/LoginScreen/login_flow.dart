@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:finamp/components/LoginScreen/login_server_selection_page.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/view_selector.dart';
+import 'package:finamp/services/client_certificate_installer.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/server_client_discovery_service.dart';
 import 'package:flutter/material.dart';
@@ -200,6 +201,7 @@ class ServerState {
   Timer? connectionTestDebounceTimer;
   String? baseUrlToTest;
   JellyfinServerClientDiscovery clientDiscoveryHandler;
+  bool clientCertificateRequired = false;
   VoidCallback? updateCallback;
 
   ServerState({
@@ -260,7 +262,13 @@ class ServerState {
       try {
         publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
       } catch (error) {
-        serverStateLogger.severe("Error loading server info: $error");
+        if (await ClientCertificateInstaller.isCertificateRequiredError(error, Uri.parse(baseUrlToTest))) {
+          clientCertificateRequired = true;
+          // Found server requiring mTLS certificate, no need to try other protocols/ports.
+          return;
+        } else {
+          serverStateLogger.severe("Couldn't reach server at $baseUrlToTest (HTTPS): $error");
+        }
       }
       if (this.baseUrlToTest != baseUrl) {
         throw Exception("Server URL changed while testing");
@@ -274,7 +282,7 @@ class ServerState {
         try {
           publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
         } catch (error) {
-          serverStateLogger.severe("Error loading server info: $error");
+          serverStateLogger.severe("Couldn't reach server at $baseUrlToTest (HTTP): $error");
         }
       }
       if (this.baseUrlToTest != baseUrl) {
@@ -289,7 +297,7 @@ class ServerState {
         try {
           publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
         } catch (error) {
-          serverStateLogger.severe("Error loading server info: $error");
+          serverStateLogger.severe("Couldn't reach server at $baseUrlToTest (default port): $error");
         }
       }
       if (this.baseUrlToTest != baseUrl) {

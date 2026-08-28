@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:finamp/color_schemes.g.dart';
+import 'package:finamp/components/Buttons/finamp_extended_floating_action_button.dart';
 import 'package:finamp/components/PlayerScreen/player_screen_appbar_title.dart';
+import 'package:finamp/extensions/color_extensions.dart';
 import 'package:finamp/extensions/string.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/main.dart';
@@ -25,7 +27,7 @@ import '../components/PlayerScreen/control_area.dart';
 import '../components/PlayerScreen/player_screen_album_image.dart';
 import '../components/PlayerScreen/queue_list.dart';
 import '../components/PlayerScreen/track_name_content.dart';
-import '../components/finamp_app_bar_button.dart';
+import '../components/finamp_app_bar_back_button.dart';
 import '../services/finamp_settings_helper.dart';
 import '../services/theme_provider.dart';
 import 'blurred_player_screen_background.dart';
@@ -83,10 +85,7 @@ class _LyricsScreenContentState extends ConsumerState<_LyricsScreenContent> {
           centerTitle: true,
           toolbarHeight: toolbarHeight,
           title: PlayerScreenAppBarTitle(maxLines: maxLines),
-          leading: FinampAppBarButton(
-            dismissDirection: AxisDirection.right,
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          leading: FinampAppBarBackButton(dismissDirection: AxisDirection.left),
           actions: [
             if (Platform.isIOS)
               Padding(
@@ -294,13 +293,22 @@ class _LyricsViewState extends ConsumerState<LyricsView> with WidgetsBindingObse
     }
 
     if ((metadata.isLoading && !metadata.hasValue) || metadata.isRefreshing) {
-      return _getEmptyState(message: "Loading lyrics...", icon: TablerIcons.microphone_2);
+      return _getEmptyState(
+        message: AppLocalizations.of(context)!.lyricsEmptyStateLoading,
+        icon: TablerIcons.microphone_2,
+      );
     } else if (!metadata.hasValue ||
         metadata.value == null ||
         metadata.value!.hasLyrics && metadata.value!.lyrics == null && !metadata.isLoading) {
-      return _getEmptyState(message: "Couldn't load lyrics!", icon: TablerIcons.microphone_2_off);
+      return _getEmptyState(
+        message: AppLocalizations.of(context)!.lyricsEmptyStateFailed,
+        icon: TablerIcons.microphone_2_off,
+      );
     } else if (!metadata.value!.hasLyrics) {
-      return _getEmptyState(message: "No lyrics available.", icon: TablerIcons.microphone_2_off);
+      return _getEmptyState(
+        message: AppLocalizations.of(context)!.lyricsEmptyStateNoLyrics,
+        icon: TablerIcons.microphone_2_off,
+      );
     } else {
       // We have lyrics that we can display
       final lyricLines = lyrics ?? [];
@@ -453,10 +461,15 @@ class _LyricLine extends ConsumerWidget {
     );
     final currentLineStyle = unSyncedStyle;
     final lowlightStyle = unSyncedStyle.copyWith(color: Colors.grey);
-    final cueHighlightStyle = currentLineStyle.copyWith(color: Theme.of(context).colorScheme.primary);
+    // ensure we use a highlight color that has decent contrast against the non-cue current line text color
+    final highlightColor = Theme.of(context).colorScheme.primary.contrastAgainst(currentLineStyle.color!) < 1.25
+        ? jellyfinBlueColor
+        : Theme.of(context).colorScheme.primary;
+    // final cueHighlightStyle = currentLineStyle.copyWith(color: Theme.of(context).colorScheme.primary);
+    final cueHighlightStyle = currentLineStyle.copyWith(color: highlightColor);
     final cueGreyStyle = currentLineStyle.copyWith(color: Colors.white);
     final cueFadeStyle = currentLineStyle.copyWith(
-      color: Color.alphaBlend(Theme.of(context).colorScheme.primary.withOpacity(0.6), Colors.white),
+      color: Color.alphaBlend(highlightColor.withOpacity(0.6), Colors.white),
     );
 
     return GestureDetector(
@@ -570,7 +583,10 @@ class _LyricLineTextState extends ConsumerState<_LyricLineText> {
 
     if (text == null || text.isEmpty) {
       setState(() {
-        textSpan = TextSpan(text: text ?? "<missing lyric line>", style: widget.currentLineStyle);
+        textSpan = TextSpan(
+          text: text ?? "<${AppLocalizations.of(context)!.lyricsMissingLyricLinePlaceholder}>",
+          style: widget.currentLineStyle,
+        );
       });
       return;
     }
@@ -634,12 +650,21 @@ class _LyricLineTextState extends ConsumerState<_LyricLineText> {
   void _updateTextWithoutCues() {
     setState(() {
       if (!widget._isSynced) {
-        textSpan = TextSpan(text: widget.line.text ?? "<missing lyric line>", style: widget.unSyncedStyle);
+        textSpan = TextSpan(
+          text: widget.line.text ?? "<${AppLocalizations.of(context)!.lyricsMissingLyricLinePlaceholder}>",
+          style: widget.unSyncedStyle,
+        );
       } else if (!isCurrentLine) {
-        textSpan = TextSpan(text: widget.line.text ?? "<missing lyric line>", style: widget.lowlightStyle);
+        textSpan = TextSpan(
+          text: widget.line.text ?? "<${AppLocalizations.of(context)!.lyricsMissingLyricLinePlaceholder}>",
+          style: widget.lowlightStyle,
+        );
       } else {
         assert(!widget._useCues);
-        textSpan = TextSpan(text: widget.line.text ?? "<missing lyric line>", style: widget.currentLineStyle);
+        textSpan = TextSpan(
+          text: widget.line.text ?? "<${AppLocalizations.of(context)!.lyricsMissingLyricLinePlaceholder}>",
+          style: widget.currentLineStyle,
+        );
       }
     });
   }
@@ -731,18 +756,13 @@ class EnableAutoScrollButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return !autoScrollEnabled
-        ? FloatingActionButton.extended(
-            onPressed: () {
+        ? FinampExtendedFloatingActionButton(
+            onTap: () {
               FeedbackHelper.feedback(FeedbackType.heavy);
               onEnableAutoScroll?.call();
             },
-            backgroundColor: IconTheme.of(context).color!.withOpacity(0.70),
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
-            icon: Icon(TablerIcons.arrow_bar_to_up, size: 28.0, color: Colors.white.withOpacity(0.9)),
-            label: Text(
-              AppLocalizations.of(context)!.enableAutoScroll,
-              style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 14.0, fontWeight: FontWeight.normal),
-            ),
+            icon: TablerIcons.arrow_bar_to_up,
+            label: AppLocalizations.of(context)!.enableAutoScroll,
           )
         : const SizedBox.shrink();
   }

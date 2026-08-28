@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:finamp/components/AddToPlaylistScreen/add_to_playlist_button.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
+import 'package:finamp/components/Buttons/finamp_extended_floating_action_button.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/PlayerScreen/queue_source_helper.dart';
 import 'package:finamp/components/album_image.dart';
@@ -13,9 +14,11 @@ import 'package:finamp/components/one_line_marquee_helper.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/components/print_duration.dart';
 import 'package:finamp/components/themed_bottom_sheet.dart';
+import 'package:finamp/extensions/color_extensions.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/main.dart';
 import 'package:finamp/menus/choice_menu.dart';
+import 'package:finamp/menus/components/icon_button_with_semantics.dart';
 import 'package:finamp/menus/components/radio_mode_menu.dart';
 import 'package:finamp/menus/track_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -38,6 +41,8 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../../extensions/localizations.dart';
 
 class QueueListStreamState {
   QueueListStreamState(this.mediaState, this.queueInfo);
@@ -111,12 +116,23 @@ class _QueueListState extends ConsumerState<QueueList> {
     _contents = <Widget>[];
 
     widget.scrollController.addListener(_updateJumpToTop);
+
+    switch (FinampSettingsHelper.finampSettings.previousTracksPersistenceMode) {
+      case PreviousTracksPersistenceMode.persistent:
+        break;
+      case PreviousTracksPersistenceMode.initiallyCollapsed:
+        FinampSetters.setPreviousTracksExpanded(false);
+        break;
+      case PreviousTracksPersistenceMode.initiallyExpanded:
+        FinampSetters.setPreviousTracksExpanded(true);
+        break;
+    }
   }
 
   void _updateJumpToTop() {
     if (widget.jumpToCurrentKey.currentContext == null) return;
     final screenHeight = MediaQuery.heightOf(widget.jumpToCurrentKey.currentContext!);
-    final currentTrackOffset = FinampSettingsHelper.finampSettings.previousTracksExpaned
+    final currentTrackOffset = FinampSettingsHelper.finampSettings.previousTracksExpanded
         ? (_previousTrackCount * QueueListTile.height)
         : 0;
     double offset = widget.scrollController.offset - currentTrackOffset;
@@ -138,9 +154,14 @@ class _QueueListState extends ConsumerState<QueueList> {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (context.mounted &&
             widget.scrollController.hasClients &&
-            FinampSettingsHelper.finampSettings.previousTracksExpaned) {
+            FinampSettingsHelper.finampSettings.previousTracksExpanded) {
           final changeHeight = _queueService.getQueue().previousTracks.length * QueueListTile.height;
-          widget.scrollController.position.correctBy(changeHeight - 50);
+          var target = widget.scrollController.position.pixels + changeHeight - 50;
+          target = target.clamp(
+            widget.scrollController.position.minScrollExtent,
+            widget.scrollController.position.maxScrollExtent,
+          );
+          widget.scrollController.position.correctPixels(target);
         }
       });
     }
@@ -150,7 +171,7 @@ class _QueueListState extends ConsumerState<QueueList> {
       // nested consumer to contain rebuilds
       Consumer(
         builder: (context, ref, child) {
-          if (ref.watch(finampSettingsProvider.previousTracksExpaned)) {
+          if (ref.watch(finampSettingsProvider.previousTracksExpanded)) {
             return PreviousTracksList(previousTracksHeaderKey: widget.previousTracksHeaderKey);
           } else {
             return const SliverToBoxAdapter();
@@ -162,8 +183,8 @@ class _QueueListState extends ConsumerState<QueueList> {
         delegate: PreviousTracksSectionHeader(
           previousTracksHeaderKey: widget.previousTracksHeaderKey,
           onTap: () {
-            final expanded = !FinampSettingsHelper.finampSettings.previousTracksExpaned;
-            FinampSetters.setPreviousTracksExpaned(expanded);
+            final expanded = !FinampSettingsHelper.finampSettings.previousTracksExpanded;
+            FinampSetters.setPreviousTracksExpanded(expanded);
 
             if (!widget.scrollController.hasClients) return;
             final changeHeight = _queueService.getQueue().previousTracks.length * QueueListTile.height;
@@ -215,7 +236,7 @@ class _QueueListState extends ConsumerState<QueueList> {
                 ),
                 Flexible(
                   child: Text(
-                    _source?.name.getLocalized(context) ?? AppLocalizations.of(context)!.unknownName,
+                    _source?.name.getLocalized(context.l10n) ?? AppLocalizations.of(context)!.unknownName,
                     style: const TextStyle(fontWeight: FontWeight.w500),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -372,22 +393,13 @@ class JumpToCurrentButtonState extends State<JumpToCurrentButton> {
   @override
   Widget build(BuildContext context) {
     return _jumpToCurrentTrackDirection != 0
-        ? FloatingActionButton.extended(
-            onPressed: () {
+        ? FinampExtendedFloatingActionButton(
+            icon: _jumpToCurrentTrackDirection < 0 ? TablerIcons.arrow_bar_to_up : TablerIcons.arrow_bar_to_down,
+            label: AppLocalizations.of(context)!.scrollToCurrentTrack,
+            onTap: () {
               FeedbackHelper.feedback(FeedbackType.heavy);
               scrollToKey(key: widget.previousTracksHeaderKey, duration: const Duration(milliseconds: 500));
             },
-            backgroundColor: IconTheme.of(context).color!.withOpacity(0.70),
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
-            icon: Icon(
-              _jumpToCurrentTrackDirection < 0 ? TablerIcons.arrow_bar_to_up : TablerIcons.arrow_bar_to_down,
-              size: 28.0,
-              color: Colors.white.withOpacity(0.9),
-            ),
-            label: Text(
-              AppLocalizations.of(context)!.scrollToCurrentTrack,
-              style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 14.0, fontWeight: FontWeight.w500),
-            ),
           )
         : const SizedBox.shrink();
   }
@@ -456,7 +468,7 @@ class _PreviousTracksListState extends State<PreviousTracksList> with TickerProv
                   isInPlaylist: queueItemInPlaylist(item),
                   parentItem: item.source.item,
                   queueItem: item,
-                  allowReorder: _queueService.playbackOrder == FinampPlaybackOrder.linear,
+                  allowReorder: true,
                   onTap: (bool playable) async {
                     FeedbackHelper.feedback(FeedbackType.selection);
                     await _queueService.skipByOffset(indexOffset);
@@ -465,7 +477,6 @@ class _PreviousTracksListState extends State<PreviousTracksList> with TickerProv
                   onRemoveFromList: () {
                     unawaited(_queueService.removeAtOffset(indexOffset));
                   },
-                  isCurrentTrack: false,
                 );
               },
             );
@@ -543,7 +554,7 @@ class _NextUpTracksListState extends State<NextUpTracksList> {
                     isInPlaylist: queueItemInPlaylist(item),
                     parentItem: item.source.item,
                     queueItem: item,
-                    allowReorder: _queueService.playbackOrder == FinampPlaybackOrder.linear,
+                    allowReorder: true,
                     onRemoveFromList: () {
                       unawaited(_queueService.removeAtOffset(indexOffset));
                     },
@@ -552,7 +563,6 @@ class _NextUpTracksListState extends State<NextUpTracksList> {
                       await _queueService.skipByOffset(indexOffset);
                       scrollToKey(key: widget.previousTracksHeaderKey, duration: const Duration(milliseconds: 500));
                     },
-                    isCurrentTrack: false,
                   );
                 },
               ),
@@ -634,7 +644,7 @@ class _QueueTracksListState extends ConsumerState<QueueTracksList> {
                   isInPlaylist: queueItemInPlaylist(item),
                   parentItem: item.source.item,
                   queueItem: item,
-                  allowReorder: _queueService.playbackOrder == FinampPlaybackOrder.linear,
+                  allowReorder: true,
                   onRemoveFromList: () {
                     unawaited(_queueService.removeAtOffset(indexOffset));
                   },
@@ -643,7 +653,6 @@ class _QueueTracksListState extends ConsumerState<QueueTracksList> {
                     await _queueService.skipByOffset(indexOffset);
                     scrollToKey(key: widget.previousTracksHeaderKey, duration: const Duration(milliseconds: 500));
                   },
-                  isCurrentTrack: false,
                 );
               },
             );
@@ -689,7 +698,11 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
         (a, b) => QueueListStreamState(a, b),
       ),
       initialData: QueueListStreamState(
-        MediaState(audioHandler.mediaItem.value, audioHandler.playbackState.value, audioHandler.fadeState.value),
+        MediaState(
+          audioHandler.mediaItem.value,
+          audioHandler.playbackState.value,
+          audioHandler.fadeState.value.fadeDirection,
+        ),
         _queueService.getQueue(),
       ),
       builder: (context, snapshot) {
@@ -705,7 +718,17 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
           const horizontalPadding = 8.0;
           const albumImageSize = 70.0;
 
-          final primaryTextColor = Colors.white;
+          final elapsedPartBackgroundColor = ColorScheme.of(context).primary;
+          final remainingPartBackgroundColor = Color.alphaBlend(
+            elapsedPartBackgroundColor.withOpacity(0.7),
+            // this is an approximation, the actual background has the blurred cover image
+            ref.watch(brightnessProvider) == Brightness.dark ? Colors.black : Colors.white,
+          );
+          final averageBackgroundColor = Color.alphaBlend(
+            elapsedPartBackgroundColor.withOpacity(0.5),
+            remainingPartBackgroundColor,
+          );
+          Color primaryTextColor = AtContrast.getContrastiveTintedTextColor(onBackground: averageBackgroundColor);
 
           return SliverAppBar(
             pinned: true,
@@ -721,7 +744,7 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
               child: Container(
                 clipBehavior: Clip.antiAlias,
                 decoration: ShapeDecoration(
-                  color: ColorScheme.of(context).primary.withOpacity(0.7),
+                  color: remainingPartBackgroundColor,
                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
                 ),
                 child: Row(
@@ -750,8 +773,16 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
                               _audioHandler.togglePlayback();
                             },
                             icon: mediaState!.playbackState.playing
-                                ? const Icon(TablerIcons.player_pause, size: 32)
-                                : const Icon(TablerIcons.player_play, size: 32),
+                                ? const Icon(
+                                    TablerIcons.player_pause,
+                                    size: 32,
+                                    shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)],
+                                  )
+                                : const Icon(
+                                    TablerIcons.player_play,
+                                    size: 32,
+                                    shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)],
+                                  ),
                             color: Colors.white,
                           ),
                         ),
@@ -775,7 +806,7 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
                                         : max(0, playbackPosition!.inMilliseconds / itemLength.inMilliseconds),
                                     child: DecoratedBox(
                                       decoration: ShapeDecoration(
-                                        color: ColorScheme.of(context).primary,
+                                        color: elapsedPartBackgroundColor,
                                         shape: const RoundedRectangleBorder(
                                           borderRadius: BorderRadius.only(
                                             topRight: Radius.circular(12),
@@ -804,19 +835,16 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(
-                                        height: 20,
-                                        child: OneLineMarqueeHelper(
-                                          key: ValueKey(currentTrack?.item.id),
-                                          text: currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            height: 26 / 20,
-                                            color: primaryTextColor,
-                                            fontWeight: Theme.brightnessOf(context) == Brightness.light
-                                                ? FontWeight.w500
-                                                : FontWeight.w600,
-                                          ),
+                                      OneLineMarqueeHelper(
+                                        key: ValueKey(currentTrack?.item.id),
+                                        text: currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          height: 26 / 20,
+                                          color: primaryTextColor,
+                                          fontWeight: Theme.brightnessOf(context) == Brightness.light
+                                              ? FontWeight.w500
+                                              : FontWeight.w600,
                                         ),
                                       ),
                                       const SizedBox(height: 4),
@@ -844,6 +872,10 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
                                                     color: primaryTextColor,
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w400,
+                                                    fontFeatures: const [
+                                                      // fixed-width digits
+                                                      FontFeature.tabularFigures(),
+                                                    ],
                                                   );
                                                   if (snapshot.hasData) {
                                                     playbackPosition = snapshot.data;
@@ -878,6 +910,10 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
                                                   color: primaryTextColor,
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w400,
+                                                  fontFeatures: const [
+                                                    // fixed-width digits
+                                                    FontFeature.tabularFigures(),
+                                                  ],
                                                 ),
                                               ),
                                             ],
@@ -902,21 +938,16 @@ class _CurrentTrackState extends ConsumerState<CurrentTrack> {
                                     ),
                                   ),
                                   IconButton(
+                                    tooltip: AppLocalizations.of(context)!.menuButtonLabel,
                                     iconSize: 28,
                                     visualDensity: const VisualDensity(horizontal: -4),
                                     // visualDensity: VisualDensity.compact,
-                                    icon: Icon(
-                                      TablerIcons.dots_vertical,
-                                      size: 28,
-                                      color: primaryTextColor,
-                                      weight: 1.5,
-                                    ),
+                                    icon: Icon(TablerIcons.dots, size: 28, color: primaryTextColor, weight: 1.5),
                                     onPressed: () {
-                                      Feedback.forLongPress(context);
+                                      FeedbackHelper.feedback(FeedbackType.selection);
                                       showModalTrackMenu(
                                         context: context,
                                         item: currentTrackBaseItem,
-                                        isInPlaylist: queueItemInPlaylist(currentTrack),
                                         parentItem: currentTrack?.source.item,
                                         confirmPlaylistRemoval: true,
                                         showQueueActions: true,
@@ -1052,15 +1083,18 @@ class QueueSectionHeader extends ConsumerWidget {
                     PlaybackBehaviorInfo? info = snapshot.data;
                     return Row(
                       children: [
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          iconSize: 28.0,
+                        IconButtonWithSemantics(
+                          label: info?.order == FinampPlaybackOrder.shuffled
+                              ? AppLocalizations.of(context)!.playbackOrderShuffledButtonTooltip
+                              : AppLocalizations.of(context)!.playbackOrderLinearButtonTooltip,
                           icon: info?.order == FinampPlaybackOrder.shuffled
-                              ? (const Icon(TablerIcons.arrows_shuffle))
-                              : (const Icon(TablerIcons.arrows_right)),
+                              ? (TablerIcons.arrows_shuffle)
+                              : (TablerIcons.arrows_right),
+                          iconSize: 28.0,
                           color: info?.order == FinampPlaybackOrder.shuffled
                               ? IconTheme.of(context).color!
                               : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withOpacity(0.85),
+                          visualDensity: VisualDensity.standard,
                           onPressed: () async {
                             await queueService.togglePlaybackOrder();
                             FeedbackHelper.feedback(FeedbackType.selection);
@@ -1071,15 +1105,22 @@ class QueueSectionHeader extends ConsumerWidget {
                             }
                           },
                         ),
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          iconSize: 28.0,
-                          icon: Icon(switch (radioEnabled ? null : info?.loop) {
+                        IconButtonWithSemantics(
+                          label: radioEnabled
+                              ? AppLocalizations.of(context)!.loopingUnavailableWhileRadioActiveWarning
+                              : switch (info?.loop) {
+                                  FinampLoopMode.none => AppLocalizations.of(context)!.loopModeNoneButtonLabel,
+                                  FinampLoopMode.one => AppLocalizations.of(context)!.loopModeOneButtonLabel,
+                                  FinampLoopMode.all => AppLocalizations.of(context)!.loopModeAllButtonLabel,
+                                  null => AppLocalizations.of(context)!.loopModeNoneButtonLabel,
+                                },
+                          icon: switch (radioEnabled ? null : info?.loop) {
                             FinampLoopMode.none => TablerIcons.repeat_off,
                             FinampLoopMode.one => TablerIcons.repeat_once,
                             FinampLoopMode.all => TablerIcons.repeat,
                             null => TablerIcons.repeat_off,
-                          }),
+                          },
+                          iconSize: 28.0,
                           color: radioEnabled
                               ? (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withOpacity(0.3)
                               : (info?.loop != FinampLoopMode.none
@@ -1087,6 +1128,7 @@ class QueueSectionHeader extends ConsumerWidget {
                                     : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withOpacity(
                                         0.85,
                                       )),
+                          visualDensity: VisualDensity.standard,
                           onPressed: () {
                             if (radioEnabled) {
                               GlobalSnackbar.message(
@@ -1102,13 +1144,16 @@ class QueueSectionHeader extends ConsumerWidget {
                             subtitle: AppLocalizations.of(context)!.loopingOverriddenByRadioSubtitle,
                           ),
                         ),
-                        IconButton(
-                          padding: EdgeInsets.zero,
+                        IconButtonWithSemantics(
+                          label: radioEnabled
+                              ? AppLocalizations.of(context)!.radioModeDisableButtonTitle
+                              : AppLocalizations.of(context)!.radioModeEnableButtonTitle,
+                          icon: radioEnabled ? TablerIcons.radio : TablerIcons.radio_off,
                           iconSize: 28.0,
-                          icon: radioEnabled ? const Icon(TablerIcons.radio) : const Icon(TablerIcons.radio_off),
                           color: currentRadioAvailabilityStatus.isAvailable
                               ? IconTheme.of(context).color!
                               : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white).withOpacity(0.85),
+                          visualDensity: VisualDensity.standard,
                           onPressed: () {
                             toggleRadio();
                             FeedbackHelper.feedback(FeedbackType.selection);
@@ -1255,7 +1300,7 @@ class PreviousTracksSectionHeader extends SliverPersistentHeaderDelegate {
             const SizedBox(width: 4.0),
             Consumer(
               builder: (context, ref, child) {
-                final isExpanded = ref.watch(finampSettingsProvider.previousTracksExpaned);
+                final isExpanded = ref.watch(finampSettingsProvider.previousTracksExpanded);
                 return Icon(
                   isExpanded ? TablerIcons.chevron_up : TablerIcons.chevron_down,
                   size: 28.0,

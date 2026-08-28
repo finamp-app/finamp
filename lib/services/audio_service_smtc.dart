@@ -1,5 +1,5 @@
 import 'package:audio_service_platform_interface/audio_service_platform_interface.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart' hide RepeatMode;
 import 'package:smtc_windows/smtc_windows.dart';
 
 class AudioServiceSMTC extends AudioServicePlatform {
@@ -31,7 +31,7 @@ class AudioServiceSMTC extends AudioServicePlatform {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
         // Listen to button events and update playback status accordingly
-        smtc.buttonPressStream.listen((event) async {
+        smtc.buttonPressStream.listen((PressedButton event) async {
           switch (event) {
             case PressedButton.play:
               await _handlerCallbacks!.play(const PlayRequest());

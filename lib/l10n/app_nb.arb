@@ -1,545 +1,351 @@
 {
-  "next": "Neste",
-  "@next": {},
-  "selectMusicLibraries": "Velg musikkbibliotek",
-  "@selectMusicLibraries": {
-    "description": "App bar title for library select screen"
-  },
-  "couldNotFindLibraries": "Fant ikke noen bibliotek.",
-  "@couldNotFindLibraries": {
-    "description": "Error message when the user does not have any libraries"
-  },
-  "unknownName": "Ukjent navn",
-  "@unknownName": {},
-  "album": "Album",
-  "@album": {},
-  "albumArtist": "Albumsartist",
-  "@albumArtist": {},
-  "finamp": "Finamp",
-  "@finamp": {},
-  "downloads": "Nedlastninger",
-  "@downloads": {},
-  "settings": "Innstillinger",
-  "@settings": {},
-  "sortBy": "Sorter etter",
-  "@sortBy": {},
-  "playCount": "Avspillingsantall",
-  "@playCount": {},
-  "premiereDate": "Premieredato",
-  "@premiereDate": {},
-  "productionYear": "Produksjonsår",
-  "@productionYear": {},
-  "required": "Påkrevd",
-  "@required": {},
-  "shareLogs": "Del logger",
-  "@shareLogs": {},
-  "logsCopied": "Logger kopiert",
-  "@logsCopied": {},
-  "logOut": "Logg ut",
-  "@logOut": {},
-  "enableTranscoding": "Skru på transkoding",
-  "@enableTranscoding": {},
-  "bitrate": "Bitrate",
-  "@bitrate": {},
-  "unknownError": "Ukjent feil",
-  "@unknownError": {},
-  "responseError": "{error} Statuskode {statusCode}.",
-  "@responseError": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "example": "Forbidden"
-      },
-      "statusCode": {
-        "type": "int",
-        "example": "403"
-      }
+    "next": "Neste",
+    "selectMusicLibraries": "Velg musikkbibliotek",
+    "@selectMusicLibraries": {
+        "description": "App bar title for library select screen"
+    },
+    "unknownName": "Ukjent navn",
+    "album": "Album",
+    "albumArtist": "Albumsartist",
+    "finamp": "Finamp",
+    "downloads": "Nedlastninger",
+    "settings": "Innstillinger",
+    "sortBy": "Sorter etter",
+    "playCount": "Avspillingsantall",
+    "premiereDate": "Premieredato",
+    "productionYear": "Produksjonsår",
+    "required": "Påkrevd",
+    "shareLogs": "Del logger",
+    "logsCopied": "Logger kopiert",
+    "logOut": "Logg ut",
+    "enableTranscoding": "Skru på transkoding",
+    "bitrate": "Bitrate",
+    "unknownError": "Ukjent feil",
+    "responseError": "{error} Statuskode {statusCode}.",
+    "@responseError": {
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Forbidden"
+            },
+            "statusCode": {
+                "type": "int",
+                "example": "403"
+            }
+        }
+    },
+    "sleepTimerTooltip": "Søvntidsur",
+    "addToPlaylistTooltip": "Legg til i spilleliste",
+    "createButtonLabel": "Opprett",
+    "noAlbum": "Ingen album",
+    "noItem": "Ingen elementer",
+    "unknownArtist": "Ukjent artist",
+    "addToQueue": "Legg til i kø",
+    "goToAlbum": "Gå til album",
+    "anErrorHasOccured": "Noe gikk galt.",
+    "removeFromMix": "Fjern fra miks",
+    "addButtonLabel": "Legg til",
+    "playlistUpdated": "Spillelistenavn oppdatert.",
+    "criticRating": "Kritikervurdering",
+    "artist": "Artist",
+    "budget": "Budsjett",
+    "artists": "Artister",
+    "communityRating": "Gemenskapsvurdering",
+    "startMix": "Start miks",
+    "random": "Tilfeldig",
+    "dateAdded": "Dato lagt til",
+    "datePlayed": "Dato avspilt",
+    "tracks": "Spor",
+    "genres": "Sjangere",
+    "albums": "Album",
+    "clear": "Tøm",
+    "audioService": "Lydtjeneste",
+    "areYouSure": "Er du sikker?",
+    "playlists": "Spillelister",
+    "music": "Musikk",
+    "offlineMode": "Frakoblet modus",
+    "sortOrder": "Sorteringsrekkefølge",
+    "name": "Navn",
+    "noButtonLabel": "Nei",
+    "message": "Melding",
+    "notAvailableInOfflineMode": "Ikke tilgjengelig i frakoblet modus",
+    "list": "Liste",
+    "light": "Lys",
+    "tabs": "Faner",
+    "cancelSleepTimer": "Avbryt søvntidsur?",
+    "grid": "Rutenett",
+    "dark": "Mørk",
+    "system": "System",
+    "yesButtonLabel": "Ja",
+    "newPlaylist": "Ny spilleliste",
+    "playlistCreated": "Spilleliste opprettet.",
+    "addToPlaylistTitle": "Legg til i spilleliste",
+    "addToMix": "Legg til i miks",
+    "minutes": "Minutter",
+    "queue": "Kø",
+    "instantMix": "Umiddelbar miks",
+    "startingInstantMix": "Starter umiddelbar miks …",
+    "responseError401": "{error} Statuskode {statusCode}. Dette betyr antagelig at du bruker feil brukernavn eller passord, eller at klienten din ikke lenger er innloget.",
+    "@responseError401": {
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Unauthorized"
+            },
+            "statusCode": {
+                "type": "int",
+                "example": "401"
+            }
+        }
+    },
+    "dlRunning": "{count} kjører",
+    "@dlRunning": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlComplete": "{count} fullført",
+    "@dlComplete": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlFailed": "{count} mislykket",
+    "@dlFailed": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "dlEnqueued": "{count} i kø",
+    "@dlEnqueued": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "logs": "Loggføring",
+    "password": "Passord",
+    "username": "Brukernavn",
+    "serverUrl": "Tjener-nettadresse",
+    "emptyServerUrl": "Tjener-nettadressen kan ikke stå tom",
+    "@emptyServerUrl": {
+        "description": "Error message that shows when the user submits a login without a server URL"
+    },
+    "internalExternalIpExplanation": "Hvis du vil ha tilgang til Jellyfin-tjeneren din annensteds fra må du bruke din eksterne IP-adresse.\n\nHvis tjeneren din er på en HTTP-port (80/443) må du angi en port. Dette er sannsynligvis tilfelle hvis tjeneren din er bak en omvendt mellomtjener.",
+    "@internalExternalIpExplanation": {
+        "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
+    },
+    "startMixNoTracksAlbum": "Lang-trykk et album for å legge til eller fjerne det fra miksbyggeren før du starter en miks",
+    "@startMixNoTracksAlbum": {
+        "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
+    },
+    "startMixNoTracksArtist": "Lang-trykk på en artist for å legge til eller fjerne vedkommende fra miksbyggeren før du starter en miks",
+    "@startMixNoTracksArtist": {
+        "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
+    },
+    "shuffleAll": "Tilfelding avspilling av alt",
+    "revenue": "Omsetning",
+    "downloadCount": "{count,plural, =1{{count} nedlasting} other{{count} nedlastinger}}",
+    "@downloadCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "error": "Feil",
+    "discNumber": "Disk {number}",
+    "@discNumber": {
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "playButtonLabel": "Spill",
+    "stackTrace": "Stabelspor",
+    "applicationLegalese": "Lisensiert MPL 2.0, med kildekode tilgjengelig på\n\ngithub.com/jmshrv/finamp",
+    "transcoding": "Transkoding",
+    "addDownloads": "Legg til nedlastinger",
+    "downloadsQueued": "Nedlastinger lagt til.",
+    "layoutAndTheme": "Posisjonering og draktvalg",
+    "shuffleButtonLabel": "Tilfeldig avspilling",
+    "location": "Sted",
+    "downloadLocations": "Nedlastingssteder",
+    "errorScreenError": "En feil inntraff under innhenting av listen over feil. Herfra bør du kanskje opprette en feilrapport på GitHub og slette programdataen.",
+    "trackCount": "{count,plural,=1{{count} spor} other{{count} spor}}",
+    "@trackCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "appDirectory": "Programmappe",
+    "bitrateSubtitle": "Høyere bitrate gir lyd i bedre kvalitet, på bekostning av høyere båndbreddebruk.",
+    "customLocation": "Egendefinert sted",
+    "enableTranscodingSubtitle": "Transkoder musikkstrømmer på tjenersiden.",
+    "addDownloadLocation": "Legg til nedlastingssted",
+    "selectDirectory": "Velg mappe",
+    "pathReturnSlashErrorMessage": "Stier som returnerer «/» kan ikke brukes.",
+    "customLocationsBuggy": "Egendefinerte steder fungerer dårlig som følge av problemer med tilganger. Måter å løse det på vurderes, men akkurat nå anbefales ikke bruk.",
+    "shuffleAllTrackCount": "Antall spor for tilfeldig avspilling",
+    "shuffleAllTrackCountSubtitle": "Mengden spor å laste inn ved bruk av «Tilfeldig avspilling av alle spor»-knappen.",
+    "viewType": "Visningstype",
+    "viewTypeSubtitle": "Visningstype for musikkskjermen",
+    "enterLowPriorityStateOnPause": "Gå inn i lavprioritetstilstand ved pause",
+    "enterLowPriorityStateOnPauseSubtitle": "Lar merknaden bli dratt unna under pause. Tillater også Android å drepe tjenesten når pauset.",
+    "landscape": "Liggende",
+    "theme": "Drakt",
+    "showTextOnGridViewSubtitle": "Hvorvidt tekst (navn, artist, osv.( skal vises i rutenettsmusikkskjermen.",
+    "useCoverAsBackgroundSubtitle": "Hvorvidt tilslørt omslag skal brukes som bakgrunn på avspillerskjermen.",
+    "showTextOnGridView": "Vis tekst i rutenettsvisning",
+    "useCoverAsBackground": "Vis tilslørt omslag som avspillerbakgrunn",
+    "removedFromPlaylist": "Fjernet fra spilleliste.",
+    "removeFromPlaylistTooltip": "Fjern fra spilleliste",
+    "bufferDuration": "Hurtiglagervarighet",
+    "showUncensoredLogMessage": "Denne loggen inneholder din innloggingsinfo. Vis?",
+    "removeFromPlaylistTitle": "Fjern fra spilleliste",
+    "bufferDurationSubtitle": "Antall sekunder avspilleren skal mellomlagre. Krever programomstart.",
+    "refresh": "Gjenoppfrisk",
+    "confirm": "Bekreft",
+    "language": "Språk",
+    "playNext": "Spill neste",
+    "@playNext": {
+        "description": "Popup menu item title for inserting an item into the play queue after the currently-playing item."
+    },
+    "noMusicLibrariesBody": "Finamp fant ingen musikkbibliotek. Forsikre deg om at din Jellyfin-tjener inneholder minst ett bibliotek med innholdstype satt til «Musikk».",
+    "disableGesture": "Skru av håndvendinger",
+    "noMusicLibrariesTitle": "Ingen musikkbibliotek",
+    "@noMusicLibrariesTitle": {
+        "description": "Title for message that shows on the views screen when no music libraries could be found."
+    },
+    "disableGestureSubtitle": "Hvorvidt håndvendinger skal skrus av.",
+    "viewLogs": "Vis logger",
+    "@viewLogs": {
+        "description": "Label for button shown during the login process that allows the user to view the app logs"
+    },
+    "back": "Tilbake",
+    "@back": {
+        "description": "Label for the back button."
+    },
+    "loginFlowWelcomeHeading": "Velkommen til",
+    "@loginFlowWelcomeHeading": {
+        "description": "Greeting shown on the login screen. The full message will be 'Welcome to Finamp'."
+    },
+    "about": "Om Finamp",
+    "@about": {
+        "description": "Label for the about/info button on the settings screen"
+    },
+    "aboutContributionPrompt": "Laget av fantastiske mennesker på fritiden.\nDu kan være en av dem!",
+    "@aboutContributionPrompt": {
+        "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
+    },
+    "aboutContributionLink": "Bidra til Finamp på GitHub:",
+    "@aboutContributionLink": {
+        "description": "Link to the Finamp GitHub repository, shown in the about screen."
+    },
+    "aboutReleaseNotes": "Les de siste utgivelsesnotatene:",
+    "@aboutReleaseNotes": {
+        "description": "Link to the release notes, shown in the about screen."
+    },
+    "aboutTranslations": "Hjelp med å oversette Finamp til ditt språk:",
+    "@aboutTranslations": {
+        "description": "Link to the translation project, shown in the about screen."
+    },
+    "aboutThanks": "Takk for at du bruker Finamp!",
+    "@aboutThanks": {
+        "description": "Thank you message shown in the about screen."
+    },
+    "loginFlowSlogan": "Din musikk, slik du vil ha det.",
+    "@loginFlowSlogan": {
+        "description": "Slogan shown on the login screen."
+    },
+    "loginFlowGetStarted": "Sett i gang!",
+    "@loginFlowGetStarted": {
+        "description": "Button label for the login/splash screen."
+    },
+    "changeLanguage": "Endre Språk",
+    "@changeLanguage": {
+        "description": "Label for button shown during the login process that allows the user to change the app language"
+    },
+    "loginFlowServerSelectionHeading": "Koble til Jellyfin",
+    "@loginFlowServerSelectionHeading": {
+        "description": "Heading for the server selection step during the login flow."
+    },
+    "serverUrlHint": "f.eks. demo.jellyfin.org/stable",
+    "@serverUrlHint": {
+        "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
+    },
+    "serverUrlInfoButtonTooltip": "Server URL-hjelp",
+    "@serverUrlInfoButtonTooltip": {
+        "description": "Tooltip for the button that shows the extra info dialog for which IP to use for remote access, and info on whether or not the user needs to specify a port."
+    },
+    "connectingToServer": "Kobler til server…",
+    "@connectingToServer": {
+        "description": "Text shown while the connection to the specified server is attempted"
+    },
+    "loginFlowLocalNetworkServers": "Servere på ditt lokale nettverk:",
+    "@loginFlowLocalNetworkServers": {
+        "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
+    },
+    "loginFlowLocalNetworkServersScanningForServers": "Leter etter servere…",
+    "@loginFlowLocalNetworkServersScanningForServers": {
+        "description": "Text shown while servers are being discovered via UDP broadcasts"
+    },
+    "loginFlowAccountSelectionHeading": "Velg kontoen din",
+    "@loginFlowAccountSelectionHeading": {
+        "description": "Heading for the account selection step during the login flow."
+    },
+    "backToServerSelection": "Tilbake til servervalg",
+    "@backToServerSelection": {
+        "description": "Label for the button that takes the user back to the server selection step during the login flow."
+    },
+    "loginFlowNamelessUser": "Bruker uten navn",
+    "@loginFlowNamelessUser": {
+        "description": "Name for a user that doesn't have a name set on the server."
+    },
+    "loginFlowCustomUser": "Egendefinert bruker",
+    "@loginFlowCustomUser": {
+        "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
+    },
+    "loginFlowAuthenticationHeading": "Logg på din bruker",
+    "@loginFlowAuthenticationHeading": {
+        "description": "Heading for the authentication step during the login flow."
+    },
+    "backToAccountSelection": "Tilbake til brukervalg",
+    "@backToAccountSelection": {
+        "description": "Label for the button that takes the user back to the account selection step during the login flow."
+    },
+    "loginFlowQuickConnectInstructions": "Åpne Jellyfin-app eller nettside, trykk på ditt brukerikon, og velg Quick Connect.",
+    "@loginFlowQuickConnectInstructions": {
+        "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
+    },
+    "loginFlowQuickConnectDisabled": "Quick Connect er deaktivert på denne serveren.",
+    "@loginFlowQuickConnectDisabled": {
+        "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
+    },
+    "orDivider": "eller",
+    "@orDivider": {
+        "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
+    },
+    "loginFlowSelectAUser": "Velg en bruker",
+    "@loginFlowSelectAUser": {
+        "description": "Heading for the list of users that the user can select from during the login flow."
+    },
+    "usernameHint": "Skriv inn brukernavnet ditt",
+    "@usernameHint": {
+        "description": "Hint text for the username input field."
+    },
+    "login": "Logg in",
+    "@login": {
+        "description": "Label for the login button."
     }
-  },
-  "invalidNumber": "Ugyldig tall",
-  "@invalidNumber": {},
-  "sleepTimerTooltip": "Søvntidsur",
-  "@sleepTimerTooltip": {},
-  "addToPlaylistTooltip": "Legg til i spilleliste",
-  "@addToPlaylistTooltip": {},
-  "createButtonLabel": "Opprett",
-  "@createButtonLabel": {},
-  "noAlbum": "Ingen album",
-  "@noAlbum": {},
-  "noItem": "Ingen elementer",
-  "@noItem": {},
-  "noArtist": "Ingen artister",
-  "@noArtist": {},
-  "unknownArtist": "Ukjent artist",
-  "@unknownArtist": {},
-  "addToQueue": "Legg til i kø",
-  "@addToQueue": {},
-  "replaceQueue": "Erstatt kø",
-  "@replaceQueue": {},
-  "goToAlbum": "Gå til album",
-  "@goToAlbum": {},
-  "addedToQueue": "Lagt til i kø.",
-  "@addedToQueue": {},
-  "queueReplaced": "Kø erstattet.",
-  "@queueReplaced": {},
-  "anErrorHasOccured": "Noe gikk galt.",
-  "@anErrorHasOccured": {},
-  "removeFromMix": "Fjern fra miks",
-  "@removeFromMix": {},
-  "addButtonLabel": "Legg til",
-  "@addButtonLabel": {},
-  "playlistUpdated": "Spillelistenavn oppdatert.",
-  "@playlistUpdated": {},
-  "criticRating": "Kritikervurdering",
-  "@criticRating": {},
-  "artist": "Artist",
-  "@artist": {},
-  "budget": "Budsjett",
-  "@budget": {},
-  "artists": "Artister",
-  "@artists": {},
-  "communityRating": "Gemenskapsvurdering",
-  "@communityRating": {},
-  "downloadMissingImages": "Last ned manglende bilder",
-  "@downloadMissingImages": {},
-  "startMix": "Start miks",
-  "@startMix": {},
-  "random": "Tilfeldig",
-  "@random": {},
-  "dateAdded": "Dato lagt til",
-  "@dateAdded": {},
-  "datePlayed": "Dato avspilt",
-  "@datePlayed": {},
-  "tracks": "Spor",
-  "@tracks": {},
-  "genres": "Sjangere",
-  "@genres": {},
-  "albums": "Album",
-  "@albums": {},
-  "clear": "Tøm",
-  "@clear": {},
-  "downloadsDeleted": "Nedlastinger slettet.",
-  "@downloadsDeleted": {},
-  "audioService": "Lydtjeneste",
-  "@audioService": {},
-  "areYouSure": "Er du sikker?",
-  "@areYouSure": {},
-  "playlists": "Spillelister",
-  "@playlists": {},
-  "music": "Musikk",
-  "@music": {},
-  "offlineMode": "Frakoblet modus",
-  "@offlineMode": {},
-  "sortOrder": "Sorteringsrekkefølge",
-  "@sortOrder": {},
-  "name": "Navn",
-  "@name": {},
-  "updateButtonLabel": "Oppdater",
-  "@updateButtonLabel": {},
-  "noButtonLabel": "Nei",
-  "@noButtonLabel": {},
-  "message": "Melding",
-  "@message": {},
-  "notAvailableInOfflineMode": "Ikke tilgjengelig i frakoblet modus",
-  "@notAvailableInOfflineMode": {},
-  "list": "Liste",
-  "@list": {},
-  "light": "Lys",
-  "@light": {},
-  "tabs": "Faner",
-  "@tabs": {},
-  "cancelSleepTimer": "Avbryt søvntidsur?",
-  "@cancelSleepTimer": {},
-  "grid": "Rutenett",
-  "@grid": {},
-  "dark": "Mørk",
-  "@dark": {},
-  "system": "System",
-  "@system": {},
-  "yesButtonLabel": "Ja",
-  "@yesButtonLabel": {},
-  "setSleepTimer": "Sett søvntidsur",
-  "@setSleepTimer": {},
-  "newPlaylist": "Ny spilleliste",
-  "@newPlaylist": {},
-  "playlistCreated": "Spilleliste opprettet.",
-  "@playlistCreated": {},
-  "addToPlaylistTitle": "Legg til i spilleliste",
-  "@addToPlaylistTitle": {},
-  "addToMix": "Legg til i miks",
-  "@addToMix": {},
-  "minutes": "Minutter",
-  "@minutes": {},
-  "queue": "Kø",
-  "@queue": {},
-  "instantMix": "Umiddelbar miks",
-  "@instantMix": {},
-  "startingInstantMix": "Starter umiddelbar miks …",
-  "@startingInstantMix": {},
-  "responseError401": "{error} Statuskode {statusCode}. Dette betyr antagelig at du bruker feil brukernavn eller passord, eller at klienten din ikke lenger er innloget.",
-  "@responseError401": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "example": "Unauthorized"
-      },
-      "statusCode": {
-        "type": "int",
-        "example": "401"
-      }
-    }
-  },
-  "dlRunning": "{count} kjører",
-  "@dlRunning": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "dlComplete": "{count} fullført",
-  "@dlComplete": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "dlFailed": "{count} mislykket",
-  "@dlFailed": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "dlEnqueued": "{count} i kø",
-  "@dlEnqueued": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "redownloadedItems": "{count,plural, =0{Ingenting trenger å lastes ned igjen.} =1{Lastet ned igjen {count} element} other{Lastet ned igjen {count} elementer}}",
-  "@redownloadedItems": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "logs": "Loggføring",
-  "@logs": {},
-  "password": "Passord",
-  "@password": {},
-  "username": "Brukernavn",
-  "@username": {},
-  "serverUrl": "Tjener-nettadresse",
-  "@serverUrl": {},
-  "emptyServerUrl": "Tjener-nettadressen kan ikke stå tom",
-  "@emptyServerUrl": {
-    "description": "Error message that shows when the user submits a login without a server URL"
-  },
-  "internalExternalIpExplanation": "Hvis du vil ha tilgang til Jellyfin-tjeneren din annensteds fra må du bruke din eksterne IP-adresse.\n\nHvis tjeneren din er på en HTTP-port (80/443) må du angi en port. Dette er sannsynligvis tilfelle hvis tjeneren din er bak en omvendt mellomtjener.",
-  "@internalExternalIpExplanation": {
-    "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
-  },
-  "startMixNoTracksAlbum": "Lang-trykk et album for å legge til eller fjerne det fra miksbyggeren før du starter en miks",
-  "@startMixNoTracksAlbum": {
-    "description": "Snackbar message that shows when the user presses the instant mix button with no albums selected"
-  },
-  "startMixNoTracksArtist": "Lang-trykk på en artist for å legge til eller fjerne vedkommende fra miksbyggeren før du starter en miks",
-  "@startMixNoTracksArtist": {
-    "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
-  },
-  "shuffleAll": "Tilfelding avspilling av alt",
-  "@shuffleAll": {},
-  "revenue": "Omsetning",
-  "@revenue": {},
-  "downloadedMissingImages": "{count,plural, =0{Fant ingen manglende bilder} =1{Lastet ned {count} manglende bilde} other{Lastet ned {count} manglende bilder}}",
-  "@downloadedMissingImages": {
-    "description": "Message that shows when the user downloads missing images",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "downloadCount": "{count,plural, =1{{count} nedlasting} other{{count} nedlastinger}}",
-  "@downloadCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "error": "Feil",
-  "@error": {},
-  "discNumber": "Disk {number}",
-  "@discNumber": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "playButtonLabel": "Spill",
-  "@playButtonLabel": {},
-  "stackTrace": "Stabelspor",
-  "@stackTrace": {},
-  "applicationLegalese": "Lisensiert MPL 2.0, med kildekode tilgjengelig på\n\ngithub.com/jmshrv/finamp",
-  "@applicationLegalese": {},
-  "transcoding": "Transkoding",
-  "@transcoding": {},
-  "failedToGetTrackFromDownloadId": "Klarte ikke å hente spor fra nedlastings-ID",
-  "@failedToGetTrackFromDownloadId": {},
-  "addDownloads": "Legg til nedlastinger",
-  "@addDownloads": {},
-  "downloadsQueued": "Nedlastinger lagt til.",
-  "@downloadsQueued": {},
-  "layoutAndTheme": "Posisjonering og draktvalg",
-  "@layoutAndTheme": {},
-  "shuffleButtonLabel": "Tilfeldig avspilling",
-  "@shuffleButtonLabel": {},
-  "location": "Sted",
-  "@location": {},
-  "downloadLocations": "Nedlastingssteder",
-  "@downloadLocations": {},
-  "errorScreenError": "En feil inntraff under innhenting av listen over feil. Herfra bør du kanskje opprette en feilrapport på GitHub og slette programdataen.",
-  "@errorScreenError": {},
-  "trackCount": "{count,plural,=1{{count} spor} other{{count} spor}}",
-  "@trackCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "appDirectory": "Programmappe",
-  "@appDirectory": {},
-  "bitrateSubtitle": "Høyere bitrate gir lyd i bedre kvalitet, på bekostning av høyere båndbreddebruk.",
-  "@bitrateSubtitle": {},
-  "customLocation": "Egendefinert sted",
-  "@customLocation": {},
-  "enableTranscodingSubtitle": "Transkoder musikkstrømmer på tjenersiden.",
-  "@enableTranscodingSubtitle": {},
-  "addDownloadLocation": "Legg til nedlastingssted",
-  "@addDownloadLocation": {},
-  "selectDirectory": "Velg mappe",
-  "@selectDirectory": {},
-  "directoryMustBeEmpty": "Mappen må være tom",
-  "@directoryMustBeEmpty": {},
-  "pathReturnSlashErrorMessage": "Stier som returnerer «/» kan ikke brukes.",
-  "@pathReturnSlashErrorMessage": {},
-  "customLocationsBuggy": "Egendefinerte steder fungerer dårlig som følge av problemer med tilganger. Måter å løse det på vurderes, men akkurat nå anbefales ikke bruk.",
-  "@customLocationsBuggy": {},
-  "shuffleAllTrackCount": "Antall spor for tilfeldig avspilling",
-  "@shuffleAllTrackCount": {},
-  "shuffleAllTrackCountSubtitle": "Mengden spor å laste inn ved bruk av «Tilfeldig avspilling av alle spor»-knappen.",
-  "@shuffleAllTrackCountSubtitle": {},
-  "viewType": "Visningstype",
-  "@viewType": {},
-  "viewTypeSubtitle": "Visningstype for musikkskjermen",
-  "@viewTypeSubtitle": {},
-  "enterLowPriorityStateOnPause": "Gå inn i lavprioritetstilstand ved pause",
-  "@enterLowPriorityStateOnPause": {},
-  "enterLowPriorityStateOnPauseSubtitle": "Lar merknaden bli dratt unna under pause. Tillater også Android å drepe tjenesten når pauset.",
-  "@enterLowPriorityStateOnPauseSubtitle": {},
-  "portrait": "Stående",
-  "@portrait": {},
-  "landscape": "Liggende",
-  "@landscape": {},
-  "gridCrossAxisCount": "{value} rutenettsakseantall",
-  "@gridCrossAxisCount": {
-    "description": "List tile title for grid cross axis count. Value will either be the portrait or landscape key.",
-    "placeholders": {
-      "value": {
-        "type": "String",
-        "example": "Portrait"
-      }
-    }
-  },
-  "gridCrossAxisCountSubtitle": "Mengden rutenettsflis å bruke per rad i {value}-modus.",
-  "@gridCrossAxisCountSubtitle": {
-    "description": "List tile subtitle for grid cross axis count. Value will either be the portrait or landscape key.",
-    "placeholders": {
-      "value": {
-        "type": "String",
-        "example": "landscape"
-      }
-    }
-  },
-  "theme": "Drakt",
-  "@theme": {},
-  "showTextOnGridViewSubtitle": "Hvorvidt tekst (navn, artist, osv.( skal vises i rutenettsmusikkskjermen.",
-  "@showTextOnGridViewSubtitle": {},
-  "useCoverAsBackgroundSubtitle": "Hvorvidt tilslørt omslag skal brukes som bakgrunn på avspillerskjermen.",
-  "@useCoverAsBackgroundSubtitle": {},
-  "hideTrackArtistsIfSameAsAlbumArtists": "Skjul artister for sporet hvis samme som albumsartister",
-  "@hideTrackArtistsIfSameAsAlbumArtists": {},
-  "hideTrackArtistsIfSameAsAlbumArtistsSubtitle": "Hvorvidt sporartister skal vises på albumsskjermen hvis forskjellig fra albumsartister.",
-  "@hideTrackArtistsIfSameAsAlbumArtistsSubtitle": {},
-  "showTextOnGridView": "Vis tekst i rutenettsvisning",
-  "@showTextOnGridView": {},
-  "useCoverAsBackground": "Vis tilslørt omslag som avspillerbakgrunn",
-  "@useCoverAsBackground": {},
-  "removedFromPlaylist": "Fjernet fra spilleliste.",
-  "@removedFromPlaylist": {},
-  "removeFromPlaylistTooltip": "Fjern fra spilleliste",
-  "@removeFromPlaylistTooltip": {},
-  "bufferDuration": "Hurtiglagervarighet",
-  "@bufferDuration": {},
-  "showUncensoredLogMessage": "Denne loggen inneholder din innloggingsinfo. Vis?",
-  "@showUncensoredLogMessage": {},
-  "removeFromPlaylistTitle": "Fjern fra spilleliste",
-  "@removeFromPlaylistTitle": {},
-  "bufferDurationSubtitle": "Antall sekunder avspilleren skal mellomlagre. Krever programomstart.",
-  "@bufferDurationSubtitle": {},
-  "insertedIntoQueue": "Lagt i kø.",
-  "@insertedIntoQueue": {
-    "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-  },
-  "refresh": "Gjenoppfrisk",
-  "@refresh": {},
-  "confirm": "Bekreft",
-  "@confirm": {},
-  "language": "Språk",
-  "@language": {},
-  "playNext": "Spill neste",
-  "@playNext": {
-    "description": "Popup menu item title for inserting an item into the play queue after the currently-playing item."
-  },
-  "resetTabs": "Tilbakestill faner",
-  "@resetTabs": {},
-  "noMusicLibrariesBody": "Finamp fant ingen musikkbibliotek. Forsikre deg om at din Jellyfin-tjener inneholder minst ett bibliotek med innholdstype satt til «Musikk».",
-  "@noMusicLibrariesBody": {},
-  "disableGesture": "Skru av håndvendinger",
-  "@disableGesture": {},
-  "noMusicLibrariesTitle": "Ingen musikkbibliotek",
-  "@noMusicLibrariesTitle": {
-    "description": "Title for message that shows on the views screen when no music libraries could be found."
-  },
-  "disableGestureSubtitle": "Hvorvidt håndvendinger skal skrus av.",
-  "@disableGestureSubtitle": {},
-  "viewLogs": "Vis logger",
-  "@viewLogs": {
-    "description": "Label for button shown during the login process that allows the user to view the app logs"
-  },
-  "back": "Tilbake",
-  "@back": {
-    "description": "Label for the back button."
-  },
-  "loginFlowWelcomeHeading": "Velkommen til",
-  "@loginFlowWelcomeHeading": {
-    "description": "Greeting shown on the login screen. The full message will be 'Welcome to Finamp'."
-  },
-  "about": "Om Finamp",
-  "@about": {
-    "description": "Label for the about/info button on the settings screen"
-  },
-  "aboutContributionPrompt": "Laget av fantastiske mennesker på fritiden.\nDu kan være en av dem!",
-  "@aboutContributionPrompt": {
-    "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
-  },
-  "aboutContributionLink": "Bidra til Finamp på GitHub:",
-  "@aboutContributionLink": {
-    "description": "Link to the Finamp GitHub repository, shown in the about screen."
-  },
-  "aboutReleaseNotes": "Les de siste utgivelsesnotatene:",
-  "@aboutReleaseNotes": {
-    "description": "Link to the release notes, shown in the about screen."
-  },
-  "aboutTranslations": "Hjelp med å oversette Finamp til ditt språk:",
-  "@aboutTranslations": {
-    "description": "Link to the translation project, shown in the about screen."
-  },
-  "aboutThanks": "Takk for at du bruker Finamp!",
-  "@aboutThanks": {
-    "description": "Thank you message shown in the about screen."
-  },
-  "loginFlowSlogan": "Din musikk, slik du vil ha det.",
-  "@loginFlowSlogan": {
-    "description": "Slogan shown on the login screen."
-  },
-  "loginFlowGetStarted": "Sett i gang!",
-  "@loginFlowGetStarted": {
-    "description": "Button label for the login/splash screen."
-  },
-  "changeLanguage": "Endre Språk",
-  "@changeLanguage": {
-    "description": "Label for button shown during the login process that allows the user to change the app language"
-  },
-  "loginFlowServerSelectionHeading": "Koble til Jellyfin",
-  "@loginFlowServerSelectionHeading": {
-    "description": "Heading for the server selection step during the login flow."
-  },
-  "serverUrlHint": "f.eks. demo.jellyfin.org/stable",
-  "@serverUrlHint": {
-    "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
-  },
-  "serverUrlInfoButtonTooltip": "Server URL-hjelp",
-  "@serverUrlInfoButtonTooltip": {
-    "description": "Tooltip for the button that shows the extra info dialog for which IP to use for remote access, and info on whether or not the user needs to specify a port."
-  },
-  "connectingToServer": "Kobler til server…",
-  "@connectingToServer": {
-    "description": "Text shown while the connection to the specified server is attempted"
-  },
-  "loginFlowLocalNetworkServers": "Servere på ditt lokale nettverk:",
-  "@loginFlowLocalNetworkServers": {
-    "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
-  },
-  "loginFlowLocalNetworkServersScanningForServers": "Leter etter servere…",
-  "@loginFlowLocalNetworkServersScanningForServers": {
-    "description": "Text shown while servers are being discovered via UDP broadcasts"
-  },
-  "loginFlowAccountSelectionHeading": "Velg kontoen din",
-  "@loginFlowAccountSelectionHeading": {
-    "description": "Heading for the account selection step during the login flow."
-  },
-  "backToServerSelection": "Tilbake til servervalg",
-  "@backToServerSelection": {
-    "description": "Label for the button that takes the user back to the server selection step during the login flow."
-  },
-  "loginFlowNamelessUser": "Bruker uten navn",
-  "@loginFlowNamelessUser": {
-    "description": "Name for a user that doesn't have a name set on the server."
-  },
-  "loginFlowCustomUser": "Egendefinert bruker",
-  "@loginFlowCustomUser": {
-    "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
-  },
-  "loginFlowAuthenticationHeading": "Logg på din bruker",
-  "@loginFlowAuthenticationHeading": {
-    "description": "Heading for the authentication step during the login flow."
-  },
-  "backToAccountSelection": "Tilbake til brukervalg",
-  "@backToAccountSelection": {
-    "description": "Label for the button that takes the user back to the account selection step during the login flow."
-  },
-  "loginFlowQuickConnectInstructions": "Åpne Jellyfin-app eller nettside, trykk på ditt brukerikon, og velg Quick Connect.",
-  "@loginFlowQuickConnectInstructions": {
-    "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
-  },
-  "loginFlowQuickConnectDisabled": "Quick Connect er deaktivert på denne serveren.",
-  "@loginFlowQuickConnectDisabled": {
-    "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
-  },
-  "orDivider": "eller",
-  "@orDivider": {
-    "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
-  },
-  "loginFlowSelectAUser": "Velg en bruker",
-  "@loginFlowSelectAUser": {
-    "description": "Heading for the list of users that the user can select from during the login flow."
-  },
-  "usernameHint": "Skriv inn brukernavnet ditt",
-  "@usernameHint": {
-    "description": "Hint text for the username input field."
-  },
-  "login": "Logg in",
-  "@login": {
-    "description": "Label for the login button."
-  }
 }

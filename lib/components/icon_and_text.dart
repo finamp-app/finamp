@@ -26,12 +26,10 @@ class IconAndText extends StatelessWidget {
             color: effectiveIconColor,
           ),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 2)),
-          Expanded(
-            // RichText blocks theming.  Text.rich does not.
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Text.rich(textSpan, maxLines: 1, overflow: TextOverflow.ellipsis),
-            ),
+          // RichText blocks theming.  Text.rich does not.
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Text.rich(textSpan, maxLines: 1, overflow: TextOverflow.ellipsis),
           ),
         ],
       ),

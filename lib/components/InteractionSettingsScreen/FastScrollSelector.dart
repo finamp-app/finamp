@@ -11,6 +11,7 @@ class FastScrollSelector extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return SwitchListTile.adaptive(
       title: Text(AppLocalizations.of(context)!.showFastScroller),
+      subtitle: Text(AppLocalizations.of(context)!.showFastScrollerSubtitle),
       value: ref.watch(finampSettingsProvider.showFastScroller),
       onChanged: (value) => FinampSetters.setShowFastScroller(value),
     );

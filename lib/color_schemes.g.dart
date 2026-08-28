@@ -90,14 +90,20 @@ const darkColorScheme = ColorScheme(
 /// If [color] is provided -> returns a generated color scheme
 /// otherwise falls back to default color schemes
 /// [lightColorScheme] or [darkColorScheme]
-ColorScheme getColorScheme(Color? color, Brightness brightness) {
+ColorScheme getColorScheme(Color? color, Brightness brightness, bool amoledTheme) {
+  ColorScheme scheme = brightness == Brightness.dark ? darkColorScheme : lightColorScheme;
+
   if (color != null) {
-    return ColorScheme.fromSeed(
+    scheme = ColorScheme.fromSeed(
       seedColor: color,
       brightness: brightness,
       dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
     );
   }
 
-  return brightness == Brightness.dark ? darkColorScheme : lightColorScheme;
+  if (amoledTheme && brightness == Brightness.dark) {
+    scheme = scheme.copyWith(background: Color(0xFF000000), surface: Color(0xFF000000));
+  }
+
+  return scheme;
 }

@@ -1,8 +1,7 @@
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../services/finamp_settings_helper.dart';
 
 class TrackShuffleItemCountEditor extends ConsumerStatefulWidget {
   const TrackShuffleItemCountEditor({super.key});

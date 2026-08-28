@@ -1,14 +1,10 @@
+import 'package:finamp/components/AlbumScreen/album_screen_content.dart';
+import 'package:finamp/components/now_playing_bar.dart';
+import 'package:finamp/models/jellyfin_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get_it/get_it.dart';
 
-import '../components/AlbumScreen/album_screen_content.dart';
-import '../components/now_playing_bar.dart';
-import '../models/jellyfin_models.dart';
-import '../services/jellyfin_api_helper.dart';
-import '../services/music_player_background_task.dart';
-
-class AlbumScreen extends ConsumerStatefulWidget {
+class AlbumScreen extends ConsumerWidget {
   const AlbumScreen({super.key, this.parent, this.genreFilter});
 
   static const routeName = "/music/album";
@@ -20,21 +16,12 @@ class AlbumScreen extends ConsumerStatefulWidget {
   final BaseItemDto? genreFilter;
 
   @override
-  ConsumerState<AlbumScreen> createState() => _AlbumScreenState();
-}
-
-class _AlbumScreenState extends ConsumerState<AlbumScreen> {
-  Future<List<List<BaseItemDto>?>>? albumScreenContentFuture;
-  JellyfinApiHelper jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
-  final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
-
-  @override
-  Widget build(BuildContext context) {
-    final BaseItemDto parent = widget.parent ?? ModalRoute.settingsOf(context)!.arguments as BaseItemDto;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final BaseItemDto resolvedParent = parent ?? ModalRoute.settingsOf(context)!.arguments as BaseItemDto;
 
     return Scaffold(
       extendBody: true,
-      body: AlbumScreenContent(parent: parent, genreFilter: widget.genreFilter),
+      body: AlbumScreenContent(parent: resolvedParent, genreFilter: genreFilter),
       bottomNavigationBar: const NowPlayingBar(),
     );
   }

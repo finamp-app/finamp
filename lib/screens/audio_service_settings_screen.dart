@@ -5,11 +5,14 @@ import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../components/AudioServiceSettingsScreen/buffer_duration_list_tile.dart';
-import '../components/AudioServiceSettingsScreen/loadQueueOnStartup_selector.dart';
-import '../components/AudioServiceSettingsScreen/stop_foreground_selector.dart';
-import '../components/AudioServiceSettingsScreen/track_shuffle_item_count_editor.dart';
+import 'package:finamp/components/AudioServiceSettingsScreen/buffer_duration_list_tile.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/components/AudioServiceSettingsScreen/loadQueueOnStartup_selector.dart';
+import 'package:finamp/components/AudioServiceSettingsScreen/stop_foreground_selector.dart';
+import 'package:finamp/components/AudioServiceSettingsScreen/track_shuffle_item_count_editor.dart';
+import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/music_player_background_task.dart';
 
 class AudioServiceSettingsScreen extends StatefulWidget {
   const AudioServiceSettingsScreen({super.key});
@@ -24,6 +27,7 @@ class _AudioServiceSettingsScreenState extends State<AudioServiceSettingsScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.audioService),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, () {
             setState(() {
@@ -33,8 +37,11 @@ class _AudioServiceSettingsScreenState extends State<AudioServiceSettingsScreen>
         ],
       ),
       body: ListView(
+        padding: const EdgeInsets.only(bottom: 200.0),
         children: [
           if (Platform.isAndroid) const StopForegroundSelector(),
+          if (Platform.isAndroid) const EnableDuckingOnInterruptionsToggle(),
+          if (Platform.isAndroid) const ForceAudioOffloadingOnAndroidToggle(),
           const TrackShuffleItemCountEditor(),
           const AudioFadeInDurationListTile(),
           const AudioFadeOutDurationListTile(),
@@ -239,6 +246,39 @@ class ClearQueueOnStopToggle extends ConsumerWidget {
       subtitle: Text(AppLocalizations.of(context)!.clearQueueOnStopEventSubtitle),
       value: ref.watch(finampSettingsProvider.clearQueueOnStopEvent),
       onChanged: FinampSetters.setClearQueueOnStopEvent,
+    );
+  }
+}
+
+class EnableDuckingOnInterruptionsToggle extends ConsumerWidget {
+  const EnableDuckingOnInterruptionsToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SwitchListTile.adaptive(
+      title: Text(AppLocalizations.of(context)!.duckOnAudioInterruptionTitle),
+      subtitle: Text(AppLocalizations.of(context)!.duckOnAudioInterruptionSubtitle),
+      value: ref.watch(finampSettingsProvider.duckOnAudioInterruption),
+      onChanged: (newValue) async {
+        FinampSetters.setDuckOnAudioInterruption(newValue);
+        await MusicPlayerBackgroundTask.configureAudioSession();
+      },
+    );
+  }
+}
+
+class ForceAudioOffloadingOnAndroidToggle extends ConsumerWidget {
+  const ForceAudioOffloadingOnAndroidToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SwitchListTile.adaptive(
+      title: Text(AppLocalizations.of(context)!.forceAudioOffloadingOnAndroidTitle),
+      subtitle: Text(AppLocalizations.of(context)!.forceAudioOffloadingOnAndroidSubtitle),
+      value: ref.watch(finampSettingsProvider.forceAudioOffloadingOnAndroid),
+      onChanged: (newValue) async {
+        FinampSetters.setForceAudioOffloadingOnAndroid(newValue);
+      },
     );
   }
 }

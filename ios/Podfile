@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '14.0'
+platform :ios, '15.0'
 
 # Fixing DKImagePickerController Bug
 use_modular_headers!
@@ -43,7 +43,7 @@ post_install do |installer|
     flutter_additional_ios_build_settings(target)
 
     target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
     end
 
     target.build_configurations.each do |config|

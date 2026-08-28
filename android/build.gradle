@@ -5,17 +5,19 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
+def rootBuildDir = rootProject.layout.buildDirectory.get().dir('../../build')
+rootProject.layout.buildDirectory.value(rootBuildDir)
 subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    def subProjectBuildDir = rootBuildDir.dir(project.name)
+    project.layout.buildDirectory.value(subProjectBuildDir)
 }
 subprojects {
     afterEvaluate { project ->
         if (project.plugins.hasPlugin("com.android.application") ||
                 project.plugins.hasPlugin("com.android.library")) {
             project.android {
-                compileSdkVersion 36
-                buildToolsVersion "34.0.0"
+                compileSdkVersion flutter.compileSdkVersion
+                buildToolsVersion "36.0.0"
             }
         }
     }
@@ -25,5 +27,5 @@ subprojects {
 }
 
 tasks.register("clean", Delete) {
-    delete rootProject.buildDir
+    delete rootProject.layout.buildDirectory
 }

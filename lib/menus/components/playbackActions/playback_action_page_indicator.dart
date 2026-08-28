@@ -1,6 +1,8 @@
 import 'package:finamp/models/finamp_models.dart';
 import 'package:flutter/material.dart';
 
+import '../../../extensions/localizations.dart';
+
 class PlaybackActionPageIndicator extends StatelessWidget {
   const PlaybackActionPageIndicator({
     super.key,
@@ -49,7 +51,7 @@ class PlaybackActionPageIndicator extends StatelessWidget {
                       borderRadius: BorderRadius.circular(9999.0),
                     ),
                     child: Text(
-                      pages.keys.elementAt(index).toLocalisedString(context),
+                      pages.keys.elementAt(index).toLocalisedString(context.l10n),
                       style: (pageController.page ?? pageController.initialPage).round() == index
                           ? textColorSelected
                           : textColor,

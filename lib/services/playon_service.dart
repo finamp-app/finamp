@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/screens/music_screen.dart';
+import 'package:finamp/screens/settings_screen.dart';
 import 'package:finamp/services/favorite_provider.dart';
+import 'package:finamp/services/jellyfin_api.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +19,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../services/finamp_settings_helper.dart';
 import '../../services/jellyfin_api_helper.dart';
 import '../../services/music_player_background_task.dart';
+import '../models/music_slices.dart';
 import 'finamp_user_helper.dart';
 
 final _playOnServiceLogger = Logger("PlayOnService");
@@ -173,16 +178,18 @@ class PlayOnService {
     if (retryActive) return;
     try {
       retryActive = true;
-      final startTime = DateTime.now();
+      var retryCount = 0;
       while (true) {
-        await Future<void>.delayed(Duration(seconds: FinampSettingsHelper.finampSettings.playOnReconnectionDelay));
+        final retryDelay = (FinampSettingsHelper.finampSettings.playOnReconnectionDelay * pow(1.3, retryCount)).round();
+        await Future<void>.delayed(Duration(seconds: retryDelay));
+        retryCount++;
         assert(retryActive);
         if (abortConnect) {
           return;
         }
         switch (socketState) {
           case SocketState.disconnected:
-            if (startTime.difference(DateTime.now()) > Duration(minutes: 5)) {
+            if (retryDelay > 5 * 60) {
               // Retry loop has timed out
               _playOnServiceLogger.warning("Stopped attempting to connect playon");
               socketState = SocketState.disconnected;
@@ -206,8 +213,14 @@ class PlayOnService {
 
   Future<void> _connectWebsocket() async {
     assert(socketState == SocketState.connecting);
+    final deviceInfo = await getDeviceInfo(deviceId: FinampSettingsHelper.finampSettings.deviceId);
+    // the [api_key] query parameter is deprecated, and has apparently been replaced with the [ApiKey] parameter (at least that's what the Jellyfin TypeScript SDK uses, which has the same Websocket restrictions)
+    // it also seems to work on earlier Jellyfin versions (tested with 10.10.7)
+    // For reference:
+    // https://github.com/jellyfin/jellyfin-sdk-typescript/blob/368a89c5f09a2b6a102f388f68a50e146b80d583/src/constants.ts#L10-L11
+    // https://github.com/jellyfin/jellyfin-sdk-typescript/blob/368a89c5f09a2b6a102f388f68a50e146b80d583/src/api.ts#L159-L164
     final url =
-        "${_finampUserHelper.currentUser!.baseURL}/socket?api_key=${_finampUserHelper.currentUser!.accessToken}";
+        "${_finampUserHelper.currentUser!.baseURL}/socket?ApiKey=${_finampUserHelper.currentUser!.accessToken}&deviceId=${deviceInfo.id}";
     final parsedUrl = Uri.parse(url);
     final wsUrl = parsedUrl.replace(scheme: parsedUrl.scheme == "https" ? "wss" : "ws");
     _channel = WebSocketChannel.connect(wsUrl);
@@ -240,7 +253,7 @@ class PlayOnService {
     );
 
     _keepaliveSubscription = Stream<void>.periodic(const Duration(seconds: 30)).listen((event) {
-      _playOnServiceLogger.info("Sent KeepAlive message through websocket");
+      _playOnServiceLogger.fine("Sent KeepAlive message through websocket");
       _channel.sink.add('{"MessageType":"KeepAlive"}');
     });
   }
@@ -285,6 +298,25 @@ class PlayOnService {
 
                 final desiredVolume = request['Data']['Arguments']['Volume'] as String;
                 _audioHandler.setVolume(double.parse(desiredVolume) / 100.0);
+                break;
+              case "GoToSettings":
+                _playOnServiceLogger.fine("Server requested to open settings");
+                unawaited(GlobalSnackbar.navigatorState?.pushNamed(SettingsScreen.routeName));
+                break;
+              case "GoHome":
+                _playOnServiceLogger.fine("Server requested to open home");
+                GlobalSnackbar.navigatorState?.popUntil((route) {
+                  return MusicScreen.routeName == route.settings.name;
+                });
+                break;
+              case "GoToSearch":
+                _playOnServiceLogger.fine("Server requested to open search");
+                //TODO implement once global search exists
+                break;
+              case "Back":
+                _playOnServiceLogger.fine("Server requested to go back");
+                unawaited(GlobalSnackbar.navigatorState?.maybePop());
+                break;
             }
             break;
           case "UserDataChanged":
@@ -367,6 +399,7 @@ class PlayOnService {
                             name: QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
                             type: QueueItemSourceType.remoteClient,
                             id: items[0].id,
+                            item: items[0],
                           ),
                           // seems like Jellyfin isn't always sending the correct index
                           startingIndex: request['Data']['StartIndex'] as int,
@@ -382,7 +415,19 @@ class PlayOnService {
                       includeItemTypes: "Audio",
                       itemIds: List<BaseItemId>.from(request['Data']['ItemIds'] as List<dynamic>),
                     );
-                    unawaited(_queueService.addToNextUp(items: items!));
+                    unawaited(
+                      _queueService.addToNextUp(
+                        PlayableSlice.simple(
+                          items!,
+                          QueueItemSource(
+                            name: QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
+                            type: QueueItemSourceType.remoteClient,
+                            id: items[0].id,
+                            item: items[0],
+                          ),
+                        ),
+                      ),
+                    );
                     break;
                   case 'PlayLast':
                     var items = await _jellyfinApiHelper.getItems(
@@ -390,7 +435,19 @@ class PlayOnService {
                       includeItemTypes: "Audio",
                       itemIds: List<BaseItemId>.from(request['Data']['ItemIds'] as List<dynamic>),
                     );
-                    unawaited(_queueService.addToQueue(items: items!));
+                    unawaited(
+                      _queueService.addToQueue(
+                        PlayableSlice.simple(
+                          items!,
+                          QueueItemSource(
+                            name: QueueItemSourceName(type: QueueItemSourceNameType.remoteClient),
+                            type: QueueItemSourceType.remoteClient,
+                            id: items[0].id,
+                            item: items[0],
+                          ),
+                        ),
+                      ),
+                    );
                     break;
                 }
             }

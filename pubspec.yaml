@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.9.20+120
+version: 1.0.0+200
 
 environment:
   sdk: ^3.9.0
@@ -32,7 +32,7 @@ dependencies:
   get_it: ^8.2.0
   # just_audio: ^0.10.5
   just_audio:
-  # TODO switch back to official just_audio once https://github.com/ryanheise/just_audio/pull/1555 is merged
+    # TODO switch back to official just_audio once https://github.com/ryanheise/just_audio/pull/1555 is merged
     git:
       url: https://github.com/LennartEnns/just_audio_fork.git
       ref: 6dfdd07d19f6f037d3f4ff04c397639e4632c687
@@ -56,6 +56,9 @@ dependencies:
       url: https://github.com/Komodo5197/frb_plugins.git
       ref: 7ece49cc16a459aaa0718ed23458802533daef37
       path: packages/smtc_windows/
+  # Despite having loose version constraints, smtc_windows and flutter_discord_rpc actually depend on the
+  # specific version 2.11.1, so we must force it.
+  flutter_rust_bridge: 2.11.1
 
   audio_service: ^0.18.18
   audio_service_mpris: ^0.2.0
@@ -70,12 +73,13 @@ dependencies:
   logging: ^1.3.0
   collection: ^1.18.0
   clipboard: ^2.0.2
-  file_picker: ^10.1.9
+  archive: ^4.0.9
+  file_picker: ^11.0.2
   file: ^7.0.1
   permission_handler: ^12.0.0
   provider: ^6.0.5
   uuid: ^4.5.1
-  infinite_scroll_pagination: ^4.0.0
+  infinite_scroll_pagination: ^5.0.0
   flutter_sticky_header: ^0.8.0
   # TODO: switch to regular `flutter_user_certificates_android` when this PR is
   # merged:
@@ -85,7 +89,6 @@ dependencies:
       url: https://github.com/jfly/flutter_user_certificates_android.git
       ref: db81e4ff3222a7db1308ed03c4bc3142c0d271d5
   device_info_plus: ^12.1.0
-  app_set_id: ^1.2.1
   package_info_plus: ^9.0.0
   octo_image: ^2.0.0
   # Main split view package does not seem actively maintained.  Use fork with ability to specify
@@ -96,11 +99,15 @@ dependencies:
       ref: 8b2b0f0e1c8470183cb2df40815a05bfdb3fe219
   share_plus: ^12.0.0
   isar: ^3.1.0
+  # Use version of isar core with android compilation fixes.  If this version or ref changes,
+  # the linux arm build in upload-assets.yml must be updated.
   isar_flutter_libs:
-    git: 
-      url: https://github.com/MrLittleWhite/isar_flutter_libs.git
+    git:
+      url: https://github.com/Komodo5197/isar_flutter_libs.git
+      ref: 21c20862e94bb33fca9e9c14b5ca72fc41307f4b
 
   path: ^1.9.0
+  path_provider_platform_interface: ^2.1.2
   intl: # pinned by flutter version
   auto_size_text: ^3.0.0
   marquee: ^2.3.0
@@ -118,7 +125,7 @@ dependencies:
   balanced_text:
     git:
       url: https://github.com/Komodo5197/flutter-balanced-text.git
-      ref: 8f3603a639be6a7d5b0008ec54b0e90df7cd8323
+      ref: a6e93dad04f650734eaa6fa4d332800c7523b2a7
   flutter_to_airplay: ^2.0.5
   flutter_blurhash: ^0.9.1
   scroll_to_index: ^3.0.1
@@ -145,13 +152,23 @@ dependencies:
   dynamic_color: ^1.8.1
   dbus: ^0.7.11
   bits: ^1.4.0
+  flutter_carplay:
+    git:
+      url: https://github.com/oguzhnatly/flutter_carplay.git
+      ref: 017ce2e
+  diacritic: ^0.1.6
+  mini_music_visualizer: ^1.1.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   build_runner: ^2.3.3
-  flutter_gen_runner:
+  # 5.14 seems to fail - might need build_runner 2.12?
+  flutter_gen_runner: 5.13.0+1
   chopper_generator: ^8.0.0
+  flutter_native_splash: ^2.4.7
   hive_ce_generator: ^1.8.1
   json_serializable: ^6.9.0
   flutter_launcher_icons: ^0.14.1
@@ -170,9 +187,12 @@ dev_dependencies:
 dependency_overrides:
   # force isar_generator community fork to accept baseline isar.
   # generated files are identical, so there should be no incompatibilities
+  # fork also allows custom build of linux arm binaries
   isar:
-    hosted: https://pub.dev
-    version: ^3.1.0
+    git:
+      url: https://github.com/Komodo5197/isar-community.git
+      ref: a602cd8999048faba043f7e1ce7ba92f4d812762
+      path: packages/isar
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -192,10 +212,10 @@ flutter:
     - images/finamp_cropped.svg
     - images/jellyfin-icon-transparent.png
     - assets/icon/icon_square_bg-black.png # preview image for Discord RPC Fallback Icon Setting
-    - assets/icon/icon_combined.png        # preview image for Discord RPC Fallback Icon Setting
+    - assets/icon/icon_combined.png # preview image for Discord RPC Fallback Icon Setting
     - assets/icon/icon_square_bg-white.png # preview image for Discord RPC Fallback Icon Setting
-    - images/finamp_cropped.png            # preview image for Discord RPC Fallback Icon Setting
-    - assets/icon/icon_white_noborder.png  # preview image for Discord RPC Fallback Icon Setting
+    - images/finamp_cropped.png # preview image for Discord RPC Fallback Icon Setting
+    - assets/icon/icon_white_noborder.png # preview image for Discord RPC Fallback Icon Setting
     - images/jellyfin-icon-transparent.png # preview image for Discord RPC Fallback Icon Setting
   #   - images/a_dot_ham.jpeg
 
@@ -242,7 +262,7 @@ msix_config:
   display_name: Finamp
   publisher_display_name: jmshrv
   identity_name: com.unicornsonlsd.finamp
-  msix_version: 0.9.20.0
+  msix_version: 1.0.0.0
   logo_path: ./images/finamp_cropped.png
   trim_logo: false # don't force logo to be square, it will be stretched
   # backgroundMediaPlayback prevents apps from getting muted or killed when being in the background (won't build if included at the moment)
@@ -254,7 +274,7 @@ msix_config:
   # capabilities: backgroundMediaPlayback,internetClient,musicLibrary,privateNetworkClientServer,globalMediaControl
   capabilities: internetClient,musicLibrary,privateNetworkClientServer
   enable_at_startup: false
-  certificate_path: ./windows/runner/resources/MSIX_LOCAL_CERTIFICATE.pfx
+  certificate_path: ./windows/runner/resources/FINAMP_MSIX_LOCAL_CERTIFICATE_NEW.pfx
   certificate_password: finamp
   # Building during msix:create is currently bugged, so build manually beforehand.
   build_windows: false

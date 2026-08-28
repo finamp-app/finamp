@@ -1,0 +1,25 @@
+# Mirrors the app theme backgrounds from lib/color_schemes.g.dart:
+# - lightColorScheme.background = #FCFDFE
+# - darkColorScheme.background = #101315
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+
+  color: "#FCFDFE"
+  color_dark: "#101315"
+  image: assets/icon/icon_foreground.png
+  image_ios: assets/icon/splash_ios_light.png
+  android_gravity: center
+  ios_content_mode: center
+  fullscreen: false
+
+  info_plist_files:
+    - ios/Runner/Info-Debug.plist
+    - ios/Runner/Info-Profile.plist
+    - ios/Runner/Info-Release.plist
+
+  android_12:
+    color: "#FCFDFE"
+    color_dark: "#101315"
+    image: assets/icon/icon_foreground.png

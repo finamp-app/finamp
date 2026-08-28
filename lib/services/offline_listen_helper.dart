@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api.dart';
 import 'package:get_it/get_it.dart';
@@ -36,7 +37,7 @@ class OfflineListenLogHelper {
   Future<void> logOfflineListen(MediaItem item, [DateTime? timestamp]) async {
     final itemJson = item.extras!["itemJson"];
 
-    final deviceInfo = await getDeviceInfo();
+    final deviceInfo = await getDeviceInfo(deviceId: FinampSettingsHelper.finampSettings.deviceId);
 
     final offlineListen = OfflineListen(
       timestamp: (timestamp ?? DateTime.now()).millisecondsSinceEpoch ~/ 1000,

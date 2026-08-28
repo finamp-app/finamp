@@ -1,14 +1,19 @@
 import 'dart:io';
 
-import 'package:finamp/components/LayoutSettingsScreen/CustomizationSettingsScreen/tile_additional_info_type_dropdown_list_tile.dart';
+import 'package:collection/collection.dart';
 import 'package:finamp/components/LayoutSettingsScreen/CustomizationSettingsScreen/playback_speed_control_visibility_dropdown_list_tile.dart';
+import 'package:finamp/components/LayoutSettingsScreen/CustomizationSettingsScreen/tile_additional_info_type_dropdown_list_tile.dart';
+import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:flutter/material.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+
+import '../extensions/localizations.dart';
 
 class CustomizationSettingsScreen extends StatefulWidget {
   const CustomizationSettingsScreen({super.key});
@@ -25,6 +30,7 @@ class _CustomizationSettingsScreenState extends State<CustomizationSettingsScree
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.customizationSettingsTitle),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(
             context,
@@ -33,6 +39,7 @@ class _CustomizationSettingsScreenState extends State<CustomizationSettingsScree
         ],
       ),
       body: ListView(
+        padding: const EdgeInsets.only(bottom: 200.0),
         children: [
           const PlaybackSpeedControlVisibilityDropdownListTile(),
           if (!Platform.isIOS) const ShowStopButtonOnMediaNotificationToggle(),
@@ -42,7 +49,9 @@ class _CustomizationSettingsScreenState extends State<CustomizationSettingsScree
           const OneLineMarqueeTextSwitch(),
           const ReleaseDateFormatDropdownListTile(),
           const TileAdditionalInfoTypeTitleListTile(),
-          ...TabContentType.values.map((type) => TileAdditionalInfoTypeDropdownListTile(tabContentType: type)),
+          ...ContentType.values
+              .whereNot((x) => x == ContentType.genericArtists)
+              .map((type) => TileAdditionalInfoTypeDropdownListTile(tabContentType: type)),
         ],
       ),
     );
@@ -152,13 +161,19 @@ class ReleaseDateFormatDropdownListTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
       title: Text(AppLocalizations.of(context)!.releaseDateFormatTitle),
-      subtitle: Text(AppLocalizations.of(context)!.releaseDateFormatSubtitle),
-      trailing: DropdownButton<ReleaseDateFormat>(
-        value: ref.watch(finampSettingsProvider.releaseDateFormat),
-        items: ReleaseDateFormat.values
-            .map((e) => DropdownMenuItem<ReleaseDateFormat>(value: e, child: Text(e.toLocalisedString(context))))
-            .toList(),
-        onChanged: FinampSetters.setReleaseDateFormat.ifNonNull,
+      subtitle: Column(
+        spacing: 4.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.releaseDateFormatSubtitle),
+          FinampSettingsDropdown<ReleaseDateFormat>(
+            dropdownItems: ReleaseDateFormat.values
+                .map((e) => DropdownMenuEntry<ReleaseDateFormat>(value: e, label: e.toLocalisedString(context.l10n)))
+                .toList(),
+            selectedValue: ref.watch(finampSettingsProvider.releaseDateFormat),
+            onSelected: FinampSetters.setReleaseDateFormat.ifNonNull,
+          ),
+        ],
       ),
     );
   }

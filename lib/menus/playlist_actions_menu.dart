@@ -6,6 +6,7 @@ import 'package:finamp/components/toggleable_list_tile.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/menu_item_info_header.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/models/music_models.dart';
 import 'package:finamp/services/favorite_provider.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -38,7 +39,7 @@ Future<void> showPlaylistActionsMenu({
       var themeColor = Theme.of(context).colorScheme.primary;
 
       final menuEntries = [
-        if (items.length == 1) MenuItemInfoHeader.condensed(item: items.first),
+        if (items.length == 1) MenuItemInfoHeader.condensed(item: FinampPlayableDto.fromItem(items.first)),
         if (items.length == 1) const SizedBox(height: 16),
         if (items.length == 1)
           Consumer(

@@ -1,9 +1,11 @@
+import 'package:finamp/components/SettingsScreen/finamp_settings_dropdown.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../models/finamp_models.dart';
-import '../../../services/finamp_settings_helper.dart';
+import '../../../extensions/localizations.dart';
 
 class TileAdditionalInfoTypeTitleListTile extends ConsumerWidget {
   const TileAdditionalInfoTypeTitleListTile({super.key});
@@ -18,7 +20,7 @@ class TileAdditionalInfoTypeTitleListTile extends ConsumerWidget {
 }
 
 class TileAdditionalInfoTypeDropdownListTile extends ConsumerWidget {
-  final TabContentType tabContentType;
+  final ContentType tabContentType;
 
   const TileAdditionalInfoTypeDropdownListTile({required this.tabContentType, super.key});
 
@@ -31,22 +33,27 @@ class TileAdditionalInfoTypeDropdownListTile extends ConsumerWidget {
     final dropdownItems = [
       TileAdditionalInfoType.adaptive,
       TileAdditionalInfoType.dateAdded,
-      if ([TabContentType.tracks, TabContentType.albums].contains(tabContentType)) TileAdditionalInfoType.dateReleased,
-      if ([TabContentType.tracks].contains(tabContentType)) TileAdditionalInfoType.playCount,
-      if ([TabContentType.tracks].contains(tabContentType)) TileAdditionalInfoType.dateLastPlayed,
-      if ([TabContentType.albums, TabContentType.artists, TabContentType.playlists].contains(tabContentType))
+      if ([ContentType.tracks, ContentType.albums].contains(tabContentType)) TileAdditionalInfoType.dateReleased,
+      if ([ContentType.tracks].contains(tabContentType)) TileAdditionalInfoType.playCount,
+      if ([ContentType.tracks].contains(tabContentType)) TileAdditionalInfoType.dateLastPlayed,
+      if ([
+        ContentType.albums,
+        ContentType.albumArtists,
+        ContentType.performingArtists,
+        ContentType.playlists,
+      ].contains(tabContentType))
         TileAdditionalInfoType.duration,
       TileAdditionalInfoType.none,
     ];
 
     return ListTile(
-      title: Text(tabContentType.toLocalisedString(context)),
-      trailing: DropdownButton<TileAdditionalInfoType>(
-        value: currentType,
-        items: dropdownItems
-            .map((e) => DropdownMenuItem<TileAdditionalInfoType>(value: e, child: Text(e.toLocalisedString(context))))
+      title: Text(tabContentType.toLocalisedString(context.l10n)),
+      subtitle: FinampSettingsDropdown<TileAdditionalInfoType>(
+        dropdownItems: dropdownItems
+            .map((e) => DropdownMenuEntry<TileAdditionalInfoType>(value: e, label: e.toLocalisedString(context.l10n)))
             .toList(),
-        onChanged: (value) {
+        selectedValue: currentType,
+        onSelected: (value) {
           if (value != null) {
             FinampSetters.setTileAdditionalInfoType(tabContentType, value);
           }

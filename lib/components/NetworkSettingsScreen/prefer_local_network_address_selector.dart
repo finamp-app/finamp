@@ -62,27 +62,30 @@ class LocalNetworkAddressSelectorState extends ConsumerState<LocalNetworkAddress
 
   @override
   Widget build(BuildContext context) {
-    FinampUser? user = ref.watch(FinampUserHelper.finampCurrentUserProvider).valueOrNull;
+    FinampUser? user = ref.watch(FinampUserHelper.finampCurrentUserProvider);
     bool featureEnabled = user?.preferLocalNetwork ?? DefaultSettings.preferLocalNetwork;
 
     return ListTile(
       enabled: featureEnabled,
       title: Text(AppLocalizations.of(context)!.preferLocalNetworkTargetAddressLocalSettingTitle),
-      subtitle: Text(AppLocalizations.of(context)!.preferLocalNetworkTargetAddressLocalSettingDescription),
-      trailing: SizedBox(
-        width: 200 * MediaQuery.textScaleFactorOf(context),
-        child: TextField(
-          enabled: featureEnabled,
-          controller: _controller,
-          focusNode: _focusNode,
-          textAlign: TextAlign.center,
-          keyboardType: TextInputType.url,
-          onEditingComplete: () {
-            FocusScope.of(context).unfocus();
-            commitIfChanged();
-          },
-          onSubmitted: (_) => commitIfChanged(),
-        ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.preferLocalNetworkTargetAddressLocalSettingDescription),
+          TextField(
+            enabled: featureEnabled,
+            controller: _controller,
+            focusNode: _focusNode,
+            style: TextTheme.of(context).bodyMedium,
+            textAlign: TextAlign.center,
+            keyboardType: TextInputType.url,
+            onEditingComplete: () {
+              FocusScope.of(context).unfocus();
+              commitIfChanged();
+            },
+            onSubmitted: (_) => commitIfChanged(),
+          ),
+        ],
       ),
     );
   }

@@ -80,7 +80,7 @@ Future<void> showRadioMenu(
                 } else {
                   // clear tracks after updating mode to ensure any later request for radio tracks use the correct settings
                   if (radioTracksWillChange) {
-                    await clearRadioTracks();
+                    await queueService.clearRadioTracks();
                   }
                   toggleRadio(true);
                 }

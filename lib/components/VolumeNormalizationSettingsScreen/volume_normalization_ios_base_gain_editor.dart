@@ -1,3 +1,4 @@
+import 'package:finamp/components/SettingsScreen/subtitle_with_more_info_dialog.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +28,11 @@ class _VolumeNormalizationIOSBaseGainEditorState extends ConsumerState<VolumeNor
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(AppLocalizations.of(context)!.volumeNormalizationIOSBaseGainEditorTitle),
-      subtitle: Text(AppLocalizations.of(context)!.volumeNormalizationIOSBaseGainEditorSubtitle),
+      subtitle: SubtitleWithMoreInfoDialog(
+        subtitle: AppLocalizations.of(context)!.volumeNormalizationIOSBaseGainEditorSubtitle,
+        dialogTitle: AppLocalizations.of(context)!.volumeNormalizationIOSBaseGainEditorTitle,
+        dialogContent: AppLocalizations.of(context)!.volumeNormalizationIOSBaseGainEditorDescription,
+      ),
       trailing: SizedBox(
         width: 50 * MediaQuery.textScaleFactorOf(context),
         child: TextField(

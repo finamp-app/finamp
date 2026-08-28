@@ -1,0 +1,14 @@
+{
+    "finamp": "ফাইনএম্প",
+    "@finamp": {
+        "description": "App name, possibly translated"
+    },
+    "finampTagline": "একটি ওপেন সোর্স জেলিফিন মিউজিক প্লেয়ার",
+    "@finampTagline": {
+        "description": "Tagline / short description for the app"
+    },
+    "startupErrorTitle": "অ্যাপ শুরু করার সময় কোনো সমস্যা হয়েছে!",
+    "@startupErrorTitle": {
+        "description": "The title for the error screen that shows when startup fails."
+    }
+}

@@ -1,5 +1,6 @@
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/services/censored_log.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -12,19 +13,11 @@ Future<void> setupLogging() async {
   final finampLogsHelper = GetIt.instance<FinampLogsHelper>();
   await finampLogsHelper.openLog();
 
+  // Hive isn't open yet, so keep everything for now. applyLogLevel picks up the
+  // persisted verboseLogging toggle once settings are available.
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((event) {
-    // We don't want to print log messages from the Flutter logger since Flutter prints logs by itself
-    if (kDebugMode && event.loggerName != "Flutter") {
-      debugPrint("[${event.loggerName}/${event.level.name}] ${event.time}: ${event.message}");
-    }
-    if (kDebugMode && event.loggerName != "Flutter" && event.getStack != null) {
-      debugPrintStack(stackTrace: event.getStack);
-    }
-    // Make sure asserts are extra visible when debugging
-    if (kDebugMode && event.object is AssertionError) {
-      GlobalSnackbar.message((_) => event.object.toString());
-    }
+    performDebugLogPrinting(event);
     finampLogsHelper.addLog(event);
   });
 
@@ -36,4 +29,31 @@ Future<void> setupLogging() async {
         false, // we can't fetch server info yet, because the user helper isn't set up yet. it's also faster to skip this here
   );
   startupLogger.info("\n${metadata.pretty}");
+}
+
+void performDebugLogPrinting(LogRecord event) {
+  // We don't want to print log messages from the Flutter logger since Flutter prints logs by itself
+  if (kDebugMode && event.loggerName != "Flutter") {
+    debugPrint("[${event.loggerName}/${event.level.name}] ${event.time}: ${event.message}");
+  }
+  if (kDebugMode && event.loggerName != "Flutter" && event.getStack != null) {
+    debugPrintStack(stackTrace: event.getStack);
+  }
+  // Make sure asserts are extra visible when debugging
+  if (kDebugMode && event.object is AssertionError) {
+    GlobalSnackbar.message((_) => event.object.toString());
+  }
+}
+
+/// Applies the persisted verboseLogging preference. Call once settings are
+/// available, since [setupLogging] runs before the Hive box is open.
+///
+/// Debug builds keep everything. Release builds cap at INFO unless verbose
+/// logging is enabled, so the FINE/FINER/FINEST trace doesn't run censoring and
+/// a synchronous file write on the main isolate for every line in production.
+///
+/// This does not apply changes to chopper log level - the app must be restarted for those to apply.
+void applyLogLevel() {
+  final verbose = FinampSettingsHelper.finampSettings.verboseLogging;
+  Logger.root.level = (kDebugMode || verbose) ? Level.ALL : Level.INFO;
 }

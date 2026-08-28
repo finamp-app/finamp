@@ -1,286 +1,212 @@
 {
-  "finampTagline": "Odprtokodni glasbeni predvajalnik za Jellyfin",
-  "@finampTagline": {
-    "description": "Tagline / short description for the app"
-  },
-  "aboutContributionLink": "Prispevaj k Finamp na GitHub:",
-  "@aboutContributionLink": {
-    "description": "Link to the Finamp GitHub repository, shown in the about screen."
-  },
-  "finamp": "Finamp",
-  "@finamp": {
-    "description": "App name, possibly translated"
-  },
-  "about": "O Finamp",
-  "@about": {
-    "description": "Label for the about/info button on the settings screen"
-  },
-  "loginFlowWelcomeHeading": "Dobrodošli v",
-  "@loginFlowWelcomeHeading": {
-    "description": "Greeting shown on the login screen. The full message will be 'Welcome to Finamp'."
-  },
-  "loginFlowSlogan": "Tvoja glasba, kakor si jo želiš.",
-  "@loginFlowSlogan": {
-    "description": "Slogan shown on the login screen."
-  },
-  "loginFlowGetStarted": "Pa začnimo!",
-  "@loginFlowGetStarted": {
-    "description": "Button label for the login/splash screen."
-  },
-  "changeLanguage": "Spremeni jezik",
-  "@changeLanguage": {
-    "description": "Label for button shown during the login process that allows the user to change the app language"
-  },
-  "loginFlowServerSelectionHeading": "Povezava z Jellyfin",
-  "@loginFlowServerSelectionHeading": {
-    "description": "Heading for the server selection step during the login flow."
-  },
-  "back": "Nazaj",
-  "@back": {
-    "description": "Label for the back button."
-  },
-  "serverUrl": "Server URL",
-  "@serverUrl": {},
-  "connectingToServer": "Povezovanje s strežnikom ...",
-  "@connectingToServer": {
-    "description": "Text shown while the connection to the specified server is attempted"
-  },
-  "loginFlowLocalNetworkServers": "Strežniki v vašem lokalnem omrežju:",
-  "@loginFlowLocalNetworkServers": {
-    "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
-  },
-  "loginFlowNamelessUser": "Neimenovani uporabnik",
-  "@loginFlowNamelessUser": {
-    "description": "Name for a user that doesn't have a name set on the server."
-  },
-  "loginFlowAuthenticationHeading": "Prijavite se v svoj račun",
-  "@loginFlowAuthenticationHeading": {
-    "description": "Heading for the authentication step during the login flow."
-  },
-  "loginFlowQuickConnectPrompt": "Uporabite kodo za hitro povezavo",
-  "@loginFlowQuickConnectPrompt": {
-    "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
-  },
-  "loginFlowQuickConnectInstructions": "Odprite aplikacijo ali spletno mesto Jellyfin, kliknite ikono uporabnika in izberite Hitra povezava.",
-  "@loginFlowQuickConnectInstructions": {
-    "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
-  },
-  "username": "Uporabniško ime",
-  "@username": {},
-  "usernameHint": "Vnesi uporabniško ime",
-  "@usernameHint": {
-    "description": "Hint text for the username input field."
-  },
-  "password": "Geslo",
-  "@password": {},
-  "passwordHint": "Vnesi geslo",
-  "@passwordHint": {
-    "description": "Hint text for the password input field."
-  },
-  "login": "Prijava",
-  "@login": {
-    "description": "Label for the login button."
-  },
-  "selectMusicLibraries": "Izberi glasbeno knjižnico",
-  "@selectMusicLibraries": {
-    "description": "App bar title for library select screen"
-  },
-  "unknownName": "Neznano ime",
-  "@unknownName": {},
-  "tracks": "Skladbe",
-  "@tracks": {},
-  "albums": "Albumi",
-  "@albums": {},
-  "genres": "Žanri",
-  "@genres": {},
-  "playlists": "Seznami predvajanja",
-  "@playlists": {},
-  "startMix": "Zaženi mix",
-  "@startMix": {},
-  "shuffleAll": "Premešaj vse",
-  "@shuffleAll": {},
-  "settings": "Nastavitve",
-  "@settings": {},
-  "offlineMode": "Offline Mode",
-  "@offlineMode": {},
-  "sortOrder": "Vrstni red",
-  "@sortOrder": {},
-  "sortBy": "Razvrsti po",
-  "@sortBy": {},
-  "title": "Naslov",
-  "@title": {},
-  "album": "Album",
-  "@album": {},
-  "albumArtist": "Izvajalec albuma",
-  "@albumArtist": {},
-  "artist": "Izvajalec",
-  "@artist": {},
-  "budget": "Proračun",
-  "@budget": {},
-  "communityRating": "Ocena skupnosti",
-  "@communityRating": {},
-  "criticRating": "Kritična ocena",
-  "@criticRating": {},
-  "dateAdded": "Datum dodajanja",
-  "@dateAdded": {},
-  "datePlayed": "Datum predvajanja",
-  "@datePlayed": {},
-  "premiereDate": "Datum premiere",
-  "@premiereDate": {},
-  "name": "Ime",
-  "@name": {},
-  "activeDownloads": "Aktivni Prenosi",
-  "@activeDownloads": {},
-  "random": "Naključno",
-  "@random": {},
-  "revenue": "Prihodki",
-  "@revenue": {},
-  "downloadMissingImages": "Prenesi manjkajoče slike",
-  "@downloadMissingImages": {},
-  "downloadLocations": "Lokacija prenosov",
-  "@downloadLocations": {},
-  "audioService": "Avdio storitev",
-  "@audioService": {},
-  "goToArtist": "Pojdi na izvajalca",
-  "@goToArtist": {},
-  "goToGenre": "Pojdi na žanr",
-  "@goToGenre": {},
-  "confirmFavoriteAdded": "Priljubljeno dodano",
-  "@confirmFavoriteAdded": {},
-  "insertedIntoQueue": "Vstavljeno v čakalno vrsto.",
-  "@insertedIntoQueue": {
-    "description": "Snackbar message that shows when the user successfully inserts items into the play queue at a location that is not necessarily the end."
-  },
-  "startingInstantMix": "Zagon takojšnjega miksa.",
-  "@startingInstantMix": {},
-  "anErrorHasOccured": "Prišlo je do napake.",
-  "@anErrorHasOccured": {},
-  "responseError": "{error} Status koda {statusCode}.",
-  "@responseError": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "example": "Forbidden"
-      },
-      "statusCode": {
-        "type": "int",
-        "example": "403"
-      }
+    "finampTagline": "Odprtokodni glasbeni predvajalnik za Jellyfin",
+    "@finampTagline": {
+        "description": "Tagline / short description for the app"
+    },
+    "aboutContributionLink": "Prispevaj k Finamp na GitHub:",
+    "@aboutContributionLink": {
+        "description": "Link to the Finamp GitHub repository, shown in the about screen."
+    },
+    "finamp": "Finamp",
+    "@finamp": {
+        "description": "App name, possibly translated"
+    },
+    "about": "O Finamp",
+    "@about": {
+        "description": "Label for the about/info button on the settings screen"
+    },
+    "loginFlowWelcomeHeading": "Dobrodošli v",
+    "@loginFlowWelcomeHeading": {
+        "description": "Greeting shown on the login screen. The full message will be 'Welcome to Finamp'."
+    },
+    "loginFlowSlogan": "Tvoja glasba, kakor si jo želiš.",
+    "@loginFlowSlogan": {
+        "description": "Slogan shown on the login screen."
+    },
+    "loginFlowGetStarted": "Pa začnimo!",
+    "@loginFlowGetStarted": {
+        "description": "Button label for the login/splash screen."
+    },
+    "changeLanguage": "Spremeni jezik",
+    "@changeLanguage": {
+        "description": "Label for button shown during the login process that allows the user to change the app language"
+    },
+    "loginFlowServerSelectionHeading": "Povezava z Jellyfin",
+    "@loginFlowServerSelectionHeading": {
+        "description": "Heading for the server selection step during the login flow."
+    },
+    "back": "Nazaj",
+    "@back": {
+        "description": "Label for the back button."
+    },
+    "serverUrl": "Server URL",
+    "connectingToServer": "Povezovanje s strežnikom ...",
+    "@connectingToServer": {
+        "description": "Text shown while the connection to the specified server is attempted"
+    },
+    "loginFlowLocalNetworkServers": "Strežniki v vašem lokalnem omrežju:",
+    "@loginFlowLocalNetworkServers": {
+        "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
+    },
+    "loginFlowNamelessUser": "Neimenovani uporabnik",
+    "@loginFlowNamelessUser": {
+        "description": "Name for a user that doesn't have a name set on the server."
+    },
+    "loginFlowAuthenticationHeading": "Prijavite se v svoj račun",
+    "@loginFlowAuthenticationHeading": {
+        "description": "Heading for the authentication step during the login flow."
+    },
+    "loginFlowQuickConnectPrompt": "Uporabite kodo za hitro povezavo",
+    "@loginFlowQuickConnectPrompt": {
+        "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
+    },
+    "loginFlowQuickConnectInstructions": "Odprite aplikacijo ali spletno mesto Jellyfin, kliknite ikono uporabnika in izberite Hitra povezava.",
+    "@loginFlowQuickConnectInstructions": {
+        "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
+    },
+    "username": "Uporabniško ime",
+    "usernameHint": "Vnesi uporabniško ime",
+    "@usernameHint": {
+        "description": "Hint text for the username input field."
+    },
+    "password": "Geslo",
+    "passwordHint": "Vnesi geslo",
+    "@passwordHint": {
+        "description": "Hint text for the password input field."
+    },
+    "login": "Prijava",
+    "@login": {
+        "description": "Label for the login button."
+    },
+    "selectMusicLibraries": "Izberi glasbeno knjižnico",
+    "@selectMusicLibraries": {
+        "description": "App bar title for library select screen"
+    },
+    "unknownName": "Neznano ime",
+    "tracks": "Skladbe",
+    "albums": "Albumi",
+    "genres": "Žanri",
+    "playlists": "Seznami predvajanja",
+    "startMix": "Zaženi mix",
+    "shuffleAll": "Premešaj vse",
+    "settings": "Nastavitve",
+    "offlineMode": "Offline Mode",
+    "sortOrder": "Vrstni red",
+    "sortBy": "Razvrsti po",
+    "title": "Naslov",
+    "album": "Album",
+    "albumArtist": "Izvajalec albuma",
+    "artist": "Izvajalec",
+    "budget": "Proračun",
+    "communityRating": "Ocena skupnosti",
+    "criticRating": "Kritična ocena",
+    "dateAdded": "Datum dodajanja",
+    "datePlayed": "Datum predvajanja",
+    "premiereDate": "Datum premiere",
+    "name": "Ime",
+    "activeDownloads": "Aktivni Prenosi",
+    "random": "Naključno",
+    "revenue": "Prihodki",
+    "downloadLocations": "Lokacija prenosov",
+    "audioService": "Avdio storitev",
+    "goToArtist": "Pojdi na izvajalca",
+    "goToGenre": "Pojdi na žanr",
+    "startingInstantMix": "Zagon takojšnjega miksa.",
+    "anErrorHasOccured": "Prišlo je do napake.",
+    "responseError": "{error} Status koda {statusCode}.",
+    "@responseError": {
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Forbidden"
+            },
+            "statusCode": {
+                "type": "int",
+                "example": "403"
+            }
+        }
+    },
+    "genericCancel": "Prekliči",
+    "@genericCancel": {
+        "description": "Used when the user stops an action from taking place inside a popup dialog window"
+    },
+    "viewLogs": "Ogled dnevnikov",
+    "@viewLogs": {
+        "description": "Label for button shown during the login process that allows the user to view the app logs"
+    },
+    "loginFlowLocalNetworkServersScanningForServers": "Iskanje strežnikov ...",
+    "@loginFlowLocalNetworkServersScanningForServers": {
+        "description": "Text shown while servers are being discovered via UDP broadcasts"
+    },
+    "backToAccountSelection": "Nazaj na izbiro računa",
+    "@backToAccountSelection": {
+        "description": "Label for the button that takes the user back to the account selection step during the login flow."
+    },
+    "loginFlowQuickConnectDisabled": "Hitra povezava je na tem strežniku onemogočena.",
+    "@loginFlowQuickConnectDisabled": {
+        "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
+    },
+    "confirmAddedToPlaylist": "Dodano na seznam predvajanja.",
+    "@confirmAddedToPlaylist": {
+        "description": "Snackbar message that shows when the user successfully adds items to a playlist."
+    },
+    "addToMix": "Dodaj v mix",
+    "removeFromMix": "Odstrani iz mixa",
+    "goToAlbum": "Pojdi na album",
+    "activeDownloadSize": "Prenašanje...",
+    "@activeDownloadSize": {
+        "description": "Message shown for download size while item is still being downloaded"
+    },
+    "logs": "Dnevnik napak",
+    "music": "Glasba",
+    "clear": "Počisti",
+    "downloads": "Prenosi",
+    "backToServerSelection": "Nazaj na izbiro strežnika",
+    "@backToServerSelection": {
+        "description": "Label for the button that takes the user back to the server selection step during the login flow."
+    },
+    "usernameValidationMissingUsername": "Vnesite uporabniško ime",
+    "@usernameValidationMissingUsername": {
+        "description": "Error message that shows when the user submits a login without a username"
+    },
+    "loginFlowSelectAUser": "Izberi uporabnika",
+    "@loginFlowSelectAUser": {
+        "description": "Heading for the list of users that the user can select from during the login flow."
+    },
+    "playCount": "Število predvajanj",
+    "productionYear": "Leto proizvodnje",
+    "fiveLatestAlbumsSetting": "Prenesi 5 najnovejših albumov",
+    "artists": "Izvajalci",
+    "loginFlowAccountSelectionHeading": "Izberite svoj račun",
+    "@loginFlowAccountSelectionHeading": {
+        "description": "Heading for the account selection step during the login flow."
+    },
+    "next": "Naprej",
+    "fiveLatestAlbumsSettingSubtitle": "Prenosi bodo odstranjeni, ko se bodo ostarali.  Zakleni prenos, da preprečiš odstranitev albuma.",
+    "emptyServerUrl": "URL strežnika ne sme biti prazen",
+    "@emptyServerUrl": {
+        "description": "Error message that shows when the user submits a login without a server URL"
+    },
+    "orDivider": "ali",
+    "@orDivider": {
+        "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
+    },
+    "loginFlowCustomUser": "Uporabnik po meri",
+    "@loginFlowCustomUser": {
+        "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
+    },
+    "removedFromPlaylist": "Odstranjeno s seznama predvajanja.",
+    "responseError401": "{error} Status koda {statusCode}. To verjetno pomeni, da ste uporabili napačno uporabniško ime/geslo ali da niste več prijavljeni.",
+    "@responseError401": {
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Unauthorized"
+            },
+            "statusCode": {
+                "type": "int",
+                "example": "401"
+            }
+        }
     }
-  },
-  "genericCancel": "Prekliči",
-  "@genericCancel": {
-    "description": "Used when the user stops an action from taking place inside a popup dialog window"
-  },
-  "viewLogs": "Ogled dnevnikov",
-  "@viewLogs": {
-    "description": "Label for button shown during the login process that allows the user to view the app logs"
-  },
-  "loginFlowLocalNetworkServersScanningForServers": "Iskanje strežnikov ...",
-  "@loginFlowLocalNetworkServersScanningForServers": {
-    "description": "Text shown while servers are being discovered via UDP broadcasts"
-  },
-  "backToAccountSelection": "Nazaj na izbiro računa",
-  "@backToAccountSelection": {
-    "description": "Label for the button that takes the user back to the account selection step during the login flow."
-  },
-  "queueReplaced": "Čakalna vrsta zamenjana.",
-  "@queueReplaced": {},
-  "loginFlowQuickConnectDisabled": "Hitra povezava je na tem strežniku onemogočena.",
-  "@loginFlowQuickConnectDisabled": {
-    "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
-  },
-  "confirmFavoriteRemoved": "Priljubljeno odstranjeno",
-  "@confirmFavoriteRemoved": {},
-  "emptyTopTracksList": "Niste še poslušali nobene skladbe tega izvajalca.",
-  "@emptyTopTracksList": {
-    "description": "Message shown as a placeholder when the top tracks list for an artist is empty"
-  },
-  "confirmAddedToPlaylist": "Dodano na seznam predvajanja.",
-  "@confirmAddedToPlaylist": {
-    "description": "Snackbar message that shows when the user successfully adds items to a playlist."
-  },
-  "addToMix": "Dodaj v mix",
-  "@addToMix": {},
-  "removeFromMix": "Odstrani iz mixa",
-  "@removeFromMix": {},
-  "goToAlbum": "Pojdi na album",
-  "@goToAlbum": {},
-  "activeDownloadSize": "Prenašanje...",
-  "@activeDownloadSize": {
-    "description": "Message shown for download size while item is still being downloaded"
-  },
-  "logs": "Dnevnik napak",
-  "@logs": {},
-  "couldNotFindLibraries": "Ne najdem nobene knjižnice.",
-  "@couldNotFindLibraries": {
-    "description": "Error message when the user does not have any libraries"
-  },
-  "music": "Glasba",
-  "@music": {},
-  "clear": "Počisti",
-  "@clear": {},
-  "downloads": "Prenosi",
-  "@downloads": {},
-  "backToServerSelection": "Nazaj na izbiro strežnika",
-  "@backToServerSelection": {
-    "description": "Label for the button that takes the user back to the server selection step during the login flow."
-  },
-  "usernameValidationMissingUsername": "Vnesite uporabniško ime",
-  "@usernameValidationMissingUsername": {
-    "description": "Error message that shows when the user submits a login without a username"
-  },
-  "loginFlowSelectAUser": "Izberi uporabnika",
-  "@loginFlowSelectAUser": {
-    "description": "Heading for the list of users that the user can select from during the login flow."
-  },
-  "playCount": "Število predvajanj",
-  "@playCount": {},
-  "productionYear": "Leto proizvodnje",
-  "@productionYear": {},
-  "fiveLatestAlbumsSetting": "Prenesi 5 najnovejših albumov",
-  "@fiveLatestAlbumsSetting": {},
-  "artists": "Izvajalci",
-  "@artists": {},
-  "loginFlowAccountSelectionHeading": "Izberite svoj račun",
-  "@loginFlowAccountSelectionHeading": {
-    "description": "Heading for the account selection step during the login flow."
-  },
-  "next": "Naprej",
-  "@next": {},
-  "syncDownloadedPlaylists": "Sinhroniziraj prenešene sezname predvajanja",
-  "@syncDownloadedPlaylists": {},
-  "fiveLatestAlbumsSettingSubtitle": "Prenosi bodo odstranjeni, ko se bodo ostarali.  Zakleni prenos, da preprečiš odstranitev albuma.",
-  "@fiveLatestAlbumsSettingSubtitle": {},
-  "emptyServerUrl": "URL strežnika ne sme biti prazen",
-  "@emptyServerUrl": {
-    "description": "Error message that shows when the user submits a login without a server URL"
-  },
-  "orDivider": "ali",
-  "@orDivider": {
-    "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
-  },
-  "loginFlowCustomUser": "Uporabnik po meri",
-  "@loginFlowCustomUser": {
-    "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
-  },
-  "addedToQueue": "Dodano v čakalno vrsto.",
-  "@addedToQueue": {
-    "description": "Snackbar message that shows when the user successfully adds items to the end of the play queue."
-  },
-  "removedFromPlaylist": "Odstranjeno s seznama predvajanja.",
-  "@removedFromPlaylist": {},
-  "responseError401": "{error} Status koda {statusCode}. To verjetno pomeni, da ste uporabili napačno uporabniško ime/geslo ali da niste več prijavljeni.",
-  "@responseError401": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "example": "Unauthorized"
-      },
-      "statusCode": {
-        "type": "int",
-        "example": "401"
-      }
-    }
-  }
 }

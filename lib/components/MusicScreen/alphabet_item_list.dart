@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:finamp/main.dart';
-import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/feedback_helper.dart';
-import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus_on_it/focus_on_it.dart';
@@ -18,6 +16,7 @@ class AlphabetList extends ConsumerStatefulWidget {
 
   final Widget child;
   final ScrollController scrollController;
+  final bool inGridMode;
 
   const AlphabetList({
     super.key,
@@ -25,6 +24,7 @@ class AlphabetList extends ConsumerStatefulWidget {
     required this.sortOrder,
     required this.child,
     required this.scrollController,
+    required this.inGridMode,
   });
 
   @override
@@ -62,7 +62,7 @@ class _AlphabetListState extends ConsumerState<AlphabetList> {
   Widget build(BuildContext context) {
     final alphabetList = Container(
       margin: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + _bottomPadding / 2),
-      decoration: ref.watch(finampSettingsProvider.contentViewType) == ContentViewType.grid
+      decoration: widget.inGridMode
           ? BoxDecoration(
               borderRadius: BorderRadius.circular(12.0),
               color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.75),

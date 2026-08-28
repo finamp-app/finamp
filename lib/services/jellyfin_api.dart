@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:io' show HttpClient, Platform;
 
-import 'package:app_set_id/app_set_id.dart';
 import 'package:chopper/chopper.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/http_aggregate_logging_interceptor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' show MultipartFile;
 import 'package:http/io_client.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -18,7 +16,7 @@ import 'jellyfin_api_helper.dart';
 
 part 'jellyfin_api.chopper.dart';
 
-const String defaultFields = "ChildCount,DateCreated,DateLastMediaAdded,Etag,Genres,ParentId,ProviderIds,Tags";
+const String defaultFields = "ChildCount,DateCreated,DateLastMediaAdded,Etag,Genres,ParentId,ProviderIds,Tags,SortName";
 
 @ChopperApi()
 abstract class JellyfinApi extends ChopperService {
@@ -35,7 +33,7 @@ abstract class JellyfinApi extends ChopperService {
   Future<dynamic> getQuickConnectState();
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
-  @Get(path: "/QuickConnect/Initiate")
+  @Post(path: "/QuickConnect/Initiate")
   Future<dynamic> initiateQuickConnect();
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
@@ -71,6 +69,10 @@ abstract class JellyfinApi extends ChopperService {
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
   @GET(path: "/Users/Me")
   Future<dynamic> getUser();
+
+  @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
+  @GET(path: "/Users/{id}")
+  Future<dynamic> getUserById(@Path() String id);
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
   @Get(path: "/Users/{id}/Views")
@@ -172,6 +174,15 @@ abstract class JellyfinApi extends ChopperService {
 
     /// Optional. Controls if multi-disc should be returned as separate albums (true) or as a single album (false).
     @Query("CollapseBoxSetItems") bool? collapseMultiDiscAlbums,
+
+    /// Optional. Filter by items whose name is sorted equally than a given input string.
+    @Query("NameStartsWith") String? nameStartsWith,
+
+    /// Optional. Filter by items whose name is sorted equally or greater than a given input string.
+    @Query("NameStartsWithOrGreater") String? nameStartsWithOrGreater,
+
+    /// Optional. Filter by items whose name is equally or lesser than a given input string.
+    @Query("NameLessThan") String? nameLessThan,
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
@@ -218,6 +229,10 @@ abstract class JellyfinApi extends ChopperService {
     @Path() required BaseItemId id,
     @Query() required String userId,
     @Query() required int limit,
+    // when requesting Instant Mixes (Jellyfin 10.10.x & 10.11.x), Jellyfin omits the [hasOwnImage] field and other metadata, which leads to us (and Jellyfin Web) falling back to the album image, even though a track image is present.
+    // These parameters help to get more accurate image data
+    @Query() bool? enableImages = true,
+    @Query() List<String>? enableImageTypes = const ["Primary", "Disc", "Thumb", "Art"],
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
@@ -417,6 +432,9 @@ abstract class JellyfinApi extends ChopperService {
 
     /// Optional filter by items that are marked as favorite, or not.
     @Query("isFavorite") bool? isFavorite,
+
+    /// Optional. Filter by items whose name is sorted equally than a given input string.
+    @Query("NameStartsWith") String? nameStartsWith,
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
@@ -461,6 +479,9 @@ abstract class JellyfinApi extends ChopperService {
 
     /// Optional filter by items that are marked as favorite, or not.
     @Query("isFavorite") bool? isFavorite,
+
+    /// Optional. Filter by items whose name is sorted equally than a given input string.
+    @Query("NameStartsWith") String? nameStartsWith,
   });
 
   /// Gets all genres from a given item, folder, or the entire library.
@@ -553,8 +574,13 @@ abstract class JellyfinApi extends ChopperService {
   @Get(path: "/System/Endpoint", optionalBody: true)
   Future<Response<dynamic>> pingServer();
 
-  static JellyfinApi create(bool inForeground) {
-    final chopperHttpLogLevel = Level.body; //TODO allow changing the log level in settings (and a debug config file?)
+  static JellyfinApi create({required bool inForeground, required bool verboseLogging}) {
+    // Body logging can be very excessive, so we do not perform it by default.  If in debug mode or configured for verbose
+    // logging, body log foreground requests but keep disabled for verbose getItems calls in background.  If using verbose
+    // logs in debug mode, body log every request.
+    final chopperHttpLogLevel = (kDebugMode && verboseLogging) || ((kDebugMode || verboseLogging) && inForeground)
+        ? Level.body
+        : Level.headers;
 
     final client = ChopperClient(
       client: http.IOClient(
@@ -641,8 +667,8 @@ class JellyfinSpecificInterceptor implements Interceptor {
   }
 }
 
-/// Creates the X-Emby-Authorization header
-Future<String> getAuthHeader() async {
+/// Creates the Authorization header
+Future<String> getAuthHeader({required String deviceId}) async {
   final notAsciiRegex = RegExp(r'[^\x00-\x7F]+');
 
   final finampUserHelper = GetIt.instance<FinampUserHelper>();
@@ -659,7 +685,7 @@ Future<String> getAuthHeader() async {
 
   authHeader = '${authHeader}Client="Finamp", ';
 
-  final deviceInfo = await getDeviceInfo();
+  final deviceInfo = await getDeviceInfo(deviceId: deviceId);
   authHeader = '${authHeader}Device="${deviceInfo.name}",DeviceId="${deviceInfo.id}", ';
 
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -672,7 +698,7 @@ Future<String> getAuthHeader() async {
 
 // return type for deviceInfo
 
-Future<DeviceInfo> getDeviceInfo() async {
+Future<DeviceInfo> getDeviceInfo({required String deviceId}) async {
   DeviceInfo info;
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   String idExtension = kDebugMode
@@ -682,12 +708,10 @@ Future<DeviceInfo> getDeviceInfo() async {
       : "";
   if (Platform.isAndroid) {
     AndroidDeviceInfo androidDeviceInfo = await deviceInfo.androidInfo;
-    final appSetId = await AppSetId().getIdentifier();
-    info = DeviceInfo(name: androidDeviceInfo.model, id: "$appSetId-$idExtension");
+    info = DeviceInfo(name: androidDeviceInfo.name, id: "$deviceId-$idExtension");
   } else if (Platform.isIOS) {
     IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
-    final appSetId = await AppSetId().getIdentifier();
-    info = DeviceInfo(name: iosDeviceInfo.name, id: "$appSetId-$idExtension");
+    info = DeviceInfo(name: iosDeviceInfo.name, id: "$deviceId-$idExtension");
   } else if (Platform.isWindows) {
     WindowsDeviceInfo windowsDeviceInfo = await deviceInfo.windowsInfo;
     final windowsId = windowsDeviceInfo.deviceId;

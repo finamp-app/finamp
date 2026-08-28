@@ -21,7 +21,7 @@ typedef SliverBuilder = (double, List<Widget>) Function(BuildContext);
 typedef WrapperBuilder = Widget Function(BuildContext, DraggableScrollableController, ScrollBuilder);
 typedef ScrollBuilder = Widget Function(double, List<Widget>);
 
-Future<void> showThemedBottomSheet({
+Future<T?> showThemedBottomSheet<T>({
   required BuildContext context,
   BaseItemDto? item,
   required String routeName,
@@ -29,17 +29,18 @@ Future<void> showThemedBottomSheet({
   WrapperBuilder? buildWrapper,
   double minDraggableHeight = 0.6,
   bool showDragHandle = true,
+  bool useRootNavigator = false,
 }) async {
   FeedbackHelper.feedback(FeedbackType.selection);
   bool useDefaultTheme = false;
   final menu = ThemedBottomSheet(
-    key: ValueKey((item?.id?.raw ?? "") + routeName),
+    key: ValueKey((item?.id.raw ?? "") + routeName),
     buildSlivers: buildSlivers,
     buildWrapper: buildWrapper,
     minDraggableHeight: minDraggableHeight,
     showDragHandle: showDragHandle,
   );
-  await showModalBottomSheet<void>(
+  return await showModalBottomSheet<T>(
     context: context,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.0))),
     isScrollControlled: true,
@@ -47,6 +48,7 @@ Future<void> showThemedBottomSheet({
     constraints: BoxConstraints(
       maxWidth: (Platform.isIOS || Platform.isAndroid) ? 500 : min(500, MediaQuery.widthOf(context) * 0.9),
     ),
+    useRootNavigator: useRootNavigator,
     isDismissible: true,
     enableDrag: true,
     useSafeArea: true,
@@ -58,8 +60,7 @@ Future<void> showThemedBottomSheet({
     builder: (BuildContext context) {
       return ProviderScope(
         overrides: [
-          if (useDefaultTheme || item == null)
-            localThemeProvider.overrideWithValue(getDefaultTheme(Theme.brightnessOf(context))),
+          if (useDefaultTheme || item == null) localThemeProvider.overrideWith((_) => ColorScheme.of(context)),
           if (!useDefaultTheme && item != null)
             localThemeInfoProvider.overrideWithValue(ThemeInfo(item, useIsolate: false)),
         ],
@@ -125,7 +126,11 @@ class _ThemedBottomSheetState extends ConsumerState<ThemedBottomSheet> {
             var (height, slivers) = widget.buildSlivers!(context);
             child = buildInternal(height, slivers);
           }
-          return ColoredBox(color: Theme.of(context).scaffoldBackgroundColor, child: child);
+          final colorScheme = ColorScheme.of(context);
+          return Material(
+            color: ElevationOverlay.applySurfaceTint(colorScheme.surface, colorScheme.surfaceTint, 1),
+            child: child,
+          );
         },
       ),
     );

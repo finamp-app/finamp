@@ -1,17 +1,17 @@
 import 'dart:io';
 
 import 'package:finamp/components/AlbumScreen/download_button.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/screens/downloads_location_screen.dart';
+import 'package:finamp/services/downloads_service.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
-
-import '../components/global_snackbar.dart';
-import '../models/finamp_models.dart';
-import '../services/downloads_service.dart';
-import '../services/finamp_settings_helper.dart';
-import 'downloads_location_screen.dart';
 
 class DownloadsSettingsScreen extends StatefulWidget {
   const DownloadsSettingsScreen({super.key});
@@ -27,11 +27,13 @@ class _DownloadsSettingsScreenState extends State<DownloadsSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.downloadSettings),
+        leading: FinampAppBarBackButton(),
         actions: [
           FinampSettingsHelper.makeSettingsResetButtonWithDialog(context, FinampSettingsHelper.resetDownloadSettings),
         ],
       ),
       body: ListView(
+        padding: const EdgeInsets.only(bottom: 200.0),
         children: [
           ListTile(
             leading: const Icon(Icons.folder),
@@ -94,8 +96,7 @@ class _DownloadsSettingsScreenState extends State<DownloadsSettingsScreen> {
           const RedownloadTranscodesSwitch(),
           const ShowPlaylistTracksSwitch(),
           const DownloadWorkersSelector(),
-          // Do not limit enqueued downloads on IOS, it throttles them like crazy on its own.
-          if (!Platform.isIOS) const ConcurentDownloadsSelector(),
+          const ConcurentDownloadsSelector(),
           const DownloadSizeWarningCutoffTile(),
         ],
       ),
@@ -182,36 +183,39 @@ class ConcurentDownloadsSelector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        ListTile(
-          title: Text(AppLocalizations.of(context)!.maxConcurrentDownloads),
-          subtitle: Text(AppLocalizations.of(context)!.maxConcurrentDownloadsSubtitle),
-        ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Slider(
-              min: 1,
-              max: 25,
-              value: ref.watch(finampSettingsProvider.maxConcurrentDownloads).clamp(1, 25).toDouble(),
-              label: AppLocalizations.of(
-                context,
-              )!.maxConcurrentDownloadsLabel(ref.watch(finampSettingsProvider.maxConcurrentDownloads).toString()),
-              onChanged: (value) => FinampSetters.setMaxConcurrentDownloads(value.toInt()),
-              autofocus: false,
-              focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
-            ),
-            Text(
-              AppLocalizations.of(
-                context,
-              )!.maxConcurrentDownloadsLabel(ref.watch(finampSettingsProvider.maxConcurrentDownloads).toString()),
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ],
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24.0),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.maxConcurrentDownloads),
+            subtitle: Text(AppLocalizations.of(context)!.maxConcurrentDownloadsSubtitle),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                AppLocalizations.of(
+                  context,
+                )!.maxConcurrentDownloadsLabel(ref.watch(finampSettingsProvider.maxConcurrentDownloads).toString()),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Slider(
+                min: 1,
+                max: 25,
+                value: ref.watch(finampSettingsProvider.maxConcurrentDownloads).clamp(1, 25).toDouble(),
+                label: AppLocalizations.of(
+                  context,
+                )!.maxConcurrentDownloadsLabel(ref.watch(finampSettingsProvider.maxConcurrentDownloads).toString()),
+                onChanged: (value) => FinampSetters.setMaxConcurrentDownloads(value.toInt()),
+                autofocus: false,
+                focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -222,32 +226,35 @@ class DownloadWorkersSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var workers = ref.watch(finampSettingsProvider.downloadWorkers);
-    return Column(
-      children: [
-        ListTile(
-          title: Text(AppLocalizations.of(context)!.downloadsWorkersSetting),
-          subtitle: Text(AppLocalizations.of(context)!.downloadsWorkersSettingSubtitle),
-        ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Slider(
-              min: 1,
-              max: 5,
-              value: workers.clamp(1, 5).toDouble(),
-              label: AppLocalizations.of(context)!.downloadsWorkersSettingLabel(workers.toString()),
-              onChanged: (value) => FinampSetters.setDownloadWorkers(value.toInt()),
-              autofocus: false,
-              focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
-            ),
-            Text(
-              AppLocalizations.of(context)!.downloadsWorkersSettingLabel(workers.toString()),
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ],
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24.0),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.downloadsWorkersSetting),
+            subtitle: Text(AppLocalizations.of(context)!.downloadsWorkersSettingSubtitle),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.downloadsWorkersSettingLabel(workers.toString()),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Slider(
+                min: 1,
+                max: 5,
+                value: workers.clamp(1, 5).toDouble(),
+                label: AppLocalizations.of(context)!.downloadsWorkersSettingLabel(workers.toString()),
+                onChanged: (value) => FinampSetters.setDownloadWorkers(value.toInt()),
+                autofocus: false,
+                focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

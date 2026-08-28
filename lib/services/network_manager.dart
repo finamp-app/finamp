@@ -62,8 +62,7 @@ class AutoOffline extends _$AutoOffline {
     bool autoOfflineActive = ref.watch(finampSettingsProvider.autoOfflineListenerActive);
 
     bool preferLocalNetwork =
-        ref.watch(FinampUserHelper.finampCurrentUserProvider).valueOrNull?.preferLocalNetwork ??
-        DefaultSettings.preferLocalNetwork;
+        ref.watch(FinampUserHelper.finampCurrentUserProvider)?.preferLocalNetwork ?? DefaultSettings.preferLocalNetwork;
 
     // Why this integer magic?
     // If the function would return a bool aka. `(autoOfflineEnabled && autoOfflineActive) || autoServerSwitch`
@@ -83,7 +82,7 @@ class AutoOffline extends _$AutoOffline {
 }
 
 Future<void> _onConnectivityChange(List<ConnectivityResult>? connections) async {
-  _networkAutomationLogger.finest(
+  _networkAutomationLogger.info(
     "Network Change: ${connections?.map((element) => element.toString()).join(", ") ?? "None (likely a manual function call)"}",
   );
   connections ??= await Connectivity().checkConnectivity();

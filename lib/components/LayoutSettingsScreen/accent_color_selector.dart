@@ -78,6 +78,7 @@ class AccentColorPopup extends ConsumerStatefulWidget {
 
 class _AccentColorPopupState extends ConsumerState<AccentColorPopup> {
   Color? previewColor = FinampSettingsHelper.finampSettings.accentColor;
+  bool amoledTheme = FinampSettingsHelper.finampSettings.amoledTheme;
   late final controller = TextEditingController(text: previewColor?.toHex());
 
   void updatePreview(String value) => setState(() {
@@ -91,7 +92,9 @@ class _AccentColorPopupState extends ConsumerState<AccentColorPopup> {
 
   @override
   Widget build(BuildContext context) {
-    final previewTheme = Theme.of(context).withColorScheme(getColorScheme(previewColor, ref.watch(brightnessProvider)));
+    final previewTheme = Theme.of(
+      context,
+    ).withColorScheme(getColorScheme(previewColor, ref.watch(brightnessProvider), amoledTheme));
 
     return Theme(
       data: previewTheme,
@@ -151,29 +154,32 @@ class _AccentColorPopupState extends ConsumerState<AccentColorPopup> {
                     ColorPickerType.accent: false,
                   },
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        FinampSetters.setAccentColor(null);
-                        Navigator.pop(context);
-                      },
-                      child: Text(AppLocalizations.of(context)!.useDefaultButton),
-                    ),
-                    FilledButton(
-                      onPressed: previewColor == null
-                          ? null
-                          : () {
-                              final color = controller.text.toColorOrNull();
-                              if (color != null) {
-                                FinampSetters.setAccentColor(color);
-                                Navigator.pop(context);
-                              }
-                            },
-                      child: Text(AppLocalizations.of(context)!.save),
-                    ),
-                  ],
+                SizedBox(
+                  width: double.infinity,
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          FinampSetters.setAccentColor(null);
+                          Navigator.pop(context);
+                        },
+                        child: Text(AppLocalizations.of(context)!.useDefaultButton),
+                      ),
+                      FilledButton(
+                        onPressed: previewColor == null
+                            ? null
+                            : () {
+                                final color = controller.text.toColorOrNull();
+                                if (color != null) {
+                                  FinampSetters.setAccentColor(color);
+                                  Navigator.pop(context);
+                                }
+                              },
+                        child: Text(AppLocalizations.of(context)!.save),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

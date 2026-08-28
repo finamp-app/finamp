@@ -10,6 +10,7 @@
 .history
 .svn/
 .swiftpm/
+.vs/
 migrate_working_dir/
 
 # Tools
@@ -32,6 +33,9 @@ repo_history.json
 # NixOS and direnv related
 .direnv
 .envrc
+
+# Zed related
+.zed/
 
 # packages file containing multi-root paths
 .packages.generated
@@ -134,3 +138,6 @@ app.*.map.json
 
 # generated localization files
 **/lib/l10n/*.dart
+
+# Integration testing artifacts
+integration_test/testing

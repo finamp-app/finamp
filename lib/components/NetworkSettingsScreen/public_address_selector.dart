@@ -24,27 +24,30 @@ class _PublicAddressSelector extends ConsumerState<PublicAddressSelector> {
 
   @override
   Widget build(BuildContext context) {
-    String? publicAddress = ref.watch(FinampUserHelper.finampCurrentUserProvider).valueOrNull?.publicAddress;
+    String? publicAddress = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.publicAddress;
 
     _controller ??= TextEditingController(text: publicAddress.toString());
 
     return ListTile(
       title: Text(AppLocalizations.of(context)!.preferLocalNetworkPublicAddressSettingTitle),
-      subtitle: Text(AppLocalizations.of(context)!.preferLocalNetworkPublicAddressSettingDescription),
-      trailing: SizedBox(
-        width: 200 * MediaQuery.textScaleFactorOf(context),
-        child: TextField(
-          controller: _controller,
-          textAlign: TextAlign.center,
-          keyboardType: TextInputType.url,
-          onSubmitted: (value) async {
-            if (!value.startsWith("http")) {
-              return GlobalSnackbar.message((context) => AppLocalizations.of(context)!.missingSchemaError);
-            }
-            GetIt.instance<FinampUserHelper>().currentUser?.update(newPublicAddress: value);
-            await changeTargetUrl();
-          },
-        ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.preferLocalNetworkPublicAddressSettingDescription),
+          TextField(
+            controller: _controller,
+            textAlign: TextAlign.center,
+            style: TextTheme.of(context).bodyMedium,
+            keyboardType: TextInputType.url,
+            onSubmitted: (value) async {
+              if (!value.startsWith("http")) {
+                return GlobalSnackbar.message((context) => AppLocalizations.of(context)!.missingSchemaError);
+              }
+              GetIt.instance<FinampUserHelper>().currentUser?.update(newPublicAddress: value);
+              await changeTargetUrl();
+            },
+          ),
+        ],
       ),
     );
   }

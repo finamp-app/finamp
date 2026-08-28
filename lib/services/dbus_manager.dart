@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dbus/dbus.dart';
 import 'package:finamp/extensions/string.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -17,7 +18,7 @@ Future<DBusMethodResponse> _updateAccentColor() async {
 }
 
 Future<DBusMethodResponse> _setAccentColor(String text) async {
-  _logger.fine("request to set Accent color to $text");
+  _logger.info("request to set Accent color to $text");
 
   if (text == "default") {
     FinampSetters.setAccentColor(null);

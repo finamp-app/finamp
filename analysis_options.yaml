@@ -12,6 +12,13 @@ analyzer:
   exclude:
     - lib/**.chopper.dart
     - lib/color_schemes.g.dart
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
   language:
       strict-casts: true
       strict-inference: true
