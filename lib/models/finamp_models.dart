@@ -318,6 +318,8 @@ class DefaultSettings {
   static const useAndroidGainEffect = true;
   static const ClientCertificate? clientCertificate = null;
   static const showQuickActionsBanner = true;
+  static const showStarRatings = false;
+  static const allowHalfStarRatings = false;
 }
 
 @HiveType(typeId: 28)
@@ -466,6 +468,8 @@ class FinampSettings {
     this.clientCertificate = DefaultSettings.clientCertificate,
     this.showQuickActionsBanner = DefaultSettings.showQuickActionsBanner,
     this.perTabContentViewType = DefaultSettings.perTabContentViewType,
+    this.showStarRatings = DefaultSettings.showStarRatings,
+    this.allowHalfStarRatings = DefaultSettings.allowHalfStarRatings,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -966,6 +970,15 @@ class FinampSettings {
   @HiveField(155, defaultValue: DefaultSettings.perTabContentViewType)
   @SettingsHelperMap("tabContentType")
   Map<ContentType, ContentViewType> perTabContentViewType;
+
+  /// Whether personal Jellyfin star ratings are shown in the player and
+  /// exposed to supported system media controls.
+  @HiveField(156, defaultValue: DefaultSettings.showStarRatings)
+  bool showStarRatings;
+
+  /// Whether the in-app rating control allows half-star increments.
+  @HiveField(157, defaultValue: DefaultSettings.allowHalfStarRatings)
+  bool allowHalfStarRatings;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
@@ -4465,6 +4478,7 @@ enum FinampQuickActions {
   surpriseMe(true),
   @HiveField(9)
   playSpecificItem(true);
+
   // ID 10 moved upwards for more sensible user-facing ordering
   //TODO support album/artist shuffle (requires queue support)
 

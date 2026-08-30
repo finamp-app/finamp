@@ -1317,6 +1317,22 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setShowStarRatings(bool newShowStarRatings) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.showStarRatings = newShowStarRatings;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setAllowHalfStarRatings(bool newAllowHalfStarRatings) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.allowHalfStarRatings = newAllowHalfStarRatings;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1763,6 +1779,11 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ) => finampSettingsProvider.select(
     (value) => value.requireValue.perTabContentViewType[tabContentType],
   );
+  ProviderListenable<bool> get showStarRatings => finampSettingsProvider.select(
+    (value) => value.requireValue.showStarRatings,
+  );
+  ProviderListenable<bool> get allowHalfStarRatings => finampSettingsProvider
+      .select((value) => value.requireValue.allowHalfStarRatings);
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

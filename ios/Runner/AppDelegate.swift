@@ -26,6 +26,9 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
         // Set up method channel for Siri media intent handling
         setupSiriIntentChannel()
 
+        // Synchronize Now Playing state with the WidgetKit extension.
+        setupWidgetChannel()
+
         // Exclude the documents and support folders from iCloud backup since we keep songs there.
         if let documentsDir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
             try? setExcludeFromiCloudBackup(documentsDir, isExcluded: true)
@@ -99,7 +102,7 @@ private func setExcludeFromiCloudBackup(_ dir: URL, isExcluded: Bool) throws {
 extension AppDelegate {
     func setupPlaybackStateChannel() {
         let channel = FlutterMethodChannel(
-            name: "\(Bundle.main.bundleIdentifier!)/playback_state",
+            name: "com.unicornsonlsd.finamp-ios/playback_state",
             binaryMessenger: flutterEngine.binaryMessenger
         )
 
@@ -132,7 +135,7 @@ private var siriIntentChannel: FlutterMethodChannel?
 extension AppDelegate {
     func setupSiriIntentChannel() {
         siriIntentChannel = FlutterMethodChannel(
-            name: "\(Bundle.main.bundleIdentifier!)/siri_intent",
+            name: "com.unicornsonlsd.finamp-ios/siri_intent",
             binaryMessenger: flutterEngine.binaryMessenger
         )
     }
