@@ -153,6 +153,8 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
     // Initialize FileDownloader singleton with persistent storage.
     // This must happen before any other file downloader access,
     // since the storage can only be supplied on the first call.
+    // Namely, before installing the client certificate,
+    // since that also configures them to the FileDownloader.
     FileDownloader(persistentStorage: IsarPersistentStorage());
 
     await _trustAndroidUserCerts();
