@@ -67,6 +67,7 @@ dependencies:
   rxdart: ^0.28.0
   simple_gesture_detector: ^0.2.1
   path_provider: ^2.0.14
+  xdg_directories: ^1.1.0
   hive_ce: ^2.10.1
   hive_ce_flutter: ^2.2.0
   file_sizes: ^1.0.6
