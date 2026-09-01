@@ -3760,5 +3760,39 @@
     "quickSettingsTranscodeLink": "All transcoding settings",
     "quickSettingsLayoutLink": "All layout & theme settings",
     "quickSettingsAllSettingsLink": "All Settings",
-    "quickSettingsNetworkLink": "Configure the local address for your server"
+    "quickSettingsNetworkLink": "Configure the local address for your server",
+    "showStarRatingsTitle": "Show star ratings",
+    "@showStarRatingsTitle": {
+        "description": "Title for the setting that shows personal Jellyfin star ratings in the player."
+    },
+    "showStarRatingsSubtitle": "Show your personal Jellyfin rating in the player, lyrics view, and supported system media controls.",
+    "@showStarRatingsSubtitle": {
+        "description": "Subtitle for the setting that shows personal Jellyfin star ratings."
+    },
+    "allowHalfStarRatingsTitle": "Allow half-star ratings",
+    "@allowHalfStarRatingsTitle": {
+        "description": "Title for the setting that enables half-star rating increments."
+    },
+    "allowHalfStarRatingsSubtitle": "Swipe across the stars to choose ratings in half-star steps.",
+    "@allowHalfStarRatingsSubtitle": {
+        "description": "Subtitle for the setting that enables half-star rating increments."
+    },
+    "starRatingNotRated": "Not rated",
+    "@starRatingNotRated": {
+        "description": "Accessibility label for a track that has no personal star rating."
+    },
+    "starRatingValueLabel": "{rating} of 5 stars",
+    "@starRatingValueLabel": {
+        "description": "Accessibility label and tooltip for a personal star rating.",
+        "placeholders": {
+            "rating": {
+                "type": "String",
+                "example": "4.5"
+            }
+        }
+    },
+    "clearStarRating": "Clear rating",
+    "@clearStarRating": {
+        "description": "Tooltip for clearing the personal star rating of a track."
+    }
 }

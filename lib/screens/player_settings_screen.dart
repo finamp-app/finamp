@@ -64,6 +64,8 @@ class PlayerSettingsScreen extends ConsumerWidget {
                 FinampSetters.setFeatureChipsConfiguration(oldFeatureChipsConfig.copyWith(features: oldFeatures));
               },
             ),
+          ShowStarRatingsToggle(),
+          if (ref.watch(finampSettingsProvider.showStarRatings)) AllowHalfStarRatingsToggle(),
           ShowAlbumReleaseDateOnPlayerScreenToggle(),
           PlayerScreenMinimumCoverPaddingEditor(),
           SuppressPlayerPaddingSwitch(),
@@ -71,6 +73,35 @@ class PlayerSettingsScreen extends ConsumerWidget {
           HidePlayerBottomActionsSwitch(),
         ],
       ),
+    );
+  }
+}
+
+class ShowStarRatingsToggle extends ConsumerWidget {
+  const ShowStarRatingsToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SwitchListTile.adaptive(
+      title: Text(AppLocalizations.of(context)!.showStarRatingsTitle),
+      subtitle: Text(AppLocalizations.of(context)!.showStarRatingsSubtitle),
+      value: ref.watch(finampSettingsProvider.showStarRatings),
+      onChanged: FinampSetters.setShowStarRatings,
+    );
+  }
+}
+
+class AllowHalfStarRatingsToggle extends ConsumerWidget {
+  const AllowHalfStarRatingsToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SwitchListTile.adaptive(
+      contentPadding: const EdgeInsets.only(left: 32, right: 16),
+      title: Text(AppLocalizations.of(context)!.allowHalfStarRatingsTitle),
+      subtitle: Text(AppLocalizations.of(context)!.allowHalfStarRatingsSubtitle),
+      value: ref.watch(finampSettingsProvider.allowHalfStarRatings),
+      onChanged: FinampSetters.setAllowHalfStarRatings,
     );
   }
 }
