@@ -87,7 +87,7 @@ class _LyricsScreenContentState extends ConsumerState<_LyricsScreenContent> {
           title: PlayerScreenAppBarTitle(maxLines: maxLines),
           leading: FinampAppBarBackButton(dismissDirection: AxisDirection.left),
           actions: [
-            if (Platform.isIOS)
+            if (Platform.isIOS || Platform.isMacOS)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: AirPlayRoutePickerView(

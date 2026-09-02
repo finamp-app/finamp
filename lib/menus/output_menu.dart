@@ -165,7 +165,7 @@ class OutputMenuHeader extends ConsumerWidget {
               ),
             ),
           ),
-          if (Platform.isIOS)
+          if (Platform.isIOS || Platform.isMacOS)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: AnimatedSwitcher(
@@ -194,7 +194,7 @@ class OutputMenuHeader extends ConsumerWidget {
                 audioHandler.showOutputSwitcherDialog();
               },
             ),
-          if (!Platform.isAndroid && !Platform.isIOS) SizedBox(width: 32, height: 8),
+          if (!Platform.isAndroid && !Platform.isIOS && !Platform.isMacOS) SizedBox(width: 32, height: 8),
         ],
       ),
     );
