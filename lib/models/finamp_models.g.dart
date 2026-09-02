@@ -91,7 +91,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             : (fields[2] as num).toInt(),
         downloadLocations: (fields[3] as List).cast<DownloadLocation>(),
         androidStopForegroundOnPause: fields[4] == null
-            ? true
+            ? false
             : fields[4] as bool,
         showTabs: fields[5] == null
             ? DefaultSettings.showTabs
