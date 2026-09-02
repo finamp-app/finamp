@@ -1,18 +1,15 @@
 import 'dart:io';
 
-import 'package:finamp/l10n/app_localizations.dart';
-import 'package:finamp/models/finamp_models.dart';
-import 'package:finamp/services/finamp_settings_helper.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/buffer_duration_list_tile.dart';
-import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/loadQueueOnStartup_selector.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/stop_foreground_selector.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/track_shuffle_item_count_editor.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AudioServiceSettingsScreen extends StatefulWidget {
   const AudioServiceSettingsScreen({super.key});
