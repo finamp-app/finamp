@@ -76,6 +76,8 @@ class FinampSettingsHelper {
     finampSettingsTemp.suppressPlayerPadding = DefaultSettings.suppressPlayerPadding;
     finampSettingsTemp.prioritizeCoverFactor = DefaultSettings.prioritizeCoverFactor;
     finampSettingsTemp.hidePlayerBottomActions = DefaultSettings.hidePlayerBottomActions;
+    finampSettingsTemp.showStarRatings = DefaultSettings.showStarRatings;
+    finampSettingsTemp.allowHalfStarRatings = DefaultSettings.allowHalfStarRatings;
 
     Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", finampSettingsTemp);
   }
