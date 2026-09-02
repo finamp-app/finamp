@@ -54,38 +54,7 @@ class _DownloadedItemTypeListState extends ConsumerState<DownloadedItemsList> {
         ? SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
               DownloadStub stub = items.elementAt(index);
-              return ExpansionTile(
-                key: PageStorageKey(stub.id),
-                leading: (stub.type == DownloadItemType.finampCollection)
-                    ? AlbumImage(item: stub.finampCollection?.item)
-                    : AlbumImage(item: stub.baseItem),
-                title: Text(stub.baseItem?.name ?? stub.name),
-                subtitle: buildDownloadedItemSubtitle(context, stub),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if ((!(stub.baseItemType == BaseItemDtoType.album || stub.baseItemType == BaseItemDtoType.track)) &&
-                        !ref.watch(finampSettingsProvider.isOffline))
-                      IconButton(
-                        icon: const Icon(Icons.sync),
-                        onPressed: () {
-                          _downloadsService.resync(stub, null);
-                        },
-                      ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => askBeforeDeleteDownloadFromDevice(context, stub),
-                    ),
-                  ],
-                ),
-                tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-                shape: LinearBorder(),
-                collapsedShape: LinearBorder(),
-                children: [
-                  if (stub.type == DownloadItemType.finampCollection || stub.baseItemType.hasChildren)
-                    DownloadedChildrenList(parent: stub),
-                ],
-              );
+              return _ExpandibleDownloadCategory(stub: stub, downloadsService: _downloadsService);
             }, childCount: items.length),
           )
         : SliverToBoxAdapter(
@@ -97,66 +66,123 @@ class _DownloadedItemTypeListState extends ConsumerState<DownloadedItemsList> {
   }
 }
 
-class DownloadedChildrenList extends ConsumerStatefulWidget {
-  const DownloadedChildrenList({super.key, required this.parent});
+class _ExpandibleDownloadCategory extends ConsumerWidget {
+  const _ExpandibleDownloadCategory({super.key, required this.stub, required DownloadsService downloadsService})
+    : _downloadsService = downloadsService;
 
-  final DownloadStub parent;
+  final DownloadStub stub;
+  final DownloadsService _downloadsService;
 
   @override
-  ConsumerState<DownloadedChildrenList> createState() => _DownloadedChildrenListState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ExpansionTile(
+      key: PageStorageKey(stub.id),
+      leading: (stub.type == DownloadItemType.finampCollection)
+          ? AlbumImage(item: stub.finampCollection?.item)
+          : AlbumImage(item: stub.baseItem),
+      title: Text(stub.baseItem?.name ?? stub.name),
+      subtitle: buildDownloadedItemSubtitle(context, stub),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if ((!(stub.baseItemType == BaseItemDtoType.album || stub.baseItemType == BaseItemDtoType.track)) &&
+              !ref.watch(finampSettingsProvider.isOffline))
+            IconButton(
+              icon: const Icon(Icons.sync),
+              onPressed: () {
+                _downloadsService.resync(stub, null);
+              },
+            ),
+          IconButton(icon: const Icon(Icons.delete), onPressed: () => askBeforeDeleteDownloadFromDevice(context, stub)),
+        ],
+      ),
+      tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+      shape: LinearBorder(),
+      collapsedShape: LinearBorder(),
+      children: [
+        if (stub.type == DownloadItemType.finampCollection || stub.baseItemType.hasChildren)
+          _DownloadedChildrenList(parent: stub, downloadsService: _downloadsService),
+      ],
+    );
+  }
 }
 
-class _DownloadedChildrenListState extends ConsumerState<DownloadedChildrenList> {
-  final _downloadsService = GetIt.instance<DownloadsService>();
+class _DownloadedChildrenList extends ConsumerStatefulWidget {
+  const _DownloadedChildrenList({super.key, required this.parent, required this.downloadsService});
+
+  final DownloadStub parent;
+  final DownloadsService downloadsService;
 
   @override
-  Widget build(BuildContext context) {
-    var items = _downloadsService.getVisibleChildren(widget.parent);
+  ConsumerState<_DownloadedChildrenList> createState() => _DownloadedChildrenListState();
+}
 
+class _DownloadedChildrenListState extends ConsumerState<_DownloadedChildrenList> {
+  @override
+  Widget build(BuildContext context) {
     // If we're displaying an artist, we have to filter out tracks that are
     // children of albums we already have in the list
-    if ((widget.parent.type == DownloadItemType.collection && widget.parent.baseItemType == BaseItemDtoType.artist) ||
-        (widget.parent.type == DownloadItemType.finampCollection &&
-            widget.parent.finampCollection!.type == FinampCollectionType.collectionWithLibraryFilter &&
-            BaseItemDtoType.fromItem(widget.parent.finampCollection!.item!) == BaseItemDtoType.artist)) {
-      // Collect album names
-      final albumIds = <BaseItemId>{};
-      for (var stub in items) {
-        if (BaseItemDtoType.fromItem(stub.baseItem!) == BaseItemDtoType.album) {
-          final albumId = stub.baseItem?.id;
-          if (albumId != null) albumIds.add(albumId);
+    List<DownloadStub> filterTracksByAlbum(List<DownloadStub> unfilteredItems) {
+      if ((widget.parent.type == DownloadItemType.collection && widget.parent.baseItemType == BaseItemDtoType.artist) ||
+          (widget.parent.type == DownloadItemType.finampCollection &&
+              widget.parent.finampCollection!.type == FinampCollectionType.collectionWithLibraryFilter &&
+              BaseItemDtoType.fromItem(widget.parent.finampCollection!.item!) == BaseItemDtoType.artist)) {
+        // Collect album names
+        final albumIds = <BaseItemId>{};
+        for (var stub in unfilteredItems) {
+          if (BaseItemDtoType.fromItem(stub.baseItem!) == BaseItemDtoType.album) {
+            final albumId = stub.baseItem?.id;
+            if (albumId != null) albumIds.add(albumId);
+          }
         }
+        // Filter out tracks with matching album id
+        unfilteredItems = unfilteredItems.where((stub) {
+          final type = BaseItemDtoType.fromItem(stub.baseItem!);
+          if (type == BaseItemDtoType.track) {
+            final albumId = stub.baseItem?.albumId;
+            return !albumIds.contains(albumId);
+          }
+          return true;
+        }).toList();
       }
-      // Filter out tracks with matching album id
-      items = items.where((stub) {
-        final type = BaseItemDtoType.fromItem(stub.baseItem!);
-        if (type == BaseItemDtoType.track) {
-          final albumId = stub.baseItem?.albumId;
-          return !albumIds.contains(albumId);
-        }
-        return true;
-      }).toList();
+
+      return unfilteredItems;
     }
 
-    return Container(
+    var unfilteredItems = widget.downloadsService.getVisibleChildren(widget.parent);
+    final items = filterTracksByAlbum(unfilteredItems);
+
+    return ColoredBox(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Column(
         children: [
-          // TODO use a list builder here
-          for (final stub in items)
-            ListTile(
-              title: Text(stub.baseItem?.name ?? stub.name),
-              leading: AlbumImage(item: stub.baseItem),
-              subtitle: ItemFileSize(stub: stub),
-              trailing: ref.watch(_downloadsService.statusProvider((stub, null))).isRequired
-                  ? IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => askBeforeDeleteDownloadFromDevice(context, stub),
-                    )
-                  : null,
-            ),
+          for (final stub in items) _DownloadedItemListTile(stub: stub, downloadsService: widget.downloadsService),
         ],
       ),
+    );
+  }
+}
+
+class _DownloadedItemListTile extends ConsumerWidget {
+  const _DownloadedItemListTile({super.key, required this.stub, required this.downloadsService});
+
+  final DownloadStub stub;
+  final DownloadsService downloadsService;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAvailableToDelete = ref.watch(downloadsService.statusProvider((stub, null))).isRequired;
+
+    return ListTile(
+      title: Text(stub.baseItem?.name ?? stub.name),
+      leading: AlbumImage(item: stub.baseItem),
+      subtitle: ItemFileSize(stub: stub),
+      trailing: isAvailableToDelete
+          ? IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () => askBeforeDeleteDownloadFromDevice(context, stub),
+            )
+          : null,
     );
   }
 }

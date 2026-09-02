@@ -293,37 +293,63 @@
             }
         }
     },
-    "dlComplete": "{count} complete",
-    "@dlComplete": {
+    "downloadedTracksAndImageCount": "{trackCount,plural,=1{{trackCount} track} other{{trackCount} tracks}}, {imageCount,plural,=1{{imageCount} image} other{{imageCount} images}}",
+    "@downloadedTracksAndImageCount": {
+        "description": "Display of downloaded track and image count on downloads screen.",
+        "placeholders": {
+            "trackCount": {
+                "type": "int"
+            },
+            "imageCount": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadChipCompleted": "{count,plural,=1{{count} Completed} other{{count} Completed}}",
+    "@downloadChipCompleted": {
+        "description": "Label for the completed downloads chip, showing the count of completed downloads.",
+        "placeholders": { "count": { "type": "int" } }
+    },
+    "downloadChipDownloading": "{count,plural,=1{{count} Downloading} other{{count} Downloading}}",
+    "@downloadChipDownloading": {
+        "description": "Label for the downloading chip, showing the count of downloads in progress.",
+        "placeholders": { "count": { "type": "int" } }
+    },
+    "downloadChipEnqueued": "{count,plural,=1{{count} Enqueued} other{{count} Enqueued}}",
+    "@downloadChipEnqueued": {
+        "description": "Label for the enqueued chip, showing the count of downloads waiting in queue.",
+        "placeholders": { "count": { "type": "int" } }
+    },
+    "downloadChipFailed": "{count,plural,=1{{count} Failed} other{{count} Failed}}",
+    "@downloadChipFailed": {
+        "description": "Label for the failed chip, showing the count of failed downloads.",
+        "placeholders": { "count": { "type": "int" } }
+    },
+    "downloadSyncStatusPresync": "Syncing",
+    "@downloadSyncStatusPresync": {
+        "description": "Status text shown before node sync counts are available."
+    },
+    "downloadSyncStatusSyncing": "{count,plural,=1{Syncing: {count} node} other{Syncing: {count} nodes}}",
+    "@downloadSyncStatusSyncing": {
+        "description": "Status text showing how many nodes are currently syncing.",
         "placeholders": {
             "count": {
                 "type": "int"
             }
         }
     },
-    "dlFailed": "{count} failed",
-    "@dlFailed": {
+    "downloadSyncStatusDownloading": "Downloading: {percent}%",
+    "@downloadSyncStatusDownloading": {
+        "description": "Status text showing download progress as a percentage.",
         "placeholders": {
-            "count": {
-                "type": "int"
+            "percent": {
+                "type": "String"
             }
         }
     },
-    "dlEnqueued": "{count} enqueued",
-    "@dlEnqueued": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
-    "dlRunning": "{count} running",
-    "@dlRunning": {
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
+    "downloadSyncStatusComplete": "Downloads Ready",
+    "@downloadSyncStatusComplete": {
+        "description": "Status text shown once all downloads and syncing have finished."
     },
     "activeDownloadsTitle": "Active Downloads",
     "noActiveDownloads": "No active downloads.",
@@ -1803,6 +1829,9 @@
     "downloadAllPlaylistsSetting": "Download all playlists",
     "downloadAllPlaylistsSettingWarning": "Note: This will download all items in all playlists, no matter which library they're from.",
     "fiveLatestAlbumsSetting": "Download 5 latest albums",
+    "downloadTimeRemaining": "Time Remaining",
+    "averageDownloadSpeed": "Average Download Speed", 
+    "downloadProgress": "Download Progress",
     "fiveLatestAlbumsSettingSubtitle": "Downloads will be removed as they age out.  Lock the download to prevent an album from being removed.",
     "cacheLibraryImagesSettings": "Cache current library images",
     "cacheLibraryImagesSettingsSubtitle": "All album, artist, genre, and playlist covers in the currently active library will be downloaded.",
@@ -2078,7 +2107,7 @@
     "@genericCancel": {
         "description": "Used when the user stops an action from taking place inside a popup dialog window"
     },
-    "itemDeletedSnackbar": "{itemType, select, album{Album} playlist{Playlist} artist{Artist} genre{Genre} track{Track} library{Library} other{Item}} got deleted from {deviceType, select, device{Device} server{Server} other{unknown}}",
+    "itemDeletedSnackbar": "{itemType, select, album{Album} playlist{Playlist} artist{Artist} genre{Genre} track{Track} library{Library} other{Item}} deleted from {deviceType, select, device{Device} server{Server} other{unknown}}",
     "@itemDeletedSnackbar": {
         "description": "Used whenever item gets deleted from the device or server, message in snackbar"
     },
