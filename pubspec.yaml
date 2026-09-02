@@ -154,8 +154,8 @@ dependencies:
   bits: ^1.4.0
   flutter_carplay:
     git:
-      url: https://github.com/oguzhnatly/flutter_carplay.git
-      ref: 017ce2e
+      url: https://github.com/finamp-app/flutter_carplay.git
+      ref: cf997048d5b51fbb60bf68bc53538e01a2378f55
   diacritic: ^0.1.6
   mini_music_visualizer: ^1.1.4
 
@@ -193,6 +193,24 @@ dependency_overrides:
       url: https://github.com/Komodo5197/isar-community.git
       ref: a602cd8999048faba043f7e1ce7ba92f4d812762
       path: packages/isar
+  # Forked audio_service to add:
+  # - iOS MPRemoteCommandCenter registration at configure time
+  # - An iosKeepNowPlayingOnStop config flag
+  # - The iOS playing-state fix from 0.18.20, not yet on pub.dev
+  # These keep Finamp as the system's resume candidate for CarPlay and
+  # Bluetooth reconnects. The flag is part of
+  # audio_service_platform_interface too, so both packages must be
+  # overridden together or the build fails.
+  audio_service:
+    git:
+      url: https://github.com/finamp-app/audio_service.git
+      ref: 1c27b0892dd588f4407d6545207c2b4965a0d283
+      path: audio_service
+  audio_service_platform_interface:
+    git:
+      url: https://github.com/finamp-app/audio_service.git
+      ref: 1c27b0892dd588f4407d6545207c2b4965a0d283
+      path: audio_service_platform_interface
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

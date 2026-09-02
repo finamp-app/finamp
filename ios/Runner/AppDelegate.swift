@@ -1,7 +1,6 @@
 import app_links
 import UIKit
 import Flutter
-import MediaPlayer
 import Intents
 import AVFoundation
 
@@ -17,11 +16,6 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
         // Start the shared engine and register plugins with it for CarPlay
         flutterEngine.run()
         GeneratedPluginRegistrant.register(with: flutterEngine)
-
-        // Set up method channel for playback state sync to MPNowPlayingInfoCenter
-        // TODO: This is a workaround because audio_service doesn't set playbackState on iOS.
-        // Consider contributing a fix to audio_service to set MPNowPlayingInfoCenter.playbackState on iOS.
-        setupPlaybackStateChannel()
 
         // Set up method channel for Siri media intent handling
         setupSiriIntentChannel()
@@ -71,6 +65,19 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
             return sceneConfig
         }
 
+        // UIApplicationSupportsMultipleScenes is required for CarPlay, but it
+        // also lets iPadOS spawn extra phone-UI windows, which would share
+        // this app's single Flutter engine and render blank. Destroy any
+        // additional window scene shortly after it connects.
+        if application.connectedScenes.contains(where: { $0 is UIWindowScene }) {
+            let extraSession = connectingSceneSession
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIApplication.shared.requestSceneSessionDestruction(extraSession, options: nil) { error in
+                    NSLog("[FINAMP] Failed to destroy extra window scene session: \(error)")
+                }
+            }
+        }
+
         // For the main app window scene, return configuration with SceneDelegate
         let sceneConfig = UISceneConfiguration(
             name: "Default Configuration",
@@ -89,40 +96,6 @@ private func setExcludeFromiCloudBackup(_ dir: URL, isExcluded: Bool) throws {
     var values = URLResourceValues()
     values.isExcludedFromBackup = isExcluded
     try mutableDir.setResourceValues(values)
-}
-
-// TODO: This is a workaround because audio_service doesn't set MPNowPlayingInfoCenter.playbackState on iOS.
-// The audio_service plugin only sets playbackState on macOS (see AudioServicePlugin.m line 293-295).
-// This causes CarPlay's Now Playing screen to not reflect the correct play/pause state when
-// playback is started from the phone. Consider contributing a fix upstream to audio_service.
-
-extension AppDelegate {
-    func setupPlaybackStateChannel() {
-        let channel = FlutterMethodChannel(
-            name: "\(Bundle.main.bundleIdentifier!)/playback_state",
-            binaryMessenger: flutterEngine.binaryMessenger
-        )
-
-        channel.setMethodCallHandler { [weak self] (call, result) in
-            switch call.method {
-            case "setPlaybackState":
-                guard let args = call.arguments as? [String: Any],
-                      let isPlaying = args["isPlaying"] as? Bool else {
-                    result(FlutterError(code: "INVALID_ARGS", message: "Missing isPlaying argument", details: nil))
-                    return
-                }
-
-                if #available(iOS 13.0, *) {
-                    let center = MPNowPlayingInfoCenter.default()
-                    center.playbackState = isPlaying ? .playing : .paused
-                }
-                result(nil)
-
-            default:
-                result(FlutterMethodNotImplemented)
-            }
-        }
-    }
 }
 
 // Handles voice commands like "Hey Siri, play [track/artist] on Finamp"

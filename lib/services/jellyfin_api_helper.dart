@@ -245,6 +245,8 @@ class JellyfinApiHelper {
     ArtistType? artistType,
     BaseItemId? genreFilter,
     bool? isFavorite,
+    String? nameStartsWith,
+    String? nameLessThan,
     int? startIndex,
     int? limit,
   }) async {
@@ -263,6 +265,8 @@ class JellyfinApiHelper {
       artistType: artistType,
       genreFilter: genreFilter,
       isFavorite: isFavorite,
+      nameStartsWith: nameStartsWith,
+      nameLessThan: nameLessThan,
       startIndex: startIndex,
       limit: limit,
     );
@@ -345,6 +349,7 @@ class JellyfinApiHelper {
             fields: fields,
             isFavorite: isFavorite,
             nameStartsWith: nameStartsWith,
+            nameLessThan: nameLessThan,
           );
         } else {
           //artistType == ArtistType.artist
@@ -361,6 +366,7 @@ class JellyfinApiHelper {
             fields: fields,
             isFavorite: isFavorite,
             nameStartsWith: nameStartsWith,
+            nameLessThan: nameLessThan,
           );
         }
       } else if (parentItem?.type == "MusicArtist") {
@@ -419,6 +425,8 @@ class JellyfinApiHelper {
           startIndex: startIndex,
           limit: limit,
           fields: fields,
+          nameStartsWith: nameStartsWith,
+          nameLessThan: nameLessThan,
         );
       } else if (parentItem?.type == "MusicGenre") {
         response = await api.getItems(

@@ -27,7 +27,6 @@ import 'package:rxdart/rxdart.dart';
 
 import 'android_auto_helper.dart';
 import 'finamp_settings_helper.dart';
-import 'ios_helpers.dart';
 import 'metadata_provider.dart';
 
 enum FadeDirection { fadeIn, fadeOut, none }
@@ -616,6 +615,48 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     _audioServiceBackgroundTaskLogger.info(
       "play() start: disableFade=$disableFade, playing=${_player.playing}, fadeDirection=${fadeState.value.fadeDirection}, currentIndex=${_player.currentIndex}, position=${_player.position}",
     );
+    if (GetIt.instance<QueueService>().getCurrentTrack() == null) {
+      // A remote play command can arrive before a queue has been loaded in
+      // this process, such as CarPlay background-launching Finamp on
+      // reconnect. Await the memoised startup restore rather than dropping
+      // the command.
+      final queueService = GetIt.instance<QueueService>();
+      _audioServiceBackgroundTaskLogger.info(
+        "play() received with no current item; awaiting saved-queue restore before starting playback",
+      );
+      try {
+        await queueService.performInitialQueueLoad();
+      } catch (e) {
+        _audioServiceBackgroundTaskLogger.warning("Saved-queue restore failed while handling remote play command: $e");
+      }
+
+      if (queueService.getCurrentTrack() == null && queueService.savedQueueState == SavedQueueState.pendingSave) {
+        // Nothing was restored because autoloadLastQueueOnStartup is disabled.
+        // An explicit play command still expresses intent to resume.
+        _audioServiceBackgroundTaskLogger.info(
+          "No auto-loaded queue; loading the latest saved queue on demand for remote play command",
+        );
+        try {
+          await queueService.loadLatestSavedQueueOnDemand();
+        } catch (e) {
+          _audioServiceBackgroundTaskLogger.warning("On-demand saved-queue load failed: $e");
+        }
+      }
+
+      if (queueService.getCurrentTrack() == null) {
+        // _replaceWholeQueue nulls out the current track for the duration of
+        // a queue rebuild, so a load that's still settling shouldn't be
+        // treated the same as there being no saved queue at all.
+        final queueLoadSettling = queueService.savedQueueState == SavedQueueState.loading || audioSources.isNotEmpty;
+        if (!queueLoadSettling) {
+          _audioServiceBackgroundTaskLogger.info("No saved queue available to resume; ignoring play() command");
+          return;
+        }
+        _audioServiceBackgroundTaskLogger.info("Queue load in progress; playing despite no current track yet");
+      } else {
+        _audioServiceBackgroundTaskLogger.info("Saved queue restored; resuming playback at its saved position");
+      }
+    }
     if (_shouldIgnorePlayPauseAfterRecentSkip) {
       return;
     }
@@ -1244,9 +1285,6 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   PlaybackState _transformEvent(PlaybackEvent event) {
     jellyfin_models.BaseItemDto? currentItem;
     bool isFavorite = false;
-
-    // Sync playback state to iOS for CarPlay Now Playing screen
-    IosPlaybackStateSync.setPlaybackState(isPlaying: _player.playing);
 
     if (mediaItem.valueOrNull?.extras?["itemJson"] != null) {
       currentItem = jellyfin_models.BaseItemDto.fromJson(

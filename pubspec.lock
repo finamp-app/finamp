@@ -92,10 +92,11 @@ packages:
   audio_service:
     dependency: "direct main"
     description:
-      name: audio_service
-      sha256: "95f3267f3449eb5cf71c8fcf1d556f57af1e898e2dc5815fb168d1843653edb7"
-      url: "https://pub.dev"
-    source: hosted
+      path: audio_service
+      ref: "1c27b0892dd588f4407d6545207c2b4965a0d283"
+      resolved-ref: "1c27b0892dd588f4407d6545207c2b4965a0d283"
+      url: "https://github.com/finamp-app/audio_service.git"
+    source: git
     version: "0.18.19"
   audio_service_mpris:
     dependency: "direct main"
@@ -108,10 +109,11 @@ packages:
   audio_service_platform_interface:
     dependency: "direct main"
     description:
-      name: audio_service_platform_interface
-      sha256: "6283782851f6c8b501b60904a32fc7199dc631172da0629d7301e66f672ab777"
-      url: "https://pub.dev"
-    source: hosted
+      path: audio_service_platform_interface
+      ref: "1c27b0892dd588f4407d6545207c2b4965a0d283"
+      resolved-ref: "1c27b0892dd588f4407d6545207c2b4965a0d283"
+      url: "https://github.com/finamp-app/audio_service.git"
+    source: git
     version: "0.1.3"
   audio_service_web:
     dependency: transitive
@@ -603,11 +605,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "017ce2e"
-      resolved-ref: "017ce2e19711d3e043ed86ade25f941f96ebb7ba"
-      url: "https://github.com/oguzhnatly/flutter_carplay.git"
+      ref: cf997048d5b51fbb60bf68bc53538e01a2378f55
+      resolved-ref: cf997048d5b51fbb60bf68bc53538e01a2378f55
+      url: "https://github.com/finamp-app/flutter_carplay.git"
     source: git
-    version: "1.2.11"
+    version: "1.6.4"
   flutter_discord_rpc:
     dependency: "direct main"
     description:
