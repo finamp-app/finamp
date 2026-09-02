@@ -1,7 +1,16 @@
+plugins {
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.10"
+}
+
 allprojects {
     repositories {
         google()
         mavenCentral()
+    }
+    configurations.all {
+        resolutionStrategy {
+            force "androidx.glance:glance-appwidget:1.1.1"
+        }
     }
 }
 
