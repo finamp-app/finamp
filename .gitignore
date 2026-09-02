@@ -13,6 +13,11 @@
 .vs/
 migrate_working_dir/
 
+# Tools
+tools/code_recap/__pycache__
+tools/code_recap/repo_history.json
+repo_history.json
+
 # IntelliJ related
 *.iml
 *.ipr
