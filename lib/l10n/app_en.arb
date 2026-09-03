@@ -2153,9 +2153,13 @@
     "@releaseDateFormatMonthYear": {
         "description": "Date format option for the release date of an album, showing the year and month. Example: March 2022"
     },
-    "releaseDateFormatMonthDayYear": "Month, Day & Year",
+    "releaseDateFormatMonthDayYear": "Month, Day & Year (Locale based)",
     "@releaseDateFormatMonthDayYear": {
-        "description": "Date format option for the release date of an album, showing the year and month and day/date. Example: March 2, 2022"
+        "description": "Date format option for the release date of an album, showing the year and month and day/date. Changes based on locale. Example: March 2, 2022"
+    },
+    "releaseDateFormatNumerical": "Short Numerical (Locale based)",
+    "@releaseDateFormatNumerical": {
+        "description": "Date format option for the release date of an album, showing the date in a short numerical format. Changes based on locale such as DD/MM/YYYY for en_gb and MM/DD/YYYY for en_us."
     },
     "showAlbumReleaseDateOnPlayerScreenTitle": "Show Album Release Date on Player Screen",
     "@showAlbumReleaseDateOnPlayerScreenTitle": {

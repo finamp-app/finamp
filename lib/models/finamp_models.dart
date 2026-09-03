@@ -3094,7 +3094,9 @@ enum ReleaseDateFormat {
   @HiveField(2)
   monthYear,
   @HiveField(3)
-  monthDayYear;
+  monthDayYear,
+  @HiveField(4)
+  numerical;
 
   /// Human-readable version of this enum. I've written longer descriptions on
   /// enums like [ContentType], and I can't be bothered to copy and paste it
@@ -3113,6 +3115,8 @@ enum ReleaseDateFormat {
         return l10n.releaseDateFormatMonthYear;
       case ReleaseDateFormat.monthDayYear:
         return l10n.releaseDateFormatMonthDayYear;
+      case ReleaseDateFormat.numerical:
+        return l10n.releaseDateFormatNumerical;
     }
   }
 }
@@ -4468,6 +4472,7 @@ enum FinampQuickActions {
   surpriseMe(true),
   @HiveField(9)
   playSpecificItem(true);
+
   // ID 10 moved upwards for more sensible user-facing ordering
   //TODO support album/artist shuffle (requires queue support)
 
