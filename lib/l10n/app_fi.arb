@@ -527,7 +527,7 @@
     "@loopModeAllButtonLabel": {
         "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop all mode"
     },
-    "queuesScreen": "Palauta toistojono",
+    "queuesScreen": "Edelliset jonot",
     "@queuesScreen": {
         "description": "Title for the screen where older now playing queues can be restored"
     },
@@ -3459,7 +3459,7 @@
     "@clientCertificate": {
         "description": "Title for the setting that allows managing SSL client certificates used for authentication"
     },
-    "clientCertificateUnavailable": "Varmennetta ei ole asetettu, asiakkaan todennus on otettu pois käytöstä",
+    "clientCertificateUnavailable": "Varmennetta ei ole asetettu, asiakkaan lisätodennus on otettu pois käytöstä",
     "@clientCertificateUnavailable": {
         "description": "Message shown when the user has no SSL client certificate available to use."
     },
@@ -3467,7 +3467,7 @@
     "@clientCertificateInstalled": {
         "description": "Message shown when the user has successfully installed an SSL client certificate."
     },
-    "clientCertificateDescription": "TLS-asiakasvarmennetta (.p12 tai .pfx) käytetään tämän laitteen todennukseen Jellyfin-palvelimellasi. Vaaditaan vain, jos palvelimesi on määritetty käyttämään molemminpuolista TLS-tunnistusta (mTLS).",
+    "clientCertificateDescription": "TLS-asiakasvarmennetta (.p12 tai .pfx) käytetään tämän laitteen lisätunnistautumiseen Jellyfin-palvelimellasi. Vaaditaan vain, jos palvelimesi on määritetty käyttämään molemminpuolista TLS-tunnistusta (mTLS).",
     "@clientCertificateDescription": {
         "description": "Explanatory text in the client certificate settings menu describing what a client certificate is used for"
     },
@@ -3649,7 +3649,7 @@
     },
     "perTabGridMode": "Valitse välilehtikohtaisesti",
     "showFastScrollerSubtitle": "Näytä tai piilota musiikkivälilehtien oikeassa laidassa oleva aakkosluettelo, jolla voit siirtyä suoraan kirjaimiin.",
-    "quickActionBanner": "Tutustu yleisesti muutettuihin asetuksiin!",
+    "quickActionBanner": "Tutustu suosituimpiin asetuksiin!",
     "@quickActionBanner": {
         "description": "Banner directing new users to the quick settings, where they can adjust the most commonly used settings"
     },
@@ -3660,10 +3660,35 @@
     "perTabGridModeScreen": "Aseta näkymätyyppi välilehtikohtaisesti",
     "perTabAlbumGrid": "Albumit vain ruudukossa",
     "quickSettingsScreen": "Pika-asetukset",
-    "quickSettingsScreenDescription": "Räätälöi Finamp mieleiseksesi näillä perusasetuksilla. Voit palata tänne milloin vain Asetukset-valikon kautta.",
+    "quickSettingsScreenDescription": "Räätälöi Finamp mieleiseksesi näillä perusasetuksilla. Voit palata tänne milloin tahansa Asetukset-valikon kautta.",
     "quickSettingsTabsLink": "Järjestä ja piilota välilehtiä",
     "quickSettingsTranscodeLink": "Kaikki uudelleenkoodausasetukset",
     "quickSettingsLayoutLink": "Kaikki asettelu- ja teema-asetukset",
     "quickSettingsAllSettingsLink": "Kaikki asetukset",
-    "quickSettingsNetworkLink": "Määritä palvelimen paikallinen osoite"
+    "quickSettingsNetworkLink": "Määritä palvelimen paikallinen osoite",
+    "inAlbumOrPlaylist": "Albumin/soittolistan järjestys",
+    "@inAlbumOrPlaylist": {
+        "description": "Sorting order for tracks in an album or playlist (by disc, then index, then name"
+    },
+    "discUnknown": "Levynumero ei tiedossa",
+    "@discUnknown": {
+        "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
+    },
+    "discUnknownOfAlbum": "[Levyn numero ei tiedossa] {albumName}",
+    "@discUnknownOfAlbum": {
+        "description": "Used when a single disc of album is opened, but the disc number is unknown, then album name is replaced with this string",
+        "placeholders": {
+            "albumName": {
+                "type": "String"
+            }
+        }
+    },
+    "advanced": "Lisäasetukset",
+    "@advanced": {
+        "description": "Label for the button on the login screen that opens the advanced options screen, and the title of that screen."
+    },
+    "clientCertificatesUnsupported": "Asiakassertifikaatteja ei tueta tällä alustalla",
+    "@clientCertificatesUnsupported": {
+        "description": "Message shown when client certificates are not supported on the user's current platform."
+    }
 }

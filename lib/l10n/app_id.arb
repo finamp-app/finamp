@@ -1,5 +1,5 @@
 {
-    "finampTagline": "Pemutar musik Jellyfin sumber terbuka",
+    "finampTagline": "Pemutar musik sumber terbuka untuk Jellyfin",
     "@finampTagline": {
         "description": "Tagline / short description for the app"
     },
@@ -23,7 +23,7 @@
     "@aboutContributionPrompt": {
         "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
     },
-    "aboutContributionLink": "Berkontribusi ke Finamp di GitHub:",
+    "aboutContributionLink": "Berkontribusi ke Finamp melalui GitHub:",
     "@aboutContributionLink": {
         "description": "Link to the Finamp GitHub repository, shown in the about screen."
     },
@@ -94,7 +94,7 @@
     "@connectingToServer": {
         "description": "Text shown while the connection to the specified server is attempted"
     },
-    "loginFlowLocalNetworkServers": "Server di jaringan lokal Anda:",
+    "loginFlowLocalNetworkServers": "Server dalam jaringan lokal Anda:",
     "@loginFlowLocalNetworkServers": {
         "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
     },
@@ -146,12 +146,12 @@
     "@loginFlowSelectAUser": {
         "description": "Heading for the list of users that the user can select from during the login flow."
     },
-    "username": "Nama pengguna",
-    "usernameHint": "Masukkan nama pengguna Anda",
+    "username": "Username",
+    "usernameHint": "Masukkan username Anda",
     "@usernameHint": {
         "description": "Hint text for the username input field."
     },
-    "usernameValidationMissingUsername": "Silakan masukkan nama pengguna",
+    "usernameValidationMissingUsername": "Silakan masukkan username",
     "@usernameValidationMissingUsername": {
         "description": "Error message that shows when the user submits a login without a username"
     },
@@ -1259,7 +1259,7 @@
     "@volumeNormalizationSwitchTitle": {
         "description": "Title for the switch that toggles replay gain"
     },
-    "volumeNormalizationSwitchSubtitle": "Gunakan informasi gain untuk menormalisasi tingkat kerasnya trek (\"Replay Gain\")",
+    "volumeNormalizationSwitchSubtitle": "Gunakan informasi gain untuk menormalisasi tingkat kerasnya trek (\"Normalisasi Gain\")",
     "@volumeNormalizationSwitchSubtitle": {
         "description": "Subtitle for the switch that toggles replay gain"
     },
@@ -1271,7 +1271,7 @@
     "@volumeNormalizationModeSelectorSubtitle": {
         "description": "Subtitle for the dropdown that selects the replay gain mode"
     },
-    "volumeNormalizationModeSelectorDescription": "Dinamis:\nSaat memutar beberapa trek dari album yang sama secara berurutan, penguat album digunakan (contoh: saat memutar sebuah album, atau trek dari album yang sama dalam sebuah daftar putar). Jika tidak, penguat trek digunakan.\n\nBerbasis trek:\nPenguat trek selalu digunakan, terlepas dari apakah album sedang diputar atau tidak.\n\nBerbasis album:\nPenguat album selalu digunakan, tetapi jika tidak tersedia (contoh: untuk tunggal), penguat trek akan digunakan sebagai gantinya.\n\nHanya Album:\nNormalisasi volume hanya diterapkan saat memutar album (menggunakan penguat album), tetapi tidak untuk trek tunggal.",
+    "volumeNormalizationModeSelectorDescription": "Dinamis:\nSaat memutar beberapa trek dari album yang sama secara berurutan, gain album digunakan (contoh: saat memutar sebuah album, atau trek dari album yang sama dalam sebuah daftar putar). Jika tidak, gain trek digunakan.\n\nBerbasis trek:\nGain trek selalu digunakan, terlepas dari apakah album sedang diputar atau tidak.\n\nBerbasis album:\nGain album selalu digunakan, tetapi jika tidak tersedia (contoh: untuk tunggal), gain trek akan digunakan sebagai gantinya.\n\nHanya Album:\nNormalisasi volume hanya diterapkan saat memutar album (menggunakan gain album), tetapi tidak untuk trek tunggal.",
     "@volumeNormalizationModeSelectorDescription": {
         "description": "Description for the dropdown that selects the replay gain mode, shown in a dialog that opens when the user presses the info icon next to the dropdown"
     },
@@ -1299,7 +1299,7 @@
     "@volumeNormalizationIOSBaseGainEditorSubtitle": {
         "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
-    "volumeNormalizationIOSBaseGainEditorDescription": "Saat ini, Normalisasi Volume pada platform selain Android memerlukan perubahan volume pemutaran untuk meniru perubahan penguat. Karena kami tidak dapat menaikkan volume di atas 100%, kami perlu menurunkan volume secara default agar kami dapat meningkatkan volume trek yang pelan.\n\nNilainya dalam desibel (dB), dengan -10 dB ~30% volume, -4.5 dB ~60% volume, dan -2 dB ~80% volume.\nNilai positif berarti tidak ada penurunan volume yang diterapkan hingga ambang batas (misal: gain -6.4 dB (dan yang lebih positif) untuk offset +6.4 dB), tetapi mencegah trek yang lebih pelan untuk ditingkatkan.\n\nAnda sebaiknya mengatur ini ke kebalikan dari gain tertinggi (paling positif) di pustaka Anda, misal: atur ke +3 dB jika gain tertinggi di pustaka Anda adalah -3 dB (dan semua trek lain memiliki gain seperti -5 dB, -8 dB, -10 dB, dll.).",
+    "volumeNormalizationIOSBaseGainEditorDescription": "Saat ini, Normalisasi Volume pada platform selain Android memerlukan perubahan volume pemutaran untuk meniru perubahan gain. Karena kami tidak dapat menaikkan volume di atas 100%, kami perlu menurunkan volume secara default agar kami dapat meningkatkan volume trek yang pelan.\n\nNilainya dalam desibel (dB), dengan -10 dB ~30% volume, -4.5 dB ~60% volume, dan -2 dB ~80% volume.\nNilai positif berarti tidak ada penurunan volume yang diterapkan hingga ambang batas (misal: gain -6.4 dB (dan yang lebih positif) untuk offset +6.4 dB), tetapi mencegah trek yang lebih pelan untuk ditingkatkan.\n\nAnda sebaiknya mengatur ini ke kebalikan dari gain tertinggi (paling positif) di pustaka Anda, misal: atur ke +3 dB jika gain tertinggi di pustaka Anda adalah -3 dB (dan semua trek lain memiliki gain seperti -5 dB, -8 dB, -10 dB, dll.).",
     "@volumeNormalizationIOSBaseGainEditorDescription": {
         "description": "Description for the input that sets the replay gain base gain on iOS and other non-Android platforms"
     },
@@ -1943,7 +1943,7 @@
     "@size": {
         "description": "Label for the feature chips showing the size (original file size or transcoded size, if available) of a track"
     },
-    "normalizationGain": "Penguat",
+    "normalizationGain": "Gain",
     "@normalizationGain": {
         "description": "Label for the feature chips showing the normalization gain / LUFS offset of a track"
     },
@@ -3658,7 +3658,7 @@
         "description": "Notification on sort and filter menu that currently pending changes will be automatically applied on close."
     },
     "removeFromQueue": "Hapus Dari Antrean",
-    "featureChipName": "{chipName, select, explicit{Eksplisit} playCount{Jumlah Putaran} additionalPeople{Orang Tambahan} playbackMode{Mode Pemutaran} codec{Codec} bitRate{Bitrate} bitDepth{Bit Depth} sampleRate{Sample Rate} size{Ukuran} normalizationGain{Gain Normalisasi} other{{chipName}}}",
+    "featureChipName": "{chipName, select, explicit{Eksplisit} playCount{Jumlah Putaran} additionalPeople{Orang Tambahan} playbackMode{Mode Pemutaran} codec{Codec} bitRate{Bitrate} bitDepth{Bit Depth} sampleRate{Sample Rate} size{Ukuran} normalizationGain{Normalisasi Gain} other{{chipName}}}",
     "@featureChipName": {
         "placeholders": {
             "chipName": {
@@ -3668,7 +3668,7 @@
         },
         "description": "Titles for settings controlling which pieces of advanced track info are displayed."
     },
-    "featureChipDescription": "{chipName, select, explicit{Tandai trek dengan konten eksplisit} additionalPeople{Orang non-artis yang berhubungan dengan trek, jika tersedia (penulis, penulis lirik, dll.)} playbackMode{Informasi status streaming dan transkode} bitDepth{Bit per sampel audio. Hanya dapat diterapkan untuk codec lossless, biasanya 16 bit.} sampleRate{Sampel audio per detik. Biasanya 44.1 kHz.} normalizationGain{Level ReplayGain yang aktif saat ini} size{Ukuran file asli dari trek} other{null}}",
+    "featureChipDescription": "{chipName, select, explicit{Tandai trek dengan konten eksplisit} additionalPeople{Orang non-artis yang berhubungan dengan trek, jika tersedia (penulis, penulis lirik, dll.)} playbackMode{Informasi status streaming dan transkode} bitDepth{Bit per sampel audio. Hanya dapat diterapkan untuk codec lossless, biasanya 16 bit.} sampleRate{Sampel audio per detik. Biasanya 44.1 kHz.} normalizationGain{Level Normalisasi Gain yang aktif saat ini} size{Ukuran file asli dari trek} other{null}}",
     "@featureChipDescription": {
         "placeholders": {
             "chipName": {
