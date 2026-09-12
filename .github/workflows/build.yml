@@ -250,7 +250,7 @@ jobs:
     - run: flutter pub get
 
     # https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications
-    - name: Install the Apple certificate and provisioning profile
+    - name: Install Apple certificate and provisioning profile
       env:
         BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
         P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
