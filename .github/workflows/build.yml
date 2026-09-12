@@ -32,12 +32,12 @@ jobs:
     steps:
     - name: Clone repository
       uses: actions/checkout@v6
-    
+
     - uses: actions/setup-java@v5
       with:
         distribution: 'zulu'
         java-version: '17'
-  
+
     - name: Free up disk space
       run: |
         # Remove .NET SDKs
@@ -71,10 +71,10 @@ jobs:
         # Include arch as linux aarch64 include isar overriding
         # arch can be removed later once isar aarch64 is easily available on pub.dev and overriding is not needed anymore
         pub-cache-key: "flutter-pub-:os:-:channel:-:version:-:arch:-:hash:"
-    
+
     - name: Gradle cache
       uses: actions/cache@v5
-      with: 
+      with:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
@@ -248,30 +248,28 @@ jobs:
 
     - run: flutter doctor
     - run: flutter pub get
-      
+
     # https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications
     - name: Install the Apple certificate and provisioning profile
       env:
-        BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_BASE64 }}
-        P12_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
-        BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
-        KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+        BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+        P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+        BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       run: |
-        set -euo pipefail
-
         # create variables
-        CERTIFICATE_PATH="$RUNNER_TEMP/apple_distribution.p12"
-        PROFILE_PATH="$RUNNER_TEMP/app_store.mobileprovision"
-        KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+        CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+        PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
         # import certificate and provisioning profile from secrets
-        echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o "$CERTIFICATE_PATH"
-        echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o "$PROFILE_PATH"
+        echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+        echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
 
         # create temporary keychain
-        security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-        security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-        security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+        security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
         # import certificate to keychain
         security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
@@ -370,22 +368,22 @@ jobs:
         path: isar
         repository: Komodo5197/isar-community
         ref: a602cd8999048faba043f7e1ce7ba92f4d812762
-    
+
     - name: Build isar core and inject into cached isar_flutter_libs
       if: matrix.arch == 'arm64'
       run: |
         sh tool/build_linux.sh aarch64
         mv libisar_linux_arm64.so $HOME/.pub-cache/git/isar_flutter_libs-*/linux/libisar.so
       working-directory: isar
-    
+
     - run: flutter build linux --release --no-pub
-    
+
     # copy icon assets and desktop file next to bundle location for easy including in tar archive
     - run: |
         cp -r assets/icon/linux/ build/linux/${{ matrix.arch }}/release/icons \
         && cp assets/finamp.desktop.m4 build/linux/${{ matrix.arch }}/release/ \
         && cp assets/com.unicornsonlsd.finamp.metainfo.xml build/linux/${{ matrix.arch }}/release/
-    
+
     # Create dynamic names based on architecture
     - name: Set archive and checksum names
       run: |
@@ -397,7 +395,7 @@ jobs:
         fi
         echo "TAR_NAME=finamp-${ref_name}-linux-${{ matrix.arch }}.tar.gz" >> $GITHUB_ENV
         echo "SHA_NAME=finamp-${ref_name}-linux-${{ matrix.arch }}.tar.gz.sha256sum" >> $GITHUB_ENV
-    
+
     # archive bundle and generate checksum
     - run: |
         tar -czf ${TAR_NAME} --directory build/linux/${{ matrix.arch }}/release/ bundle icons finamp.desktop.m4 com.unicornsonlsd.finamp.metainfo.xml \
@@ -408,7 +406,7 @@ jobs:
         name: ${{ env.TAR_NAME }}
         path: ${{ env.TAR_NAME }}
         compression-level: 0 # no compression
-    
+
     - uses: actions/upload-artifact@v6
       with:
         name: ${{ env.SHA_NAME }}
