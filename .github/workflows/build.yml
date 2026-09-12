@@ -281,7 +281,29 @@ jobs:
         cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
     - name: Build App Store IPA
-      run: flutter build ipa --release --no-pub
+      # We do this fiddly flutter-build-then-xcodebuild so that we can use the
+      # CI profiles/certificates while keeping the Xcode project's signing
+      # settings to auto for normal use
+      run: |
+        flutter build ios --release --no-pub --no-codesign --config-only
+        xcodebuild \
+          -workspace ios/Runner.xcworkspace \
+          -scheme Runner \
+          -configuration Release \
+          -destination 'generic/platform=iOS' \
+          -archivePath "$PWD/build/ios/archive/Runner.xcarchive" \
+          archive \
+          CODE_SIGN_STYLE=Manual \
+          CODE_SIGN_IDENTITY='Apple Distribution' \
+          'CODE_SIGN_IDENTITY[sdk=iphoneos*]=Apple Distribution' \
+          DEVELOPMENT_TEAM=PFNS8PTRM7 \
+          'PROVISIONING_PROFILE_SPECIFIER=Finamp CI'
+        mkdir -p build/ios/ipa
+        xcodebuild \
+          -exportArchive \
+          -archivePath "$PWD/build/ios/archive/Runner.xcarchive" \
+          -exportPath "$PWD/build/ios/ipa" \
+          -exportOptionsPlist ios/ExportOptions-CI.plist
 
     - name: Upload IPA to App Store Connect
       env:

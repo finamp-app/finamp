@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>method</key>
+	<string>app-store-connect</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.unicornsonlsd.finamp-ios</key>
+		<string>Finamp CI</string>
+	</dict>
+	<key>signingStyle</key>
+	<string>manual</string>
+	<key>teamID</key>
+	<string>PFNS8PTRM7</string>
+</dict>
+</plist>
