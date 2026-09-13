@@ -293,11 +293,9 @@ jobs:
           -destination 'generic/platform=iOS' \
           -archivePath "$PWD/build/ios/archive/Runner.xcarchive" \
           archive \
-          CODE_SIGN_STYLE=Manual \
-          CODE_SIGN_IDENTITY='Apple Distribution' \
-          'CODE_SIGN_IDENTITY[sdk=iphoneos*]=Apple Distribution' \
-          DEVELOPMENT_TEAM=PFNS8PTRM7 \
-          'PROVISIONING_PROFILE_SPECIFIER=Finamp CI'
+          FINAMP_CODE_SIGN_STYLE=Manual \
+          FINAMP_CODE_SIGN_IDENTITY='Apple Distribution' \
+          'FINAMP_PROVISIONING_PROFILE_SPECIFIER=Finamp CI'
         mkdir -p build/ios/ipa
         xcodebuild \
           -exportArchive \
