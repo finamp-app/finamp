@@ -26,7 +26,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  background_downloader: ^9.2.3
+  background_downloader: ^9.6.2
   json_annotation: ^4.8.1
   chopper: ^8.0.0
   get_it: ^8.2.0
@@ -165,6 +165,8 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   build_runner: ^2.3.3
+  tief_test_harness: ^0.1.1
+  tief_screen: ^0.1.0
   # 5.14 seems to fail - might need build_runner 2.12?
   flutter_gen_runner: 5.13.0+1
   chopper_generator: ^8.0.0
@@ -183,6 +185,8 @@ dev_dependencies:
       ref: f070a067378c215b9212a2a22ea593293671c9c9
       path: packages/isar_generator
   msix: ^3.16.9
+  args: ^2.7.0
+  yaml: ^3.1.4
 
 dependency_overrides:
   # force isar_generator community fork to accept baseline isar.

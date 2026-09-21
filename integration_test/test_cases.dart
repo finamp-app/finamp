@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'dart:io';
 
-import 'package:dbus/dbus.dart';
 import 'package:finamp/components/AlbumScreen/album_screen_content.dart';
 import 'package:finamp/components/Buttons/cta_huge.dart';
 import 'package:finamp/components/LoginScreen/login_server_selection_page.dart';
@@ -19,14 +17,16 @@ import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
+import 'helpers.dart';
+
 void main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   /// The ProviderContainer initialized by main().
   /// All tests should create and attach to descendants of this to avoid errors.
   ProviderContainer? container;
-  List<FlutterErrorDetails>? mainErrors = [];
-  bool mainCompleted = false;
+  late List<FlutterErrorDetails> mainErrors;
+  late bool mainCompleted;
 
   setUpAll(() async {
     // Disable audio output on windows and linux due to missing driver in CI
@@ -34,37 +34,7 @@ void main() async {
       JustAudioMediaKit.nullBackend = true;
     }
 
-    // If main throws an error, the future runZoneGuarded returns will never complete, so do not await it.
-    //Instead, we will simply check that main has completed with no errors after a 30 second timeout.  This also
-    // allows some errors thrown by the background services to be caught before the following tests start.
-    unawaited(
-      runZonedGuarded(
-        () async {
-          // Login testing flag redirects file accesses to testing folder and clears it on startup.
-          // Download base directories are not redirected, so loginTesting flag should be avoided on mobile.
-          // Note that this means mobile integration test runs will require manual file clearing outside of CI
-          await app.main([], integrationTesting: true, loginTesting: !(Platform.isAndroid || Platform.isIOS));
-          mainCompleted = true;
-        },
-        (e, stack) {
-          // Linux throws DBusServiceUnknownException due to dbus service org.freedesktop.UPower
-          // missing in CI.  Ignore.
-          if (e is DBusServiceUnknownException) return;
-
-          if (mainErrors != null) {
-            mainErrors!.add(FlutterErrorDetails(exception: e, stack: stack));
-          } else {
-            debugPrint("Received background error after completion of main()");
-            debugPrint("Error: $e");
-            debugPrintStack(stackTrace: stack);
-            // If main has already completed, the app's core functionality is working, so we allow the tests to complete
-            // without rethrowing the error.
-          }
-        },
-      ),
-    );
-
-    await Future<void>.delayed(Duration(seconds: 30));
+    (mainCompleted, mainErrors) = await initializeApp();
   });
 
   // These integration tests all rely on the previous one working.  Not good practice, but whatever.
@@ -72,17 +42,17 @@ void main() async {
     testWidgets('Verify app loads without errors', (tester) async {
       // Running main in setup instead of here to prevent all logging from being attributed
       // to this test in output.
-      for (var error in mainErrors!) {
+      for (var error in mainErrors) {
         debugPrint("Error thrown in main: ${error.exception}");
         if (error.stack != null) {
           debugPrintStack(stackTrace: error.stack!);
         }
       }
 
-      expect(mainErrors!.length, equals(0));
+      expect(mainErrors.length, equals(0));
       expect(mainCompleted, equals(true));
 
-      mainErrors = null;
+      mainErrors = [];
 
       // The testing harness tries to clear out all the async code between tests, and runs all the cases in individual
       // async contexts as part of this. I believe the expectation is that background services and realtime tasks will
@@ -178,23 +148,4 @@ void main() async {
     });
     // TODO add test where we migrate from old settings data?
   });
-}
-
-extension WaitForElement on WidgetTester {
-  Future<void> waitFor(Finder finder, {int seconds = 20, bool realtime = true}) async {
-    int i = 0;
-    while (true) {
-      await pump(Duration(seconds: 1));
-      if (any(finder)) {
-        return;
-      }
-      if (i >= seconds) {
-        throw "$finder never found expected widget after $seconds seconds.";
-      }
-      i++;
-      if (realtime) {
-        await Future<void>.delayed(Duration(seconds: 1));
-      }
-    }
-  }
 }

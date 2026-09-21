@@ -1,0 +1,9 @@
+server: https://demo.jellyfin.org/stable
+user: demo 
+password:
+harnesses:
+# For specifying which harnesses to run, e.g.
+# HARNESSES:
+#   - Player Screen
+#   - Settings Screen
+playlistId: your_playlist_id_here

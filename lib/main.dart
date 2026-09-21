@@ -798,7 +798,9 @@ Future<void> _setupFinampUserHelper() async {
 }
 
 class Finamp extends StatefulWidget {
-  const Finamp({super.key});
+  final bool? integrationTesting;
+
+  const Finamp({super.key, this.integrationTesting});
 
   @override
   State<Finamp> createState() => _FinampState();
@@ -909,7 +911,7 @@ class _FinampState extends State<Finamp> with WindowListener {
           FocusScopeNode navigatorFocus = FocusScope.of(navigatorContext, createDependency: false);
           navigatorFocus.requestScopeFocus();
         },
-        child: FinampProviderBuilder(child: FinampApp()),
+        child: FinampProviderBuilder(child: FinampApp(integrationTesting: widget.integrationTesting)),
       ),
     );
   }
@@ -942,7 +944,9 @@ class _FinampState extends State<Finamp> with WindowListener {
 }
 
 class FinampApp extends ConsumerWidget {
-  const FinampApp({super.key});
+  final bool? integrationTesting;
+
+  const FinampApp({super.key, this.integrationTesting});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -1069,6 +1073,7 @@ class FinampApp extends ConsumerWidget {
       navigatorKey: GlobalSnackbar.rawMaterialAppNavigatorKey,
       shortcuts: GlobalShortcuts.shortcutMap,
       actions: GlobalShortcuts.actionMap,
+      debugShowCheckedModeBanner: integrationTesting != true,
     );
   }
 }
