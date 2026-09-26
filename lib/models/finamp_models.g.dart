@@ -480,13 +480,14 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..radioEnabled = fields[140] == null ? false : fields[140] as bool
       ..radioMode = fields[141] == null
           ? RadioMode.similar
-          : fields[141] as RadioMode;
+          : fields[141] as RadioMode
+      ..playerQueueLimit = (fields[161] as num?)?.toInt();
   }
 
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(149)
+      ..writeByte(150)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -784,7 +785,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(159)
       ..write(obj.showQuickActionsBanner)
       ..writeByte(160)
-      ..write(obj.perTabContentViewType);
+      ..write(obj.perTabContentViewType)
+      ..writeByte(161)
+      ..write(obj.playerQueueLimit);
   }
 
   @override
@@ -2372,6 +2375,8 @@ class SavedQueueStateAdapter extends TypeAdapter<SavedQueueState> {
         return SavedQueueState.failed;
       case 5:
         return SavedQueueState.pendingSave;
+      case 6:
+        return SavedQueueState.failedOversized;
       default:
         return SavedQueueState.preInit;
     }
@@ -2392,6 +2397,8 @@ class SavedQueueStateAdapter extends TypeAdapter<SavedQueueState> {
         writer.writeByte(4);
       case SavedQueueState.pendingSave:
         writer.writeByte(5);
+      case SavedQueueState.failedOversized:
+        writer.writeByte(6);
     }
   }
 

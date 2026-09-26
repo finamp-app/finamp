@@ -8,6 +8,7 @@ import 'package:collection/collection.dart';
 import 'package:finamp/components/PlayerScreen/queue_source_helper.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/components/now_playing_bar.dart';
+import 'package:finamp/extensions/list.dart';
 import 'package:finamp/gen/assets.gen.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -32,6 +33,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
+import '../extensions/localizations.dart';
 import '../models/music_slices.dart';
 
 /// A track queueing service for Finamp.
@@ -97,14 +99,11 @@ class QueueService {
   SavedQueueState _savedQueueState = SavedQueueState.preInit;
   FinampStorableQueueInfo? _failedSavedQueue;
   static const int _maxSavedQueues = 60;
+  // This is just used to suppress the error message when loading is canceled deliberately
+  bool _queueLoadCanceled = false;
 
-  static int get maxInitialQueueItems => Platform.isIOS || Platform.isMacOS
-      ? 1000
-      : Platform.isAndroid
-      ? 1000
-      : 1000;
-
-  static int get maxQueueItems => Platform.isIOS || Platform.isMacOS ? 1500 : 5000;
+  static int get queueRadioLimit =>
+      ((FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit) * 0.5).ceil();
 
   QueueService() {
     // _queueServiceLogger.level = Level.OFF;
@@ -341,8 +340,8 @@ class QueueService {
     final queueToSave = getQueue();
     List<int> shuffleIndices = [..._latestShuffleIndices];
     // if we exceeded the queue size limit, remove as many tracks from previousTracks as needed
-    if (queueToSave.fullQueue.length > maxQueueItems) {
-      final excess = queueToSave.fullQueue.length - maxQueueItems;
+    if (queueToSave.fullQueue.length > queueRadioLimit) {
+      final excess = queueToSave.fullQueue.length - queueRadioLimit;
       // create a copy of previous tracks to avoid modifying the original list, which is tied directly to Finamp's internal queue
       var trimmedPreviousTracks = [...queueToSave.previousTracks];
       List<int> indicesToRemove = [];
@@ -399,7 +398,15 @@ class QueueService {
           }
 
           if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup && !await _hasInitialPlayLink()) {
-            await loadSavedQueue(info);
+            if (info.trackCount >=
+                (FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit)) {
+              _savedQueueState = SavedQueueState.failedOversized;
+              _failedSavedQueue = info;
+              refreshQueueStream();
+              _queueServiceLogger.info("Aborting auto-restore of large queue with ${info.trackCount} tracks");
+            } else {
+              await loadSavedQueue(info);
+            }
           } else {
             _savedQueueState = SavedQueueState.pendingSave;
           }
@@ -433,8 +440,16 @@ class QueueService {
   }
 
   Future<void> retryQueueLoad() async {
-    if (_savedQueueState == SavedQueueState.failed && _failedSavedQueue != null) {
+    if (_savedQueueState.isFailed && _failedSavedQueue != null) {
       await loadSavedQueue(_failedSavedQueue!);
+    }
+  }
+
+  Future<void> cancelQueueLoad() async {
+    if (_savedQueueState == SavedQueueState.loading || _savedQueueState.isFailed) {
+      _savedQueueState = SavedQueueState.pendingSave;
+      _queueLoadCanceled = true;
+      refreshQueueStream();
     }
   }
 
@@ -570,6 +585,7 @@ class QueueService {
       int droppedTracks = info.trackCount - loadedTracks;
 
       if (_savedQueueState != SavedQueueState.loading) {
+        if (_queueLoadCanceled) return;
         return Future.error("Loading of saved Queue was interrupted.");
       }
 
@@ -614,6 +630,7 @@ class QueueService {
           unawaited(playbackHistoryService.reportRestoredSessionStatus());
         });
       }
+      _queueLoadCanceled = false;
     }
   }
 
@@ -628,6 +645,21 @@ class QueueService {
     bool skipRadioCacheInvalidation = false,
   }) async {
     // _initialQueue = list; // save original PlaybackList for looping/restarting and meta info
+
+    order ??= FinampPlaybackOrder.linear;
+
+    final limit = FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit;
+    if (items.length > limit) {
+      // If item is to be shuffled, we need to preshuffle before the limit is applied to reach all tracks
+      if (order == FinampPlaybackOrder.shuffled) {
+        order = FinampPlaybackOrder.linear;
+        items = List.of(items);
+        items.shuffle();
+      }
+      final fullSize = items.length;
+      items = items.safeSliceByLength(0, limit);
+      GlobalSnackbar.message((context) => context.l10n.oversizedQueueItemTruncated(fullSize, items.length));
+    }
 
     await _replaceWholeQueue(
       itemList: items,
@@ -646,18 +678,36 @@ class QueueService {
   Future<void> startSlicePlayback(PlayableSlice slice) async => _startSlicePlayback(slice: slice);
 
   Future<void> _startSlicePlayback({required PlayableSlice slice, bool beginPlaying = true}) async {
+    final limit = FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit;
     switch (slice) {
       case BasePlayableSlice():
       case GroupedPlayableSlice():
-      case PreCachedPlayableSlice() when slice.shuffleState == SliceShuffleState.playerShuffled:
+      case PreCachedPlayableSlice()
+          when slice.shuffleState == SliceShuffleState.playerShuffled || slice.cachedTracks.length > limit:
+        // We don't really expect to be hitting the queue limit with cached Tracks, so trying to shortcut the resolve isn't needed.
         final base = await slice.resolve();
-        final order = switch (base.shuffleState) {
+        var order = switch (base.shuffleState) {
           SliceShuffleState.preShuffled => FinampPlaybackOrder.linear,
           SliceShuffleState.playerShuffled => FinampPlaybackOrder.shuffled,
           SliceShuffleState.linear => FinampPlaybackOrder.linear,
         };
+
+        List<jellyfin_models.BaseItemDto> items = base.items;
+        if (base.items.length > limit) {
+          // If item is to be shuffled, we need to preshuffle before the limit is applied to reach all tracks
+          if (order == FinampPlaybackOrder.shuffled) {
+            order = FinampPlaybackOrder.linear;
+            items = List.of(base.items);
+            items.shuffle();
+          }
+          items = items.safeSliceByLength(0, limit);
+          GlobalSnackbar.message(
+            (context) => context.l10n.oversizedQueueItemTruncated(base.items.length, items.length),
+          );
+        }
+
         await _replaceWholeQueue(
-          itemList: base.items,
+          itemList: items,
           source: base.source,
           order: order,
           initialIndex: order == FinampPlaybackOrder.linear ? base.startingIndex : null,
@@ -681,7 +731,7 @@ class QueueService {
           "Started playing '${slice.source.name.getLocalized(GlobalSnackbar.requireL10n)}' (${slice.source.type}), pending additional tracks",
         );
         _queueServiceLogger.info("Items for queue: [${slice.cachedTracks.map((e) => e.name).join(", ")}]");
-        final additionalTracks = List.of(await slice.fetchTracks);
+        var additionalTracks = List.of(await slice.fetchTracks);
         if (!slice.combineTracks) {
           assert(() {
             for (int i = 0; i < slice.cachedTracks.length; i++) {
@@ -694,6 +744,14 @@ class QueueService {
           for (var track in slice.cachedTracks) {
             additionalTracks.remove(track);
           }
+        }
+        final itemSize = additionalTracks.length + slice.cachedTracks.length;
+        if (additionalTracks.length + slice.cachedTracks.length > limit) {
+          additionalTracks = additionalTracks.safeSliceByLength(0, limit - slice.cachedTracks.length);
+          GlobalSnackbar.message(
+            (context) =>
+                context.l10n.oversizedQueueItemTruncated(itemSize, additionalTracks.length + slice.cachedTracks.length),
+          );
         }
         // TODO verify we haven't made other queue changes?
         await _insertFollowupItems(additionalTracks, slice.source, slice.cachedTracks.length);
@@ -711,7 +769,7 @@ class QueueService {
     int? nextUpLength,
     List<int>? shuffleOrder,
     Duration? initialSeekPosition,
-    FinampPlaybackOrder? order,
+    required FinampPlaybackOrder order,
     bool beginPlaying = true,
     bool isRestoredQueue = false,
     bool skipRadioCacheInvalidation = false,
@@ -748,8 +806,6 @@ class QueueService {
       if (!skipRadioCacheInvalidation) {
         invalidateRadioCache();
       }
-
-      order ??= FinampPlaybackOrder.linear;
 
       nextUpLength ??= 0;
 
@@ -934,7 +990,16 @@ class QueueService {
       return _startSlicePlayback(slice: slice, beginPlaying: false);
     }
     final baseSlice = await slice.resolve(preShuffle: true);
-    final items = baseSlice.items;
+    List<jellyfin_models.BaseItemDto> items;
+    final limit = FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit;
+    if (baseSlice.items.length > limit) {
+      items = baseSlice.items.safeSliceByLength(0, limit);
+      GlobalSnackbar.message(
+        (context) => context.l10n.oversizedQueueItemTruncated(baseSlice.items.length, items.length),
+      );
+    } else {
+      items = baseSlice.items;
+    }
 
     try {
       if (_savedQueueState == SavedQueueState.pendingSave) {
@@ -969,7 +1034,16 @@ class QueueService {
       return _startSlicePlayback(slice: slice, beginPlaying: false);
     }
     final baseSlice = await slice.resolve(preShuffle: true);
-    final items = baseSlice.items;
+    List<jellyfin_models.BaseItemDto> items;
+    final limit = FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit;
+    if (baseSlice.items.length > limit) {
+      items = baseSlice.items.safeSliceByLength(0, limit);
+      GlobalSnackbar.message(
+        (context) => context.l10n.oversizedQueueItemTruncated(baseSlice.items.length, items.length),
+      );
+    } else {
+      items = baseSlice.items;
+    }
 
     try {
       if (_savedQueueState == SavedQueueState.pendingSave) {
@@ -1005,7 +1079,16 @@ class QueueService {
       return _startSlicePlayback(slice: slice, beginPlaying: false);
     }
     final baseSlice = await slice.resolve(preShuffle: true);
-    final items = baseSlice.items;
+    List<jellyfin_models.BaseItemDto> items;
+    final limit = FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit;
+    if (baseSlice.items.length > limit) {
+      items = baseSlice.items.safeSliceByLength(0, limit);
+      GlobalSnackbar.message(
+        (context) => context.l10n.oversizedQueueItemTruncated(baseSlice.items.length, items.length),
+      );
+    } else {
+      items = baseSlice.items;
+    }
 
     try {
       if (_savedQueueState == SavedQueueState.pendingSave) {

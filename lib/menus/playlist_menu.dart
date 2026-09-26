@@ -52,7 +52,9 @@ Future<void> showModalPlaylistMenu({
       SliverPersistentHeader(delegate: MenuItemInfoSliverHeader(item: playableItem), pinned: true),
       MenuMask(
         height: MenuItemInfoSliverHeader.defaultHeight,
-        child: SliverToBoxAdapter(child: PlaybackActionRow(item: playableItem)),
+        child: SliverToBoxAdapter(
+          child: PlaybackActionRow(item: playableItem, trackCount: playableItem.item.childCount),
+        ),
       ),
       MenuMask(
         height: MenuItemInfoSliverHeader.defaultHeight,

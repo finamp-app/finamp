@@ -3764,5 +3764,20 @@
     "quickSettingsTranscodeLink": "All transcoding settings",
     "quickSettingsLayoutLink": "All layout & theme settings",
     "quickSettingsAllSettingsLink": "All Settings",
-    "quickSettingsNetworkLink": "Configure the local address for your server"
+    "quickSettingsNetworkLink": "Configure the local address for your server",
+    "queueAutorestoreOversized": "Saved queue is excessively large.  Continue anyway?",
+    "oversizedQueueItemTruncated": "Oversized item truncated from {itemSize} to {maxSize} tracks.",
+    "@oversizedQueueItemTruncated": {
+        "description": "Message displayed if an item is truncated while being added to queue",
+        "placeholders": {
+            "itemSize": {
+                "type": "int"
+            },
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueSizeLimitTitle": "Queue track limit",
+    "queueSizeLimitSubtitle": "Applies a soft cap to the queue by limiting the size of individual items added.  Excessively large queues may still be created through the addition of multiple items to one queue.  Attempting to play a queue too large for a device may result in app crashes."
 }

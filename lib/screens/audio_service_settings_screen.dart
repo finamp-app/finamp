@@ -1,18 +1,16 @@
 import 'dart:io';
 
-import 'package:finamp/l10n/app_localizations.dart';
-import 'package:finamp/models/finamp_models.dart';
-import 'package:finamp/services/finamp_settings_helper.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/buffer_duration_list_tile.dart';
-import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/loadQueueOnStartup_selector.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/stop_foreground_selector.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/track_shuffle_item_count_editor.dart';
+import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AudioServiceSettingsScreen extends StatefulWidget {
   const AudioServiceSettingsScreen({super.key});
@@ -52,6 +50,7 @@ class _AudioServiceSettingsScreenState extends State<AudioServiceSettingsScreen>
           const AutoplayRestoredQueueToggle(),
           const AutoReloadQueueToggle(),
           const ClearQueueOnStopToggle(),
+          const MaxQueueSizeListTile(),
         ],
       ),
     );
@@ -279,6 +278,55 @@ class ForceAudioOffloadingOnAndroidToggle extends ConsumerWidget {
       onChanged: (newValue) async {
         FinampSetters.setForceAudioOffloadingOnAndroid(newValue);
       },
+    );
+  }
+}
+
+class MaxQueueSizeListTile extends ConsumerStatefulWidget {
+  const MaxQueueSizeListTile({super.key});
+
+  @override
+  ConsumerState<MaxQueueSizeListTile> createState() => _MaxQueueSizeListTileState();
+}
+
+class _MaxQueueSizeListTileState extends ConsumerState<MaxQueueSizeListTile> {
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    ref.listenManual(finampSettingsProvider.playerQueueLimit, (_, value) {
+      var newText = (value ?? DefaultSettings.playerQueueLimit).toString();
+      if (_controller.text != newText) {
+        _controller.text = newText;
+      }
+    }, fireImmediately: true);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.queueSizeLimitTitle),
+      subtitle: Text(AppLocalizations.of(context)!.queueSizeLimitSubtitle),
+      trailing: SizedBox(
+        width: 50 * MediaQuery.textScaleFactorOf(context),
+        child: TextField(
+          controller: _controller,
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            var valueInt = int.tryParse(value);
+
+            if (valueInt != null && !valueInt.isNegative) {
+              if (valueInt < 100) {
+                _controller.text = "100";
+                valueInt = 100;
+              }
+              FinampSetters.setPlayerQueueLimit(valueInt);
+            }
+          },
+        ),
+      ),
     );
   }
 }

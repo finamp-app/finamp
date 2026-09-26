@@ -74,9 +74,14 @@ class PlayerScreen extends StatelessWidget {
         initialData: queueService.getQueue(),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data!.saveState == SavedQueueState.loading) {
-            return buildLoadingScreen(context, null);
-          } else if (snapshot.hasData && snapshot.data!.saveState == SavedQueueState.failed) {
-            return buildLoadingScreen(context, queueService.retryQueueLoad);
+            return buildLoadingScreen(context, snapshot.data!.saveState, null, queueService.cancelQueueLoad);
+          } else if (snapshot.hasData && snapshot.data!.saveState.isFailed) {
+            return buildLoadingScreen(
+              context,
+              snapshot.data!.saveState,
+              queueService.retryQueueLoad,
+              queueService.cancelQueueLoad,
+            );
           } else if (snapshot.hasData && snapshot.data!.currentTrack != null) {
             return _PlayerScreenContent(playerScreen: this);
           } else {
@@ -87,7 +92,13 @@ class PlayerScreen extends StatelessWidget {
     );
   }
 
-  Widget buildLoadingScreen(BuildContext context, void Function()? retryCallback) {
+  Widget buildLoadingScreen(
+    BuildContext context,
+    SavedQueueState state,
+    void Function()? retryCallback,
+    void Function() cancelCallback,
+  ) {
+    assert(state == SavedQueueState.loading || (state.isFailed && retryCallback != null));
     double imageSize = min(MediaQuery.widthOf(context), MediaQuery.heightOf(context)) / 2;
 
     return SimpleGestureDetector(
@@ -114,12 +125,17 @@ class PlayerScreen extends StatelessWidget {
                     : SizedBox(width: imageSize, height: imageSize, child: const CircularProgressIndicator.adaptive()),
                 const Spacer(),
                 BalancedText(
-                  (retryCallback != null)
-                      ? AppLocalizations.of(context)!.queueRetryMessage
-                      : AppLocalizations.of(context)!.queueLoadingMessage,
+                  switch (state) {
+                    SavedQueueState.loading => context.l10n.queueLoadingMessage,
+                    SavedQueueState.failed => context.l10n.queueRetryMessage,
+                    SavedQueueState.failedOversized => context.l10n.queueAutorestoreOversized,
+                    _ => "ERROR",
+                  },
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 20, height: 26 / 20),
                 ),
+                SizedBox(height: 15.0),
+                SimpleButton(text: context.l10n.genericCancel, icon: TablerIcons.cancel, onPressed: cancelCallback),
                 const Spacer(flex: 2),
               ],
             ),

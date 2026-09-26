@@ -455,7 +455,7 @@ class PlayOnService {
         }
       }
     } catch (e) {
-      _playOnServiceLogger.severe("Error handling message: $e");
+      _playOnServiceLogger.severe("Error handling message: $e", e);
     }
   }
 }

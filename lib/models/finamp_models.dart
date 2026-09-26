@@ -318,6 +318,11 @@ class DefaultSettings {
   static const useAndroidGainEffect = true;
   static const ClientCertificate? clientCertificate = null;
   static const showQuickActionsBanner = true;
+  // iOS/macos player can start to struggle at 2000 tracks.  Android can run out of memory with 10,000-20,000 tracks.
+  // Linux/Windows use mpv shim which handles all queueing in dart, so they shouldn't have any limitations.
+  static final playerQueueLimit = Platform.isIOS || Platform.isMacOS
+      ? 1500
+      : (Platform.isLinux || Platform.isWindows ? 30000 : 5000);
 }
 
 @HiveType(typeId: 28)
@@ -969,6 +974,11 @@ class FinampSettings {
   @HiveField(160, defaultValue: DefaultSettings.perTabContentViewType)
   @SettingsHelperMap("tabContentType")
   Map<ContentType, ContentViewType> perTabContentViewType;
+
+  @HiveField(161)
+  /// The maximum size we want a queue to reach.  We will not hard-enforce this, but individual items will be trimmed
+  /// when adding to queue and we will cancel auto-restore for queues over this size.
+  int? playerQueueLimit;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
@@ -2580,6 +2590,10 @@ enum SavedQueueState {
   failed,
   @HiveField(5)
   pendingSave,
+  @HiveField(6)
+  failedOversized;
+
+  bool get isFailed => this == failed || this == failedOversized;
 }
 
 @HiveType(typeId: 63)
