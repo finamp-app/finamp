@@ -969,6 +969,28 @@ class JellyfinApiHelper {
     return UserItemDataDto.fromJson(response as Map<String, dynamic>);
   }
 
+  /// Sets the current user's personal Jellyfin rating for an item.
+  Future<UserItemDataDto> setUserRating(BaseItemId itemId, double rating) async {
+    assert(_verifyCallable());
+
+    if (rating < 0 || rating > 10) {
+      throw ArgumentError.value(rating, "rating", "Jellyfin ratings must be between 0 and 10");
+    }
+
+    final response = await jellyfinApi.setUserRating(itemId: itemId, userData: <String, dynamic>{"Rating": rating});
+
+    return UserItemDataDto.fromJson(response as Map<String, dynamic>);
+  }
+
+  /// Removes the current user's personal numeric rating for an item.
+  Future<UserItemDataDto> clearUserRating(BaseItemId itemId) async {
+    assert(_verifyCallable());
+
+    final response = await jellyfinApi.clearUserRating(itemId: itemId);
+
+    return UserItemDataDto.fromJson(response as Map<String, dynamic>);
+  }
+
   void addArtistToMixBuilderList(BaseItemDto item) {
     selectedMixArtists.add(item);
   }

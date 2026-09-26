@@ -558,6 +558,16 @@ abstract class JellyfinApi extends ChopperService {
     @Path() required BaseItemId itemId,
   });
 
+  /// Updates personal user data for an item.
+  @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
+  @POST(path: "/UserItems/{itemId}/UserData")
+  Future<dynamic> setUserRating({@Path() required BaseItemId itemId, @Body() required Map<String, dynamic> userData});
+
+  /// Clears the personal numeric rating for an item.
+  @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
+  @DELETE(path: "/UserItems/{itemId}/Rating")
+  Future<dynamic> clearUserRating({@Path() required BaseItemId itemId});
+
   /// Requests lyrics for a track.
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
   @Get(path: "/Audio/{itemId}/Lyrics")

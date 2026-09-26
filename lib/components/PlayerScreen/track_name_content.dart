@@ -2,6 +2,7 @@ import 'package:finamp/components/AddToPlaylistScreen/add_to_playlist_button.dar
 import 'package:finamp/components/PlayerScreen/album_chip.dart';
 import 'package:finamp/components/PlayerScreen/artist_chip.dart';
 import 'package:finamp/components/PlayerScreen/player_buttons_more.dart';
+import 'package:finamp/components/PlayerScreen/track_rating.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/screens/player_screen.dart';
@@ -27,6 +28,8 @@ class TrackNameContent extends ConsumerWidget {
     final currentTrack = queue!.currentTrack!;
 
     final jellyfin_models.BaseItemDto trackBaseItemDto = currentTrack.baseItem;
+    final showStarRatings = ref.watch(finampSettingsProvider.showStarRatings);
+    final chipBackgroundColor = IconTheme.of(context).color!.withValues(alpha: 0.1);
 
     Widget getContent(BoxConstraints constraints, double padding) => Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -106,20 +109,26 @@ class TrackNameContent extends ConsumerWidget {
           children: [
             PlayerButtonsMore(item: trackBaseItemDto, queueItem: currentTrack),
             Flexible(
-              child: ArtistChips(
-                baseItem: trackBaseItemDto,
-                backgroundColor: IconTheme.of(context).color!.withOpacity(0.1),
-              ),
+              child: showStarRatings
+                  ? TrackRating(baseItem: trackBaseItemDto)
+                  : ArtistChips(baseItem: trackBaseItemDto, backgroundColor: chipBackgroundColor),
             ),
             AddToPlaylistButton(item: trackBaseItemDto, queueItem: currentTrack),
           ],
         ),
+        if (showStarRatings)
+          Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 280),
+              child: ArtistChips(baseItem: trackBaseItemDto, backgroundColor: chipBackgroundColor),
+            ),
+          ),
         Center(
           child: Container(
             constraints: const BoxConstraints(maxWidth: 280),
             child: AlbumChips(
               baseItem: trackBaseItemDto,
-              backgroundColor: IconTheme.of(context).color!.withOpacity(0.1),
+              backgroundColor: chipBackgroundColor,
               key: trackBaseItemDto.album == null ? null : ValueKey("${trackBaseItemDto.album}-album"),
             ),
           ),

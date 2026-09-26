@@ -834,6 +834,34 @@ final class _$JellyfinApi extends JellyfinApi {
   }
 
   @override
+  Future<dynamic> setUserRating({
+    required BaseItemId itemId,
+    required Map<String, dynamic> userData,
+  }) async {
+    final Uri $url = Uri.parse('/UserItems/${itemId}/UserData');
+    final $body = userData;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    final Response $response = await client.send<dynamic, dynamic>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+      responseConverter: JsonConverter.responseFactory,
+    );
+    return $response.bodyOrThrow;
+  }
+
+  @override
+  Future<dynamic> clearUserRating({required BaseItemId itemId}) async {
+    final Uri $url = Uri.parse('/UserItems/${itemId}/Rating');
+    final Request $request = Request('DELETE', $url, client.baseUrl);
+    final Response $response = await client.send<dynamic, dynamic>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+      responseConverter: JsonConverter.responseFactory,
+    );
+    return $response.bodyOrThrow;
+  }
+
+  @override
   Future<dynamic> getLyrics({required BaseItemId itemId}) async {
     final Uri $url = Uri.parse('/Audio/${itemId}/Lyrics');
     final Request $request = Request('GET', $url, client.baseUrl);
