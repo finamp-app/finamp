@@ -3764,5 +3764,6 @@
     "quickSettingsTranscodeLink": "All transcoding settings",
     "quickSettingsLayoutLink": "All layout & theme settings",
     "quickSettingsAllSettingsLink": "All Settings",
-    "quickSettingsNetworkLink": "Configure the local address for your server"
+    "quickSettingsNetworkLink": "Configure the local address for your server",
+    "folders":"Folders"
 }

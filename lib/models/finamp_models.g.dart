@@ -162,6 +162,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
                 ContentType.playlists,
                 ContentType.tracks,
                 ContentType.genres,
+                ContentType.folders,
               ]
             : (fields[22] as List).cast<ContentType>(),
         autoloadLastQueueOnStartup: fields[28] == null
@@ -1932,6 +1933,8 @@ class ContentTypeAdapter extends TypeAdapter<ContentType> {
         return ContentType.inPerformingArtistAlbums;
       case 11:
         return ContentType.inAlbumArtistAlbums;
+      case 12:
+        return ContentType.folders;
       default:
         return ContentType.albums;
     }
@@ -1964,6 +1967,8 @@ class ContentTypeAdapter extends TypeAdapter<ContentType> {
         writer.writeByte(10);
       case ContentType.inAlbumArtistAlbums:
         writer.writeByte(11);
+      case ContentType.folders:
+        writer.writeByte(12);
     }
   }
 
@@ -9579,6 +9584,7 @@ const _$ContentTypeEnumMap = {
   ContentType.mixed: 'mixed',
   ContentType.inPerformingArtistAlbums: 'inPerformingArtistAlbums',
   ContentType.inAlbumArtistAlbums: 'inAlbumArtistAlbums',
+  ContentType.folders: 'folders',
 };
 
 const _$MediaItemParentTypeEnumMap = {
@@ -9710,6 +9716,7 @@ Map<String, dynamic> _$HomeScreenSectionConfigurationToJson(
   if (_$HomeScreenSectionPresetTypeEnumMap[instance.presetType]
       case final value?)
     'presetType': value,
+  'contentType': _$ContentTypeEnumMap[instance.contentType]!,
   'hashCode': instance.hashCode,
   'id': instance.id,
 };

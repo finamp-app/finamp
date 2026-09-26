@@ -55,43 +55,44 @@ class FinampSectionHeader extends ConsumerWidget {
         behavior: HitTestBehavior.opaque,
         child: Padding(
           padding: correctedHeaderPadding,
-          child: Dismissible(
-            key: Key("$key-dismissible"),
-            direction: ref.watch(finampSettingsProvider.disableGesture) || onDismiss == null
-                ? DismissDirection.none
-                : getAllowedDismissDirection(
-                    swipeLeftEnabled:
-                        ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight) != ItemSwipeActions.nothing,
-                    swipeRightEnabled:
-                        ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft) != ItemSwipeActions.nothing,
-                  ),
-            dismissThresholds: const {DismissDirection.startToEnd: 0.65, DismissDirection.endToStart: 0.65},
-            confirmDismiss: onDismiss != null
-                ? (direction) async {
-                    var followUpAction = (direction == DismissDirection.startToEnd)
-                        ? FinampSettingsHelper.finampSettings.itemSwipeActionLeftToRight
-                        : FinampSettingsHelper.finampSettings.itemSwipeActionRightToLeft;
-                    return await onDismiss!(followUpAction);
-                  }
-                : null,
-            background: buildSwipeActionBackground(
-              context: context,
-              direction: DismissDirection.startToEnd,
-              action: ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight),
-            ),
-            secondaryBackground: buildSwipeActionBackground(
-              context: context,
-              direction: DismissDirection.endToStart,
-              action: ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Material(
+          child: Material(
+            child: Dismissible(
+              key: Key("$key-dismissible"),
+              direction: ref.watch(finampSettingsProvider.disableGesture) || onDismiss == null
+                  ? DismissDirection.none
+                  : getAllowedDismissDirection(
+                      swipeLeftEnabled:
+                          ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight) != ItemSwipeActions.nothing,
+                      swipeRightEnabled:
+                          ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft) != ItemSwipeActions.nothing,
+                    ),
+              dismissThresholds: const {DismissDirection.startToEnd: 0.65, DismissDirection.endToStart: 0.65},
+              confirmDismiss: onDismiss != null
+                  ? (direction) async {
+                      var followUpAction = (direction == DismissDirection.startToEnd)
+                          ? FinampSettingsHelper.finampSettings.itemSwipeActionLeftToRight
+                          : FinampSettingsHelper.finampSettings.itemSwipeActionRightToLeft;
+                      return await onDismiss!(followUpAction);
+                    }
+                  : null,
+              background: buildSwipeActionBackground(
+                context: context,
+                direction: DismissDirection.startToEnd,
+                action: ref.watch(finampSettingsProvider.itemSwipeActionLeftToRight),
+              ),
+              secondaryBackground: buildSwipeActionBackground(
+                context: context,
+                direction: DismissDirection.endToStart,
+                action: ref.watch(finampSettingsProvider.itemSwipeActionRightToLeft),
+              ),
+
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(6.0),
                         // all handled by the [GestureDetector] above,
@@ -123,9 +124,9 @@ class FinampSectionHeader extends ConsumerWidget {
                       ),
                     ),
                   ),
-                ),
-                ...actions,
-              ],
+                  ...actions,
+                ],
+              ),
             ),
           ),
         ),

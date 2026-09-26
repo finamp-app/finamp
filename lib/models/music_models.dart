@@ -95,6 +95,8 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
       case ContentType.inPerformingArtistAlbums:
       case ContentType.inAlbumArtistAlbums:
         throw UnsupportedError("Invalid content type $tab for music screen tab.");
+      case ContentType.folders:
+        break;
     }
   }
 
@@ -133,6 +135,8 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
       case ContentType.inPerformingArtistAlbums:
       case ContentType.inAlbumArtistAlbums:
         throw UnsupportedError("Invalid content type $tab for music screen tab.");
+      case ContentType.folders:
+        return MusicScreenPlayable._(tab: tab, library: library, source: source, sortConfig: sortConfig);
     }
   }
 
@@ -150,6 +154,7 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
     ContentType.inAlbumArtistAlbums ||
     ContentType.inPerformingArtistAlbums ||
     ContentType.mixed => throw UnsupportedError("Invalid music screen content type $tab"),
+    ContentType.folders => 20,
   };
 
   @override
@@ -472,4 +477,34 @@ class UnavailableHomeSectionPlayable extends FinampDisplayable<FinampPlayable> {
 
   @override
   int get hashHelper => Object.hash(UnavailableHomeSectionPlayable, section);
+}
+
+class Folder extends _SortablePagedItem<FinampPlayableDto> {
+  Folder(super.item, {super.source, required super.sortConfig});
+
+  factory Folder.fromItem(BaseItemDto item) =>
+      Folder(item, source: QueueItemSource.fromBaseItem(item), sortConfig: ResolvedSortConfig.defaultSort);
+
+  MusicScreenPlayable<FinampPlayableDto> getMusicScreenRequest() {
+    return MusicScreenPlayable(tab: ContentType.folders, library: item.id, source: source, sortConfig: sortConfig);
+  }
+
+  @override
+  bool equalsHelper(Object other) => other is Folder;
+
+  @override
+  int get hashHelper => (Folder as Object).hashCode;
+
+  @override
+  Folder copyWith(ResolvedSortConfig newSort) => Folder(item, source: source, sortConfig: newSort);
+
+  @override
+  int get normalChildSize => switch (BaseItemDtoType.fromItem(item)) {
+    BaseItemDtoType.artist => 5,
+    BaseItemDtoType.playlist => 20,
+    BaseItemDtoType.library => 5,
+    BaseItemDtoType.folder => 10,
+    BaseItemDtoType.collection => 20,
+    _ => 1,
+  };
 }

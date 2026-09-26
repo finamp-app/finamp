@@ -4,6 +4,7 @@ import 'package:finamp/components/AlbumScreen/downloaded_indicator.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
 import 'package:finamp/components/album_image.dart';
 import 'package:finamp/components/favorite_button.dart';
+import 'package:finamp/components/one_line_marquee_helper.dart';
 import 'package:finamp/components/print_duration.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -180,67 +181,76 @@ class ItemCollectionListTile extends ConsumerWidget {
         (additionalInfo != null) ||
         downloadedIndicator.isVisible(ref) ||
         item.isExplicit);
-    final subtitleText = Text.rich(
-      overflow: TextOverflow.clip,
-      softWrap: false,
-      maxLines: 1,
-      TextSpan(
-        children: [
-          WidgetSpan(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 2.0),
-              child: Transform.translate(
-                offset: isOnDesktop ? Offset(-1.5, 1.7) : Offset(-1.5, 0.4),
-                child: downloadedIndicator,
-              ),
+    final subtitleText = BaseItemDtoType.fromItem(item) == BaseItemDtoType.folder && subtitle != null
+        ? LeftSideEllipsis(
+            text: subtitle,
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
             ),
-            alignment: PlaceholderAlignment.baseline,
-            baseline: TextBaseline.alphabetic,
-          ),
-          if (item.isExplicit)
-            WidgetSpan(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 2.0),
-                child: Transform.translate(
-                  offset: isOnDesktop ? Offset(-1.5, 3.3) : Offset(-1.5, 1.7),
-                  child: Icon(TablerIcons.explicit, size: Theme.of(context).textTheme.bodyMedium!.fontSize! + 3),
-                ),
-              ),
-              alignment: PlaceholderAlignment.baseline,
-              baseline: TextBaseline.alphabetic,
-            ),
-          if (downloadedIndicator.isVisible(ref) || item.isExplicit)
-            WidgetSpan(child: SizedBox(width: (additionalInfo != null) ? 5.0 : 2.0)),
-          if (additionalInfo != null) ...[
-            if (additionalInfoIcon != null) additionalInfoIcon,
-            additionalInfo,
-            if ((itemType == BaseItemDtoType.album && albumShowsYearAndDurationInstead) || subtitle != null) ...[
-              const WidgetSpan(child: SizedBox(width: 10.0)),
-              TextSpan(
-                text: (itemType == BaseItemDtoType.album && albumShowsYearAndDurationInstead)
-                    ? printDuration(item.runTimeTicksDuration())
-                    : subtitle,
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.6),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-            ],
-          ] else ...[
+          )
+        : Text.rich(
+            overflow: TextOverflow.clip,
+            softWrap: false,
+            maxLines: 1,
             TextSpan(
-              text: subtitle,
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                overflow: TextOverflow.ellipsis,
-              ),
+              children: [
+                WidgetSpan(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 2.0),
+                    child: Transform.translate(
+                      offset: isOnDesktop ? Offset(-1.5, 1.7) : Offset(-1.5, 0.4),
+                      child: downloadedIndicator,
+                    ),
+                  ),
+                  alignment: PlaceholderAlignment.baseline,
+                  baseline: TextBaseline.alphabetic,
+                ),
+                if (item.isExplicit)
+                  WidgetSpan(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 2.0),
+                      child: Transform.translate(
+                        offset: isOnDesktop ? Offset(-1.5, 3.3) : Offset(-1.5, 1.7),
+                        child: Icon(TablerIcons.explicit, size: Theme.of(context).textTheme.bodyMedium!.fontSize! + 3),
+                      ),
+                    ),
+                    alignment: PlaceholderAlignment.baseline,
+                    baseline: TextBaseline.alphabetic,
+                  ),
+                if (downloadedIndicator.isVisible(ref) || item.isExplicit)
+                  WidgetSpan(child: SizedBox(width: (additionalInfo != null) ? 5.0 : 2.0)),
+                if (additionalInfo != null) ...[
+                  if (additionalInfoIcon != null) additionalInfoIcon,
+                  additionalInfo,
+                  if ((itemType == BaseItemDtoType.album && albumShowsYearAndDurationInstead) || subtitle != null) ...[
+                    const WidgetSpan(child: SizedBox(width: 10.0)),
+                    TextSpan(
+                      text: (itemType == BaseItemDtoType.album && albumShowsYearAndDurationInstead)
+                          ? printDuration(item.runTimeTicksDuration())
+                          : subtitle,
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.6),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                  ],
+                ] else ...[
+                  TextSpan(
+                    text: subtitle,
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.75),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
-        ],
-      ),
-    );
+          );
 
     final unthemedListTile = Builder(
       // get updated context after the theme is applied

@@ -427,6 +427,7 @@ class CarPlayHelper {
               case ContentType.playlists:
               case ContentType.genres:
               case ContentType.mixed:
+              case ContentType.folders:
                 showBrowsableListTemplate(tabType: parentId.contentType);
               case ContentType.albumArtists:
               case ContentType.performingArtists:

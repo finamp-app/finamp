@@ -158,6 +158,7 @@ class DefaultSettings {
     ContentType.playlists,
     ContentType.tracks,
     ContentType.genres,
+    ContentType.folders,
   ];
   static const showTabs = {
     ContentType.home: true,
@@ -1167,7 +1168,9 @@ enum ContentType {
   @HiveField(10)
   inPerformingArtistAlbums(BaseItemDtoType.album),
   @HiveField(11)
-  inAlbumArtistAlbums(BaseItemDtoType.album);
+  inAlbumArtistAlbums(BaseItemDtoType.album),
+  @HiveField(12)
+  folders(null);
 
   const ContentType(this.itemType);
 
@@ -1206,6 +1209,8 @@ enum ContentType {
         return l10n.performingArtistFilter;
       case ContentType.inAlbumArtistAlbums:
         return l10n.albumArtistFilter;
+      case ContentType.folders:
+        return l10n.folders;
     }
   }
 
@@ -1244,6 +1249,7 @@ enum ContentType {
     ContentType.mixed => false,
     ContentType.inPerformingArtistAlbums => false,
     ContentType.inAlbumArtistAlbums => false,
+    ContentType.folders => true,
   };
 
   bool get isPlayableJellyfinType => switch (this) {
@@ -1259,6 +1265,7 @@ enum ContentType {
     ContentType.mixed => false,
     ContentType.inPerformingArtistAlbums => false,
     ContentType.inAlbumArtistAlbums => false,
+    ContentType.folders => false,
   };
 
   // This is basically whether we expect music_screen_tab_view to be able to display this type.
@@ -1275,6 +1282,7 @@ enum ContentType {
     ContentType.mixed => false,
     ContentType.inPerformingArtistAlbums => false,
     ContentType.inAlbumArtistAlbums => false,
+    ContentType.folders => true,
   };
 }
 
@@ -4170,6 +4178,12 @@ class HomeScreenSectionConfiguration {
   final String? customSectionTitle;
   @HiveField(3)
   final HomeScreenSectionPresetType? presetType;
+
+  ContentType get contentType => switch (base) {
+    QueuesHomeSection() => ContentType.home,
+    TabsHomeSection tab => tab.contentType,
+    CollectionHomeSection item => item.contentType,
+  };
 
   const HomeScreenSectionConfiguration({
     required this.base,

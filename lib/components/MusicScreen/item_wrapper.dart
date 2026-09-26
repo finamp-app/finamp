@@ -23,6 +23,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../screens/music_screen.dart';
+
 /// This is a wrapper around ItemCollectionCard and ItemCollectionListTile.
 /// It receives an item, and automatically handles displaying the item appropriately.
 /// Depending on the values given, a list tile or a card will be returned.
@@ -102,6 +104,23 @@ class _ItemCollectionWrapperState extends ConsumerState<ItemWrapper> {
               () {
                 FeedbackHelper.feedback(FeedbackType.selection);
                 switch (BaseItemDtoType.fromItem(mutableItem)) {
+                  case BaseItemDtoType.folder:
+                    Navigator.of(context).push(
+                      MaterialPageRoute<MusicScreen>(
+                        builder: (context) => MusicScreen(
+                          singleTabConfig: HomeScreenSectionConfiguration(
+                            base: CollectionHomeSection(
+                              contentType: ContentType.folders,
+                              itemId: widget.item.id,
+                              libraryId: currentLibraryPlaceholder,
+                            ),
+                            sortConfig: SortAndFilterConfiguration.defaultSort,
+                            customSectionTitle: widget.item.path,
+                          ),
+                        ),
+                      ),
+                    );
+                    return;
                   case BaseItemDtoType.track:
                     showModalTrackMenu(context: context, item: mutableItem, source: widget.source);
                     break;

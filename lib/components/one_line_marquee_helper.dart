@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -59,5 +61,74 @@ class OneLineMarqueeHelper extends ConsumerWidget {
         }
       },
     );
+  }
+}
+
+class LeftSideEllipsis extends StatelessWidget {
+  final String text;
+
+  final TextStyle? style;
+
+  const LeftSideEllipsis({super.key, required this.text, this.style});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth - 7.0;
+        final textPainter = TextPainter(
+          text: TextSpan(text: text, style: style),
+          maxLines: 1,
+          textDirection: TextDirection.ltr,
+        )..layout(maxWidth: width);
+
+        if (!textPainter.didExceedMaxLines) {
+          textPainter.dispose();
+          return Text(text, style: style, overflow: TextOverflow.visible, softWrap: false);
+        }
+
+        double getWidth(String? text) {
+          textPainter.text = TextSpan(text: text, style: style);
+          textPainter.layout();
+
+          return textPainter.size.width;
+        }
+
+        final showable = _binarySearch(
+          0,
+          text.length,
+          (length) => getWidth("...${text.substring(text.length - length, text.length)}").compareTo(width),
+        );
+        textPainter.dispose();
+        return Text(
+          "...${text.substring(text.length - showable, text.length)}",
+          style: style,
+          overflow: TextOverflow.visible,
+          softWrap: false,
+        );
+      },
+    );
+  }
+
+  /// Uses binary search to find the value between min and max, inclusive, that satisfies the given comparison.
+  /// If no exact match is found, returns the largest value below the target if floor is true, or smallest above if floor is false.
+  int _binarySearch(int min, int max, int Function(int) evaluate, {bool floor = true}) {
+    if (min >= max) {
+      if (floor) {
+        return math.min(min, max);
+      } else {
+        return math.max(min, max);
+      }
+    }
+    final midpoint = (max - min) / 2.0 + min;
+    final center = floor ? midpoint.ceil() : midpoint.floor();
+    final result = evaluate(center);
+    if (result > 0) {
+      return _binarySearch(min, center - (floor ? 1 : 0), evaluate, floor: floor);
+    } else if (result < 0) {
+      return _binarySearch(center + (floor ? 0 : 1), max, evaluate, floor: floor);
+    } else {
+      return center;
+    }
   }
 }

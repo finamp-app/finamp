@@ -95,6 +95,8 @@ class PagedContent extends _$PagedContent {
         musicRequest = request.getMusicScreenRequest();
       case MusicScreenPlayable<FinampPlayableDto>():
         musicRequest = request;
+      case Folder():
+        musicRequest = request.getMusicScreenRequest();
     }
 
     int offset = 0;
@@ -316,6 +318,42 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
 
   final artistType = artistFilter != null ? ref.watch(finampSettingsProvider.defaultArtistType) : tabArtistType;
 
+  if (request.tab == ContentType.folders) {
+    final out = await jellyfinApiHelper.getItems(
+      parentItem: BaseItemDto(id: library!.id),
+      recursive: false,
+      startIndex: startIndex,
+      fields: "${jellyfinApiHelper.defaultFields},Path",
+      limit: limit,
+      sortBy: request.sortConfig.sortBy.jellyfinName(request.tab),
+      sortOrder: request.sortConfig.sortOrder.toString(),
+    );
+    out?.forEach((item) {
+      // Artist, genres, libraries, folders, and collections are returned as folders.  Tracks and other direct file types
+      // are returned as-is to allow playback.  Albums are returned as-is because jellyfin never shows any internal structure,
+      // so we can provide all features without loosing any browsing capabilities.
+      item.type = switch (BaseItemDtoType.fromItem(item)) {
+        BaseItemDtoType.album ||
+        BaseItemDtoType.playlist ||
+        BaseItemDtoType.track ||
+        BaseItemDtoType.musicVideo ||
+        BaseItemDtoType.audioBook ||
+        BaseItemDtoType.tvEpisode ||
+        BaseItemDtoType.video ||
+        BaseItemDtoType.movie ||
+        BaseItemDtoType.trailer ||
+        BaseItemDtoType.noItem ||
+        BaseItemDtoType.unknown => item.type,
+        BaseItemDtoType.artist ||
+        BaseItemDtoType.genre ||
+        BaseItemDtoType.library ||
+        BaseItemDtoType.folder ||
+        BaseItemDtoType.collection => BaseItemDtoType.folder.jellyfinName,
+      };
+    });
+    return out;
+  }
+
   return jellyfinApiHelper.getItems(
     libraryFilter: library?.id,
     parentItem: request.tab == ContentType.playlists ? null : (artistFilter?.extraBaseItem ?? library),
@@ -378,6 +416,11 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
     }
   } else {
     libraryId = request.library as BaseItemId;
+  }
+
+  if (request.tab == ContentType.folders) {
+    // Browsing by folder not supported while offline
+    return [];
   }
 
   //FIXME this seems to also return metadata-only albums which don't have any downloaded children

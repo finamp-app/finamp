@@ -364,19 +364,24 @@ Future<List<BaseItemDto>> _flattenToTracks(Ref ref, {required FinampPlayableDto 
         }
       }
       return output;
-    case Genre<FinampPlayableDto>():
+    case FinampDisplayable<FinampPlayableDto> displayed:
+      limit ??= FinampSettingsHelper.finampSettings.trackShuffleItemCount;
       // Keep page provider alive even though we only read its notifier.
-      ref.listen(pagedContentProvider(item), (_, _) {});
-      final pager = ref.read(pagedContentProvider(item).notifier);
-      final (children, childFuture) = pager.loadSlice(
-        0,
-        limit ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount,
-      );
-      if ((limit == null || children.length < limit) && childFuture != null) {
+      ref.listen(pagedContentProvider(displayed), (_, _) {});
+      final pager = ref.read(pagedContentProvider(displayed).notifier);
+      final (children, childFuture) = pager.loadSlice(0, limit);
+      if ((children.length < limit) && childFuture != null) {
         children.addAll(await childFuture);
       }
       // The children of a FinampPlayableDto should always be more FinampPlayableDtos
-      return children.map((x) => (x as FinampPlayableDto).item).toList();
+      final output = <BaseItemDto>[];
+      for (final child in children.map((x) => x as FinampPlayableDto)) {
+        output.addAll(await _flattenToTracks(ref, item: child, limit: limit - output.length));
+        if (output.length > limit) {
+          break;
+        }
+      }
+      return output;
   }
 }
 

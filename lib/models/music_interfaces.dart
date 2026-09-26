@@ -77,6 +77,11 @@ sealed class FinampPlayableDto extends FinampPlayable {
         source: source,
         sortConfig: sortOverride ?? SortAndFilterConfiguration.defaultSort,
       ),
+      BaseItemDtoType.folder || BaseItemDtoType.library => Folder(
+        item,
+        source: source,
+        sortConfig: sortOverride ?? SortAndFilterConfiguration.defaultSort,
+      ),
       _ => throw UnsupportedError("Unexpected BaseItemDto type: ${item.type}"),
     };
   }

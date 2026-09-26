@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/finamp_icon.dart';
+import 'package:finamp/components/one_line_marquee_helper.dart';
 import 'package:finamp/extensions/color_extensions.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/icon_button_with_semantics.dart';
@@ -238,6 +239,13 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                         future: PackageInfo.fromPlatform(),
                         builder: (context, asyncSnapshot) {
                           final appName = asyncSnapshot.data?.appName ?? AppLocalizations.of(context)!.finamp;
+                          // folder views get left side ellipses instead of the standard right side ones.
+                          if (singleTabConfig?.contentType == ContentType.folders) {
+                            return LeftSideEllipsis(
+                              text: singleTabConfig!.getTitle(context.l10n),
+                              style: TextStyle(fontSize: 20),
+                            );
+                          }
                           return Text(
                             singleTabConfig?.getTitle(context.l10n) ??
                                 finampUserHelper.currentUser?.currentView?.name ??

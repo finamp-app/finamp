@@ -20,6 +20,8 @@ String? generateSubtitle({
   }
 
   switch (BaseItemDtoType.fromItem(item)) {
+    case BaseItemDtoType.folder:
+      return item.path;
     case BaseItemDtoType.album:
       return item.albumArtists != null &&
               item.albumArtists!.isNotEmpty &&
