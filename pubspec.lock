@@ -730,10 +730,11 @@ packages:
   flutter_to_airplay:
     dependency: "direct main"
     description:
-      name: flutter_to_airplay
-      sha256: e71e7cbdf363c3f9686625f68b14e57497b507ef72d54016c14ccdffd3e4305d
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "2d09182f60fe95529446ee50cc54340827895af9"
+      resolved-ref: "2d09182f60fe95529446ee50cc54340827895af9"
+      url: "https://github.com/obiwantoby/flutter_to_airplay.git"
+    source: git
     version: "2.1.0"
   flutter_user_certificates_android:
     dependency: "direct main"
