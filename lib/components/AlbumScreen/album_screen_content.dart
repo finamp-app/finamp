@@ -20,6 +20,7 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/album_screen_provider.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/permission_providers.dart';
+import 'package:finamp/services/performance_benchmark_service.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,6 +50,9 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
   //bool get disableDownloads => sortAndFilterController.value.filters.isNotEmpty;
 
   StreamSubscription<void>? _listener;
+  PerformanceBenchmarkDetailCommand? _benchmarkDetailCommand;
+  bool _benchmarkDetailDataMarked = false;
+  bool _benchmarkDetailFrameScheduled = false;
 
   @override
   void initState() {
@@ -58,6 +62,24 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
     _listener = musicScreenRefreshStream.stream.listen((_) {
       setState(() {});
     });
+
+    final command = PerformanceBenchmarkService.instance.activeDetailCommand;
+    if (command != null && command.itemId == widget.parent.id.raw) {
+      _benchmarkDetailCommand = command;
+      PerformanceBenchmarkService.instance.mark(
+        "detail-screen-mounted",
+        values: {"targetAlias": command.targetAlias, "targetType": command.targetType},
+      );
+      if (command.refresh) {
+        ref.invalidate(getAlbumOrPlaylistTracksProvider(widget.parent));
+        if (BaseItemDtoType.fromItem(widget.parent) == BaseItemDtoType.playlist) {
+          // Playlist rendering goes through the sorted provider. Invalidate the
+          // family explicitly so refreshed-detail can never reuse a warm sorted
+          // result just because the underlying provider happened not to notify.
+          ref.invalidate(getSortedPlaylistTracksProvider);
+        }
+      }
+    }
     super.initState();
   }
 
@@ -84,6 +106,40 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
 
     final displayChildren = allTracks ?? [];
     final queueChildren = playableTracks ?? [];
+
+    final benchmarkCommand = _benchmarkDetailCommand;
+    if (benchmarkCommand != null && !isLoading) {
+      final benchmark = PerformanceBenchmarkService.instance;
+      if (!_benchmarkDetailDataMarked) {
+        _benchmarkDetailDataMarked = true;
+        benchmark.mark(
+          "detail-children-ready",
+          values: {
+            "targetAlias": benchmarkCommand.targetAlias,
+            "targetType": benchmarkCommand.targetType,
+            "childCount": displayChildren.length,
+          },
+        );
+        benchmark.metric("detailChildCount", displayChildren.length);
+      }
+      if (!_benchmarkDetailFrameScheduled) {
+        _benchmarkDetailFrameScheduled = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || !identical(PerformanceBenchmarkService.instance.activeDetailCommand, benchmarkCommand)) {
+            return;
+          }
+          benchmark.mark(
+            "detail-first-rendered-content",
+            values: {
+              "targetAlias": benchmarkCommand.targetAlias,
+              "targetType": benchmarkCommand.targetType,
+              "childCount": displayChildren.length,
+            },
+          );
+          benchmarkCommand.complete();
+        });
+      }
+    }
 
     void onDelete(BaseItemDto item) {
       // This is pretty inefficient (has to search through whole list) but

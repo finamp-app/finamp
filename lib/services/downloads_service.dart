@@ -8,6 +8,7 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/performance_benchmark_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -200,6 +201,21 @@ class DownloadsService {
           DownloadItem? listener = _isar.downloadItems.getSync(int.parse(event.task.taskId));
           if (listener != null) {
             var newState = DownloadItemState.fromTaskStatus(event.status);
+            final benchmark = PerformanceBenchmarkService.instance;
+            final benchmarkRun = benchmark.activeRun;
+            if (benchmarkRun != null && benchmarkRun.scenario.contains("download")) {
+              if ((event.status == TaskStatus.running || event.status == TaskStatus.enqueued) &&
+                  benchmarkRun.metrics["downloadTransferStarted"] != true) {
+                benchmarkRun.setMetric("downloadTransferStarted", true);
+                benchmark.mark("download-first-transfer-start", values: {"itemType": listener.type.name});
+              }
+              if (event.status == TaskStatus.complete &&
+                  listener.type == DownloadItemType.track &&
+                  benchmarkRun.metrics["downloadFirstTrackCompleted"] != true) {
+                benchmarkRun.setMetric("downloadFirstTrackCompleted", true);
+                benchmark.mark("download-first-track-complete", values: {"itemType": listener.type.name});
+              }
+            }
             if (!listener.state.isFinal) {
               // Completed images have their extension updated if possible.  Tracks
               // should already have extensions when enqueued.  Extensions only serve
@@ -372,16 +388,37 @@ class DownloadsService {
 
     await downloadTaskQueue.initializeQueue();
 
-    // Wait a few seconds to not slow initial library load
+    // Wait a few seconds to not slow initial library load.
+    //
+    // The benchmark's first process is a cleanup/preconditioning process, not
+    // a measured startup. It must be able to remove state left by an
+    // interrupted earlier benchmark before the normal queues are restarted;
+    // otherwise stale queued work can block startup readiness indefinitely and
+    // prevent the cleanup phase from ever running. Real measured startup
+    // processes keep the normal queue restart unchanged and readiness-blocking.
     _finampUserHelper.runUserHook(() async {
-      await Future<void>.delayed(const Duration(seconds: 10));
-      try {
-        await syncBuffer.executeSyncs();
-        await deleteBuffer.executeDeletes();
-        await downloadTaskQueue.executeDownloads();
-      } catch (e) {
-        _downloadsLogger.severe("Error $e while restarting download/delete queues on startup.");
+      final benchmark = PerformanceBenchmarkService.instance;
+      if (PerformanceBenchmarkService.enabled) {
+        final suiteStage = await benchmark.getSuiteStage();
+        if (suiteStage == null) {
+          benchmark.diagnostic(
+            "startup-download-queue-work-suppressed-for-preconditioning",
+            values: {"suiteStage": "fresh-preconditioning"},
+          );
+          return;
+        }
       }
+
+      await benchmark.runStartupTask("download-queue-startup", () async {
+        await Future<void>.delayed(const Duration(seconds: 10));
+        try {
+          await syncBuffer.executeSyncs();
+          await deleteBuffer.executeDeletes();
+          await downloadTaskQueue.executeDownloads();
+        } catch (e) {
+          _downloadsLogger.severe("Error $e while restarting download/delete queues on startup.");
+        }
+      });
     });
   }
 
@@ -435,6 +472,20 @@ class DownloadsService {
     required DownloadProfile transcodeProfile,
     BaseItemId? viewId,
   }) async {
+    final benchmark = PerformanceBenchmarkService.instance;
+    benchmark.mark("download-add-start");
+    benchmark.metric("downloadTargetType", stub.type.name);
+    final activeBenchmark = benchmark.activeRun;
+    if (activeBenchmark != null &&
+        activeBenchmark.scenario.contains("download") &&
+        activeBenchmark.targetAlias != null) {
+      await benchmark.setDownloadCleanupRequired(
+        targetAlias: activeBenchmark.targetAlias!,
+        targetItemId: stub.id,
+        targetItemType: stub.type.name,
+      );
+      benchmark.mark("download-cleanup-required");
+    }
     // Comment https://github.com/jmshrv/finamp/issues/134#issuecomment-1563441355
     // suggests this does not make a request and always returns failure
     /*if (downloadLocation.needsPermission) {
@@ -456,13 +507,20 @@ class DownloadsService {
       syncItemDownloadSettings(canonItem);
     });
 
+    benchmark.mark("download-sync-start");
     await resync(stub, viewId);
+    benchmark.mark("download-sync-planning-complete");
   }
 
   /// Removes the anchor link to an item and sync deletes it.  This will allow the
   /// item to be deleted but may not result in deletion actually occurring as the
   /// item may be required by other collections.
   Future<void> deleteDownload({required DownloadStub stub}) async {
+    final benchmark = PerformanceBenchmarkService.instance;
+    final benchmarkCleanup = await benchmark.isDownloadCleanupTarget(stub.id);
+    if (benchmarkCleanup) {
+      await benchmark.markDownloadCleanupStarted();
+    }
     DownloadItem? canonItem;
     _isar.writeTxnSync(() {
       var anchorItem = _anchor.asItem(null);
@@ -497,6 +555,9 @@ class DownloadsService {
       _userDeleteRunning = false;
     }
     restartDownloads();
+    if (benchmarkCleanup) {
+      await benchmark.markDownloadCleanupCompleted();
+    }
   }
 
   /// Re-syncs every download node.
@@ -521,6 +582,8 @@ class DownloadsService {
     var requiredByCount = _isar.downloadItems.filter().requires((q) => q.isarIdEqualTo(stub.isarId)).countSync();
     try {
       bool required = requiredByCount != 0;
+      final benchmark = PerformanceBenchmarkService.instance;
+      benchmark.mark("download-resync-start");
       _downloadsLogger.info("Starting sync of ${stub.name}.");
       if (forceSync) {
         forceFullSync = true;
@@ -528,11 +591,26 @@ class DownloadsService {
       _isar.writeTxnSync(() {
         syncBuffer.addAll(required ? [stub.isarId] : [], required ? [] : [stub.isarId], viewId);
       });
+
+      final syncGraph = Stopwatch()..start();
       await syncBuffer.executeSyncs();
+      syncGraph.stop();
+      benchmark.metric("downloadSyncGraphMicros", syncGraph.elapsedMicroseconds);
+      benchmark.mark("download-sync-graph-complete");
+
       _downloadsLogger.info("Moving to deletes for ${stub.name}.");
+      final deletePhase = Stopwatch()..start();
       await deleteBuffer.executeDeletes();
+      deletePhase.stop();
+      benchmark.metric("downloadDeletePhaseMicros", deletePhase.elapsedMicroseconds);
+      benchmark.mark("download-delete-phase-complete");
+
       _downloadsLogger.info("Triggering enqueues for ${stub.name}.");
+      final enqueuePhase = Stopwatch()..start();
       unawaited(downloadTaskQueue.executeDownloads());
+      enqueuePhase.stop();
+      benchmark.metric("downloadTransferEnqueueMicros", enqueuePhase.elapsedMicroseconds);
+      benchmark.mark("download-transfer-enqueued");
 
       _downloadsLogger.info("Sync of ${stub.name} complete.");
     } catch (error, stackTrace) {
@@ -1650,6 +1728,264 @@ class DownloadsService {
         )
         // Watching queries is expensive and seems to have a memory link.  Avoid using if possible.
         .watch(fireImmediately: true);
+  }
+
+  /// Benchmark-only aggregate state of the download/sync engine.
+  /// Counts are intentionally limited to active/failure states and never expose
+  /// the total library/download cardinality.
+  Map<String, int> getPerformanceBenchmarkQueueState() {
+    if (!PerformanceBenchmarkService.enabled) {
+      throw StateError("Benchmark queue state is only available in benchmark mode");
+    }
+
+    int countState(DownloadItemState state) => _isar.downloadItems
+        .where()
+        .stateEqualTo(state)
+        .filter()
+        .typeEqualTo(DownloadItemType.track)
+        .or()
+        .typeEqualTo(DownloadItemType.image)
+        .countSync();
+
+    final pendingSyncTasks = _isar.isarTaskDatas
+        .where()
+        .typeEqualTo(IsarTaskDataType.syncNode)
+        .or()
+        .typeEqualTo(IsarTaskDataType.deleteNode)
+        .countSync();
+
+    return {
+      "enqueued": countState(DownloadItemState.enqueued),
+      "downloading": countState(DownloadItemState.downloading),
+      "failed": countState(DownloadItemState.failed),
+      "syncFailed": countState(DownloadItemState.syncFailed),
+      "needsRedownload": countState(DownloadItemState.needsRedownload),
+      "needsRedownloadComplete": countState(DownloadItemState.needsRedownloadComplete),
+      "pendingSyncTasks": pendingSyncTasks,
+    };
+  }
+
+  /// Benchmark-only aggregate progress for a downloaded album/playlist.
+  /// No media names, ids or paths are exposed.
+  Map<String, int> getPerformanceBenchmarkCollectionProgress(DownloadStub stub) {
+    if (!PerformanceBenchmarkService.enabled) {
+      throw StateError("Benchmark download progress is only available in benchmark mode");
+    }
+    final tracks = _isar.downloadItems
+        .where()
+        .typeEqualTo(DownloadItemType.track)
+        .filter()
+        .infoFor((q) => q.isarIdEqualTo(stub.isarId))
+        .findAllSync();
+
+    var complete = 0;
+    var active = 0;
+    var failed = 0;
+    for (final track in tracks) {
+      if (track.state == DownloadItemState.complete || track.state == DownloadItemState.needsRedownloadComplete) {
+        complete++;
+      } else if (track.state == DownloadItemState.failed || track.state == DownloadItemState.syncFailed) {
+        failed++;
+      } else if (track.state == DownloadItemState.downloading || track.state == DownloadItemState.enqueued) {
+        active++;
+      }
+    }
+
+    return {"totalTracks": tracks.length, "completeTracks": complete, "activeTracks": active, "failedTracks": failed};
+  }
+
+  /// Benchmark-only wait until no queued/running file transfer remains.
+  ///
+  /// Intended for isolated benchmark phases such as the automatic all-playlist
+  /// metadata/image sync where the root collection can become complete before
+  /// all informational image transfers have finished.
+  Future<void> waitForPerformanceBenchmarkDownloadSystemIdle({
+    Duration stableFor = const Duration(seconds: 3),
+    Duration timeout = const Duration(hours: 3),
+  }) async {
+    if (!PerformanceBenchmarkService.enabled) {
+      throw StateError("Benchmark download waiting is only available in benchmark mode");
+    }
+
+    final overall = Stopwatch()..start();
+    Stopwatch? stableSince;
+
+    while (overall.elapsed < timeout) {
+      final state = getPerformanceBenchmarkQueueState();
+      final active =
+          (state["enqueued"] ?? 0) +
+          (state["downloading"] ?? 0) +
+          (state["needsRedownload"] ?? 0) +
+          (state["needsRedownloadComplete"] ?? 0);
+      final pendingSyncTasks = state["pendingSyncTasks"] ?? 0;
+
+      if (active == 0 && pendingSyncTasks == 0 && !syncBuffer.isRunning && !_userDeleteRunning) {
+        stableSince ??= Stopwatch()..start();
+        if (stableSince.elapsed >= stableFor) {
+          return;
+        }
+      } else {
+        stableSince = null;
+      }
+
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+    }
+
+    throw TimeoutException("Benchmark download system did not become idle", timeout);
+  }
+
+  /// Benchmark-only wait for a collection download to reach a terminal state.
+  /// Exports only aggregate counts; media ids/names/paths never leave the device.
+  Future<Map<String, int>> waitForPerformanceBenchmarkDownload({
+    required DownloadStub stub,
+    required int expectedTracks,
+    Duration timeout = const Duration(hours: 2),
+  }) async {
+    if (!PerformanceBenchmarkService.enabled) {
+      throw StateError("Benchmark download waiting is only available in benchmark mode");
+    }
+
+    final benchmark = PerformanceBenchmarkService.instance;
+    final stopwatch = Stopwatch()..start();
+    Stopwatch? stalledSince;
+    var previousComplete = -1;
+
+    while (stopwatch.elapsed < timeout) {
+      final progress = getPerformanceBenchmarkCollectionProgress(stub);
+      final complete = progress["completeTracks"] ?? 0;
+      final failed = progress["failedTracks"] ?? 0;
+      final active = progress["activeTracks"] ?? 0;
+      final total = progress["totalTracks"] ?? 0;
+
+      if (complete != previousComplete) {
+        benchmark.metric("downloadCompleteTracks", complete);
+        benchmark.metric("downloadGraphTracks", total);
+        benchmark.metric("downloadFailedTracks", failed);
+        benchmark.metric("downloadActiveTracks", active);
+        previousComplete = complete;
+      }
+
+      if (failed > 0) {
+        throw StateError("Benchmark download reached a failed terminal state");
+      }
+
+      if (total == expectedTracks && complete == expectedTracks && active == 0) {
+        benchmark.mark(
+          "download-all-tracks-complete",
+          values: {"expectedTracks": expectedTracks, "completeTracks": complete},
+        );
+        return progress;
+      }
+
+      final queueState = getPerformanceBenchmarkQueueState();
+      final globallyActive = (queueState["enqueued"] ?? 0) + (queueState["downloading"] ?? 0);
+      final pendingSyncTasks = queueState["pendingSyncTasks"] ?? 0;
+      final systemIdle = globallyActive == 0 && pendingSyncTasks == 0 && !syncBuffer.isRunning && !_userDeleteRunning;
+
+      if (systemIdle) {
+        stalledSince ??= Stopwatch()..start();
+        if (stalledSince.elapsed >= const Duration(seconds: 30)) {
+          benchmark.mark(
+            "download-stalled-incomplete",
+            values: {
+              "expectedTracks": expectedTracks,
+              "totalTracks": total,
+              "completeTracks": complete,
+              "failedTracks": failed,
+            },
+          );
+          throw StateError("Benchmark download became idle before reaching expected completion");
+        }
+      } else {
+        stalledSince = null;
+      }
+
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+    }
+
+    throw TimeoutException("Benchmark collection download did not complete", timeout);
+  }
+
+  /// Benchmark-only wait until the target is no longer user-downloaded.
+  Future<void> waitForPerformanceBenchmarkCleanup({
+    required DownloadStub stub,
+    Duration timeout = const Duration(minutes: 10),
+  }) async {
+    if (!PerformanceBenchmarkService.enabled) {
+      throw StateError("Benchmark cleanup waiting is only available in benchmark mode");
+    }
+
+    final stopwatch = Stopwatch()..start();
+    while (stopwatch.elapsed < timeout) {
+      if (!getStatus(stub, null).isDownloaded) {
+        return;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    }
+
+    throw TimeoutException("Benchmark download cleanup did not finish", timeout);
+  }
+
+  /// Benchmark-only sequential read reference for downloaded local files.
+  ///
+  /// This intentionally bypasses Finamp metadata/queue/player work so the
+  /// benchmark can distinguish storage throughput from application overhead.
+  /// File paths and item names remain device-local and are never returned.
+  Future<Map<String, int>> readPerformanceBenchmarkFiles(DownloadStub stub) async {
+    if (!PerformanceBenchmarkService.enabled) {
+      throw StateError("Benchmark filesystem reads are only available in benchmark mode");
+    }
+
+    final locationMap = FinampSettingsHelper.finampSettings.downloadLocationsMap;
+    final result = await GetIt.instance<JellyfinApiHelper>().runInIsolate(
+      _readPerformanceBenchmarkFilesBackground(stub.isarId, locationMap),
+    );
+    return Map<String, int>.from(result as Map);
+  }
+
+  static Future<Map<String, int>> Function(dynamic) _readPerformanceBenchmarkFilesBackground(
+    int isarId,
+    Map<String, DownloadLocation> locationMap,
+  ) {
+    return (dynamic _) async {
+      final root = GetIt.instance<Isar>().downloadItems.getSync(isarId);
+      if (root == null) {
+        return <String, int>{"fileCount": 0, "bytes": 0, "durationMicros": 0};
+      }
+
+      final required = <DownloadItem>{};
+      final info = <DownloadItem>{};
+      _getFileChildren(root, required, info, true);
+      final allItems = <DownloadItem>[...required, ...info.difference(required)];
+
+      var fileCount = 0;
+      var bytes = 0;
+      final stopwatch = Stopwatch()..start();
+
+      for (final item in allItems) {
+        if (item.path == null || item.fileTranscodingProfile?.downloadLocationId == null) {
+          continue;
+        }
+        if (item.type != DownloadItemType.track && item.type != DownloadItemType.image) {
+          continue;
+        }
+        if (!item.state.isComplete) continue;
+
+        final location = locationMap[item.fileTranscodingProfile!.downloadLocationId];
+        if (location == null) continue;
+
+        final file = File(path_helper.join(location.currentPath, item.path!));
+        if (!await file.exists()) continue;
+
+        fileCount++;
+        await for (final chunk in file.openRead()) {
+          bytes += chunk.length;
+        }
+      }
+
+      stopwatch.stop();
+      return <String, int>{"fileCount": fileCount, "bytes": bytes, "durationMicros": stopwatch.elapsedMicroseconds};
+    };
   }
 
   /// Returns the size of a download by recursively calculating the size of all

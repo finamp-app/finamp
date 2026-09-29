@@ -9,6 +9,7 @@ import 'package:finamp/components/QueueRestoreScreen/queue_restore_tile.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
+import 'package:finamp/services/performance_benchmark_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -76,6 +77,21 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
   final _isarDownloader = GetIt.instance<DownloadsService>();
   StreamSubscription<void>? _musicScreenRefreshStreamSubscription;
   StreamSubscription<void>? _downloadsRefreshStreamSubscription;
+  StreamSubscription<PerformanceBenchmarkJumpCommand>? _benchmarkJumpSubscription;
+  StreamSubscription<PerformanceBenchmarkTabCommand>? _benchmarkTabSubscription;
+  StreamSubscription<PerformanceBenchmarkPageCommand>? _benchmarkPageSubscription;
+  PerformanceBenchmarkJumpCommand? _activeBenchmarkJump;
+  Stopwatch? _benchmarkAlphabetPageWait;
+  PerformanceBenchmarkPageCommand? _activeBenchmarkPage;
+  int _benchmarkPageInitialCount = 0;
+  bool _benchmarkPageFrameScheduled = false;
+  PerformanceBenchmarkSearchCommand? _lastCompletedSearchCommand;
+  bool _benchmarkSearchFrameScheduled = false;
+  PerformanceBenchmarkTabCommand? _activeBenchmarkTab;
+  bool _benchmarkTabDataMarked = false;
+  bool _benchmarkTabFrameScheduled = false;
+  bool _startupReadyReported = false;
+  bool _startupReadyFrameScheduled = false;
 
   late AutoScrollController controller;
   String? letterToSearch;
@@ -95,15 +111,326 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     _downloadsRefreshStreamSubscription = _isarDownloader.offlineDeletesStream.listen((event) {
       _refresh();
     });
+    _benchmarkTabSubscription = PerformanceBenchmarkService.instance.tabCommands.listen(_activateBenchmarkTab);
+    final pendingTabCommand = PerformanceBenchmarkService.instance.activeTabCommand;
+    if (pendingTabCommand != null) {
+      _activateBenchmarkTab(pendingTabCommand);
+    }
+
+    _benchmarkPageSubscription = PerformanceBenchmarkService.instance.pageCommands.listen((command) {
+      if (widget.contentType?.name != command.contentType) return;
+      if (_activeBenchmarkPage != null) {
+        command.completeError(StateError("Another benchmark page command is already active"), StackTrace.current);
+        return;
+      }
+      final state = ref.read(pageControl);
+      if (!state.hasNextPage) {
+        PerformanceBenchmarkService.instance.mark(
+          "page-no-next-page",
+          values: {"contentType": command.contentType, "loadedItems": state.items?.length ?? 0},
+        );
+        command.complete(false);
+        return;
+      }
+      _activeBenchmarkPage = command;
+      _recordBenchmarkSortConfiguration();
+      _benchmarkPageInitialCount = state.items?.length ?? 0;
+      _benchmarkPageFrameScheduled = false;
+      PerformanceBenchmarkService.instance.mark(
+        "page-load-start",
+        values: {"contentType": command.contentType, "loadedItems": _benchmarkPageInitialCount},
+      );
+      ref.read(pageControl.notifier).newPage();
+    });
+
+    _benchmarkJumpSubscription = PerformanceBenchmarkService.instance.jumpCommands.listen((command) {
+      if (widget.contentType?.name != command.contentType) return;
+      if (_activeBenchmarkJump != null) {
+        command.completeError(StateError("Another benchmark alphabet jump is already active"), StackTrace.current);
+        return;
+      }
+      final sortBy = widget.sortConfig.sortBy;
+      final fastScrollerAvailable = sortBy == SortBy.sortName || sortBy == SortBy.albumArtist;
+      _recordBenchmarkSortConfiguration();
+      if (!fastScrollerAvailable) {
+        final error = StateError("Fast scroller is not available for the current sort configuration");
+        PerformanceBenchmarkService.instance.mark(
+          "alphabet-jump-unavailable",
+          values: {
+            "contentType": command.contentType,
+            "letter": command.letter,
+            "sortBy": sortBy?.name ?? "none",
+            "sortOrder": widget.sortConfig.sortOrder?.name ?? "none",
+          },
+        );
+        command.completeError(error, StackTrace.current);
+        return;
+      }
+
+      _activeBenchmarkJump = command;
+      final benchmark = PerformanceBenchmarkService.instance;
+      benchmark.mark("alphabet-jump-start", values: {"contentType": command.contentType, "letter": command.letter});
+      benchmark.metric("alphabetJumpPagesLoaded", 0);
+      unawaited(scrollToLetter(command.letter));
+    });
 
     super.initState();
   }
 
+  void _recordBenchmarkSortConfiguration() {
+    final benchmark = PerformanceBenchmarkService.instance;
+    benchmark.metric("sortBy", widget.sortConfig.sortBy?.name ?? "none");
+    benchmark.metric("sortOrder", widget.sortConfig.sortOrder?.name ?? "none");
+  }
+
+  bool _matchesBenchmarkTab(PerformanceBenchmarkTabCommand command) {
+    final type = widget.contentType;
+    if (type == null) return false;
+    if (command.contentType == "artists") {
+      return type == ContentType.albumArtists ||
+          type == ContentType.performingArtists ||
+          type == ContentType.genericArtists;
+    }
+    return type.name == command.contentType;
+  }
+
+  void _activateBenchmarkTab(PerformanceBenchmarkTabCommand command) {
+    if (!_matchesBenchmarkTab(command)) return;
+    if (_activeBenchmarkTab != null && !identical(_activeBenchmarkTab, command)) {
+      command.completeError(StateError("Another benchmark tab command is already active"), StackTrace.current);
+      return;
+    }
+
+    _activeBenchmarkTab = command;
+    _recordBenchmarkSortConfiguration();
+    _benchmarkTabDataMarked = false;
+    _benchmarkTabFrameScheduled = false;
+    if (command.refresh) {
+      PerformanceBenchmarkService.instance.mark(
+        "ui-tab-refresh-start",
+        values: {"contentType": widget.contentType?.name},
+      );
+      ref.read(pageControl.notifier).refresh();
+    } else {
+      PerformanceBenchmarkService.instance.mark(
+        "ui-tab-warm-state-reused",
+        values: {"contentType": widget.contentType?.name, "loadedItems": ref.read(pageControl).items?.length ?? 0},
+      );
+    }
+  }
+
+  void _maybeReportStartupScreenReady(PagingState<int, FinampDisplayableOrPlayable> state) {
+    if (!PerformanceBenchmarkService.enabled ||
+        _startupReadyReported ||
+        _startupReadyFrameScheduled ||
+        state.isLoading) {
+      return;
+    }
+
+    final contentType = widget.contentType?.name;
+    final selected = PerformanceBenchmarkService.instance.startupSelectedContentType;
+    if (contentType == null || selected != contentType) return;
+
+    // A completed empty result is still a usable screen. Only an unresolved
+    // first page (items == null while another page is expected) is not ready.
+    if (state.items == null && state.hasNextPage) return;
+
+    _startupReadyFrameScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startupReadyFrameScheduled = false;
+      if (!mounted || _startupReadyReported) return;
+
+      final current = ref.read(pageControl);
+      if (current.isLoading || (current.items == null && current.hasNextPage)) {
+        return;
+      }
+
+      _startupReadyReported = true;
+      PerformanceBenchmarkService.instance.reportStartupScreenReady(contentType);
+    });
+  }
+
+  void _maybeFailBenchmarkCommands(PagingState<int, FinampDisplayableOrPlayable> state) {
+    final error = state.error;
+    if (error == null || state.isLoading) return;
+
+    final stackTrace = StackTrace.current;
+    final benchmark = PerformanceBenchmarkService.instance;
+    final contentType = widget.contentType?.name;
+
+    final pageCommand = _activeBenchmarkPage;
+    if (pageCommand != null) {
+      benchmark.mark(
+        "page-provider-error",
+        values: {"contentType": pageCommand.contentType, "errorType": error.runtimeType.toString()},
+      );
+      pageCommand.completeError(error, stackTrace);
+      _activeBenchmarkPage = null;
+      _benchmarkPageFrameScheduled = false;
+    }
+
+    final jumpCommand = _activeBenchmarkJump;
+    if (jumpCommand != null) {
+      benchmark.mark(
+        "alphabet-jump-provider-error",
+        values: {
+          "contentType": jumpCommand.contentType,
+          "letter": jumpCommand.letter,
+          "errorType": error.runtimeType.toString(),
+        },
+      );
+      timer?.cancel();
+      letterToSearch = null;
+      jumpCommand.completeError(error, stackTrace);
+      _activeBenchmarkJump = null;
+    }
+
+    final tabCommand = _activeBenchmarkTab;
+    if (tabCommand != null && tabCommand.selected) {
+      benchmark.mark(
+        "ui-tab-provider-error",
+        values: {"contentType": contentType, "errorType": error.runtimeType.toString()},
+      );
+      tabCommand.completeError(error, stackTrace);
+      _activeBenchmarkTab = null;
+      _benchmarkTabFrameScheduled = false;
+    }
+
+    final searchCommand = benchmark.activeSearchCommand;
+    if (searchCommand != null && searchCommand.selectedContentType == contentType) {
+      benchmark.mark(
+        "search-provider-error",
+        values: {
+          "contentType": contentType,
+          "queryAlias": searchCommand.queryAlias,
+          "errorType": error.runtimeType.toString(),
+        },
+      );
+      searchCommand.completeError(error, stackTrace);
+      _benchmarkSearchFrameScheduled = false;
+    }
+  }
+
+  void _maybeCompleteBenchmarkTab(PagingState<int, FinampDisplayableOrPlayable> state) {
+    final command = _activeBenchmarkTab;
+    if (command == null || !command.selected || state.isLoading || (state.items?.isEmpty ?? true)) {
+      return;
+    }
+
+    final benchmark = PerformanceBenchmarkService.instance;
+    if (!_benchmarkTabDataMarked) {
+      _benchmarkTabDataMarked = true;
+      benchmark.mark(
+        "ui-tab-data-ready",
+        values: {"contentType": widget.contentType?.name, "loadedItems": state.items?.length ?? 0},
+      );
+    }
+
+    if (_benchmarkTabFrameScheduled) return;
+    _benchmarkTabFrameScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !identical(_activeBenchmarkTab, command)) return;
+      final currentState = ref.read(pageControl);
+      benchmark.mark(
+        "ui-tab-first-rendered-content",
+        values: {"contentType": widget.contentType?.name, "loadedItems": currentState.items?.length ?? 0},
+      );
+      command.complete();
+      _activeBenchmarkTab = null;
+      _benchmarkTabFrameScheduled = false;
+    });
+  }
+
+  void _maybeCompleteBenchmarkPage(PagingState<int, FinampDisplayableOrPlayable> state) {
+    final command = _activeBenchmarkPage;
+    if (command == null || state.isLoading) return;
+
+    final loadedItems = state.items?.length ?? 0;
+    if (loadedItems <= _benchmarkPageInitialCount && state.hasNextPage) {
+      return;
+    }
+
+    if (_benchmarkPageFrameScheduled) return;
+    _benchmarkPageFrameScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !identical(_activeBenchmarkPage, command)) return;
+      final current = ref.read(pageControl);
+      PerformanceBenchmarkService.instance.mark(
+        "page-first-rendered-content",
+        values: {
+          "contentType": command.contentType,
+          "loadedItems": current.items?.length ?? 0,
+          "itemsAdded": (current.items?.length ?? 0) - _benchmarkPageInitialCount,
+          "hasNextPage": current.hasNextPage,
+        },
+      );
+      PerformanceBenchmarkService.instance.metric(
+        "pageItemsAdded",
+        (current.items?.length ?? 0) - _benchmarkPageInitialCount,
+      );
+      command.complete(true);
+      _activeBenchmarkPage = null;
+      _benchmarkPageFrameScheduled = false;
+    });
+  }
+
+  void _maybeCompleteBenchmarkSearch(PagingState<int, FinampDisplayableOrPlayable> state) {
+    final command = PerformanceBenchmarkService.instance.activeSearchCommand;
+    if (command == null ||
+        identical(_lastCompletedSearchCommand, command) ||
+        command.selectedContentType != widget.contentType?.name ||
+        state.isLoading) {
+      return;
+    }
+
+    if (state.items == null && state.hasNextPage) return;
+
+    final resultCount = state.items?.length ?? 0;
+    final benchmark = PerformanceBenchmarkService.instance;
+    _recordBenchmarkSortConfiguration();
+    benchmark.mark(
+      "search-data-ready",
+      values: {"contentType": widget.contentType?.name, "queryAlias": command.queryAlias, "resultCount": resultCount},
+    );
+    benchmark.metric("searchResultCount", resultCount);
+
+    if (_benchmarkSearchFrameScheduled) return;
+    _benchmarkSearchFrameScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !identical(PerformanceBenchmarkService.instance.activeSearchCommand, command)) {
+        _benchmarkSearchFrameScheduled = false;
+        return;
+      }
+      final current = ref.read(pageControl);
+      benchmark.mark(
+        "search-first-rendered-content",
+        values: {
+          "contentType": widget.contentType?.name,
+          "queryAlias": command.queryAlias,
+          "resultCount": current.items?.length ?? 0,
+        },
+      );
+      _lastCompletedSearchCommand = command;
+      _benchmarkSearchFrameScheduled = false;
+      command.complete();
+    });
+  }
+
   // Scrolls the list to the first occurrence of the letter in the list
   // If clicked in the # element, it goes to the first or last one item, depending on sort order
-  void scrollToLetter(String letter) async {
+  Future<void> scrollToLetter(String letter) async {
     if (letter.isEmpty) return;
 
+    final benchmark = PerformanceBenchmarkService.instance;
+    final pageWait = _benchmarkAlphabetPageWait;
+    if (pageWait != null) {
+      pageWait.stop();
+      benchmark.incrementMetric("alphabetPageWaitMicros", pageWait.elapsedMicroseconds);
+      benchmark.mark("alphabet-jump-page-ready");
+      _benchmarkAlphabetPageWait = null;
+    }
+
+    final localScan = Stopwatch()..start();
     letterToSearch = letter;
     var codePointToScrollTo = (widget.contentType == ContentType.tracks ? letter.toUpperCase() : letter.toLowerCase())
         .codeUnitAt(0);
@@ -147,42 +474,71 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
       int itemCodePoint = sortName.codeUnitAt(0);
       final comparisonResult = itemCodePoint - codePointToScrollTo;
       if (comparisonResult == 0) {
+        localScan.stop();
+        benchmark.incrementMetric("alphabetLocalScanMicros", localScan.elapsedMicroseconds);
+        benchmark.mark("alphabet-jump-target-located");
         timer?.cancel();
+        final targetScroll = Stopwatch()..start();
         await controller.scrollToIndex(
           i,
           duration: _getAnimationDurationForOffsetToIndex(i),
           preferPosition: AutoScrollPosition.begin,
         );
+        targetScroll.stop();
+        benchmark.incrementMetric("alphabetTargetScrollMicros", targetScroll.elapsedMicroseconds);
+        benchmark.mark("alphabet-jump-target-rendered");
 
         letterToSearch = null;
+        _completeBenchmarkJump();
         return;
       } else if (reversed ? comparisonResult < 0 : comparisonResult > 0) {
         // If the letter is before the current item, there was no previous match (letter doesn't seem to exist in library)
         // scroll to the previous item instead
+        localScan.stop();
+        benchmark.incrementMetric("alphabetLocalScanMicros", localScan.elapsedMicroseconds);
+        benchmark.mark("alphabet-jump-target-located");
         timer?.cancel();
+        final targetScroll = Stopwatch()..start();
         await controller.scrollToIndex(
           (i - 1).clamp(0, itemList.length - 1),
           // duration: scrollDuration,
           duration: _getAnimationDurationForOffsetToIndex(i),
           preferPosition: AutoScrollPosition.middle,
         );
+        targetScroll.stop();
+        benchmark.incrementMetric("alphabetTargetScrollMicros", targetScroll.elapsedMicroseconds);
+        benchmark.mark("alphabet-jump-target-rendered");
 
         letterToSearch = null;
+        _completeBenchmarkJump();
         return;
       }
     }
 
+    localScan.stop();
+    benchmark.incrementMetric("alphabetLocalScanMicros", localScan.elapsedMicroseconds);
+
     timer?.cancel();
     if (!state.hasNextPage) {
       letterToSearch = null;
+      _completeBenchmarkJump();
     } else {
-      timer = Timer(const Duration(seconds: 8), () {
-        // If page loading takes too long, cancel search and allow image loading.
-        letterToSearch = null;
-      });
+      // Normal interactive use gives up after eight seconds so deferred
+      // image loading can resume. The benchmark must not do that: a slow page
+      // is exactly what we are trying to measure, so keep the target letter
+      // active until the real page arrives or the suite-level timeout fires.
+      if (_activeBenchmarkJump == null) {
+        timer = Timer(const Duration(seconds: 8), () {
+          letterToSearch = null;
+        });
+      }
 
+      benchmark.incrementMetric("alphabetJumpPagesLoaded");
+      benchmark.mark("alphabet-jump-page-requested", values: {"loadedItems": itemList.length});
+      _benchmarkAlphabetPageWait = Stopwatch()..start();
       ref.read(pageControl.notifier).newPage();
     }
+    final pageEdgeScroll = Stopwatch()..start();
     if (MediaQuery.disableAnimationsOf(context)) {
       controller.jumpTo(controller.position.maxScrollExtent);
     } else {
@@ -192,6 +548,8 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         curve: Curves.ease,
       );
     }
+    pageEdgeScroll.stop();
+    benchmark.incrementMetric("alphabetPageEdgeScrollMicros", pageEdgeScroll.elapsedMicroseconds);
   }
 
   Duration _getAnimationDurationForOffsetToIndex(int index) {
@@ -203,10 +561,39 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     return duration;
   }
 
+  void _completeBenchmarkJump() {
+    final command = _activeBenchmarkJump;
+    if (command == null) return;
+    final state = ref.read(pageControl);
+    PerformanceBenchmarkService.instance.mark(
+      "alphabet-jump-complete",
+      values: {"loadedItems": state.items?.length ?? 0},
+    );
+    command.complete();
+    _activeBenchmarkJump = null;
+  }
+
   @override
   void dispose() {
     _musicScreenRefreshStreamSubscription?.cancel();
     _downloadsRefreshStreamSubscription?.cancel();
+    _benchmarkJumpSubscription?.cancel();
+    _benchmarkTabSubscription?.cancel();
+    _benchmarkPageSubscription?.cancel();
+    _activeBenchmarkPage?.completeError(
+      StateError("Music screen disposed during benchmark page measurement"),
+      StackTrace.current,
+    );
+    _activeBenchmarkTab?.completeError(
+      StateError("Music screen disposed during benchmark tab measurement"),
+      StackTrace.current,
+    );
+    _activeBenchmarkJump?.completeError(
+      StateError("Music screen disposed during benchmark alphabet jump"),
+      StackTrace.current,
+    );
+    _benchmarkAlphabetPageWait?.stop();
+    _benchmarkAlphabetPageWait = null;
     //_pagingController.dispose();
     timer?.cancel();
     super.dispose();
@@ -230,6 +617,12 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
   Widget build(BuildContext context) {
     super.build(context);
     widget.refresh?.callback = _refresh;
+    final benchmarkPageState = ref.watch(pageControl);
+    _maybeFailBenchmarkCommands(benchmarkPageState);
+    _maybeReportStartupScreenReady(benchmarkPageState);
+    _maybeCompleteBenchmarkTab(benchmarkPageState);
+    _maybeCompleteBenchmarkPage(benchmarkPageState);
+    _maybeCompleteBenchmarkSearch(benchmarkPageState);
     if (letterToSearch != null) {
       scrollToLetter(letterToSearch!);
     }

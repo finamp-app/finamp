@@ -54,6 +54,8 @@ import 'package:finamp/services/music_providers.dart';
 import 'package:finamp/services/network_manager.dart';
 import 'package:finamp/services/offline_listen_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
+import 'package:finamp/services/performance_benchmark_service.dart';
+import 'package:finamp/services/performance_benchmark_suite_runner.dart';
 import 'package:finamp/services/playon_service.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/theme_provider.dart';
@@ -134,11 +136,20 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
 
   try {
     startTime = DateTime.now();
+    PerformanceBenchmarkService.instance.startProcessStopwatch();
     await setupLogging();
     await _setupEdgeToEdgeOverlayStyle();
     _mainLog.info("Setup edge-to-edge overlay");
-    await setupHive();
+    await PerformanceBenchmarkService.instance.runStartupTask("setup-hive-isar", setupHive);
     _mainLog.info("Setup hive and isar");
+    final recoveredBenchmark = await PerformanceBenchmarkService.instance.recoverInterruptedRun();
+    if (recoveredBenchmark != null) {
+      _mainLog.warning(
+        "Recovered interrupted benchmark run "
+        "${recoveredBenchmark["id"]} at step "
+        "${recoveredBenchmark["lastStep"]}",
+      );
+    }
     // Apply the persisted verbose logging preference now that settings exist.
     applyLogLevel();
     _migrateDownloadLocations();
@@ -149,28 +160,31 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
     _migrateDeviceId();
     await _migrateThemeModeLocale();
     _mainLog.info("Completed applicable migrations");
-    await _trustAndroidUserCerts();
-    await ClientCertificateInstaller().installClientCertificate();
+    await PerformanceBenchmarkService.instance.runStartupTask("trust-platform-certificates", _trustAndroidUserCerts);
+    await PerformanceBenchmarkService.instance.runStartupTask(
+      "install-client-certificate",
+      () => ClientCertificateInstaller().installClientCertificate(),
+    );
     _mainLog.info("Installed client certificate");
-    await _setupFinampUserHelper();
+    await PerformanceBenchmarkService.instance.runStartupTask("setup-user-helper", _setupFinampUserHelper);
     _mainLog.info("Setup user helper");
-    await _setupJellyfinApiData();
+    await PerformanceBenchmarkService.instance.runStartupTask("setup-jellyfin-api", _setupJellyfinApiData);
     _mainLog.info("setup jellyfin api");
     _setupOfflineListenLogHelper();
     _mainLog.info("Setup offline listen tracking");
-    await _setupDownloadsHelper();
+    await PerformanceBenchmarkService.instance.runStartupTask("setup-downloads-service", _setupDownloadsHelper);
     _mainLog.info("Setup downloads service");
-    await _setupProviders();
+    await PerformanceBenchmarkService.instance.runStartupTask("setup-providers", _setupProviders);
     _mainLog.info("Setup providers");
-    await _setupOSIntegration(args);
+    await PerformanceBenchmarkService.instance.runStartupTask("setup-os-integration", () => _setupOSIntegration(args));
     _mainLog.info("Setup os integrations");
-    await _setupPlayOnService();
+    await PerformanceBenchmarkService.instance.runStartupTask("setup-playon-registration", _setupPlayOnService);
     _mainLog.info("Setup PlayOnService");
-    await _setupPlaybackServices();
+    await PerformanceBenchmarkService.instance.runStartupTask("setup-playback-services", _setupPlaybackServices);
     _mainLog.info("Setup audio player");
-    await _setupKeepScreenOnHelper();
+    await PerformanceBenchmarkService.instance.runStartupTask("setup-keep-screen-on", _setupKeepScreenOnHelper);
     _mainLog.info("Setup KeepScreenOnHelper");
-    await _setupDiscordRpc();
+    await PerformanceBenchmarkService.instance.runStartupTask("setup-discord-rpc", _setupDiscordRpc);
     _mainLog.info("Setup Discord RPC");
   } catch (error, trace) {
     if (!integrationTesting) {
@@ -190,11 +204,14 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
       if (error is Error) {
         details = details.copyWith(stack: error.stackTrace ?? details.stack);
       }
+      final stack = details.stack ?? StackTrace.current;
+      unawaited(PerformanceBenchmarkService.instance.recordCrash(error, stack, source: "FlutterError.onError"));
       FlutterError.presentError(details);
       flutterLogger.severe(error, error, details.stack);
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
+      unawaited(PerformanceBenchmarkService.instance.recordCrash(error, stack, source: "PlatformDispatcher.onError"));
       flutterLogger.severe(error, error, stack);
 
       // We have not handled printing to console, flutter should still do that.
@@ -206,14 +223,22 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
 
   await findSystemLocale();
   await initializeDateFormatting();
-  unawaited(fetchSystemPalette());
+  unawaited(PerformanceBenchmarkService.instance.runStartupTask("system-palette", fetchSystemPalette));
   await initDBus();
 
   _mainLog.info("Launching main app");
 
   // Integration testing will launch the widgets itself, so just return
   if (!integrationTesting) {
+    if (PerformanceBenchmarkService.enabled) {
+      SchedulerBinding.instance.addTimingsCallback(PerformanceBenchmarkService.instance.recordFrameTimings);
+    }
+    await PerformanceBenchmarkService.instance.reportStartupMilestone("startup-main-init-complete");
     runApp(const Finamp());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(PerformanceBenchmarkService.instance.reportStartupMilestone("startup-first-frame"));
+    });
+    PerformanceBenchmarkSuiteRunner.instance.arm();
   }
 }
 
@@ -265,9 +290,18 @@ Future<void> _setupDownloadsHelper() async {
         baseDirectory: DownloadLocationType.platformDefaultDirectory,
       );
       FinampSettingsHelper.addDownloadLocation(downloadLocation);
-      // There may be old downloads present due to skipping the migration
-      // Run a repair to make sure they all get cleaned up.
-      unawaited(downloadsService.repairAllDownloads().then((value) => null, onError: GlobalSnackbar.error));
+      // There may be old downloads present due to skipping the migration.
+      // In benchmark mode this background repair is part of startup readiness;
+      // normal Finamp keeps the existing fire-and-forget behaviour.
+      if (PerformanceBenchmarkService.enabled) {
+        unawaited(
+          PerformanceBenchmarkService.instance
+              .runStartupTask("repair-downloads-after-location-recreation", downloadsService.repairAllDownloads)
+              .catchError((dynamic error) => GlobalSnackbar.error(error)),
+        );
+      } else {
+        unawaited(downloadsService.repairAllDownloads().then((value) => null, onError: GlobalSnackbar.error));
+      }
     }
   }
 
@@ -277,10 +311,82 @@ Future<void> _setupDownloadsHelper() async {
   await fileDownloader.resumeFromBackground();
   await downloadsService.startQueues();
 
-  if (!FinampSettingsHelper.finampSettings.hasDownloadedPlaylistInfo) {
+  if (PerformanceBenchmarkService.enabled) {
+    GetIt.instance<FinampUserHelper>().runUserHook(() {
+      final benchmark = PerformanceBenchmarkService.instance;
+      unawaited(
+        benchmark
+            .runStartupTask("default-playlist-metadata-lifecycle", () async {
+              final suiteStage = await benchmark.getSuiteStage();
+
+              if (suiteStage != "realistic-startup-prepared") {
+                benchmark.diagnostic(
+                  suiteStage == null
+                      ? "startup-playlist-metadata-work-suppressed-for-preconditioning"
+                      : "startup-playlist-metadata-work-not-repeated",
+                  values: {"suiteStage": suiteStage ?? "fresh-preconditioning"},
+                );
+                return;
+              }
+
+              final metadataStub = DownloadStub.fromFinampCollection(
+                FinampCollection(type: FinampCollectionType.allPlaylistsMetadata),
+              );
+              await benchmark.setDownloadCleanupRequired(
+                targetAlias: "all-playlists-metadata",
+                targetItemId: metadataStub.id,
+                targetItemType: metadataStub.type.name,
+              );
+              benchmark.markStartupPlaylistMetadataWorkRan();
+              try {
+                final planning = Stopwatch()..start();
+                benchmark.diagnostic(
+                  "startup-playlist-metadata-plan-start",
+                  values: {"processElapsedMs": benchmark.processElapsedMs},
+                );
+                await downloadsService.addDefaultPlaylistInfoDownload();
+                planning.stop();
+                benchmark.diagnostic(
+                  "startup-playlist-metadata-plan-complete",
+                  values: {
+                    "durationMs": planning.elapsedMicroseconds / 1000.0,
+                    "processElapsedMs": benchmark.processElapsedMs,
+                  },
+                );
+
+                final settle = Stopwatch()..start();
+                benchmark.diagnostic(
+                  "startup-playlist-metadata-settle-start",
+                  values: {"processElapsedMs": benchmark.processElapsedMs},
+                );
+                await downloadsService.waitForPerformanceBenchmarkDownloadSystemIdle(
+                  stableFor: const Duration(seconds: 5),
+                  timeout: const Duration(hours: 3),
+                );
+                settle.stop();
+                benchmark.diagnostic(
+                  "startup-playlist-metadata-settle-complete",
+                  values: {
+                    "durationMs": settle.elapsedMicroseconds / 1000.0,
+                    "processElapsedMs": benchmark.processElapsedMs,
+                  },
+                );
+                benchmark.reportStartupPlaylistMetadataWorkResult(success: true);
+              } catch (e) {
+                benchmark.reportStartupPlaylistMetadataWorkResult(success: false, errorType: e.runtimeType.toString());
+                _mainLog.severe("Benchmark startup playlist metadata download failed: $e");
+              }
+            })
+            .catchError((Object error) {
+              _mainLog.severe("Benchmark startup playlist metadata lifecycle failed: $error");
+            }),
+      );
+    });
+  } else if (!FinampSettingsHelper.finampSettings.hasDownloadedPlaylistInfo) {
     GetIt.instance<FinampUserHelper>().runUserHook(() async {
       await downloadsService.addDefaultPlaylistInfoDownload().catchError((Object e) {
-        // log error without snackbar, we don't want users to be greeted with errors on first launch
+        // log error without snackbar, we don't want users to be greeted with
+        // errors on first launch
         _mainLog.severe("Failed to download playlist metadata: $e");
       });
       FinampSetters.setHasDownloadedPlaylistInfo(true);
@@ -291,7 +397,9 @@ Future<void> _setupDownloadsHelper() async {
 Future<void> _setupPlayOnService() async {
   final playOnService = PlayOnService();
   GetIt.instance.registerSingleton(playOnService);
-  GetIt.instance<FinampUserHelper>().runUserHook(playOnService.initialize);
+  GetIt.instance<FinampUserHelper>().runUserHook(() async {
+    await PerformanceBenchmarkService.instance.runStartupTask("play-on-service", playOnService.initialize);
+  });
 }
 
 Future<void> _setupDiscordRpc() async {
@@ -350,7 +458,7 @@ Future<void> _setupProviders() async {
   container.listen(finampSettingsProvider, (_, _) {});
   await container.read(finampSettingsProvider.future);
 
-  await initImageCache();
+  await PerformanceBenchmarkService.instance.runStartupTask("init-image-cache", initImageCache);
 
   DataSourceService.create();
   AutoOffline.startWatching();
@@ -471,7 +579,11 @@ Future<void> _setupPlaybackServices() async {
   }
 
   // Begin to restore queue
-  unawaited(queueService.performInitialQueueLoad().catchError((dynamic x) => GlobalSnackbar.error(x)));
+  unawaited(
+    PerformanceBenchmarkService.instance
+        .runStartupTask("initial-queue-restore", queueService.performInitialQueueLoad)
+        .catchError((dynamic x) => GlobalSnackbar.error(x)),
+  );
 }
 
 /// Migrates the old DownloadLocations list to a map

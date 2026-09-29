@@ -22,6 +22,7 @@ import '../screens/downloads_screen.dart';
 import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
 import 'jellyfin_api_helper.dart';
+import 'performance_benchmark_service.dart';
 
 part 'downloads_service_backend.g.dart';
 
@@ -912,6 +913,10 @@ class DownloadsSyncService {
       }
     }
 
+    final benchmarkNodeStopwatch = PerformanceBenchmarkService.enabled ? (Stopwatch()..start()) : null;
+    final benchmarkNodeRole = asRequired ? "required" : "info";
+    final benchmarkNodeType = parent.type.name;
+
     _syncLogger.finer("Syncing ${parent.baseItemType.name} ${parent.name} with required:$asRequired viewId:$viewId");
 
     //
@@ -1176,6 +1181,20 @@ class DownloadsSyncService {
       }
       // Set priority high to prevent stalling, but lower than creating network requests
     }, Priority.animation);
+
+    if (benchmarkNodeStopwatch != null) {
+      benchmarkNodeStopwatch.stop();
+      final benchmark = PerformanceBenchmarkService.instance;
+      benchmark.incrementMetricBuffered("downloadSyncNodeCount_${benchmarkNodeType}_$benchmarkNodeRole");
+      benchmark.incrementMetricBuffered(
+        "downloadSyncNodeMicros_${benchmarkNodeType}_$benchmarkNodeRole",
+        benchmarkNodeStopwatch.elapsedMicroseconds,
+      );
+      benchmark.maxMetricBuffered(
+        "downloadSyncNodeMicrosMax_${benchmarkNodeType}_$benchmarkNodeRole",
+        benchmarkNodeStopwatch.elapsedMicroseconds,
+      );
+    }
   }
 
   /// This updates the children of an item to exactly match the given set.
@@ -1187,6 +1206,7 @@ class DownloadsSyncService {
   /// Used within [_syncDownload].
   /// This should only be called inside an isar write transaction.
   (Set<int>, Set<int>, Set<int>) _updateChildren(DownloadItem parent, bool required, Set<DownloadStub> children) {
+    final benchmarkStopwatch = PerformanceBenchmarkService.enabled ? (Stopwatch()..start()) : null;
     IsarLinks<DownloadItem> links = required ? parent.requires : parent.info;
 
     var oldChildIds = (links.filter().isarIdProperty().findAllSync()).toSet();
@@ -1223,7 +1243,20 @@ class DownloadsSyncService {
       // Collection download state may need changing with different children
       _downloadsService.syncItemState(parent);
     }
-    return (childrenToPutAndLink.map((e) => e.isarId).toSet(), childIdsToLink.toSet(), childIdsToUnlink);
+    final insertedIds = childrenToPutAndLink.map((e) => e.isarId).toSet();
+    final linkedIds = childIdsToLink.toSet();
+    if (benchmarkStopwatch != null) {
+      benchmarkStopwatch.stop();
+      final benchmark = PerformanceBenchmarkService.instance;
+      final role = required ? "required" : "info";
+      benchmark.incrementMetricBuffered("downloadUpdateChildrenCount_$role");
+      benchmark.incrementMetricBuffered("downloadUpdateChildrenMicros_$role", benchmarkStopwatch.elapsedMicroseconds);
+      benchmark.incrementMetricBuffered("downloadUpdateChildrenInserted_$role", insertedIds.length);
+      benchmark.incrementMetricBuffered("downloadUpdateChildrenLinkedExisting_$role", linkedIds.length);
+      benchmark.incrementMetricBuffered("downloadUpdateChildrenUnlinked_$role", childIdsToUnlink.length);
+      benchmark.maxMetricBuffered("downloadUpdateChildrenMicrosMax_$role", benchmarkStopwatch.elapsedMicroseconds);
+    }
+    return (insertedIds, linkedIds, childIdsToUnlink);
   }
 
   /// Get BaseItemDto from the given baseItemDto ID.  Tries local cache, then
@@ -1231,8 +1264,10 @@ class DownloadsSyncService {
   /// to this method.  Used within [_syncDownload].
   Future<DownloadStub?> _getBaseItemInfo(BaseItemId id, DownloadItemType type, bool forceServer) async {
     if (_metadataCache.containsKey(id)) {
+      PerformanceBenchmarkService.instance.incrementMetricBuffered("downloadMetadataCacheHit");
       return _metadataCache[id];
     }
+    PerformanceBenchmarkService.instance.incrementMetricBuffered("downloadMetadataCacheMiss");
     Completer<DownloadStub?> itemFetch = Completer();
     try {
       DownloadStub? item;
@@ -1288,11 +1323,13 @@ class DownloadsSyncService {
     var item = parent.baseItem!;
 
     if (_childCache.containsKey(item.id.raw)) {
+      PerformanceBenchmarkService.instance.incrementMetricBuffered("downloadChildCacheHit");
       var childIds = await _childCache[item.id.raw]!;
       return Future.wait(
         childIds.map((e) => _metadataCache[BaseItemId(e)]).nonNulls,
       ).then((value) => value.nonNulls.toList());
     }
+    PerformanceBenchmarkService.instance.incrementMetricBuffered("downloadChildCacheMiss");
     Completer<List<String>> itemFetch = Completer();
     // This prevents errors in itemFetch being reported as unhandled.
     // They are handled by original caller in rethrow.
@@ -1475,16 +1512,35 @@ class DownloadsSyncService {
   /// of all know views.  Used by [_syncDownload] to assign libraries to items
   /// in playlists or finampCollections.
   Future<BaseItemId?> _getAlbumViewID(BaseItemId albumId) async {
-    final userHelper = GetIt.instance<FinampUserHelper>();
-    for (var view in (userHelper.currentUser?.views.values ?? <BaseItemDto>[])) {
-      var children = await _getCollectionChildren(DownloadStub.fromItem(type: DownloadItemType.collection, item: view));
-      // Iterable.nonNulls does not seem to work here, I don't know why.
-      var childIds = children.map<BaseItemId?>((e) => e.baseItem?.id).where((id) => id != null).toList();
-      if (childIds.contains(albumId)) {
-        return view.id;
+    final benchmarkStopwatch = PerformanceBenchmarkService.enabled ? (Stopwatch()..start()) : null;
+    int viewsExamined = 0;
+    int albumIdsScanned = 0;
+    try {
+      final userHelper = GetIt.instance<FinampUserHelper>();
+      for (var view in (userHelper.currentUser?.views.values ?? <BaseItemDto>[])) {
+        viewsExamined++;
+        var children = await _getCollectionChildren(
+          DownloadStub.fromItem(type: DownloadItemType.collection, item: view),
+        );
+        // Iterable.nonNulls does not seem to work here, I don't know why.
+        var childIds = children.map<BaseItemId?>((e) => e.baseItem?.id).where((id) => id != null).toList();
+        albumIdsScanned += childIds.length;
+        if (childIds.contains(albumId)) {
+          return view.id;
+        }
+      }
+      return null;
+    } finally {
+      if (benchmarkStopwatch != null) {
+        benchmarkStopwatch.stop();
+        final benchmark = PerformanceBenchmarkService.instance;
+        benchmark.incrementMetricBuffered("downloadAlbumViewLookupCount");
+        benchmark.incrementMetricBuffered("downloadAlbumViewLookupMicros", benchmarkStopwatch.elapsedMicroseconds);
+        benchmark.incrementMetricBuffered("downloadAlbumViewViewsExamined", viewsExamined);
+        benchmark.incrementMetricBuffered("downloadAlbumViewIdsScanned", albumIdsScanned);
+        benchmark.maxMetricBuffered("downloadAlbumViewLookupMicrosMax", benchmarkStopwatch.elapsedMicroseconds);
       }
     }
-    return null;
   }
 
   /// If items on the server are deleted or updated, it is possible that the BaseItemDto stored in the image download is

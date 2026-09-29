@@ -19,6 +19,7 @@ import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_screen_provider.dart';
+import 'package:finamp/services/performance_benchmark_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -50,6 +51,9 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
   CuratedItemSelectionType? clickedCuratedItemSelectionType;
 
   StreamSubscription<void>? _refreshStream;
+  PerformanceBenchmarkDetailCommand? _benchmarkDetailCommand;
+  bool _benchmarkDetailDataMarked = false;
+  bool _benchmarkDetailFrameScheduled = false;
 
   @override
   void initState() {
@@ -60,6 +64,22 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
       _refresh();
     });
     controller.updateGenreFilter(widget.genreFilter);
+
+    final command = PerformanceBenchmarkService.instance.activeDetailCommand;
+    if (command != null && command.itemId == widget.parent.id.raw) {
+      _benchmarkDetailCommand = command;
+      PerformanceBenchmarkService.instance.mark(
+        "detail-screen-mounted",
+        values: {"targetAlias": command.targetAlias, "targetType": command.targetType},
+      );
+      if (command.refresh) {
+        ref.invalidate(getArtistTracksSectionProvider);
+        ref.invalidate(getArtistAlbumsProvider);
+        ref.invalidate(getPerformingArtistAlbumsProvider);
+        ref.invalidate(getPerformingArtistTracksProvider);
+        ref.invalidate(getArtistTracksProvider);
+      }
+    }
     super.initState();
   }
 
@@ -205,17 +225,55 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         )
         .valueOrNull;
 
-    final allTracks = ref.watch(
-      getArtistTracksProvider(
-        artist: widget.parent,
-        libraryFilter: widget.library?.id,
-        genreFilter: sortConfig.genreFilter?.id,
-        sortAndFilterConfiguration: albumsSortConfig,
-        sortLikeAlbums: true,
-      ).future,
+    final allTracksProvider = getArtistTracksProvider(
+      artist: widget.parent,
+      libraryFilter: widget.library?.id,
+      genreFilter: sortConfig.genreFilter?.id,
+      sortAndFilterConfiguration: albumsSortConfig,
+      sortLikeAlbums: true,
     );
+    final allTracksAsync = ref.watch(allTracksProvider).valueOrNull;
+    final allTracks = ref.watch(allTracksProvider.future);
 
     final isLoading = topTracksAsync == null || albumArtistAlbumsAsync == null || performingArtistAlbumsAsync == null;
+    final benchmarkDetailReady = !isLoading && allPerformingArtistTracksAsync != null && allTracksAsync != null;
+
+    final benchmarkCommand = _benchmarkDetailCommand;
+    if (benchmarkCommand != null && benchmarkDetailReady) {
+      final benchmark = PerformanceBenchmarkService.instance;
+      final visibleChildCount =
+          topTracksAsync!.length + albumArtistAlbumsAsync!.length + performingArtistAlbumsAsync!.length;
+      benchmark.metric("artistResolvedTrackCount", allTracksAsync!.length);
+      if (!_benchmarkDetailDataMarked) {
+        _benchmarkDetailDataMarked = true;
+        benchmark.mark(
+          "detail-children-ready",
+          values: {
+            "targetAlias": benchmarkCommand.targetAlias,
+            "targetType": benchmarkCommand.targetType,
+            "childCount": visibleChildCount,
+          },
+        );
+        benchmark.metric("detailChildCount", visibleChildCount);
+      }
+      if (!_benchmarkDetailFrameScheduled) {
+        _benchmarkDetailFrameScheduled = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || !identical(PerformanceBenchmarkService.instance.activeDetailCommand, benchmarkCommand)) {
+            return;
+          }
+          benchmark.mark(
+            "detail-first-rendered-content",
+            values: {
+              "targetAlias": benchmarkCommand.targetAlias,
+              "targetType": benchmarkCommand.targetType,
+              "childCount": visibleChildCount,
+            },
+          );
+          benchmarkCommand.complete();
+        });
+      }
+    }
 
     /// We add the new disabled filters to our local set, so that we don't accidentally re-enable
     /// previously disabled filters. Only a full refresh of the screen should do that.

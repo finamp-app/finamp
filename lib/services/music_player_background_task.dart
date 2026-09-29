@@ -13,6 +13,7 @@ import 'package:finamp/services/current_track_metadata_provider.dart';
 import 'package:finamp/services/favorite_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
+import 'package:finamp/services/performance_benchmark_service.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/radio_service_helper.dart' as RadioServiceHelper;
 import 'package:flutter/foundation.dart';
@@ -506,10 +507,72 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
     _player.errorStream.listen((error) {
       _audioServiceBackgroundTaskLogger.severe("Player error: $error", error);
+      PerformanceBenchmarkService.instance.mark("player-error", values: {"errorType": error.runtimeType.toString()});
+    });
+
+    String? benchmarkReadyRunId;
+    String? benchmarkPlayingRunId;
+    String? benchmarkPositionRunId;
+    String? benchmarkUsefulBufferRunId;
+
+    PerformanceBenchmarkRun? activePlaybackBenchmarkRun() {
+      final run = PerformanceBenchmarkService.instance.activeRun;
+      final isPlaybackBenchmark =
+          run != null &&
+          (run.scenario.startsWith("playback-startup-") || run.scenario == "artist-album-track-drilldown");
+      if (!isPlaybackBenchmark || !run!.events.any((event) => event.name == "playback-action-received")) {
+        return null;
+      }
+      return run;
+    }
+
+    void reportUsefulBufferIfReady() {
+      if (!_player.playing) return;
+      final run = activePlaybackBenchmarkRun();
+      if (run == null || benchmarkUsefulBufferRunId == run.id) return;
+
+      final bufferedPosition = _player.bufferedPosition;
+      final usefulBuffer = bufferedPosition - _player.position;
+      if (usefulBuffer >= const Duration(seconds: 2)) {
+        benchmarkUsefulBufferRunId = run.id;
+        PerformanceBenchmarkService.instance.mark(
+          "player-useful-buffer-ready",
+          values: {"bufferedPositionMs": bufferedPosition.inMilliseconds, "bufferAheadMs": usefulBuffer.inMilliseconds},
+        );
+      }
+    }
+
+    _player.playingStream.listen((playing) {
+      if (!playing) return;
+      final run = activePlaybackBenchmarkRun();
+      if (run != null && benchmarkPlayingRunId != run.id) {
+        benchmarkPlayingRunId = run.id;
+        PerformanceBenchmarkService.instance.mark("player-playing");
+      }
+
+      // bufferedPosition can become useful before playing flips to true. In
+      // that case bufferedPositionStream may not emit again and the benchmark
+      // would wait forever despite a large existing buffer.
+      reportUsefulBufferIfReady();
+    });
+
+    _player.bufferedPositionStream.listen((_) {
+      reportUsefulBufferIfReady();
     });
 
     // trigger sleep timer early if we're almost at the end of the final track
     _player.positionStream.listen((position) {
+      final run = activePlaybackBenchmarkRun();
+      if (_player.playing && position > Duration.zero && run != null && benchmarkPositionRunId != run.id) {
+        benchmarkPositionRunId = run.id;
+        PerformanceBenchmarkService.instance.mark(
+          "player-first-position-advance",
+          values: {
+            "positionMs": position.inMilliseconds,
+            "bufferedPositionMs": _player.bufferedPosition.inMilliseconds,
+          },
+        );
+      }
       if (sleepTimer?.remainingTracks == 1 &&
           ((mediaItem.value?.duration ?? Duration.zero) - position).inMilliseconds / _player.speed <=
               // even if fade out is disabled, we stop a bit early to avoid advancing to the next track
@@ -528,6 +591,13 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
     // Special processing for state transitions.
     _player.processingStateStream.listen((event) async {
+      if (event == ProcessingState.ready) {
+        final run = activePlaybackBenchmarkRun();
+        if (run != null && benchmarkReadyRunId != run.id) {
+          benchmarkReadyRunId = run.id;
+          PerformanceBenchmarkService.instance.mark("player-processing-ready");
+        }
+      }
       if (event == ProcessingState.completed) {
         await handleEndOfQueue();
       }
@@ -1347,16 +1417,29 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   /// Syncs the list of MediaItems (_queue) with the internal queue of the player.
   /// Called by onAddQueueItem and onUpdateQueue.
   Future<AudioSource> _queueItemToAudioSource(FinampQueueItem queueItem) async {
-    if (queueItem.item.extras!["downloadedTrackPath"] == null) {
+    final extras = queueItem.item.extras!;
+    final downloadedTrackPath = extras["downloadedTrackPath"] as String?;
+    final isOffline = extras["isOffline"] as bool? ?? false;
+    final shouldTranscode = extras["shouldTranscode"] as bool? ?? false;
+
+    if (downloadedTrackPath == null) {
       // If downloadedTrack wasn't passed, we assume that the item is not
       // downloaded.
 
       // If offline, we throw an error so that we don't accidentally stream from
       // the internet. See the big comment in _trackUri() to see why this was
       // passed in extras.
-      if (queueItem.item.extras!["isOffline"] as bool) {
+      if (isOffline) {
         return Future.error("Offline mode enabled but downloaded track not found.");
       } else {
+        final user = GetIt.instance<FinampUserHelper>().currentUser;
+        final usesLocalTarget = user?.isLocal == true && user?.preferLocalNetwork == true;
+        PerformanceBenchmarkService.instance.reportPlaybackSourceSelected(
+          source: "server",
+          serverTarget: usesLocalTarget ? "local" : "public",
+          transcoded: shouldTranscode,
+          offline: false,
+        );
         final trackUri = await _trackUri(queueItem.item);
         return AudioSource.uri(trackUri, tag: queueItem);
         // if (queueItem.item.extras!["shouldTranscode"] == true) {
@@ -1368,7 +1451,11 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     } else {
       // We have to deserialise this because Dart is stupid and can't handle
       // sending classes through isolates.
-      final downloadedTrackPath = queueItem.item.extras!["downloadedTrackPath"] as String;
+      PerformanceBenchmarkService.instance.reportPlaybackSourceSelected(
+        source: "downloaded-file",
+        transcoded: false,
+        offline: isOffline,
+      );
 
       // Path verification and stuff is done in AudioServiceHelper, so this path
       // should be valid.

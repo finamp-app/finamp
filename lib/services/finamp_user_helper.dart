@@ -3,6 +3,7 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/jellyfin_api.dart' as jellyfin_api;
 import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/services/performance_benchmark_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce/hive.dart';
@@ -69,9 +70,21 @@ class FinampUserHelper {
 
   /// Saves a new user to the Hive box and sets the CurrentUserId.
   Future<void> saveUser(FinampUser newUser) async {
+    final previous = currentUser;
+    final previousUsesLocal = previous?.isLocal == true && previous?.preferLocalNetwork == true;
+    final nextUsesLocal = newUser.isLocal && newUser.preferLocalNetwork;
+
+    if (PerformanceBenchmarkService.enabled && previous != null && previousUsesLocal != nextUsesLocal) {
+      PerformanceBenchmarkService.instance.diagnostic(
+        "network-target-changed",
+        values: {"from": previousUsesLocal ? "local" : "public", "to": nextUsesLocal ? "local" : "public"},
+      );
+    }
+
     _isar.writeTxnSync(() {
       _isar.finampUsers.putSync(newUser, saveLinks: false);
     });
+
     await setAuthHeader();
     while (_postUserHooks.isNotEmpty) {
       _postUserHooks.removeAt(0)();

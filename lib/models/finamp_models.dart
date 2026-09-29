@@ -11,6 +11,7 @@ import 'package:collection/collection.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/performance_benchmark_service.dart';
 import 'package:finamp/services/radio_service_helper.dart';
 import 'package:finamp/utils/platform_helper.dart';
 import 'package:flutter/foundation.dart';
@@ -96,10 +97,31 @@ class FinampUser {
   BaseItemDto? get currentView => views[currentViewId];
 
   void update({bool? newIsLocal, String? newLocalAddress, String? newPublicAddress, bool? newPreferLocalNetwork}) {
+    final previousIsLocal = isLocal;
+    final previousPreferLocalNetwork = preferLocalNetwork;
+    final previousUsesLocal = previousIsLocal && previousPreferLocalNetwork;
+
     isLocal = newIsLocal ?? isLocal;
     localAddress = newLocalAddress ?? localAddress;
     publicAddress = newPublicAddress ?? publicAddress;
     preferLocalNetwork = newPreferLocalNetwork ?? preferLocalNetwork;
+
+    final nextUsesLocal = isLocal && preferLocalNetwork;
+    if (PerformanceBenchmarkService.enabled &&
+        (previousIsLocal != isLocal ||
+            previousPreferLocalNetwork != preferLocalNetwork ||
+            previousUsesLocal != nextUsesLocal)) {
+      PerformanceBenchmarkService.instance.diagnostic(
+        "network-target-state-changed",
+        values: {
+          "fromLocalTarget": previousUsesLocal,
+          "toLocalTarget": nextUsesLocal,
+          "preferLocalNetwork": preferLocalNetwork,
+          "isLocal": isLocal,
+        },
+      );
+    }
+
     GetIt.instance<FinampUserHelper>().saveUser(this);
   }
 }

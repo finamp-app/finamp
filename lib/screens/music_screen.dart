@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:finamp/components/HomeScreen/finamp_music_screen_header.dart';
@@ -17,6 +18,7 @@ import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_providers.dart';
+import 'package:finamp/services/performance_benchmark_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -54,6 +56,8 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
   final Map<ContentType, SortAndFilterController> sortAndFilterControllerMap = {};
 
   TabController? _tabController;
+  StreamSubscription<PerformanceBenchmarkTabCommand>? _benchmarkTabSubscription;
+  StreamSubscription<PerformanceBenchmarkSearchCommand>? _benchmarkSearchSubscription;
 
   final _audioServiceHelper = GetIt.instance<AudioServiceHelper>();
   final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
@@ -110,10 +114,89 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
   @override
   void initState() {
     super.initState();
+    _benchmarkTabSubscription = PerformanceBenchmarkService.instance.tabCommands.listen((command) {
+      if (!mounted || widget.singleTabConfig != null) return;
+
+      final tabs = ref
+          .read(finampSettingsProvider.tabOrder)
+          .where((e) => e.isTab)
+          .where((e) => ref.read(finampSettingsProvider.showTabs(e)) ?? false)
+          .toList();
+
+      int index = tabs.indexWhere((tab) {
+        if (command.contentType == "artists") {
+          return tab == ContentType.genericArtists ||
+              tab == ContentType.albumArtists ||
+              tab == ContentType.performingArtists;
+        }
+        return tab.name == command.contentType;
+      });
+
+      if (index < 0) {
+        command.completeError(StateError("Requested benchmark tab is not visible"), StackTrace.current);
+        return;
+      }
+
+      final targetTab = tabs[index];
+      final contentTab = targetTab == ContentType.genericArtists
+          ? ref.read(finampSettingsProvider.defaultArtistType).tabType
+          : targetTab;
+
+      _tabController?.index = index;
+      command.markSelected(contentTab.name);
+      PerformanceBenchmarkService.instance.mark(
+        "ui-tab-selected",
+        values: {"requestedContentType": command.contentType, "contentType": contentTab.name},
+      );
+      setState(() {});
+    });
+
+    _benchmarkSearchSubscription = PerformanceBenchmarkService.instance.searchCommands.listen((command) {
+      if (!mounted || widget.singleTabConfig != null) return;
+
+      final tabs = ref
+          .read(finampSettingsProvider.tabOrder)
+          .where((e) => e.isTab)
+          .where((e) => ref.read(finampSettingsProvider.showTabs(e)) ?? false)
+          .toList();
+
+      final index = tabs.indexWhere((tab) {
+        if (command.contentType == "artists") {
+          return tab == ContentType.genericArtists ||
+              tab == ContentType.albumArtists ||
+              tab == ContentType.performingArtists;
+        }
+        return tab.name == command.contentType;
+      });
+
+      if (index < 0) {
+        command.completeError(StateError("Requested benchmark search tab is not visible"), StackTrace.current);
+        return;
+      }
+
+      final targetTab = tabs[index];
+      final contentTab = targetTab == ContentType.genericArtists
+          ? ref.read(finampSettingsProvider.defaultArtistType).tabType
+          : targetTab;
+
+      _tabController?.index = index;
+      textEditingController.text = command.query;
+      searchQuery = command.query.isEmpty ? null : command.query;
+      isSearching = command.query.isNotEmpty;
+      command.markSelected(contentTab.name);
+
+      PerformanceBenchmarkService.instance.mark(
+        "search-applied",
+        values: {"contentType": contentTab.name, "queryAlias": command.queryAlias, "queryLength": command.query.length},
+      );
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
+    _benchmarkTabSubscription?.cancel();
+    _benchmarkSearchSubscription?.cancel();
     _tabController?.dispose();
     textEditingController.dispose();
     super.dispose();
@@ -221,7 +304,16 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
       return SizedBox.shrink();
     }
 
-    refreshMap[sortedTabs.elementAt(_tabController!.index)] = MusicRefreshCallback();
+    final selectedTab = sortedTabs.elementAt(_tabController!.index);
+    refreshMap[selectedTab] = MusicRefreshCallback();
+
+    if (PerformanceBenchmarkService.enabled &&
+        PerformanceBenchmarkService.instance.startupSelectedContentType == null) {
+      final selectedContentType = selectedTab == ContentType.genericArtists
+          ? ref.watch(finampSettingsProvider.defaultArtistType).tabType
+          : selectedTab;
+      PerformanceBenchmarkService.instance.setStartupSelectedContentType(selectedContentType.name);
+    }
 
     // If this setting changes, the appbar will change its preferred height, so we need to rebuild the scaffold.
     ref.watch(finampSettingsProvider.showQuickActionsBanner);

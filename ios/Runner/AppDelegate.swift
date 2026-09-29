@@ -8,6 +8,10 @@ import AVFoundation
 // Shared engine for CarPlay - the flutter_carplay plugin requires this
 let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadlessExecution: true)
 
+// Test-branch performance timing. DispatchTime is monotonic, so this can
+// measure native process launch -> Dart/UI milestones without wall-clock skew.
+private let benchmarkNativeLaunchUptimeNanoseconds = DispatchTime.now().uptimeNanoseconds
+
 @main
 @objc class AppDelegate: FlutterAppDelegate, INPlayMediaIntentHandling {
     override func application(
@@ -17,6 +21,8 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
         // Start the shared engine and register plugins with it for CarPlay
         flutterEngine.run()
         GeneratedPluginRegistrant.register(with: flutterEngine)
+
+        setupBenchmarkLaunchTimingChannel()
 
         // Set up method channel for playback state sync to MPNowPlayingInfoCenter
         // TODO: This is a workaround because audio_service doesn't set playbackState on iOS.
@@ -79,6 +85,28 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
         sceneConfig.delegateClass = SceneDelegate.self
         sceneConfig.storyboard = UIStoryboard(name: "Main", bundle: nil)
         return sceneConfig
+    }
+}
+
+extension AppDelegate {
+    func setupBenchmarkLaunchTimingChannel() {
+        let channel = FlutterMethodChannel(
+            name: "finamp/benchmark_launch_timing",
+            binaryMessenger: flutterEngine.binaryMessenger
+        )
+
+        channel.setMethodCallHandler { call, result in
+            switch call.method {
+            case "elapsedMilliseconds":
+                let now = DispatchTime.now().uptimeNanoseconds
+                let elapsed = now >= benchmarkNativeLaunchUptimeNanoseconds
+                    ? now - benchmarkNativeLaunchUptimeNanoseconds
+                    : 0
+                result(Double(elapsed) / 1_000_000.0)
+            default:
+                result(FlutterMethodNotImplemented)
+            }
+        }
     }
 }
 

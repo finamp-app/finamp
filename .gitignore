@@ -136,3 +136,7 @@ app.*.map.json
 
 # Integration testing artifacts
 integration_test/testing
+
+# Local performance benchmark artifacts
+benchmark-results/
+Build Runner_*.txt

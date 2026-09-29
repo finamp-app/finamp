@@ -6,6 +6,7 @@ import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/curated_item_filter_row.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
 import 'package:finamp/services/genre_screen_provider.dart';
+import 'package:finamp/services/performance_benchmark_service.dart';
 import 'package:finamp/components/curated_item_sections.dart';
 import 'package:finamp/components/favorite_button.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
@@ -47,9 +48,23 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
   CuratedItemSelectionType? clickedCuratedItemSelectionTypeTracks;
   CuratedItemSelectionType? clickedCuratedItemSelectionTypeAlbums;
   CuratedItemSelectionType? clickedCuratedItemSelectionTypeArtists;
+  PerformanceBenchmarkDetailCommand? _benchmarkDetailCommand;
+  bool _benchmarkDetailDataMarked = false;
+  bool _benchmarkDetailFrameScheduled = false;
 
   @override
   void initState() {
+    final command = PerformanceBenchmarkService.instance.activeDetailCommand;
+    if (command != null && command.itemId == widget.parent.id.raw) {
+      _benchmarkDetailCommand = command;
+      PerformanceBenchmarkService.instance.mark(
+        "detail-screen-mounted",
+        values: {"targetAlias": command.targetAlias, "targetType": command.targetType},
+      );
+      if (command.refresh) {
+        ref.invalidate(genreCuratedItemsProvider);
+      }
+    }
     super.initState();
   }
 
@@ -141,6 +156,41 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
         artistsAsync.valueOrNull ?? (null, null, null, null);
 
     final isLoading = tracks == null || albums == null || artists == null;
+
+    final benchmarkCommand = _benchmarkDetailCommand;
+    if (benchmarkCommand != null && !isLoading) {
+      final benchmark = PerformanceBenchmarkService.instance;
+      final visibleChildCount = tracks!.length + albums!.length + artists!.length;
+      if (!_benchmarkDetailDataMarked) {
+        _benchmarkDetailDataMarked = true;
+        benchmark.mark(
+          "detail-children-ready",
+          values: {
+            "targetAlias": benchmarkCommand.targetAlias,
+            "targetType": benchmarkCommand.targetType,
+            "childCount": visibleChildCount,
+          },
+        );
+        benchmark.metric("detailChildCount", visibleChildCount);
+      }
+      if (!_benchmarkDetailFrameScheduled) {
+        _benchmarkDetailFrameScheduled = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || !identical(PerformanceBenchmarkService.instance.activeDetailCommand, benchmarkCommand)) {
+            return;
+          }
+          benchmark.mark(
+            "detail-first-rendered-content",
+            values: {
+              "targetAlias": benchmarkCommand.targetAlias,
+              "targetType": benchmarkCommand.targetType,
+              "childCount": visibleChildCount,
+            },
+          );
+          benchmarkCommand.complete();
+        });
+      }
+    }
 
     /// We add the new disabled filters to a local set, which we actually use. That's because otherwise,
     /// we would re-enable deactivated filters once the user selects a different filter that's available.

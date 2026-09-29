@@ -3,6 +3,7 @@ import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/screens/lyrics_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
+import 'package:finamp/services/performance_benchmark_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -12,6 +13,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 /// Implements ability to keep screen on according to various conditions
 class KeepScreenOnHelper {
   bool _keepingScreenOn = false;
+  bool _performanceBenchmarkOverride = false;
 
   bool _isPlaying = false;
   bool _isLyricsShowing = false;
@@ -47,7 +49,19 @@ class KeepScreenOnHelper {
     container.listen(finampSettingsProvider.keepScreenOnWhilePluggedIn, (_, __) => setKeepScreenOn);
   }
 
+  void setPerformanceBenchmarkOverride(bool enabled) {
+    if (!PerformanceBenchmarkService.enabled) return;
+    _performanceBenchmarkOverride = enabled;
+    setKeepScreenOn();
+    PerformanceBenchmarkService.instance.diagnostic("benchmark-screen-awake-override", values: {"enabled": enabled});
+  }
+
   void setKeepScreenOn() {
+    if (_performanceBenchmarkOverride) {
+      _turnOn();
+      return;
+    }
+
     if (FinampSettingsHelper.finampSettings.keepScreenOnWhilePluggedIn && !_isPluggedIn) {
       _turnOff();
     } else {
