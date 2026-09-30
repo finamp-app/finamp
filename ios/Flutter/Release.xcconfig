@@ -1,2 +1,6 @@
 #include "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
+
+FINAMP_CODE_SIGN_STYLE = Automatic
+FINAMP_CODE_SIGN_IDENTITY = Apple Development
+FINAMP_PROVISIONING_PROFILE_SPECIFIER =

@@ -20,8 +20,7 @@ permissions:
   contents: write
 
 env:
-  if_condition: &integration_if github.event_name == 'workflow_dispatch' ||
-    (github.event_name == 'push' && github.repository == 'finamp-app/finamp' )
+  if_condition: &integration_if false
 
 # Due to a flutter bug, flutter build is not generating localizations
 # workaround by always running flutter pub get immediately before building,
@@ -202,6 +201,127 @@ jobs:
     - name: Run Integration Tests
       if: *integration_if
       run: flutter test integration_test/test_cases.dart -d 'iPhone 17'
+
+  release-ios:
+    name: Release iOS to App Store Connect
+    if: >-
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/') &&
+      github.repository == 'finamp-app/finamp'
+    needs: build-ios
+    runs-on: macos-latest
+    environment: app-store-connect
+    concurrency:
+      group: app-store-connect-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+    - uses: actions/checkout@v6
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        cache: false
+        pub-cache: true
+
+    - name: Cache CocoaPods
+      uses: actions/cache@v5
+      with:
+        path: |
+          ios/Pods
+          ~/.cocoapods
+        key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+        restore-keys: ${{ runner.os }}-pods-
+
+    - name: Cache Dart build cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          .dart_tool
+          build
+        key: ${{ runner.os }}-dart-build-${{ hashFiles('pubspec.lock') }}
+        restore-keys: ${{ runner.os }}-dart-build-
+
+    - run: flutter doctor
+    - run: flutter pub get
+
+    # https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications
+    - name: Install Apple certificate and provisioning profile
+      env:
+        BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+        P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+        BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      run: |
+        # create variables
+        CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+        PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+        # import certificate and provisioning profile from secrets
+        echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+        echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+
+        # create temporary keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+        # import certificate to keychain
+        security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+        security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        security list-keychain -d user -s $KEYCHAIN_PATH
+
+        # apply provisioning profile
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+    - name: Build App Store IPA
+      # We do this fiddly flutter-build-then-xcodebuild so that we can use the
+      # CI profiles/certificates while keeping the Xcode project's signing
+      # settings to auto for normal use
+      run: |
+        flutter build ios --release --no-pub --no-codesign --config-only
+        xcodebuild \
+          -workspace ios/Runner.xcworkspace \
+          -scheme Runner \
+          -configuration Release \
+          -destination 'generic/platform=iOS' \
+          -archivePath "$PWD/build/ios/archive/Runner.xcarchive" \
+          archive \
+          FINAMP_CODE_SIGN_STYLE=Manual \
+          FINAMP_CODE_SIGN_IDENTITY='Apple Distribution' \
+          'FINAMP_PROVISIONING_PROFILE_SPECIFIER=Finamp CI'
+        mkdir -p build/ios/ipa
+        xcodebuild \
+          -exportArchive \
+          -archivePath "$PWD/build/ios/archive/Runner.xcarchive" \
+          -exportPath "$PWD/build/ios/ipa" \
+          -exportOptionsPlist ios/ExportOptions-CI.plist
+
+    - name: Upload IPA to App Store Connect
+      env:
+        API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+        API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+      run: |
+        set -euo pipefail
+
+        API_PRIVATE_KEYS_DIR="$RUNNER_TEMP/appstore-keys"
+        mkdir -p "$API_PRIVATE_KEYS_DIR"
+        printf '%s' "$API_PRIVATE_KEY" \
+          > "$API_PRIVATE_KEYS_DIR/AuthKey_${API_KEY_ID}.p8"
+
+        API_PRIVATE_KEYS_DIR="$API_PRIVATE_KEYS_DIR" \
+          xcrun altool --upload-app \
+            --type ios \
+            --file build/ios/ipa/*.ipa \
+            --apiKey "$API_KEY_ID" \
+            --apiIssuer "$API_ISSUER_ID"
 
   build-linux:
     name: Build for Linux
