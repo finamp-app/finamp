@@ -185,6 +185,7 @@ class NowPlayingBar extends ConsumerWidget {
     final showPauseButton = ref.watch(
       mediaStateProvider.select((x) => x.playbackState.playing && x.fadeDirection != FadeDirection.fadeOut),
     );
+    final processingState = ref.watch(mediaStateProvider.select((x) => x.playbackState.processingState));
 
     return Padding(
       padding: const EdgeInsets.only(left: 12.0, bottom: 12.0, right: 12.0),
@@ -279,11 +280,20 @@ class NowPlayingBar extends ConsumerWidget {
                                     unawaited(audioHandler.togglePlayback());
                                   },
                                   color: Colors.white,
-                                  icon: Icon(
-                                    showPauseButton ? TablerIcons.player_pause : TablerIcons.player_play,
-                                    shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)],
-                                    size: 32,
-                                  ),
+                                  // Show a spinner while the playback state is
+                                  // loading (e.g. a queue pushed to a remote
+                                  // session hasn't been confirmed playing yet).
+                                  icon: processingState == AudioProcessingState.loading
+                                      ? const SizedBox(
+                                          width: 28,
+                                          height: 28,
+                                          child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white),
+                                        )
+                                      : Icon(
+                                          showPauseButton ? TablerIcons.player_pause : TablerIcons.player_play,
+                                          shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)],
+                                          size: 32,
+                                        ),
                                 ),
                               ),
                           ],

@@ -48,7 +48,9 @@ class LogoutListTile extends ConsumerWidget {
                     // We check if the audio service is running on iOS because
                     // stop() never completes if the service is not running.
                     if (!Platform.isIOS || (audioHandler.playbackState.valueOrNull?.playing ?? false)) {
-                      await queueService.stopAndClearQueue();
+                      // Fully drop any remote-control connection: the session
+                      // belongs to the account being logged out.
+                      await queueService.stopAndClearQueue(disconnectRemote: true);
                     }
 
                     final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
