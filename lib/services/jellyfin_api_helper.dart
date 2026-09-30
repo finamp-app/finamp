@@ -230,6 +230,54 @@ class JellyfinApiHelper {
     return response.items;
   }
 
+
+  /// Return only [itemIds] that are descendants of [parentItem].
+  ///
+  /// Jellyfin supports combining ParentId with ids on the normal Items
+  /// endpoint. Keep this separate from [getItems] because the general helper
+  /// intentionally rejects itemIds + parentItem for historical call sites.
+  Future<List<BaseItemDto>> getItemsInParentByIds({
+    required BaseItemDto parentItem,
+    required List<BaseItemId> itemIds,
+    required String includeItemTypes,
+    required String fields,
+  }) async {
+    if (itemIds.isEmpty) {
+      return <BaseItemDto>[];
+    }
+
+    final currentUserId = _finampUserHelper.currentUser!.id;
+    return runInIsolate((api) async {
+      final response = await api.getItems(
+        userId: currentUserId,
+        parentId: parentItem.id,
+        ids: itemIds.join(","),
+        includeItemTypes: includeItemTypes,
+        recursive: true,
+        fields: fields,
+      );
+      return QueryResult_BaseItemDto.fromJson(
+        response as Map<String, dynamic>,
+      ).items ?? <BaseItemDto>[];
+    });
+  }
+
+  Future<List<BaseItemDto>> getTracksForAlbumIds({
+    required List<BaseItemId> albumIds,
+    required String fields,
+  }) async {
+    if (albumIds.isEmpty) {
+      return <BaseItemDto>[];
+    }
+    return await getItems(
+          albumIds: albumIds,
+          includeItemTypes: "Audio",
+          sortBy: "ParentIndexNumber,IndexNumber,SortName",
+          fields: fields,
+        ) ??
+        <BaseItemDto>[];
+  }
+
   Future<QueryResult_BaseItemDto> getItemsWithTotalRecordCount({
     BaseItemDto? parentItem,
     BaseItemId? libraryFilter,
@@ -836,13 +884,22 @@ class JellyfinApiHelper {
   Future<Map<BaseItemId, BaseItemDto>>? _getItemByIdBatchedFuture;
   final Set<BaseItemId> _getItemByIdBatchedRequests = {};
 
-  /// Gets an item from a user's library, batching with other request coming in around the same time.
-  Future<BaseItemDto?> getItemByIdBatched(BaseItemId itemId, [String? fields]) async {
+  /// Gets an item from a user's library, batching with other requests coming in around the same time.
+  ///
+  /// [collectDelay] controls how long the first caller waits for additional
+  /// callers to join the batch. Download graph syncs can use [Duration.zero]
+  /// because their concurrent metadata requests are already started together,
+  /// while other callers retain the normal coalescing window.
+  Future<BaseItemDto?> getItemByIdBatched(
+    BaseItemId itemId, [
+    String? fields,
+    Duration collectDelay = const Duration(milliseconds: 250),
+  ]) async {
     assert(_verifyCallable());
     fields ??=
         defaultFields; // explicitly set the default fields, if we pass `null` to [JellyfinAPI.getItems] it will **not** apply the default fields, since the argument *is* provided.
     _getItemByIdBatchedRequests.add(itemId);
-    _getItemByIdBatchedFuture ??= Future.delayed(const Duration(milliseconds: 250), () async {
+    _getItemByIdBatchedFuture ??= Future.delayed(collectDelay, () async {
       _getItemByIdBatchedFuture = null;
       var ids = _getItemByIdBatchedRequests.toList();
       _getItemByIdBatchedRequests.clear();
