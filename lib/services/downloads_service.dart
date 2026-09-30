@@ -41,6 +41,10 @@ class DownloadsService {
   late final Stream<Map<DownloadItemState, int>> downloadStatusesStream;
   final StreamController<Map<DownloadItemState, int>> _downloadStatusesStreamController = StreamController.broadcast();
 
+  final Map<int, TaskProgressUpdate> _downloadsProgress = {};
+  late final Stream<void> downloadProgressStream;
+  final StreamController<void> _downloadProgressStreamController = StreamController.broadcast();
+
   // This triggers refresh of music/artist screens on item deletion
   late final Stream<void> offlineDeletesStream;
   final StreamController<void> _offlineDeletesStreamController = StreamController.broadcast();
@@ -160,11 +164,29 @@ class DownloadsService {
         .toList();
   });
 
+  // Gets download progress for all downloading files
+  late final allProgressProvider = Provider.autoDispose<Map<int, TaskProgressUpdate>>((ref) {
+    var subscription = downloadProgressStream.listen((_) {
+      ref.state = Map.unmodifiable(_downloadsProgress);
+    });
+    ref.onDispose(subscription.cancel);
+    return Map.unmodifiable(_downloadsProgress);
+  });
+
+  // Gets download progress for an individual downloading file.  Derived from
+  // allProgressProvider via select so a widget only rebuilds when this specific
+  // item's progress actually changes, rather than on every throttle tick.
+  late final progressProvider = Provider.family.autoDispose<TaskProgressUpdate?, int>((ref, isarId) {
+    return ref.watch(allProgressProvider.select((progress) => progress[isarId]));
+  });
+
   /// Constructs the service.  startQueues should also be called to complete initialization.
   DownloadsService() {
     // Initialize downloadStatuses dict with actual counts of items in isar with
     // that state.  Calls to updateItemState will keep this up to date as the
     // state of an item is changed.
+    const kStreamThrottleTime = Duration(milliseconds: 200);
+
     for (var state in DownloadItemState.values) {
       downloadStatuses[state] = _isar.downloadItems
           .where()
@@ -178,10 +200,17 @@ class DownloadsService {
     }
 
     downloadStatusesStream = _downloadStatusesStreamController.stream.throttleTime(
-      const Duration(milliseconds: 200),
+      kStreamThrottleTime,
       leading: false,
       trailing: true,
     );
+
+    downloadProgressStream = _downloadProgressStreamController.stream.throttleTime(
+      kStreamThrottleTime,
+      leading: false,
+      trailing: true,
+    );
+
     offlineDeletesStream = _offlineDeletesStreamController.stream;
     downloadCountsStream = _downloadCountsStreamController.stream;
 
@@ -282,6 +311,21 @@ class DownloadsService {
             _downloadsLogger.severe("Could not determine item for id ${event.task.taskId}, event:${event.toString()}");
           }
         });
+      } else if (event is TaskProgressUpdate) {
+        final taskId = event.task.taskId;
+        final isarId = int.tryParse(taskId);
+        if (isarId == null) {
+          _downloadsLogger.severe("Unabled to find item to download with id $taskId");
+          return;
+        }
+
+        if (event.progress < 0 || event.progress >= 1.0) {
+          _downloadsProgress.remove(isarId);
+        } else {
+          _downloadsProgress[isarId] = event;
+        }
+
+        _downloadProgressStreamController.add(null);
       }
     });
 
@@ -901,6 +945,11 @@ class DownloadsService {
         }
       }
       item.state = newState;
+
+      if (newState.isFinal && item.type.hasFiles) {
+        _downloadsProgress.remove(item.isarId);
+      }
+
       _isar.downloadItems.putSync(item, saveLinks: false);
       List<DownloadItem> parents = _isar.downloadItems
           .where()
@@ -1768,4 +1817,10 @@ class DownloadsService {
       return outdated ? DownloadItemStatus.incidentalOutdated : DownloadItemStatus.incidental;
     }
   }
+
+  String getNetworkSpeedAsString({required double networkSpeed, int decimals = 0}) => switch (networkSpeed) {
+    <= 0 => '-- MB/s',
+    >= 1 => '${networkSpeed.toStringAsFixed(decimals)} MB/s',
+    _ => '${(networkSpeed * 1000).toStringAsFixed(decimals)} kB/s',
+  };
 }
