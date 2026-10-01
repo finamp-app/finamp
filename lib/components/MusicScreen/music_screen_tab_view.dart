@@ -79,6 +79,10 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
 
   late AutoScrollController controller;
   String? letterToSearch;
+  String? _alphabetSeekAttemptedLetter;
+  int? _alphabetResolvedTargetIndex;
+  int _alphabetSeekGeneration = 0;
+  bool _alphabetSeekInProgress = false;
 
   Timer? timer;
 
@@ -104,7 +108,12 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
   void scrollToLetter(String letter) async {
     if (letter.isEmpty) return;
 
-    letterToSearch = letter;
+    if (letterToSearch != letter) {
+      letterToSearch = letter;
+      _alphabetSeekAttemptedLetter = null;
+      _alphabetResolvedTargetIndex = null;
+      _alphabetSeekGeneration++;
+    }
     var codePointToScrollTo = (widget.contentType == ContentType.tracks ? letter.toUpperCase() : letter.toLowerCase())
         .codeUnitAt(0);
 
@@ -114,6 +123,10 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
 
     //TODO use binary search to improve performance for already loaded pages
     final state = ref.read(pageControl);
+    if (state.isLoading) return;
+    final pageNotifier = ref.read(pageControl.notifier);
+    final pageStartOffset = pageNotifier.pageStartOffset;
+    final hasLeadingGap = pageStartOffset > 0;
     final itemList = state.items ?? [];
     SortBy? tabSortBy = widget.sortConfig.sortBy;
     bool reversed = widget.sortConfig.sortOrder == SortOrder.descending;
@@ -148,41 +161,114 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
       final comparisonResult = itemCodePoint - codePointToScrollTo;
       if (comparisonResult == 0) {
         timer?.cancel();
-        await controller.scrollToIndex(
-          i,
-          duration: _getAnimationDurationForOffsetToIndex(i),
+        await _scrollToTargetIndex(
+          targetIndex: i,
           preferPosition: AutoScrollPosition.begin,
         );
 
         letterToSearch = null;
+        _alphabetSeekAttemptedLetter = null;
+        _alphabetResolvedTargetIndex = null;
         return;
       } else if (reversed ? comparisonResult < 0 : comparisonResult > 0) {
-        // If the letter is before the current item, there was no previous match (letter doesn't seem to exist in library)
-        // scroll to the previous item instead
-        timer?.cancel();
-        await controller.scrollToIndex(
-          (i - 1).clamp(0, itemList.length - 1),
-          // duration: scrollDuration,
-          duration: _getAnimationDurationForOffsetToIndex(i),
-          preferPosition: AutoScrollPosition.middle,
-        );
+        // With a seek window, items before this window may not be loaded. Only
+        // treat an overshoot as authoritative when the loaded data starts at
+        // the beginning or when this is already the resolved target window.
+        if (!hasLeadingGap || _alphabetResolvedTargetIndex != null) {
+          timer?.cancel();
+          await _scrollToTargetIndex(
+            targetIndex: (i - 1).clamp(0, itemList.length - 1),
+            preferPosition: AutoScrollPosition.middle,
+          );
 
-        letterToSearch = null;
-        return;
+          letterToSearch = null;
+          _alphabetSeekAttemptedLetter = null;
+          _alphabetResolvedTargetIndex = null;
+          return;
+        }
+        break;
       }
     }
 
     timer?.cancel();
-    if (!state.hasNextPage) {
-      letterToSearch = null;
-    } else {
-      timer = Timer(const Duration(seconds: 8), () {
-        // If page loading takes too long, cancel search and allow image loading.
-        letterToSearch = null;
-      });
 
-      ref.read(pageControl.notifier).newPage();
+    if (letter == '#' &&
+        _alphabetResolvedTargetIndex != null &&
+        _alphabetResolvedTargetIndex! < itemList.length) {
+      await _scrollToTargetIndex(
+        targetIndex: _alphabetResolvedTargetIndex!,
+        preferPosition: AutoScrollPosition.begin,
+      );
+      letterToSearch = null;
+      _alphabetSeekAttemptedLetter = null;
+      _alphabetResolvedTargetIndex = null;
+      return;
     }
+
+    if (!state.hasNextPage &&
+        (!hasLeadingGap || _alphabetResolvedTargetIndex != null)) {
+      letterToSearch = null;
+      _alphabetSeekAttemptedLetter = null;
+      _alphabetResolvedTargetIndex = null;
+      return;
+    }
+
+    if (_alphabetResolvedTargetIndex != null &&
+        _alphabetResolvedTargetIndex! >= itemList.length) {
+      final missingItems =
+          _alphabetResolvedTargetIndex! - itemList.length + 1;
+      ref.read(pageControl.notifier).newPage(
+        pageSize: min(missingItems, 5000),
+      );
+      return;
+    }
+
+    if (!_alphabetSeekInProgress &&
+        _alphabetSeekAttemptedLetter != letter) {
+      _alphabetSeekAttemptedLetter = letter;
+      _alphabetSeekInProgress = true;
+      final seekGeneration = _alphabetSeekGeneration;
+      try {
+        final targetIndex = await ref
+            .read(pageControl.notifier)
+            .resolveAlphabetTargetIndex(letter);
+        if (seekGeneration != _alphabetSeekGeneration ||
+            letterToSearch != letter) {
+          return;
+        }
+
+        _alphabetResolvedTargetIndex = targetIndex;
+        if (targetIndex != null &&
+            !_useListModeForCurrentContent() &&
+            (hasLeadingGap || targetIndex >= itemList.length)) {
+          _alphabetResolvedTargetIndex =
+              pageNotifier.seekToIndexWindow(targetIndex);
+          return;
+        }
+
+        if (targetIndex != null && targetIndex >= itemList.length) {
+          final missingItems = targetIndex - itemList.length + 1;
+          pageNotifier.newPage(
+            pageSize: min(missingItems, 5000),
+          );
+          return;
+        }
+      } finally {
+        _alphabetSeekInProgress = false;
+        if (letterToSearch != null && letterToSearch != letter) {
+          scrollToLetter(letterToSearch!);
+        }
+      }
+    }
+
+    timer = Timer(const Duration(seconds: 8), () {
+      // If fallback page loading takes too long, cancel search and allow image loading.
+      letterToSearch = null;
+      _alphabetSeekAttemptedLetter = null;
+      _alphabetResolvedTargetIndex = null;
+    });
+
+    ref.read(pageControl.notifier).newPage();
     if (MediaQuery.disableAnimationsOf(context)) {
       controller.jumpTo(controller.position.maxScrollExtent);
     } else {
@@ -192,6 +278,93 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         curve: Curves.ease,
       );
     }
+  }
+
+  bool _useListModeForCurrentContent() {
+    final contentType = widget.contentType;
+    if (contentType == null || contentType == ContentType.tracks) {
+      return true;
+    }
+    return ref.read(
+          finampSettingsProvider.perTabContentViewType(contentType),
+        ) !=
+        ContentViewType.grid;
+  }
+
+  Future<void> _scrollToTargetIndex({
+    required int targetIndex,
+    required AutoScrollPosition preferPosition,
+  }) async {
+    var duration = _getAnimationDurationForOffsetToIndex(targetIndex);
+
+    if (!_useListModeForCurrentContent() &&
+        controller.hasClients &&
+        !controller.tagMap.containsKey(targetIndex)) {
+      final position = controller.position;
+      final estimatedOffset = _estimateGridOffsetForIndex(
+        targetIndex,
+        position,
+      );
+
+      controller.jumpTo(estimatedOffset);
+      await WidgetsBinding.instance.endOfFrame;
+
+      if (MediaQuery.disableAnimationsOf(context)) {
+        duration = Duration.zero;
+      } else {
+        final refinedDurationMs = _getAnimationDurationForOffsetToIndex(
+          targetIndex,
+        ).inMilliseconds.clamp(120, 350);
+        duration = Duration(milliseconds: refinedDurationMs);
+      }
+    }
+
+    await controller.scrollToIndex(
+      targetIndex,
+      duration: duration,
+      preferPosition: preferPosition,
+    );
+  }
+
+  double _estimateGridOffsetForIndex(
+    int targetIndex,
+    ScrollPosition position,
+  ) {
+    final contentType = widget.contentType;
+    if (contentType == null) {
+      return position.pixels;
+    }
+
+    final widthData = calculateItemCollectionCardWidth(ref);
+    final itemWidth = widthData.$1;
+    final itemPadding = widthData.$2;
+    final itemHeight = calculateItemCollectionCardHeight(
+      ref: ref,
+      sectionInfo: null,
+      itemType: contentType.itemType ?? BaseItemDtoType.album,
+    );
+
+    final mediaPadding = MediaQuery.paddingOf(context);
+    final crossAxisExtent = max(
+      1.0,
+      MediaQuery.sizeOf(context).width -
+          mediaPadding.left -
+          mediaPadding.right -
+          itemPadding,
+    );
+
+    var crossAxisCount =
+        ((crossAxisExtent + itemPadding) / (itemWidth + itemPadding)).round();
+    crossAxisCount = max(1, crossAxisCount);
+
+    final crossAxisSpacing = crossAxisExtent / crossAxisCount;
+    final mainAxisStride = itemHeight - itemWidth + crossAxisSpacing;
+    final targetRow = targetIndex ~/ crossAxisCount;
+    final estimatedOffset = itemPadding + targetRow * mainAxisStride;
+
+    return estimatedOffset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
   }
 
   Duration _getAnimationDurationForOffsetToIndex(int index) {
