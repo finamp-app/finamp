@@ -64,9 +64,8 @@ class _ArtistSettingsScreenState extends ConsumerState<ArtistSettingsScreen> {
                     ),
                   );
                 },
-                onReorder: (oldIndex, newIndex) {
+                onReorderItem: (oldIndex, newIndex) {
                   setState(() {
-                    if (oldIndex < newIndex) newIndex -= 1;
                     final currentOrder = List.of(FinampSettingsHelper.finampSettings.artistItemSectionsOrder);
                     final movedItem = currentOrder.removeAt(oldIndex);
                     currentOrder.insert(newIndex, movedItem);
@@ -106,9 +105,8 @@ class _ArtistSettingsScreenState extends ConsumerState<ArtistSettingsScreen> {
                       ),
                     );
                   },
-                  onReorder: (oldIndex, newIndex) {
+                  onReorderItem: (oldIndex, newIndex) {
                     setState(() {
-                      if (oldIndex < newIndex) newIndex -= 1;
                       final currentOrder = List.of(
                         FinampSettingsHelper.finampSettings.artistItemSectionFilterChipOrder,
                       );

@@ -9,7 +9,6 @@ import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logging/logging.dart';
 
 import 'login_flow.dart';
 
@@ -26,8 +25,6 @@ class LoginAuthenticationPage extends StatefulWidget {
 }
 
 class _LoginAuthenticationPageState extends State<LoginAuthenticationPage> {
-  static final _loginAuthenticationPageLogger = Logger("LoginAuthenticationPage");
-
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
   String? username;
@@ -125,7 +122,7 @@ class _LoginAuthenticationPageState extends State<LoginAuthenticationPage> {
               initialValue: username,
               onSaved: (newValue) => username = newValue,
               validator: (value) {
-                if (value?.isEmpty == true) {
+                if (value?.isEmpty ?? false) {
                   return AppLocalizations.of(context)!.usernameValidationMissingUsername;
                 }
                 return null;

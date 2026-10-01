@@ -127,7 +127,7 @@ class _AlbumChipContent extends ConsumerWidget {
       excludeSemantics: true,
       container: true,
       child: Material(
-        color: backgroundColor ?? Colors.white.withOpacity(0.1),
+        color: backgroundColor ?? Colors.white.withValues(alpha: 0.1),
         borderRadius: _borderRadius,
         child: InkWell(
           borderRadius: _borderRadius,

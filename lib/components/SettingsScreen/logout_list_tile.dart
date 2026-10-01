@@ -28,7 +28,7 @@ class LogoutListTile extends ConsumerWidget {
           : Text(AppLocalizations.of(context)!.logoutButtonSubtitle, style: const TextStyle(color: Colors.red)),
       enabled: !ref.watch(finampSettingsProvider.isOffline),
       onTap: () {
-        showDialog(
+        showDialog<void>(
           context: context,
           builder: (context) => AlertDialog(
             title: Text(AppLocalizations.of(context)!.areYouSure),
@@ -53,7 +53,7 @@ class LogoutListTile extends ConsumerWidget {
 
                     final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
-                    await jellyfinApiHelper.logoutCurrentUser().onError((_, __) {});
+                    await jellyfinApiHelper.logoutCurrentUser().onError((_, _) {});
 
                     if (!context.mounted) return;
 

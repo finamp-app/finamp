@@ -52,8 +52,8 @@ class ToggleableListTile extends ConsumerWidget {
           : const EdgeInsets.only(left: 12.0, right: 12.0, top: 4.0, bottom: 4.0),
       child: Container(
         decoration: ShapeDecoration(
-          color: themeColor.withOpacity(
-            lowContrast
+          color: themeColor.withValues(
+            alpha: lowContrast
                 ? state
                       ? 0.1
                       : 0.0
@@ -90,7 +90,7 @@ class ToggleableListTile extends ConsumerWidget {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 12.0),
                       child: VerticalDivider(
-                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5),
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
                         thickness: 1.5,
                         indent: 8.0,
                         endIndent: 8.0,

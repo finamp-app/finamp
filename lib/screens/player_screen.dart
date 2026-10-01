@@ -95,8 +95,8 @@ class PlayerScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Color.alphaBlend(
           Theme.brightnessOf(context) == Brightness.dark
-              ? IconTheme.of(context).color!.withOpacity(0.35)
-              : IconTheme.of(context).color!.withOpacity(0.5),
+              ? IconTheme.of(context).color!.withValues(alpha: 0.35)
+              : IconTheme.of(context).color!.withValues(alpha: 0.5),
           Theme.brightnessOf(context) == Brightness.dark ? Colors.black : Colors.white,
         ),
         // Required for sleep timer input

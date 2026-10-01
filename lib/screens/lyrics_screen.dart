@@ -469,7 +469,7 @@ class _LyricLine extends ConsumerWidget {
     final cueHighlightStyle = currentLineStyle.copyWith(color: highlightColor);
     final cueGreyStyle = currentLineStyle.copyWith(color: Colors.white);
     final cueFadeStyle = currentLineStyle.copyWith(
-      color: Color.alphaBlend(highlightColor.withOpacity(0.6), Colors.white),
+      color: Color.alphaBlend(highlightColor.withValues(alpha: 0.6), Colors.white),
     );
 
     return GestureDetector(
@@ -733,10 +733,10 @@ class LyricsListMask extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [
             Colors.transparent,
-            Colors.white.withOpacity(0.5),
+            Colors.white.withValues(alpha: 0.5),
             Colors.white,
             Colors.white,
-            Colors.white.withOpacity(0.5),
+            Colors.white.withValues(alpha: 0.5),
             Colors.transparent,
           ],
           stops: const [0.0, 0.05, 0.10, 0.90, 0.95, 1.0],

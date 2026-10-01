@@ -26,7 +26,7 @@ class CTALarge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accentColor = disabled
-        ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+        ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)
         : Theme.of(context).colorScheme.primary;
     return Semantics(
       label: text,
@@ -58,8 +58,11 @@ class CTALarge extends StatelessWidget {
             ),
             backgroundColor: WidgetStateProperty.all<Color>(
               Theme.brightnessOf(context) == Brightness.dark
-                  ? accentColor.withOpacity(disabled ? 0.05 : 0.15)
-                  : Color.alphaBlend(accentColor.withOpacity(0.2), Colors.white).withOpacity(disabled ? 0.5 : 1.0),
+                  ? accentColor.withValues(alpha: disabled ? 0.05 : 0.15)
+                  : Color.alphaBlend(
+                      accentColor.withValues(alpha: 0.2),
+                      Colors.white,
+                    ).withValues(alpha: disabled ? 0.5 : 1.0),
             ),
           ),
           child: Wrap(
@@ -74,9 +77,9 @@ class CTALarge extends StatelessWidget {
                 style: TextStyle(
                   color:
                       (Theme.brightnessOf(context) == Brightness.light
-                              ? Color.alphaBlend(accentColor.withOpacity(0.33), Colors.black)
+                              ? Color.alphaBlend(accentColor.withValues(alpha: 0.33), Colors.black)
                               : Colors.white)
-                          .withOpacity(disabled ? 0.5 : 1.0),
+                          .withValues(alpha: disabled ? 0.5 : 1.0),
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),

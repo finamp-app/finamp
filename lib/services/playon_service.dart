@@ -245,7 +245,7 @@ class PlayOnService {
           _startReconnectionLoop();
         }
       },
-      onError: (error) {
+      onError: (Object error) {
         _playOnServiceLogger.severe("WebSocket Error: $error");
         _keepaliveSubscription?.cancel();
         socketState = SocketState.disconnected;
@@ -289,7 +289,6 @@ class PlayOnService {
               case "DisplayMessage":
                 final messageFromServer = request['Data']['Arguments']['Text'];
                 final header = request['Data']['Arguments']['Header'];
-                final timeout = request['Data']['Arguments']['Timeout'];
                 _playOnServiceLogger.info("Displaying message from server: '$messageFromServer'");
                 GlobalSnackbar.message((context) => "$header: $messageFromServer");
                 break;

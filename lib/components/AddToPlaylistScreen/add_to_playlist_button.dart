@@ -66,7 +66,7 @@ class AddToPlaylistButton extends ConsumerWidget {
           tooltip: AppLocalizations.of(context)!.addToPlaylistTooltip,
           icon: Icon(isFav ? Icons.favorite : Icons.favorite_outline, size: size ?? 24.0),
           color: color ?? IconTheme.of(context).color,
-          disabledColor: (color ?? IconTheme.of(context).color)!.withOpacity(0.3),
+          disabledColor: (color ?? IconTheme.of(context).color)!.withValues(alpha: 0.3),
           visualDensity: visualDensity ?? VisualDensity.compact,
           onPressed: () async {
             if (FinampSettingsHelper.finampSettings.preferAddingToFavoritesOverPlaylists) {

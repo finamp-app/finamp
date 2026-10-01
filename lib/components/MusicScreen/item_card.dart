@@ -49,11 +49,11 @@ class ItemCard extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(4.0),
                       color: Theme.brightnessOf(context) == Brightness.dark
-                          ? ColorScheme.of(context).primary.withOpacity(0.08)
+                          ? ColorScheme.of(context).primary.withValues(alpha: 0.08)
                           : Color.alphaBlend(
-                              ColorScheme.of(context).primary.withOpacity(0.1),
+                              ColorScheme.of(context).primary.withValues(alpha: 0.1),
                               Colors.white,
-                            ).withOpacity(1.0),
+                            ).withValues(alpha: 1.0),
                       child: Align(
                         alignment: Alignment.center,
                         child: _ItemCollectionCardText(item: item, onImage: true),
@@ -171,8 +171,11 @@ class HomeScreenQueueTile extends ConsumerWidget {
           child: Container(
             decoration: BoxDecoration(
               color: Theme.brightnessOf(context) == Brightness.dark
-                  ? ColorScheme.of(context).primary.withOpacity(0.08)
-                  : Color.alphaBlend(ColorScheme.of(context).primary.withOpacity(0.1), Colors.white).withOpacity(1.0),
+                  ? ColorScheme.of(context).primary.withValues(alpha: 0.08)
+                  : Color.alphaBlend(
+                      ColorScheme.of(context).primary.withValues(alpha: 0.1),
+                      Colors.white,
+                    ).withValues(alpha: 1.0),
               borderRadius: BorderRadius.circular(8.0),
             ),
             padding: const EdgeInsets.all(8.0),

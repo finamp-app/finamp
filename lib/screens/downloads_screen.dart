@@ -75,7 +75,7 @@ void showSyncWarningSnackbar() {
     (scaffold) => AppLocalizations.of(scaffold)!.syncFailedWarningShort,
     action: (context) => SnackBarAction(
       label: MaterialLocalizations.of(context).moreButtonTooltip,
-      onPressed: () => showDialog(
+      onPressed: () => showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
           title: Text(AppLocalizations.of(context)!.syncFailedWarningShort),

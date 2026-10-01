@@ -92,7 +92,7 @@ class IsFavorite extends _$IsFavorite {
     });
     state = isFavorite;
     // If the current track is the one being toggled, update the playback state (and media notification)
-    if (item!.id == queueService.getCurrentTrack()?.baseItem?.id) {
+    if (item!.id == queueService.getCurrentTrack()?.baseItem.id) {
       audioHandler.refreshPlaybackStateAndMediaNotification();
     }
     return state;

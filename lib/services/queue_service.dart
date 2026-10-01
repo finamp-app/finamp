@@ -570,7 +570,7 @@ class QueueService {
       int droppedTracks = info.trackCount - loadedTracks;
 
       if (_savedQueueState != SavedQueueState.loading) {
-        return Future.error("Loading of saved Queue was interrupted.");
+        throw "Loading of saved Queue was interrupted.";
       }
 
       if (loadedTracks > 0) {
@@ -762,13 +762,11 @@ class QueueService {
       }
 
       if (initialIndex >= itemList.length) {
-        return Future.error("initialIndex is bigger than the itemList! ($initialIndex >= ${itemList.length})");
+        throw "initialIndex is bigger than the itemList! ($initialIndex >= ${itemList.length})";
       }
 
       if (initialIndex + nextUpLength >= itemList.length) {
-        return Future.error(
-          "nextUpLength is longer than available items! ($nextUpLength >= ${itemList.length - initialIndex})",
-        );
+        throw "nextUpLength is longer than available items! ($nextUpLength >= ${itemList.length - initialIndex})";
       }
 
       _queueServiceLogger.info("Replacing whole queue with ${itemList.length} items.");
@@ -1157,10 +1155,7 @@ class QueueService {
     if (playbackOrder == FinampPlaybackOrder.shuffled) {
       final newShuffleOrder = [..._shuffleOrder.indices];
       final int itemToMove = newShuffleOrder.removeAt(_currentQueueIndex + oldOffset);
-      newShuffleOrder.insert(
-        oldOffset < newOffset ? _currentQueueIndex + newOffset - 1 : _currentQueueIndex + newOffset,
-        itemToMove,
-      );
+      newShuffleOrder.insert(_currentQueueIndex + newOffset, itemToMove);
       try {
         _shuffleOrder.overrideShuffle(newShuffleOrder);
         await _audioHandler.shuffle();
@@ -1169,7 +1164,7 @@ class QueueService {
       }
     } else {
       final oldIndex = _currentQueueIndex + oldOffset;
-      final newIndex = oldOffset < newOffset ? _currentQueueIndex + newOffset - 1 : _currentQueueIndex + newOffset;
+      final newIndex = _currentQueueIndex + newOffset;
 
       await _audioHandler.moveFinampQueueItem(oldIndex, newIndex);
     }

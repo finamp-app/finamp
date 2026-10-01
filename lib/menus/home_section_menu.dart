@@ -71,7 +71,7 @@ Future<void> showModalHomeSectionMenu({
   }
 
   if (!context.mounted) return;
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     routeName: albumMenuRouteName,
     buildSlivers: (context) => getMenuProperties(context),

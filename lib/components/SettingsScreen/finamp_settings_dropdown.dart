@@ -51,7 +51,10 @@ class FinampSettingsDropdown<T> extends StatelessWidget {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
             ),
             backgroundColor: WidgetStateProperty.all<Color>(
-              Color.alphaBlend(ColorScheme.of(context).onSurface.withOpacity(0.2), ColorScheme.of(context).surface),
+              Color.alphaBlend(
+                ColorScheme.of(context).onSurface.withValues(alpha: 0.2),
+                ColorScheme.of(context).surface,
+              ),
             ),
           ),
           inputDecorationTheme: InputDecorationTheme(
@@ -60,8 +63,8 @@ class FinampSettingsDropdown<T> extends StatelessWidget {
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
             filled: true,
             fillColor: Color.alphaBlend(
-              ColorScheme.of(context).primary.withOpacity(0.075),
-              ColorScheme.of(context).onSurface.withOpacity(0.1),
+              ColorScheme.of(context).primary.withValues(alpha: 0.075),
+              ColorScheme.of(context).onSurface.withValues(alpha: 0.1),
             ),
             visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
             errorBorder: InputBorder.none,

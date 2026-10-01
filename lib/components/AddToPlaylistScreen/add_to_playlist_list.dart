@@ -103,6 +103,9 @@ class _AddToPlaylistListState extends State<AddToPlaylistList> {
                 );
                 itemsToAdd = children.$1;
               }
+
+              if (!context.mounted) return;
+
               var dialogResult = await showDialog<(Future<BaseItemId>, String?)?>(
                 context: context,
                 builder: (context) => NewPlaylistDialog(

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:finamp/components/AudioServiceSettingsScreen/buffer_duration_list_tile.dart';
-import 'package:finamp/components/AudioServiceSettingsScreen/loadQueueOnStartup_selector.dart';
+import 'package:finamp/components/AudioServiceSettingsScreen/load_queue_on_startup_selector.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/stop_foreground_selector.dart';
 import 'package:finamp/components/AudioServiceSettingsScreen/track_shuffle_item_count_editor.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
@@ -96,7 +96,7 @@ class _BufferSizeListTileState extends ConsumerState<BufferSizeListTile> {
       title: Text(AppLocalizations.of(context)!.bufferSizeTitle),
       subtitle: Text(AppLocalizations.of(context)!.bufferSizeSubtitle),
       trailing: SizedBox(
-        width: 50 * MediaQuery.textScaleFactorOf(context),
+        width: MediaQuery.textScalerOf(context).scale(50),
         child: TextField(
           controller: _controller,
           textAlign: TextAlign.center,
@@ -144,7 +144,7 @@ class _AudioFadeInDurationListTileState extends ConsumerState<AudioFadeInDuratio
       title: Text(AppLocalizations.of(context)!.audioFadeInDurationSettingTitle),
       subtitle: Text(AppLocalizations.of(context)!.audioFadeInDurationSettingSubtitle),
       trailing: SizedBox(
-        width: 50 * MediaQuery.textScaleFactorOf(context),
+        width: MediaQuery.textScalerOf(context).scale(50),
         child: TextField(
           controller: _controller,
           textAlign: TextAlign.center,
@@ -187,7 +187,7 @@ class _AudioFadeOutDurationListTileState extends ConsumerState<AudioFadeOutDurat
       title: Text(AppLocalizations.of(context)!.audioFadeOutDurationSettingTitle),
       subtitle: Text(AppLocalizations.of(context)!.audioFadeOutDurationSettingSubtitle),
       trailing: SizedBox(
-        width: 50 * MediaQuery.textScaleFactorOf(context),
+        width: MediaQuery.textScalerOf(context).scale(50),
         child: TextField(
           controller: _controller,
           textAlign: TextAlign.center,

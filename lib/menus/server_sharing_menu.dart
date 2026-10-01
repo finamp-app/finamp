@@ -18,7 +18,7 @@ const serverSharingPanelRouteName = "/server-sharing-panel";
 Future<void> showServerSharingPanel({required BuildContext context}) async {
   FeedbackHelper.feedback(FeedbackType.selection);
 
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     routeName: serverSharingPanelRouteName,
     minDraggableHeight: 0.45,
@@ -74,7 +74,7 @@ class ServerSharingMenuControls extends ConsumerStatefulWidget {
   const ServerSharingMenuControls({super.key});
 
   @override
-  _ServerSharingMenuControlsState createState() => _ServerSharingMenuControlsState();
+  ConsumerState<ServerSharingMenuControls> createState() => _ServerSharingMenuControlsState();
 }
 
 class _ServerSharingMenuControlsState extends ConsumerState<ServerSharingMenuControls> {

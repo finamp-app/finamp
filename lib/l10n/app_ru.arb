@@ -1081,7 +1081,7 @@
     "@togglePlaybackButtonTooltip": {
         "description": "Tooltip for the button that toggles playback"
     },
-    "confirmAddToNextUp": "{type, select, track{Композиция добавлена} album{Альбом добавлен} artist{Исполнитель добавлен} playlist{Плейлист добавлен} genre{Жанр добавлен} genre{Диск добавлен} other{Элемент добавлен}} следующим",
+    "confirmAddToNextUp": "{type, select, track{Композиция добавлена} album{Альбом добавлен} artist{Исполнитель добавлен} playlist{Плейлист добавлен} genre{Жанр добавлен} disc{Диск добавлен} other{Элемент добавлен}} следующим",
     "@confirmAddToNextUp": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the \"Next Up\" queue",
         "placeholders": {

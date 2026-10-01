@@ -17,7 +17,7 @@ class GenreScreen extends ConsumerStatefulWidget {
   final BaseItemDto? widgetGenre;
 
   @override
-  _GenreScreenState createState() => _GenreScreenState();
+  ConsumerState<GenreScreen> createState() => _GenreScreenState();
 }
 
 class _GenreScreenState extends ConsumerState<GenreScreen> {

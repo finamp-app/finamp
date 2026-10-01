@@ -146,7 +146,7 @@ class _RoundedIconButton extends StatelessWidget {
             BoxShadow(
               blurRadius: 2,
               offset: const Offset(0, 2),
-              color: (icon.color ?? IconTheme.of(context).color)!.withOpacity(0.25),
+              color: (icon.color ?? IconTheme.of(context).color)!.withValues(alpha: 0.25),
             ),
           ],
     );
@@ -161,7 +161,7 @@ class _RoundedIconButton extends StatelessWidget {
       height: height,
       child: Material(
         borderRadius: actualBorderRadius,
-        color: IconTheme.of(context).color!.withOpacity(0.15),
+        color: IconTheme.of(context).color!.withValues(alpha: 0.15),
         child: InkWell(borderRadius: actualBorderRadius, onTap: onTap, child: actualIcon),
       ),
     );

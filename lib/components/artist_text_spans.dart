@@ -10,6 +10,7 @@ import '../screens/artist_screen.dart';
 List<TextSpan> getArtistsTextSpans(BaseItemDto item, BuildContext context, bool popRoutes) {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   List<TextSpan> separatedArtistTextSpans = [];
+  final navigator = Navigator.of(context);
 
   List<NameIdPair>? artists = item.type == "MusicAlbum" ? item.albumArtists : item.artistItems;
 
@@ -30,8 +31,8 @@ List<TextSpan> getArtistsTextSpans(BaseItemDto item, BuildContext context, bool 
                     .getItemById(e.id)
                     .then(
                       (artist) => popRoutes
-                          ? Navigator.of(context).popAndPushNamed(ArtistScreen.routeName, arguments: artist)
-                          : Navigator.of(context).pushNamed(ArtistScreen.routeName, arguments: artist),
+                          ? navigator.popAndPushNamed(ArtistScreen.routeName, arguments: artist)
+                          : navigator.pushNamed(ArtistScreen.routeName, arguments: artist),
                     );
               },
           ),

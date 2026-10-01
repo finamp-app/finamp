@@ -1,4 +1,4 @@
-import 'package:finamp/components/InteractionSettingsScreen/FastScrollSelector.dart';
+import 'package:finamp/components/InteractionSettingsScreen/fast_scroll_selector.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/InteractionSettingsScreen/auto_expand_player_screen.dart';
 import 'package:finamp/components/InteractionSettingsScreen/item_swipe_action_dropdown_list_tile.dart';

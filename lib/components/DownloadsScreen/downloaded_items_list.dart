@@ -20,6 +20,8 @@ class DownloadedItemsTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final action = this.action;
+
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 4),
@@ -27,7 +29,7 @@ class DownloadedItemsTitle extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
-            if (action != null) action!,
+            if (action != null) action,
           ],
         ),
       ),

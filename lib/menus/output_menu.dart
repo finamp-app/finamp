@@ -31,7 +31,7 @@ Future<void> showOutputMenu({required BuildContext context, bool usePlayerTheme 
 
   FeedbackHelper.feedback(FeedbackType.selection);
 
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     item: queueService.getCurrentTrack()?.baseItem,
     routeName: outputMenuRouteName,
@@ -302,7 +302,7 @@ class OutputSelectorTile extends StatelessWidget {
       // subtitle: AppLocalizations.of(context)!.songCount(childCount ?? 0),
       leading: Container(
         padding: const EdgeInsets.all(16.0),
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         child: Icon(switch (routeInfo.deviceType) {
           1 => TablerIcons.device_tv,
           3 => TablerIcons.bluetooth,
@@ -371,7 +371,7 @@ class _VolumeSliderState extends ConsumerState<VolumeSlider> {
         opacity: widget.enabled ? 1.0 : 0.6,
         child: Container(
           decoration: ShapeDecoration(
-            color: themeColor.withOpacity(0.3),
+            color: themeColor.withValues(alpha: 0.3),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           clipBehavior: Clip.antiAlias,
@@ -396,7 +396,7 @@ class _VolumeSliderState extends ConsumerState<VolumeSlider> {
                     ),
                     thumbColor: Colors.white,
                     activeTrackColor: themeColor,
-                    inactiveTrackColor: themeColor.withOpacity(0.3),
+                    inactiveTrackColor: themeColor.withValues(alpha: 0.3),
                     overlayShape: SliderComponentShape.noOverlay,
                   ),
                   child: Slider(

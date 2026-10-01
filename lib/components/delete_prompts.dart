@@ -13,7 +13,7 @@ import '../models/jellyfin_models.dart';
 
 Future<void> askBeforeDeleteDownloadFromDevice(BuildContext context, DownloadStub stub, {VoidCallback? refresh}) async {
   String type = stub.baseItemType.name;
-  await showDialog(
+  await showDialog<void>(
     context: context,
     builder: (context) => ConfirmationPromptDialog(
       promptText: AppLocalizations.of(context)!.deleteFromTargetDialogText("", "device", type),
@@ -56,7 +56,7 @@ Future<void> askBeforeDeleteFromServerAndDevice(
 
   final deleteType = status.toDeleteType();
 
-  await showDialog(
+  await showDialog<void>(
     context: context,
     builder: (_) => ConfirmationPromptDialog(
       promptText: AppLocalizations.of(context)!.deleteFromTargetDialogText(deleteType.textForm, "server", type),

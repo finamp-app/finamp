@@ -15,7 +15,7 @@ class PaddedCustomScrollview extends CustomScrollView {
     super.shrinkWrap,
     super.center,
     super.anchor,
-    super.cacheExtent,
+    super.scrollCacheExtent,
     super.slivers,
     super.semanticChildCount,
     super.dragStartBehavior,

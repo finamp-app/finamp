@@ -132,7 +132,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                     surfaceTintColor: Colors.transparent,
                     shadowColor: Theme.brightnessOf(context) == Brightness.dark
                         ? Colors.transparent
-                        : Theme.of(context).colorScheme.shadow.withOpacity(0.4),
+                        : Theme.of(context).colorScheme.shadow.withValues(alpha: 0.4),
                     color: Theme.brightnessOf(context) == Brightness.dark
                         ? Color.alphaBlend(
                             // only use primary accent if Finamp icon is guaranteed to look nice on it
@@ -140,7 +140,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                             ref.watch(finampSettingsProvider.useMonochromeIcon) ||
                                     (!ref.watch(finampSettingsProvider.useSystemAccentColor) &&
                                         ref.watch(finampSettingsProvider.accentColor) == null)
-                                ? ColorScheme.of(context).primary.withOpacity(0.1)
+                                ? ColorScheme.of(context).primary.withValues(alpha: 0.1)
                                 : Color(0xff000e2e),
                             ColorScheme.of(context).surface,
                           )
@@ -148,7 +148,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadiusGeometry.circular(12.0),
                       side: Theme.brightnessOf(context) == Brightness.dark
-                          ? BorderSide(color: ColorScheme.of(context).outline.withOpacity(0.3), width: 0.5)
+                          ? BorderSide(color: ColorScheme.of(context).outline.withValues(alpha: 0.3), width: 0.5)
                           : BorderSide.none,
                     ),
                     child: Padding(
@@ -176,7 +176,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                               35,
                               35,
                               overrideColor: ref.watch(finampSettingsProvider.isOffline)
-                                  ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
+                                  ? TextTheme.of(context).bodyMedium?.color?.withValues(alpha: 0.6)
                                   : null,
                             ),
                             Positioned(bottom: -4, right: -2, child: Icon(statusIcon, size: 16)),

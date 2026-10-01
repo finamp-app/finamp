@@ -161,7 +161,7 @@ Future<bool> removeFromPlaylist(
 }) async {
   bool isConfirmed = !confirm;
   if (confirm) {
-    await showDialog(
+    await showDialog<void>(
       context: context,
       builder: (context) => ConfirmationPromptDialog(
         promptText: AppLocalizations.of(
