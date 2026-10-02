@@ -113,7 +113,7 @@
     "unknownError": "알수 없는 오류",
     "shuffleAllTrackCount": "전곡 임의 재생시 곡 수",
     "shuffleAllTrackCountSubtitle": "노래 또는 장르 탭에서 '전곡 임의 재생' 버튼을 사용할 때 불러올 곡(들)의 개수입니다.",
-    "viewTypeSubtitle": "음악 화면 보기 유형",
+    "viewTypeSubtitle": "모든 음악 화면 탭에서 그리드나 리스트 모드를 제어합니다. (단, 홈스크린은 제외)",
     "list": "목록",
     "grid": "그리드(격자)",
     "landscape": "가로 보기",
@@ -123,7 +123,7 @@
     "disableGestureSubtitle": "제스처 비활성화 여부를 설정합니다.",
     "showFastScroller": "빠른 스크롤 표시",
     "theme": "테마",
-    "system": "시스템",
+    "system": "시스템 설정을 따름",
     "light": "밝은 테마",
     "tabs": "탭",
     "yesButtonLabel": "네",
@@ -218,7 +218,7 @@
     "customLocationsBuggy": "사용자 지정 위치는 대부분의 상황에서 권장하지 않습니다(버그가 매우 많이 발생할 수 있습니다). 운영체제 '음악'폴더 위치의 경우 시스템 제한 때문에 앨범 커버를 저장할 수 없습니다.",
     "enterLowPriorityStateOnPause": "일시 중지시 낮은 우선순위 상태로 전환합니다",
     "enterLowPriorityStateOnPauseSubtitle": "일시 중지시 알림창을 밀어서 사라지게 합니다. 안드로이드에서는 일시 중지시 서비스를 강제 종료할 수 있게 합니다.",
-    "viewType": "보기 유형",
+    "viewType": "음악 화면 표시 유형",
     "dark": "어두운 테마",
     "sleepTimerTooltip": "취침 타이머",
     "cancelSleepTimer": "취침 타이머를 취소할까요?",
@@ -419,7 +419,7 @@
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
     },
-    "kiloBitsPerSecondLabel": "{bitrate} kbps",
+    "kiloBitsPerSecondLabel": "{bitrate} KiB/초",
     "@kiloBitsPerSecondLabel": {
         "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
         "placeholders": {
@@ -449,7 +449,7 @@
     "@loopModeNoneButtonLabel": {
         "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop off mode"
     },
-    "queuesScreen": "‘지금 재생중’ 복원",
+    "queuesScreen": "이전 대기열 복원",
     "@queuesScreen": {
         "description": "Title for the screen where older now playing queues can be restored"
     },
@@ -747,7 +747,7 @@
         }
     },
     "bufferDisableSizeConstraintsTitle": "버퍼 크기를 제한하지 않습니다",
-    "bufferSizeSubtitle": "버퍼의 크기(MB단위). 변경시 재시작이 필요합니다",
+    "bufferSizeSubtitle": "버퍼의 크기(MiB단위). 변경시 재시작이 필요합니다",
     "placeholderSource": "출처 미상",
     "@placeholderSource": {
         "description": "Placeholder text used when the source of the current track/queue is unknown"
@@ -855,7 +855,7 @@
         }
     },
     "close": "닫기",
-    "couldNotLoad": "{source, select, album{앨범} playlist{플레이리스트} trackMix{트랙 믹스} artistMix{아티스트 믹스} albumMix{앨범 믹스} genreMix{장르 믹스} favorites{즐겨찾기} allTracks{전체 트랙} filteredList{트랙 목록} genre{장르} artist{아티스트} track{트랙} nextUpAlbum{Next Up 앨범} nextUpPlaylist{Next Up 플레이리스트 } nextUpArtist{Next Up 아티스트 } nextUpGenre{Next Up 장르} other{}} 로딩에 실패하였습니다",
+    "couldNotLoad": "{source, select, album{앨범} playlist{플레이리스트} trackMix{트랙 믹스} artistMix{아티스트 믹스} albumMix{앨범 믹스} genreMix{장르 믹스} favorites{즐겨찾기} allTracks{전체 트랙} filteredList{트랙 목록} genre{장르} artist{아티스트} track{트랙} nextUpAlbum{Next Up 앨범} nextUpPlaylist{Next Up 플레이리스트 } nextUpArtist{Next Up 아티스트 } nextUpGenre{Next Up 장르} other{}} 로딩할 수 없습니다",
     "@couldNotLoad": {
         "placeholders": {
             "source": {
@@ -989,7 +989,7 @@
             }
         }
     },
-    "startInstantMixForIndividualTracksSwitchSubtitle": "활성화하면 (노래 탭에서) 곡을 탭했을 때 단일 곡 재생 대신 해당 곡으로 인스턴트 믹스를 시작합니다.",
+    "startInstantMixForIndividualTracksSwitchSubtitle": "활성화하면 (노래 탭에서) 곡을 탭했을 때 노래를 순서대로 재생하는 대신 해당 노래로 인스턴트 믹스를 시작합니다.",
     "downloadItem": "다운로드",
     "@downloadItem": {
         "description": "Option to download item in long-press menu."
@@ -1374,7 +1374,7 @@
     "@releaseDateFormatMonthYear": {
         "description": "Date format option for the release date of an album, showing the year and month. Example: March 2022"
     },
-    "releaseDateFormatMonthDayYear": "월, 일 & 연도",
+    "releaseDateFormatMonthDayYear": "월, 일 & 연도 (지역 기반)",
     "@releaseDateFormatMonthDayYear": {
         "description": "Date format option for the release date of an album, showing the year and month and day/date. Example: March 2, 2022"
     },
@@ -1931,7 +1931,7 @@
     "@playbackActionPageRegularTrackOptions": {
         "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
     },
-    "systemAccentColor": "시스템 강조(색상) 설정을 사용합니다",
+    "systemAccentColor": "시스템 강조 색상을 사용합니다",
     "@systemAccentColor": {
         "description": "Title of the System Accent Color setting."
     },
@@ -2094,7 +2094,7 @@
         "description": "Name for the view/screen that shows albums"
     },
     "downloadAllPlaylistsSettingWarning": "주의: 라이브러리 출처와 관계없이 모든 플레이리스트의 모든 항목들을 다운로드 합니다.",
-    "lyricsEmptyStateLoading": "가사 불러오는 중...",
+    "lyricsEmptyStateLoading": "가사 불러오는 중…",
     "@lyricsEmptyStateLoading": {
         "description": "Message shown while lyrics are being loaded"
     },
@@ -2173,5 +2173,528 @@
     "allowDeleteFromServerSubtitle": "(삭제가 가능한 경우) 서버 파일 시스템에서 항목을 영구적으로 삭제하는 옵션을 활성화 또는 비활성화 합니다.",
     "@allowDeleteFromServerSubtitle": {
         "description": "Subtitle for the setting that controls if items can be deleted from the server"
+    },
+    "verboseLogging": "상세 로깅",
+    "@verboseLogging": {
+        "description": "Title for the toggle that enables detailed logging on the logs screen"
+    },
+    "verboseLoggingSubtitle": "버그 리포트를 위해 상세한 로그를 유지합니다. 재생 성능을 높이려면 설정을 끄십시오.",
+    "@verboseLoggingSubtitle": {
+        "description": "Subtitle explaining the verbose logging toggle"
+    },
+    "activeLibraries": "활성 라이브러리",
+    "@activeLibraries": {
+        "description": "Active Libraries"
+    },
+    "inAlbumOrPlaylist": "앨범/플레이리스트 정렬 순서",
+    "@inAlbumOrPlaylist": {
+        "description": "Sorting order for tracks in an album or playlist (by disc, then index, then name"
+    },
+    "discUnknown": "디스크 번호 알 수 없음",
+    "@discUnknown": {
+        "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
+    },
+    "perTabGridMode": "탭별로 선택하십시오",
+    "showFastScrollerSubtitle": "글자 단위로 검색하게 해주는 알파벳 리스트를 음악 탭 오른쪽 가장자리에 표시하거나 숨깁니다.",
+    "noDateLastPlayed": "최초 재생 대기중",
+    "@noDateLastPlayed": {
+        "description": "Placeholder text if an item has no lastPlayedDate set."
+    },
+    "librarySelectError": "이용 가능한 라이브러리를 불러오는데 실패했습니다",
+    "@librarySelectError": {
+        "description": "Error shown when the library select screen fails to load."
+    },
+    "autoOfflineOptionOff": "비활성화됨",
+    "@autoOfflineOptionOff": {
+        "description": "This is shown when the autoOffline feature is turned off and has no effects"
+    },
+    "autoOfflineOptionNetwork": "근거리 네트워크",
+    "@autoOfflineOptionNetwork": {
+        "description": "This is shown when the autoOffline feature is set to \"local Network\", this means offline mode will be automatically enabled when no wifi or ethernet connection is active"
+    },
+    "autoOfflineOptionDisconnected": "연결 끊김",
+    "@autoOfflineOptionDisconnected": {
+        "description": "This is shown when the autoOffline feature is set to Disconnected, this means offline mode will be automatically enabled when either wifi, ethernet or cellular is active"
+    },
+    "autoOfflineOptionUnreachable": "연결 불가",
+    "@autoOfflineOptionUnreachable": {
+        "description": "This is shown when the autoOffline feature is set to Unreachable, this means offline mode will be automatically enabled when - after a network change - the server cant be pinged"
+    },
+    "autoOfflineSettingSubtitle": "네트워크 및 서버 연결 상태에 따라 오프라인 모드를 자동으로 활성화 합니다.",
+    "@autoOfflineSettingSubtitle": {
+        "description": "Subtitle for the automated offline mode setting."
+    },
+    "audioFadeOutDurationSettingTitle": "페이드 아웃 지속시간",
+    "@audioFadeOutDurationSettingTitle": {
+        "description": "Title for the audio fade-out duration setting."
+    },
+    "audioFadeOutDurationSettingSubtitle": "오디오 페이드 아웃의 지속시간을 밀리초 단위로 설정합니다.",
+    "@audioFadeOutDurationSettingSubtitle": {
+        "description": "Subtitle for the audio fade-out duration setting. Set to 0 to disable fade-out."
+    },
+    "audioFadeInDurationSettingTitle": "페이드 인 지속시간",
+    "@audioFadeInDurationSettingTitle": {
+        "description": "Title for the audio fade-in duration setting."
+    },
+    "audioFadeInDurationSettingSubtitle": "오디오 페이드 인의 지속시간을 밀리초 단위로 설정합니다. 0으로 설정하면 비활성화 합니다.",
+    "@audioFadeInDurationSettingSubtitle": {
+        "description": "Subtitle for the audio fade-in duration setting. Set to 0 to disable fade-in."
+    },
+    "outputMenuButtonTitle": "출력",
+    "@outputMenuButtonTitle": {
+        "description": "Button title for opening the output menu/panel"
+    },
+    "outputMenuTitle": "출력 변경",
+    "@outputMenuTitle": {
+        "description": "Title for the output menu that allows the user to change the audio output device and volume"
+    },
+    "outputMenuVolumeSectionTitle": "볼륨",
+    "@outputMenuVolumeSectionTitle": {
+        "description": "Title for the volume section in the output menu"
+    },
+    "outputMenuDevicesSectionTitle": "이용할 수 있는 기기",
+    "@outputMenuDevicesSectionTitle": {
+        "description": "Title for the available devices section in the output menu"
+    },
+    "outputMenuOpenConnectionSettingsButtonTitle": "기기에 연결하기",
+    "@outputMenuOpenConnectionSettingsButtonTitle": {
+        "description": "Button title for connecting to a device from the output menu"
+    },
+    "deviceType": "{type, select, speaker{기기 스피커} tv{TV} bluetooth{블루투스} other{알 수 없음}}",
+    "@deviceType": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        },
+        "description": "Label for the type of device in the output menu"
+    },
+    "itemCountCalculating": "아이템 개수 계산",
+    "@itemCountCalculating": {
+        "description": "Shown to screen readers while the item count is being calculated."
+    },
+    "preferLocalNetworkActiveAddressInfoText": "활성화된 주소",
+    "@preferLocalNetworkActiveAddressInfoText": {
+        "description": "Shows the active address inside the network settings screen so the user can see if this feature works"
+    },
+    "preferLocalNetworkTargetAddressLocalSettingTitle": "근거리 네트워크 주소",
+    "preferLocalNetworkTargetAddressLocalSettingDescription": "근거리 네트워크에 속한 젤리핀 서버의 주소",
+    "preferLocalNetworkEnableSwitchTitle": "근거리 네트워크 선호",
+    "preferLocalNetworkEnableSwitchDescription": "젤리핀 서버가 근거리 네트워크에 속한 경우 다른 주소를 사용할지 여부",
+    "preferLocalNetworkPublicAddressSettingTitle": "공용 주소",
+    "preferLocalNetworkPublicAddressSettingDescription": "젤리핀 서버에 연결하기 위한 기본 주소",
+    "networkSettingsTitle": "네트워크",
+    "@networkSettingsTitle": {
+        "description": "Title for the network settings screen"
+    },
+    "downloadPaused": "기기가 와이파이에 연결되어 있지 않아서 다운로드를 일시중지 했습니다",
+    "@downloadPaused": {
+        "description": "Gets shown in the snackbar if loosing wifi connection while downloads are running and the 'requireWifiForDownloads' is enabled"
+    },
+    "missingSchemaError": "인터넷 주소(URL)는 'http://' 또는 'https://'로 시작해야 합니다",
+    "@missingSchemaError": {
+        "description": "Snackbar message when the user changes their home/public address but it doesn't start with http"
+    },
+    "testConnectionButtonLabel": "두 가지 연결 테스트",
+    "@testConnectionButtonLabel": {
+        "description": "Button to test the public and local url inside the network settings tab"
+    },
+    "ping": "{status, select, true_true{두 가지 연결 가능} true_false{근거리 네트워크 연결 실패} false_true{공용 주소 연결 실패} false_false{두 가지 연결 실패} other{알 수 없음}}",
+    "@ping": {
+        "description": "Gets shown in the Snackbar when using the Test Connection Button inside the Network Settings. true means reachable, false means unreachable. the first value is for the public address, the second value is fot the home address."
+    },
+    "autoReloadQueueTitle": "대기열 자동으로 다시 불러오기",
+    "@autoReloadQueueTitle": {
+        "description": "Title for the setting that controls if the queue is automatically reloaded when the source changes"
+    },
+    "autoReloadQueueSubtitle": "출처(소스)가 바뀌면 대기열을 자동으로 다시 불러옵니다 (오프라인 모드가 활성화되거나 서버 주소가 바뀐 경우). 설정을 비활성화 하면 Finamp는 확인 메시지를 띄웁니다.",
+    "@autoReloadQueueSubtitle": {
+        "description": "Subtitle for the setting that controls if the queue is automatically reloaded when the source changes"
+    },
+    "clearQueueOnStopEventTitle": "외부 요인에 의한 정지시 대기열을 초기화함",
+    "@clearQueueOnStopEventTitle": {
+        "description": "Title for the setting that controls if OS stop commands clear the queue."
+    },
+    "deleteFromTargetConfirmButton": "{target, select, device{ 기기에서} server{ 서버에서} other{}} 삭제",
+    "@deleteFromTargetConfirmButton": {
+        "description": "(Important: Note the space in front of some cases) The button the user needs to press to execute the delete action. If no target is set, the text should just be a generic 'delete' text. This button is both visible before and after the delete confirm prompt."
+    },
+    "downloadSizeWarningCutoff": "다운로드 용량 경고의 기준",
+    "@downloadSizeWarningCutoff": {
+        "description": "Title for the setting controlling when to warn about a large download"
+    },
+    "publiclyVisiblePlaylist": "공개됨:",
+    "@publiclyVisiblePlaylist": {
+        "description": "Toggle for playlist creation where true means the playlist is publicly visible, false means only the creator can see it."
+    },
+    "additionalBaseItemInfoTitle": "추가적인 아이템 정보",
+    "@additionalBaseItemInfoTitle": {
+        "description": "Title for the setting that controls the displayed additional item info."
+    },
+    "deleteFromTargetDialogText": "지정한 {itemType, select, album{앨범} playlist{플레이리스트} artist{아티스트} genre{장르} track{곡} library{라이브러리} other{아이템}}을(를) {device, select, device{이 기기} server{서버 파일과 라이브러리.{deleteType, select, canDelete{ 삭제시 이 기기의 항목도 함께 삭제합니다.} cantDelete{ 이 항목은 다음 동기화 시점까지 이 기기에 유지됩니다.} notDownloaded{} other{}}\n이 작업은 되돌릴 수 없습니다} other{}}에서 지우려고 합니다.",
+    "@deleteFromTargetDialogText": {
+        "description": "(Important: Note the space in front of some cases) A Confirm Prompt used whenever an item is about to be deleted from the device or server. The Server case should explain that this cannot be reverted, this information is not needed for the device since the user can just download the track again. The delete Type adapts the server text even more in can the user can or cant delete the item."
+    },
+    "additionalBaseItemInfoSubtitle": "아이템 목록에서 어떤 유형의 추가 정보를 보여줄지 설정합니다. \"적응형\"을 선택하면 추가 정보 유형은 현재 정렬이나 내용에 기반하여 자동으로 선택됩니다.",
+    "@additionalBaseItemInfoSubtitle": {
+        "description": "Subtitle for the setting that controls the displayed additional item info."
+    },
+    "noDateAdded": "추가된 날짜 정보 없음",
+    "@noDateAdded": {
+        "description": "Placeholder text if an item has no dateAdded set."
+    },
+    "autoOfflineSettingDescription": "{disabledModeName}:\n오프라인 모드로 자동 전환하지 않습니다. 배터리를 절약할 수 있습니다.\n\n{localNetworkModeName}:\n와이파이나 이더넷에 연결되지 않은 경우 오프라인 모드로 전환합니다.\n\n{disconnectedModeName}:\n아무것도 연결되지 않은 경우 오프라인 모드로 전환합니다.\n\n{unreachableModeName}:\n네트워크 변경 후 서버 연결(Ping)이 안 될 경우 오프라인 모드로 전환합니다.\n\n오프라인 모드는 언제라도 수동으로 켜고 끌 수 있으며, 이 때 오프라인 모드 자동전환 기능은 사용자가 다시 활성화 할 때까지 중단됩니다.",
+    "@autoOfflineSettingDescription": {
+        "description": "Setting description. Make sure the Mode names match the translations.",
+        "placeholders": {
+            "disabledModeName": {
+                "type": "String"
+            },
+            "localNetworkModeName": {
+                "type": "String"
+            },
+            "disconnectedModeName": {
+                "type": "String"
+            },
+            "unreachableModeName": {
+                "type": "String"
+            }
+        }
+    },
+    "autoOfflineSettingTitle": "오프라인 모드로 자동 전환",
+    "autoOfflineNotification": "오프라인 모드가 자동으로 {state, select, enabled{활성화됨} disabled{비활성화됨} other{번역:조형래}}",
+    "@autoOfflineNotification": {
+        "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
+    },
+    "radioModeActiveTitle": "라디오 모드 활성화됨",
+    "@radioModeActiveTitle": {
+        "description": "Title displayed in the queue to show that radio mode is enabled and active."
+    },
+    "radioModeDisabledTitle": "라디오 모드 비활성화됨",
+    "@radioModeDisabledTitle": {
+        "description": "Title displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeInactiveTitle": "라디오 모드 일시 정지",
+    "@radioModeInactiveTitle": {
+        "description": "Title displayed in the queue to show that the radio is enabled but not active."
+    },
+    "radioModeEnableButtonTitle": "라디오 모드 켜기",
+    "@radioModeEnableButtonTitle": {
+        "description": "Title for the option that enables radio mode."
+    },
+    "radioModeDisableButtonTitle": "라디오 모드 끄기",
+    "@radioModeDisableButtonTitle": {
+        "description": "Title for the option that disables radio mode."
+    },
+    "clearQueueOnStopEventSubtitle": "시스템(OS)에서 정지 명령을 수신하면 대기열을 비우고 앱을 종료합니다. 앱 내에서는 정지 동작이 항상 대기열을 비우고 앱을 종료합니다.",
+    "@clearQueueOnStopEventSubtitle": {
+        "description": "Subtitle for the setting that controls if OS stop commands clear the queue."
+    },
+    "radioModeMenuTitle": "라디오 모드 선택",
+    "@radioModeMenuTitle": {
+        "description": "Title for menu that allows users to choose the radio mode."
+    },
+    "loopingOverriddenByRadioSubtitle": "라디오 모드가 활성화되면 대기열 반복은 비활성화 됩니다",
+    "@loopingOverriddenByRadioSubtitle": {
+        "description": "Subtitle displayed in the radio menu to show that queue looping is disabled while radio mode is enabled."
+    },
+    "radioModeOptionName": "{option, select, reshuffle{임의 재생 다시 하기} random{무작위} similar{비슷한 분위기} continuous{연속} albumMix{앨범 믹스} other{{option}}}",
+    "@radioModeOptionName": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Radio mode names in radio mode/algorithm dropdown"
+    },
+    "radioModeOptionTitle": "{option, select, reshuffle{임의 재생 다시 하기 모드} random{무작위 모드} similar{비슷한 분위기 모드} continuous{연속 모드} albumMix{앨범 믹스} other{{option}}} 활성화됨",
+    "@radioModeOptionTitle": {
+        "placeholders": {
+            "option": {
+                "type": "String",
+                "description": "Corresponds to RadioMode.name"
+            }
+        },
+        "description": "Title displayed in the queue, showing which radio mode/algorithm is currently being used."
+    },
+    "radioModeDisableButtonSubtitle": "기존의 반복 모드로 되돌아갑니다",
+    "@radioModeDisableButtonSubtitle": {
+        "description": "Subtitle for the option that disables radio mode."
+    },
+    "radioModeEnabledSubtitle": "설정하려면 탭하세요",
+    "@radioModeEnabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show when radio mode is enabled."
+    },
+    "radioModeDisabledSubtitle": "활성화 하려면 탭하세요",
+    "@radioModeDisabledSubtitle": {
+        "description": "Subtitle displayed in the queue to show that radio mode is disabled."
+    },
+    "radioModeUnavailableWhileOfflineDescription": "오프라인 모드에서는 이용 불가합니다",
+    "@radioModeUnavailableWhileOfflineDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
+    },
+    "radioModeUnavailableWhileOfflineSubtitle": "{modeName} 오프라인 모드에서는 이용 불가능합니다",
+    "@radioModeUnavailableWhileOfflineSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the user is offline and the radio mode requires the user to be online to function."
+    },
+    "radioModeUnavailableForSourceItemDescription": "이 대기열의 출처에서는 이용 불가합니다",
+    "@radioModeUnavailableForSourceItemDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
+    },
+    "radioModeUnavailableForSourceItemSubtitle": "{modeName} 이 대기열의 출처에서는 이용 불가합니다",
+    "@radioModeUnavailableForSourceItemSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the queue source item type is not supported."
+    },
+    "radioModeUnavailableQueueEmptyDescription": "대기열이 비어있어서 이용 불가합니다",
+    "@radioModeUnavailableQueueEmptyDescription": {
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioModeUnavailableQueueEmptySubtitle": "{modeName} 대기열이 비어있어서 이용 불가합니다",
+    "@radioModeUnavailableQueueEmptySubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the subtitle for radio modes when the queue is empty."
+    },
+    "radioModeRandomUnavailableNotDownloadedDescription": "'{sourceName}'이/가 다운로드 되지 않아서 이용 불가합니다",
+    "@radioModeRandomUnavailableNotDownloadedDescription": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedSubtitle": "{modeName} '{sourceName}'이/가 다운로드 되지 않아서 이용불가합니다",
+    "@radioModeRandomUnavailableNotDownloadedSubtitle": {
+        "description": "Shown as the subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded.",
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            },
+            "sourceName": {
+                "type": "String"
+            }
+        }
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericDescription": "대기열의 곡들(음원)이 다운로드 되지 않아서 이용 불가합니다",
+    "@radioModeRandomUnavailableNotDownloadedGenericDescription": {
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "radioModeRandomUnavailableNotDownloadedGenericSubtitle": "{modeName} 대기열의 곡들(음원)이 다운로드 되지 않아서 이용 불가합니다",
+    "@radioModeRandomUnavailableNotDownloadedGenericSubtitle": {
+        "placeholders": {
+            "modeName": {
+                "type": "String",
+                "description": "The pre-translated radio mode name"
+            }
+        },
+        "description": "Shown as the generic subtitle for radio modes when the user is offline and the random radio mode can't be used since the queue source hasn't been downloaded, when the queue source has no name."
+    },
+    "loopingUnavailableWhileRadioActiveWarning": "라디오 모드가 활성화 되어 있을때는 대기열이 무한으로 계속되기 때문에 반복 재생 모드를 바꿀 수 없습니다.",
+    "@loopingUnavailableWhileRadioActiveWarning": {
+        "description": "Warning message when trying to change the loop mode while radio is active."
+    },
+    "autoReloadPrompt": "새로운 {type, select, network{네트워크 설정} transcoding{트랜스코딩 설정} other{설정}}을 적용하려면 대기열을 다시 불러오세요",
+    "@autoReloadPrompt": {
+        "description": "Prompt shown when the queue needs to be reloaded after changing network settings",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "menuButtonLabel": "추가 작업",
+    "@menuButtonLabel": {
+        "description": "Generic label for menu buttons shown throughout the app. Used for the album, artist, playlist, etc. menus"
+    },
+    "autoReloadPromptReloadButton": "다시 불러오기",
+    "@autoReloadPromptReloadButton": {
+        "description": "Button title for reloading the queue after network settings change"
+    },
+    "notImplementedYet": "아직 미구현 상태입니다.",
+    "@notImplementedYet": {
+        "description": "Message shown when a feature is not implemented yet"
+    },
+    "automaticOfflineModeOverrideActiveTitle": "자동 전환 일시 중지됨",
+    "@automaticOfflineModeOverrideActiveTitle": {
+        "description": "Title for the label shown below the offline mode toggle when automatic offline mode switching is paused"
+    },
+    "automaticOfflineModeOverrideActiveSubtitle": "다시 재생하려면 탭하세요",
+    "@automaticOfflineModeOverrideActiveSubtitle": {
+        "description": "Subtitle for the label shown below the offline mode toggle when automatic offline mode switching is paused"
+    },
+    "sleepTimerFinishLastTrack": "이번 곡에서 종료하시겠습니까?",
+    "@sleepTimerFinishLastTrack": {
+        "description": "Option for the sleep timer that will finish the last track before stopping playback."
+    },
+    "sleepTimerAfterCurrentTrack": "이 노래가 끝난 후",
+    "@sleepTimerAfterCurrentTrack": {
+        "description": "Option for the sleep timer that will stop playback after the current track finishes."
+    },
+    "sleepTimerStartTimer": "타이머 시작",
+    "@sleepTimerStartTimer": {
+        "description": "Label for the button that starts the sleep timer"
+    },
+    "syncPlaybackSpeedAndPitchLabel": "속도와 피치 동기화",
+    "@syncPlaybackSpeedAndPitchLabel": {
+        "description": "Label for the checkbox that toggled is the pitch is adjusted along with the playback speed, or if the pitch is kept constant. Shown in the speed submenu on the track menu"
+    },
+    "serverSharingMenuTitle": "근거리 네트워크에서 서버 공유",
+    "@serverSharingMenuTitle": {
+        "description": "Title for the server sharing menu that allows the user to share their server address with other devices on the local network"
+    },
+    "serverSharingMenuButtonTitle": "서버 공유",
+    "@serverSharingMenuButtonTitle": {
+        "description": "Title for the button in the drawer that opens the server sharing menu"
+    },
+    "serverSharingMenuConfirmationDialogText": "오프라인 모드에서도 서버 공유 기능을 활성화 하시겠습니까? Finamp가 근거리 네트워크를 통해 데이터를 송신하게 됩니다.",
+    "@serverSharingMenuConfirmationDialogText": {
+        "description": "Dialog text shown when enabling server sharing while offline mode is enabled"
+    },
+    "serverSharingMenuConfirmationDialogConfirmationButtonLabel": "확인 및 활성화",
+    "@serverSharingMenuConfirmationDialogConfirmationButtonLabel": {
+        "description": "Positive action label for the dialog shown when enabling server sharing while offline mode is enabled"
+    },
+    "serverSharingMenuControlTitleSharingEnabled": "서버 공유",
+    "@serverSharingMenuControlTitleSharingEnabled": {
+        "description": "Title of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned on"
+    },
+    "serverSharingMenuControlSubtitleSharingDisabled": "공유하려면 탭하세요",
+    "@serverSharingMenuControlSubtitleSharingDisabled": {
+        "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned off"
+    },
+    "serverSharingMenuControlTitleSharingDisabled": "공유하지 않음",
+    "@serverSharingMenuControlTitleSharingDisabled": {
+        "description": "Title of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned off"
+    },
+    "serverSharingMenuControlSubtitleSharingEnabled": "정지하려면 탭하세요",
+    "@serverSharingMenuControlSubtitleSharingEnabled": {
+        "description": "Subtitle of the toggle control in the server sharing menu used to turn server sharing on or off, when it's currently turned on"
+    },
+    "useHighContrastColorsTitle": "고대비 색상 사용",
+    "@useHighContrastColorsTitle": {
+        "description": "Title for the setting that controls if high contrast colors are used throughout the app"
+    },
+    "autoExpandPlayerScreenTitle": "재생을 시작하면 재생 화면을 엽니다",
+    "@autoExpandPlayerScreenTitle": {
+        "description": "Title for the setting that controls if the player screen is opened directly after starting a new queue"
+    },
+    "discordRPCSettingDescription": "디스코드 상태에 재생중인 노래를 보여주고 싶다면 디스코드 커스텀 상태 메시지를 활성화 하세요. 오프라인 모드가 활성화되면 디스코드에 연결하지 않습니다.",
+    "@discordRPCSettingDescription": {
+        "description": "Description for the setting that controls if the Discord RPC (Rich Presence) feature is enabled"
+    },
+    "discordRPCIconSettingTitle": "디스코드 상태 메시지 대체 아이콘",
+    "@discordRPCIconSettingTitle": {
+        "description": "Title for the setting that controls which icon gets shown in the Discord RPC (Rich Presence) in case the local address is in use"
+    },
+    "discordRPCIconSettingDescription": "대체 아이콘은 공용 주소가 감지되지 않을 때 표시됩니다. (디스코드는 근거리 네티워크의 이미지를 가져올 수 없으므로 대체 아이콘을 사용합니다)",
+    "@discordRPCIconSettingDescription": {
+        "description": "Description for the setting that controls which Icon the discord RPC displays as a Fallback in case no public address is detected (it doenst matter what connection is active)."
+    },
+    "discordRPCIconDark": "Finamp - 검은 테마",
+    "@discordRPCIconDark": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with the Dark-Theme Background"
+    },
+    "discordRPCIconBlack": "Finamp - 검은 테마",
+    "@discordRPCIconBlack": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a Black Background"
+    },
+    "discordRPCIconLight": "Finamp - 하얀 테마",
+    "@discordRPCIconLight": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a White Background"
+    },
+    "discordRPCIconJFTransparent": "Jellyfin - 반투명 로고",
+    "@discordRPCIconJFTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Jellyfin logo with a Transparent Background"
+    },
+    "discordRPCIconTransparent": "Finamp - 반투명 로고",
+    "@discordRPCIconTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the Finamp logo with a Transparent Background"
+    },
+    "discordRPCIconWhiteTransparent": "Finamp - 흰색 반투명 로고",
+    "@discordRPCIconWhiteTransparent": {
+        "description": "A REALLY short description of the icon in use. Its format is 'ICON, BACKGROUND'. This one is the full white Finamp logo with a Transparent Background"
+    },
+    "preferAddingToFavoritesOverPlaylistsTitle": "하트 아이콘을 탭하여 즐겨찾기에 추가",
+    "@preferAddingToFavoritesOverPlaylistsTitle": {
+        "description": "Title for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "preferAddingToFavoritesOverPlaylistsSubtitle": "활성화 되면, 짧게 탭하여 즐겨찾기에 추가하고 길게 눌러서 '플레이리스트 추가' 메뉴를 엽니다. 기본값은 반대로 동작합니다.",
+    "@preferAddingToFavoritesOverPlaylistsSubtitle": {
+        "description": "Subtitle for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
+    },
+    "preferNextUpPrependingTitle": "'Next Up' 맨 앞에 추가하는 것을 선호함",
+    "@preferNextUpPrependingTitle": {
+        "description": "Title for the setting to prefer prepending to Next Up over appending"
+    },
+    "releaseDateFormatNumerical": "짧은 숫자양식 (지역 기반)",
+    "@releaseDateFormatNumerical": {
+        "description": "Date format option for the release date of an album, showing the date in a short numerical format. Changes based on locale such as DD/MM/YYYY for en_gb and MM/DD/YYYY for en_us."
+    },
+    "serverSharingMenuDescription": "서버 주소 공유는 Jellyfin 서버와 동일 근거리 네트워크에 포함되지 않은 신규 클라이언트 설정에 유용합니다(예를 들면 호텔 TV, 직장 PC, 이동중인 휴대폰).",
+    "@serverSharingMenuDescription": {
+        "description": "Description text shown in the server sharing menu, right below the controls"
+    },
+    "quickConnectAuthorizationMenuPrompt": "빠른 연결 코드를 입력함",
+    "@quickConnectAuthorizationMenuPrompt": {
+        "description": "Title for the button in server sharing menu that opens the quick connect authorization menu"
+    },
+    "quickConnectAuthorizationMenuTitle": "빠른 연결 요청 승인",
+    "@quickConnectAuthorizationMenuTitle": {
+        "description": "Title for the quick connect authorization menu that allows the user to authorize a quick connect request from another device"
+    },
+    "quickConnectAuthorizationMenuInputLabel": "빠른 연결 코드",
+    "@quickConnectAuthorizationMenuInputLabel": {
+        "description": "Label for the quick connect code input, shown below the input field"
+    },
+    "quickConnectAuthorizationMenuStateSubtitleIdle": "아래의 코드를 입력하거나 붙여넣으세요",
+    "@quickConnectAuthorizationMenuStateSubtitleIdle": {
+        "description": "Subtitle for the quick connect authorization menu state info (above the input field) while the code hasn't been submitted yet"
+    },
+    "quickConnectAuthorizationMenuStateTitleProcessing": "빠른 연결 승인중",
+    "@quickConnectAuthorizationMenuStateTitleProcessing": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) while a request is being processed"
+    },
+    "quickConnectAuthorizationMenuStateTitleSuccess": "빠른 연결 요청 승인됨",
+    "@quickConnectAuthorizationMenuStateTitleSuccess": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) when the authorization was successful"
+    },
+    "quickConnectAuthorizationMenuStateTitleFailed": "빠른 연결 코드 틀림",
+    "@quickConnectAuthorizationMenuStateTitleFailed": {
+        "description": "Title for the quick connect authorization menu state info (above the input field) when the authorization was unsuccessful"
+    },
+    "quickConnectAuthorizationMenuStateSubtitleFailed": "빠른 연결 코드를 다시 확인하고 입력하세요",
+    "@quickConnectAuthorizationMenuStateSubtitleFailed": {
+        "description": "Subtitle for the quick connect authorization menu state info (above the input field) when the authorization was unsuccessful"
+    },
+    "quickConnectAuthorizationMenuButtonTitle": "빠른 연결 승인",
+    "@quickConnectAuthorizationMenuButtonTitle": {
+        "description": "Title for the button in the drawer that opens the quick connect authorization menu"
+    },
+    "quickConnectAuthorizationMenuDescription": "빠른 연결 기능으로 다른 Jellyfin 클라이언트에 로그인 하려는 경우 상단 입력란에 6자리 숫자 코드를 입력하세요. 이렇게 하면 다른 클라이언트의 로그인 요청이 승인되고 Finamp에서 사용중인 계정으로 로그인 합니다.",
+    "@quickConnectAuthorizationMenuDescription": {
+        "description": "Description for the quick connect authorization menu, shown at the bottom"
+    },
+    "accessibility": "접근성",
+    "@accessibility": {
+        "description": "Title for the accessibility settings screen"
     }
 }

@@ -156,9 +156,9 @@
     "datePlayed": "Senast uppspelad datum",
     "downloads": "Nedladdningar",
     "errorScreenError": "Ett fel uppstod när listan över fel skulle hämtas! Vid det här laget bör du förmodligen bara skapa ett problem på GitHub och radera appdata",
-    "shuffleAllTrackCountSubtitle": "Antal ljudspår att ladda vid användning av Shuffle-knappen på spårfliken eller genre-skärmen.",
-    "shuffleAll": "Shuffla alla",
-    "shuffleButtonLabel": "Shuffla",
+    "shuffleAllTrackCountSubtitle": "Antal ljudspår att ladda vid användning av blandaknappen på spårfliken eller genre-skärmen.",
+    "shuffleAll": "Blanda alla",
+    "shuffleButtonLabel": "Blanda",
     "audioService": "Ljudtjänst",
     "username": "Användarnamn",
     "logs": "Loggar",
@@ -201,7 +201,7 @@
     "startingInstantMix": "Startar snabbmix.",
     "removeFromMix": "Ta bort från Mix",
     "addToMix": "Lägg till i Mix",
-    "shuffleAllTrackCount": "Antal spår i Shufflingen",
+    "shuffleAllTrackCount": "Antal blandade spår",
     "viewTypeSubtitle": "Visningstyp för musikskärmen",
     "useCoverAsBackground": "Visa suddigt omslag som spelarbakgrund",
     "useCoverAsBackgroundSubtitle": "Huruvida du vill använda en suddig omslagsbild som bakgrund i vissa delar av appen eller inte.",
@@ -358,7 +358,7 @@
     "@playbackHistory": {
         "description": "Title for the playback history screen, where the user can see a list of recently played tracks, sorted by "
     },
-    "shuffleAllQueueSource": "Shuffla alla",
+    "shuffleAllQueueSource": "Blanda alla",
     "@shuffleAllQueueSource": {
         "description": "Title for the queue source when the user is shuffling all tracks. Should be capitalized (if applicable) to be more recognizable throughout the UI"
     },
@@ -584,7 +584,7 @@
     "@playingFrom": {
         "description": "Prefix shown before the name of the main queue source, like the album or playlist that was used to start playback. Example: \"Playing from {My Nice Playlist}\""
     },
-    "shuffleToNextUp": "Shuffla efter Nästa",
+    "shuffleToNextUp": "Blanda efter nästa",
     "@shuffleToNextUp": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
     },
@@ -602,11 +602,11 @@
             }
         }
     },
-    "shuffleNext": "Shuffla innan Nästa",
+    "shuffleNext": "Blanda innan nästa",
     "@shuffleNext": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "confirmShuffleToQueue": "Shufflade efter spelkön",
+    "confirmShuffleToQueue": "Blandar efter spelkön",
     "@confirmShuffleToQueue": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the regular queue"
     },
@@ -638,7 +638,7 @@
     "@previousTracks": {
         "description": "Description in the queue panel for the list of tracks that come before the current track in the queue. The tracks might not actually have been played (e.g. if the user skipped ahead to a specific track)."
     },
-    "shuffleToQueue": "Shuffla efter Spelkö",
+    "shuffleToQueue": "Blanda efter Spelkö",
     "@shuffleToQueue": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
@@ -660,11 +660,11 @@
             }
         }
     },
-    "confirmShuffleNext": "Shufflade innan Nästa",
+    "confirmShuffleNext": "Blandar innan Nästa",
     "@confirmShuffleNext": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the front of the \"Next Up\" queue"
     },
-    "confirmShuffleToNextUp": "Shufflade efter Nästa",
+    "confirmShuffleToNextUp": "Blandar efter Nästa",
     "@confirmShuffleToNextUp": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the \"Next Up\" queue"
     },
@@ -680,7 +680,7 @@
     "@savedQueue": {
         "description": "Title for the queue source for tracks were previously in the queue before an app restart and have been reloaded"
     },
-    "shuffleAlbumsToNextUp": "Shuffla album efter Nästa",
+    "shuffleAlbumsToNextUp": "Blanda album efter Nästa",
     "@shuffleAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of Next Up"
     },
@@ -696,11 +696,11 @@
             }
         }
     },
-    "playbackOrderLinearButtonTooltip": "Spelar upp i ordning. Tryck för att shuffla.",
+    "playbackOrderLinearButtonTooltip": "Spelar upp i ordning. Tryck för att blanda.",
     "@playbackOrderLinearButtonTooltip": {
         "description": "Tooltip for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in linear/in-order mode"
     },
-    "playbackOrderShuffledButtonTooltip": "Shufflar spår. Tryck för att spela upp i ordning.",
+    "playbackOrderShuffledButtonTooltip": "Blandar spår. Tryck för att spela upp i ordning.",
     "@playbackOrderShuffledButtonTooltip": {
         "description": "Tooltip for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in shuffle mode"
     },
@@ -773,7 +773,7 @@
     "@playbackOrderLinearButtonLabel": {
         "description": "Label for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in linear/in-order mode"
     },
-    "playbackOrderShuffledButtonLabel": "Shufflar spår",
+    "playbackOrderShuffledButtonLabel": "Blandar spår",
     "@playbackOrderShuffledButtonLabel": {
         "description": "Label for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in shuffle mode"
     },
@@ -869,7 +869,7 @@
     "@periodicPlaybackSessionUpdateFrequencySubtitle": {
         "description": "Description of the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
     },
-    "shuffleAlbumsNext": "Shuffla album innan Nästa",
+    "shuffleAlbumsNext": "Blanda album innan Nästa",
     "@shuffleAlbumsNext": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the start of Next Up"
     },
@@ -950,7 +950,7 @@
     "@volumeNormalizationModeAlbumBased": {
         "description": "'Album-based' option for the replay gain mode dropdown. In album-based mode, the album gain is always used, regardless of whether an album is playing or not."
     },
-    "shuffleAlbumsToQueue": "Shuffla album efter spelkö",
+    "shuffleAlbumsToQueue": "Blanda album efter spelkö",
     "@shuffleAlbumsToQueue": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the end of the regular queue"
     },
@@ -1001,7 +1001,7 @@
             }
         }
     },
-    "shuffleAlbums": "Shuffla album",
+    "shuffleAlbums": "Blanda album",
     "@shuffleAlbums": {
         "description": "Label for action that shuffles all albums of an artist or genre"
     },
@@ -1718,11 +1718,11 @@
     "@outputMenuButtonTitle": {
         "description": "Button title for opening the output menu/panel"
     },
-    "showShuffleButtonOnMediaNotificationSubtitle": "Styr ifall medianotisen har en shufflingsknapp. Detta låter dig shuffla/avshuffla uppspelningen utan att öppna appen.",
+    "showShuffleButtonOnMediaNotificationSubtitle": "Styr ifall medianotisen har en blandaknapp. Detta låter dig slå på/av blandad uppspelning utan att öppna appen.",
     "@showShuffleButtonOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a shuffle button."
     },
-    "showShuffleButtonOnMediaNotificationTitle": "Visa shufflingsknapp på medianotis",
+    "showShuffleButtonOnMediaNotificationTitle": "Visa blandaknapp på medianotis",
     "@showShuffleButtonOnMediaNotificationTitle": {
         "description": "Title for the setting that controls if the media notification has a shuffle button."
     },
@@ -2121,7 +2121,7 @@
     "@movePlayNext": {
         "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "shuffleSome": "Shuffla vissa",
+    "shuffleSome": "Blanda vissa",
     "playbackActionPageRegularTrackOptions": "Spela",
     "@playbackActionPageRegularTrackOptions": {
         "description": "Label for the playback action page that contains all actions of the normal track menu, like starting a new queue or duplicating the track within the existing queue"
@@ -2196,15 +2196,15 @@
     "@startRadio": {
         "description": "Menu label for starting a radio from a playlist, album, etc."
     },
-    "shuffleSomeNext": "Shuffla vissa näst",
+    "shuffleSomeNext": "Blanda vissa innan nästa",
     "@shuffleSomeNext": {
         "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "shuffleSomeToNextUp": "Shuffla vissa till Näst Upp",
+    "shuffleSomeToNextUp": "Blanda vissa till Näst Upp",
     "@shuffleSomeToNextUp": {
         "description": "Used for shuffling some tracks to the end of the \"Next Up\" queue, to play after all prior tracks from Next Up have played"
     },
-    "shuffleSomeToQueue": "Shuffla vissa till Spelkön",
+    "shuffleSomeToQueue": "Blanda vissa till Spelkön",
     "@shuffleSomeToQueue": {
         "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
@@ -2226,15 +2226,15 @@
             }
         }
     },
-    "shuffleSomeAlbums": "Shuffla vissa Album",
+    "shuffleSomeAlbums": "Blanda vissa Album",
     "@shuffleSomeAlbums": {
         "description": "Label for action that shuffles some albums of a genre"
     },
-    "shuffleSomeAlbumsNext": "Shuffla vissa Album Näst",
+    "shuffleSomeAlbumsNext": "Blanda vissa Album Näst",
     "@shuffleSomeAlbumsNext": {
         "description": "Label for action that shuffles some albums of a genre and adds them at the start of Next Up"
     },
-    "shuffleSomeAlbumsToNextUp": "Shuffla vissa Album till Näst Upp",
+    "shuffleSomeAlbumsToNextUp": "Blanda vissa Album till Näst Upp",
     "@shuffleSomeAlbumsToNextUp": {
         "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
     },
@@ -2735,7 +2735,7 @@
     "@recentQueuesDescription": {
         "description": "Description of a home screen section preset"
     },
-    "shuffleTracksActionDescription": "Shufflar slumpmässiga spår från ditt bibliotek",
+    "shuffleTracksActionDescription": "Blandar slumpmässiga spår från ditt bibliotek",
     "@shuffleTracksActionDescription": {
         "description": "Description of a home screen quick action"
     },
@@ -2767,7 +2767,7 @@
     "@playSpecificItemActionDescription": {
         "description": "Description of a home screen quick action"
     },
-    "shuffleTracksAction": "Shuffla Spår",
+    "shuffleTracksAction": "Blanda Spår",
     "@shuffleTracksAction": {
         "description": "Name of a home screen quick action"
     },
@@ -2848,7 +2848,7 @@
     "@systemAccentColorHasPriorityInfo": {
         "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
     },
-    "shuffleSomeAlbumsToQueue": "Shuffla vissa Album till Kö",
+    "shuffleSomeAlbumsToQueue": "Blanda vissa Album till Kö",
     "@shuffleSomeAlbumsToQueue": {
         "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
     },

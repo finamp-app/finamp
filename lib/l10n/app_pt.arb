@@ -638,7 +638,7 @@
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
     },
-    "kiloBitsPerSecondLabel": "{bitrate} kbps",
+    "kiloBitsPerSecondLabel": "{bitrate} KiB/s",
     "@kiloBitsPerSecondLabel": {
         "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
         "placeholders": {
@@ -814,7 +814,7 @@
     "bufferDisableSizeConstraintsTitle": "Não limitar o tamanho do buffer",
     "bufferDisableSizeConstraintsSubtitle": "Desativa as restrições do tamanho do buffer. O buffer será sempre carregado de acordo com a duração configurada, mesmo para ficheiros muito grandes. Pode causar instabilidade. É necessário reiniciar.",
     "bufferSizeTitle": "Tamanho do Buffer",
-    "bufferSizeSubtitle": "O tamanho do buffer em MB. É necessário reiniciar",
+    "bufferSizeSubtitle": "O tamanho do buffer em MiB. É necessário reiniciar",
     "confirmPlayNext": "{type, select, track{Faixa} album{Álbum} artist{Artista} playlist{Lista de Reprodução} genre{Estilo} disc{Disco} other{Item}} vai tocar a seguir",
     "@confirmPlayNext": {
         "description": "A confirmation message that is shown after successfully adding a track to the front of the \"Next Up\" queue",
@@ -1840,7 +1840,7 @@
     "preferLocalNetworkEnableSwitchDescription": "Se usa ou não um endereço diferente quando você está na sua rede local do seu servidor jellyfin",
     "preferLocalNetworkPublicAddressSettingTitle": "Endereço Público",
     "preferLocalNetworkPublicAddressSettingDescription": "O endereço principal usado para ligação ao seu servidor Jellyfin",
-    "missingSchemaError": "Url precisa de começar com http(s)://",
+    "missingSchemaError": "URL precisa de começar com http(s)://",
     "@missingSchemaError": {
         "description": "Snackbar message when the user changes their home/public address but it doesn't start with http"
     },
@@ -1933,7 +1933,7 @@
     "@autoOfflineSettingDescription": {
         "description": "Setting description. Make sure the Mode names match the translations."
     },
-    "releaseDateFormatMonthDayYear": "Mês, Dia e Ano",
+    "releaseDateFormatMonthDayYear": "Mês, Dia e Ano (Baseado na localização)",
     "@releaseDateFormatMonthDayYear": {
         "description": "Date format option for the release date of an album, showing the year and month and day/date. Example: March 2, 2022"
     },
@@ -2712,7 +2712,7 @@
         },
         "description": "Subtitle displayed in the queue to describe what the radio is doing if enabled"
     },
-    "lyricsEmptyStateLoading": "A carregar letras...",
+    "lyricsEmptyStateLoading": "A carregar letras…",
     "@lyricsEmptyStateLoading": {
         "description": "Message shown while lyrics are being loaded"
     },
@@ -2805,7 +2805,7 @@
     "@previousTracksPersistenceModeSelectorTitle": {
         "description": "Title for setting that allows to override state of previous tracks header in queue list"
     },
-    "previousTracksPersistenceModeSelectorSubtitle": "Se você abrir o painel de fila, a secção de pistas anteriores deve estar...",
+    "previousTracksPersistenceModeSelectorSubtitle": "Se você abrir o painel de fila, a secção de pistas anteriores deve estar…",
     "@previousTracksPersistenceModeSelectorSubtitle": {
         "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
     },
@@ -3057,7 +3057,7 @@
     "@currentLibrary": {
         "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
     },
-    "loading": "A carregar...",
+    "loading": "A carregar…",
     "@loading": {
         "description": "Message when items or libraries are loading in home screen section editor"
     },
@@ -3697,5 +3697,10 @@
     "clientCertificatesUnsupported": "Certificados de cliente não são suportados nesta plataforma",
     "@clientCertificatesUnsupported": {
         "description": "Message shown when client certificates are not supported on the user's current platform."
-    }
+    },
+    "releaseDateFormatNumerical": "Numeração Curta (Baseada na localização)",
+    "@releaseDateFormatNumerical": {
+        "description": "Date format option for the release date of an album, showing the date in a short numerical format. Changes based on locale such as DD/MM/YYYY for en_gb and MM/DD/YYYY for en_us."
+    },
+    "loginFlowLocalNetworkServersNoResults": "Ainda não foram detetados servidores - pode precisar de inserir manualmente o endereço do servidor."
 }

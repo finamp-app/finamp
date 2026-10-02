@@ -484,7 +484,7 @@
     "@confirmDownloadStarted": {
         "description": "A confirmation message that is shown after successfully adding an item to the download queue, before it starts being processed and enqueued for download"
     },
-    "kiloBitsPerSecondLabel": "{bitrate} kbps",
+    "kiloBitsPerSecondLabel": "{bitrate} KiB/s",
     "@kiloBitsPerSecondLabel": {
         "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
         "placeholders": {
@@ -1508,7 +1508,7 @@
     },
     "bufferDisableSizeConstraintsTitle": "Neomezovat velikost vyrovnávací paměti",
     "bufferSizeTitle": "Velikost vyrovnávací paměti",
-    "bufferSizeSubtitle": "Velikost vyrovnávací paměti v MB. Vyžaduje restart",
+    "bufferSizeSubtitle": "Velikost vyrovnávací paměti v MiB. Vyžaduje restart",
     "bufferDisableSizeConstraintsSubtitle": "Zakáže omezení velikosti vyrovnávací paměti. Vyrovnávací paměť bude vždy načtena na nastavené trvání, i pro velmi velké soubory. Může způsobit pády. Vyžaduje restart.",
     "publiclyVisiblePlaylist": "Veřejně viditelné:",
     "@publiclyVisiblePlaylist": {
@@ -1553,7 +1553,7 @@
     "@releaseDateFormatYear": {
         "description": "Date format option for the release date of an album, showing only the year"
     },
-    "releaseDateFormatMonthDayYear": "Měsíc, den a rok",
+    "releaseDateFormatMonthDayYear": "Měsíc, den a rok (podle místních předvoleb)",
     "@releaseDateFormatMonthDayYear": {
         "description": "Date format option for the release date of an album, showing the year and month and day/date. Example: March 2, 2022"
     },
@@ -3684,5 +3684,9 @@
     "clientCertificatesUnsupported": "Klientské certifikáty nejsou na této platformě podporovány",
     "@clientCertificatesUnsupported": {
         "description": "Message shown when client certificates are not supported on the user's current platform."
+    },
+    "releaseDateFormatNumerical": "Krátké numerické (podle místních předvoleb)",
+    "@releaseDateFormatNumerical": {
+        "description": "Date format option for the release date of an album, showing the date in a short numerical format. Changes based on locale such as DD/MM/YYYY for en_gb and MM/DD/YYYY for en_us."
     }
 }
