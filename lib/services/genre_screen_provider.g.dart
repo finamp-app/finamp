@@ -11,7 +11,7 @@ part of 'genre_screen_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$genreCuratedItemsHash() => r'2e40db93d99555677c38e066509ddfeb5894c405';
+String _$genreCuratedItemsHash() => r'1baaf69d0e18d7157821ed36e506a0c4e2f5205e';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -58,7 +58,7 @@ class GenreCuratedItemsFamily
   GenreCuratedItemsProvider call(
     BaseItemDto parent,
     BaseItemDtoType baseItemType,
-    BaseItemDto? library,
+    ResolvedLibraryId? library,
   ) {
     return GenreCuratedItemsProvider(parent, baseItemType, library);
   }
@@ -100,7 +100,7 @@ class GenreCuratedItemsProvider
   GenreCuratedItemsProvider(
     BaseItemDto parent,
     BaseItemDtoType baseItemType,
-    BaseItemDto? library,
+    ResolvedLibraryId? library,
   ) : this._internal(
         (ref) => genreCuratedItems(
           ref as GenreCuratedItemsRef,
@@ -135,7 +135,7 @@ class GenreCuratedItemsProvider
 
   final BaseItemDto parent;
   final BaseItemDtoType baseItemType;
-  final BaseItemDto? library;
+  final ResolvedLibraryId? library;
 
   @override
   Override overrideWith(
@@ -217,7 +217,7 @@ mixin GenreCuratedItemsRef
   BaseItemDtoType get baseItemType;
 
   /// The parameter `library` of this provider.
-  BaseItemDto? get library;
+  ResolvedLibraryId? get library;
 }
 
 class _GenreCuratedItemsProviderElement
@@ -239,7 +239,8 @@ class _GenreCuratedItemsProviderElement
   BaseItemDtoType get baseItemType =>
       (origin as GenreCuratedItemsProvider).baseItemType;
   @override
-  BaseItemDto? get library => (origin as GenreCuratedItemsProvider).library;
+  ResolvedLibraryId? get library =>
+      (origin as GenreCuratedItemsProvider).library;
 }
 
 // ignore_for_file: type=lint

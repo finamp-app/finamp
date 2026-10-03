@@ -72,7 +72,7 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
               singleTabConfig: HomeScreenSectionConfiguration(
                 base: CollectionHomeSection(
                   itemId: source.item!.id,
-                  libraryId: GetIt.instance<FinampUserHelper>().currentUser!.currentViewId!,
+                  libraryId: GetIt.instance<FinampUserHelper>().currentUser!.currentLibraryId!,
                   contentType: ContentType.mixed,
                 ),
                 customSectionTitle: source.item!.name ?? AppLocalizations.of(context)!.unknownName,
@@ -107,7 +107,7 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
                 singleTabConfig: HomeScreenSectionConfiguration(
                   base: CollectionHomeSection(
                     itemId: source.item!.id,
-                    libraryId: GetIt.instance<FinampUserHelper>().currentUser!.currentViewId!,
+                    libraryId: GetIt.instance<FinampUserHelper>().currentUser!.currentLibraryId!,
                     contentType: ContentType.mixed,
                   ),
                   customSectionTitle: source.item!.name ?? AppLocalizations.of(context)!.unknownName,

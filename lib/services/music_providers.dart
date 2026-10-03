@@ -44,8 +44,9 @@ Future<List<BaseItemDto>> globalSearch(Ref ref, String searchTerm, {required boo
     limit: 10,
   );
   // TODO handle genres for all libraries?  Or just use current?  We could just warn on no/low results?
+  // TODO now this is even worse because being in allLibraries completely blocks genre lookups.
   final genreFuture = jellyfinApiHelper.getItems(
-    parentItem: GetIt.instance<FinampUserHelper>().currentUser!.currentView!,
+    parentItem: GetIt.instance<FinampUserHelper>().currentUser!.currentView2,
     includeItemTypes: [BaseItemDtoType.genre.jellyfinName].join(","),
     recursive: false,
     searchTerm: searchTerm,

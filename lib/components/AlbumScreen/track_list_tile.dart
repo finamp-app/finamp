@@ -11,16 +11,11 @@ import 'package:finamp/menus/components/overflow_menu_button.dart';
 import 'package:finamp/menus/track_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
-import 'package:finamp/services/artist_content_provider.dart';
 import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/feedback_helper.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
-import 'package:finamp/services/jellyfin_api_helper.dart';
-import 'package:finamp/services/music_screen_provider.dart';
 import 'package:finamp/services/media_state_stream.dart';
 import 'package:finamp/services/music_player_background_task.dart';
-import 'package:finamp/services/radio_service_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -61,7 +56,6 @@ class TrackListTile extends ConsumerWidget {
 
     /// The parent item which will be played with starting index [index] on tap.
     required this.parentPlayable,
-    this.lazyAddMoreTracksToQueue = false,
     this.selectedFilter,
 
     /// Index of the track in whatever parent this widget is in. Used to start
@@ -89,7 +83,6 @@ class TrackListTile extends ConsumerWidget {
 
   final BaseItemDto item;
   final FinampPlayable parentPlayable;
-  final bool lazyAddMoreTracksToQueue;
   final CuratedItemSelectionType? selectedFilter;
   final int? index;
   final bool showIndex;
@@ -106,8 +99,6 @@ class TrackListTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool playable;
-    final finampUserHelper = GetIt.instance<FinampUserHelper>();
-    final library = finampUserHelper.currentUser?.currentView;
     if (ref.watch(finampSettingsProvider.isOffline)) {
       playable = ref.watch(
         GetIt.instance<DownloadsService>()
@@ -118,9 +109,11 @@ class TrackListTile extends ConsumerWidget {
       playable = true;
     }
 
+    // TODO fix passing down playable so that genre curated items lazy loading works
+
     // We lazyload more tracks here if the user starts a queue from one of the top tracks sections
     // because for performance-reasons, we first only fetch the data for the 5 tracks we really need
-    Future<void> lazyAddMoreTracks(PlayableSlice slice) async {
+    /*Future<void> lazyAddMoreTracks(PlayableSlice slice) async {
       if (parentItem == null || selectedFilter == null) return;
 
       final baseItemType = BaseItemDtoType.fromItem(parentItem!);
@@ -194,7 +187,7 @@ class TrackListTile extends ConsumerWidget {
           ),
         ),
       );
-    }
+    }*/
 
     Future<void> trackListTileOnTap(bool playable) async {
       final queueService = GetIt.instance<QueueService>();
@@ -235,21 +228,8 @@ class TrackListTile extends ConsumerWidget {
         getPlayableSliceProvider(item: sourcedParent, startingOffset: index!).future,
       );
 
-      // avoid radio eagerly adding new tracks from cache (or requesting new tracks) before lazy loading of additional tracks completes
-      final previousRadioState = FinampSettingsHelper.finampSettings.radioEnabled;
-      FinampSetters.setRadioEnabled(false);
-      invalidateRadioCache();
-
       // start linear playback of album from the given index
       await queueService.startSlicePlayback(slice);
-
-      if (lazyAddMoreTracksToQueue) {
-        unawaited(
-          lazyAddMoreTracks(slice).whenComplete(() {
-            FinampSetters.setRadioEnabled(previousRadioState);
-          }),
-        );
-      }
     }
 
     return TrackListItem(

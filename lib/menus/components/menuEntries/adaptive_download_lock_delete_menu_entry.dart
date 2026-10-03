@@ -21,7 +21,7 @@ class AdaptiveDownloadLockDeleteMenuEntry extends ConsumerWidget implements Hide
   Widget build(BuildContext context, WidgetRef ref) {
     final downloadsService = GetIt.instance<DownloadsService>();
 
-    final DownloadStub downloadStub = _getStub();
+    final DownloadStub downloadStub = _getStub(ref);
 
     final DownloadItemStatus? downloadStatus = ref.watch(downloadsService.statusProvider((downloadStub, null)));
 
@@ -36,20 +36,21 @@ class AdaptiveDownloadLockDeleteMenuEntry extends ConsumerWidget implements Hide
     }
   }
 
-  DownloadStub _getStub() {
-    final library = GetIt.instance<FinampUserHelper>().currentUser?.currentView;
+  DownloadStub _getStub(WidgetRef? ref) {
+    final library =
+        ref?.watch(FinampUserHelper.currentLibraryProvider) ??
+        GetIt.instance<FinampUserHelper>().currentUser?.currentLibraryId;
     return switch (BaseItemDtoType.fromItem(baseItem)) {
       BaseItemDtoType.track => DownloadStub.fromItem(type: DownloadItemType.track, item: baseItem),
-      BaseItemDtoType.artist || BaseItemDtoType.genre => DownloadStub.fromFinampCollection(
-        FinampCollection(type: FinampCollectionType.collectionWithLibraryFilter, library: library, item: baseItem),
-      ),
+      BaseItemDtoType.artist ||
+      BaseItemDtoType.genre => DownloadStub.libraryFilteredItem(item: baseItem, library: library),
       _ => DownloadStub.fromItem(type: DownloadItemType.collection, item: baseItem),
     };
   }
 
   @override
   bool get isVisible {
-    final DownloadItemStatus downloadStatus = GetIt.instance<DownloadsService>().getStatus(_getStub(), null);
+    final DownloadItemStatus downloadStatus = GetIt.instance<DownloadsService>().getStatus(_getStub(null), null);
 
     return downloadStatus.isRequired || !FinampSettingsHelper.finampSettings.isOffline;
   }

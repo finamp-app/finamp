@@ -16,7 +16,6 @@ import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/services/artist_content_provider.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_screen_provider.dart';
 import 'package:flutter/material.dart';
@@ -24,10 +23,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
 class ArtistScreenContent extends ConsumerStatefulWidget {
-  const ArtistScreenContent({super.key, required this.parent, this.library, this.genreFilter});
+  const ArtistScreenContent({super.key, required this.parent, required this.library, this.genreFilter});
 
   final BaseItemDto parent;
-  final BaseItemDto? library;
+  final ResolvedLibraryId library;
   final BaseItemDto? genreFilter;
 
   @override
@@ -148,8 +147,6 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
 
   @override
   Widget build(BuildContext context) {
-    final finampUserHelper = GetIt.instance<FinampUserHelper>();
-    final library = finampUserHelper.currentUser?.currentView;
     final artistItemSectionsOrder = ref.watch(finampSettingsProvider.artistItemSectionsOrder);
     final artistCuratedItemSectionFilterOrder = ref.watch(finampSettingsProvider.artistItemSectionFilterChipOrder);
     final bool autoSwitchItemCurationTypeEnabled = ref.watch(finampSettingsProvider.autoSwitchItemCurationType);
@@ -181,7 +178,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         .watch(
           getArtistAlbumsProvider(
             artist: widget.parent,
-            libraryFilter: widget.library?.id,
+            libraryFilter: widget.library,
             genreFilter: sortConfig.genreFilter?.id,
           ),
         )
@@ -190,7 +187,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         .watch(
           getPerformingArtistAlbumsProvider(
             artist: widget.parent,
-            libraryFilter: widget.library?.id,
+            libraryFilter: widget.library,
             genreFilter: sortConfig.genreFilter?.id,
           ),
         )
@@ -199,7 +196,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         .watch(
           getPerformingArtistTracksProvider(
             artist: widget.parent,
-            libraryFilter: widget.library?.id,
+            libraryFilter: widget.library,
             genreFilter: sortConfig.genreFilter?.id,
           ),
         )
@@ -208,7 +205,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
     final allTracks = ref.watch(
       getArtistTracksProvider(
         artist: widget.parent,
-        libraryFilter: widget.library?.id,
+        libraryFilter: widget.library,
         genreFilter: sortConfig.genreFilter?.id,
         sortAndFilterConfiguration: albumsSortConfig,
         sortLikeAlbums: true,
@@ -292,13 +289,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
               FavoriteButton(item: widget.parent),
               if (!isLoading)
                 DownloadButton(
-                  item: DownloadStub.fromFinampCollection(
-                    FinampCollection(
-                      type: FinampCollectionType.collectionWithLibraryFilter,
-                      library: library,
-                      item: widget.parent,
-                    ),
-                  ),
+                  item: DownloadStub.libraryFilteredItem(library: widget.library, item: widget.parent),
                   children: allChildren,
                   downloadDisabled: disableDownloads,
                   customTooltip: disableDownloads
@@ -324,7 +315,6 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                         parent: widget.parent,
                         tracks: topTracks,
                         childrenForQueue: topTracks,
-                        lazyAddMoreTracksToQueue: true,
                         tracksText: type.toLocalisedSectionTitle(context, artistCuratedItemSelectionType),
                         isOnArtistScreen: true,
                         genreFilter: sortConfig.genreFilter,

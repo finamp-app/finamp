@@ -11,7 +11,6 @@ import 'package:finamp/menus/components/menu_item_info_header.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/music_models.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -120,28 +119,15 @@ HomeDownloadInfo? getHomeDownloadInfo(
       if (type == BaseItemDtoType.collection) {
         // TODO implement collection downloads
         return null;
-      } else if ([BaseItemDtoType.artist, BaseItemDtoType.genre].contains(type) &&
-          collectionSection.libraryId != allLibraryPlaceholder) {
-        final user =
-            (ref?.watch(FinampUserHelper.finampCurrentUserProvider) ?? GetIt.instance<FinampUserHelper>().currentUser);
-        final BaseItemDto? library;
-        if (collectionSection.libraryId == currentLibraryPlaceholder) {
-          library = user?.currentView;
-        } else {
-          library = user?.views[collectionSection.libraryId as BaseItemId];
-        }
+      } else if ([BaseItemDtoType.artist, BaseItemDtoType.genre].contains(type)) {
+        final library = ref != null
+            ? collectionSection.libraryId.resolve2(ref)
+            : collectionSection.libraryId.resolve3();
         if (library == null) {
           return null;
         }
         return HomeDownloadInfo(
-          stub: DownloadStub.fromFinampCollection(
-            FinampCollection(
-              type: FinampCollectionType.collectionWithLibraryFilter,
-              // TODO allow LibraryIds instead of fetching full baseitemDtos?
-              library: library,
-              item: item,
-            ),
-          ),
+          stub: DownloadStub.libraryFilteredItem(item: item, library: library),
           warning: null,
         );
       } else {

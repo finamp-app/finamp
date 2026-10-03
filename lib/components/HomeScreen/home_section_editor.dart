@@ -380,7 +380,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
           ),
           Consumer(
             builder: (_, ref, _) {
-              final views = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.views.values;
+              final views = ref.watch(FinampUserHelper.currentUserProvider)?.views.values;
               return FinampSettingsDropdown<LibraryId?>(
                 dropdownItems: [
                   DropdownMenuEntry<LibraryId?>(
@@ -458,7 +458,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
               ),
               Consumer(
                 builder: (_, ref, _) {
-                  final views = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.views.values;
+                  final views = ref.watch(FinampUserHelper.currentUserProvider)?.views.values;
                   return FinampSettingsDropdown<LibraryId?>(
                     dropdownItems: [
                       DropdownMenuEntry<LibraryId?>(

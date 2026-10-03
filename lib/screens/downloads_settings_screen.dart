@@ -11,19 +11,22 @@ import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
-class DownloadsSettingsScreen extends StatefulWidget {
+import '../extensions/localizations.dart';
+import '../models/jellyfin_models.dart';
+
+class DownloadsSettingsScreen extends ConsumerStatefulWidget {
   const DownloadsSettingsScreen({super.key});
   static const routeName = "/settings/downloads";
   @override
-  State<DownloadsSettingsScreen> createState() => _DownloadsSettingsScreenState();
+  ConsumerState<DownloadsSettingsScreen> createState() => _DownloadsSettingsScreenState();
 }
 
-class _DownloadsSettingsScreenState extends State<DownloadsSettingsScreen> {
+class _DownloadsSettingsScreenState extends ConsumerState<DownloadsSettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    var userHelper = GetIt.instance<FinampUserHelper>();
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.downloadSettings),
@@ -52,18 +55,28 @@ class _DownloadsSettingsScreenState extends State<DownloadsSettingsScreen> {
               ),
             ),
           ),
+
           ListTile(
             // TODO real UI for this
             title: Text(AppLocalizations.of(context)!.cacheLibraryImagesSettings),
             subtitle: Text(AppLocalizations.of(context)!.cacheLibraryImagesSettingsSubtitle),
-            trailing: DownloadButton(
-              item: DownloadStub.fromFinampCollection(
-                FinampCollection(
-                  type: FinampCollectionType.libraryImages,
-                  library: userHelper.currentUser!.currentView!,
-                ),
-              ),
-            ),
+            trailing: () {
+              if (ref.watch(FinampUserHelper.currentUserProvider.select((x) => x?.currentView2))
+                  case BaseItemDto library) {
+                return DownloadButton(
+                  item: DownloadStub.fromFinampCollection(FinampCollection.libraryImages(library: library)),
+                );
+              } else {
+                return Opacity(
+                  opacity: 0.4,
+                  child: IconButton(
+                    icon: const Icon(TablerIcons.download),
+                    tooltip: context.l10n.cacheNeedsLibrary,
+                    onPressed: null,
+                  ),
+                );
+              }
+            }(),
           ),
           ListTile(
             // TODO real UI for this

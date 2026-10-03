@@ -31,7 +31,7 @@ class FinampUserAdapter extends TypeAdapter<FinampUser> {
       isLocal: fields[8] == null ? false : fields[8] as bool,
       accessToken: fields[2] as String,
       serverId: fields[3] as String,
-      currentViewId: fields[4] as BaseItemId?,
+      currentLibraryId: fields[4] as ResolvedLibraryId?,
       views: fields[5] == null
           ? const {}
           : (fields[5] as Map).cast<BaseItemId, BaseItemDto>(),
@@ -51,7 +51,7 @@ class FinampUserAdapter extends TypeAdapter<FinampUser> {
       ..writeByte(3)
       ..write(obj.serverId)
       ..writeByte(4)
-      ..write(obj.currentViewId)
+      ..write(obj.currentLibraryId)
       ..writeByte(5)
       ..write(obj.views)
       ..writeByte(7)
@@ -1063,7 +1063,7 @@ class QueueItemSourceAdapter extends TypeAdapter<QueueItemSource> {
       name: fields[1] as QueueItemSourceName,
       id: fields[2] as BaseItemId,
       contextNormalizationGain: (fields[4] as num?)?.toDouble(),
-      library: fields[5] as BaseItemId?,
+      library: fields[5] as ResolvedLibraryId?,
     );
   }
 
@@ -1174,54 +1174,6 @@ class FinampQueueItemAdapter extends TypeAdapter<FinampQueueItem> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is FinampQueueItemAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class FinampQueueOrderAdapter extends TypeAdapter<FinampQueueOrder> {
-  @override
-  final typeId = 58;
-
-  @override
-  FinampQueueOrder read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return FinampQueueOrder(
-      items: (fields[0] as List).cast<FinampQueueItem>(),
-      originalSource: fields[1] as QueueItemSource,
-      linearOrder: (fields[2] as List).cast<int>(),
-      shuffledOrder: (fields[3] as List).cast<int>(),
-      sourceLibrary: fields[5] as BaseItemDto?,
-    )..id = fields[4] as String;
-  }
-
-  @override
-  void write(BinaryWriter writer, FinampQueueOrder obj) {
-    writer
-      ..writeByte(6)
-      ..writeByte(0)
-      ..write(obj.items)
-      ..writeByte(1)
-      ..write(obj.originalSource)
-      ..writeByte(2)
-      ..write(obj.linearOrder)
-      ..writeByte(3)
-      ..write(obj.shuffledOrder)
-      ..writeByte(4)
-      ..write(obj.id)
-      ..writeByte(5)
-      ..write(obj.sourceLibrary);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is FinampQueueOrderAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
@@ -9514,20 +9466,10 @@ const _$BaseItemDtoTypeEnumMap = {
 
 FinampCollection _$FinampCollectionFromJson(Map json) => FinampCollection(
   type: $enumDecode(_$FinampCollectionTypeEnumMap, json['Type']),
-  library: json['Library'] == null
-      ? null
-      : BaseItemDto.fromJson(Map<String, dynamic>.from(json['Library'] as Map)),
-  item: json['Item'] == null
-      ? null
-      : BaseItemDto.fromJson(Map<String, dynamic>.from(json['Item'] as Map)),
 );
 
 Map<String, dynamic> _$FinampCollectionToJson(FinampCollection instance) =>
-    <String, dynamic>{
-      'Type': _$FinampCollectionTypeEnumMap[instance.type]!,
-      if (instance.library?.toJson() case final value?) 'Library': value,
-      if (instance.item?.toJson() case final value?) 'Item': value,
-    };
+    <String, dynamic>{'Type': _$FinampCollectionTypeEnumMap[instance.type]!};
 
 const _$FinampCollectionTypeEnumMap = {
   FinampCollectionType.favorites: 'favorites',

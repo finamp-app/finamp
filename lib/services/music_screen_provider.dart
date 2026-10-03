@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:finamp/extensions/list.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/services/artist_content_provider.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -172,7 +171,7 @@ class PagedContent extends _$PagedContent {
         case FinampPlayableDto item:
           ref.invalidate(itemByIdProvider(item.item.id));
         case MusicScreenPlayable<FinampPlayableDto> library:
-          final libraryId = library.library.resolve(ref);
+          final libraryId = library.library.resolve(ref)?.viewId;
           if (libraryId != null && ref.exists(itemByIdProvider(libraryId))) {
             try {
               ref.read(itemByIdProvider(libraryId));
@@ -198,7 +197,7 @@ class PagedContent extends _$PagedContent {
       case FinampPlayableDto item:
         ref.invalidate(itemByIdProvider(item.item.id));
       case MusicScreenPlayable<FinampPlayableDto> library:
-        final libraryId = library.library.resolve(ref);
+        final libraryId = library.library.resolve(ref)?.viewId;
         if (libraryId != null && ref.exists(itemByIdProvider(libraryId))) {
           try {
             ref.read(itemByIdProvider(libraryId));
@@ -279,30 +278,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
     return loadHomeSectionItemsOffline(ref: ref, request: request, startIndex: startIndex, limit: limit);
   }
 
-  final BaseItemId? libraryId;
-  if (request.library == allLibraryPlaceholder) {
-    libraryId = null;
-  } else if (request.library == currentLibraryPlaceholder) {
-    final nullableLibraryId = ref.watch<BaseItemId?>(
-      FinampUserHelper.finampCurrentUserProvider.select((value) => value?.currentView?.id),
-    );
-    if (nullableLibraryId == null) {
-      return [];
-    } else {
-      libraryId = nullableLibraryId;
-    }
-  } else {
-    libraryId = request.library as BaseItemId;
-  }
-
-  // TODO refactor so we only need to provide the id?
-  BaseItemDto? library;
-  if (libraryId != null) {
-    library = await ref.watch(itemByIdProvider(libraryId).future);
-    if (library == null) {
-      return [];
-    }
-  }
+  final library = request.library.resolve(ref);
 
   final genreFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter);
   final artistFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.artistFilter);
@@ -317,8 +293,8 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
   final artistType = artistFilter != null ? ref.watch(finampSettingsProvider.defaultArtistType) : tabArtistType;
 
   return jellyfinApiHelper.getItems(
-    libraryFilter: library?.id,
-    parentItem: request.tab == ContentType.playlists ? null : (artistFilter?.extraBaseItem ?? library),
+    libraryFilter: library,
+    parentItem: request.tab == ContentType.playlists ? null : artistFilter?.extraBaseItem,
     includeItemTypes: [request.tab.itemType?.jellyfinName].join(","),
     sortBy: request.sortConfig.sortBy.jellyfinName(request.tab),
     sortOrder: request.sortConfig.sortOrder.toString(),
@@ -366,19 +342,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
   final genreFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.genreFilter);
   final artistFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.artistFilter);
 
-  BaseItemId? libraryId;
-  if (request.library == allLibraryPlaceholder) {
-    libraryId = null;
-  } else if (request.library == currentLibraryPlaceholder) {
-    libraryId = ref.watch<BaseItemId?>(
-      FinampUserHelper.finampCurrentUserProvider.select((value) => value?.currentView?.id),
-    );
-    if (libraryId == null) {
-      return [];
-    }
-  } else {
-    libraryId = request.library as BaseItemId;
-  }
+  ResolvedLibraryId? libraryId = request.library.resolve(ref);
 
   //FIXME this seems to also return metadata-only albums which don't have any downloaded children
   if (request.tab == ContentType.tracks && artistFilter != null) {
@@ -396,7 +360,7 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
       // tracks are not stored as collections, so we need to get them differently
       offlineItems = await downloadsService.getAllTracks(
         nameFilter: searchFilter?.extraString.trim(),
-        viewFilter: libraryId,
+        viewFilter: libraryId?.viewId,
         nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
         onlyFavorites: request.sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
         genreFilter: genreFilter?.extraBaseItem.id,
@@ -408,8 +372,8 @@ Future<List<BaseItemDto>?> loadHomeSectionItemsOffline({
         // TODO use the filter config for this instead of global(several places)?
         // Might need to refactor sortconfig into some preexising providers to eliminate direct global setting usage
         fullyDownloaded: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
-        viewFilter: libraryId,
-        childViewFilter: [ContentType.albums, ContentType.playlists].contains(request.tab) ? null : libraryId,
+        viewFilter: libraryId?.viewId,
+        childViewFilter: [ContentType.albums, ContentType.playlists].contains(request.tab) ? null : libraryId?.viewId,
         nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
         onlyFavorites: request.sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
         infoForType: switch (request.tab) {

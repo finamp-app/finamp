@@ -10,14 +10,13 @@ import 'package:get_it/get_it.dart';
 import '../../models/finamp_models.dart';
 import '../../services/downloads_service.dart';
 import '../../services/finamp_settings_helper.dart';
-import '../../services/finamp_user_helper.dart';
 import '../../services/jellyfin_api_helper.dart';
 import '../global_snackbar.dart';
 
 class DownloadDialog extends ConsumerStatefulWidget {
   const DownloadDialog._build({
     required this.item,
-    required this.viewId,
+    required this.library,
     required this.downloadLocationId,
     required this.needsTranscode,
     required this.children,
@@ -25,7 +24,7 @@ class DownloadDialog extends ConsumerStatefulWidget {
   });
 
   final DownloadStub item;
-  final BaseItemId viewId;
+  final ResolvedLibraryId library;
   final String? downloadLocationId;
   final bool needsTranscode;
   final List<BaseItemDto>? children;
@@ -38,11 +37,12 @@ class DownloadDialog extends ConsumerStatefulWidget {
   /// if there is more than one location.  A transcode setting dropdown will be shown
   /// if transcode downloads is set to ask.  If neither is needed, the
   /// download is initiated immediately with no dialog.
-  static Future<void> show(BuildContext context, DownloadStub item, BaseItemId? viewId, {int? trackCount}) async {
-    if (viewId == null) {
-      final finampUserHelper = GetIt.instance<FinampUserHelper>();
-      viewId = finampUserHelper.currentUser!.currentViewId;
-    }
+  static Future<void> show(
+    BuildContext context,
+    DownloadStub item,
+    ResolvedLibraryId library, {
+    int? trackCount,
+  }) async {
     bool needTranscode =
         FinampSettingsHelper.finampSettings.shouldTranscodeDownloads == TranscodeDownloadsSetting.ask &&
         (item.finampCollection?.type.hasAudio ?? true);
@@ -98,7 +98,7 @@ class DownloadDialog extends ConsumerStatefulWidget {
       GlobalSnackbar.message((scaffold) => AppLocalizations.of(scaffold)!.confirmDownloadStarted, isConfirmation: true);
       unawaited(
         downloadsService
-            .addDownload(stub: item, viewId: viewId!, transcodeProfile: profile)
+            .addDownload(stub: item, viewId: library.viewId, transcodeProfile: profile)
             // TODO only show the enqueued confirmation if the enqueuing took longer than ~10 seconds
             .then((value) => GlobalSnackbar.message((scaffold) => AppLocalizations.of(scaffold)!.downloadsQueued)),
       );
@@ -108,7 +108,7 @@ class DownloadDialog extends ConsumerStatefulWidget {
         context: context,
         builder: (context) => DownloadDialog._build(
           item: item,
-          viewId: viewId!,
+          library: library,
           downloadLocationId: downloadLocation,
           needsTranscode: needTranscode,
           children: children,
@@ -248,7 +248,7 @@ class _DownloadDialogState extends ConsumerState<DownloadDialog> {
                   // We've selected to download, so lets set this as the default for next time
                   FinampSetters.setLastUsedDownloadLocationId(profile.downloadLocationId);
                   await downloadsService
-                      .addDownload(stub: widget.item, viewId: widget.viewId, transcodeProfile: profile)
+                      .addDownload(stub: widget.item, viewId: widget.library.viewId, transcodeProfile: profile)
                       .onError((error, stackTrace) => GlobalSnackbar.error(error));
 
                   GlobalSnackbar.message((scaffold) => AppLocalizations.of(scaffold)!.downloadsQueued);

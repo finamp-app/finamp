@@ -47,7 +47,7 @@ class FinampUser {
     required this.isLocal,
     required this.accessToken,
     required this.serverId,
-    this.currentViewId,
+    this.currentLibraryId,
     this.views = const {},
   });
 
@@ -68,10 +68,10 @@ class FinampUser {
   String serverId;
   @HiveField(4)
   @ignore
-  BaseItemId? currentViewId;
+  ResolvedLibraryId? currentLibraryId;
   @Name("currentViewId")
-  String? get isarCurrentViewId => currentViewId?.raw;
-  set isarCurrentViewId(String? id) => currentViewId = id == null ? null : BaseItemId(id);
+  String? get isarCurrentViewId => currentLibraryId?.raw;
+  set isarCurrentViewId(String? id) => currentLibraryId = id == null ? null : ResolvedLibraryId(id);
   @ignore
   @HiveField(5)
   Map<BaseItemId, BaseItemDto> views;
@@ -93,7 +93,12 @@ class FinampUser {
   );
 
   @ignore
-  BaseItemDto? get currentView => views[currentViewId];
+  /// Gets the current library view.  Returns null for all library view.
+  BaseItemDto? get currentView2 {
+    final viewId = currentLibraryId?.viewId;
+    if (viewId == null) return null;
+    return views[viewId];
+  }
 
   void update({bool? newIsLocal, String? newLocalAddress, String? newPublicAddress, bool? newPreferLocalNetwork}) {
     isLocal = newIsLocal ?? isLocal;
@@ -1480,6 +1485,21 @@ class DownloadStub {
     );
   }
 
+  factory DownloadStub.libraryFilteredItem({required BaseItemDto item, required ResolvedLibraryId? library}) {
+    assert(
+      BaseItemDtoType.fromItem(item) == BaseItemDtoType.genre ||
+          BaseItemDtoType.fromItem(item) == BaseItemDtoType.artist,
+    );
+    final view = GetIt.instance<FinampUserHelper>().currentUser?.views.values.firstWhereOrNull(
+      (x) => x.id.raw == library?.raw,
+    );
+    if (view == null) {
+      return DownloadStub.fromItem(type: DownloadItemType.collection, item: item);
+    } else {
+      return DownloadStub.fromFinampCollection(FinampCollection.libraryFiltered2(library: view, item: item));
+    }
+  }
+
   factory DownloadStub.fromId({required BaseItemId id, required DownloadItemType type, required String? name}) {
     assert(!type.requiresItem);
     return DownloadStub._build(
@@ -2163,7 +2183,7 @@ class QueueItemSource {
     BaseItemDto baseItem, {
     QueueItemSourceType? type,
     QueueItemSourceNameType? nameType,
-    BaseItemId? library,
+    ResolvedLibraryId? library,
   }) {
     final defaultType = switch (BaseItemDtoType.fromItem(baseItem)) {
       BaseItemDtoType.album => QueueItemSourceType.album,
@@ -2183,7 +2203,7 @@ class QueueItemSource {
     switch (BaseItemDtoType.fromItem(baseItem)) {
       case BaseItemDtoType.artist:
       case BaseItemDtoType.genre:
-        library ??= GetIt.instance<FinampUserHelper>().currentUser?.currentViewId;
+        library ??= GetIt.instance<FinampUserHelper>().currentUser?.currentLibraryId;
       case _:
         break;
     }
@@ -2240,7 +2260,7 @@ class QueueItemSource {
   final double? contextNormalizationGain;
 
   @HiveField(5)
-  final BaseItemId? library;
+  final ResolvedLibraryId? library;
 
   bool get wantsItem => item == null && RegExp(r'^[0-9a-f]{32}$').matchAsPrefix(id) != null;
 
@@ -2392,7 +2412,7 @@ class FinampQueueItem {
   BaseItemId get baseItemId => item.extras!["itemJson"]["Id"] as BaseItemId;
 }
 
-@HiveType(typeId: 58)
+//@HiveType(typeId: 58)
 class FinampQueueOrder {
   FinampQueueOrder({
     required this.items,
@@ -2404,27 +2424,21 @@ class FinampQueueOrder {
     id = const Uuid().v4();
   }
 
-  @HiveField(0)
   List<FinampQueueItem> items;
 
-  @HiveField(1)
   QueueItemSource originalSource;
 
   /// The linear order of the items in the queue. Used when shuffle is disabled.
   /// The integers at index x contains the index of the item within [items] at queue position x.
-  @HiveField(2)
   List<int> linearOrder;
 
   /// The shuffled order of the items in the queue. Used when shuffle is enabled.
   /// The integers at index x contains the index of the item within [items] at queue position x.
-  @HiveField(3)
   List<int> shuffledOrder;
 
-  @HiveField(4)
   late String id;
 
-  @HiveField(5)
-  BaseItemDto? sourceLibrary;
+  ResolvedLibraryId? sourceLibrary;
 }
 
 //@HiveType(typeId: 59)
@@ -2454,7 +2468,7 @@ class FinampQueueInfo {
 
   String id;
 
-  BaseItemDto? sourceLibrary;
+  ResolvedLibraryId? sourceLibrary;
 
   int get currentTrackIndex => previousTracks.length + (currentTrack == null ? 0 : 1);
   int get upcomingTrackCount => nextUp.length + queue.length;
@@ -2791,19 +2805,17 @@ enum FinampCollectionType {
 
 @JsonSerializable(fieldRename: FieldRename.pascal, explicitToJson: true, anyMap: true, includeIfNull: false)
 class FinampCollection {
-  FinampCollection({required this.type, this.library, this.item}) {
-    assert(
-      (type == FinampCollectionType.libraryImages && library != null && item == null) ||
-          (type == FinampCollectionType.collectionWithLibraryFilter && library != null && item != null) ||
-          (type != FinampCollectionType.libraryImages &&
-              type != FinampCollectionType.collectionWithLibraryFilter &&
-              item == null &&
-              library == null),
-      'Invalid combination of type, library, and item for FinampCollection.',
-    );
-  }
+  FinampCollection({required this.type}) : library = null, item = null;
+
+  FinampCollection.libraryFiltered2({required BaseItemDto this.library, required BaseItemDto this.item})
+    : type = FinampCollectionType.collectionWithLibraryFilter;
+
+  FinampCollection.libraryImages({required BaseItemDto this.library})
+    : type = FinampCollectionType.libraryImages,
+      item = null;
 
   final FinampCollectionType type;
+  // TODO switch this to a baseItemId?
   final BaseItemDto? library;
   final BaseItemDto? item;
 

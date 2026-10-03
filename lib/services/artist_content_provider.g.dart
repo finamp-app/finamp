@@ -12,7 +12,7 @@ part of 'artist_content_provider.dart';
 // **************************************************************************
 
 String _$getArtistTracksSectionHash() =>
-    r'568e17b713d1e4f47ad71d50093f0c887743145c';
+    r'055842bc18f32171931ca491af9a04609012e852';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -57,7 +57,7 @@ class GetArtistTracksSectionFamily
   /// See also [getArtistTracksSection].
   GetArtistTracksSectionProvider call({
     required BaseItemDto artist,
-    BaseItemDto? libraryFilter,
+    LibraryId? libraryFilter,
     BaseItemId? genreFilter,
   }) {
     return GetArtistTracksSectionProvider(
@@ -106,7 +106,7 @@ class GetArtistTracksSectionProvider
   /// See also [getArtistTracksSection].
   GetArtistTracksSectionProvider({
     required BaseItemDto artist,
-    BaseItemDto? libraryFilter,
+    LibraryId? libraryFilter,
     BaseItemId? genreFilter,
   }) : this._internal(
          (ref) => getArtistTracksSection(
@@ -141,7 +141,7 @@ class GetArtistTracksSectionProvider
   }) : super.internal();
 
   final BaseItemDto artist;
-  final BaseItemDto? libraryFilter;
+  final LibraryId? libraryFilter;
   final BaseItemId? genreFilter;
 
   @override
@@ -218,7 +218,7 @@ mixin GetArtistTracksSectionRef
   BaseItemDto get artist;
 
   /// The parameter `libraryFilter` of this provider.
-  BaseItemDto? get libraryFilter;
+  LibraryId? get libraryFilter;
 
   /// The parameter `genreFilter` of this provider.
   BaseItemId? get genreFilter;
@@ -239,14 +239,14 @@ class _GetArtistTracksSectionProviderElement
   @override
   BaseItemDto get artist => (origin as GetArtistTracksSectionProvider).artist;
   @override
-  BaseItemDto? get libraryFilter =>
+  LibraryId? get libraryFilter =>
       (origin as GetArtistTracksSectionProvider).libraryFilter;
   @override
   BaseItemId? get genreFilter =>
       (origin as GetArtistTracksSectionProvider).genreFilter;
 }
 
-String _$getArtistAlbumsHash() => r'9604fbf0b816367ec52ebadceaf2d1ed242dd1b7';
+String _$getArtistAlbumsHash() => r'6acf82dbc9833483f6bf0187b94bf53deaf8534b';
 
 /// See also [getArtistAlbums].
 @ProviderFor(getArtistAlbums)
@@ -445,7 +445,7 @@ class _GetArtistAlbumsProviderElement
 }
 
 String _$getPerformingArtistAlbumsHash() =>
-    r'9dab03f6b5346bfb2e88c4333c5b07f633010b74';
+    r'b6911ecf1bb86853bfcbb72e4574355c7eeb64ea';
 
 /// See also [getPerformingArtistAlbums].
 @ProviderFor(getPerformingArtistAlbums)

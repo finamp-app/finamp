@@ -62,12 +62,12 @@ class DownloadButton extends ConsumerWidget {
         parentTooltip = AppLocalizations.of(context)!.incidentalDownloadTooltip(parentName);
       }
     }
-    BaseItemId viewId;
+    ResolvedLibraryId viewId;
     if (isLibrary) {
-      viewId = BaseItemId(item.id);
+      viewId = ResolvedLibraryId(item.id);
     } else {
       final finampUserHelper = GetIt.instance<FinampUserHelper>();
-      viewId = finampUserHelper.currentUser!.currentViewId!;
+      viewId = finampUserHelper.currentUser!.currentLibraryId!;
     }
 
     var downloadButton = Opacity(
@@ -122,7 +122,7 @@ class DownloadButton extends ConsumerWidget {
       icon: const Icon(Icons.sync),
       tooltip: AppLocalizations.of(context)!.syncDownloads,
       onPressed: () {
-        downloadsService.resync(item, viewId);
+        downloadsService.resync(item, viewId.viewId);
       },
       color: (status.outdated && !downloadDisabled) ? Colors.orange : null,
     );

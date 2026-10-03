@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:finamp/components/AlbumScreen/download_button.dart';
 import 'package:finamp/components/toggleable_list_tile.dart';
 import 'package:flutter/material.dart';
@@ -14,36 +15,48 @@ import '../../services/finamp_user_helper.dart';
 class ViewListTile extends ConsumerWidget {
   const ViewListTile({super.key, required this.view});
 
-  final BaseItemDto view;
+  final ResolvedLibraryId view;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
 
-    var currentViewId = ref.watch(FinampUserHelper.finampCurrentUserProvider.select((value) => value?.currentViewId));
+    final currentViewId = ref.watch(FinampUserHelper.currentUserProvider.select((value) => value?.currentLibraryId));
+    final viewItem = ref.watch(
+      FinampUserHelper.currentUserProvider.select(
+        (value) => value?.views.values.firstWhereOrNull((x) => x.id.raw == view.raw),
+      ),
+    );
+    assert(viewItem != null || view == allLibraryPlaceholder);
+    final name = switch (view) {
+      allLibraryPlaceholder => context.l10n.allLibraries,
+      _ => viewItem?.name,
+    };
 
     return Semantics.fromProperties(
-      properties: SemanticsProperties(label: view.name, selected: currentViewId == view.id),
+      properties: SemanticsProperties(label: name, selected: currentViewId == view),
       container: true,
       child: ToggleableListTile(
         leading: Padding(
           padding: const EdgeInsets.only(left: 8.0, right: 8.0),
           child: Icon(
-            getViewIcon(view.collectionType),
-            color: currentViewId == view.id ? Theme.of(context).colorScheme.primary : null,
+            view == allLibraryPlaceholder ? TablerIcons.blend_mode : getViewIcon(viewItem?.collectionType),
+            color: currentViewId == view ? Theme.of(context).colorScheme.primary : null,
             size: 20.0,
           ),
         ),
-        title: view.name ?? context.l10n.unknownName,
+        title: name ?? context.l10n.unknownName,
         titleStyle: TextStyle(fontSize: 14.0),
-        trailing: DownloadButton(
-          isLibrary: true,
-          item: DownloadStub.fromItem(item: view, type: DownloadItemType.collection),
-        ),
+        trailing: viewItem == null
+            ? SizedBox.shrink()
+            : DownloadButton(
+                isLibrary: true,
+                item: DownloadStub.fromItem(item: viewItem, type: DownloadItemType.collection),
+              ),
         condensed: true,
-        state: currentViewId == view.id,
+        state: currentViewId == view,
         onToggle: (bool currentState) async {
-          finampUserHelper.setCurrentUserCurrentViewId(view.id);
+          finampUserHelper.setCurrentUserCurrentViewId(view);
           await Future<void>.delayed(const Duration(milliseconds: 400));
           // update state first to give visual feedback, then close menu
           if (!context.mounted) return;

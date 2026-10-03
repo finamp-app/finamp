@@ -1464,7 +1464,7 @@ class DownloadsService {
       favoriteIds = _getFavoriteIds() ?? [];
     }
     if (fullyDownloaded) {
-      final libraryId = _finampUserHelper.currentUser?.currentViewId;
+      final libraryId = _finampUserHelper.currentUser?.currentLibraryId;
       libraryFilteredIds = _isar.downloadItems
           .where()
           .typeEqualTo(DownloadItemType.finampCollection)

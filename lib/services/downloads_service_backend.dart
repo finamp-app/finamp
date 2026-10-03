@@ -881,7 +881,7 @@ class DownloadsSyncService {
             viewId = null;
           case FinampCollectionType.libraryImages:
           case FinampCollectionType.collectionWithLibraryFilter:
-            viewId = parent.finampCollection!.library!.id;
+            viewId = parent.finampCollection!.library?.id;
         }
     }
     if (requireCompleted.contains(parent.isarId)) {
@@ -1428,7 +1428,9 @@ class DownloadsSyncService {
           outputItems =
               await _jellyfinApiData.getItems(
                 parentItem: (baseItemType == BaseItemDtoType.genre) ? collection.library! : item,
-                libraryFilter: (baseItemType == BaseItemDtoType.artist) ? collection.library!.id : null,
+                libraryFilter: (baseItemType == BaseItemDtoType.artist)
+                    ? ResolvedLibraryId(collection.library!.id.raw)
+                    : null,
                 genreFilter: (baseItemType == BaseItemDtoType.genre) ? item.id : null,
                 includeItemTypes: BaseItemDtoType.album.jellyfinName,
                 fields: fields,
@@ -1442,7 +1444,7 @@ class DownloadsSyncService {
             outputItems.addAll(
               await _jellyfinApiData.getItems(
                     parentItem: item,
-                    libraryFilter: collection.library!.id,
+                    libraryFilter: ResolvedLibraryId(collection.library!.id.raw),
                     includeItemTypes: BaseItemDtoType.track.jellyfinName,
                     filters: "Artist=${parent.name}",
                     artistType: ArtistType.artist,

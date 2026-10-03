@@ -19,9 +19,9 @@ Future<(int, BaseItemDtoType)> itemAmount(
 }) async {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final downloadsService = GetIt.instance<DownloadsService>();
-  final library = GetIt.instance<FinampUserHelper>().currentUser?.currentView;
 
   BaseItemDtoType itemType = BaseItemDtoType.fromItem(baseItem);
+  final library = ref.watch(FinampUserHelper.currentUserProvider)?.currentLibraryId;
 
   late int itemCount;
 
@@ -31,12 +31,12 @@ Future<(int, BaseItemDtoType)> itemAmount(
           showTrackCountForArtists || ref.watch(finampSettingsProvider.defaultArtistType) == ArtistType.artist;
       if (ref.watch(finampSettingsProvider.isOffline)) {
         var items = await (showTrackCountForArtists
-            ? ref.watch(getArtistAlbumsProvider(artist: baseItem, libraryFilter: library?.id).future)
-            : ref.watch(getPerformingArtistTracksProvider(artist: baseItem, libraryFilter: library?.id).future));
+            ? ref.watch(getArtistAlbumsProvider(artist: baseItem, libraryFilter: library).future)
+            : ref.watch(getPerformingArtistTracksProvider(artist: baseItem, libraryFilter: library).future));
         itemCount = items.length;
       } else {
         var items = await jellyfinApiHelper.getItemsWithTotalRecordCount(
-          libraryFilter: library?.id,
+          libraryFilter: library,
           parentItem: baseItem,
           includeItemTypes: showTrackCountForArtists
               ? BaseItemDtoType.track.jellyfinName
@@ -58,14 +58,14 @@ Future<(int, BaseItemDtoType)> itemAmount(
         var items = await downloadsService.getAllCollections(
           includeItemTypes: [BaseItemDtoType.album],
           fullyDownloaded: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
-          viewFilter: library?.id,
+          viewFilter: library?.viewId,
           nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
           genreFilter: baseItem.id,
         );
         itemCount = items.nonNulls.length;
       } else {
         var items = await jellyfinApiHelper.getItemsWithTotalRecordCount(
-          parentItem: library,
+          libraryFilter: library,
           genreFilter: baseItem.id,
           limit: 1,
           includeItemTypes: BaseItemDtoType.album.jellyfinName,

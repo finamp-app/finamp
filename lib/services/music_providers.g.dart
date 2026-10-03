@@ -11,7 +11,7 @@ part of 'music_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$globalSearchHash() => r'629baea3ff8943df78747a6e6804455125ae7136';
+String _$globalSearchHash() => r'd0d4c2c645b1084f339ad1087f144449a43e4f1e';
 
 /// Copied from Dart SDK
 class _SystemHash {

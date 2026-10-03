@@ -150,10 +150,13 @@ class AndroidAutoHelper {
     // otherwise, use the current view as fallback to ensure we get the correct items.
     final parentItem = itemId.parentType == MediaItemParentType.collection
         ? BaseItemDto(id: itemId.itemId!, type: itemId.contentType.itemType?.jellyfinName)
-        : (itemId.contentType == ContentType.playlists ? null : _finampUserHelper.currentUser?.currentView);
+        : null;
 
     final items = await _jellyfinApiHelper.getItems(
       parentItem: parentItem,
+      libraryFilter: parentItem != null || itemId.contentType == ContentType.playlists
+          ? null
+          : _finampUserHelper.currentUser?.currentLibraryId,
       sortBy: includeItemTypes == BaseItemDtoType.track
           ? "ParentIndexNumber,IndexNumber,${sortBy.jellyfinName(itemId.contentType)}"
           : sortBy.jellyfinName(itemId.contentType),
@@ -304,7 +307,7 @@ class AndroidAutoHelper {
             nameFilter: searchTerm,
             includeItemTypes: [BaseItemDtoType.playlist],
             fullyDownloaded: false,
-            viewFilter: finampUserHelper.currentUser?.currentView?.id,
+            viewFilter: finampUserHelper.currentUser?.currentLibraryId?.viewId,
             childViewFilter: null,
             nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
             onlyFavorites: false,
@@ -476,7 +479,7 @@ class AndroidAutoHelper {
           // If we're on the tracks tab, just get all of the downloaded items
           offlineItems = await _downloadsService.getAllTracks(
             // nameFilter: widget.searchTerm,
-            viewFilter: finampUserHelper.currentUser?.currentView?.id,
+            viewFilter: finampUserHelper.currentUser?.currentLibraryId?.viewId,
             nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
           );
 
@@ -566,7 +569,7 @@ class AndroidAutoHelper {
         // If we're on the tracks tab, just get all of the downloaded items
         offlineItems = await _downloadsService.getAllTracks(
           // nameFilter: widget.searchTerm,
-          viewFilter: finampUserHelper.currentUser?.currentView?.id,
+          viewFilter: finampUserHelper.currentUser?.currentLibraryId?.viewId,
           nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
         );
 
@@ -1033,7 +1036,7 @@ class AndroidAutoHelper {
         // We should probably try to page this, at least if we are sorting by name
         offlineItems = await _downloadsService.getAllTracks(
           nameFilter: searchTerm,
-          viewFilter: finampUserHelper.currentUser?.currentView?.id,
+          viewFilter: finampUserHelper.currentUser?.currentLibraryId?.viewId,
           nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
           onlyFavorites: false,
         );
@@ -1043,11 +1046,11 @@ class AndroidAutoHelper {
           includeItemTypes: itemTypes,
           fullyDownloaded: false,
           viewFilter: itemTypes.first == ContentType.albums.itemType
-              ? finampUserHelper.currentUser?.currentView?.id
+              ? finampUserHelper.currentUser?.currentLibraryId?.viewId
               : null,
           childViewFilter:
               (itemTypes.contains(ContentType.albums.itemType) && itemTypes.contains(ContentType.playlists.itemType))
-              ? finampUserHelper.currentUser?.currentView?.id
+              ? finampUserHelper.currentUser?.currentLibraryId?.viewId
               : null,
           nullableViewFilters:
               itemTypes.first == ContentType.albums.itemType &&
@@ -1058,15 +1061,19 @@ class AndroidAutoHelper {
       searchResult = offlineItems.map((e) => e.baseItem).whereNotNull().toList();
     } else {
       if (itemTypes.first == BaseItemDtoType.artist) {
-        searchResult = await jellyfinApiHelper.getArtists(
-          parentItem: finampUserHelper.currentUser?.currentView,
+        searchResult = await jellyfinApiHelper.getItems(
+          libraryFilter: finampUserHelper.currentUser?.currentLibraryId,
           searchTerm: searchTerm,
           startIndex: 0,
           limit: limit,
+          artistType: ArtistType.artist,
+          includeItemTypes: BaseItemDtoType.artist.jellyfinName,
         );
       } else {
         searchResult = await jellyfinApiHelper.getItems(
-          parentItem: itemTypes.contains(BaseItemDtoType.playlist) ? null : finampUserHelper.currentUser?.currentView,
+          libraryFilter: itemTypes.contains(BaseItemDtoType.playlist)
+              ? null
+              : finampUserHelper.currentUser?.currentLibraryId,
           includeItemTypes: itemTypes.map((type) => type.jellyfinName).join(","),
           searchTerm: searchTerm,
           startIndex: 0,

@@ -42,7 +42,7 @@ final AutoDisposeFutureProviderFamily<ServerInfo?, Uri> serverInfoProvider = Fut
     .family<ServerInfo?, Uri>((ref, serverAddress) async {
       final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
-      final currentUserInfo = ref.watch(FinampUserHelper.finampCurrentUserProvider);
+      final currentUserInfo = ref.watch(FinampUserHelper.currentUserProvider);
       final bool isCurrentServer = [
         currentUserInfo?.publicAddress,
         currentUserInfo?.localAddress,
@@ -90,7 +90,7 @@ final AutoDisposeFutureProviderFamily<ServerInfo?, Uri> serverInfoProvider = Fut
 
 /// Provider for info about the currently connected server
 final currentServerInfoProvider = Provider<AsyncValue<ServerInfo?>>((ref) {
-  final currentServer = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.baseURL;
+  final currentServer = ref.watch(FinampUserHelper.currentUserProvider)?.baseURL;
   if (currentServer != null) {
     return ref.watch(serverInfoProvider(Uri.parse(currentServer)));
   }

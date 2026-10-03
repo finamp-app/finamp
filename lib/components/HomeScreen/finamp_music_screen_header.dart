@@ -85,7 +85,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
 
     final statusIcon = ref.watch(finampSettingsProvider.isOffline)
         ? TablerIcons.cloud_off
-        : ref.watch(FinampUserHelper.finampCurrentUserProvider)?.isLocal ?? false
+        : ref.watch(FinampUserHelper.currentUserProvider)?.isLocal ?? false
         ? TablerIcons.wifi
         : null; // hide icon by default (remote connection)
 
@@ -240,7 +240,7 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                           final appName = asyncSnapshot.data?.appName ?? AppLocalizations.of(context)!.finamp;
                           return Text(
                             singleTabConfig?.getTitle(context.l10n) ??
-                                finampUserHelper.currentUser?.currentView?.name ??
+                                finampUserHelper.currentUser?.currentView2?.name ??
                                 appName,
                             style: TextStyle(fontSize: 20),
                             maxLines: 1,

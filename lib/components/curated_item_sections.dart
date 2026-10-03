@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:finamp/components/AlbumScreen/album_screen_content.dart';
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/curated_item_filter_row.dart';
 import 'package:finamp/components/item_collections_sliver_list.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -9,7 +10,6 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 
 class TracksSection extends ConsumerStatefulWidget {
   const TracksSection({
@@ -17,7 +17,6 @@ class TracksSection extends ConsumerStatefulWidget {
     required this.parent,
     this.tracks,
     this.childrenForQueue,
-    this.lazyAddMoreTracksToQueue = false,
     required this.tracksText,
     this.seeAllCallbackFunction,
     this.genreFilter,
@@ -33,7 +32,6 @@ class TracksSection extends ConsumerStatefulWidget {
   final BaseItemDto parent;
   final List<BaseItemDto>? tracks;
   final List<BaseItemDto>? childrenForQueue;
-  final bool lazyAddMoreTracksToQueue;
   final String tracksText;
   final VoidCallback? seeAllCallbackFunction;
   final BaseItemDto? genreFilter;
@@ -193,7 +191,6 @@ class _TracksSectionState extends ConsumerState<TracksSection> {
                   TracksSliverList(
                     childrenForList: widget.tracks!,
                     childrenForQueue: widget.childrenForQueue!,
-                    lazyAddMoreTracksToQueue: widget.lazyAddMoreTracksToQueue,
                     selectedFilter: widget.selectedFilter,
                     adaptiveAdditionalInfoSortBy: widget.selectedFilter?.getSortBy(),
                     parent: widget.parent,

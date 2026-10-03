@@ -28,7 +28,7 @@ class AudioServiceHelper {
   Future<void> shuffleAll({required bool onlyShowFavorites, BaseItemDto? genreFilter, int? itemCount}) async {
     List<jellyfin_models.BaseItemDto>? items = (await getShuffleAllTracks(
       onlyShowFavorites: onlyShowFavorites,
-      library: _finampUserHelper.currentUser!.currentView!,
+      library: _finampUserHelper.currentUser!.currentLibraryId,
       genreFilter: genreFilter,
       itemCount: itemCount,
     ))?.$1;
@@ -50,7 +50,7 @@ class AudioServiceHelper {
                 type: onlyShowFavorites ? QueueItemSourceNameType.yourLikes : QueueItemSourceNameType.shuffleAll,
               ),
               id: "shuffleAll",
-              library: _finampUserHelper.currentUser!.currentView!.id,
+              library: _finampUserHelper.currentUser?.currentLibraryId,
             );
 
       await _queueService.startPlayback(items: items, source: source, order: FinampPlaybackOrder.shuffled);
@@ -59,7 +59,7 @@ class AudioServiceHelper {
 
   Future<(List<BaseItemDto>, int)?> getShuffleAllTracks({
     required bool onlyShowFavorites,
-    required BaseItemDto library,
+    required ResolvedLibraryId? library,
     BaseItemDto? genreFilter,
     int? itemCount,
   }) async {
@@ -69,7 +69,7 @@ class AudioServiceHelper {
       // shuffle them before making a sublist, but I couldn't think of a better
       // way.
       final items = (await _isarDownloader.getAllTracks(
-        viewFilter: library.id,
+        viewFilter: library?.viewId,
         genreFilter: genreFilter?.id,
         onlyFavorites: onlyShowFavorites,
         nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
@@ -83,7 +83,7 @@ class AudioServiceHelper {
     } else {
       // If online, get all audio items from the user's view
       final record = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
-        parentItem: library,
+        libraryFilter: library,
         includeItemTypes: "Audio",
         filters: onlyShowFavorites ? "IsFavorite" : null,
         limit: itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount,
@@ -229,7 +229,7 @@ class AudioServiceHelper {
       return;
     }
     final randomTracks = await _jellyfinApiHelper.getItems(
-      parentItem: _finampUserHelper.currentUser?.currentView,
+      parentItem: _finampUserHelper.currentUser?.currentView2,
       includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
       limit: 1,
       sortBy: SortBy.random.jellyfinName(ContentType.tracks),
@@ -294,7 +294,7 @@ class AudioServiceHelper {
 
     // get random item (of the selected type)
     final randomItem = (await _jellyfinApiHelper.getItems(
-      parentItem: contentType == ContentType.playlists ? null : _finampUserHelper.currentUser!.currentView,
+      parentItem: contentType == ContentType.playlists ? null : _finampUserHelper.currentUser!.currentView2,
       filters: favoritesOnly ? "IsFavorite" : null,
       // Jellyfin 10.10 and 10.11 use the [isFavorite] boolean filter instead of the list-based [filters] parameter for genres, so add that here
       // I guess part of the reason for this is that it's not possible to favorite a genre through the Jellyfin Web UI at all...
@@ -372,8 +372,8 @@ class AudioServiceHelper {
             x,
             (await switch (x) {
               ContentType.genres => _jellyfinApiHelper.getItemsWithTotalRecordCount(
-                parentItem: _finampUserHelper.currentUser!.currentView,
-                libraryFilter: _finampUserHelper.currentUser!.currentView!.id,
+                parentItem: _finampUserHelper.currentUser!.currentView2,
+                libraryFilter: _finampUserHelper.currentUser!.currentLibraryId,
                 includeItemTypes: [BaseItemDtoType.genre.jellyfinName].join(","),
                 // filters: "IsFavorite",
                 isFavorite: true,
@@ -381,8 +381,8 @@ class AudioServiceHelper {
                 limit: 1,
               ),
               _ => _jellyfinApiHelper.getItemsWithTotalRecordCount(
-                parentItem: _finampUserHelper.currentUser!.currentView,
-                libraryFilter: _finampUserHelper.currentUser!.currentView!.id,
+                parentItem: _finampUserHelper.currentUser!.currentView2,
+                libraryFilter: _finampUserHelper.currentUser!.currentLibraryId,
                 includeItemTypes: [x.itemType!.jellyfinName].join(","),
                 filters: "IsFavorite",
                 limit: 1,

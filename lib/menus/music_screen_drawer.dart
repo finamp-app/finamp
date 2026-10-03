@@ -8,6 +8,7 @@ import 'package:finamp/components/MusicScreen/view_list_tile.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/downloads_screen.dart';
 import 'package:finamp/screens/logs_screen.dart';
 import 'package:finamp/screens/playback_history_screen.dart';
@@ -42,6 +43,10 @@ class MusicScreenDrawer extends ConsumerWidget {
         final excessWidth = constraints.maxWidth - minWidth;
         final expandedWidth = minWidth + excessWidth * 0.5;
         final targetWidth = min(expandedWidth, 450.0);
+        final views = finampUserHelper.currentUser!.views.values.map((x) => ResolvedLibraryId(x.id.raw)).toList();
+        if (views.length > 1) {
+          views.add(allLibraryPlaceholder);
+        }
         return Drawer(
           surfaceTintColor: colorScheme.surfaceTint,
           backgroundColor: colorScheme.surface,
@@ -108,7 +113,7 @@ class MusicScreenDrawer extends ConsumerWidget {
                               SizedBox(height: 8),
                               Text(
                                 context.l10n.connectionStateInfoString(
-                                  ((ref.watch(FinampUserHelper.finampCurrentUserProvider)?.isLocal ?? false)
+                                  ((ref.watch(FinampUserHelper.currentUserProvider)?.isLocal ?? false)
                                           ? switch (true) {
                                               _ when downloadsService.syncBuffer.isRunning =>
                                                 ConnectionStateInfo.syncingLocal,
@@ -184,8 +189,8 @@ class MusicScreenDrawer extends ConsumerWidget {
                   ],
                   SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
-                      return ViewListTile(view: finampUserHelper.currentUser!.views.values.elementAt(index));
-                    }, childCount: finampUserHelper.currentUser!.views.length),
+                      return ViewListTile(view: views.elementAt(index));
+                    }, childCount: views.length),
                   ),
                   SliverFillRemaining(
                     hasScrollBody: false,
