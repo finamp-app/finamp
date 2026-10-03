@@ -68,6 +68,9 @@ This also means that you can keep using your regular install of Finamp (from the
 If you try to install a release build you built yourself (with your signing key) on top of a release build you downloaded from the Play Store or GitHub, Android will prevent you from doing so and show a generic error message. The only solution here is to uninstall the existing version, and then install your build. Note that this will delete any logins, settings and downloads that you had configured.  
 This generally shouldn't be needed, since debug builds works fine for daily usage, even though they are a bit less performant.
 
+For the maintainer workflow that builds signed Android release artifacts from
+tags, see [Android release artifacts](docs/android-release.md).
+
 ### Developing on Windows
 
 With recent Flutter updates, there have been some issue with caches not being closed when trying to build *on* Windows (no matter which platform).  
