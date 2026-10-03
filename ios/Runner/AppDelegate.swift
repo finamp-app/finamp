@@ -1,7 +1,6 @@
 import app_links
 import UIKit
 import Flutter
-import MediaPlayer
 import Intents
 import AVFoundation
 
@@ -17,11 +16,6 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
         // Start the shared engine and register plugins with it for CarPlay
         flutterEngine.run()
         GeneratedPluginRegistrant.register(with: flutterEngine)
-
-        // Set up method channel for playback state sync to MPNowPlayingInfoCenter
-        // TODO: This is a workaround because audio_service doesn't set playbackState on iOS.
-        // Consider contributing a fix to audio_service to set MPNowPlayingInfoCenter.playbackState on iOS.
-        setupPlaybackStateChannel()
 
         // Set up method channel for Siri media intent handling
         setupSiriIntentChannel()
@@ -52,34 +46,6 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
         }
         return nil
     }
-
-    // Required for scene-based lifecycle to properly configure CarPlay scene
-    @available(iOS 13.0, *)
-    override func application(
-        _ application: UIApplication,
-        configurationForConnecting connectingSceneSession: UISceneSession,
-        options: UIScene.ConnectionOptions
-    ) -> UISceneConfiguration {
-        // Check if this is a CarPlay scene (CPTemplateApplicationSceneSessionRoleApplication)
-        if connectingSceneSession.role.rawValue == "CPTemplateApplicationSceneSessionRoleApplication" {
-            let sceneConfig = UISceneConfiguration(
-                name: "CarPlay Configuration",
-                sessionRole: connectingSceneSession.role
-            )
-            // Use the flutter_carplay plugin's delegate directly (now that it's @objc accessible)
-            sceneConfig.delegateClass = NSClassFromString("flutter_carplay.FlutterCarPlaySceneDelegate")
-            return sceneConfig
-        }
-
-        // For the main app window scene, return configuration with SceneDelegate
-        let sceneConfig = UISceneConfiguration(
-            name: "Default Configuration",
-            sessionRole: connectingSceneSession.role
-        )
-        sceneConfig.delegateClass = SceneDelegate.self
-        sceneConfig.storyboard = UIStoryboard(name: "Main", bundle: nil)
-        return sceneConfig
-    }
 }
 
 private func setExcludeFromiCloudBackup(_ dir: URL, isExcluded: Bool) throws {
@@ -89,40 +55,6 @@ private func setExcludeFromiCloudBackup(_ dir: URL, isExcluded: Bool) throws {
     var values = URLResourceValues()
     values.isExcludedFromBackup = isExcluded
     try mutableDir.setResourceValues(values)
-}
-
-// TODO: This is a workaround because audio_service doesn't set MPNowPlayingInfoCenter.playbackState on iOS.
-// The audio_service plugin only sets playbackState on macOS (see AudioServicePlugin.m line 293-295).
-// This causes CarPlay's Now Playing screen to not reflect the correct play/pause state when
-// playback is started from the phone. Consider contributing a fix upstream to audio_service.
-
-extension AppDelegate {
-    func setupPlaybackStateChannel() {
-        let channel = FlutterMethodChannel(
-            name: "\(Bundle.main.bundleIdentifier!)/playback_state",
-            binaryMessenger: flutterEngine.binaryMessenger
-        )
-
-        channel.setMethodCallHandler { [weak self] (call, result) in
-            switch call.method {
-            case "setPlaybackState":
-                guard let args = call.arguments as? [String: Any],
-                      let isPlaying = args["isPlaying"] as? Bool else {
-                    result(FlutterError(code: "INVALID_ARGS", message: "Missing isPlaying argument", details: nil))
-                    return
-                }
-
-                if #available(iOS 13.0, *) {
-                    let center = MPNowPlayingInfoCenter.default()
-                    center.playbackState = isPlaying ? .playing : .paused
-                }
-                result(nil)
-
-            default:
-                result(FlutterMethodNotImplemented)
-            }
-        }
-    }
 }
 
 // Handles voice commands like "Hey Siri, play [track/artist] on Finamp"

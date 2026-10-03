@@ -98,6 +98,8 @@ class QueueService {
   FinampStorableQueueInfo? _failedSavedQueue;
   static const int _maxSavedQueues = 60;
 
+  final _initialQueueLoad = Completer<void>();
+
   static int get maxInitialQueueItems => Platform.isIOS || Platform.isMacOS
       ? 1000
       : Platform.isAndroid
@@ -382,33 +384,66 @@ class QueueService {
     return info;
   }
 
-  Future<void> performInitialQueueLoad() async {
-    if (_savedQueueState == SavedQueueState.preInit) {
-      try {
-        _savedQueueState = SavedQueueState.init;
-        archiveSavedQueue(inInit: true);
-        var info = _queuesBox.get("latest");
-        if (info != null) {
-          var keys = _queuesBox.values.map((x) => DateTime.fromMillisecondsSinceEpoch(x.creation)).toList();
-          keys.sort();
-          _queueServiceLogger.finest("Stored queue dates: $keys");
-          if (keys.length > _maxSavedQueues) {
-            var extra = keys.getRange(0, keys.length - _maxSavedQueues).map((e) => e.millisecondsSinceEpoch.toString());
-            _queueServiceLogger.finest("Deleting stored queues: $extra");
-            unawaited(_queuesBox.deleteAll(extra));
-          }
+  /// Returns the saved queue history (excluding the live "latest" queue),
+  /// newest first.
+  List<FinampStorableQueueInfo> getRecentQueueHistory() {
+    final queueMap = _queuesBox.toMap();
+    queueMap.remove("latest");
+    final queueList = queueMap.values.toList();
+    queueList.sort((x, y) => y.creation - x.creation);
+    return queueList;
+  }
 
-          if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup && !await _hasInitialPlayLink()) {
-            await loadSavedQueue(info);
-          } else {
-            _savedQueueState = SavedQueueState.pendingSave;
-          }
+  /// Startup queue restore, called once from main().
+  Future<void> performInitialQueueLoad() async {
+    if (_savedQueueState != SavedQueueState.preInit) return;
+    try {
+      _savedQueueState = SavedQueueState.init;
+      archiveSavedQueue(inInit: true);
+      var info = _queuesBox.get("latest");
+      if (info != null) {
+        var keys = _queuesBox.values.map((x) => DateTime.fromMillisecondsSinceEpoch(x.creation)).toList();
+        keys.sort();
+        _queueServiceLogger.finest("Stored queue dates: $keys");
+        if (keys.length > _maxSavedQueues) {
+          var extra = keys.getRange(0, keys.length - _maxSavedQueues).map((e) => e.millisecondsSinceEpoch.toString());
+          _queueServiceLogger.finest("Deleting stored queues: $extra");
+          unawaited(_queuesBox.deleteAll(extra));
         }
-      } catch (e) {
-        _queueServiceLogger.severe(e);
-        rethrow;
+
+        if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup && !await _hasInitialPlayLink()) {
+          await loadSavedQueue(info);
+        } else {
+          _savedQueueState = SavedQueueState.pendingSave;
+        }
+      }
+    } catch (e) {
+      _queueServiceLogger.severe(e);
+      rethrow;
+    } finally {
+      if (!_initialQueueLoad.isCompleted) {
+        _initialQueueLoad.complete();
       }
     }
+  }
+
+  /// Completes when the startup restore finishes, and never errors.
+  Future<void> get initialQueueLoaded => _initialQueueLoad.future;
+
+  /// Waits for the startup restore, then loads the latest saved queue if that restore skipped it.
+  Future<bool> ensureQueueLoaded() async {
+    await _initialQueueLoad.future;
+    if (_currentTrack == null && _audioHandler.audioSources.isEmpty) {
+      if (_savedQueueState == SavedQueueState.failed) {
+        await retryQueueLoad();
+      } else if (_savedQueueState == SavedQueueState.pendingSave) {
+        final info = _queuesBox.get("latest");
+        if (info != null) {
+          await loadSavedQueue(info);
+        }
+      }
+    }
+    return _currentTrack != null || _audioHandler.audioSources.isNotEmpty;
   }
 
   Future<bool> _hasInitialPlayLink() async {
@@ -1141,6 +1176,47 @@ class QueueService {
       }
       _buildQueueFromNativePlayerQueue();
     });
+  }
+
+  /// Replaces the upcoming tracks with [slice] without interrupting the current track.
+  Future<void> replaceUpcoming(PlayableSlice slice) async {
+    if (_audioHandler.audioSources.isEmpty || _currentTrack == null) {
+      return _startSlicePlayback(slice: slice);
+    }
+
+    final upcomingCount = _queueNextUp.length + _queue.length;
+
+    archiveSavedQueue();
+
+    _order.originalSource = slice.source;
+
+    await addToQueue(slice);
+
+    final adjustedIndicesToRemove = List.generate(
+      upcomingCount,
+      (index) => getActualIndexByLinearIndex(_currentQueueIndex + index + 1),
+    )..sort();
+
+    if (upcomingCount > 0) {
+      int currentRangeEnd = adjustedIndicesToRemove.last;
+      int currentRangeStart = currentRangeEnd;
+      // remove from the back to avoid index shifting
+      for (final adjustedIndex in adjustedIndicesToRemove.reversed.skip(1)) {
+        if (adjustedIndex == currentRangeStart - 1) {
+          currentRangeStart = adjustedIndex;
+        } else {
+          // remove in batches to improve performance
+          await _audioHandler.removeFinampQueueItemRange(currentRangeStart, currentRangeEnd + 1);
+          currentRangeStart = adjustedIndex;
+          currentRangeEnd = adjustedIndex;
+        }
+      }
+      await _audioHandler.removeFinampQueueItemRange(currentRangeStart, currentRangeEnd + 1);
+    }
+
+    _buildQueueFromNativePlayerQueue();
+
+    _queueServiceLogger.fine("Replaced $upcomingCount upcoming items with items from '${slice.source.name}'");
   }
 
   Future<void> removeQueueItem(FinampQueueItem queueItem) async {

@@ -8,33 +8,9 @@ import '../models/finamp_models.dart';
 import 'android_auto_helper.dart';
 import 'audio_service_helper.dart';
 
-/// iOS-specific helpers for playback state sync and Siri media intents.
+/// iOS-specific helpers for Siri media intents.
 
 final _logger = Logger('IosHelpers');
-
-/// Syncs playback state to iOS's MPNowPlayingInfoCenter.
-///
-/// TODO: This is a workaround because audio_service doesn't set
-/// MPNowPlayingInfoCenter.playbackState on iOS (only on macOS).
-/// This causes CarPlay's Now Playing screen to not reflect the correct
-/// play/pause state when playback is started from the phone.
-/// Consider contributing a fix upstream to audio_service.
-class IosPlaybackStateSync {
-  static const _channel = MethodChannel('com.unicornsonlsd.finamp-ios/playback_state');
-
-  /// Sets the playback state on iOS's MPNowPlayingInfoCenter.
-  /// This is needed for CarPlay to show the correct play/pause state.
-  static Future<void> setPlaybackState({required bool isPlaying}) async {
-    if (!Platform.isIOS) return;
-
-    try {
-      await _channel.invokeMethod('setPlaybackState', {'isPlaying': isPlaying});
-      _logger.fine('Set iOS playback state to ${isPlaying ? "playing" : "paused"}');
-    } catch (e) {
-      _logger.warning('Failed to set iOS playback state: $e');
-    }
-  }
-}
 
 /// Handles Siri media intent commands from iOS.
 ///

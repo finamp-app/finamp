@@ -152,10 +152,18 @@ dependencies:
   dynamic_color: ^1.8.1
   dbus: ^0.7.11
   bits: ^1.4.0
+  # flutter_carplay fork, based on upstream v1.6.5 with the following commits on top:
+  # - fix: decode percent-encoded file URIs before loading images (7246714d)
+  # - feat: support SF Symbols as image sources with an optional tint (7d207f63)
+  # - feat: add custom Now Playing buttons (c56098e3)
+  # - fix: always complete list and image row selections (fa8e5b09)
+  # - feat: allow a section index title independent of the section header (0d0b7dc3)
+  # - fix: reuse native list items across section updates (7bab43ec)
+  # - feat: support trailing navigation bar buttons on list templates (8d243ea8)
   flutter_carplay:
     git:
-      url: https://github.com/oguzhnatly/flutter_carplay.git
-      ref: 017ce2e
+      url: https://github.com/finamp-app/flutter_carplay.git
+      ref: 8d243ea855bd40787a55b4492cd2ff6c6b8835f4
   diacritic: ^0.1.6
   mini_music_visualizer: ^1.1.4
 
@@ -193,6 +201,24 @@ dependency_overrides:
       url: https://github.com/Komodo5197/isar-community.git
       ref: a602cd8999048faba043f7e1ce7ba92f4d812762
       path: packages/isar
+  # Forked audio_service to add:
+  # - iOS MPRemoteCommandCenter registration at configure time
+  # - An iosKeepNowPlayingOnStop config flag
+  # - The iOS playing-state fix from 0.18.20, not yet on pub.dev
+  # These keep Finamp as the system's resume candidate for CarPlay and
+  # Bluetooth reconnects. The flag is part of
+  # audio_service_platform_interface too, so both packages must be
+  # overridden together or the build fails.
+  audio_service:
+    git:
+      url: https://github.com/finamp-app/audio_service.git
+      ref: 77d8a1253cb34ab398e3e7bc364629f46089a897
+      path: audio_service
+  audio_service_platform_interface:
+    git:
+      url: https://github.com/finamp-app/audio_service.git
+      ref: 77d8a1253cb34ab398e3e7bc364629f46089a897
+      path: audio_service_platform_interface
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

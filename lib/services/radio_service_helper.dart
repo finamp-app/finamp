@@ -161,20 +161,31 @@ Future<void> maybeAddRadioTracks() async {
   }
 }
 
+int _radioTracksNeededForInitialQueue(RadioMode radioMode) => switch (radioMode) {
+  // continuous mode requires successive requests, so reduce the amount of tracks so the queue starts faster
+  // additional tracks will be loaded after the queue has started
+  RadioMode.continuous => 3,
+  // if we find true albums right away, this threshold should be easily surpassed
+  // if not, searching for fallbacks could take a few requests, so accept fewer tracks to start the queue, then delegate further loading
+  RadioMode.albumMix => 7,
+  _ => 30,
+};
+
 Future<void> startRadioPlayback(BaseItemDto source) async {
-  final currentRadioMode = FinampSettingsHelper.finampSettings.radioMode;
-  final int radioTracksNeededForInitialQueue = switch (currentRadioMode) {
-    // continuous mode requires successive requests, so reduce the amount of tracks so the queue starts faster
-    // additional tracks will be loaded after the queue has started
-    RadioMode.continuous => 3,
-    // if we find true albums right away, this threshold should be easily surpassed
-    // if not, searching for fallbacks could take a few requests, so accept fewer tracks to start the queue, then delegate further loading
-    RadioMode.albumMix => 7,
-    _ => 30,
-  };
+  final preview = await generateRadioPreview(source);
+  await startRadioPlaybackWithTracks(source, preview.radioMode, preview.tracks);
+}
+
+/// Generates the tracks for a new radio queue without touching playback.
+Future<({RadioMode radioMode, List<BaseItemDto> tracks})> generateRadioPreview(
+  BaseItemDto source, {
+  RadioMode? radioMode,
+}) async {
+  final selectedRadioMode = radioMode ?? FinampSettingsHelper.finampSettings.radioMode;
+  final radioTracksNeededForInitialQueue = _radioTracksNeededForInitialQueue(selectedRadioMode);
 
   invalidateRadioCache(); // we're starting a new queue, any older state is invalid now
-  var localResult = _radioCacheStateStream.value!.copyWith(generating: true, failed: false);
+  final localResult = _radioCacheStateStream.value!.copyWith(generating: true, failed: false);
   _radioCacheStateStream.add(localResult);
 
   List<BaseItemDto> generatedTracks = [];
@@ -183,18 +194,34 @@ Future<void> startRadioPlayback(BaseItemDto source) async {
       radioTracksNeededForInitialQueue,
       overrideSeedItem: source,
       forNewQueue: true,
+      radioMode: selectedRadioMode,
     );
   } catch (e) {
     _radioLogger.warning("Couldn't generate radio tracks: $e");
   }
 
-  final tracksToAddCount = min(switch (localResult.radioMode) {
-    RadioMode.albumMix => generatedTracks.length, // album mix returns full albums, and those should stay together
-    RadioMode.reshuffle => generatedTracks.length, // we append the full shuffled source at once
+  if (identical(localResult, _radioCacheStateStream.value)) {
+    _radioCacheStateStream.add(localResult.copyWith(generating: false));
+  }
+  return (radioMode: selectedRadioMode, tracks: generatedTracks);
+}
+
+/// Starts a radio queue from preview tracks, after the current track when [keepCurrentTrack].
+Future<void> startRadioPlaybackWithTracks(
+  BaseItemDto source,
+  RadioMode radioMode,
+  List<BaseItemDto> tracks, {
+  bool keepCurrentTrack = false,
+}) async {
+  final radioTracksNeededForInitialQueue = _radioTracksNeededForInitialQueue(radioMode);
+
+  final tracksToAddCount = min(switch (radioMode) {
+    RadioMode.albumMix => tracks.length, // album mix returns full albums, and those should stay together
+    RadioMode.reshuffle => tracks.length, // we append the full shuffled source at once
     _ => radioTracksNeededForInitialQueue,
-  }, generatedTracks.length);
-  final tracksToAdd = generatedTracks.take(tracksToAddCount);
-  final tracksToCache = generatedTracks.skip(tracksToAddCount);
+  }, tracks.length);
+  final tracksToAdd = tracks.take(tracksToAddCount);
+  final tracksToCache = tracks.skip(tracksToAddCount);
 
   if (tracksToAdd.isEmpty) {
     _radioLogger.warning("No tracks generated for radio playback from source '${source.name}'. Aborting.");
@@ -202,28 +229,42 @@ Future<void> startRadioPlayback(BaseItemDto source) async {
     return;
   }
 
-  FinampSetters.setRadioMode(currentRadioMode);
+  FinampSetters.setRadioMode(radioMode);
   toggleRadio(true);
   invalidateRadioCache(); // we're still starting a new queue, and acquire a new lock here
-  localResult = _radioCacheStateStream.value!.copyWith(
+  final localResult = _radioCacheStateStream.value!.copyWith(
     generating: false,
     queueing: true,
-    seedItem: currentRadioMode == RadioMode.continuous ? tracksToAdd.lastOrNull ?? source : source,
+    seedItem: radioMode == RadioMode.continuous ? tracksToAdd.lastOrNull ?? source : source,
     tracks: tracksToCache.toList(),
   );
   _radioCacheStateStream.add(localResult);
 
-  await GetIt.instance<QueueService>().startPlayback(
-    items: tracksToAdd.toList(),
-    source: QueueItemSource(
-      type: QueueItemSourceType.radio,
-      name: QueueItemSourceName(type: QueueItemSourceNameType.radio, localizationParameter: source.name ?? ""),
-      id: source.id,
-      item: source,
-      library: GetIt.instance<FinampUserHelper>().currentUser?.currentViewId,
-    ),
-    skipRadioCacheInvalidation: true,
+  final queueService = GetIt.instance<QueueService>();
+  final radioSource = QueueItemSource(
+    type: QueueItemSourceType.radio,
+    name: QueueItemSourceName(type: QueueItemSourceNameType.radio, localizationParameter: source.name ?? ""),
+    id: source.id,
+    item: source,
+    library: GetIt.instance<FinampUserHelper>().currentUser?.currentViewId,
   );
+
+  if (keepCurrentTrack && queueService.getCurrentTrack() != null) {
+    await queueService.replaceUpcoming(
+      BasePlayableSlice(
+        items: tracksToAdd.toList(),
+        startingIndex: 0,
+        source: radioSource,
+        shuffleState: SliceShuffleState.linear,
+      ),
+    );
+  } else {
+    await queueService.startPlayback(
+      items: tracksToAdd.toList(),
+      source: radioSource,
+      skipRadioCacheInvalidation: true,
+    );
+  }
 
   if (identical(localResult, _radioCacheStateStream.value)) {
     _radioCacheStateStream.add(localResult.copyWith(queueing: false));
@@ -282,7 +323,9 @@ Future<List<BaseItemDto>> generateRadioTracks(
   BaseItemDto? overrideSeedItem,
   List<BaseItemDto> cachedTracks = const [],
   bool forNewQueue = false,
+  RadioMode? radioMode,
 }) async {
+  final selectedRadioMode = radioMode ?? FinampSettingsHelper.finampSettings.radioMode;
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final downloadsService = GetIt.instance<DownloadsService>();
   final finampUserHelper = GetIt.instance<FinampUserHelper>();
@@ -296,11 +339,10 @@ Future<List<BaseItemDto>> generateRadioTracks(
     "overrideSeedItem must be provided if the queue is empty.",
   );
 
-  final actualSeed =
-      overrideSeedItem ?? providers.read(getActiveRadioSeedProvider(FinampSettingsHelper.finampSettings.radioMode));
+  final actualSeed = overrideSeedItem ?? providers.read(getActiveRadioSeedProvider(selectedRadioMode));
 
   _radioLogger.info(
-    "Generating $minNumTracks radio tracks from ${overrideSeedItem == null ? "queue" : "override"} item '${actualSeed?.name}' using '${FinampSettingsHelper.finampSettings.radioMode.name}' mode.",
+    "Generating $minNumTracks radio tracks from ${overrideSeedItem == null ? "queue" : "override"} item '${actualSeed?.name}' using '${selectedRadioMode.name}' mode.",
   );
 
   /// Adds tracks in such a manner to simulate "shuffle-repeat all",
@@ -761,7 +803,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
   }
 
   try {
-    tracksOut = switch (FinampSettingsHelper.finampSettings.radioMode) {
+    tracksOut = switch (selectedRadioMode) {
       RadioMode.reshuffle => await reshuffleMode(),
       RadioMode.random => await randomMode(),
       RadioMode.similar => await similarMode(),
@@ -772,7 +814,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
     _radioLogger.warning(e);
   }
   _radioLogger.info(
-    "Selected ${tracksOut.length} tracks for '${FinampSettingsHelper.finampSettings.radioMode.name}' mode: ${tracksOut.map((e) => "'${e.artists?.firstOrNull} - ${e.name}'").join(", ")}",
+    "Selected ${tracksOut.length} tracks for '${selectedRadioMode.name}' mode: ${tracksOut.map((e) => "'${e.artists?.firstOrNull} - ${e.name}'").join(", ")}",
   );
   return tracksOut;
 }

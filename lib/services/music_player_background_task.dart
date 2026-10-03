@@ -27,7 +27,6 @@ import 'package:rxdart/rxdart.dart';
 
 import 'android_auto_helper.dart';
 import 'finamp_settings_helper.dart';
-import 'ios_helpers.dart';
 import 'metadata_provider.dart';
 
 enum FadeDirection { fadeIn, fadeOut, none }
@@ -616,6 +615,24 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     _audioServiceBackgroundTaskLogger.info(
       "play() start: disableFade=$disableFade, playing=${_player.playing}, fadeDirection=${fadeState.value.fadeDirection}, currentIndex=${_player.currentIndex}, position=${_player.position}",
     );
+    final queueService = GetIt.instance<QueueService>();
+    if (queueService.getCurrentTrack() == null) {
+      _audioServiceBackgroundTaskLogger.info(
+        "play() received with no current item, awaiting saved-queue restore before starting playback",
+      );
+      bool queueAvailable;
+      try {
+        queueAvailable = await queueService.ensureQueueLoaded();
+      } catch (e) {
+        _audioServiceBackgroundTaskLogger.warning("Saved-queue restore failed while handling remote play command: $e");
+        queueAvailable = audioSources.isNotEmpty;
+      }
+
+      if (!queueAvailable) {
+        _audioServiceBackgroundTaskLogger.info("No saved queue available to resume, ignoring play() command");
+        return;
+      }
+    }
     if (_shouldIgnorePlayPauseAfterRecentSkip) {
       return;
     }
@@ -1244,9 +1261,6 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   PlaybackState _transformEvent(PlaybackEvent event) {
     jellyfin_models.BaseItemDto? currentItem;
     bool isFavorite = false;
-
-    // Sync playback state to iOS for CarPlay Now Playing screen
-    IosPlaybackStateSync.setPlaybackState(isPlaying: _player.playing);
 
     if (mediaItem.valueOrNull?.extras?["itemJson"] != null) {
       currentItem = jellyfin_models.BaseItemDto.fromJson(

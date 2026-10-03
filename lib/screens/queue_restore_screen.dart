@@ -1,10 +1,10 @@
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_ce/hive.dart';
+import 'package:get_it/get_it.dart';
 
 import '../components/QueueRestoreScreen/queue_restore_tile.dart';
-import '../models/finamp_models.dart';
+import '../services/queue_service.dart';
 
 class QueueRestoreScreen extends StatelessWidget {
   const QueueRestoreScreen({super.key});
@@ -13,11 +13,7 @@ class QueueRestoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final queuesBox = Hive.box<FinampStorableQueueInfo>("Queues");
-    var queueMap = queuesBox.toMap();
-    queueMap.remove("latest");
-    var queueList = queueMap.values.toList();
-    queueList.sort((x, y) => y.creation - x.creation);
+    final queueList = GetIt.instance<QueueService>().getRecentQueueHistory();
 
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.queuesScreen), leading: FinampAppBarBackButton()),
