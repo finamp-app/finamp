@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:finamp/extensions/list.dart';
@@ -26,7 +27,10 @@ const homeScreenSectionItemLimit = 25;
 @riverpod
 class PagedContent extends _$PagedContent {
   List<int> _pageSizes = [];
+  int _pageStartOffset = 0;
   List<ProviderBase<AsyncValue<Object?>>> _dependencies = [];
+
+  int get pageStartOffset => _pageStartOffset;
 
   @override
   PagingState<int, FinampDisplayableOrPlayable> build(FinampDisplayable<FinampDisplayableOrPlayable> request) {
@@ -97,7 +101,7 @@ class PagedContent extends _$PagedContent {
         musicRequest = request;
     }
 
-    int offset = 0;
+    int offset = _pageStartOffset;
     for (int i = 0; i < _pageSizes.length; i++) {
       final provider = loadHomeSectionItemsProvider(request: musicRequest, startIndex: offset, limit: _pageSizes[i]);
       providers.add(provider);
@@ -145,6 +149,137 @@ class PagedContent extends _$PagedContent {
     }
   }
 
+  int seekToIndexWindow(
+    int targetIndex, {
+    int leadingItems = 80,
+    int pageSize = 240,
+  }) {
+    final windowStart = max(0, targetIndex - leadingItems);
+    _pageStartOffset = windowStart;
+    _pageSizes = [pageSize];
+    ref.invalidateSelf();
+    return targetIndex - windowStart;
+  }
+
+  Future<int?> resolveAlphabetTargetIndex(String letter) async {
+    if (letter.isEmpty ||
+        ref.read(finampSettingsProvider.isOffline)) {
+      return null;
+    }
+
+    final MusicScreenPlayable? musicRequest = switch (request) {
+      Genre<FinampPlayableDto> genre => genre.getMusicScreenRequest(),
+      MusicScreenPlayable<FinampPlayableDto> musicScreenRequest =>
+        musicScreenRequest,
+      _ => null,
+    };
+    if (musicRequest == null) return null;
+
+    if (musicRequest.sortConfig.sortBy != SortBy.sortName ||
+        musicRequest.sortConfig.filters.any(
+          (filter) => filter.type == ItemFilterType.isFullyDownloaded,
+        )) {
+      return null;
+    }
+
+    final BaseItemId? libraryId;
+    if (musicRequest.library == allLibraryPlaceholder) {
+      libraryId = null;
+    } else if (musicRequest.library == currentLibraryPlaceholder) {
+      libraryId = ref.read<BaseItemId?>(
+        FinampUserHelper.finampCurrentUserProvider.select(
+          (value) => value?.currentView?.id,
+        ),
+      );
+      if (libraryId == null) return null;
+    } else {
+      libraryId = musicRequest.library as BaseItemId;
+    }
+
+    BaseItemDto? library;
+    if (libraryId != null) {
+      library = await ref.read(itemByIdProvider(libraryId).future);
+      if (library == null) return null;
+    }
+
+    final genreFilter = musicRequest.sortConfig.filters.firstWhereOrNull(
+      (filter) => filter.type == ItemFilterType.genreFilter,
+    );
+    final artistFilter = musicRequest.sortConfig.filters.firstWhereOrNull(
+      (filter) => filter.type == ItemFilterType.artistFilter,
+    );
+    final searchFilter = musicRequest.sortConfig.filters.firstWhereOrNull(
+      (filter) => filter.type == ItemFilterType.searchTerm,
+    );
+
+    final tabArtistType = switch (musicRequest.tab) {
+      ContentType.albumArtists => ArtistType.albumArtist,
+      ContentType.performingArtists => ArtistType.artist,
+      _ => null,
+    };
+    final artistType = artistFilter != null
+        ? ref.read(finampSettingsProvider.defaultArtistType)
+        : tabArtistType;
+
+    Future<QueryResult_BaseItemDto> query({
+      String? nameStartsWithOrGreater,
+      String? nameLessThan,
+    }) {
+      return GetIt.instance<JellyfinApiHelper>().getItemsWithTotalRecordCount(
+        libraryFilter: library?.id,
+        parentItem: musicRequest.tab == ContentType.playlists
+            ? null
+            : (artistFilter?.extraBaseItem ?? library),
+        includeItemTypes: [musicRequest.tab.itemType?.jellyfinName].join(","),
+        sortBy: musicRequest.sortConfig.sortBy.jellyfinName(musicRequest.tab),
+        sortOrder: musicRequest.sortConfig.sortOrder.toString(),
+        searchTerm: searchFilter?.extraString.trim(),
+        filters: musicRequest.sortConfig.filters
+            .map(
+              (filter) => switch (filter.type) {
+                ItemFilterType.isFavorite => "IsFavorite",
+                ItemFilterType.isFullyDownloaded => null,
+                ItemFilterType.startsWithCharacter => null,
+                ItemFilterType.genreFilter => null,
+                ItemFilterType.artistFilter => null,
+                ItemFilterType.searchTerm => null,
+                ItemFilterType.isUnplayed => "IsUnplayed",
+              },
+            )
+            .nonNulls
+            .join(","),
+        limit: 1,
+        isFavorite: JellyfinApiHelper.getIsFavoriteFilter(
+          musicRequest.tab,
+          musicRequest.sortConfig.filters,
+        ),
+        artistType: artistType,
+        genreFilter: genreFilter?.extraBaseItem.id,
+        nameStartsWithOrGreater: nameStartsWithOrGreater,
+        nameLessThan: nameLessThan,
+      );
+    }
+
+    final descending =
+        musicRequest.sortConfig.sortOrder == SortOrder.descending;
+    final totalFuture = query();
+    if (letter == "#") {
+      final total = (await totalFuture).totalRecordCount ?? 0;
+      if (total <= 0) return 0;
+      return descending ? total - 1 : 0;
+    }
+
+    final boundaryFuture = descending
+        ? query(nameLessThan: letter)
+        : query(nameStartsWithOrGreater: letter);
+    final results = await Future.wait([totalFuture, boundaryFuture]);
+    final total = results[0].totalRecordCount ?? 0;
+    final boundaryCount = results[1].totalRecordCount ?? 0;
+    if (total <= 0) return 0;
+
+    return (total - boundaryCount).clamp(0, total - 1).toInt();
+  }
+
   void fetchHomeScreenItems() {
     // The pagination tends to generate multiple requests at once, so block all but the initial one.  The exception is
     // while loading the first, undersized page, we allow a second request through immediately to potentially finish
@@ -159,6 +294,7 @@ class PagedContent extends _$PagedContent {
 
   void refresh() {
     _pageSizes = [];
+    _pageStartOffset = 0;
     ref.invalidateSelf();
     // Delay invalidation of page providers until after we stop depending on them
     // to avoid immediate rebuild of all.
