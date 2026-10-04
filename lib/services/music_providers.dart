@@ -44,8 +44,9 @@ Future<List<BaseItemDto>> globalSearch(Ref ref, String searchTerm, {required boo
     limit: 10,
   );
   // TODO handle genres for all libraries?  Or just use current?  We could just warn on no/low results?
+  // TODO now this is even worse because being in allLibraries completely blocks genre lookups.
   final genreFuture = jellyfinApiHelper.getItems(
-    parentItem: GetIt.instance<FinampUserHelper>().currentUser!.currentView!,
+    parentItem: GetIt.instance<FinampUserHelper>().currentUser!.currentView2,
     includeItemTypes: [BaseItemDtoType.genre.jellyfinName].join(","),
     recursive: false,
     searchTerm: searchTerm,
@@ -93,7 +94,7 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
       // TODO better source
       if (item == null) {
         // TODO should we be throwing?  Or returning null?
-        return PrecalculatedPlayable(
+        return UnavailableHomeSectionPlayable(
           source: QueueItemSource(
             type: QueueItemSourceType.unknown,
             name: QueueItemSourceName(
@@ -102,7 +103,7 @@ Future<FinampDisplayable<FinampPlayable>> resolveSection(Ref ref, HomeScreenSect
             ),
             id: collectionSection.itemId,
           ),
-          tracks: [],
+          section: section,
         );
       }
       // source for collections has item added, otherwise all 3 sources are identical
@@ -189,6 +190,31 @@ Future<PlayableSlice> getPlayableSlice(
       );
     case InstantMix():
       throw UnsupportedError("Music screen should not be including instant mix.");
+    case PrecalculatedPlayable():
+      if (item.generateFollowupTracks == null) {
+        return BasePlayableSlice(
+          items: item.tracks,
+          startingIndex: startingOffset,
+          source: item.source,
+          shuffleState: SliceShuffleState.linear,
+        );
+      } else if (startingOffset >= item.tracks.length) {
+        return BasePlayableSlice(
+          items: item.tracks + await item.generateFollowupTracks!(),
+          startingIndex: startingOffset,
+          source: item.source,
+          shuffleState: SliceShuffleState.linear,
+        );
+      } else {
+        return PreCachedPlayableSlice(
+          source: item.source,
+          shuffleState: SliceShuffleState.linear,
+          cachedTracks: item.tracks,
+          startingOffset: startingOffset,
+          fetchTracks: item.generateFollowupTracks!(),
+          combineTracks: true,
+        );
+      }
     case FinampPagedPlayable<FinampPlayableDto>():
       bool hardLimit = true;
       if (limit == null) {
@@ -390,8 +416,6 @@ Future<List<Track>> getChildTracks(Ref ref, {required FinampUnpagedDisplayable<T
       // TODO handle playable vs non-playable tracks better.  Maybe track + playableTrack types?
       return items.$2.map((baseItem) => Track(baseItem)).toList();
     case AlbumDisc():
-      return item.tracks.map((baseItem) => Track(baseItem)).toList();
-    case PrecalculatedPlayable():
       return item.tracks.map((baseItem) => Track(baseItem)).toList();
     case Playlist():
       final items = await ref.watch(getSortedPlaylistTracksProvider(item.item, item.sortConfig).future);

@@ -1,9 +1,10 @@
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
+import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/screens/music_screen.dart';
+import 'package:finamp/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:finamp/l10n/app_localizations.dart';
-import 'package:finamp/screens/splash_screen.dart';
+
 import '../components/ViewSelector/no_music_libraries_message.dart';
 import '../components/global_snackbar.dart';
 import '../models/jellyfin_models.dart';
@@ -76,7 +77,7 @@ class _ViewSelectorState extends State<ViewSelector> {
               // If only one music library is available and user doesn't have a
               // view saved (assuming setup is in progress), skip the selector.
               if (_views.values.where((element) => element == true).length == 1 &&
-                  _finampUserHelper.currentUser!.currentView == null) {
+                  _finampUserHelper.currentUser!.currentLibraryId == null) {
                 _submitChoice();
               } else {
                 if (mounted) {

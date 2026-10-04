@@ -1,29 +1,30 @@
 import 'dart:math' as math;
 
 import 'package:finamp/components/AlbumScreen/album_screen_content.dart';
+import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/components/curated_item_filter_row.dart';
 import 'package:finamp/components/item_collections_sliver_list.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/services/music_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 
-class TracksSection extends ConsumerStatefulWidget {
-  const TracksSection({
+import '../models/music_models.dart';
+
+class CuratedTracksSection extends ConsumerStatefulWidget {
+  const CuratedTracksSection({
     super.key,
     required this.parent,
     this.tracks,
-    this.childrenForQueue,
-    this.lazyAddMoreTracksToQueue = false,
     required this.tracksText,
     this.seeAllCallbackFunction,
     this.genreFilter,
     this.includeFilterRow = false,
     this.customFilterOrder,
-    this.selectedFilter,
+    required this.selectedFilter,
     this.disabledFilters,
     this.onFilterSelected,
     this.isOnArtistScreen = false,
@@ -32,24 +33,22 @@ class TracksSection extends ConsumerStatefulWidget {
 
   final BaseItemDto parent;
   final List<BaseItemDto>? tracks;
-  final List<BaseItemDto>? childrenForQueue;
-  final bool lazyAddMoreTracksToQueue;
   final String tracksText;
   final VoidCallback? seeAllCallbackFunction;
   final BaseItemDto? genreFilter;
   final bool includeFilterRow;
   final List<CuratedItemSelectionType>? customFilterOrder;
-  final CuratedItemSelectionType? selectedFilter;
+  final CuratedItemSelectionType selectedFilter;
   final List<CuratedItemSelectionType>? disabledFilters;
   final void Function(CuratedItemSelectionType type)? onFilterSelected;
   final bool isOnArtistScreen;
   final bool isOnGenreScreen;
 
   @override
-  ConsumerState<TracksSection> createState() => _TracksSectionState();
+  ConsumerState<CuratedTracksSection> createState() => _TracksSectionState();
 }
 
-class _TracksSectionState extends ConsumerState<TracksSection> {
+class _TracksSectionState extends ConsumerState<CuratedTracksSection> {
   bool _showTracks = true;
   bool _isExpandable = true;
   bool _manuallyClosed = false;
@@ -61,16 +60,15 @@ class _TracksSectionState extends ConsumerState<TracksSection> {
   }
 
   @override
-  void didUpdateWidget(covariant TracksSection oldWidget) {
+  void didUpdateWidget(covariant CuratedTracksSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     _evaluateTrackVisibility();
   }
 
   void _evaluateTrackVisibility() {
     final hasTracks = widget.tracks != null && widget.tracks!.isNotEmpty;
-    final hasQueue = widget.childrenForQueue != null;
 
-    if ((hasTracks && hasQueue) || widget.includeFilterRow) {
+    if (hasTracks || widget.includeFilterRow) {
       if (!_showTracks || !_isExpandable) {
         setState(() {
           if (!_manuallyClosed) {
@@ -98,13 +96,36 @@ class _TracksSectionState extends ConsumerState<TracksSection> {
     final isPlayed =
         widget.selectedFilter == CuratedItemSelectionType.mostPlayed ||
         widget.selectedFilter == CuratedItemSelectionType.recentlyPlayed;
+    final sortConfig = ResolvedSortConfig.skipResolving(
+      SortAndFilterConfiguration(
+        sortBy: widget.selectedFilter.getSortBy(),
+        sortOrder: SortOrder.descending,
+        filters: {
+          if (isFavorites) ItemFilter(type: ItemFilterType.isFavorite),
+          if (widget.genreFilter != null) ItemFilter(type: ItemFilterType.genreFilter, extras: widget.genreFilter),
+        },
+      ),
+    );
 
     String itemTypeKey = 'other';
+    FinampPlayable? followup;
 
     if (itemType == BaseItemDtoType.artist) {
       itemTypeKey = (widget.genreFilter != null) ? 'artistGenreFilter' : 'artist';
+      followup = Artist(
+        widget.parent,
+        sortConfig: sortConfig,
+        type: ArtistChildType.tracks,
+        library: currentLibraryPlaceholder,
+      );
     } else if (itemType == BaseItemDtoType.genre) {
       itemTypeKey = 'genre';
+      followup = Genre(
+        widget.parent,
+        sortConfig: sortConfig,
+        type: GenreChildType.tracks,
+        library: currentLibraryPlaceholder,
+      );
     }
     if (isFavorites) {
       emptyText = loc.curatedItemsNoFavorites(itemTypeKey);
@@ -192,10 +213,20 @@ class _TracksSectionState extends ConsumerState<TracksSection> {
                 if (widget.tracks != null && widget.tracks!.isNotEmpty)
                   TracksSliverList(
                     childrenForList: widget.tracks!,
-                    childrenForQueue: widget.childrenForQueue!,
-                    lazyAddMoreTracksToQueue: widget.lazyAddMoreTracksToQueue,
-                    selectedFilter: widget.selectedFilter,
-                    adaptiveAdditionalInfoSortBy: widget.selectedFilter?.getSortBy(),
+                    childrenForQueue: widget.tracks!,
+                    generateFollowupTracks: followup == null
+                        ? null
+                        : () async {
+                            final slice = await ref.read(
+                              getPlayableSliceProvider(item: followup!, startingOffset: 0).future,
+                            );
+                            final items = (await slice.resolve()).items;
+                            for (final track in widget.tracks!) {
+                              items.remove(track);
+                            }
+                            return items;
+                          },
+                    adaptiveAdditionalInfoSortBy: widget.selectedFilter.getSortBy(),
                     parent: widget.parent,
                   )
                 else

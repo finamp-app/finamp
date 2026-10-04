@@ -19,7 +19,7 @@ class FinampUserHelper {
       _currentUserCache = null;
       setAuthHeader();
       if (GetIt.instance.isRegistered(type: ProviderContainer)) {
-        GetIt.instance<ProviderContainer>().invalidate(finampCurrentUserProvider);
+        GetIt.instance<ProviderContainer>().invalidate(currentUserProvider);
       }
     });
   }
@@ -49,9 +49,12 @@ class FinampUserHelper {
 
   late String authorizationHeader;
 
-  static final Provider<FinampUser?> finampCurrentUserProvider = Provider((ref) {
+  static final Provider<FinampUser?> currentUserProvider = Provider((ref) {
     return GetIt.instance<FinampUserHelper>().currentUser;
   });
+
+  static ProviderListenable<LibraryId?> get currentLibraryProvider =>
+      currentUserProvider.select((x) => x?.currentLibraryId);
 
   Future<void> migrateFromHive() async {
     await Hive.openBox<FinampUser>("FinampUsers");
@@ -91,17 +94,17 @@ class FinampUserHelper {
     FinampUser currentUserTemp = currentUser!;
 
     currentUserTemp.views = Map<BaseItemId, BaseItemDto>.fromEntries(newViews.map((e) => MapEntry(e.id, e)));
-    currentUserTemp.currentViewId = currentUserTemp.views.keys.first;
+    currentUserTemp.currentLibraryId = LibraryId(currentUserTemp.views.keys.first.raw);
 
     _isar.writeTxnSync(() {
       _isar.finampUsers.putSync(currentUserTemp, saveLinks: false);
     });
   }
 
-  void setCurrentUserCurrentViewId(BaseItemId newViewId) {
+  void setCurrentUserCurrentViewId(LibraryId newViewId) {
     FinampUser currentUserTemp = currentUser!;
 
-    currentUserTemp.currentViewId = newViewId;
+    currentUserTemp.currentLibraryId = LibraryId(newViewId.raw);
 
     _isar.writeTxnSync(() {
       _isar.finampUsers.putSync(currentUserTemp, saveLinks: false);
@@ -139,7 +142,7 @@ class UserInfoProviders {
       .family<UserInfo?, String>((ref, userId) async {
         final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
-        final currentUserInfo = ref.watch(FinampUserHelper.finampCurrentUserProvider);
+        final currentUserInfo = ref.watch(FinampUserHelper.currentUserProvider);
         final bool isCurrentUser = currentUserInfo?.id == userId;
         UserInfo userInfo = UserInfo(jellyfinUser: null, finampUser: currentUserInfo);
         finampUserHelperLogger.fine("Fetching user info for '$userId'");
@@ -170,7 +173,7 @@ class UserInfoProviders {
 
   /// Provider for additional user info fetched from the server
   static final currentUserInfoProvider = Provider<AsyncValue<UserInfo?>>((ref) {
-    final currentUserId = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.id;
+    final currentUserId = ref.watch(FinampUserHelper.currentUserProvider)?.id;
     if (currentUserId != null) {
       return ref.watch(userInfoProvider(currentUserId));
     }

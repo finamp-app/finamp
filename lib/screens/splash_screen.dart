@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/screens/login_screen.dart';
 import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/screens/view_selector.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -16,7 +16,7 @@ class SplashScreen extends StatelessWidget {
 
     if (finampUserHelper.currentUser == null) {
       return const LoginScreen();
-    } else if (finampUserHelper.currentUser!.currentView == null) {
+    } else if (finampUserHelper.currentUser!.currentLibraryId == null) {
       return const ViewSelector();
     } else {
       return const MusicScreen();

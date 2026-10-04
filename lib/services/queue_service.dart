@@ -169,7 +169,7 @@ class QueueService {
       _providers.listen(finampSettingsProvider.radioEnabled, (_, _) => unawaited(maybeAddRadioTracks()));
       _providers.listen(finampSettingsProvider.radioMode, (_, _) => unawaited(maybeAddRadioTracks()));
       _providers.listen(finampSettingsProvider.isOffline, (_, _) => unawaited(maybeAddRadioTracks()));
-      _providers.listen(FinampUserHelper.finampCurrentUserProvider, (_, _) => unawaited(maybeAddRadioTracks()));
+      _providers.listen(FinampUserHelper.currentUserProvider, (_, _) => unawaited(maybeAddRadioTracks()));
     });
 
     // register callbacks
@@ -855,7 +855,7 @@ class QueueService {
         originalSource: source,
         linearOrder: newLinearOrder,
         shuffledOrder: newShuffledOrder,
-        sourceLibrary: _finampUserHelper.currentUser?.currentView,
+        sourceLibrary: _finampUserHelper.currentUser?.currentLibraryId,
       );
 
       _queueServiceLogger.fine("Order items length: ${_order.items.length}");

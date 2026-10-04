@@ -45,8 +45,7 @@ class ItemCollectionListTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
-    final finampUserHelper = GetIt.instance<FinampUserHelper>();
-    final library = finampUserHelper.currentUser?.currentView;
+    final library = ref.watch(FinampUserHelper.currentLibraryProvider);
     final itemType = BaseItemDtoType.fromItem(item);
     final isOnDesktop = Platform.isMacOS || Platform.isWindows || Platform.isLinux;
     final subtitle = (itemType != BaseItemDtoType.album || !albumShowsYearAndDurationInstead)
@@ -58,9 +57,7 @@ class ItemCollectionListTile extends ConsumerWidget {
           )
         : null;
     final itemDownloadStub = switch (itemType) {
-      BaseItemDtoType.artist || BaseItemDtoType.genre => DownloadStub.fromFinampCollection(
-        FinampCollection(type: FinampCollectionType.collectionWithLibraryFilter, library: library, item: item),
-      ),
+      BaseItemDtoType.artist || BaseItemDtoType.genre => DownloadStub.libraryFilteredItem(item: item, library: library),
       BaseItemDtoType.track => DownloadStub.fromItem(type: DownloadItemType.track, item: item),
       _ => DownloadStub.fromItem(type: DownloadItemType.collection, item: item),
     };

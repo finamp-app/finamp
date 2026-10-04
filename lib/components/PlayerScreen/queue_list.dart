@@ -463,10 +463,8 @@ class _PreviousTracksListState extends State<PreviousTracksList> with TickerProv
                 final indexOffset = -((_previousTracks?.length ?? 0) - index);
                 return QueueListTile(
                   key: ValueKey(item.id),
-                  item: item.baseItem,
                   listIndex: index,
                   isInPlaylist: queueItemInPlaylist(item),
-                  parentItem: item.source.item,
                   queueItem: item,
                   allowReorder: true,
                   onTap: (bool playable) async {
@@ -549,10 +547,8 @@ class _NextUpTracksListState extends State<NextUpTracksList> {
                   final indexOffset = index + 1;
                   return QueueListTile(
                     key: ValueKey(item.id),
-                    item: item.baseItem,
                     listIndex: index,
                     isInPlaylist: queueItemInPlaylist(item),
-                    parentItem: item.source.item,
                     queueItem: item,
                     allowReorder: true,
                     onRemoveFromList: () {
@@ -639,10 +635,8 @@ class _QueueTracksListState extends ConsumerState<QueueTracksList> {
 
                 return QueueListTile(
                   key: ValueKey(item.id),
-                  item: item.baseItem,
                   listIndex: index,
                   isInPlaylist: queueItemInPlaylist(item),
-                  parentItem: item.source.item,
                   queueItem: item,
                   allowReorder: true,
                   onRemoveFromList: () {

@@ -19,7 +19,7 @@ Future<(List<BaseItemDto>, int, CuratedItemSelectionType, Set<CuratedItemSelecti
   Ref ref,
   BaseItemDto parent,
   BaseItemDtoType baseItemType,
-  BaseItemDto? library,
+  LibraryId? library,
 ) async {
   final bool isOffline = ref.watch(finampSettingsProvider.isOffline);
   final bool autoSwitchItemCurationTypeEnabled = ref.watch(finampSettingsProvider.autoSwitchItemCurationType);
@@ -107,7 +107,7 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOnline({
   required BaseItemDto parent,
   required CuratedItemSelectionType genreCuratedItemSelectionType,
   required BaseItemDtoType baseItemType,
-  BaseItemDto? library,
+  LibraryId? library,
   String? sortBySecondary,
   ArtistType? artistType,
 }) async {
@@ -121,7 +121,7 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOnline({
   int itemCount;
 
   final fetchedItems = await jellyfinApiHelper.getItemsWithTotalRecordCount(
-    parentItem: library,
+    libraryFilter: library,
     genreFilter: parent.id,
     sortBy: sortBy.jellyfinName(tabType),
     sortOrder: "Descending",
@@ -135,7 +135,7 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOnline({
     // When we filter the favorites, we have to make an additional request to get the correct number
     // otherwise we would only get the totalRecordCount of Favorites of that genre
     final fetchedItemCountWithoutFavorites = await jellyfinApiHelper.getItemsWithTotalRecordCount(
-      parentItem: library,
+      libraryFilter: library,
       genreFilter: parent.id,
       limit: 1,
       includeItemTypes: baseItemType.jellyfinName,
@@ -153,7 +153,7 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOffline({
   required BaseItemDto parent,
   required CuratedItemSelectionType genreCuratedItemSelectionType,
   required BaseItemDtoType baseItemType,
-  BaseItemDto? library,
+  LibraryId? library,
   BaseItemDtoType? artistInfoForType,
 }) async {
   // The "Most Played" functionality is still here, just in case we find a solution on
@@ -167,7 +167,7 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOffline({
 
   final List<DownloadStub> fetchedItems = (baseItemType == BaseItemDtoType.track)
       ? await downloadsService.getAllTracks(
-          viewFilter: library?.id,
+          viewFilter: library?.viewId,
           nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
           onlyFavorites: (genreCuratedItemSelectionType == CuratedItemSelectionType.favorites)
               ? ref.watch(finampSettingsProvider.trackOfflineFavorites)
@@ -177,9 +177,9 @@ Future<(List<BaseItemDto>, int)> getCuratedItemsOffline({
       : await downloadsService.getAllCollections(
           includeItemTypes: [baseItemType],
           fullyDownloaded: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
-          viewFilter: (baseItemType == BaseItemDtoType.album) ? library?.id : null,
+          viewFilter: (baseItemType == BaseItemDtoType.album) ? library?.viewId : null,
           childViewFilter: (baseItemType != BaseItemDtoType.album && baseItemType != BaseItemDtoType.playlist)
-              ? library?.id
+              ? library?.viewId
               : null,
           nullableViewFilters:
               (baseItemType == BaseItemDtoType.album) &&

@@ -24,7 +24,7 @@ class _PublicAddressSelector extends ConsumerState<PublicAddressSelector> {
 
   @override
   Widget build(BuildContext context) {
-    String? publicAddress = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.publicAddress;
+    String? publicAddress = ref.watch(FinampUserHelper.currentUserProvider)?.publicAddress;
 
     _controller ??= TextEditingController(text: publicAddress.toString());
 

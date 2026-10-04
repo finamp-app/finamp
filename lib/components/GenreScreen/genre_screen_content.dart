@@ -11,7 +11,6 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/music_screen.dart';
-import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/genre_screen_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,10 +26,10 @@ import '../MusicScreen/sort_and_filter_row.dart';
 import '../padded_custom_scrollview.dart';
 
 class GenreScreenContent extends ConsumerStatefulWidget {
-  const GenreScreenContent({super.key, required this.parent, this.library});
+  const GenreScreenContent({super.key, required this.parent, required this.library});
 
   final BaseItemDto parent;
-  final BaseItemDto? library;
+  final LibraryId library;
 
   @override
   ConsumerState<GenreScreenContent> createState() => _GenreScreenContentState();
@@ -112,8 +111,6 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
 
   @override
   Widget build(BuildContext context) {
-    final finampUserHelper = GetIt.instance<FinampUserHelper>();
-    final library = finampUserHelper.currentUser?.currentView;
     final loc = AppLocalizations.of(context)!;
     final genreCuratedItemSectionFilterOrder = ref.watch(finampSettingsProvider.genreItemSectionFilterChipOrder);
     final genreItemSectionsOrder = ref.watch(finampSettingsProvider.genreItemSectionsOrder);
@@ -211,13 +208,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
             FavoriteButton(item: widget.parent),
             if (!isLoading)
               DownloadButton(
-                item: DownloadStub.fromFinampCollection(
-                  FinampCollection(
-                    type: FinampCollectionType.collectionWithLibraryFilter,
-                    library: library,
-                    item: widget.parent,
-                  ),
-                ),
+                item: DownloadStub.libraryFilteredItem(item: widget.parent, library: widget.library),
                 childrenCount: albumCount,
               ),
             IconButton(
@@ -304,11 +295,9 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
               case GenreItemSections.tracks:
                 return SliverPadding(
                   padding: const EdgeInsets.only(bottom: 12.0),
-                  sliver: TracksSection(
+                  sliver: CuratedTracksSection(
                     parent: widget.parent,
                     tracks: tracks,
-                    childrenForQueue: tracks,
-                    lazyAddMoreTracksToQueue: true,
                     tracksText: (genreCuratedItemSelectionTypeTracks != null)
                         ? genreCuratedItemSelectionTypeTracks.toLocalisedSectionTitle(context, BaseItemDtoType.track)
                         : loc.tracks,
@@ -317,7 +306,7 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
                         openSeeAll(ContentType.tracks, itemSelectionType: genreCuratedItemSelectionTypeTracks),
                     includeFilterRow: true,
                     customFilterOrder: genreCuratedItemSectionFilterOrder,
-                    selectedFilter: genreCuratedItemSelectionTypeTracks,
+                    selectedFilter: genreCuratedItemSelectionTypeTracks!,
                     disabledFilters: _disabledTrackFilters.toList(),
                     onFilterSelected: (type) {
                       // We store the clicked type locally in addition to changing the setting,

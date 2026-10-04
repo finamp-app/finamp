@@ -99,7 +99,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
   // TODO the tab types should probably just be separate widgets.
 
   String tabTitle = "";
-  LibraryId tabLibrary = currentLibraryPlaceholder;
+  DynamicLibraryId tabLibrary = currentLibraryPlaceholder;
   ContentType tabContent = ContentType.tracks;
   StaticSortAndFilterController tabSortController = StaticSortAndFilterController(
     startingConfig: SortAndFilterConfiguration.defaultSort,
@@ -110,7 +110,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
   String collectionTitle = "";
   BaseItemDto? selectedCollection;
   ContentType? collectionContent;
-  LibraryId collectionLibrary = currentLibraryPlaceholder;
+  DynamicLibraryId collectionLibrary = currentLibraryPlaceholder;
   StaticSortAndFilterController collectionSortController = StaticSortAndFilterController(
     startingConfig: SortAndFilterConfiguration.defaultSort,
     contentType: ContentType.tracks,
@@ -380,23 +380,25 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
           ),
           Consumer(
             builder: (_, ref, _) {
-              final views = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.views.values;
-              return FinampSettingsDropdown<LibraryId?>(
+              final views = ref.watch(FinampUserHelper.currentUserProvider)?.views.values;
+              return FinampSettingsDropdown<DynamicLibraryId?>(
                 dropdownItems: [
-                  DropdownMenuEntry<LibraryId?>(
+                  DropdownMenuEntry<DynamicLibraryId?>(
                     value: currentLibraryPlaceholder,
                     label: context.l10n.currentLibrary,
                     leadingIcon: const Icon(TablerIcons.bolt),
                   ),
                   if (BaseItemDtoType.fromItem(selectedCollection!) != BaseItemDtoType.genre)
-                    DropdownMenuEntry<LibraryId?>(
+                    DropdownMenuEntry<DynamicLibraryId?>(
                       value: allLibraryPlaceholder,
                       label: context.l10n.allLibraries,
                       leadingIcon: const Icon(TablerIcons.bolt),
                     ),
                   if (views != null)
-                    ...views.map((e) => DropdownMenuEntry<LibraryId?>(value: e.id as LibraryId, label: e.name!)),
-                  if (views == null) DropdownMenuEntry<LibraryId?>(value: null, label: context.l10n.loading),
+                    ...views.map(
+                      (e) => DropdownMenuEntry<DynamicLibraryId?>(value: e.id as DynamicLibraryId, label: e.name!),
+                    ),
+                  if (views == null) DropdownMenuEntry<DynamicLibraryId?>(value: null, label: context.l10n.loading),
                 ],
                 selectedValue: collectionLibrary,
                 onSelected: (selectedLibraryId) {
@@ -458,23 +460,25 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
               ),
               Consumer(
                 builder: (_, ref, _) {
-                  final views = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.views.values;
-                  return FinampSettingsDropdown<LibraryId?>(
+                  final views = ref.watch(FinampUserHelper.currentUserProvider)?.views.values;
+                  return FinampSettingsDropdown<DynamicLibraryId?>(
                     dropdownItems: [
-                      DropdownMenuEntry<LibraryId?>(
+                      DropdownMenuEntry<DynamicLibraryId?>(
                         value: currentLibraryPlaceholder,
                         label: context.l10n.currentLibrary,
                         leadingIcon: const Icon(TablerIcons.bolt),
                       ),
                       if (tabContent != ContentType.genres)
-                        DropdownMenuEntry<LibraryId?>(
+                        DropdownMenuEntry<DynamicLibraryId?>(
                           value: allLibraryPlaceholder,
                           label: context.l10n.allLibraries,
                           leadingIcon: const Icon(TablerIcons.bolt),
                         ),
                       if (views != null)
-                        ...views.map((e) => DropdownMenuEntry<LibraryId?>(value: e.id as LibraryId, label: e.name!)),
-                      if (views == null) DropdownMenuEntry<LibraryId?>(value: null, label: context.l10n.loading),
+                        ...views.map(
+                          (e) => DropdownMenuEntry<DynamicLibraryId?>(value: e.id as DynamicLibraryId, label: e.name!),
+                        ),
+                      if (views == null) DropdownMenuEntry<DynamicLibraryId?>(value: null, label: context.l10n.loading),
                     ],
                     selectedValue: tabLibrary,
                     onSelected: (selectedLibraryId) {

@@ -11,7 +11,6 @@ import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/finamp_section_header.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/extensions/localizations.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/album_menu.dart';
 import 'package:finamp/menus/components/icon_button_with_semantics.dart';
 import 'package:finamp/menus/components/overflow_menu_button.dart';
@@ -237,9 +236,8 @@ class TracksSliverList extends ConsumerStatefulWidget {
     super.key,
     required this.childrenForList,
     required this.childrenForQueue,
-    this.lazyAddMoreTracksToQueue = false,
-    this.selectedFilter,
     required this.parent,
+    this.generateFollowupTracks,
     this.onRemoveFromList,
     this.forceAlbumArtists = false,
     this.adaptiveAdditionalInfoSortBy,
@@ -247,10 +245,8 @@ class TracksSliverList extends ConsumerStatefulWidget {
 
   final List<BaseItemDto> childrenForList;
   final List<BaseItemDto> childrenForQueue;
-  final bool lazyAddMoreTracksToQueue;
-  final CuratedItemSelectionType? selectedFilter;
-  // TODO switch this to a playable
   final BaseItemDto parent;
+  final Future<List<BaseItemDto>> Function()? generateFollowupTracks;
   final BaseItemDtoCallback? onRemoveFromList;
   final bool forceAlbumArtists;
   final SortBy? adaptiveAdditionalInfoSortBy;
@@ -316,12 +312,9 @@ class _TracksSliverListState extends ConsumerState<TracksSliverList> {
         return TrackListTile(
           key: ValueKey(item.id),
           item: item,
-          lazyAddMoreTracksToQueue: widget.lazyAddMoreTracksToQueue,
-          selectedFilter: widget.selectedFilter,
           index: indexOffset,
           showIndex: item.albumId == widget.parent.id,
           showCover: item.albumId != widget.parent.id || ref.watch(finampSettingsProvider.showCoversOnAlbumScreen),
-          parentItem: widget.parent,
           onRemoveFromList: () {
             final item = removeItem();
             if (widget.onRemoveFromList != null) {
@@ -330,10 +323,10 @@ class _TracksSliverListState extends ConsumerState<TracksSliverList> {
           },
           forceAlbumArtists: widget.forceAlbumArtists,
           adaptiveAdditionalInfoSortBy: widget.adaptiveAdditionalInfoSortBy,
-          // TODO should we be passing and leveraging a proper parent playable?
           parentPlayable: PrecalculatedPlayable(
             source: QueueItemSource.fromBaseItem(widget.parent),
             tracks: widget.childrenForQueue,
+            generateFollowupTracks: widget.generateFollowupTracks,
           ),
         );
       }, childCount: widget.childrenForList.length),

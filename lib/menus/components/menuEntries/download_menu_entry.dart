@@ -10,6 +10,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../components/confirmation_prompt_dialog.dart';
+import '../../../services/finamp_user_helper.dart';
 
 class DownloadMenuEntry extends ConsumerWidget implements HideableMenuEntry {
   final DownloadStub downloadStub;
@@ -29,6 +30,7 @@ class DownloadMenuEntry extends ConsumerWidget implements HideableMenuEntry {
         icon: TablerIcons.download,
         title: AppLocalizations.of(context)!.downloadItem,
         onTap: () async {
+          final library = ref.watch(FinampUserHelper.currentLibraryProvider)!;
           if (warningMessage != null) {
             final confirmed = await showDialog<bool?>(
               context: context,
@@ -38,10 +40,10 @@ class DownloadMenuEntry extends ConsumerWidget implements HideableMenuEntry {
               ),
             );
             if ((confirmed ?? false) && context.mounted) {
-              await DownloadDialog.show(context, downloadStub, null);
+              await DownloadDialog.show(context, downloadStub, library);
             }
           } else {
-            await DownloadDialog.show(context, downloadStub, null);
+            await DownloadDialog.show(context, downloadStub, library);
           }
           if (context.mounted) {
             Navigator.pop(context);

@@ -26,7 +26,7 @@ class ArtistScreen extends ConsumerWidget {
       extendBody: true,
       body: ArtistScreenContent(
         parent: artist,
-        library: finampUserHelper.currentUser?.currentView,
+        library: ref.watch(FinampUserHelper.currentLibraryProvider)!,
         genreFilter: genreFilter,
       ),
       bottomNavigationBar: const NowPlayingBar(),

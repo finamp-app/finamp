@@ -12,7 +12,7 @@ class LocalNetworkSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool preferLocalNetwork =
-        ref.watch(FinampUserHelper.finampCurrentUserProvider)?.preferLocalNetwork ?? DefaultSettings.preferLocalNetwork;
+        ref.watch(FinampUserHelper.currentUserProvider)?.preferLocalNetwork ?? DefaultSettings.preferLocalNetwork;
 
     return SwitchListTile.adaptive(
       title: Text(AppLocalizations.of(context)!.preferLocalNetworkEnableSwitchTitle),

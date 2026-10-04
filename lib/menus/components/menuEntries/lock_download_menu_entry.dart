@@ -4,6 +4,7 @@ import 'package:finamp/menus/components/menuEntries/menu_entry.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -51,6 +52,7 @@ class LockDownloadMenuEntry extends ConsumerWidget implements HideableMenuEntry 
           icon: Icons.lock_outlined,
           title: AppLocalizations.of(context)!.lockDownload,
           onTap: () async {
+            final library = ref.watch(FinampUserHelper.currentLibraryProvider)!;
             if (warningMessage != null) {
               final confirmed = await showDialog<bool?>(
                 context: context,
@@ -60,10 +62,10 @@ class LockDownloadMenuEntry extends ConsumerWidget implements HideableMenuEntry 
                 ),
               );
               if ((confirmed ?? false) && context.mounted) {
-                await DownloadDialog.show(context, downloadStub, null);
+                await DownloadDialog.show(context, downloadStub, library);
               }
             } else {
-              await DownloadDialog.show(context, downloadStub, null);
+              await DownloadDialog.show(context, downloadStub, library);
             }
             if (context.mounted) {
               Navigator.pop(context);

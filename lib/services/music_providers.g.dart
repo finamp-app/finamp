@@ -11,7 +11,7 @@ part of 'music_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$globalSearchHash() => r'629baea3ff8943df78747a6e6804455125ae7136';
+String _$globalSearchHash() => r'd0d4c2c645b1084f339ad1087f144449a43e4f1e';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -169,7 +169,7 @@ class _GlobalSearchProviderElement
   bool get includeTracks => (origin as GlobalSearchProvider).includeTracks;
 }
 
-String _$resolveSectionHash() => r'fb1ca99c7145fa70fc9bbf931029039584829f8c';
+String _$resolveSectionHash() => r'5ce3e594a75c23d03378e067c5e73a32b24dbc13';
 
 /// See also [resolveSection].
 @ProviderFor(resolveSection)
@@ -296,7 +296,7 @@ class _ResolveSectionProviderElement
       (origin as ResolveSectionProvider).section;
 }
 
-String _$getPlayableSliceHash() => r'a7de6c8ea850e99401cdae69950743ea398e1370';
+String _$getPlayableSliceHash() => r'd28b4ae42bbadb0bc7834cad4a92f685765ef48a';
 
 /// See also [getPlayableSlice].
 @ProviderFor(getPlayableSlice)
@@ -589,7 +589,7 @@ class _GetAlbumShuffledPlayerSliceProviderElement
       (origin as GetAlbumShuffledPlayerSliceProvider).item;
 }
 
-String _$getChildTracksHash() => r'c94b4121e0f39fa565716273b35e6ef8f6ebbbe2';
+String _$getChildTracksHash() => r'fdb2c40235dd4a1473965791d8946e13612f8ca9';
 
 /// See also [getChildTracks].
 @ProviderFor(getChildTracks)

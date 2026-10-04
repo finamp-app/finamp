@@ -6,7 +6,6 @@ import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:get_it/get_it.dart';
 
 import '../components/AlbumScreen/download_button.dart';
 import '../components/LayoutSettingsScreen/automatic_accent_color_selector.dart';
@@ -19,6 +18,7 @@ import '../components/finamp_app_bar_back_button.dart';
 import '../extensions/localizations.dart';
 import '../l10n/app_localizations.dart';
 import '../models/finamp_models.dart';
+import '../models/jellyfin_models.dart';
 import '../services/finamp_user_helper.dart';
 import 'accessibility_settings_screen.dart';
 import 'content_view_type_settings_screen.dart';
@@ -107,14 +107,23 @@ class QuickSettingsScreen extends ConsumerWidget {
           ListTile(
             title: Text(AppLocalizations.of(context)!.cacheLibraryImagesSettings),
             subtitle: Text(AppLocalizations.of(context)!.cacheLibraryImagesSettingsSubtitle),
-            trailing: DownloadButton(
-              item: DownloadStub.fromFinampCollection(
-                FinampCollection(
-                  type: FinampCollectionType.libraryImages,
-                  library: GetIt.instance<FinampUserHelper>().currentUser!.currentView!,
-                ),
-              ),
-            ),
+            trailing: () {
+              if (ref.watch(FinampUserHelper.currentUserProvider.select((x) => x?.currentView2))
+                  case BaseItemDto library) {
+                return DownloadButton(
+                  item: DownloadStub.fromFinampCollection(FinampCollection.libraryImages(library: library)),
+                );
+              } else {
+                return Opacity(
+                  opacity: 0.4,
+                  child: IconButton(
+                    icon: const Icon(TablerIcons.download),
+                    tooltip: context.l10n.cacheNeedsLibrary,
+                    onPressed: null,
+                  ),
+                );
+              }
+            }(),
           ),
         ],
       ),

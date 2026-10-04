@@ -163,7 +163,7 @@ class JellyfinApiHelper {
 
   Future<List<BaseItemDto>?> getItems({
     BaseItemDto? parentItem,
-    BaseItemId? libraryFilter,
+    LibraryId? libraryFilter,
     String? includeItemTypes,
     String? sortBy,
     String? sortOrder,
@@ -232,7 +232,7 @@ class JellyfinApiHelper {
 
   Future<QueryResult_BaseItemDto> getItemsWithTotalRecordCount({
     BaseItemDto? parentItem,
-    BaseItemId? libraryFilter,
+    LibraryId? libraryFilter,
     String? includeItemTypes,
     String? sortBy,
     String? sortOrder,
@@ -271,7 +271,7 @@ class JellyfinApiHelper {
 
   Future<QueryResult_BaseItemDto> _fetchGetItemsResponse({
     BaseItemDto? parentItem,
-    BaseItemId? libraryFilter,
+    LibraryId? libraryFilter,
     String? includeItemTypes,
     String? sortBy,
     String? sortOrder,
@@ -332,7 +332,7 @@ class JellyfinApiHelper {
         if (artistType == ArtistType.albumArtist) {
           // Album Artists
           response = await api.getAlbumArtists(
-            parentId: parentItem?.id,
+            parentId: parentItem?.id ?? libraryFilter?.viewId,
             recursive: recursive,
             sortBy: sortBy,
             sortOrder: sortOrder,
@@ -350,7 +350,7 @@ class JellyfinApiHelper {
           //artistType == ArtistType.artist
           // Performing Artists
           response = await api.getArtists(
-            parentId: parentItem?.id,
+            parentId: parentItem?.id ?? libraryFilter?.viewId,
             sortBy: sortBy,
             sortOrder: sortOrder,
             searchTerm: searchTerm,
@@ -372,7 +372,7 @@ class JellyfinApiHelper {
           // Albums of Album Artists
           response = await api.getItems(
             userId: currentUserId,
-            parentId: libraryFilter,
+            parentId: libraryFilter?.viewId,
             albumArtistIds: parentItem?.id.raw,
             includeItemTypes: includeItemTypes,
             recursive: recursive,
@@ -392,7 +392,7 @@ class JellyfinApiHelper {
           // Performing Artists
           response = await api.getItems(
             userId: currentUserId,
-            parentId: libraryFilter,
+            parentId: libraryFilter?.viewId,
             artistIds: parentItem?.id.raw,
             includeItemTypes: includeItemTypes,
             recursive: recursive,
@@ -410,7 +410,7 @@ class JellyfinApiHelper {
         }
       } else if (includeItemTypes == "MusicGenre") {
         response = await api.getGenres(
-          parentId: parentItem?.id,
+          parentId: parentItem?.id ?? libraryFilter?.viewId,
           // includeItemTypes: includeItemTypes,
           sortBy: sortBy,
           sortOrder: sortOrder,
@@ -422,7 +422,7 @@ class JellyfinApiHelper {
         );
       } else if (parentItem?.type == "MusicGenre") {
         response = await api.getItems(
-          parentId: libraryFilter,
+          parentId: libraryFilter?.viewId,
           userId: currentUserId,
           albumIds: albumIds?.join(","),
           genreIds: parentItem?.id.raw,
@@ -442,7 +442,7 @@ class JellyfinApiHelper {
         // that.
         response = await api.getItems(
           userId: currentUserId,
-          parentId: parentItem?.id,
+          parentId: parentItem?.id ?? libraryFilter?.viewId,
           includeItemTypes: includeItemTypes,
           recursive: recursive,
           sortBy: sortBy,
@@ -462,58 +462,6 @@ class JellyfinApiHelper {
         );
       }
       return QueryResult_BaseItemDto.fromJson(response as Map<String, dynamic>);
-    });
-  }
-
-  Future<List<BaseItemDto>?> getArtists({
-    BaseItemDto? parentItem,
-    String? sortBy,
-    String? sortOrder,
-    String? searchTerm,
-    String? filters,
-    String? fields,
-
-    /// The record index to start at. All items with a lower index will be
-    /// dropped from the results.
-    int? startIndex,
-
-    /// The maximum number of records to return.
-    int? limit,
-  }) async {
-    final currentUserId = _finampUserHelper.currentUser?.id;
-    if (currentUserId == null) {
-      // When logging out, this request causes errors since currentUser is
-      // required sometimes. We just return an empty list since this error
-      // usually happens because the listeners on MusicScreenTabView update
-      // milliseconds before the page is popped. This shouldn't happen in normal
-      // use.
-      return [];
-    }
-    assert(_verifyCallable());
-    fields ??=
-        defaultFields; // explicitly set the default fields, if we pass `null` to [JellyfinAPI.getItems] it will **not** apply the default fields, since the argument *is* provided.
-
-    if (parentItem != null) {
-      _jellyfinApiHelperLogger.fine("Getting artists which are children of ${parentItem.name}");
-    } else {
-      _jellyfinApiHelperLogger.fine("Getting artists.");
-    }
-
-    return runInIsolate((api) async {
-      dynamic response;
-
-      response = await api.getArtists(
-        parentId: parentItem?.id,
-        searchTerm: searchTerm,
-        fields: fields,
-        sortBy: sortBy,
-        sortOrder: sortOrder,
-        filters: filters,
-        startIndex: startIndex,
-        limit: limit,
-      );
-
-      return QueryResult_BaseItemDto.fromJson(response as Map<String, dynamic>).items;
     });
   }
 
@@ -1009,7 +957,7 @@ class JellyfinApiHelper {
     assert(_verifyCallable());
     final response = await jellyfinApi.getItems(
       userId: _finampUserHelper.currentUser!.id,
-      parentId: _finampUserHelper.currentUser!.currentView?.id,
+      parentId: _finampUserHelper.currentUser!.currentLibraryId?.viewId,
       artistIds: artistIds.join(","),
       filters: "IsNotFolder",
       recursive: true,
@@ -1040,7 +988,7 @@ class JellyfinApiHelper {
     assert(_verifyCallable());
     final response = await jellyfinApi.getItems(
       userId: _finampUserHelper.currentUser!.id,
-      parentId: _finampUserHelper.currentUser!.currentView?.id,
+      parentId: _finampUserHelper.currentUser!.currentLibraryId?.viewId,
       genreIds: genreIds.join(","),
       filters: "IsNotFolder",
       recursive: true,

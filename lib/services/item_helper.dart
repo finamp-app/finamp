@@ -53,7 +53,7 @@ Future<List<BaseItemDto>> loadChildTracksFromBaseItem({
         newItemsFuture = ref.read(
           getArtistTracksProvider(
             artist: item,
-            libraryFilter: finampUserHelper.currentUser?.currentViewId,
+            libraryFilter: finampUserHelper.currentUser?.currentLibraryId,
             genreFilter: sortConfig.genreFilter?.id,
             onlyFavorites: sortConfig.favoritesFilter,
           ).future,
@@ -61,7 +61,7 @@ Future<List<BaseItemDto>> loadChildTracksFromBaseItem({
         break;
       case BaseItemDtoType.genre:
         newItemsFuture = jellyfinApiHelper.getItems(
-          parentItem: finampUserHelper.currentUser?.currentView,
+          parentItem: finampUserHelper.currentUser?.currentView2,
           includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
           limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
           genreFilter: item.id,
@@ -130,7 +130,7 @@ Future<List<BaseItemDto>?> loadChildTracksOffline({
       break;
     case BaseItemDtoType.genre:
       items = (await downloadsService.getAllTracks(
-        viewFilter: finampUserHelper.currentUser?.currentView?.id,
+        viewFilter: finampUserHelper.currentUser?.currentLibraryId?.viewId,
         genreFilter: item.id,
         nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
         onlyFavorites: sortConfig.favoritesFilter,
@@ -148,7 +148,7 @@ Future<List<BaseItemDto>?> loadChildTracksOffline({
       items = await GetIt.instance<ProviderContainer>().read(
         getArtistTracksProvider(
           artist: item,
-          libraryFilter: finampUserHelper.currentUser?.currentViewId,
+          libraryFilter: finampUserHelper.currentUser?.currentLibraryId,
           genreFilter: sortConfig.genreFilter?.id,
           onlyFavorites: sortConfig.favoritesFilter,
         ).future,
@@ -178,7 +178,7 @@ void openItemPage(BaseItemDto item, NavigatorState navigator, {bool showTracks =
           singleTabConfig: HomeScreenSectionConfiguration(
             base: CollectionHomeSection(
               itemId: item.id,
-              libraryId: finampUserHelper.currentUser!.currentViewId!,
+              libraryId: finampUserHelper.currentUser!.currentLibraryId!,
               contentType: ContentType.mixed,
             ),
             customSectionTitle: item.name ?? AppLocalizations.of(context)!.unknownName,

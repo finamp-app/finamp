@@ -34,12 +34,19 @@ import 'new_page_progress_indicator.dart';
 final musicScreenRefreshStream = StreamController<void>.broadcast();
 
 class MusicScreenTabView extends ConsumerStatefulWidget {
-  const MusicScreenTabView({super.key, required this.displayable, this.refresh, this.allowTrackGestures = false});
+  const MusicScreenTabView({
+    super.key,
+    required this.displayable,
+    this.refresh,
+    required this.resetSearchQuery,
+    this.allowTrackGestures = false,
+  });
 
   // TODO does it even make sense to allow things this generic?  How much simplification would going from this to
   // moving everythign that isn't an actual music screen back out of here?
   final FinampDisplayable<FinampDisplayableOrPlayable> displayable;
   final MusicRefreshCallback? refresh;
+  final void Function()? resetSearchQuery;
 
   final bool allowTrackGestures;
 
@@ -274,6 +281,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                 onPressed: () {
                   FinampSetters.setOnlyShowFavorites(DefaultSettings.onlyShowFavorites);
                   FinampSetters.setOnlyShowFullyDownloaded(DefaultSettings.onlyShowFullyDownloaded);
+                  widget.resetSearchQuery?.call();
                 },
               ),
             ],

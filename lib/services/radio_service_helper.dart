@@ -220,7 +220,7 @@ Future<void> startRadioPlayback(BaseItemDto source) async {
       name: QueueItemSourceName(type: QueueItemSourceNameType.radio, localizationParameter: source.name ?? ""),
       id: source.id,
       item: source,
-      library: GetIt.instance<FinampUserHelper>().currentUser?.currentViewId,
+      library: GetIt.instance<FinampUserHelper>().currentUser?.currentLibraryId,
     ),
     skipRadioCacheInvalidation: true,
   );
@@ -285,7 +285,6 @@ Future<List<BaseItemDto>> generateRadioTracks(
 }) async {
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final downloadsService = GetIt.instance<DownloadsService>();
-  final finampUserHelper = GetIt.instance<FinampUserHelper>();
   final queueService = GetIt.instance<QueueService>();
   final providers = GetIt.instance<ProviderContainer>();
   final currentQueue = queueService.getQueue();
@@ -421,13 +420,10 @@ Future<List<BaseItemDto>> generateRadioTracks(
 
     if (source != null) {
       if (source.type != QueueItemSourceType.radio || isGenre) {
-        final library = GetIt.instance<FinampUserHelper>().currentUser?.views.values.firstWhereOrNull(
-          (x) => x.id == source!.library,
-        );
-        if (library != null) {
+        if (source.library != null) {
           final record = await GetIt.instance<AudioServiceHelper>().getShuffleAllTracks(
             onlyShowFavorites: source.type == QueueItemSourceType.favorites,
-            library: library,
+            library: source!.library,
             itemCount: 50,
             genreFilter: isGenre ? source.item : null,
           );
@@ -443,7 +439,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
       } else {
         // sourceTracks is expected to be randomized, but this might load in order.
         // however, this will also load all tracks, so they will be immediately copied into queueTracks and drawn
-        // from randomly regardkless.
+        // from randomly regardless.
         sourceTracks = (await loadChildTracksFromBaseItem(
           item: actualSeed!,
           sortConfig: SortAndFilterConfiguration.defaultForItem(actualSeed),
@@ -616,7 +612,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
               similarAlbums = await providers.read(
                 getPerformingArtistAlbumsProvider(
                   artist: artist,
-                  libraryFilter: currentQueue.sourceLibrary?.id,
+                  libraryFilter: currentQueue.sourceLibrary,
                   sortBy: SortBy.random,
                 ).future,
               );
@@ -624,7 +620,7 @@ Future<List<BaseItemDto>> generateRadioTracks(
               similarAlbums = await providers.read(
                 getArtistAlbumsProvider(
                   artist: artist,
-                  libraryFilter: currentQueue.sourceLibrary?.id,
+                  libraryFilter: currentQueue.sourceLibrary,
                   sortBy: SortBy.random,
                 ).future,
               );
@@ -637,13 +633,13 @@ Future<List<BaseItemDto>> generateRadioTracks(
               similarAlbums = (await downloadsService.getAllCollections(
                 includeItemTypes: [BaseItemDtoType.album],
                 fullyDownloaded: false,
-                viewFilter: finampUserHelper.currentUser?.currentViewId,
+                viewFilter: currentQueue.sourceLibrary?.viewId,
                 nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
               )).map((e) => e.baseItem).nonNulls.toList();
             } else {
               similarAlbums =
                   (await jellyfinApiHelper.getItems(
-                    parentItem: currentQueue.sourceLibrary,
+                    libraryFilter: currentQueue.sourceLibrary,
                     recursive: true,
                     includeItemTypes: [BaseItemDtoType.album.name].join(","),
                     sortBy: SortBy.random.jellyfinName(ContentType.albums),

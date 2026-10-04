@@ -193,7 +193,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
     if (_tabController == null) {
       _buildTabController();
     }
-    ref.watch(FinampUserHelper.finampCurrentUserProvider);
+    ref.watch(FinampUserHelper.currentUserProvider);
     // Get the filtered tab or the tabs from the user's tab order,
     // and filter them to only include enabled tabs
     final sortedTabs = widget.singleTabConfig != null
@@ -335,6 +335,7 @@ class _MusicScreenState extends ConsumerState<MusicScreen> with TickerProviderSt
                       child: Material(
                         child: MusicScreenTabView(
                           refresh: refreshMap[tabType],
+                          resetSearchQuery: _stopSearching,
                           allowTrackGestures: widget.singleTabConfig != null,
                           displayable: displayable,
                         ),

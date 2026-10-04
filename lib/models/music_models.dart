@@ -73,7 +73,7 @@ class Playlist extends _SortableItem<Track> {
 
 class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _SortablePagedPlayable<ChildType> {
   final ContentType tab;
-  final LibraryId library;
+  final DynamicLibraryId library;
 
   MusicScreenPlayable._({required this.tab, required this.library, required super.source, required super.sortConfig}) {
     switch (tab) {
@@ -100,7 +100,7 @@ class MusicScreenPlayable<ChildType extends FinampPlayableDto> extends _Sortable
 
   factory MusicScreenPlayable({
     required ContentType tab,
-    required LibraryId library,
+    required DynamicLibraryId library,
     required QueueItemSource source,
     required ResolvedSortConfig sortConfig,
   }) {
@@ -189,12 +189,15 @@ class AlbumDisc extends FinampPlayableDto implements FinampUnpagedPlayable<Track
   int get hashHelper => Object.hashAll(tracks);
 }
 
-class PrecalculatedPlayable extends FinampUnpagedPlayable<Track> {
-  const PrecalculatedPlayable({required super.source, required this.tracks});
+class PrecalculatedPlayable extends FinampPlayable {
+  const PrecalculatedPlayable({required super.source, required this.tracks, this.generateFollowupTracks});
   final List<BaseItemDto> tracks;
 
+  // We don't have a way to hash this function, but we'll assume if the track list & source are identical this should be, too.
+  final Future<List<BaseItemDto>> Function()? generateFollowupTracks;
+
   @override
-  String get id => "finamp-music-screen-${source.hashCode}";
+  String get id => "finamp-precalculated-playable-${source.hashCode}";
 
   @override
   bool equalsHelper(Object other) => other is PrecalculatedPlayable && listEquals(tracks, other.tracks);
@@ -316,14 +319,14 @@ class Artist<ChildType extends FinampPlayableDto> extends _SortableItem<ChildTyp
   }
 
   final ArtistChildType type;
-  final LibraryId library;
+  final DynamicLibraryId library;
 
   factory Artist(
     BaseItemDto item, {
     QueueItemSource? source,
     required ResolvedSortConfig sortConfig,
     required ArtistChildType type,
-    required LibraryId library,
+    required DynamicLibraryId library,
   }) {
     switch (type) {
       case ArtistChildType.albumsFromArtist || ArtistChildType.appearsOnAlbums:
@@ -376,14 +379,14 @@ class Genre<ChildType extends FinampPlayableDto> extends _SortablePagedItem<Chil
   }
 
   final GenreChildType type;
-  final LibraryId library;
+  final DynamicLibraryId library;
 
   factory Genre(
     BaseItemDto item, {
     QueueItemSource? source,
     required ResolvedSortConfig sortConfig,
     required GenreChildType type,
-    required LibraryId library,
+    required DynamicLibraryId library,
   }) {
     switch (type) {
       case GenreChildType.tracks:
