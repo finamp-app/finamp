@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:finamp/components/PlayerScreen/player_buttons_loop_mode.dart';
 import 'package:finamp/components/PlayerScreen/player_buttons_playback_order.dart';
 import 'package:finamp/components/Shortcuts/global_shortcut_manager.dart';
@@ -31,6 +32,7 @@ class PlayerButtons extends ConsumerWidget {
     final showPauseButton = ref.watch(
       mediaStateProvider.select((x) => x.playbackState.playing && x.fadeDirection != FadeDirection.fadeOut),
     );
+    final processingState = ref.watch(mediaStateProvider.select((x) => x.playbackState.processingState));
 
     return Row(
       mainAxisSize: MainAxisSize.max,
@@ -83,7 +85,18 @@ class PlayerButtons extends ConsumerWidget {
                 Radius.circular(controller.shouldShow(PlayerHideable.bigPlayButton) ? 16 : 12),
               ),
               color: IconTheme.of(context).color!.withAlpha(128),
-              child: Icon(showPauseButton ? TablerIcons.player_pause : TablerIcons.player_play, size: 32),
+              // While the playback state is loading (e.g. a queue pushed to a
+              // remote session hasn't been confirmed playing yet), show a
+              // spinner instead of a play state that isn't known.
+              child: processingState == AudioProcessingState.loading
+                  ? Center(
+                      child: SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: CircularProgressIndicator(strokeWidth: 3, color: IconTheme.of(context).color),
+                      ),
+                    )
+                  : Icon(showPauseButton ? TablerIcons.player_pause : TablerIcons.player_play, size: 32),
             ),
           ),
         ),
