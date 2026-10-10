@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 
@@ -43,7 +44,7 @@ class MetadataProvider {
   bool get hasLyrics => mediaSourceInfo.mediaStreams.any((e) => e.type == "Lyric");
 }
 
-final AutoDisposeFutureProviderFamily<MetadataProvider?, BaseItemDto> metadataProvider = FutureProvider.autoDispose
+final FutureProviderFamily<MetadataProvider?, BaseItemDto> metadataProvider = FutureProvider.autoDispose
     .family<MetadataProvider?, BaseItemDto>((ref, item) async {
       Future<BaseItemDto?>? parentFuture;
       if (item.parentId != null) {

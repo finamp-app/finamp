@@ -60,7 +60,7 @@ jobs:
         run: flutter pub get
       - name: Verify code generation
         run: |
-          dart run build_runner build --delete-conflicting-outputs
+          dart run build_runner build
           git add . # new files are not tracked by git
           if git diff --cached --name-only | grep -q '\.g\.dart$'; then
             echo "Code generation is different, diff follows"

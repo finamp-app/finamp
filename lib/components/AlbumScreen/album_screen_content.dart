@@ -11,7 +11,6 @@ import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/finamp_section_header.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/extensions/localizations.dart';
-import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/album_menu.dart';
 import 'package:finamp/menus/components/icon_button_with_semantics.dart';
 import 'package:finamp/menus/components/overflow_menu_button.dart';
@@ -79,7 +78,7 @@ class _AlbumScreenContentState extends ConsumerState<AlbumScreenContent> {
     final tracksAsync = parentIsPlaylist
         ? ref.watch(getSortedPlaylistTracksProvider(widget.parent, sortSetting))
         : ref.watch(getAlbumOrPlaylistTracksProvider(widget.parent));
-    final (allTracks, playableTracks) = tracksAsync.valueOrNull ?? (null, null);
+    final (allTracks, playableTracks) = tracksAsync.value ?? (null, null);
     final isLoading = allTracks == null;
 
     final displayChildren = allTracks ?? [];

@@ -347,8 +347,7 @@ class AndroidAutoHelper {
               id: playlist.id,
               item: playlist,
             ),
-            order: FinampPlaybackOrder
-                .linear, //TODO add a setting that sets the default (because Android Auto doesn't give use the prompt as an extra), or use the current order?
+            order: FinampPlaybackOrder.linear, //TODO add a setting that sets the default (because Android Auto doesn't give use the prompt as an extra), or use the current order?
           );
         } else {
           _androidAutoHelperLogger.warning("No playlists found for query: ${enhancedQuery ?? searchQuery.rawQuery}");
@@ -439,8 +438,7 @@ class AndroidAutoHelper {
             id: album.id,
             item: album,
           ),
-          order: FinampPlaybackOrder
-              .linear, //TODO add a setting that sets the default (because Android Auto doesn't give use the prompt as an extra), or use the current order?
+          order: FinampPlaybackOrder.linear, //TODO add a setting that sets the default (because Android Auto doesn't give use the prompt as an extra), or use the current order?
         );
       } else if (itemType == ContentType.performingArtists.itemType) {
         if (FinampSettingsHelper.finampSettings.isOffline) {

@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce/hive.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path_helper;
 import 'package:rxdart/rxdart.dart';
@@ -102,17 +102,10 @@ class DownloadsService {
   /// Provider for the download status of an item.  See [getStatus] for details.
   /// This provider relies on the fact that [_syncDownload] always re-inserts
   /// processed items into Isar to know when to re-check status.
-  late final statusProvider = Provider.family.autoDispose<DownloadItemStatus, (DownloadStub, int?)>((ref, record) {
-    var (stub, childCount) = record;
-    assert(stub.type != DownloadItemType.image && stub.type != DownloadItemType.anchor);
-    // Refresh on addDownload/removeDownload as well as state change
-    ref.watch(_anchorProvider);
-    var sub = _isar.downloadItems.watchObjectLazy(stub.isarId).listen((_) {
-      ref.state = getStatus(stub, childCount);
-    });
-    ref.onDispose(sub.cancel);
-    return getStatus(stub, childCount);
-  });
+  late final statusProvider = NotifierProvider.family
+      .autoDispose<_StatusNotifier, DownloadItemStatus, (DownloadStub, int?)>(
+        (record) => _StatusNotifier(this, record),
+      );
 
   /// Provider for the actual download item associated with a stub.  This is used
   /// inside the downloads screen.
@@ -1785,5 +1778,23 @@ class DownloadsService {
     } else {
       return outdated ? DownloadItemStatus.incidentalOutdated : DownloadItemStatus.incidental;
     }
+  }
+}
+
+class _StatusNotifier extends Notifier<DownloadItemStatus> {
+  _StatusNotifier(this.service, this.record);
+  final (DownloadStub, int?) record;
+  final DownloadsService service;
+  @override
+  DownloadItemStatus build() {
+    var (stub, childCount) = record;
+    assert(stub.type != DownloadItemType.image && stub.type != DownloadItemType.anchor);
+    // Refresh on addDownload/removeDownload as well as state change
+    ref.watch(service._anchorProvider);
+    var sub = service._isar.downloadItems.watchObjectLazy(stub.isarId).listen((_) {
+      state = service.getStatus(stub, childCount);
+    });
+    ref.onDispose(sub.cancel);
+    return service.getStatus(stub, childCount);
   }
 }

@@ -68,9 +68,9 @@ class _ClientCertificateMenuContentState extends ConsumerState<_ClientCertificat
     final l10n = AppLocalizations.of(context)!;
 
     final result = await FilePicker.pickFiles(type: FileType.custom, allowedExtensions: ['p12', 'pfx']);
-    if (result == null || result.files.single.path == null) return;
+    if (result.length != 1 || result.single.path == null) return;
 
-    final filePath = result.files.single.path!;
+    final filePath = result.single.path!;
 
     if (!mounted) return;
     final password = await _showPasswordDialog(context);
@@ -149,9 +149,8 @@ class _ClientCertificateMenuContentState extends ConsumerState<_ClientCertificat
           // Description
           Text(
             l10n.clientCertificateDescription,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withAlpha(179)),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: Theme.of(context).colorScheme.onSurface.withAlpha(179)),
           ),
           // Action buttons
           Row(

@@ -48,7 +48,7 @@ Future<void> showOutputMenu({required BuildContext context, bool usePlayerTheme 
             // receiver and the per-app volume has no audible effect, so pin the
             // slider to 100% and disable it. Other platforms and output modes
             // (e.g. Bluetooth) keep the normal per-app volume control.
-            final volumeControlDisabled = ref.watch(airPlayActiveProvider).valueOrNull ?? false;
+            final volumeControlDisabled = ref.watch(airPlayActiveProvider).value ?? false;
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -78,7 +78,7 @@ Future<void> showOutputMenu({required BuildContext context, bool usePlayerTheme 
         ),
         Consumer(
           builder: (context, ref, child) {
-            final volumeControlDisabled = ref.watch(airPlayActiveProvider).valueOrNull ?? false;
+            final volumeControlDisabled = ref.watch(airPlayActiveProvider).value ?? false;
             return isDesktop && !volumeControlDisabled
                 ? Center(
                     child: Text(
@@ -436,9 +436,8 @@ class _VolumeSliderState extends ConsumerState<VolumeSlider> {
                 child: Center(
                   child: Text(
                     "${(currentValue * 100).floor()}%",
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
+                    style: Theme.of(context).textTheme.bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
                   ),
                 ),
               ),

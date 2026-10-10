@@ -83,7 +83,7 @@ class ItemCollectionListTile extends ConsumerWidget {
       maxLines: MediaQuery.textScalerOf(context).scale(15.5) > 15.5 * 1.11 ? 1 : 2,
     );
     final isCurrentlyPlaying = ref.watch(
-      currentTrackProvider.select((queueItem) => queueItem.valueOrNull?.source.id == item.id.raw),
+      currentTrackProvider.select((queueItem) => queueItem.value?.source.id == item.id.raw),
     );
 
     final sortIconMeta = {

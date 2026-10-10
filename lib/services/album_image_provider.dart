@@ -71,121 +71,136 @@ final _imageCache = DefaultCacheManager();
 
 const _infiniteHeight = 999999;
 
-final AutoDisposeProviderFamily<AlbumImageInfo, AlbumImageRequest>
-albumImageProvider = Provider.autoDispose.family<AlbumImageInfo, AlbumImageRequest>((ref, request) {
-  String? requestCacheKey = request.item.blurHash ?? request.item.imageId;
-  // We currently only support square image requests
-  assert(request.maxWidth == request.maxHeight);
-  if (albumRequestsCache.containsKey(requestCacheKey)) {
-    final cacheRequestHeight = albumRequestsCache[requestCacheKey]!.maxHeight;
-    if ((request.maxHeight ?? _infiniteHeight) > (cacheRequestHeight ?? _infiniteHeight)) {
+final albumImageProvider = NotifierProvider.autoDispose.family<_AlbumImageNotifier, AlbumImageInfo, AlbumImageRequest>(
+  _AlbumImageNotifier.new,
+);
+
+class _AlbumImageNotifier extends Notifier<AlbumImageInfo> {
+  _AlbumImageNotifier(this.request);
+
+  final AlbumImageRequest request;
+
+  @override
+  AlbumImageInfo build() {
+    String? requestCacheKey = request.item.blurHash ?? request.item.imageId;
+    // We currently only support square image requests
+    assert(request.maxWidth == request.maxHeight);
+    if (albumRequestsCache.containsKey(requestCacheKey)) {
+      final cacheRequestHeight = albumRequestsCache[requestCacheKey]!.maxHeight;
+      if ((request.maxHeight ?? _infiniteHeight) > (cacheRequestHeight ?? _infiniteHeight)) {
+        albumRequestsCache[requestCacheKey] = request;
+      }
+    } else {
       albumRequestsCache[requestCacheKey] = request;
     }
-  } else {
-    albumRequestsCache[requestCacheKey] = request;
-  }
-  ref.onDispose(() {
-    if (albumRequestsCache.containsKey(requestCacheKey)) {
-      if (albumRequestsCache[requestCacheKey] == request) {
-        albumRequestsCache.remove(requestCacheKey);
+    ref.onDispose(() {
+      if (albumRequestsCache.containsKey(requestCacheKey)) {
+        if (albumRequestsCache[requestCacheKey] == request) {
+          albumRequestsCache.remove(requestCacheKey);
+        }
+      }
+    });
+
+    if (request.item.imageId == null) {
+      return AlbumImageInfo.empty(request);
+    }
+
+    final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+    final isardownloader = GetIt.instance<DownloadsService>();
+
+    File? downloadedImage = isardownloader.getImageDownload(item: request.item)?.file;
+
+    String key;
+    bool blurhashKey = false;
+    if (request.item.blurHash != null) {
+      key = request.item.blurHash! + request.maxWidth.toString() + request.maxHeight.toString();
+      blurhashKey = true;
+    } else {
+      key = request.item.imageId! + request.maxWidth.toString() + request.maxHeight.toString();
+    }
+
+    if (downloadedImage == null) {
+      final cacheEntry = _playerImageCache[key];
+      final isValid = cacheEntry?.validTill.isAfter(DateTime.now()) ?? false;
+      if (isValid && cacheEntry!.file.existsSync()) {
+        downloadedImage = cacheEntry.file;
       }
     }
-  });
 
-  if (request.item.imageId == null) {
-    return AlbumImageInfo.empty(request);
-  }
+    if (downloadedImage == null) {
+      if (ref.watch(finampSettingsProvider.isOffline)) {
+        return AlbumImageInfo.empty(request);
+      }
 
-  final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
-  final isardownloader = GetIt.instance<DownloadsService>();
+      // TODO maybe we can reuse cached player images or existing sufficiently larger image requests instead of fetching from server
 
-  File? downloadedImage = isardownloader.getImageDownload(item: request.item)?.file;
+      Uri? imageUrl;
 
-  String key;
-  bool blurhashKey = false;
-  if (request.item.blurHash != null) {
-    key = request.item.blurHash! + request.maxWidth.toString() + request.maxHeight.toString();
-    blurhashKey = true;
-  } else {
-    key = request.item.imageId! + request.maxWidth.toString() + request.maxHeight.toString();
-  }
-
-  if (downloadedImage == null) {
-    final cacheEntry = _playerImageCache[key];
-    final isValid = cacheEntry?.validTill.isAfter(DateTime.now()) ?? false;
-    if (isValid && cacheEntry!.file.existsSync()) {
-      downloadedImage = cacheEntry.file;
-    }
-  }
-
-  if (downloadedImage == null) {
-    if (ref.watch(finampSettingsProvider.isOffline)) {
-      return AlbumImageInfo.empty(request);
-    }
-
-    // TODO maybe we can reuse cached player images or existing sufficiently larger image requests instead of fetching from server
-
-    Uri? imageUrl;
-
-    if (request.fullQuality) {
-      imageUrl = jellyfinApiHelper.getImageUrl(item: request.item, quality: null, format: null);
-    } else {
-      imageUrl = jellyfinApiHelper.getImageUrl(
-        item: request.item,
-        maxWidth: request.maxWidth,
-        maxHeight: request.maxHeight,
-      );
-    }
-
-    if (imageUrl == null) {
-      return AlbumImageInfo.empty(request);
-    }
-
-    if (request.fullQuality) {
-      // If we want full quality player images, retrieve them via the image cache instead of linking directly.
-      // In most cases, the initial null value will only be seen by the precache logic.
-      Future.sync(() async {
-        FileInfo imageFile = await _imageCache.downloadFile(imageUrl.toString(), key: key);
-        if (blurhashKey) {
-          // The default validTill length is 7 days.  Images fetched by blurhash cannot change, as that would change the
-          // blurhash, so update vaildTill to one year.
-          var cacheObject = await _imageCache.store.retrieveCacheData(key);
-          cacheObject = cacheObject!.copyWith(validTill: DateTime.now().add(Duration(days: 365)));
-          await _imageCache.store.putFile(cacheObject);
-        }
-        _playerImageCache[key] = imageFile;
-        ref.state = AlbumImageInfo(
-          FileImage(imageFile.file, scale: 0.25),
-          request,
-          Uri.file(imageFile.file.path),
-          fullQuality: true,
+      if (request.fullQuality) {
+        imageUrl = jellyfinApiHelper.getImageUrl(item: request.item, quality: null, format: null);
+      } else {
+        imageUrl = jellyfinApiHelper.getImageUrl(
+          item: request.item,
+          maxWidth: request.maxWidth,
+          maxHeight: request.maxHeight,
         );
-      });
-      // Temporary result for the frame or so the cache loads
-      return AlbumImageInfo(null, request, null, fullQuality: true);
-    } else {
-      // Allow drawing albums up to 4X intrinsic size by setting scale
-      return AlbumImageInfo(
-        CachedImage(NetworkImage(imageUrl.toString(), scale: 0.25), key),
-        request,
-        imageUrl,
-        fullQuality: request.fullQuality,
+      }
+
+      if (imageUrl == null) {
+        return AlbumImageInfo.empty(request);
+      }
+
+      if (request.fullQuality) {
+        // If we want full quality player images, retrieve them via the image cache instead of linking directly.
+        // In most cases, the initial null value will only be seen by the precache logic.
+        Future.sync(() async {
+          FileInfo imageFile = await _imageCache.downloadFile(imageUrl.toString(), key: key);
+          if (blurhashKey) {
+            // The default validTill length is 7 days.  Images fetched by blurhash cannot change, as that would change the
+            // blurhash, so update vaildTill to one year.
+            var cacheObject = await _imageCache.store.retrieveCacheData(key);
+            cacheObject = cacheObject!.copyWith(validTill: DateTime.now().add(Duration(days: 365)));
+            await _imageCache.store.putFile(cacheObject);
+          }
+          _playerImageCache[key] = imageFile;
+          state = AlbumImageInfo(
+            FileImage(imageFile.file, scale: 0.25),
+            request,
+            Uri.file(imageFile.file.path),
+            fullQuality: true,
+          );
+        });
+        // Temporary result for the frame or so the cache loads
+        return AlbumImageInfo(null, request, null, fullQuality: true);
+      } else {
+        // Allow drawing albums up to 4X intrinsic size by setting scale
+        return AlbumImageInfo(
+          CachedImage(NetworkImage(imageUrl.toString(), scale: 0.25), key),
+          request,
+          imageUrl,
+          fullQuality: request.fullQuality,
+        );
+      }
+    }
+
+    // downloads are already de-dupped by blurHash and do not need CachedImage
+    // Allow drawing albums up to 4X intrinsic size by setting scale
+    ImageProvider out = FileImage(downloadedImage, scale: 0.25);
+    if (!request.fullQuality) {
+      // Limit memory cached image size to twice displayed size
+      // This helps keep cache usage by fileImages in check
+      // Caching smaller at 2X size results in blurriness comparable to
+      // NetworkImages fetched with display size
+      out = ResizeImage(
+        out,
+        width: request.maxWidth! * 2,
+        height: request.maxHeight! * 2,
+        policy: ResizeImagePolicy.fit,
       );
     }
+    return AlbumImageInfo(out, request, Uri.file(downloadedImage.path), fullQuality: request.fullQuality);
   }
-
-  // downloads are already de-dupped by blurHash and do not need CachedImage
-  // Allow drawing albums up to 4X intrinsic size by setting scale
-  ImageProvider out = FileImage(downloadedImage, scale: 0.25);
-  if (!request.fullQuality) {
-    // Limit memory cached image size to twice displayed size
-    // This helps keep cache usage by fileImages in check
-    // Caching smaller at 2X size results in blurriness comparable to
-    // NetworkImages fetched with display size
-    out = ResizeImage(out, width: request.maxWidth! * 2, height: request.maxHeight! * 2, policy: ResizeImagePolicy.fit);
-  }
-  return AlbumImageInfo(out, request, Uri.file(downloadedImage.path), fullQuality: request.fullQuality);
-});
+}
 
 class CachedImage extends ImageProvider<CachedImage> {
   CachedImage(ImageProvider base, this.cacheKey) : _base = base;

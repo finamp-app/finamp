@@ -596,10 +596,7 @@ abstract class JellyfinApi extends ChopperService {
 
     final client = ChopperClient(
       client: http.IOClient(
-        HttpClient()
-          ..connectionTimeout = const Duration(
-            seconds: 10,
-          ), // if we don't get a response by then, it's probably not worth it to wait any longer. this prevents the server connection test from taking too long
+        HttpClient()..connectionTimeout = const Duration(seconds: 10), // if we don't get a response by then, it's probably not worth it to wait any longer. this prevents the server connection test from taking too long
       ),
       // The first part of the URL is now here
       services: [

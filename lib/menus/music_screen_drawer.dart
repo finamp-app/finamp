@@ -72,7 +72,7 @@ class MusicScreenDrawer extends ConsumerWidget {
                             ),
                             SizedBox(height: 8),
                             Text(
-                              ref.watch(packageNameProvider).valueOrNull ?? AppLocalizations.of(context)!.finamp,
+                              ref.watch(packageNameProvider).value ?? AppLocalizations.of(context)!.finamp,
                               style: const TextStyle(fontSize: 20),
                             ),
                             if (settings?.isOffline ?? false)

@@ -50,9 +50,8 @@ Future<void> showRadioMenu(
                 )!.radioModeUnavailableWhileOfflineDescription,
                 RadioModeAvailabilityStatus.unavailableNotDownloaded =>
                   modeSeedItem?.name != null
-                      ? AppLocalizations.of(
-                          context,
-                        )!.radioModeRandomUnavailableNotDownloadedDescription(modeSeedItem!.name!)
+                      ? AppLocalizations.of(context)!
+                            .radioModeRandomUnavailableNotDownloadedDescription(modeSeedItem!.name!)
                       : AppLocalizations.of(context)!.radioModeRandomUnavailableNotDownloadedGenericDescription,
                 RadioModeAvailabilityStatus.unavailableQueueEmpty => AppLocalizations.of(
                   context,

@@ -35,7 +35,7 @@ class DownloadedIndicator extends ConsumerWidget {
     final downloadsService = GetIt.instance<DownloadsService>();
     AsyncValue<DownloadItemState?> status = ref.watch(downloadsService.stateProvider(item));
     if (status.hasValue) {
-      switch (status.valueOrNull) {
+      switch (status.value) {
         case null:
         case DownloadItemState.notDownloaded:
           return const SizedBox.shrink();

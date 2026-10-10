@@ -4,7 +4,6 @@
 
 // dart format off
 
-
 part of 'downloads_service_backend.dart';
 
 // **************************************************************************
@@ -62,7 +61,7 @@ const IsarTaskDataSchema = CollectionSchema(
   getId: _isarTaskDataGetId,
   getLinks: _isarTaskDataGetLinks,
   attach: _isarTaskDataAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _isarTaskDataEstimateSize(

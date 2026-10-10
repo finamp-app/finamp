@@ -105,7 +105,7 @@ You'll have to do this whenever you:
 To perform the code generation, run:
 
 ```bash
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
 ```
 
 If you can't launch Finamp (e.g. with `flutter run`) after generating code you may need to run `flutter clean` and then try both commands again. This must be done when:
@@ -178,7 +178,7 @@ lib/                                -- the codebase also known as src in other p
 
 1. Figure out the endpoint you need. You can use <https://api.jellyfin.org> for this, for example
 2. Create a new matching endpoint in `jellyfin_api.dart`. Just copy-paste the needed annotations from other similar endpoints.
-3. Run code-generation (`dart run build_runner build --delete-conflicting-outputs`) to generate actual code based on the endpoint annotations
+3. Run code-generation (`dart run build_runner builds`) to generate actual code based on the endpoint annotations
 4. Create a new method for interacting with the endpoint in `jellyfin_api_helper.dart`. Again, just copy-paste what you need.
 5. Call the new method through `JellyfinApiHelper` to make your request
 
@@ -187,7 +187,7 @@ lib/                                -- the codebase also known as src in other p
 1. Find a setting that has a similar UI (e.g. toggle, dropdown) as what you're trying to add
 2. Find the code for that setting on one of the settings screens, and check what kind of data structure it uses (defined in `finamp_models.dart`)
 3. Add a new property for the setting you're trying to add, with the right data structure. That [can] involve, in that order: [create a new enum or class at the end of the file], [assign new HiveIDs and field IDs], add a new default value for the setting (`DefaultSettings` class), add a new property to `FinampSettings` (remember to increment the `HiveField` annotation), and add an argument for the new property to the `FinampSettings` constructor
-4. Then run code generation via `dart run build_runner build --delete-conflicting-outputs`
+4. Then run code generation via `dart run build_runner build`
 5. Now duplicate the code for the new setting in the appropriate settings screen file, and update the settings property it references to match your newly added setting
 6. Now add new translation strings in `app_en.arb` at the bottom, then generate the new localizations via `flutter gen-l10n` (see "Adding i18n strings")
 7. Use the new translation tokens in your new settings' code, replacing the old translation tokens

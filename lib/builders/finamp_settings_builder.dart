@@ -25,9 +25,12 @@ class _FinampSettingsGenerator extends Generator {
       return '';
     }
     ClassElement? settings;
-    for (var import in library.element.definingCompilationUnit.libraryImports) {
-      settings = LibraryReader(import.importedLibrary!).findType("FinampSettings");
-      if (settings != null) break;
+    outerLoop:
+    for (var fragment in library.element.fragments) {
+      for (var import in fragment.importedLibraries) {
+        settings = LibraryReader(import).findType("FinampSettings");
+        if (settings != null) break outerLoop;
+      }
     }
     if (settings == null) {
       log.warning("Could not find FinampSettings");
@@ -36,31 +39,29 @@ class _FinampSettingsGenerator extends Generator {
 
     var settersCode = "";
     var selectorsCode = "";
-    for (var property in settings.accessors) {
-      if (!property.nonSynthetic.hasDeprecated &&
-          TypeChecker.fromRuntime(SettingsHelperIgnore).firstAnnotationOfExact(property.nonSynthetic) == null) {
-        final mapAnnotationObj = TypeChecker.fromRuntime(
-          SettingsHelperMap,
-        ).firstAnnotationOfExact(property.nonSynthetic);
 
-        if (property.isSetter) {
-          if (property.parameters.length != 1) {
-            log.warning("Unexpected param count for ${property.displayName}: ${property.parameters.length}");
+    for (var property in settings.setters) {
+      if (!property.nonSynthetic.metadata.hasDeprecated &&
+          TypeChecker.typeNamed(SettingsHelperIgnore).firstAnnotationOfExact(property.nonSynthetic) == null) {
+        final mapAnnotationObj = TypeChecker.typeNamed(SettingsHelperMap).firstAnnotationOfExact(property.nonSynthetic);
+
+        if (property.formalParameters.length != 1) {
+          log.warning("Unexpected param count for ${property.displayName}: ${property.formalParameters.length}");
+        }
+        var typeArg = property.formalParameters.first.type;
+        // setter name with first letter uppercase for adding prefixes to
+        var paramName = "${property.displayName.substring(0, 1).toUpperCase()}${property.displayName.substring(1)}";
+
+        if (mapAnnotationObj != null) {
+          if (!typeArg.isDartCoreMap) {
+            throw "Error on FinampSettings.${property.displayName} - Non-Maps cannot have SettingsHelperMap annotation.";
           }
-          var typeArg = property.parameters.first.type;
-          // setter name with first letter uppercase for adding prefixes to
-          var paramName = "${property.displayName.substring(0, 1).toUpperCase()}${property.displayName.substring(1)}";
-
-          if (mapAnnotationObj != null) {
-            if (!typeArg.isDartCoreMap) {
-              throw "Error on FinampSettings.${property.displayName} - Non-Maps cannot have SettingsHelperMap annotation.";
-            }
-            final mapAnnotation = SettingsHelperMap.fromRaw(mapAnnotationObj);
-            final mapType = typeArg as ParameterizedType;
-            final keyType = _typeName(mapType.typeArguments[0]);
-            final valueType = _typeName(mapType.typeArguments[1]);
-            settersCode +=
-                '''static void set$paramName($keyType ${mapAnnotation.keyName}, $valueType newValue){
+          final mapAnnotation = SettingsHelperMap.fromRaw(mapAnnotationObj);
+          final mapType = typeArg as ParameterizedType;
+          final keyType = _typeName(mapType.typeArguments[0]);
+          final valueType = _typeName(mapType.typeArguments[1]);
+          settersCode +=
+              '''static void set$paramName($keyType ${mapAnnotation.keyName}, $valueType newValue){
               FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
               try {
                 finampSettingsTemp.${property.displayName}[${mapAnnotation.keyName}]=newValue;
@@ -72,57 +73,61 @@ class _FinampSettingsGenerator extends Generator {
               Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", finampSettingsTemp);
             }
             ''';
-          } else {
-            if (typeArg.isDartCoreMap) {
-              throw "Error on FinampSettings.${property.displayName} - Maps must have either a SettingsHelperMap or SettingsHelperIgnore annotation.";
-            }
-            settersCode += '''static void set$paramName(${_typeName(typeArg)} new$paramName){
+        } else {
+          if (typeArg.isDartCoreMap) {
+            throw "Error on FinampSettings.${property.displayName} - Maps must have either a SettingsHelperMap or SettingsHelperIgnore annotation.";
+          }
+          settersCode += '''static void set$paramName(${_typeName(typeArg)} new$paramName){
               FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
               ''';
-            // Make sure we use a new list instance so that getter fires.
-            if (typeArg.isDartCoreList) {
-              settersCode +=
-                  '''if(finampSettingsTemp.${property.displayName}==new$paramName){
+          // Make sure we use a new list instance so that getter fires.
+          if (typeArg.isDartCoreList) {
+            settersCode +=
+                '''if(finampSettingsTemp.${property.displayName}==new$paramName){
                 new$paramName=new$paramName.toList();
               }
               ''';
-            }
-            settersCode += '''finampSettingsTemp.${property.displayName}=new$paramName;
+          }
+          settersCode += '''finampSettingsTemp.${property.displayName}=new$paramName;
               Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", finampSettingsTemp);
               }
               ''';
-          }
         }
+      }
+    }
 
-        if (property.isGetter) {
-          if (mapAnnotationObj != null) {
-            if (!property.returnType.isDartCoreMap) {
-              throw "Error on FinampSettings.${property.displayName} - Non-Maps cannot have SettingsHelperMap annotation.";
-            }
-            final mapAnnotation = SettingsHelperMap.fromRaw(mapAnnotationObj);
-            final mapType = property.returnType as ParameterizedType;
-            final keyType = _typeName(mapType.typeArguments[0]);
-            final valueType = _typeName(mapType.typeArguments[1]);
-            final returnType = valueType.endsWith("?") ? valueType : "$valueType?";
-            selectorsCode +=
-                '''ProviderListenable<$returnType> ${property.displayName}($keyType ${mapAnnotation.keyName}) => 
+    for (var property in settings.getters) {
+      if (!property.nonSynthetic.metadata.hasDeprecated &&
+          TypeChecker.typeNamed(SettingsHelperIgnore).firstAnnotationOfExact(property.nonSynthetic) == null) {
+        final mapAnnotationObj = TypeChecker.typeNamed(SettingsHelperMap).firstAnnotationOfExact(property.nonSynthetic);
+
+        if (mapAnnotationObj != null) {
+          if (!property.returnType.isDartCoreMap) {
+            throw "Error on FinampSettings.${property.displayName} - Non-Maps cannot have SettingsHelperMap annotation.";
+          }
+          final mapAnnotation = SettingsHelperMap.fromRaw(mapAnnotationObj);
+          final mapType = property.returnType as ParameterizedType;
+          final keyType = _typeName(mapType.typeArguments[0]);
+          final valueType = _typeName(mapType.typeArguments[1]);
+          final returnType = valueType.endsWith("?") ? valueType : "$valueType?";
+          selectorsCode +=
+              '''ProviderListenable<$returnType> ${property.displayName}($keyType ${mapAnnotation.keyName}) => 
               finampSettingsProvider.select((value) => value.requireValue.${property.displayName}[${mapAnnotation.keyName}]);
               ''';
-            if (mapAnnotation.keyGetter) {
-              selectorsCode +=
-                  '''ProviderListenable<Iterable<$keyType>> get ${property.displayName}Keys => 
+          if (mapAnnotation.keyGetter) {
+            selectorsCode +=
+                '''ProviderListenable<Iterable<$keyType>> get ${property.displayName}Keys => 
               finampSettingsProvider.select((value) => _LengthEqualsIterable(value.requireValue.${property.displayName}.keys));
               ''';
-            }
-          } else {
-            if (property.returnType.isDartCoreMap) {
-              throw "Error on FinampSettings.${property.displayName} - Maps must have either a SettingsHelperMap or SettingsHelperIgnore annotation.";
-            }
-            selectorsCode +=
-                '''ProviderListenable<${_typeName(property.returnType)}> get ${property.displayName} => 
+          }
+        } else {
+          if (property.returnType.isDartCoreMap) {
+            throw "Error on FinampSettings.${property.displayName} - Maps must have either a SettingsHelperMap or SettingsHelperIgnore annotation.";
+          }
+          selectorsCode +=
+              '''ProviderListenable<${_typeName(property.returnType)}> get ${property.displayName} => 
               finampSettingsProvider.select((value) => value.requireValue.${property.displayName});
         ''';
-          }
         }
       }
     }
@@ -138,7 +143,7 @@ class _FinampSettingsGenerator extends Generator {
     }
     
     /// Generated providers to easily watch only specific fields in finampSettings
-    extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings>{
+    extension FinampSettingsProviderSelectors on FinampSettingsProvider{
       $selectorsCode
     }
     

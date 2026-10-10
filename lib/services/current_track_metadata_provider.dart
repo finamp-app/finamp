@@ -7,7 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'metadata_provider.dart';
 
 /// Provider to handle pre-fetching metadata for upcoming tracks
-final currentTrackMetadataProvider = AutoDisposeProvider<AsyncValue<MetadataProvider?>>((ref) {
+final currentTrackMetadataProvider = Provider<AsyncValue<MetadataProvider?>>((ref) {
   final List<FinampQueueItem> precacheItems = GetIt.instance<QueueService>().peekQueue(
     next: 3,
     previous: 1,

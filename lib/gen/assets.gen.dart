@@ -52,9 +52,7 @@ class $AssetsIconGen {
   List<AssetGenImage> get values => [iconCombined, iconSquareBgBlack, iconSquareBgWhite, iconWhiteNoborder];
 }
 
-class Assets {
-  const Assets._();
-
+abstract final class Assets {
   static const $AssetsIconGen icon = $AssetsIconGen();
   static const $ImagesGen images = $ImagesGen();
 }

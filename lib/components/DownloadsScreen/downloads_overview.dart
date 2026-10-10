@@ -101,15 +101,13 @@ class DownloadsOverview extends StatelessWidget {
                                 style: const TextStyle(color: Colors.red),
                               ),
                               Text(
-                                AppLocalizations.of(
-                                  context,
-                                )!.dlEnqueued(snapshot.data?[DownloadItemState.enqueued] ?? -1),
+                                AppLocalizations.of(context)!
+                                    .dlEnqueued(snapshot.data?[DownloadItemState.enqueued] ?? -1),
                                 style: const TextStyle(color: Colors.grey),
                               ),
                               Text(
-                                AppLocalizations.of(
-                                  context,
-                                )!.dlRunning(snapshot.data?[DownloadItemState.downloading] ?? -1),
+                                AppLocalizations.of(context)!
+                                    .dlRunning(snapshot.data?[DownloadItemState.downloading] ?? -1),
                                 style: const TextStyle(color: Colors.grey),
                               ),
                             ],

@@ -28,8 +28,7 @@ class DownloadLocationDeleteDialog extends StatelessWidget {
               if (fileDownloads.isNotEmpty) {
                 Navigator.of(context).pop();
                 GlobalSnackbar.message(
-                  (_) =>
-                      "Could not delete download location - unexpected downloads found in location.  Try running a downloads repair.",
+                  (_) => "Could not delete download location - unexpected downloads found in location.  Try running a downloads repair.",
                 );
               } else {
                 FinampSettingsHelper.deleteDownloadLocation(id);

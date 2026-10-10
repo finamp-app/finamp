@@ -8,7 +8,7 @@ linter:
     - use_if_null_to_convert_nulls_to_bools
 analyzer:
   plugins:
-    - custom_lint
+    - riverpod_lint: 3.1.9
   exclude:
     - "lib/**/*.g.dart"
     - "lib/l10n/app_localizations*.dart"

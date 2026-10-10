@@ -140,9 +140,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ListTile(
             leading: const Icon(TablerIcons.sparkles),
             title: Text(AppLocalizations.of(context)!.quickSettingsScreen),
-            onTap: () => Navigator.of(
-              context,
-            ).pushNamed(QuickSettingsScreen.routeName, arguments: QuickSettingsScreen.fromSettingsScreen),
+            onTap: () =>
+                Navigator.of(context)
+                    .pushNamed(QuickSettingsScreen.routeName, arguments: QuickSettingsScreen.fromSettingsScreen),
           ),
           ListTile(
             leading: const Icon(TablerIcons.home),

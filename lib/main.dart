@@ -73,7 +73,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 import 'package:path/path.dart' as path_helper;
@@ -344,7 +344,12 @@ Future<void> setupHive() async {
 }
 
 Future<void> _setupProviders() async {
-  var container = ProviderContainer(observers: [FinampProviderObserver()]);
+  var container = ProviderContainer(
+    observers: [FinampProviderObserver()],
+    // Never retry any provider
+    // TODO we should try to actually make use of this feature?
+    retry: (retryCount, error) => null,
+  );
   GetIt.instance.registerSingleton<ProviderContainer>(container);
   // Make sure that finampSettingsProvider always has a value available
   container.listen(finampSettingsProvider, (_, _) {});
@@ -354,14 +359,6 @@ Future<void> _setupProviders() async {
 
   DataSourceService.create();
   AutoOffline.startWatching();
-
-  unawaited(
-    Stream<void>.periodic(Duration(seconds: 1)).forEach((_) {
-      if (!SchedulerBinding.instance.framesEnabled) {
-        (providerScopeKey.currentContext as InheritedElement?)?.build();
-      }
-    }),
-  );
 }
 
 Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
@@ -1256,14 +1253,9 @@ class NoTransitionPageTransitionsBuilder extends PageTransitionsBuilder {
   }
 }
 
-class FinampProviderObserver extends ProviderObserver {
+final class FinampProviderObserver extends ProviderObserver {
   @override
-  void providerDidFail(
-    ProviderBase<Object?> provider,
-    Object error,
-    StackTrace stackTrace,
-    ProviderContainer container,
-  ) {
+  void providerDidFail(ProviderObserverContext context, Object error, StackTrace stackTrace) {
     GlobalSnackbar.error(error);
   }
 }

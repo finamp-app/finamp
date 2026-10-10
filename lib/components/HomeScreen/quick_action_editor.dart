@@ -170,9 +170,8 @@ class QuickActionConfigMenuState extends ConsumerState<QuickActionConfigMenu> {
                 onPressed: () {
                   if (context.mounted && value != null) {
                     FeedbackHelper.feedback(FeedbackType.selection);
-                    Navigator.of(
-                      context,
-                    ).pop(QuickActionConfig(action: selected!, itemId: value.id, itemName: value.name));
+                    Navigator.of(context)
+                        .pop(QuickActionConfig(action: selected!, itemId: value.id, itemName: value.name));
                   }
                 },
               );

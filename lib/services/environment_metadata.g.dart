@@ -4,7 +4,6 @@
 
 // dart format off
 
-
 part of 'environment_metadata.dart';
 
 // **************************************************************************

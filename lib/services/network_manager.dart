@@ -29,7 +29,7 @@ int activeDelayCounter = 0;
 final autoOfflineStatusStream = StreamController<int>.broadcast();
 final autoOfflineStatusProvider = StreamProvider((ref) {
   return autoOfflineStatusStream.stream;
-}).select((v) => v.valueOrNull ?? 0);
+}).select((v) => v.value ?? 0);
 
 final StreamSubscription<List<ConnectivityResult>> _listener = Connectivity().onConnectivityChanged.listen(
   _onConnectivityChange,

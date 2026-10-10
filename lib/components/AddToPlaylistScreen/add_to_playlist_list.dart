@@ -275,9 +275,8 @@ class _AddToPlaylistTileState extends ConsumerState<AddToPlaylistTile> {
             bool confirmed = false;
             String promptText;
             if (isMultipleTracks) {
-              promptText = AppLocalizations.of(
-                context,
-              )!.confirmAddMultipleTracksToPlaylist(widget.itemsToBeAdded.length);
+              promptText = AppLocalizations.of(context)!
+                  .confirmAddMultipleTracksToPlaylist(widget.itemsToBeAdded.length);
             } else {
               String itemType = switch (BaseItemDtoType.fromItem(widget.itemsToBeAdded.first)) {
                 BaseItemDtoType.album => "album",
@@ -286,9 +285,8 @@ class _AddToPlaylistTileState extends ConsumerState<AddToPlaylistTile> {
                 BaseItemDtoType.playlist => "playlist",
                 _ => "unknown",
               };
-              promptText = AppLocalizations.of(
-                context,
-              )!.confirmAddCollectionItemToPlaylist(itemType, widget.itemsToBeAdded.first.name ?? "Unknown");
+              promptText = AppLocalizations.of(context)!
+                  .confirmAddCollectionItemToPlaylist(itemType, widget.itemsToBeAdded.first.name ?? "Unknown");
             }
             await showDialog<void>(
               context: context,

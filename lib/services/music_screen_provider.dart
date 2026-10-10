@@ -6,6 +6,7 @@ import 'package:finamp/models/music_models.dart';
 import 'package:finamp/services/artist_content_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -24,30 +25,30 @@ const musicScreenPageSize = 100;
 const homeScreenSectionItemLimit = 25;
 
 @riverpod
-class PagedContent extends _$PagedContent {
+class PagedContent<ChildType extends FinampDisplayableOrPlayable> extends _$PagedContent<ChildType> {
   List<int> _pageSizes = [];
   List<ProviderBase<AsyncValue<Object?>>> _dependencies = [];
 
   @override
-  PagingState<int, FinampDisplayableOrPlayable> build(FinampDisplayable<FinampDisplayableOrPlayable> request) {
+  PagingState<int, ChildType> build(FinampDisplayable<ChildType> request) {
     switch (request) {
-      case FinampUnpagedDisplayable():
-        return _buildUnpaged(request);
+      case FinampUnpagedDisplayable<FinampDisplayableOrPlayable>():
+        return _buildUnpaged(request as FinampUnpagedDisplayable<ChildType>);
       case FinampPagedPlayable<FinampPlayableDto>():
-        return _buildPaged(request);
+        return _buildPaged(request as FinampPagedPlayable<FinampPlayableDto>);
       case UnavailableHomeSectionPlayable():
         return PagingState(pages: [], keys: [], isLoading: false, hasNextPage: false, error: null);
     }
   }
 
-  PagingState<int, FinampDisplayableOrPlayable> _buildUnpaged(FinampUnpagedDisplayable request) {
+  PagingState<int, ChildType> _buildUnpaged(FinampUnpagedDisplayable<ChildType> request) {
     if (_pageSizes.isEmpty) {
       return PagingState(pages: null, keys: null, isLoading: false, hasNextPage: true, error: null);
     }
-    final provider = getChildrenProvider(item: request);
+    final provider = getChildrenProvider<ChildType>(item: request);
     final page = ref.watch(provider).unwrapPrevious();
 
-    List<FinampDisplayableOrPlayable>? output;
+    List<ChildType>? output;
     bool isLoading = false;
     bool hasNextPage = true;
     Object? error;
@@ -63,7 +64,7 @@ class PagedContent extends _$PagedContent {
           keys.add(offset);
           if (page.value!.length < pageSize) {
             hasNextPage = false;
-          }
+          }/
         }*/
       isLoading = true;
     } else if (page is AsyncError) {
@@ -72,7 +73,7 @@ class PagedContent extends _$PagedContent {
 
     _dependencies = [provider];
 
-    return PagingState<int, FinampDisplayableOrPlayable>(
+    return PagingState<int, ChildType>(
       pages: output == null ? null : [output],
       keys: output == null ? null : [0],
       isLoading: isLoading,
@@ -81,8 +82,11 @@ class PagedContent extends _$PagedContent {
     );
   }
 
-  PagingState<int, FinampDisplayableOrPlayable> _buildPaged(FinampPagedPlayable<FinampPlayableDto> request) {
-    final List<List<FinampDisplayableOrPlayable>> pages = [];
+  PagingState<int, ChildType> _buildPaged(FinampPagedPlayable<FinampPlayableDto> request) {
+    // We don't appear to be able to downcast the generic types in any way, even though we've already pattern matched them
+    // We expect request to always be a FinampPagedPlayable<runtime ChildType extends FinampPlayableDto>
+    assert(request is FinampDisplayable<ChildType>);
+    final List<List<ChildType>> pages = [];
     final List<int> keys = [];
     final List<LoadHomeSectionItemsProvider> providers = [];
     bool isLoading = false;
@@ -91,10 +95,10 @@ class PagedContent extends _$PagedContent {
 
     final MusicScreenPlayable musicRequest;
     switch (request) {
-      case Genre<FinampPlayableDto>():
-        musicRequest = request.getMusicScreenRequest();
-      case MusicScreenPlayable<FinampPlayableDto>():
-        musicRequest = request;
+      case Genre<FinampPlayableDto> request2:
+        musicRequest = request2.getMusicScreenRequest();
+      case MusicScreenPlayable<FinampPlayableDto> request2:
+        musicRequest = request2;
     }
 
     int offset = 0;
@@ -106,7 +110,8 @@ class PagedContent extends _$PagedContent {
 
       if (page is AsyncData) {
         if (page.value != null) {
-          pages.add(page.value!.map((x) => FinampPlayableDto.fromItem(x)).toList());
+          // We assume that the request us actually giving us BaseItemDtos with the expected type
+          pages.add(page.value!.map((x) => FinampPlayableDto.fromItem(x) as ChildType).toList());
           keys.add(offset);
           if (page.value!.length < _pageSizes[i]) {
             hasNextPage = false;
@@ -129,7 +134,7 @@ class PagedContent extends _$PagedContent {
 
     _dependencies = providers;
 
-    return PagingState<int, FinampDisplayableOrPlayable>(
+    return PagingState<int, ChildType>(
       pages: pages.isEmpty ? null : pages,
       keys: keys.isEmpty ? null : keys,
       isLoading: isLoading,
@@ -220,10 +225,7 @@ class PagedContent extends _$PagedContent {
     }
   }
 
-  (List<FinampDisplayableOrPlayable>, Future<List<FinampDisplayableOrPlayable>>?) loadSlice(
-    int startingIndex,
-    int limit,
-  ) {
+  (List<ChildType>, Future<List<ChildType>>?) loadSlice(int startingIndex, int limit) {
     // capture local request for type casting
     final request = this.request;
     // TODO wait for current active loads to complete.  Do error response?
@@ -235,7 +237,7 @@ class PagedContent extends _$PagedContent {
     if (preCached.length >= queueEndTarget) {
       return (preCached.slice(startingIndex, queueEndTarget), null);
     }
-    List<FinampDisplayableOrPlayable> items = [];
+    List<ChildType> items = [];
     if (startingIndex < preCached.length) {
       items = preCached.slice(startingIndex);
     }
@@ -251,9 +253,9 @@ class PagedContent extends _$PagedContent {
     newPage(pageSize: loadSize);
 
     ProviderSubscription? sub;
-    Completer<List<FinampDisplayableOrPlayable>?> waitForPage = Completer();
-    sub = GetIt.instance<ProviderContainer>().listen<PagingState<int, FinampDisplayableOrPlayable>>(
-      pagedContentProvider(request),
+    Completer<List<ChildType>?> waitForPage = Completer();
+    sub = GetIt.instance<ProviderContainer>().listen<PagingState<int, ChildType>>(
+      pagedContentProvider<ChildType>(request),
       (_, value) {
         if (!value.isLoading) {
           waitForPage.complete(value.items);

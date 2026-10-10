@@ -151,9 +151,8 @@ class _ServerSharingMenuControlsState extends ConsumerState<ServerSharingMenuCon
             context: context,
             builder: (context) => ConfirmationPromptDialog(
               promptText: AppLocalizations.of(context)!.serverSharingMenuConfirmationDialogText,
-              confirmButtonText: AppLocalizations.of(
-                context,
-              )!.serverSharingMenuConfirmationDialogConfirmationButtonLabel,
+              confirmButtonText: AppLocalizations.of(context)!
+                  .serverSharingMenuConfirmationDialogConfirmationButtonLabel,
               onConfirmed: () => setServerSharing(true),
             ),
           );

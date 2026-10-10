@@ -147,13 +147,13 @@ class HomeScreenQueueTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     int remainingTracks = info.trackCount - info.previousTracks.length;
 
-    BaseItemDto? track = info.currentTrack == null ? null : ref.watch(itemByIdProvider(info.currentTrack!)).valueOrNull;
+    BaseItemDto? track = info.currentTrack == null ? null : ref.watch(itemByIdProvider(info.currentTrack!)).value;
 
     QueueItemSource source = info.source;
     if (source.wantsItem) {
       // BaseItemId uses String equals, the linter is mistaken.
       // ignore: provider_parameters
-      final sourceItem = ref.watch(itemByIdProvider(BaseItemId(source.id))).valueOrNull;
+      final sourceItem = ref.watch(itemByIdProvider(BaseItemId(source.id))).value;
       if (sourceItem != null) {
         source = source.withItem(sourceItem);
       }
@@ -204,9 +204,8 @@ class HomeScreenQueueTile extends ConsumerWidget {
                 if (track?.name != null)
                   // exclude subtitle line 1 if track name is null
                   Text(
-                    AppLocalizations.of(
-                      context,
-                    )!.queueRestoreSubtitle1("${track!.name!} - ${track.artists!.join(", ")}"),
+                    AppLocalizations.of(context)!
+                        .queueRestoreSubtitle1("${track!.name!} - ${track.artists!.join(", ")}"),
                     style: TextTheme.of(context).bodySmall!.copyWith(fontSize: 11, fontStyle: FontStyle.italic),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

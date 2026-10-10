@@ -114,7 +114,7 @@ class _PlaylistEditScreenState extends ConsumerState<PlaylistEditScreen> {
     _name = playlist.name;
     _fetchPublicVisibility();
     final tracksAsync = ref.read(getDefaultSortedPlaylistTracksProvider(playlist));
-    final (allTracks, playableTracks) = tracksAsync.valueOrNull ?? (<BaseItemDto>[], <BaseItemDto>[]);
+    final (allTracks, playableTracks) = tracksAsync.value ?? (<BaseItemDto>[], <BaseItemDto>[]);
     playlistTracks = List.from(allTracks);
     if (tracksAsync.hasValue) {
       setState(() => _isLoading = false);
@@ -125,7 +125,7 @@ class _PlaylistEditScreenState extends ConsumerState<PlaylistEditScreen> {
         (_, tracksAsyncLoaded) {
           if (mounted) {
             final (allTracksLoaded, playableTracksLoaded) =
-                tracksAsyncLoaded.valueOrNull ?? (<BaseItemDto>[], <BaseItemDto>[]);
+                tracksAsyncLoaded.value ?? (<BaseItemDto>[], <BaseItemDto>[]);
             setState(() {
               playlistTracks = List.from(allTracksLoaded);
               _initialTrackIdsOrder = playlistTracks.map((t) => t.id.raw).toList();
@@ -142,8 +142,8 @@ class _PlaylistEditScreenState extends ConsumerState<PlaylistEditScreen> {
 
   Future<File?> filePicker() async {
     final result = await FilePicker.pickFiles(type: FileType.image);
-    if (result == null) return null;
-    return File(result.files.single.path!);
+    if (result.length != 1 || result.single.path == null) return null;
+    return File(result.single.path!);
   }
 
   Future<void> _fetchPublicVisibility() async {

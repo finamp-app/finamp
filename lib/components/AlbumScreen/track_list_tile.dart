@@ -17,9 +17,9 @@ import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
-import 'package:finamp/services/music_screen_provider.dart';
 import 'package:finamp/services/media_state_stream.dart';
 import 'package:finamp/services/music_player_background_task.dart';
+import 'package:finamp/services/music_screen_provider.dart';
 import 'package:finamp/services/radio_service_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -541,9 +541,8 @@ class TrackListItem extends ConsumerWidget {
 
     final isCurrentlyPlaying = ref.watch(
       currentTrackProvider.select(
-        (playingItem) => queueItem != null
-            ? queueItem!.id == playingItem.valueOrNull?.id
-            : playingItem.valueOrNull?.baseItemId == baseItem.id,
+        (playingItem) =>
+            queueItem != null ? queueItem!.id == playingItem.value?.id : playingItem.value?.baseItemId == baseItem.id,
       ),
     );
 

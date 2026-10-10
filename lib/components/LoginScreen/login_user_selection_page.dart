@@ -202,9 +202,8 @@ class QuickConnectSection extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: SelectableText(
                     connectionState.quickConnectState?.code ?? "",
-                    style: Theme.of(
-                      context,
-                    ).textTheme.displaySmall!.copyWith(fontFamily: "monospace", letterSpacing: 5.0),
+                    style: Theme.of(context).textTheme.displaySmall!
+                        .copyWith(fontFamily: "monospace", letterSpacing: 5.0),
                     semanticsLabel: connectionState.quickConnectState?.code?.split("").join(" "),
                     textAlign: TextAlign.center,
                   ),
