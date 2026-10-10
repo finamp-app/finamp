@@ -384,7 +384,7 @@
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
     },
-    "kiloBitsPerSecondLabel": "{bitrate} kbps",
+    "kiloBitsPerSecondLabel": "{bitrate} KiB/s",
     "@kiloBitsPerSecondLabel": {
         "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
         "placeholders": {
@@ -709,7 +709,7 @@
     "@emptyFilteredListSubtitle": {
         "description": "Message shown when a list of items is filtered and no items match the filter"
     },
-    "bufferSizeSubtitle": "Taille du tampon en Mo. Un redémarrage est nécessaire",
+    "bufferSizeSubtitle": "Taille de la mémoire tampon en MiB. Nécessite un redémarrage.",
     "playbackOrderLinearButtonLabel": "Jouer dans l'ordre",
     "@playbackOrderLinearButtonLabel": {
         "description": "Label for the button that toggles the playback order between linear/in-order and shuffle, while the queue is in linear/in-order mode"
@@ -1491,7 +1491,7 @@
     "@downloadSizeWarningCutoffSubtitle": {
         "description": "Subtitle for the setting controlling when to warn about a large download"
     },
-    "releaseDateFormatMonthDayYear": "Mois, Jour & Année",
+    "releaseDateFormatMonthDayYear": "Mois, jour et année (en fonction des paramètres régionaux)",
     "@releaseDateFormatMonthDayYear": {
         "description": "Date format option for the release date of an album, showing the year and month and day/date. Example: March 2, 2022"
     },
@@ -2725,7 +2725,7 @@
     "@lyricsEmptyStateFailed": {
         "description": "Message shown when lyrics failed to load"
     },
-    "lyricsEmptyStateLoading": "Chargement des paroles...",
+    "lyricsEmptyStateLoading": "Chargement des paroles…",
     "@lyricsEmptyStateLoading": {
         "description": "Message shown while lyrics are being loaded"
     },
@@ -2806,7 +2806,7 @@
     "@previousTracksPersistenceModeSelectorTitle": {
         "description": "Title for setting that allows to override state of previous tracks header in queue list"
     },
-    "previousTracksPersistenceModeSelectorSubtitle": "Si vous ouvrez le panneau de la file d'attente, la section des titres précédents devrait...",
+    "previousTracksPersistenceModeSelectorSubtitle": "Si vous ouvrez le panneau de la file d'attente, la section des titres précédents devrait…",
     "@previousTracksPersistenceModeSelectorSubtitle": {
         "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
     },
@@ -3698,5 +3698,10 @@
     "clientCertificatesUnsupported": "Les certificats client ne sont pas pris en charge sur cette plateforme.",
     "@clientCertificatesUnsupported": {
         "description": "Message shown when client certificates are not supported on the user's current platform."
-    }
+    },
+    "releaseDateFormatNumerical": "Format numérique court (en fonction des paramètres régionaux)",
+    "@releaseDateFormatNumerical": {
+        "description": "Date format option for the release date of an album, showing the date in a short numerical format. Changes based on locale such as DD/MM/YYYY for en_gb and MM/DD/YYYY for en_us."
+    },
+    "loginFlowLocalNetworkServersNoResults": "Aucun serveur détecté - vous devrez peut-être entrer l'adresse du serveur manuellement."
 }

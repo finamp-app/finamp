@@ -681,7 +681,7 @@
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
     },
-    "kiloBitsPerSecondLabel": "{bitrate} kbps",
+    "kiloBitsPerSecondLabel": "{bitrate} KiB/s",
     "@kiloBitsPerSecondLabel": {
         "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
         "placeholders": {
@@ -750,7 +750,7 @@
     "bufferDisableSizeConstraintsTitle": "Don't limit buffer size",
     "bufferDisableSizeConstraintsSubtitle": "Disables the buffer size constraints ('Buffer Size'). The buffer will always be loaded to the configured duration ('Buffer Duration'), even for very large files. Can cause crashes. Requires a restart.",
     "bufferSizeTitle": "Buffer Size",
-    "bufferSizeSubtitle": "The size of the buffer in MB. Requires a restart",
+    "bufferSizeSubtitle": "The size of the buffer in MiB. Requires a restart",
     "language": "Language",
     "skipToPreviousTrackButtonTooltip": "Skip to beginning or to previous track",
     "@skipToPreviousTrackButtonTooltip": {
@@ -1896,7 +1896,7 @@
     "@showSeekControlsOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a seekable progress bar."
     },
-    "lyricsEmptyStateLoading": "Loading lyrics...",
+    "lyricsEmptyStateLoading": "Loading lyrics…",
     "@lyricsEmptyStateLoading": {
         "description": "Message shown while lyrics are being loaded"
     },
@@ -2370,7 +2370,7 @@
     "@downloadPaused": {
         "description": "Gets shown in the snackbar if loosing wifi connection while downloads are running and the 'requireWifiForDownloads' is enabled"
     },
-    "missingSchemaError": "Url needs to start with http(s)://",
+    "missingSchemaError": "URL needs to start with http(s)://",
     "@missingSchemaError": {
         "description": "Snackbar message when the user changes their home/public address but it doesn't start with http"
     },
@@ -2934,7 +2934,7 @@
     "@previousTracksPersistenceModeSelectorTitle": {
         "description": "Title for setting that allows to override state of previous tracks header in queue list"
     },
-    "previousTracksPersistenceModeSelectorSubtitle": "If you open the queue panel, the previous tracks section should be...",
+    "previousTracksPersistenceModeSelectorSubtitle": "If you open the queue panel, the previous tracks section should be…",
     "@previousTracksPersistenceModeSelectorSubtitle": {
         "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
     },
@@ -3153,7 +3153,7 @@
     "@currentLibrary": {
         "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
     },
-    "loading": "Loading...",
+    "loading": "Loading…",
     "@loading": {
         "description": "Message when items or libraries are loading in home screen section editor"
     },

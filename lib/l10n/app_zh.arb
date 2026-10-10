@@ -62,11 +62,11 @@
     "unknownError": "未知错误",
     "enterLowPriorityStateOnPause": "暂停时进入低优先级状态",
     "landscape": "横向",
-    "viewType": "视图类型",
-    "viewTypeSubtitle": "音乐列表的视图类型",
+    "viewType": "音乐屏幕显示类型",
+    "viewTypeSubtitle": "控制除主屏幕外，所有音乐界面标签页的网格或列表显示模式。",
     "showTextOnGridView": "在网格视图中显示文本",
     "useCoverAsBackgroundSubtitle": "是否在播放器屏幕上使用模糊的封面作为背景。",
-    "system": "系统",
+    "system": "遵循系统",
     "light": "浅色",
     "noButtonLabel": "否",
     "yesButtonLabel": "是",
@@ -429,7 +429,7 @@
     "@playbackModeDirectPlaying": {
         "description": "Feature chip that is shown when tracks are being played directly from the server, without transcoding"
     },
-    "kiloBitsPerSecondLabel": "{bitrate} kbps",
+    "kiloBitsPerSecondLabel": "{bitrate} KiB/s",
     "@kiloBitsPerSecondLabel": {
         "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
         "placeholders": {
@@ -502,7 +502,7 @@
     "@startInstantMixForIndividualTracksSwitchTitle": {
         "description": "Title for the switch that toggles if tapping a track on the tracks tab will start an instant mix of that track instead of just playing a single track."
     },
-    "startInstantMixForIndividualTracksSwitchSubtitle": "启用后，点击歌曲选项卡上的歌曲将生成速成合辑，而不仅仅是播放单个歌曲。",
+    "startInstantMixForIndividualTracksSwitchSubtitle": "启用此功能后，在“曲目”标签页中轻点某首曲目，将立即开始混音该曲目，而不是按顺序播放曲目。",
     "syncComplete": "所有下载已重新同步。",
     "@syncComplete": {
         "description": "Message displayed after download sync completes."
@@ -531,7 +531,7 @@
     "@preferQuickSyncSwitchSubtitle": {
         "description": "Description of setting that skips completed albums while syncing."
     },
-    "downloadInfo": "{size} {codec}{bitrate, select, null{} other{ @ {bitrate} Transcoded}}{location, select, null{} other{ ({location})}}",
+    "downloadInfo": "{size} {codec}{bitrate, select, null{} other{ @ {bitrate} 转码}}{location, select, null{} other{ ({location})}}",
     "@downloadInfo": {
         "placeholders": {
             "bitrate": {
@@ -767,7 +767,7 @@
     "@shareOfflineListens": {
         "description": "Button for exporting the JSON file containing any playback events that couldn't be submitted to the server, either because offline mode was enabled or the connection failed"
     },
-    "yourLikes": "你的喜欢",
+    "yourLikes": "您的点赞 (from \"{trackName}\")",
     "@yourLikes": {
         "description": "Title for the queue source when the user is playing their liked tracks"
     },
@@ -818,7 +818,7 @@
     "@loopModeOneButtonLabel": {
         "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop one mode"
     },
-    "queuesScreen": "恢复正在播放",
+    "queuesScreen": "历史队列",
     "@queuesScreen": {
         "description": "Title for the screen where older now playing queues can be restored"
     },
@@ -1075,7 +1075,7 @@
         },
         "description": "Dropdown option to download transcoded version of tracks"
     },
-    "collectionDownloadInfo": "{size}{codec, select, ORIGINAL{} other{ as {codec} @ {bitrate}}}{location, select, null{} other{ ({location})}}",
+    "collectionDownloadInfo": "{size}{codec, select, ORIGINAL{} other{ 以 {codec} @ {bitrate}}}{location, select, null{} other{ ({location})}}",
     "@collectionDownloadInfo": {
         "placeholders": {
             "bitrate": {
@@ -1237,7 +1237,7 @@
         "description": "Subtitle for the editor that allows the user to set the minimum padding around the album cover on the player screen."
     },
     "noActiveDownloads": "无正在下载。",
-    "bufferSizeSubtitle": "缓冲区的容量（MB）。重启生效",
+    "bufferSizeSubtitle": "缓冲区大小（单位：MiB）。需要重启",
     "addToMorePlaylistsTitle": "添加至更多播放列表",
     "shuffleAllQueueSource": "随机播放",
     "@shuffleAllQueueSource": {
@@ -1577,7 +1577,7 @@
     "@releaseDateFormatSubtitle": {
         "description": "Title for the setting that controls the format release dates throughout the app."
     },
-    "releaseDateFormatMonthDayYear": "月、日、年",
+    "releaseDateFormatMonthDayYear": "月、日、年（基于区域设置）",
     "@releaseDateFormatMonthDayYear": {
         "description": "Date format option for the release date of an album, showing the year and month and day/date. Example: March 2, 2022"
     },
@@ -1756,7 +1756,7 @@
     "@downloadPaused": {
         "description": "Gets shown in the snackbar if loosing wifi connection while downloads are running and the 'requireWifiForDownloads' is enabled"
     },
-    "missingSchemaError": "Url 需要以 http(s):// 开头",
+    "missingSchemaError": "URL 需要以 http(s):// 开头",
     "@missingSchemaError": {
         "description": "Snackbar message when the user changes their home/public address but it doesn't start with http"
     },
@@ -2038,7 +2038,7 @@
     "@applyFilterOnGenreChipTapTitle": {
         "description": "Title for the setting that controls if taps on genre chips should apply a genre filter to the current screen or should redirect to the GenreScreen."
     },
-    "applyFilterOnGenreChipTapSubtitle": "默认情况下，点击类型会打开页面，长按则按该类型筛选艺人或播放列表。启用此功能后，两者操作将互换。",
+    "applyFilterOnGenreChipTapSubtitle": "默认情况下，点击类型会打开页面，长按则按该类型筛选艺术家或播放列表。启用此功能后，两者操作将互换。",
     "@applyFilterOnGenreChipTapSubtitle": {
         "description": "Subtitle for the setting that controls if taps on genres should apply a genre filter to the current screen or should redirect to the GenreScreen."
     },
@@ -2070,7 +2070,7 @@
     "@savingChanges": {
         "description": "Text shown while the changes to a playlist are being saved"
     },
-    "confirmAddCollectionItemToPlaylist": "确定要将 {itemType, select, album{专辑} playlist{播放列表} artist{艺人} genre{类型} other{项目} }「{itemName}」中的所有曲目添加到此播放列表吗？这些曲目之后只能单独移除。",
+    "confirmAddCollectionItemToPlaylist": "您确定要将 {itemType, select, album{专辑} playlist{播放列表} artist{艺术家} genre{类型} other{项目}} '{itemName}' 中的所有歌曲加入此播放列表吗？这些歌曲之后只能逐一移除。",
     "@confirmAddCollectionItemToPlaylist": {
         "description": "Warning dialog for adding an album, artist, etc. or multiple tracks to a playlist, clarifying that this cannot be undone without removing all tracks individually and manually.",
         "placeholders": {
@@ -2253,7 +2253,7 @@
     "@quickConnectAuthorizationMenuStateSubtitleIdle": {
         "description": "Subtitle for the quick connect authorization menu state info (above the input field) while the code hasn't been submitted yet"
     },
-    "quickConnectAuthorizationMenuStateTitleProcessing": "正在授权请求",
+    "quickConnectAuthorizationMenuStateTitleProcessing": "授权请求",
     "@quickConnectAuthorizationMenuStateTitleProcessing": {
         "description": "Title for the quick connect authorization menu state info (above the input field) while a request is being processed"
     },
@@ -2305,7 +2305,7 @@
     "@accentColorTitle": {
         "description": "Title for the accent color picker sheet"
     },
-    "systemAccentColor": "使用系统主题色",
+    "systemAccentColor": "使用系统强调色",
     "@systemAccentColor": {
         "description": "Title of the System Accent Color setting."
     },
@@ -2473,7 +2473,7 @@
             }
         }
     },
-    "lyricsEmptyStateLoading": "歌词加载中……",
+    "lyricsEmptyStateLoading": "正在加载歌词…",
     "@lyricsEmptyStateLoading": {
         "description": "Message shown while lyrics are being loaded"
     },
@@ -2805,7 +2805,7 @@
     "@previousTracksPersistenceModeSelectorTitle": {
         "description": "Title for setting that allows to override state of previous tracks header in queue list"
     },
-    "previousTracksPersistenceModeSelectorSubtitle": "打开播放队列面板时，是否显示已放完的歌曲。",
+    "previousTracksPersistenceModeSelectorSubtitle": "打开播放队列面板时，是否显示已放完的歌曲…",
     "@previousTracksPersistenceModeSelectorSubtitle": {
         "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
     },
@@ -3016,7 +3016,7 @@
     "@currentLibrary": {
         "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
     },
-    "loading": "加载中...",
+    "loading": "加载中…",
     "@loading": {
         "description": "Message when items or libraries are loading in home screen section editor"
     },
@@ -3234,7 +3234,7 @@
     "@shuffleTracksAction": {
         "description": "Name of a home screen quick action"
     },
-    "randomFavoriteAction": "随机播放收藏",
+    "randomFavoriteAction": "随机播放收藏 {itemType, select, albums{专辑} tracks{曲目} playlists{播放列表} performingArtists{表演艺术家} albumArtists{专辑艺术家} none{of <类型>} other{}}",
     "@randomFavoriteAction": {
         "description": "Name of a home screen quick action"
     },
@@ -3389,7 +3389,7 @@
             }
         }
     },
-    "homeAllPlaylistsWarning": "确定要下载所有播放列表吗？这将下载每一个播放列表，而不仅仅是当前栏目中的列表。",
+    "homeAllPlaylistsWarning": "您确定要下载所有播放列表吗？这将下载每一个播放列表，而不仅仅是此部分中的那些。",
     "@homeAllPlaylistsWarning": {
         "description": "Warning presented when pressing the download button on playlist home sections with a filter applied.  This is shown because the download will not apply the filter."
     },
@@ -3449,11 +3449,11 @@
             }
         }
     },
-    "clientCertificate": "mTLS (SSL) 客户端证书",
+    "clientCertificate": "客户端证书 (mTLS)",
     "@clientCertificate": {
         "description": "Title for the setting that allows managing SSL client certificates used for authentication"
     },
-    "clientCertificateUnavailable": "未设置证书，客户端身份验证已禁用",
+    "clientCertificateUnavailable": "未设置证书，已禁用额外的客户端身份验证",
     "@clientCertificateUnavailable": {
         "description": "Message shown when the user has no SSL client certificate available to use."
     },
@@ -3461,7 +3461,7 @@
     "@clientCertificateInstalled": {
         "description": "Message shown when the user has successfully installed an SSL client certificate."
     },
-    "clientCertificateDescription": "TLS 客户端证书（.p12 或 .pfx）用于向您的 Jellyfin 服务器验证此设备的身份。仅当您的服务器配置了双向 TLS 时才需要此证书。",
+    "clientCertificateDescription": "TLS 客户端证书（.p12 或 .pfx）用于向您的 Jellyfin 服务器对该设备进行额外身份验证。仅当您的服务器配置了双向 TLS（mutual TLS）时才需要此证书。",
     "@clientCertificateDescription": {
         "description": "Explanatory text in the client certificate settings menu describing what a client certificate is used for"
     },
@@ -3513,5 +3513,215 @@
     "@applyChangesOnClose": {
         "description": "Notification on sort and filter menu that currently pending changes will be automatically applied on close."
     },
-    "removeFromQueue": "从队列中移除"
+    "removeFromQueue": "从队列中移除",
+    "verboseLogging": "详细日志记录",
+    "@verboseLogging": {
+        "description": "Title for the toggle that enables detailed logging on the logs screen"
+    },
+    "verboseLoggingSubtitle": "保留详细日志以用于错误报告。如需获得更好的播放性能，请关闭此选项。",
+    "@verboseLoggingSubtitle": {
+        "description": "Subtitle explaining the verbose logging toggle"
+    },
+    "inAlbumOrPlaylist": "专辑/播放列表顺序",
+    "@inAlbumOrPlaylist": {
+        "description": "Sorting order for tracks in an album or playlist (by disc, then index, then name"
+    },
+    "discUnknown": "未知光盘",
+    "@discUnknown": {
+        "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
+    },
+    "perTabGridMode": "按标签页选择",
+    "showFastScrollerSubtitle": "显示或隐藏音乐标签页右侧的字母列表，以便快速跳转至特定字母。",
+    "discUnknownOfAlbum": "[未知光盘] {albumName}",
+    "@discUnknownOfAlbum": {
+        "description": "Used when a single disc of album is opened, but the disc number is unknown, then album name is replaced with this string",
+        "placeholders": {
+            "albumName": {
+                "type": "String"
+            }
+        }
+    },
+    "volumeControlDisabledCastingHint": "音频正在投射到不支持应用内音量控制的设备上。",
+    "@volumeControlDisabledCastingHint": {
+        "description": "Hint text displayed below the volume bar when the in-app volume slider is disabled because audio is being cast to a device that bypasses the in-app volume handling and handles its own volume, such as when using Airplay."
+    },
+    "selectItemTypes": "选择项目类型",
+    "@selectItemTypes": {
+        "description": "Title for 'play random item' quick action edit menu"
+    },
+    "randomAlbums": "随机专辑",
+    "@randomAlbums": {
+        "description": "Name of a home screen section preset"
+    },
+    "randomAlbumArtists": "随机专辑艺术家",
+    "@randomAlbumArtists": {
+        "description": "Name of a home screen section preset"
+    },
+    "recentlyAddedPlaylists": "最近创建的播放列表",
+    "@recentlyAddedPlaylists": {
+        "description": "Name of a home screen section preset"
+    },
+    "randomAlbumsDescription": "随机排序专辑",
+    "@randomAlbumsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "randomArtistsDescription": "艺术家（随机排序）",
+    "@randomArtistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "recentlyAddedPlaylistsDescription": "按创建日期排序的播放列表，从最新创建开始",
+    "@recentlyAddedPlaylistsDescription": {
+        "description": "Description of a home screen section preset"
+    },
+    "playRandomItemActionDescription": "开始播放随机项目",
+    "@playRandomItemActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "randomItemAction": "随机播放 {itemType, select, albums{专辑} tracks{曲目} playlists{播放列表} performingArtists{表演艺术家} albumArtists{专辑艺术家} none{项目of <类型>} other{项目}}",
+    "@randomItemAction": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "description": "Localized name of item type to be selected, or placeholder 'multiple'"
+            }
+        },
+        "description": "Name of a home screen quick action"
+    },
+    "randomPlaylistAction": "随机播放列表",
+    "@randomPlaylistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomArtistAction": "随机播放艺术家",
+    "@randomArtistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteAlbumAction": "随机播放收藏专辑",
+    "@randomFavoriteAlbumAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteTrackAction": "随机播放收藏曲目",
+    "@randomFavoriteTrackAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoritePlaylistAction": "随机播放收藏列表",
+    "@randomFavoritePlaylistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteArtistAction": "随机播放收藏艺术家",
+    "@randomFavoriteArtistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomFavoriteGenreAction": "随机播放收藏类型",
+    "@randomFavoriteGenreAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "artistFilter": "艺术家: {name}",
+    "@artistFilter": {
+        "description": "Name of artistFilter",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "advanced": "高级",
+    "@advanced": {
+        "description": "Label for the button on the login screen that opens the advanced options screen, and the title of that screen."
+    },
+    "clientCertificatesUnsupported": "此平台不支持客户端证书",
+    "@clientCertificatesUnsupported": {
+        "description": "Message shown when client certificates are not supported on the user's current platform."
+    },
+    "featureChipName": "{chipName, select, explicit{不雅内容} playCount{播放次数} additionalPeople{其他人员} playbackMode{播放模式} codec{编码格式} bitRate{比特率} bitDepth{位深} sampleRate{采样率} size{大小} normalizationGain{音量增益} other{{chipName}}}",
+    "@featureChipName": {
+        "placeholders": {
+            "chipName": {
+                "type": "String",
+                "example": "playCount"
+            }
+        },
+        "description": "Titles for settings controlling which pieces of advanced track info are displayed."
+    },
+    "featureChipDescription": "{chipName, select, explicit{标记包含不雅内容或不雅内容的曲目} additionalPeople{与歌曲相关的非艺术家人员（如有）名单（词曲作者等）。)} playbackMode{流媒体与转码状态信息} bitDepth{每个音频采样的位数。仅适用于无损编解码器，通常为 16 位。} sampleRate{每秒音频采样数。通常为 44.1 kHz。} normalizationGain{当前生效的重放增益值} size{该曲目的原始文件大小} other{null}}",
+    "@featureChipDescription": {
+        "placeholders": {
+            "chipName": {
+                "type": "String",
+                "example": "playCount"
+            }
+        },
+        "description": "Descriptions of different pieces of advanced track info."
+    },
+    "maximizePlayer": "最大化播放器",
+    "collapsePlayer": "将播放器收起至侧边栏",
+    "addSpecialDownloads": "添加特殊下载",
+    "@addSpecialDownloads": {
+        "description": "Button on downloads screen which allows adding special downloads, such as all playlists or all favorites."
+    },
+    "allTracks": "所有曲目 (from \"{trackName}\")",
+    "@allTracks": {
+        "description": "Queue source when playing from tracks screen.",
+        "placeholders": {
+            "trackName": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "quickActionBanner": "来看看一些常用的设置更改！",
+    "@quickActionBanner": {
+        "description": "Banner directing new users to the quick settings, where they can adjust the most commonly used settings"
+    },
+    "themeSettingTitle": "应用配色主题（深色/浅色）",
+    "@themeSettingTitle": {
+        "description": "Title for the setting that allows you to override the system theme and force dark or light mode"
+    },
+    "perTabGridModeScreen": "设置每个标签页的视图类型",
+    "perTabAlbumGrid": "仅以网格形式显示专辑",
+    "quickSettingsScreen": "快速设置",
+    "quickSettingsScreenDescription": "使用这些核心选项根据您的喜好定制 Finamp。随时通过“设置”返回此处。",
+    "quickSettingsTabsLink": "重新排列并隐藏标签页",
+    "quickSettingsTranscodeLink": "所有转码设置",
+    "quickSettingsLayoutLink": "所有布局与主题设置",
+    "quickSettingsAllSettingsLink": "所有设置",
+    "quickSettingsNetworkLink": "配置服务器的本地地址",
+    "releaseDateFormatNumerical": "短数字（基于区域设置）",
+    "@releaseDateFormatNumerical": {
+        "description": "Date format option for the release date of an album, showing the date in a short numerical format. Changes based on locale such as DD/MM/YYYY for en_gb and MM/DD/YYYY for en_us."
+    },
+    "loginFlowLocalNetworkServersNoResults": "尚未检测到服务器 - 您可能需要手动输入服务器地址。",
+    "downloadDialogDownloadLocationLabel": "下载位置",
+    "@downloadDialogDownloadLocationLabel": {
+        "description": "Label for the dropdown in the download dialog that selects where the download is stored. Only shown when multiple download locations are available."
+    },
+    "downloadDialogPath": "路径: {path}",
+    "@downloadDialogPath": {
+        "description": "Shows the file system path of the selected download location in the download dialog.",
+        "placeholders": {
+            "path": {
+                "type": "String",
+                "example": "/storage/emulated/0/Android/data/com.unicornsonlsd.finamp/files"
+            }
+        }
+    },
+    "downloadDialogTranscodeFilesTitle": "转码文件？",
+    "@downloadDialogTranscodeFilesTitle": {
+        "description": "Title of the checkbox in the download dialog that toggles whether the downloaded tracks are transcoded."
+    },
+    "downloadDialogFileSizeLabel": "文件大小：",
+    "@downloadDialogFileSizeLabel": {
+        "description": "Label for the original vs. transcoded file size line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogFormatLabel": "格式：",
+    "@downloadDialogFormatLabel": {
+        "description": "Label for the original vs. transcoded audio format line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogBitrateLabel": "比特率：",
+    "@downloadDialogBitrateLabel": {
+        "description": "Label for the original vs. transcoded bitrate line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogTranscodedIntoSemanticLabel": "转码为",
+    "@downloadDialogTranscodedIntoSemanticLabel": {
+        "description": "Screen reader label for the arrow icon in the download dialog's transcode summary. It sits between the original value and the transcoded value, e.g. 'FLAC, transcoded into, OPUS'."
+    }
 }

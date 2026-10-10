@@ -1715,5 +1715,13 @@
     "customizeHomeScreen": "Ana ekranı düzenle",
     "@customizeHomeScreen": {
         "description": "Label for home screen customize button"
+    },
+    "activeLibraries": "Aktif Kütüphaneler",
+    "@activeLibraries": {
+        "description": "Active Libraries"
+    },
+    "discUnknown": "Bilinmeyen Disk",
+    "@discUnknown": {
+        "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
     }
 }

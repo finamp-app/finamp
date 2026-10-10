@@ -1,0 +1,232 @@
+{
+    "startupErrorTitle": "Algo fallou durante a inicialización da app",
+    "@startupErrorTitle": {
+        "description": "The title for the error screen that shows when startup fails."
+    },
+    "finamp": "Finamp",
+    "@finamp": {
+        "description": "App name, possibly translated"
+    },
+    "startupErrorCallToAction": "Por favor, crea unha incidencia en \"github.com/jmshrv/finamp\" cos rexistros (usa o botón de embaixo) e unha captura de esta páxina, para que poidamos arregla-lo tan cedo como posíbel.",
+    "@startupErrorCallToAction": {
+        "description": "The subtitle / call to action for what to do after encountering a startup error"
+    },
+    "startupErrorWorkaround": "Como solución temporal ao error, podes limpar os datos de applicación e reestablece-la app. Ten en conta que en ese caso a túa configuración e descargas serán eliminadas.",
+    "@startupErrorWorkaround": {
+        "description": "The subtitle for how to manually recover from a startup error"
+    },
+    "about": "Acerca Finamp",
+    "@about": {
+        "description": "Label for the about/info button on the settings screen"
+    },
+    "aboutContributionPrompt": "Feito por xente maravillosa no seu tempo libre.\nTi podes ser uno de eles!",
+    "@aboutContributionPrompt": {
+        "description": "Text shown in the about screen, explaining that the app is made by volunteers and that the user could be one of them."
+    },
+    "aboutContributionLink": "Contribúe a Finamp en Github:",
+    "@aboutContributionLink": {
+        "description": "Link to the Finamp GitHub repository, shown in the about screen."
+    },
+    "aboutReleaseNotes": "Lee as últimas notas de versión:",
+    "@aboutReleaseNotes": {
+        "description": "Link to the release notes, shown in the about screen."
+    },
+    "aboutTranslations": "Axuda a traducir Finamp ao teu idioma:",
+    "@aboutTranslations": {
+        "description": "Link to the translation project, shown in the about screen."
+    },
+    "aboutThanks": "Grazas por usar Finamp!",
+    "@aboutThanks": {
+        "description": "Thank you message shown in the about screen."
+    },
+    "loginFlowWelcomeHeading": "Benvido a {styledName}",
+    "@loginFlowWelcomeHeading": {
+        "description": "Greeting shown on the login screen.",
+        "placeholders": {
+            "styledName": {
+                "type": "String",
+                "example": "Finamp"
+            }
+        }
+    },
+    "loginFlowSlogan": "A túa música, como ti queres.",
+    "@loginFlowSlogan": {
+        "description": "Slogan shown on the login screen."
+    },
+    "loginFlowGetStarted": "Comenza!",
+    "@loginFlowGetStarted": {
+        "description": "Button label for the login/splash screen."
+    },
+    "viewLogs": "Ver Rexistros",
+    "@viewLogs": {
+        "description": "Label for button shown during the login process that allows the user to view the app logs"
+    },
+    "changeLanguage": "Cambiar Idioma",
+    "@changeLanguage": {
+        "description": "Label for button shown during the login process that allows the user to change the app language"
+    },
+    "loginFlowServerSelectionHeading": "Conecta a Jellyfin",
+    "@loginFlowServerSelectionHeading": {
+        "description": "Heading for the server selection step during the login flow."
+    },
+    "back": "Atrás",
+    "@back": {
+        "description": "Label for the back button."
+    },
+    "serverUrl": "URL do Servidor",
+    "internalExternalIpExplanation": "Si queres poder acceder ao teu servidor Jellyfin de maneira remota, tes que usar a túa IP externa.\n\nSi o teu servidor está nun porto HTTP por defecto (80 ou 443) ou no porto por defecto de Jellyfin (8096), entón non tes por qué especificar o porto.\n\nSi o URL é correcto, deberías ver aparecer algunha información sobre o teu servidor embaixo do campo de entrada.",
+    "@internalExternalIpExplanation": {
+        "description": "Extra info for which IP to use for remote access, and info on whether or not the user needs to specify a port."
+    },
+    "serverUrlInfoButtonTooltip": "Axuda URL do Servidor",
+    "@serverUrlInfoButtonTooltip": {
+        "description": "Tooltip for the button that shows the extra info dialog for which IP to use for remote access, and info on whether or not the user needs to specify a port."
+    },
+    "emptyServerUrl": "O URL do Servidor non pode estar vacío",
+    "@emptyServerUrl": {
+        "description": "Error message that shows when the user submits a login without a server URL"
+    },
+    "connectingToServer": "Conectando ao servidor…",
+    "@connectingToServer": {
+        "description": "Text shown while the connection to the specified server is attempted"
+    },
+    "finampTagline": "Un reproductor de música de código aberto",
+    "@finampTagline": {
+        "description": "Tagline / short description for the app"
+    },
+    "serverUrlHint": "e.x. demo.jellyfin.org/stable",
+    "@serverUrlHint": {
+        "description": "Hint text for the server URL input field. Should be the address to an actual, public Jellyfin server."
+    },
+    "loginFlowLocalNetworkServers": "Servidores na túa rede local:",
+    "@loginFlowLocalNetworkServers": {
+        "description": "Heading for the list of servers on the local network, shown during the login flow. Should ideally have a colon at the end."
+    },
+    "loginFlowLocalNetworkServersScanningForServers": "Procurando servidores…",
+    "@loginFlowLocalNetworkServersScanningForServers": {
+        "description": "Text shown while servers are being discovered via UDP broadcasts"
+    },
+    "loginFlowAccountSelectionHeading": "Selecciona a túa conta",
+    "@loginFlowAccountSelectionHeading": {
+        "description": "Heading for the account selection step during the login flow."
+    },
+    "backToServerSelection": "Retorna a selección de servidores",
+    "@backToServerSelection": {
+        "description": "Label for the button that takes the user back to the server selection step during the login flow."
+    },
+    "loginFlowNamelessUser": "Usuario Sin Nome",
+    "@loginFlowNamelessUser": {
+        "description": "Name for a user that doesn't have a name set on the server."
+    },
+    "loginFlowCustomUser": "Usuario Personalizado",
+    "@loginFlowCustomUser": {
+        "description": "Label for a button that allows the user to enter a custom username/password, for example if their user account is hidden."
+    },
+    "loginFlowAuthenticationHeading": "Accede á túa conta",
+    "@loginFlowAuthenticationHeading": {
+        "description": "Heading for the authentication step during the login flow."
+    },
+    "backToAccountSelection": "Retorna á selección de conta",
+    "@backToAccountSelection": {
+        "description": "Label for the button that takes the user back to the account selection step during the login flow."
+    },
+    "loginFlowQuickConnectPrompt": "Usa código Quick Connect",
+    "@loginFlowQuickConnectPrompt": {
+        "description": "Text shown above the quick connect code. The full message will be 'Use Quick Connect code {code}'. The code will be a 6-digit number. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
+    },
+    "loginFlowQuickConnectInstructions": "Abre á app de Jellyfin ou a páxina web, pulsa no icono do teu usuario e selecciona Quick Connect.",
+    "@loginFlowQuickConnectInstructions": {
+        "description": "Instructions for how and where to enter the Quick Connect code. Ideally, 'Quick Connect' should be capitalized and translated exactly as it is in the Jellyfin web UI."
+    },
+    "loginFlowQuickConnectDisabled": "Quick Connect non está habilitado neste servidor.",
+    "@loginFlowQuickConnectDisabled": {
+        "description": "Warning that is shown during authentication if Quick Connect is disabled on the server."
+    },
+    "orDivider": "ou",
+    "@orDivider": {
+        "description": "Text that separates two different ways to log in. For example, after selecting a server during the login flow, the other can either use Quick Connect, *or* select an account from a list. The text is stylized by wrapping it in dashes: '- or -'."
+    },
+    "loginFlowSelectAUser": "Selecciona un usuario",
+    "@loginFlowSelectAUser": {
+        "description": "Heading for the list of users that the user can select from during the login flow."
+    },
+    "username": "Nome de usuario",
+    "usernameHint": "Introduce o teu nome de usuario",
+    "@usernameHint": {
+        "description": "Hint text for the username input field."
+    },
+    "usernameValidationMissingUsername": "Por favor, introduce o teu nome de usuario",
+    "@usernameValidationMissingUsername": {
+        "description": "Error message that shows when the user submits a login without a username"
+    },
+    "password": "Contrasinal",
+    "passwordHint": "Introduce o teu contrasinal",
+    "@passwordHint": {
+        "description": "Hint text for the password input field."
+    },
+    "login": "Acceder",
+    "@login": {
+        "description": "Label for the login button."
+    },
+    "logs": "Rexistros",
+    "verboseLoggingSubtitle": "Mantén rexistros detallados para informes de fallos. Deixa desabilitado para mellor rendimento durante reproducción.",
+    "@verboseLoggingSubtitle": {
+        "description": "Subtitle explaining the verbose logging toggle"
+    },
+    "next": "Seguinte",
+    "selectMusicLibraries": "Selecciona Bibliotecas Musicales",
+    "@selectMusicLibraries": {
+        "description": "App bar title for library select screen"
+    },
+    "allLibraries": "Todas as Bibliotecas",
+    "@allLibraries": {
+        "description": "All Libraries"
+    },
+    "activeLibraries": "Bibliotecas Activas",
+    "@activeLibraries": {
+        "description": "Active Libraries"
+    },
+    "unknownName": "Nome Desconocido",
+    "tracks": "Cancións",
+    "albums": "Álbums",
+    "appearsOnAlbums": "Aparece en",
+    "artists": "Artistas",
+    "genres": "Xéneros",
+    "noGenres": "Sin Xéneros",
+    "@noGenres": {
+        "description": "Gets shown when there are no genres available for an album or artist"
+    },
+    "playlists": "Listas de reproducción",
+    "startMix": "Comenza mezcla",
+    "startMixNoTracksArtist": "Presiona un artista para engadir ou elimina-lo do creador de mezclas antes de comezar",
+    "@startMixNoTracksArtist": {
+        "description": "Snackbar message that shows when the user presses the instant mix button with no artists selected"
+    },
+    "music": "Música",
+    "clear": "Limpar",
+    "favorite": "Favorito",
+    "favorites": "Favoritos",
+    "shuffleSome": "Mezcla algúns",
+    "shuffleAll": "Mezcla todos",
+    "downloads": "Descargas",
+    "settings": "Configuración",
+    "offlineMode": "Modo desconexión",
+    "sortBy": "Arranxar por",
+    "title": "Título",
+    "album": "Álbum",
+    "albumArtist": "Artista do Álbum",
+    "albumArtists": "Artistas do Álbum",
+    "artist": "Artista",
+    "budget": "Presuposto",
+    "communityRating": "Valoración da Comunidade",
+    "criticRating": "Valoración da Crítica",
+    "dateAdded": "Data Engadido",
+    "datePlayed": "Data da Última Reproducción",
+    "playCount": "Conta de Reproduccións",
+    "premiereDate": "Data do Lanzamento",
+    "productionYear": "Data de Producción",
+    "name": "Nome",
+    "random": "Aleatorio",
+    "revenue": "Ingresos",
+    "duration": "Duración"
+}
