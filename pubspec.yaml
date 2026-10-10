@@ -26,7 +26,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  background_downloader: ^9.2.3
+  background_downloader: ^9.5.9
   json_annotation: ^4.8.1
   chopper: ^8.0.0
   get_it: ^8.2.0
