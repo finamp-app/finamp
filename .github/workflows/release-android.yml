@@ -1,0 +1,111 @@
+name: Android release artifacts
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*.*.*'
+  pull_request:
+    paths:
+      - '.github/workflows/release-android.yml'
+      - '.github/scripts/android_signing.py'
+      - '.github/scripts/test_android_signing.py'
+
+permissions:
+  contents: read
+
+jobs:
+  check-signing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: Check signing configuration
+        run: python3 -m unittest discover -s .github/scripts -p 'test_android_signing.py' -v
+
+  release-android:
+    needs: check-signing
+    # No release credentials are available to PRs, branch dispatches, or forks.
+    if: >-
+      github.repository == 'finamp-app/finamp' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: android-release
+    concurrency:
+      group: android-release-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: false
+      - name: Set up Rust for native plugins
+        uses: hecrj/setup-rust-action@v2
+      - name: Record build tool versions
+        run: |
+          flutter --version
+          java -version
+          rustc --version
+      - name: Install Android verification tools
+        run: sdkmanager 'build-tools;36.0.0'
+      - run: flutter pub get
+      - name: Configure release signing
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: python3 .github/scripts/android_signing.py
+      - name: Build release APK
+        # --no-pub can leave integration_test in the generated release registrant:
+        # https://github.com/flutter/flutter/issues/169336
+        run: flutter build apk --release
+      - name: Build release app bundle
+        # Run pub get again for the localization workaround used by build.yml.
+        run: |
+          flutter pub get
+          flutter build appbundle --release
+      - name: Verify release signatures
+        env:
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+        run: |
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs build/app/outputs/flutter-apk/app-release.apk
+          jarsigner -verify -strict -keystore "$RUNNER_TEMP/finamp-release.jks" -storepass:env ANDROID_STORE_PASSWORD build/app/outputs/bundle/release/app-release.aab
+      - name: Package artifacts
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          mkdir -p android-release
+          cp build/app/outputs/flutter-apk/app-release.apk "android-release/Finamp-${RELEASE_TAG}-universal.apk"
+          cp build/app/outputs/bundle/release/app-release.aab "android-release/Finamp-${RELEASE_TAG}.aab"
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging build/app/outputs/flutter-apk/app-release.apk > android-release/apk-manifest.txt
+          grep -q "^package: name='com.unicornsonlsd.finamp' " android-release/apk-manifest.txt
+          flutter --version --machine > android-release/flutter-version.json
+          git rev-parse HEAD > android-release/commit.txt
+          cp pubspec.lock android-release/pubspec.lock
+          cd android-release
+          sha256sum -- *.apk *.aab > SHA256SUMS
+      - uses: actions/upload-artifact@v6
+        with:
+          name: finamp-android-release-${{ github.ref_name }}
+          path: android-release/
+          if-no-files-found: error
+          compression-level: 0
+      - name: Remove signing files
+        if: always()
+        run: rm -f android/key.properties "$RUNNER_TEMP/finamp-release.jks"
