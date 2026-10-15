@@ -3833,23 +3833,28 @@ const FinampUserSchema = CollectionSchema(
     ),
     r'id': PropertySchema(id: 4, name: r'id', type: IsarType.string),
     r'isLocal': PropertySchema(id: 5, name: r'isLocal', type: IsarType.bool),
-    r'isarViews': PropertySchema(
+    r'isarCustomHeaders': PropertySchema(
       id: 6,
+      name: r'isarCustomHeaders',
+      type: IsarType.stringList,
+    ),
+    r'isarViews': PropertySchema(
+      id: 7,
       name: r'isarViews',
       type: IsarType.string,
     ),
     r'localAddress': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'localAddress',
       type: IsarType.string,
     ),
     r'preferLocalNetwork': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'preferLocalNetwork',
       type: IsarType.bool,
     ),
     r'serverId': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'serverId',
       type: IsarType.string,
     ),
@@ -3886,6 +3891,13 @@ int _finampUserEstimateSize(
     }
   }
   bytesCount += 3 + object.id.length * 3;
+  bytesCount += 3 + object.isarCustomHeaders.length * 3;
+  {
+    for (var i = 0; i < object.isarCustomHeaders.length; i++) {
+      final value = object.isarCustomHeaders[i];
+      bytesCount += value.length * 3;
+    }
+  }
   bytesCount += 3 + object.isarViews.length * 3;
   bytesCount += 3 + object.localAddress.length * 3;
   bytesCount += 3 + object.serverId.length * 3;
@@ -3904,10 +3916,11 @@ void _finampUserSerialize(
   writer.writeString(offsets[3], object.isarCurrentViewId);
   writer.writeString(offsets[4], object.id);
   writer.writeBool(offsets[5], object.isLocal);
-  writer.writeString(offsets[6], object.isarViews);
-  writer.writeString(offsets[7], object.localAddress);
-  writer.writeBool(offsets[8], object.preferLocalNetwork);
-  writer.writeString(offsets[9], object.serverId);
+  writer.writeStringList(offsets[6], object.isarCustomHeaders);
+  writer.writeString(offsets[7], object.isarViews);
+  writer.writeString(offsets[8], object.localAddress);
+  writer.writeBool(offsets[9], object.preferLocalNetwork);
+  writer.writeString(offsets[10], object.serverId);
 }
 
 FinampUser _finampUserDeserialize(
@@ -3921,12 +3934,13 @@ FinampUser _finampUserDeserialize(
     publicAddress: reader.readString(offsets[2]),
     id: reader.readString(offsets[4]),
     isLocal: reader.readBool(offsets[5]),
-    localAddress: reader.readString(offsets[7]),
-    preferLocalNetwork: reader.readBool(offsets[8]),
-    serverId: reader.readString(offsets[9]),
+    localAddress: reader.readString(offsets[8]),
+    preferLocalNetwork: reader.readBool(offsets[9]),
+    serverId: reader.readString(offsets[10]),
   );
   object.isarCurrentViewId = reader.readStringOrNull(offsets[3]);
-  object.isarViews = reader.readString(offsets[6]);
+  object.isarCustomHeaders = reader.readStringList(offsets[6]) ?? [];
+  object.isarViews = reader.readString(offsets[7]);
   return object;
 }
 
@@ -3950,12 +3964,14 @@ P _finampUserDeserializeProp<P>(
     case 5:
       return (reader.readBool(offset)) as P;
     case 6:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringList(offset) ?? []) as P;
     case 7:
       return (reader.readString(offset)) as P;
     case 8:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 9:
+      return (reader.readBool(offset)) as P;
+    case 10:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -4805,6 +4821,209 @@ extension FinampUserQueryFilter
     });
   }
 
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersElementEqualTo(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'isarCustomHeaders',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'isarCustomHeaders',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'isarCustomHeaders',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'isarCustomHeaders',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'isarCustomHeaders',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersElementEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'isarCustomHeaders',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersElementContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'isarCustomHeaders',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersElementMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'isarCustomHeaders',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'isarCustomHeaders', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'isarCustomHeaders', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'isarCustomHeaders', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'isarCustomHeaders', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'isarCustomHeaders', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersLengthLessThan(int length, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'isarCustomHeaders', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersLengthGreaterThan(int length, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'isarCustomHeaders',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
+  isarCustomHeadersLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'isarCustomHeaders',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isarIdEqualTo(
     Id value,
   ) {
@@ -5630,6 +5849,13 @@ extension FinampUserQueryWhereDistinct
     });
   }
 
+  QueryBuilder<FinampUser, FinampUser, QDistinct>
+  distinctByIsarCustomHeaders() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isarCustomHeaders');
+    });
+  }
+
   QueryBuilder<FinampUser, FinampUser, QDistinct> distinctByIsarViews({
     bool caseSensitive = true,
   }) {
@@ -5704,6 +5930,13 @@ extension FinampUserQueryProperty
   QueryBuilder<FinampUser, bool, QQueryOperations> isLocalProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isLocal');
+    });
+  }
+
+  QueryBuilder<FinampUser, List<String>, QQueryOperations>
+  isarCustomHeadersProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isarCustomHeaders');
     });
   }
 

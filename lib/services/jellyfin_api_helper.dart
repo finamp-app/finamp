@@ -46,6 +46,7 @@ class JellyfinApiHelper {
   List<BaseItemDto> selectedMixGenres = [];
 
   Uri? baseUrlTemp;
+  Map<String, String>? customHeadersTemp;
 
   final String defaultFields = jellyfin_api.defaultFields;
 
@@ -661,11 +662,13 @@ class JellyfinApiHelper {
       accessToken: newUserAuthenticationResult.accessToken!,
       serverId: newUserAuthenticationResult.serverId!,
       views: {},
+      customHeaders: customHeadersTemp ?? {},
     );
 
     await _finampUserHelper.saveUser(newUser);
-    baseUrlTemp =
-        null; // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    baseUrlTemp = null;
+    customHeadersTemp = null;
   }
 
   /// Authenticates a user and saves the login details
@@ -690,11 +693,13 @@ class JellyfinApiHelper {
       accessToken: newUserAuthenticationResult.accessToken!,
       serverId: newUserAuthenticationResult.serverId!,
       views: {},
+      customHeaders: customHeadersTemp ?? {},
     );
 
     await _finampUserHelper.saveUser(newUser);
-    baseUrlTemp =
-        null; // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    baseUrlTemp = null;
+    customHeadersTemp = null;
   }
 
   /// Gets the current user.

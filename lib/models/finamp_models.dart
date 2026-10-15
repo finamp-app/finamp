@@ -49,6 +49,7 @@ class FinampUser {
     required this.serverId,
     this.currentViewId,
     this.views = const {},
+    this.customHeaders = const {},
   });
 
   @HiveField(0)
@@ -72,6 +73,7 @@ class FinampUser {
   @Name("currentViewId")
   String? get isarCurrentViewId => currentViewId?.raw;
   set isarCurrentViewId(String? id) => currentViewId = id == null ? null : BaseItemId(id);
+
   @ignore
   @HiveField(5)
   Map<BaseItemId, BaseItemDto> views;
@@ -84,6 +86,19 @@ class FinampUser {
 
   @HiveField(9, defaultValue: DefaultSettings.preferLocalNetwork)
   bool preferLocalNetwork;
+
+  @ignore
+  Map<String, String> customHeaders;
+  List<String> get isarCustomHeaders => customHeaders.keys.followedBy(customHeaders.values).toList();
+  set isarCustomHeaders(List<String> raw) {
+    assert(raw.length % 2 == 0);
+    final out = <String, String>{};
+    final midPoint = (raw.length / 2).round();
+    for (int i = 0; i < midPoint; i++) {
+      out[raw[i]] = raw[midPoint + i];
+    }
+    customHeaders = out;
+  }
 
   // We only need 1 user, the current user
   final Id isarId = 0;
@@ -985,6 +1000,7 @@ class FinampSettings {
       gridImageSize: DefaultSettings.gridImageSize,
       homeScreenImageSize: DefaultSettings.homeScreenImageSize,
       deviceId: const Uuid().v4(),
+      resyncOnStartup: kDebugMode ? false : DefaultSettings.resyncOnStartup,
     );
   }
 
