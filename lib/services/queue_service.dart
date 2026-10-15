@@ -183,6 +183,7 @@ class QueueService {
   }
 
   ProviderSubscription<AlbumImageInfo>? _latestAlbumImage;
+  int _mediaItemGeneration = 0;
 
   void _buildQueueFromNativePlayerQueue({bool logUpdate = true, int? indexOverride}) {
     final playbackHistoryService = GetIt.instance<PlaybackHistoryService>();
@@ -281,12 +282,20 @@ class QueueService {
 
     refreshQueueStream();
     _currentTrackStream.add(_currentTrack);
+    // Invalidate pending artwork work, including an earlier occurrence of the
+    // same track. An async placeholder lookup must not resurrect a cleared item.
+    final mediaItemGeneration = ++_mediaItemGeneration;
+    _latestAlbumImage?.close();
+    _latestAlbumImage = null;
     var currentMediaItem = _currentTrack?.item;
+    _audioHandler.mediaItem.add(currentMediaItem);
     if (currentMediaItem != null) {
       final item = jellyfin_models.BaseItemDto.fromJson(currentMediaItem.extras!["itemJson"] as Map<String, dynamic>);
       final artRequest = AlbumImageRequest(item: item);
+      var artworkRevision = 0;
 
-      void updateMediaItem(AlbumImageInfo latest, bool force) async {
+      void updateMediaItem(AlbumImageInfo latest) async {
+        final revision = ++artworkRevision;
         var artUri = latest.uri;
         if (artUri == null) {
           // replace with placeholder art
@@ -300,17 +309,16 @@ class QueueService {
           final packageInfo = await PackageInfo.fromPlatform();
           artUri = Uri(scheme: "content", host: packageInfo.packageName, path: artUri.path);
         }
-        if (!force && _audioHandler.mediaItem.valueOrNull?.id != currentMediaItem?.id) return;
+        if (mediaItemGeneration != _mediaItemGeneration || revision != artworkRevision) return;
         currentMediaItem = currentMediaItem?.copyWith(artUri: artUri);
         _audioHandler.mediaItem.add(currentMediaItem);
       }
 
-      _latestAlbumImage?.close();
       _latestAlbumImage = _providers.listen(
         albumImageProvider(artRequest),
-        (_, latest) => updateMediaItem(latest, false),
+        (_, latest) => updateMediaItem(latest),
       );
-      updateMediaItem(_providers.read(albumImageProvider(artRequest)), true);
+      updateMediaItem(_providers.read(albumImageProvider(artRequest)));
     }
     _audioHandler.queue.add(
       _queuePreviousTracks
