@@ -1,12 +1,11 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../components/MusicScreen/sort_and_filter_row.dart';
 import '../components/global_snackbar.dart';
 import '../models/finamp_models.dart';
 import '../models/jellyfin_models.dart';
@@ -173,7 +172,7 @@ Future<PlayableSlice> getPlayableSlice(
 }) async {
   switch (item) {
     case FinampUnpagedPlayable<Track>():
-      final items = (await ref.watch(getChildTracksProvider(item: item).future)).map((x) => x.item).toList();
+      final items = (await ref.watch(getChildrenProvider(item: item).future)).map((x) => x.item).toList();
       return BasePlayableSlice(
         items: items,
         startingIndex: startingOffset,
@@ -210,23 +209,12 @@ Future<PlayableSlice> getPlayableSlice(
       final pager = ref.read(pagedContentProvider(item).notifier);
       final (children, childFuture) = pager.loadSlice(startingOffset - preTracks, childLimit);
 
-      // We require a MusicScreenPlayable<FinampPlayableItem> as input, so all children are guaranteed to be FinampPlayableDtos.
-      // pagedContentProvider is not generic so it can't propagate this constraint, so we must cast
-      return _fetchFromChildren(
-        ref,
-        item,
-        children.cast<FinampPlayableDto>().toList(),
-        childFuture?.then((x) => x.cast<FinampPlayableDto>()),
-        0,
-        trackLimit,
-        preTracks,
-        hardLimit,
-      );
+      return _fetchFromChildren(ref, item, children.toList(), childFuture, 0, trackLimit, preTracks, hardLimit);
     case PlayableQueue():
       // TODO: add special queue slice
       throw UnimplementedError();
     case FinampUnpagedDisplayable<FinampPlayableDto> displayable:
-      final children = await ref.watch(getChildItemsProvider(item: displayable).future);
+      final children = await ref.watch(getChildrenProvider(item: displayable).future);
       return _fetchFromChildren(ref, item, children, null, startingOffset, limit, 0, true);
   }
 }
@@ -311,34 +299,30 @@ Future<PlayableSlice> _fetchFromChildren(
 @riverpod
 Future<PlayableSlice> getAlbumShuffledPlayerSlice(Ref ref, {required FinampPlayable item}) async {
   assert(item is Genre || item is Artist || (item is FinampSortable<Album> && item is FinampPlayable));
-  final albumPlayable =
-      switch (item) {
-            FinampSortable<Album>() => item,
-            Artist artist => Artist(
-              artist.item,
-              sortConfig: SortAndFilterConfiguration.defaultSort,
-              // Only track types should get through to here
-              type: ArtistChildType.appearsOnAlbums,
-              library: artist.library,
-            ),
-            Genre genre => Genre(
-              genre.item,
-              sortConfig: SortAndFilterConfiguration.defaultSort,
-              type: GenreChildType.albums,
-              library: genre.library,
-            ),
-            _ => throw UnsupportedError("Cannot shuffle albums of $item"),
-          }
-          as FinampSortable<Album>;
-  final shuffledPlayable =
-      albumPlayable.copyWith(
-            SortAndFilterController.resolveOffline(
-              ref,
-              ContentType.albums,
-              albumPlayable.sortConfig.copyWith(sortBy: SortBy.random),
-            ),
-          )
-          as FinampPlayable;
+  final albumPlayable = switch (item) {
+    FinampSortable<Album>() => item,
+    Artist artist => Artist(
+      artist.item,
+      sortConfig: SortAndFilterConfiguration.defaultSort,
+      // Only track types should get through to here
+      type: ArtistChildType.appearsOnAlbums,
+      library: artist.library,
+    ),
+    Genre genre => Genre(
+      genre.item,
+      sortConfig: SortAndFilterConfiguration.defaultSort,
+      type: GenreChildType.albums,
+      library: genre.library,
+    ),
+    _ => throw UnsupportedError("Cannot shuffle albums of $item"),
+  } as FinampSortable<Album>;
+  final shuffledPlayable = albumPlayable.copyWith(
+    SortAndFilterController.resolveOffline(
+      ref,
+      ContentType.albums,
+      albumPlayable.sortConfig.copyWith(sortBy: SortBy.random),
+    ),
+  ) as FinampPlayable;
   final slice = await ref.watch(getPlayableSliceProvider(item: shuffledPlayable, startingOffset: 0).future);
   return slice.markPreshuffled();
   // return GroupedPlayableSlice(parent: slice, groupBy: (element) => element.albumId?.toString());
@@ -347,7 +331,7 @@ Future<PlayableSlice> getAlbumShuffledPlayerSlice(Ref ref, {required FinampPlaya
 Future<List<BaseItemDto>> _flattenToTracks(Ref ref, {required FinampPlayableDto item, required int? limit}) async {
   switch (item) {
     case FinampUnpagedDisplayable<Track> unpagged:
-      final tracks = await getChildTracks(ref, item: unpagged);
+      final tracks = await ref.watch(getChildrenProvider(item: unpagged).future);
       return tracks.map((x) => x.item).toList();
     case Track track:
       return [track.item];
@@ -355,7 +339,7 @@ Future<List<BaseItemDto>> _flattenToTracks(Ref ref, {required FinampPlayableDto 
       throw UnsupportedError("Music screen should not be including instant mix.");
     case FinampUnpagedDisplayable<FinampPlayableDto> displayable:
       // TODO should artists/genres be doing direct requests?  How could we handle sorting?
-      final children = await ref.watch(getChildItemsProvider(item: displayable).future);
+      final children = await ref.watch(getChildrenProvider(item: displayable).future);
       final output = <BaseItemDto>[];
       for (final child in children) {
         output.addAll(await _flattenToTracks(ref, item: child, limit: limit == null ? null : limit - output.length));
@@ -375,15 +359,11 @@ Future<List<BaseItemDto>> _flattenToTracks(Ref ref, {required FinampPlayableDto 
       if ((limit == null || children.length < limit) && childFuture != null) {
         children.addAll(await childFuture);
       }
-      // The children of a FinampPlayableDto should always be more FinampPlayableDtos
-      return children.map((x) => (x as FinampPlayableDto).item).toList();
+      return children.map((x) => x.item).toList();
   }
 }
 
-// Riverpod providers do not seem to currently support generics, so I've just duplicated this provider for all relevant types.
-
-@riverpod
-Future<List<Track>> getChildTracks(Ref ref, {required FinampUnpagedDisplayable<Track> item}) async {
+Future<List<Track>> _getChildTracks(Ref ref, {required FinampUnpagedDisplayable<Track> item}) async {
   switch (item) {
     case Album():
       final items = await ref.watch(getAlbumOrPlaylistTracksProvider(item.item).future);
@@ -420,14 +400,13 @@ Future<List<Track>> getChildTracks(Ref ref, {required FinampUnpagedDisplayable<T
   }
 }
 
-@riverpod
-Future<List<FinampPlayableDto>> getChildItems(
+Future<List<FinampPlayableDto>> _getChildItems(
   Ref ref, {
   required FinampUnpagedDisplayable<FinampPlayableDto> item,
 }) async {
   switch (item) {
     case FinampUnpagedDisplayable<Track>():
-      return await ref.watch(getChildTracksProvider(item: item).future);
+      return _getChildTracks(ref, item: item);
     case JellyfinCollection():
       final children = await ref.watch(getJellyfinCollectionProvider(item.item, item.sortConfig).future) ?? [];
       return children.map<FinampPlayableDto>((child) => FinampPlayableDto.fromItem(child)).toList();
@@ -461,33 +440,40 @@ Future<List<FinampPlayableDto>> getChildItems(
   }
 }
 
-@riverpod
-Future<List<FinampDisplayableOrPlayable>> getChildren(
+Future<List<FinampDisplayableOrPlayable>> _getChildren(
   Ref ref, {
   required FinampUnpagedDisplayable<FinampDisplayableOrPlayable> item,
 }) async {
   switch (item) {
-    case FinampUnpagedDisplayable<Track>():
-      // TODO figure out how to get refreshing working for non MusicScreenPlayables
-      // Maybe we could have a refresh provider that takes a DisplayableOrPlayable and gets watched by everyone?
-      return await ref.watch(getChildTracksProvider(item: item).future);
-    case FinampUnpagedDisplayable<FinampPlayableDto>():
-      return await ref.watch(getChildItemsProvider(item: item).future);
-    case LatestQueues():
+    case FinampUnpagedDisplayable<FinampPlayableDto> t:
+      return _getChildItems(ref, item: t);
+    case LatestQueues queues:
       final queuesBox = Hive.box<FinampStorableQueueInfo>("Queues");
       var queueMap = queuesBox.toMap();
       queueMap.remove("latest");
       var queueList = queueMap.values.toList();
       queueList.sort((x, y) {
-        return switch (item.sortConfig.sortBy) {
+        return switch (queues.sortConfig.sortBy) {
           SortBy.dateCreated || SortBy.datePlayed => x.creation.compareTo(y.creation),
           // SortBy.runtime => x.runtime.compareTo(y.runtime), //TODO add support for sorting by runtime
           _ => 0,
         };
       });
-      if (item.sortConfig.sortOrder == SortOrder.descending) {
+      if (queues.sortConfig.sortOrder == SortOrder.descending) {
         queueList = queueList.reversed.toList();
       }
       return queueList.map((x) => PlayableQueue(queue: x, source: item.source)).toList();
   }
+}
+
+@riverpod
+Future<List<ChildType>> getChildren<ChildType extends FinampDisplayableOrPlayable>(
+  Ref ref, {
+  required FinampUnpagedDisplayable<ChildType> item,
+}) async {
+  // We can't ever satisfy the typechecker here because there's no we way to guarantee we aren't looking for a
+  // previously unknown subtype of the final result our switching leads us to.  So we'll just rely on the switch
+  // statements to cover every leaf type and assume that no one subclasses them in a weird way.
+  final out = await _getChildren(ref, item: item);
+  return out.cast<ChildType>();
 }

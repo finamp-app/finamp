@@ -248,9 +248,8 @@ class HomeScreenSection extends ConsumerWidget {
             ),
         ],
         onTap: () {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute<MusicScreen>(builder: (context) => MusicScreen(singleTabConfig: sectionInfo)));
+          Navigator.of(context)
+              .push(MaterialPageRoute<MusicScreen>(builder: (context) => MusicScreen(singleTabConfig: sectionInfo)));
         },
         onSecondaryTap: () => showModalHomeSectionMenu(context: context, section: sectionInfo),
         onDismiss: null,

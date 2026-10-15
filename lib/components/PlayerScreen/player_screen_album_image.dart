@@ -34,9 +34,8 @@ class PlayerScreenAlbumImage extends ConsumerWidget {
         final currentTrack = snapshot.data!.currentTrack;
 
         return Semantics(
-          label: AppLocalizations.of(
-            context,
-          )!.playerAlbumArtworkTooltip(currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName),
+          label: AppLocalizations.of(context)!
+              .playerAlbumArtworkTooltip(currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName),
           excludeSemantics: true, // replace child semantics with custom semantics
           container: true,
           child: GestureDetector(

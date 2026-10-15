@@ -92,9 +92,8 @@ class _AccentColorPopupState extends ConsumerState<AccentColorPopup> {
 
   @override
   Widget build(BuildContext context) {
-    final previewTheme = Theme.of(
-      context,
-    ).withColorScheme(getColorScheme(previewColor, ref.watch(brightnessProvider), amoledTheme));
+    final previewTheme = Theme.of(context)
+        .withColorScheme(getColorScheme(previewColor, ref.watch(brightnessProvider), amoledTheme));
 
     return Theme(
       data: previewTheme,

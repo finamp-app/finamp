@@ -46,9 +46,8 @@ class ItemInfo extends ConsumerWidget {
             padding: EdgeInsets.only(left: 6, right: 6, top: 0, bottom: 6),
             child: Text(
               item.name ?? context.l10n.unknownName,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontSize: Theme.of(context).textTheme.titleMedium!.fontSize! + 1),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontSize: Theme.of(context).textTheme.titleMedium!.fontSize! + 1),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

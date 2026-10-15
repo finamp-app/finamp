@@ -133,9 +133,8 @@ void navigateToSource(BuildContext context, QueueItemSource source) {
       final sectionInfo = FinampSettingsHelper.finampSettings.homeScreenConfiguration.sections.singleWhere(
         (section) => section.id == source.id,
       );
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute<MusicScreen>(builder: (context) => MusicScreen(singleTabConfig: sectionInfo)));
+      Navigator.of(context)
+          .push(MaterialPageRoute<MusicScreen>(builder: (context) => MusicScreen(singleTabConfig: sectionInfo)));
       break;
     case QueueItemSourceType.downloads:
       Navigator.of(context).pushNamed(DownloadsScreen.routeName);
@@ -164,9 +163,8 @@ Future<bool> removeFromPlaylist(
     await showDialog<void>(
       context: context,
       builder: (context) => ConfirmationPromptDialog(
-        promptText: AppLocalizations.of(
-          context,
-        )!.removeFromPlaylistPrompt(item.name ?? "item", parent.name ?? "playlist"),
+        promptText: AppLocalizations.of(context)!
+            .removeFromPlaylistPrompt(item.name ?? "item", parent.name ?? "playlist"),
         confirmButtonText: AppLocalizations.of(context)!.removeFromPlaylistConfirm,
         onConfirmed: () {
           isConfirmed = true;

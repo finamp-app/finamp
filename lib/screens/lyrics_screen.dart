@@ -217,9 +217,7 @@ class _LyricsViewState extends ConsumerState<LyricsView> with WidgetsBindingObse
                 -1,
                 preferPosition: AutoScrollPosition.middle,
                 duration: MediaQuery.disableAnimationsOf(context)
-                    ? const Duration(
-                        milliseconds: 1,
-                      ) // there's an assertion in the library forbidding a duration of 0, so we use 1ms instead to get instant scrolling
+                    ? const Duration(milliseconds: 1) // there's an assertion in the library forbidding a duration of 0, so we use 1ms instead to get instant scrolling
                     : const Duration(milliseconds: 300),
               ),
             );
@@ -229,9 +227,7 @@ class _LyricsViewState extends ConsumerState<LyricsView> with WidgetsBindingObse
                 closestLineIndex,
                 preferPosition: AutoScrollPosition.middle,
                 duration: MediaQuery.disableAnimationsOf(context)
-                    ? const Duration(
-                        milliseconds: 1,
-                      ) // there's an assertion in the library forbidding a duration of 0, so we use 1ms instead to get instant scrolling
+                    ? const Duration(milliseconds: 1) // there's an assertion in the library forbidding a duration of 0, so we use 1ms instead to get instant scrolling
                     : const Duration(milliseconds: 300),
               ),
             );
@@ -287,7 +283,7 @@ class _LyricsViewState extends ConsumerState<LyricsView> with WidgetsBindingObse
   Widget build(BuildContext context) {
     //!!! use unwrapPrevious() to prevent getting previous values. If we don't have the lyrics for the current track yet, we want to show the loading state, and not the lyrics for the previous track
     final metadata = ref.watch(currentTrackMetadataProvider).unwrapPrevious();
-    lyrics = metadata.valueOrNull?.lyrics?.lyrics;
+    lyrics = metadata.value?.lyrics?.lyrics;
     if (!_isSynchronizedLyrics) {
       currentLineNotifier.value = null;
     }
@@ -337,7 +333,7 @@ class _LyricsViewState extends ConsumerState<LyricsView> with WidgetsBindingObse
                     behavior: const FinampScrollBehavior(scrollbars: false),
                     child: LyricsListMask(
                       child: ListView.builder(
-                        key: PageStorageKey(metadata.valueOrNull?.item),
+                        key: PageStorageKey(metadata.value?.item),
                         controller: autoScrollController,
                         itemCount: lyricLines.length + 2,
                         itemBuilder: (context, rawIndex) {
@@ -386,9 +382,7 @@ class _LyricsViewState extends ConsumerState<LyricsView> with WidgetsBindingObse
                                       index,
                                       preferPosition: AutoScrollPosition.middle,
                                       duration: MediaQuery.disableAnimationsOf(context)
-                                          ? const Duration(
-                                              milliseconds: 1,
-                                            ) // there's an assertion in the library forbidding a duration of 0, so we use 1ms instead to get instant scrolling
+                                          ? const Duration(milliseconds: 1) // there's an assertion in the library forbidding a duration of 0, so we use 1ms instead to get instant scrolling
                                           : const Duration(milliseconds: 500),
                                     ),
                                   );
@@ -418,9 +412,7 @@ class _LyricsViewState extends ConsumerState<LyricsView> with WidgetsBindingObse
                               currentLineNotifier.value!,
                               preferPosition: AutoScrollPosition.middle,
                               duration: MediaQuery.disableAnimationsOf(context)
-                                  ? const Duration(
-                                      milliseconds: 1,
-                                    ) // there's an assertion in the library forbidding a duration of 0, so we use 1ms instead to get instant scrolling
+                                  ? const Duration(milliseconds: 1) // there's an assertion in the library forbidding a duration of 0, so we use 1ms instead to get instant scrolling
                                   : const Duration(milliseconds: 500),
                             ),
                           );

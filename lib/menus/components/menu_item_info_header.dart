@@ -225,9 +225,8 @@ class AlbumInfo extends ConsumerWidget {
                 item.tracks.first.parentIndexNumber!,
                 baseItem.name ?? AppLocalizations.of(context)!.unknownName,
               )
-            : AppLocalizations.of(
-                context,
-              )!.discUnknownOfAlbum(baseItem.name ?? AppLocalizations.of(context)!.unknownName);
+            : AppLocalizations.of(context)!
+                  .discUnknownOfAlbum(baseItem.name ?? AppLocalizations.of(context)!.unknownName);
       case Album():
         baseItem = item.item;
         title = baseItem.name ?? AppLocalizations.of(context)!.unknownName;

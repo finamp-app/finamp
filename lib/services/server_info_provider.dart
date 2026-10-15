@@ -38,55 +38,64 @@ class ServerInfo {
   }
 }
 
-final AutoDisposeFutureProviderFamily<ServerInfo?, Uri> serverInfoProvider = FutureProvider.autoDispose
-    .family<ServerInfo?, Uri>((ref, serverAddress) async {
-      final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+final serverInfoProvider = AsyncNotifierProvider.autoDispose.family<_ServerInfoNotifier, ServerInfo?, Uri>(
+  _ServerInfoNotifier.new,
+);
 
-      final currentUserInfo = ref.watch(FinampUserHelper.finampCurrentUserProvider);
-      final bool isCurrentServer = [
-        currentUserInfo?.publicAddress,
-        currentUserInfo?.localAddress,
-      ].contains(serverAddress.toString());
-      ServerInfo serverInfo;
-      serverInfoProviderLogger.finer("Fetching server info for '$serverAddress'");
+class _ServerInfoNotifier extends AsyncNotifier<ServerInfo?> {
+  _ServerInfoNotifier(this.serverAddress);
+  final Uri serverAddress;
 
-      //!!! return last-known value if offline, instead of making a network request
-      if (ref.watch(finampSettingsProvider.isOffline)) {
-        return ref.state.value;
+  @override
+  Future<ServerInfo?> build() async {
+    final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
+
+    final currentUserInfo = ref.watch(FinampUserHelper.finampCurrentUserProvider);
+    final bool isCurrentServer = [
+      currentUserInfo?.publicAddress,
+      currentUserInfo?.localAddress,
+    ].contains(serverAddress.toString());
+    ServerInfo serverInfo;
+    serverInfoProviderLogger.finer("Fetching server info for '$serverAddress'");
+
+    //!!! return last-known value if offline, instead of making a network request
+    if (ref.watch(finampSettingsProvider.isOffline)) {
+      return state.value;
+    }
+
+    PublicSystemInfoResult? publicInfo;
+    try {
+      if (isCurrentServer) {
+        publicInfo = await jellyfinApiHelper.loadServerPublicInfo();
+      } else {
+        publicInfo = await jellyfinApiHelper.loadCustomServerPublicInfo(serverAddress);
       }
-
-      PublicSystemInfoResult? publicInfo;
-      try {
-        if (isCurrentServer) {
-          publicInfo = await jellyfinApiHelper.loadServerPublicInfo();
-        } else {
-          publicInfo = await jellyfinApiHelper.loadCustomServerPublicInfo(serverAddress);
-        }
-        if (publicInfo == null) {
-          throw Exception("Received null public server info");
-        }
-      } catch (e) {
-        serverInfoProviderLogger.severe("Failed to fetch public server info for '$serverAddress':", e);
-        return null;
+      if (publicInfo == null) {
+        throw Exception("Received null public server info");
       }
-      serverInfoProviderLogger.finest("Fetched public server info for '$serverAddress': publicInfo");
+    } catch (e) {
+      serverInfoProviderLogger.severe("Failed to fetch public server info for '$serverAddress':", e);
+      return null;
+    }
+    serverInfoProviderLogger.finest("Fetched public server info for '$serverAddress': publicInfo");
 
-      List<UserDto> users = [];
-      try {
-        final publicUsers = await jellyfinApiHelper.loadPublicUsers();
-        users = publicUsers.users;
-      } catch (e) {
-        serverInfoProviderLogger.severe("Failed to fetch users for '$serverAddress':", e);
-      }
-      serverInfoProviderLogger.finest("Fetched users for '$serverAddress': $users");
+    List<UserDto> users = [];
+    try {
+      final publicUsers = await jellyfinApiHelper.loadPublicUsers();
+      users = publicUsers.users;
+    } catch (e) {
+      serverInfoProviderLogger.severe("Failed to fetch users for '$serverAddress':", e);
+    }
+    serverInfoProviderLogger.finest("Fetched users for '$serverAddress': $users");
 
-      //TODO implement feature and plugin detection
+    //TODO implement feature and plugin detection
 
-      serverInfo = ServerInfo(publicServerInfo: publicInfo, users: users);
-      serverInfoProviderLogger.fine("Server info for '$serverAddress': $serverInfo");
+    serverInfo = ServerInfo(publicServerInfo: publicInfo, users: users);
+    serverInfoProviderLogger.fine("Server info for '$serverAddress': $serverInfo");
 
-      return serverInfo;
-    });
+    return serverInfo;
+  }
+}
 
 /// Provider for info about the currently connected server
 final currentServerInfoProvider = Provider<AsyncValue<ServerInfo?>>((ref) {

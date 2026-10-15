@@ -175,7 +175,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                 genreFilter: sortConfig.genreFilter?.id,
               ),
             )
-            .valueOrNull ??
+            .value ??
         (null, null, null);
     final albumArtistAlbumsAsync = ref
         .watch(
@@ -185,7 +185,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
             genreFilter: sortConfig.genreFilter?.id,
           ),
         )
-        .valueOrNull;
+        .value;
     final performingArtistAlbumsAsync = ref
         .watch(
           getPerformingArtistAlbumsProvider(
@@ -194,7 +194,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
             genreFilter: sortConfig.genreFilter?.id,
           ),
         )
-        .valueOrNull;
+        .value;
     final allPerformingArtistTracksAsync = ref
         .watch(
           getPerformingArtistTracksProvider(
@@ -203,7 +203,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
             genreFilter: sortConfig.genreFilter?.id,
           ),
         )
-        .valueOrNull;
+        .value;
 
     final allTracks = ref.watch(
       getArtistTracksProvider(

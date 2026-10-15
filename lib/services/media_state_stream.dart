@@ -27,7 +27,7 @@ Stream<MediaState> get mediaStateStream {
 
 final mediaStateProvider = StreamProvider.autoDispose<MediaState>((_) => mediaStateStream).select((v) {
   final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
-  return v.valueOrNull ??
+  return v.value ??
       MediaState(
         audioHandler.mediaItem.valueOrNull,
         audioHandler.playbackState.value,

@@ -10,6 +10,7 @@ import 'package:finamp/main.dart' as app;
 import 'package:finamp/menus/components/playbackActions/playback_actions.dart';
 import 'package:finamp/screens/login_screen.dart';
 import 'package:finamp/screens/music_screen.dart';
+import 'package:finamp/screens/player_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +66,21 @@ void main() async {
     );
 
     await Future<void>.delayed(Duration(seconds: 30));
+
+    // All tests will use their own dedicated test ProviderContainers so that they
+    // can be properly torn down on completion.  Save off and unregister the one created by main()
+    // to prepare for this.  isRegistered should always be true if main() did noot throw an error early.
+    if (GetIt.instance.isRegistered<ProviderContainer>()) {
+      container = GetIt.instance<ProviderContainer>();
+      GetIt.instance.unregister<ProviderContainer>();
+    }
+  });
+
+  setUp(() {
+    GetIt.instance.registerSingleton(ProviderContainer.test(parent: container));
+  });
+  tearDown(() {
+    GetIt.instance.unregister<ProviderContainer>();
   });
 
   // These integration tests all rely on the previous one working.  Not good practice, but whatever.
@@ -84,18 +100,6 @@ void main() async {
 
       mainErrors = null;
 
-      // The testing harness tries to clear out all the async code between tests, and runs all the cases in individual
-      // async contexts as part of this. I believe the expectation is that background services and realtime tasks will
-      // all be replaced with mockups, for more consistent and self-contained tests. But this code doesn't do that and
-      // has real persistent background services, so I've had errors occasionally showing up in earlier tests occasionally,
-      // and a bunch of strange issues with providers were occurring. Giving each test its own child ProviderContainer
-      // which inherits the global persistent providers from the original one set up in main seems to have solved those, but it's
-      // all still a bit mysterious.
-      container = GetIt.instance<ProviderContainer>();
-      GetIt.instance.unregister<ProviderContainer>();
-      await container!.pump();
-      GetIt.instance.registerSingleton(ProviderContainer(parent: container));
-
       // This makes the screen sized correctly when watching integration test.
       // I don't know why this works or is needed.
       await tester.pumpWidget(Container(color: Colors.white));
@@ -107,9 +111,6 @@ void main() async {
       expect(find.byType(LoginScreen), findsOneWidget);
     });
     testWidgets('Log in to demo server', (tester) async {
-      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
-      await container!.pump();
-      GetIt.instance.registerSingleton(ProviderContainer(parent: container));
       await tester.pumpWidget(app.Finamp());
       await tester.pumpAndSettle();
 
@@ -144,9 +145,6 @@ void main() async {
       expect(find.byType(MusicScreen), findsOneWidget);
     });
     testWidgets('Start playing a track', (tester) async {
-      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
-      await container!.pump();
-      GetIt.instance.registerSingleton(ProviderContainer(parent: container));
       await tester.pumpWidget(app.Finamp());
       await tester.pump();
       FinampSetters.setAllowSplitScreen(false);
@@ -163,8 +161,13 @@ void main() async {
       await tester.tap(playButton);
       await tester.pump();
 
-      final playerScreen = find.byKey(Key("NowPlayingBar"));
-      await tester.waitFor(playerScreen);
+      if (tester.view.physicalSize.width >= 800) {
+        final playerScreen = find.byType(PlayerScreen);
+        await tester.waitFor(playerScreen);
+      } else {
+        final nowPlaying = find.byKey(Key("NowPlayingBar"));
+        await tester.waitFor(nowPlaying);
+      }
       await tester.pump();
 
       // Progress into song

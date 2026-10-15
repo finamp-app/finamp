@@ -25,8 +25,7 @@ Future<void> setupLogging() async {
 
   // Create and store the Log instance for later use
   final metadata = await EnvironmentMetadata.create(
-    fetchServerInfo:
-        false, // we can't fetch server info yet, because the user helper isn't set up yet. it's also faster to skip this here
+    fetchServerInfo: false, // we can't fetch server info yet, because the user helper isn't set up yet. it's also faster to skip this here
   );
   startupLogger.info("\n${metadata.pretty}");
 }

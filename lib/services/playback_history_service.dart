@@ -35,8 +35,7 @@ class PlaybackHistoryService {
   ({PlaybackState state, FinampQueueItem? item})? _previousPlayback;
   DateTime _lastPositionUpdate = DateTime.now();
 
-  FinampQueueItem?
-  _lastReportedTrackStarted; // used to check if playback has already reported as "started" at some point for the current track
+  FinampQueueItem? _lastReportedTrackStarted; // used to check if playback has already reported as "started" at some point for the current track
   FinampQueueItem? _lastReportedTrackStopped; // used to prevent reporting a track as stopped multiple times
 
   final _historyStream = BehaviorSubject<List<FinampHistoryItem>>.seeded(List.empty(growable: true));

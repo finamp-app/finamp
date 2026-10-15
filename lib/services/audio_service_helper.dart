@@ -152,8 +152,7 @@ class AudioServiceHelper {
             id: artists.first.id,
             item: artists.first,
           ),
-          order: FinampPlaybackOrder
-              .linear, // instant mixes should have their order determined by the server, especially to make sure the first item is the one that the mix is based off of
+          order: FinampPlaybackOrder.linear, // instant mixes should have their order determined by the server, especially to make sure the first item is the one that the mix is based off of
         );
         _jellyfinApiHelper.clearArtistMixBuilderList();
       }
@@ -181,8 +180,7 @@ class AudioServiceHelper {
             id: albums.first.id,
             item: albums.first,
           ),
-          order: FinampPlaybackOrder
-              .linear, // instant mixes should have their order determined by the server, especially to make sure the first item is the one that the mix is based off of
+          order: FinampPlaybackOrder.linear, // instant mixes should have their order determined by the server, especially to make sure the first item is the one that the mix is based off of
         );
         _jellyfinApiHelper.clearAlbumMixBuilderList();
       }
@@ -210,8 +208,7 @@ class AudioServiceHelper {
             id: genres.first.id,
             item: genres.first,
           ),
-          order: FinampPlaybackOrder
-              .linear, // instant mixes should have their order determined by the server, especially to make sure the first item is the one that the mix is based off of
+          order: FinampPlaybackOrder.linear, // instant mixes should have their order determined by the server, especially to make sure the first item is the one that the mix is based off of
         );
         _jellyfinApiHelper.clearAlbumMixBuilderList();
       }

@@ -15,7 +15,7 @@ class ItemFileSize extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final textFunction = ref.watch(downloadSizeTextProvider(stub)).valueOrNull;
+    final textFunction = ref.watch(downloadSizeTextProvider(stub)).value;
     final text = textFunction == null ? "" : textFunction(context);
     if (text.startsWith("!!!")) {
       return Text(text.substring(3), style: TextStyle(color: Colors.red));
@@ -57,9 +57,9 @@ final downloadSizeTextProvider = FutureProvider.autoDispose.family((Ref ref, Dow
         final locationName = FinampSettingsHelper.finampSettings.downloadLocationsMap.length > 1
             ? FinampSettingsHelper.finampSettings.downloadLocationsMap[item.fileDownloadLocation?.id]?.name
             : null;
-        return (BuildContext context) => AppLocalizations.of(
-          context,
-        )!.downloadInfo(bitrate, codec.toUpperCase(), FileSize.getSize(fileSize), locationName ?? "null");
+        return (BuildContext context) =>
+            AppLocalizations.of(context)!
+                .downloadInfo(bitrate, codec.toUpperCase(), FileSize.getSize(fileSize), locationName ?? "null");
       } else {
         var profile = item.userTranscodingProfile ?? item.syncTranscodingProfile;
         //Suppress codec display on downloads without audio files

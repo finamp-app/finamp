@@ -4,7 +4,6 @@
 
 // dart format off
 
-
 part of 'finamp_settings_helper.dart';
 
 // **************************************************************************
@@ -20,25 +19,22 @@ extension FinampSetters on FinampSettingsHelper {
   static void setIsOffline(bool newIsOffline) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.isOffline = newIsOffline;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShouldTranscode(bool newShouldTranscode) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.shouldTranscode = newShouldTranscode;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setTranscodeBitrate(int newTranscodeBitrate) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.transcodeBitrate = newTranscodeBitrate;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAndroidStopForegroundOnPause(
@@ -47,9 +43,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.androidStopForegroundOnPause =
         newAndroidStopForegroundOnPause;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowTabs(ContentType tabContentType, bool newValue) {
@@ -61,57 +56,50 @@ extension FinampSetters on FinampSettingsHelper {
       finampSettingsTemp.showTabs = Map.from(finampSettingsTemp.showTabs);
       finampSettingsTemp.showTabs[tabContentType] = newValue;
     }
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setOnlyShowFavorites(bool newOnlyShowFavorites) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.onlyShowFavorites = newOnlyShowFavorites;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setTrackShuffleItemCount(int newTrackShuffleItemCount) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.trackShuffleItemCount = newTrackShuffleItemCount;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowTextOnGridView(bool newShowTextOnGridView) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showTextOnGridView = newShowTextOnGridView;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setUseCoverAsBackground(bool newUseCoverAsBackground) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.useCoverAsBackground = newUseCoverAsBackground;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setBufferDurationSeconds(int newBufferDurationSeconds) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDurationSeconds = newBufferDurationSeconds;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setDisableGesture(bool newDisableGesture) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.disableGesture = newDisableGesture;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setTabSortBy(ContentType tabContentType, SortBy newValue) {
@@ -123,9 +111,8 @@ extension FinampSetters on FinampSettingsHelper {
       finampSettingsTemp.tabSortBy = Map.from(finampSettingsTemp.tabSortBy);
       finampSettingsTemp.tabSortBy[tabContentType] = newValue;
     }
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setTabSortOrder(ContentType tabContentType, SortOrder newValue) {
@@ -139,9 +126,8 @@ extension FinampSetters on FinampSettingsHelper {
       );
       finampSettingsTemp.tabSortOrder[tabContentType] = newValue;
     }
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setTabOrder(List<ContentType> newTabOrder) {
@@ -150,25 +136,22 @@ extension FinampSetters on FinampSettingsHelper {
       newTabOrder = newTabOrder.toList();
     }
     finampSettingsTemp.tabOrder = newTabOrder;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowFastScroller(bool newShowFastScroller) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showFastScroller = newShowFastScroller;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setLoopMode(FinampLoopMode newLoopMode) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.loopMode = newLoopMode;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAutoloadLastQueueOnStartup(
@@ -177,17 +160,15 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.autoloadLastQueueOnStartup =
         newAutoloadLastQueueOnStartup;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setVolumeNormalizationActive(bool newVolumeNormalizationActive) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.volumeNormalizationActive = newVolumeNormalizationActive;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setVolumeNormalizationIOSBaseGain(
@@ -196,9 +177,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.volumeNormalizationIOSBaseGain =
         newVolumeNormalizationIOSBaseGain;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setVolumeNormalizationMode(
@@ -206,9 +186,8 @@ extension FinampSetters on FinampSettingsHelper {
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.volumeNormalizationMode = newVolumeNormalizationMode;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setHasCompletedDownloadsServiceMigration(
@@ -217,25 +196,22 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.hasCompletedDownloadsServiceMigration =
         newHasCompletedDownloadsServiceMigration;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setRequireWifiForDownloads(bool newRequireWifiForDownloads) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.requireWifiForDownloads = newRequireWifiForDownloads;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setOnlyShowFullyDownloaded(bool newOnlyShowFullyDownloaded) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.onlyShowFullyDownloaded = newOnlyShowFullyDownloaded;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowDownloadsWithUnknownLibrary(
@@ -244,41 +220,36 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showDownloadsWithUnknownLibrary =
         newShowDownloadsWithUnknownLibrary;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setMaxConcurrentDownloads(int newMaxConcurrentDownloads) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.maxConcurrentDownloads = newMaxConcurrentDownloads;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setDownloadWorkers(int newDownloadWorkers) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.downloadWorkers = newDownloadWorkers;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setResyncOnStartup(bool newResyncOnStartup) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.resyncOnStartup = newResyncOnStartup;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPreferQuickSyncs(bool newPreferQuickSyncs) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.preferQuickSyncs = newPreferQuickSyncs;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setHasCompletedIsarUserMigration(
@@ -287,9 +258,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.hasCompletedIsarUserMigration =
         newHasCompletedIsarUserMigration;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setDownloadTranscodingCodec(
@@ -297,9 +267,8 @@ extension FinampSetters on FinampSettingsHelper {
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.downloadTranscodingCodec = newDownloadTranscodingCodec;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShouldTranscodeDownloads(
@@ -307,17 +276,15 @@ extension FinampSetters on FinampSettingsHelper {
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.shouldTranscodeDownloads = newShouldTranscodeDownloads;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setDownloadTranscodeBitrate(int? newDownloadTranscodeBitrate) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.downloadTranscodeBitrate = newDownloadTranscodeBitrate;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShouldRedownloadTranscodes(
@@ -326,17 +293,15 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.shouldRedownloadTranscodes =
         newShouldRedownloadTranscodes;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setEnableVibration(bool newEnableVibration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.enableVibration = newEnableVibration;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPlayerScreenCoverMinimumPadding(
@@ -345,41 +310,36 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.playerScreenCoverMinimumPadding =
         newPlayerScreenCoverMinimumPadding;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPrioritizeCoverFactor(double newPrioritizeCoverFactor) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.prioritizeCoverFactor = newPrioritizeCoverFactor;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setSuppressPlayerPadding(bool newSuppressPlayerPadding) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.suppressPlayerPadding = newSuppressPlayerPadding;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setHidePlayerBottomActions(bool newHidePlayerBottomActions) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.hidePlayerBottomActions = newHidePlayerBottomActions;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setReportQueueToServer(bool newReportQueueToServer) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.reportQueueToServer = newReportQueueToServer;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPeriodicPlaybackSessionUpdateFrequencySeconds(
@@ -388,33 +348,29 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.periodicPlaybackSessionUpdateFrequencySeconds =
         newPeriodicPlaybackSessionUpdateFrequencySeconds;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowArtistsTracksSection(bool newShowArtistsTracksSection) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showArtistsTracksSection = newShowArtistsTracksSection;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowArtistChipImage(bool newShowArtistChipImage) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showArtistChipImage = newShowArtistChipImage;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPlaybackSpeed(double newPlaybackSpeed) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.playbackSpeed = newPlaybackSpeed;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPlaybackSpeedVisibility(
@@ -422,41 +378,36 @@ extension FinampSetters on FinampSettingsHelper {
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.playbackSpeedVisibility = newPlaybackSpeedVisibility;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setDefaultDownloadLocation(String? newDefaultDownloadLocation) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.defaultDownloadLocation = newDefaultDownloadLocation;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAllowSplitScreen(bool newAllowSplitScreen) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.allowSplitScreen = newAllowSplitScreen;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setSplitScreenPlayerWidth(double newSplitScreenPlayerWidth) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.splitScreenPlayerWidth = newSplitScreenPlayerWidth;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setTrackOfflineFavorites(bool newTrackOfflineFavorites) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.trackOfflineFavorites = newTrackOfflineFavorites;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowProgressOnNowPlayingBar(
@@ -465,9 +416,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showProgressOnNowPlayingBar =
         newShowProgressOnNowPlayingBar;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setStartInstantMixForIndividualTracks(
@@ -476,25 +426,22 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.startInstantMixForIndividualTracks =
         newStartInstantMixForIndividualTracks;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowLyricsTimestamps(bool newShowLyricsTimestamps) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showLyricsTimestamps = newShowLyricsTimestamps;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setLyricsAlignment(LyricsAlignment newLyricsAlignment) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.lyricsAlignment = newLyricsAlignment;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowStopButtonOnMediaNotification(
@@ -503,9 +450,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showStopButtonOnMediaNotification =
         newShowStopButtonOnMediaNotification;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowSeekControlsOnMediaNotification(
@@ -514,17 +460,15 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showSeekControlsOnMediaNotification =
         newShowSeekControlsOnMediaNotification;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setLyricsFontSize(LyricsFontSize newLyricsFontSize) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.lyricsFontSize = newLyricsFontSize;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowLyricsScreenAlbumPrelude(
@@ -533,17 +477,15 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showLyricsScreenAlbumPrelude =
         newShowLyricsScreenAlbumPrelude;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setKeepScreenOnOption(KeepScreenOnOption newKeepScreenOnOption) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.keepScreenOnOption = newKeepScreenOnOption;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setKeepScreenOnWhilePluggedIn(
@@ -552,17 +494,15 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.keepScreenOnWhilePluggedIn =
         newKeepScreenOnWhilePluggedIn;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setHasDownloadedPlaylistInfo(bool newHasDownloadedPlaylistInfo) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.hasDownloadedPlaylistInfo = newHasDownloadedPlaylistInfo;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setTranscodingStreamingFormat(
@@ -571,9 +511,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.transcodingStreamingFormat =
         newTranscodingStreamingFormat;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setFeatureChipsConfiguration(
@@ -581,17 +520,15 @@ extension FinampSetters on FinampSettingsHelper {
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.featureChipsConfiguration = newFeatureChipsConfiguration;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowCoversOnAlbumScreen(bool newShowCoversOnAlbumScreen) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showCoversOnAlbumScreen = newShowCoversOnAlbumScreen;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setBufferDisableSizeConstraints(
@@ -600,41 +537,36 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDisableSizeConstraints =
         newBufferDisableSizeConstraints;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setBufferSizeMegabytes(int newBufferSizeMegabytes) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferSizeMegabytes = newBufferSizeMegabytes;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setDownloadSizeWarningCutoff(int newDownloadSizeWarningCutoff) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.downloadSizeWarningCutoff = newDownloadSizeWarningCutoff;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAllowDeleteFromServer(bool newAllowDeleteFromServer) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.allowDeleteFromServer = newAllowDeleteFromServer;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setOneLineMarqueeTextButton(bool newOneLineMarqueeTextButton) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.oneLineMarqueeTextButton = newOneLineMarqueeTextButton;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowAlbumReleaseDateOnPlayerScreen(
@@ -643,17 +575,15 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showAlbumReleaseDateOnPlayerScreen =
         newShowAlbumReleaseDateOnPlayerScreen;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setReleaseDateFormat(ReleaseDateFormat newReleaseDateFormat) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.releaseDateFormat = newReleaseDateFormat;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setLastUsedDownloadLocationId(
@@ -662,41 +592,36 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.lastUsedDownloadLocationId =
         newLastUsedDownloadLocationId;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAudioFadeOutDuration(Duration newAudioFadeOutDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.audioFadeOutDuration = newAudioFadeOutDuration;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAudioFadeInDuration(Duration newAudioFadeInDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.audioFadeInDuration = newAudioFadeInDuration;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAutoOffline(AutoOfflineOption newAutoOffline) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.autoOffline = newAutoOffline;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAutoOfflineListenerActive(bool newAutoOfflineListenerActive) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.autoOfflineListenerActive = newAutoOfflineListenerActive;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setItemSwipeActionLeftToRight(
@@ -705,9 +630,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.itemSwipeActionLeftToRight =
         newItemSwipeActionLeftToRight;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setItemSwipeActionRightToLeft(
@@ -716,57 +640,50 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.itemSwipeActionRightToLeft =
         newItemSwipeActionRightToLeft;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setDefaultArtistType(ArtistType newDefaultArtistType) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.defaultArtistType = newDefaultArtistType;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setCurrentVolume(double newCurrentVolume) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.currentVolume = newCurrentVolume;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPlayOnStaleDelay(int newPlayOnStaleDelay) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.playOnStaleDelay = newPlayOnStaleDelay;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPlayOnReconnectionDelay(int newPlayOnReconnectionDelay) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.playOnReconnectionDelay = newPlayOnReconnectionDelay;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setEnablePlayon(bool newEnablePlayon) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.enablePlayon = newEnablePlayon;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAutoReloadQueue(bool newAutoReloadQueue) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.autoReloadQueue = newAutoReloadQueue;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowShuffleButtonOnMediaNotification(
@@ -775,9 +692,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showShuffleButtonOnMediaNotification =
         newShowShuffleButtonOnMediaNotification;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowFavoriteButtonOnMediaNotification(
@@ -786,17 +702,15 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showFavoriteButtonOnMediaNotification =
         newShowFavoriteButtonOnMediaNotification;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setScreenSize(ScreenSize? newScreenSize) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.screenSize = newScreenSize;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setGenreCuratedItemSelectionTypeTracks(
@@ -805,9 +719,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.genreCuratedItemSelectionTypeTracks =
         newGenreCuratedItemSelectionTypeTracks;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setGenreCuratedItemSelectionTypeAlbums(
@@ -816,9 +729,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.genreCuratedItemSelectionTypeAlbums =
         newGenreCuratedItemSelectionTypeAlbums;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setGenreCuratedItemSelectionTypeArtists(
@@ -827,9 +739,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.genreCuratedItemSelectionTypeArtists =
         newGenreCuratedItemSelectionTypeArtists;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setGenreItemSectionsOrder(
@@ -841,25 +752,22 @@ extension FinampSetters on FinampSettingsHelper {
       newGenreItemSectionsOrder = newGenreItemSectionsOrder.toList();
     }
     finampSettingsTemp.genreItemSectionsOrder = newGenreItemSectionsOrder;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setGenreFilterArtistScreens(bool newGenreFilterArtistScreens) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.genreFilterArtistScreens = newGenreFilterArtistScreens;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setGenreListsInheritSorting(bool newGenreListsInheritSorting) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.genreListsInheritSorting = newGenreListsInheritSorting;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setGenreItemSectionFilterChipOrder(
@@ -873,17 +781,15 @@ extension FinampSetters on FinampSettingsHelper {
     }
     finampSettingsTemp.genreItemSectionFilterChipOrder =
         newGenreItemSectionFilterChipOrder;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setApplyFilterOnGenreChipTap(bool newApplyFilterOnGenreChipTap) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.applyFilterOnGenreChipTap = newApplyFilterOnGenreChipTap;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setArtistCuratedItemSelectionType(
@@ -892,9 +798,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.artistCuratedItemSelectionType =
         newArtistCuratedItemSelectionType;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setArtistItemSectionFilterChipOrder(
@@ -908,9 +813,8 @@ extension FinampSetters on FinampSettingsHelper {
     }
     finampSettingsTemp.artistItemSectionFilterChipOrder =
         newArtistItemSectionFilterChipOrder;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setArtistItemSectionsOrder(
@@ -922,9 +826,8 @@ extension FinampSetters on FinampSettingsHelper {
       newArtistItemSectionsOrder = newArtistItemSectionsOrder.toList();
     }
     finampSettingsTemp.artistItemSectionsOrder = newArtistItemSectionsOrder;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAutoSwitchItemCurationType(
@@ -933,57 +836,50 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.autoSwitchItemCurationType =
         newAutoSwitchItemCurationType;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setGenreFilterPlaylists(bool newGenreFilterPlaylists) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.genreFilterPlaylists = newGenreFilterPlaylists;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setSleepTimer(SleepTimer? newSleepTimer) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.sleepTimer = newSleepTimer;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setClearQueueOnStopEvent(bool newClearQueueOnStopEvent) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.clearQueueOnStopEvent = newClearQueueOnStopEvent;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPlaybackPitch(double newPlaybackPitch) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.playbackPitch = newPlaybackPitch;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setSyncPlaybackSpeedAndPitch(bool newSyncPlaybackSpeedAndPitch) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.syncPlaybackSpeedAndPitch = newSyncPlaybackSpeedAndPitch;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setUseHighContrastColors(bool newUseHighContrastColors) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.useHighContrastColors = newUseHighContrastColors;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setHasCompletedDownloadsFileOwnerMigration(
@@ -992,9 +888,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.hasCompletedDownloadsFileOwnerMigration =
         newHasCompletedDownloadsFileOwnerMigration;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setTileAdditionalInfoType(
@@ -1011,33 +906,29 @@ extension FinampSetters on FinampSettingsHelper {
       );
       finampSettingsTemp.tileAdditionalInfoType[tabContentType] = newValue;
     }
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setRpcEnabled(bool newRpcEnabled) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.rpcEnabled = newRpcEnabled;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setRpcIcon(DiscordRpcIcon newRpcIcon) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.rpcIcon = newRpcIcon;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAutoExpandPlayerScreen(bool newAutoExpandPlayerScreen) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.autoExpandPlayerScreen = newAutoExpandPlayerScreen;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPreferAddingToFavoritesOverPlaylists(
@@ -1046,33 +937,29 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.preferAddingToFavoritesOverPlaylists =
         newPreferAddingToFavoritesOverPlaylists;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPreviousTracksExpanded(bool newPreviousTracksExpanded) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.previousTracksExpanded = newPreviousTracksExpanded;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAutoplayRestoredQueue(bool newAutoplayRestoredQueue) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.autoplayRestoredQueue = newAutoplayRestoredQueue;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPreferNextUpPrepending(bool newPreferNextUpPrepending) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.preferNextUpPrepending = newPreferNextUpPrepending;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setRememberLastUsedPlaybackActionRowPage(
@@ -1081,9 +968,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.rememberLastUsedPlaybackActionRowPage =
         newRememberLastUsedPlaybackActionRowPage;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setLastUsedPlaybackActionRowPage(
@@ -1092,33 +978,29 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.lastUsedPlaybackActionRowPage =
         newLastUsedPlaybackActionRowPage;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAccentColor(Color? newAccentColor) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.accentColor = newAccentColor;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setThemeMode(ThemeMode newThemeMode) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.themeMode = newThemeMode;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setLocale(Locale? newLocale) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.locale = newLocale;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setHasCompletedThemeModeLocaleMigration(
@@ -1127,33 +1009,29 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.hasCompletedThemeModeLocaleMigration =
         newHasCompletedThemeModeLocaleMigration;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setSystemAccentColor(Color? newSystemAccentColor) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.systemAccentColor = newSystemAccentColor;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setUseSystemAccentColor(bool newUseSystemAccentColor) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.useSystemAccentColor = newUseSystemAccentColor;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setUseMonochromeIcon(bool newUseMonochromeIcon) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.useMonochromeIcon = newUseMonochromeIcon;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setLastUsedPlaybackActionRowPageForQueueMenu(
@@ -1162,33 +1040,29 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.lastUsedPlaybackActionRowPageForQueueMenu =
         newLastUsedPlaybackActionRowPageForQueueMenu;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setRadioEnabled(bool newRadioEnabled) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.radioEnabled = newRadioEnabled;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setRadioMode(RadioMode newRadioMode) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.radioMode = newRadioMode;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setDuckOnAudioInterruption(bool newDuckOnAudioInterruption) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.duckOnAudioInterruption = newDuckOnAudioInterruption;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setForceAudioOffloadingOnAndroid(
@@ -1197,9 +1071,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.forceAudioOffloadingOnAndroid =
         newForceAudioOffloadingOnAndroid;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setMultichannelHandlingSetting(
@@ -1208,9 +1081,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.multichannelHandlingSetting =
         newMultichannelHandlingSetting;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPreviousTracksPersistenceMode(
@@ -1219,9 +1091,8 @@ extension FinampSetters on FinampSettingsHelper {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.previousTracksPersistenceMode =
         newPreviousTracksPersistenceMode;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setHomeScreenConfiguration(
@@ -1229,73 +1100,64 @@ extension FinampSetters on FinampSettingsHelper {
   ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.homeScreenConfiguration = newHomeScreenConfiguration;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setGridImageSize(int newGridImageSize) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.gridImageSize = newGridImageSize;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setAmoledTheme(bool newAmoledTheme) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.amoledTheme = newAmoledTheme;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setUseAndroidGainEffect(bool newUseAndroidGainEffect) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.useAndroidGainEffect = newUseAndroidGainEffect;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setHomeScreenImageSize(int newHomeScreenImageSize) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.homeScreenImageSize = newHomeScreenImageSize;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setClientCertificate(ClientCertificate? newClientCertificate) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.clientCertificate = newClientCertificate;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setDeviceId(String newDeviceId) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.deviceId = newDeviceId;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setVerboseLogging(bool newVerboseLogging) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.verboseLogging = newVerboseLogging;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setShowQuickActionsBanner(bool newShowQuickActionsBanner) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showQuickActionsBanner = newShowQuickActionsBanner;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setPerTabContentViewType(
@@ -1312,22 +1174,20 @@ extension FinampSetters on FinampSettingsHelper {
       );
       finampSettingsTemp.perTabContentViewType[tabContentType] = newValue;
     }
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
+    Hive.box<FinampSettings>("FinampSettings")
+        .put("FinampSettings", finampSettingsTemp);
   }
 }
 
 /// Generated providers to easily watch only specific fields in finampSettings
-extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
+extension FinampSettingsProviderSelectors on FinampSettingsProvider {
   ProviderListenable<bool> get isOffline =>
       finampSettingsProvider.select((value) => value.requireValue.isOffline);
   ProviderListenable<bool> get shouldTranscode => finampSettingsProvider.select(
@@ -1792,22 +1652,44 @@ class _LengthEqualsIterable<E> extends DelegatingIterable<E> {
 // RiverpodGenerator
 // **************************************************************************
 
-String _$finampSettingsHash() => r'298d6dcfef9bacbabf1c0d39f1b0c4155f511639';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [finampSettings].
 @ProviderFor(finampSettings)
-final finampSettingsProvider = StreamProvider<FinampSettings>.internal(
-  finampSettings,
-  name: r'finampSettingsProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$finampSettingsHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final finampSettingsProvider = FinampSettingsProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef FinampSettingsRef = StreamProviderRef<FinampSettings>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class FinampSettingsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<FinampSettings>,
+          FinampSettings,
+          Stream<FinampSettings>
+        >
+    with $FutureModifier<FinampSettings>, $StreamProvider<FinampSettings> {
+  FinampSettingsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'finampSettingsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$finampSettingsHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<FinampSettings> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<FinampSettings> create(Ref ref) {
+    return finampSettings(ref);
+  }
+}
+
+String _$finampSettingsHash() => r'298d6dcfef9bacbabf1c0d39f1b0c4155f511639';

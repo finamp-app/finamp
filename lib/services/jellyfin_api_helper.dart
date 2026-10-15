@@ -15,7 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_user_certificates_android/flutter_user_certificates_android.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/io_client.dart' as http;
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -297,8 +297,7 @@ class JellyfinApiHelper {
     final currentUserId = _finampUserHelper.currentUser!.id;
     assert(_verifyCallable());
     assert(itemIds == null || parentItem == null);
-    fields ??=
-        defaultFields; // explicitly set the default fields, if we pass `null` to [JellyfinAPI.getItems] it will **not** apply the default fields, since the argument *is* provided.
+    fields ??= defaultFields; // explicitly set the default fields, if we pass `null` to [JellyfinAPI.getItems] it will **not** apply the default fields, since the argument *is* provided.
     recursive ??= true;
 
     if (parentItem != null) {
@@ -498,8 +497,7 @@ class JellyfinApiHelper {
       return [];
     }
     assert(_verifyCallable());
-    fields ??=
-        defaultFields; // explicitly set the default fields, if we pass `null` to [JellyfinAPI.getItems] it will **not** apply the default fields, since the argument *is* provided.
+    fields ??= defaultFields; // explicitly set the default fields, if we pass `null` to [JellyfinAPI.getItems] it will **not** apply the default fields, since the argument *is* provided.
 
     if (parentItem != null) {
       _jellyfinApiHelperLogger.fine("Getting artists which are children of ${parentItem.name}");
@@ -847,8 +845,7 @@ class JellyfinApiHelper {
   /// Gets an item from a user's library, batching with other request coming in around the same time.
   Future<BaseItemDto?> getItemByIdBatched(BaseItemId itemId, [String? fields]) async {
     assert(_verifyCallable());
-    fields ??=
-        defaultFields; // explicitly set the default fields, if we pass `null` to [JellyfinAPI.getItems] it will **not** apply the default fields, since the argument *is* provided.
+    fields ??= defaultFields; // explicitly set the default fields, if we pass `null` to [JellyfinAPI.getItems] it will **not** apply the default fields, since the argument *is* provided.
     _getItemByIdBatchedRequests.add(itemId);
     _getItemByIdBatchedFuture ??= Future.delayed(const Duration(milliseconds: 250), () async {
       _getItemByIdBatchedFuture = null;
@@ -1318,7 +1315,7 @@ class JellyfinApiHelper {
       return true;
     }
     var stack = StackTrace.current.toString();
-    if (stack.contains('ProviderElementBase.buildState') ||
+    if (stack.contains('ProviderElement.buildState') ||
         stack.contains('initState ') ||
         stack.contains('didUpdateWidget') ||
         stack.contains('new QueueService') ||

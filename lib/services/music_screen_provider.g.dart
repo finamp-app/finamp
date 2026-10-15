@@ -4,201 +4,328 @@
 
 // dart format off
 
-
 part of 'music_screen_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$loadHomeSectionItemsHash() =>
-    r'79de212cae057856d0c2c10ef7dea9dc84ede6d4';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
+@ProviderFor(PagedContent)
+final pagedContentProvider = PagedContentFamily._();
 
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-/// See also [loadHomeSectionItems].
-@ProviderFor(loadHomeSectionItems)
-const loadHomeSectionItemsProvider = LoadHomeSectionItemsFamily();
-
-/// See also [loadHomeSectionItems].
-class LoadHomeSectionItemsFamily
-    extends Family<AsyncValue<List<BaseItemDto>?>> {
-  /// See also [loadHomeSectionItems].
-  const LoadHomeSectionItemsFamily();
-
-  /// See also [loadHomeSectionItems].
-  LoadHomeSectionItemsProvider call({
-    required MusicScreenPlayable<FinampPlayableDto> request,
-    required int startIndex,
-    required int limit,
-  }) {
-    return LoadHomeSectionItemsProvider(
-      request: request,
-      startIndex: startIndex,
-      limit: limit,
-    );
-  }
-
-  @override
-  LoadHomeSectionItemsProvider getProviderOverride(
-    covariant LoadHomeSectionItemsProvider provider,
-  ) {
-    return call(
-      request: provider.request,
-      startIndex: provider.startIndex,
-      limit: provider.limit,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'loadHomeSectionItemsProvider';
-}
-
-/// See also [loadHomeSectionItems].
-class LoadHomeSectionItemsProvider
-    extends AutoDisposeFutureProvider<List<BaseItemDto>?> {
-  /// See also [loadHomeSectionItems].
-  LoadHomeSectionItemsProvider({
-    required MusicScreenPlayable<FinampPlayableDto> request,
-    required int startIndex,
-    required int limit,
-  }) : this._internal(
-         (ref) => loadHomeSectionItems(
-           ref as LoadHomeSectionItemsRef,
-           request: request,
-           startIndex: startIndex,
-           limit: limit,
-         ),
-         from: loadHomeSectionItemsProvider,
-         name: r'loadHomeSectionItemsProvider',
-         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-             ? null
-             : _$loadHomeSectionItemsHash,
-         dependencies: LoadHomeSectionItemsFamily._dependencies,
-         allTransitiveDependencies:
-             LoadHomeSectionItemsFamily._allTransitiveDependencies,
-         request: request,
-         startIndex: startIndex,
-         limit: limit,
+final class PagedContentProvider<ChildType extends FinampDisplayableOrPlayable>
+    extends
+        $NotifierProvider<
+          PagedContent<ChildType>,
+          PagingState<int, ChildType>
+        > {
+  PagedContentProvider._({
+    required PagedContentFamily super.from,
+    required FinampDisplayable<ChildType> super.argument,
+  }) : super(
+         retry: null,
+         name: r'pagedContentProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
        );
 
-  LoadHomeSectionItemsProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.request,
-    required this.startIndex,
-    required this.limit,
-  }) : super.internal();
-
-  final MusicScreenPlayable<FinampPlayableDto> request;
-  final int startIndex;
-  final int limit;
+  @override
+  String debugGetCreateSourceHash() => _$pagedContentHash();
 
   @override
-  Override overrideWith(
-    FutureOr<List<BaseItemDto>?> Function(LoadHomeSectionItemsRef provider)
-    create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: LoadHomeSectionItemsProvider._internal(
-        (ref) => create(ref as LoadHomeSectionItemsRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        request: request,
-        startIndex: startIndex,
-        limit: limit,
-      ),
-    );
+  String toString() {
+    return r'pagedContentProvider'
+        '<${ChildType}>'
+        '($argument)';
   }
 
+  @$internal
   @override
-  AutoDisposeFutureProviderElement<List<BaseItemDto>?> createElement() {
-    return _LoadHomeSectionItemsProviderElement(this);
+  PagedContent<ChildType> create() => PagedContent<ChildType>();
+
+  $R _captureGenerics<$R>(
+    $R Function<ChildType extends FinampDisplayableOrPlayable>() cb,
+  ) {
+    return cb<ChildType>();
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(PagingState<int, ChildType> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PagingState<int, ChildType>>(value),
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is LoadHomeSectionItemsProvider &&
-        other.request == request &&
-        other.startIndex == startIndex &&
-        other.limit == limit;
+    return other is PagedContentProvider &&
+        other.runtimeType == runtimeType &&
+        other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, request.hashCode);
-    hash = _SystemHash.combine(hash, startIndex.hashCode);
-    hash = _SystemHash.combine(hash, limit.hashCode);
-
-    return _SystemHash.finish(hash);
+    return Object.hash(runtimeType, argument);
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin LoadHomeSectionItemsRef
-    on AutoDisposeFutureProviderRef<List<BaseItemDto>?> {
-  /// The parameter `request` of this provider.
-  MusicScreenPlayable<FinampPlayableDto> get request;
+String _$pagedContentHash() => r'25eb9678f1dea2a6bd5ff22ae4c3bf2cdf6e1daa';
 
-  /// The parameter `startIndex` of this provider.
-  int get startIndex;
+final class PagedContentFamily extends $Family {
+  PagedContentFamily._()
+    : super(
+        retry: null,
+        name: r'pagedContentProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
 
-  /// The parameter `limit` of this provider.
-  int get limit;
+  PagedContentProvider<ChildType>
+  call<ChildType extends FinampDisplayableOrPlayable>(
+    FinampDisplayable<ChildType> request,
+  ) => PagedContentProvider<ChildType>._(argument: request, from: this);
+
+  @override
+  String toString() => r'pagedContentProvider';
+
+  /// {@macro riverpod.override_with}
+  Override overrideWith(
+    PagedContent<ChildType>
+    Function<ChildType extends FinampDisplayableOrPlayable>()
+    create,
+  ) => $FamilyOverride(
+    from: this,
+    createElement: (pointer) {
+      final provider = pointer.origin as PagedContentProvider;
+      return provider._captureGenerics(
+        <ChildType extends FinampDisplayableOrPlayable>() {
+          provider as PagedContentProvider<ChildType>;
+          return provider
+              .$view(create: create<ChildType>)
+              .$createElement(pointer);
+        },
+      );
+    },
+  );
+
+  /// {@macro riverpod.override_with_build}
+  Override overrideWithBuild(
+    PagingState<int, ChildType> Function<
+      ChildType extends FinampDisplayableOrPlayable
+    >(Ref ref, PagedContent<ChildType> notifier)
+    build,
+  ) => $FamilyOverride(
+    from: this,
+    createElement: (pointer) {
+      final provider = pointer.origin as PagedContentProvider;
+      return provider._captureGenerics(
+        <ChildType extends FinampDisplayableOrPlayable>() {
+          provider as PagedContentProvider<ChildType>;
+          return provider
+              .$view(runNotifierBuildOverride: build<ChildType>)
+              .$createElement(pointer);
+        },
+      );
+    },
+  );
 }
 
-class _LoadHomeSectionItemsProviderElement
-    extends AutoDisposeFutureProviderElement<List<BaseItemDto>?>
-    with LoadHomeSectionItemsRef {
-  _LoadHomeSectionItemsProviderElement(super.provider);
+abstract class _$PagedContent<ChildType extends FinampDisplayableOrPlayable>
+    extends $Notifier<PagingState<int, ChildType>> {
+  late final _$args = ref.$arg as FinampDisplayable<ChildType>;
+  FinampDisplayable<ChildType> get request => _$args;
+
+  PagingState<int, ChildType> build(FinampDisplayable<ChildType> request);
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<PagingState<int, ChildType>, PagingState<int, ChildType>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                PagingState<int, ChildType>,
+                PagingState<int, ChildType>
+              >,
+              PagingState<int, ChildType>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+@ProviderFor(loadHomeSectionItems)
+final loadHomeSectionItemsProvider = LoadHomeSectionItemsFamily._();
+
+final class LoadHomeSectionItemsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<BaseItemDto>?>,
+          List<BaseItemDto>?,
+          FutureOr<List<BaseItemDto>?>
+        >
+    with
+        $FutureModifier<List<BaseItemDto>?>,
+        $FutureProvider<List<BaseItemDto>?> {
+  LoadHomeSectionItemsProvider._({
+    required LoadHomeSectionItemsFamily super.from,
+    required ({
+      MusicScreenPlayable<FinampPlayableDto> request,
+      int startIndex,
+      int limit,
+    })
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'loadHomeSectionItemsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
-  MusicScreenPlayable<FinampPlayableDto> get request =>
-      (origin as LoadHomeSectionItemsProvider).request;
+  String debugGetCreateSourceHash() => _$loadHomeSectionItemsHash();
+
   @override
-  int get startIndex => (origin as LoadHomeSectionItemsProvider).startIndex;
+  String toString() {
+    return r'loadHomeSectionItemsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
   @override
-  int get limit => (origin as LoadHomeSectionItemsProvider).limit;
+  $FutureProviderElement<List<BaseItemDto>?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<BaseItemDto>?> create(Ref ref) {
+    final argument =
+        this.argument
+            as ({
+              MusicScreenPlayable<FinampPlayableDto> request,
+              int startIndex,
+              int limit,
+            });
+    return loadHomeSectionItems(
+      ref,
+      request: argument.request,
+      startIndex: argument.startIndex,
+      limit: argument.limit,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is LoadHomeSectionItemsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$loadHomeSectionItemsHash() =>
+    r'79de212cae057856d0c2c10ef7dea9dc84ede6d4';
+
+final class LoadHomeSectionItemsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<BaseItemDto>?>,
+          ({
+            MusicScreenPlayable<FinampPlayableDto> request,
+            int startIndex,
+            int limit,
+          })
+        > {
+  LoadHomeSectionItemsFamily._()
+    : super(
+        retry: null,
+        name: r'loadHomeSectionItemsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  LoadHomeSectionItemsProvider call({
+    required MusicScreenPlayable<FinampPlayableDto> request,
+    required int startIndex,
+    required int limit,
+  }) => LoadHomeSectionItemsProvider._(
+    argument: (request: request, startIndex: startIndex, limit: limit),
+    from: this,
+  );
+
+  @override
+  String toString() => r'loadHomeSectionItemsProvider';
+}
+
+/// Total item count for [request], ignoring pagination. CarPlay uses this to
+/// decide whether a view needs the letter picker.
+
+@ProviderFor(musicScreenItemCount)
+final musicScreenItemCountProvider = MusicScreenItemCountFamily._();
+
+/// Total item count for [request], ignoring pagination. CarPlay uses this to
+/// decide whether a view needs the letter picker.
+
+final class MusicScreenItemCountProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  /// Total item count for [request], ignoring pagination. CarPlay uses this to
+  /// decide whether a view needs the letter picker.
+  MusicScreenItemCountProvider._({
+    required MusicScreenItemCountFamily super.from,
+    required MusicScreenPlayable<FinampPlayableDto> super.argument,
+  }) : super(
+         retry: null,
+         name: r'musicScreenItemCountProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$musicScreenItemCountHash();
+
+  @override
+  String toString() {
+    return r'musicScreenItemCountProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    final argument = this.argument as MusicScreenPlayable<FinampPlayableDto>;
+    return musicScreenItemCount(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MusicScreenItemCountProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
 String _$musicScreenItemCountHash() =>
@@ -206,448 +333,116 @@ String _$musicScreenItemCountHash() =>
 
 /// Total item count for [request], ignoring pagination. CarPlay uses this to
 /// decide whether a view needs the letter picker.
-///
-/// Copied from [musicScreenItemCount].
-@ProviderFor(musicScreenItemCount)
-const musicScreenItemCountProvider = MusicScreenItemCountFamily();
 
-/// Total item count for [request], ignoring pagination. CarPlay uses this to
-/// decide whether a view needs the letter picker.
-///
-/// Copied from [musicScreenItemCount].
-class MusicScreenItemCountFamily extends Family<AsyncValue<int>> {
-  /// Total item count for [request], ignoring pagination. CarPlay uses this to
-  /// decide whether a view needs the letter picker.
-  ///
-  /// Copied from [musicScreenItemCount].
-  const MusicScreenItemCountFamily();
-
-  /// Total item count for [request], ignoring pagination. CarPlay uses this to
-  /// decide whether a view needs the letter picker.
-  ///
-  /// Copied from [musicScreenItemCount].
-  MusicScreenItemCountProvider call(
-    MusicScreenPlayable<FinampPlayableDto> request,
-  ) {
-    return MusicScreenItemCountProvider(request);
-  }
-
-  @override
-  MusicScreenItemCountProvider getProviderOverride(
-    covariant MusicScreenItemCountProvider provider,
-  ) {
-    return call(provider.request);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'musicScreenItemCountProvider';
-}
-
-/// Total item count for [request], ignoring pagination. CarPlay uses this to
-/// decide whether a view needs the letter picker.
-///
-/// Copied from [musicScreenItemCount].
-class MusicScreenItemCountProvider extends AutoDisposeFutureProvider<int> {
-  /// Total item count for [request], ignoring pagination. CarPlay uses this to
-  /// decide whether a view needs the letter picker.
-  ///
-  /// Copied from [musicScreenItemCount].
-  MusicScreenItemCountProvider(MusicScreenPlayable<FinampPlayableDto> request)
-    : this._internal(
-        (ref) => musicScreenItemCount(ref as MusicScreenItemCountRef, request),
-        from: musicScreenItemCountProvider,
+final class MusicScreenItemCountFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<int>,
+          MusicScreenPlayable<FinampPlayableDto>
+        > {
+  MusicScreenItemCountFamily._()
+    : super(
+        retry: null,
         name: r'musicScreenItemCountProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$musicScreenItemCountHash,
-        dependencies: MusicScreenItemCountFamily._dependencies,
-        allTransitiveDependencies:
-            MusicScreenItemCountFamily._allTransitiveDependencies,
-        request: request,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
       );
 
-  MusicScreenItemCountProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.request,
-  }) : super.internal();
+  /// Total item count for [request], ignoring pagination. CarPlay uses this to
+  /// decide whether a view needs the letter picker.
 
-  final MusicScreenPlayable<FinampPlayableDto> request;
+  MusicScreenItemCountProvider call(
+    MusicScreenPlayable<FinampPlayableDto> request,
+  ) => MusicScreenItemCountProvider._(argument: request, from: this);
 
   @override
-  Override overrideWith(
-    FutureOr<int> Function(MusicScreenItemCountRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: MusicScreenItemCountProvider._internal(
-        (ref) => create(ref as MusicScreenItemCountRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        request: request,
-      ),
-    );
+  String toString() => r'musicScreenItemCountProvider';
+}
+
+@ProviderFor(getJellyfinCollection)
+final getJellyfinCollectionProvider = GetJellyfinCollectionFamily._();
+
+final class GetJellyfinCollectionProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<BaseItemDto>?>,
+          List<BaseItemDto>?,
+          FutureOr<List<BaseItemDto>?>
+        >
+    with
+        $FutureModifier<List<BaseItemDto>?>,
+        $FutureProvider<List<BaseItemDto>?> {
+  GetJellyfinCollectionProvider._({
+    required GetJellyfinCollectionFamily super.from,
+    required (BaseItemDto, SortAndFilterConfiguration) super.argument,
+  }) : super(
+         retry: null,
+         name: r'getJellyfinCollectionProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$getJellyfinCollectionHash();
+
+  @override
+  String toString() {
+    return r'getJellyfinCollectionProvider'
+        ''
+        '$argument';
   }
 
+  @$internal
   @override
-  AutoDisposeFutureProviderElement<int> createElement() {
-    return _MusicScreenItemCountProviderElement(this);
+  $FutureProviderElement<List<BaseItemDto>?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<BaseItemDto>?> create(Ref ref) {
+    final argument = this.argument as (BaseItemDto, SortAndFilterConfiguration);
+    return getJellyfinCollection(ref, argument.$1, argument.$2);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is MusicScreenItemCountProvider && other.request == request;
+    return other is GetJellyfinCollectionProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, request.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
-}
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin MusicScreenItemCountRef on AutoDisposeFutureProviderRef<int> {
-  /// The parameter `request` of this provider.
-  MusicScreenPlayable<FinampPlayableDto> get request;
-}
-
-class _MusicScreenItemCountProviderElement
-    extends AutoDisposeFutureProviderElement<int>
-    with MusicScreenItemCountRef {
-  _MusicScreenItemCountProviderElement(super.provider);
-
-  @override
-  MusicScreenPlayable<FinampPlayableDto> get request =>
-      (origin as MusicScreenItemCountProvider).request;
 }
 
 String _$getJellyfinCollectionHash() =>
     r'1c7ade2240687f4de0fb3a93b51f27a97fb80e8a';
 
-/// See also [getJellyfinCollection].
-@ProviderFor(getJellyfinCollection)
-const getJellyfinCollectionProvider = GetJellyfinCollectionFamily();
+final class GetJellyfinCollectionFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<BaseItemDto>?>,
+          (BaseItemDto, SortAndFilterConfiguration)
+        > {
+  GetJellyfinCollectionFamily._()
+    : super(
+        retry: null,
+        name: r'getJellyfinCollectionProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
 
-/// See also [getJellyfinCollection].
-class GetJellyfinCollectionFamily
-    extends Family<AsyncValue<List<BaseItemDto>?>> {
-  /// See also [getJellyfinCollection].
-  const GetJellyfinCollectionFamily();
-
-  /// See also [getJellyfinCollection].
   GetJellyfinCollectionProvider call(
     BaseItemDto collection,
     SortAndFilterConfiguration sortConfig,
-  ) {
-    return GetJellyfinCollectionProvider(collection, sortConfig);
-  }
-
-  @override
-  GetJellyfinCollectionProvider getProviderOverride(
-    covariant GetJellyfinCollectionProvider provider,
-  ) {
-    return call(provider.collection, provider.sortConfig);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'getJellyfinCollectionProvider';
-}
-
-/// See also [getJellyfinCollection].
-class GetJellyfinCollectionProvider
-    extends AutoDisposeFutureProvider<List<BaseItemDto>?> {
-  /// See also [getJellyfinCollection].
-  GetJellyfinCollectionProvider(
-    BaseItemDto collection,
-    SortAndFilterConfiguration sortConfig,
-  ) : this._internal(
-        (ref) => getJellyfinCollection(
-          ref as GetJellyfinCollectionRef,
-          collection,
-          sortConfig,
-        ),
-        from: getJellyfinCollectionProvider,
-        name: r'getJellyfinCollectionProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$getJellyfinCollectionHash,
-        dependencies: GetJellyfinCollectionFamily._dependencies,
-        allTransitiveDependencies:
-            GetJellyfinCollectionFamily._allTransitiveDependencies,
-        collection: collection,
-        sortConfig: sortConfig,
-      );
-
-  GetJellyfinCollectionProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.collection,
-    required this.sortConfig,
-  }) : super.internal();
-
-  final BaseItemDto collection;
-  final SortAndFilterConfiguration sortConfig;
-
-  @override
-  Override overrideWith(
-    FutureOr<List<BaseItemDto>?> Function(GetJellyfinCollectionRef provider)
-    create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: GetJellyfinCollectionProvider._internal(
-        (ref) => create(ref as GetJellyfinCollectionRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        collection: collection,
-        sortConfig: sortConfig,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeFutureProviderElement<List<BaseItemDto>?> createElement() {
-    return _GetJellyfinCollectionProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is GetJellyfinCollectionProvider &&
-        other.collection == collection &&
-        other.sortConfig == sortConfig;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, collection.hashCode);
-    hash = _SystemHash.combine(hash, sortConfig.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin GetJellyfinCollectionRef
-    on AutoDisposeFutureProviderRef<List<BaseItemDto>?> {
-  /// The parameter `collection` of this provider.
-  BaseItemDto get collection;
-
-  /// The parameter `sortConfig` of this provider.
-  SortAndFilterConfiguration get sortConfig;
-}
-
-class _GetJellyfinCollectionProviderElement
-    extends AutoDisposeFutureProviderElement<List<BaseItemDto>?>
-    with GetJellyfinCollectionRef {
-  _GetJellyfinCollectionProviderElement(super.provider);
-
-  @override
-  BaseItemDto get collection =>
-      (origin as GetJellyfinCollectionProvider).collection;
-  @override
-  SortAndFilterConfiguration get sortConfig =>
-      (origin as GetJellyfinCollectionProvider).sortConfig;
-}
-
-String _$pagedContentHash() => r'1eaefb681245bb519b05fa4c4186d5a85d7a4fbe';
-
-abstract class _$PagedContent
-    extends
-        BuildlessAutoDisposeNotifier<
-          PagingState<int, FinampDisplayableOrPlayable>
-        > {
-  late final FinampDisplayable<FinampDisplayableOrPlayable> request;
-
-  PagingState<int, FinampDisplayableOrPlayable> build(
-    FinampDisplayable<FinampDisplayableOrPlayable> request,
+  ) => GetJellyfinCollectionProvider._(
+    argument: (collection, sortConfig),
+    from: this,
   );
+
+  @override
+  String toString() => r'getJellyfinCollectionProvider';
 }
-
-/// See also [PagedContent].
-@ProviderFor(PagedContent)
-const pagedContentProvider = PagedContentFamily();
-
-/// See also [PagedContent].
-class PagedContentFamily
-    extends Family<PagingState<int, FinampDisplayableOrPlayable>> {
-  /// See also [PagedContent].
-  const PagedContentFamily();
-
-  /// See also [PagedContent].
-  PagedContentProvider call(
-    FinampDisplayable<FinampDisplayableOrPlayable> request,
-  ) {
-    return PagedContentProvider(request);
-  }
-
-  @override
-  PagedContentProvider getProviderOverride(
-    covariant PagedContentProvider provider,
-  ) {
-    return call(provider.request);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'pagedContentProvider';
-}
-
-/// See also [PagedContent].
-class PagedContentProvider
-    extends
-        AutoDisposeNotifierProviderImpl<
-          PagedContent,
-          PagingState<int, FinampDisplayableOrPlayable>
-        > {
-  /// See also [PagedContent].
-  PagedContentProvider(FinampDisplayable<FinampDisplayableOrPlayable> request)
-    : this._internal(
-        () => PagedContent()..request = request,
-        from: pagedContentProvider,
-        name: r'pagedContentProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$pagedContentHash,
-        dependencies: PagedContentFamily._dependencies,
-        allTransitiveDependencies:
-            PagedContentFamily._allTransitiveDependencies,
-        request: request,
-      );
-
-  PagedContentProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.request,
-  }) : super.internal();
-
-  final FinampDisplayable<FinampDisplayableOrPlayable> request;
-
-  @override
-  PagingState<int, FinampDisplayableOrPlayable> runNotifierBuild(
-    covariant PagedContent notifier,
-  ) {
-    return notifier.build(request);
-  }
-
-  @override
-  Override overrideWith(PagedContent Function() create) {
-    return ProviderOverride(
-      origin: this,
-      override: PagedContentProvider._internal(
-        () => create()..request = request,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        request: request,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeNotifierProviderElement<
-    PagedContent,
-    PagingState<int, FinampDisplayableOrPlayable>
-  >
-  createElement() {
-    return _PagedContentProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is PagedContentProvider && other.request == request;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, request.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin PagedContentRef
-    on
-        AutoDisposeNotifierProviderRef<
-          PagingState<int, FinampDisplayableOrPlayable>
-        > {
-  /// The parameter `request` of this provider.
-  FinampDisplayable<FinampDisplayableOrPlayable> get request;
-}
-
-class _PagedContentProviderElement
-    extends
-        AutoDisposeNotifierProviderElement<
-          PagedContent,
-          PagingState<int, FinampDisplayableOrPlayable>
-        >
-    with PagedContentRef {
-  _PagedContentProviderElement(super.provider);
-
-  @override
-  FinampDisplayable<FinampDisplayableOrPlayable> get request =>
-      (origin as PagedContentProvider).request;
-}
-
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

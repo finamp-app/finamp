@@ -82,9 +82,8 @@ class NowPlayingBar extends ConsumerWidget {
         child: Container(
           decoration: getShadow(ref.context),
           child: Material(
-            shadowColor: ColorScheme.of(
-              context,
-            ).primary.withValues(alpha: Theme.brightnessOf(context) == Brightness.light ? 0.75 : 0.3),
+            shadowColor: ColorScheme.of(context).primary
+                .withValues(alpha: Theme.brightnessOf(context) == Brightness.light ? 0.75 : 0.3),
             borderRadius: BorderRadius.circular(12.0),
             clipBehavior: Clip.antiAlias,
             color: Theme.brightnessOf(context) == Brightness.dark
@@ -227,9 +226,8 @@ class NowPlayingBar extends ConsumerWidget {
                   return false;
                 },
                 child: Material(
-                  shadowColor: ColorScheme.of(
-                    context,
-                  ).primary.withValues(alpha: Theme.brightnessOf(context) == Brightness.light ? 0.75 : 0.3),
+                  shadowColor: ColorScheme.of(context).primary
+                      .withValues(alpha: Theme.brightnessOf(context) == Brightness.light ? 0.75 : 0.3),
                   borderRadius: BorderRadius.circular(12.0),
                   clipBehavior: Clip.antiAlias,
                   color: Theme.brightnessOf(context) == Brightness.dark

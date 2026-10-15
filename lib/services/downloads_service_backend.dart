@@ -10,7 +10,7 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get_it/get_it.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path_helper;
@@ -1289,9 +1289,8 @@ class DownloadsSyncService {
 
     if (_childCache.containsKey(item.id.raw)) {
       var childIds = await _childCache[item.id.raw]!;
-      return Future.wait(
-        childIds.map((e) => _metadataCache[BaseItemId(e)]).nonNulls,
-      ).then((value) => value.nonNulls.toList());
+      return Future.wait(childIds.map((e) => _metadataCache[BaseItemId(e)]).nonNulls)
+          .then((value) => value.nonNulls.toList());
     }
     Completer<List<String>> itemFetch = Completer();
     // This prevents errors in itemFetch being reported as unhandled.

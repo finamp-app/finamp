@@ -99,9 +99,8 @@ class FeatureState {
     if (FinampSettingsHelper.finampSettings.currentVolume != 1.0) {
       features.add(
         FeatureProperties(
-          text: AppLocalizations.of(
-            context,
-          )!.currentVolumeFeatureText((FinampSettingsHelper.finampSettings.currentVolume * 100).floor()),
+          text: AppLocalizations.of(context)!
+              .currentVolumeFeatureText((FinampSettingsHelper.finampSettings.currentVolume * 100).floor()),
         ),
       );
     }
@@ -225,7 +224,7 @@ class FeatureChips extends ConsumerWidget {
           context: context,
           currentTrack: snapshot.data,
           ref: ref,
-          metadata: metadata.valueOrNull,
+          metadata: metadata.value,
         );
 
         // log feature state for debugging
@@ -308,11 +307,8 @@ class _FeatureContent extends StatelessWidget {
         ),
         _ => Text(
           feature.text,
-          style: Theme.of(context).textTheme.displaySmall!.copyWith(
-            fontSize: 11,
-            fontWeight: FontWeight.w300,
-            overflow: TextOverflow.ellipsis,
-          ),
+          style: Theme.of(context).textTheme.displaySmall!
+              .copyWith(fontSize: 11, fontWeight: FontWeight.w300, overflow: TextOverflow.ellipsis),
           softWrap: false,
           overflow: TextOverflow.ellipsis,
         ),

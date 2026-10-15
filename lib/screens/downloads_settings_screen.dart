@@ -196,18 +196,16 @@ class ConcurentDownloadsSelector extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                AppLocalizations.of(
-                  context,
-                )!.maxConcurrentDownloadsLabel(ref.watch(finampSettingsProvider.maxConcurrentDownloads).toString()),
+                AppLocalizations.of(context)!
+                    .maxConcurrentDownloadsLabel(ref.watch(finampSettingsProvider.maxConcurrentDownloads).toString()),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Slider(
                 min: 1,
                 max: 25,
                 value: ref.watch(finampSettingsProvider.maxConcurrentDownloads).clamp(1, 25).toDouble(),
-                label: AppLocalizations.of(
-                  context,
-                )!.maxConcurrentDownloadsLabel(ref.watch(finampSettingsProvider.maxConcurrentDownloads).toString()),
+                label: AppLocalizations.of(context)!
+                    .maxConcurrentDownloadsLabel(ref.watch(finampSettingsProvider.maxConcurrentDownloads).toString()),
                 onChanged: (value) => FinampSetters.setMaxConcurrentDownloads(value.toInt()),
                 autofocus: false,
                 focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),

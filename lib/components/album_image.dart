@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 // FadeWidget is not exported by octo_image's public API.
 // ignore: implementation_imports

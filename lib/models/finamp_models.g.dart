@@ -4,7 +4,6 @@
 
 // dart format off
 
-
 part of 'finamp_models.dart';
 
 // **************************************************************************
@@ -3824,32 +3823,31 @@ const FinampUserSchema = CollectionSchema(
       name: r'accessToken',
       type: IsarType.string,
     ),
-    r'baseURL': PropertySchema(id: 1, name: r'baseURL', type: IsarType.string),
-    r'baseUrl': PropertySchema(id: 2, name: r'baseUrl', type: IsarType.string),
+    r'baseUrl': PropertySchema(id: 1, name: r'baseUrl', type: IsarType.string),
     r'currentViewId': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'currentViewId',
       type: IsarType.string,
     ),
-    r'id': PropertySchema(id: 4, name: r'id', type: IsarType.string),
-    r'isLocal': PropertySchema(id: 5, name: r'isLocal', type: IsarType.bool),
+    r'id': PropertySchema(id: 3, name: r'id', type: IsarType.string),
+    r'isLocal': PropertySchema(id: 4, name: r'isLocal', type: IsarType.bool),
     r'isarViews': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'isarViews',
       type: IsarType.string,
     ),
     r'localAddress': PropertySchema(
-      id: 7,
+      id: 6,
       name: r'localAddress',
       type: IsarType.string,
     ),
     r'preferLocalNetwork': PropertySchema(
-      id: 8,
+      id: 7,
       name: r'preferLocalNetwork',
       type: IsarType.bool,
     ),
     r'serverId': PropertySchema(
-      id: 9,
+      id: 8,
       name: r'serverId',
       type: IsarType.string,
     ),
@@ -3867,7 +3865,7 @@ const FinampUserSchema = CollectionSchema(
   getId: _finampUserGetId,
   getLinks: _finampUserGetLinks,
   attach: _finampUserAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _finampUserEstimateSize(
@@ -3877,7 +3875,6 @@ int _finampUserEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.accessToken.length * 3;
-  bytesCount += 3 + object.baseURL.length * 3;
   bytesCount += 3 + object.publicAddress.length * 3;
   {
     final value = object.isarCurrentViewId;
@@ -3899,15 +3896,14 @@ void _finampUserSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.accessToken);
-  writer.writeString(offsets[1], object.baseURL);
-  writer.writeString(offsets[2], object.publicAddress);
-  writer.writeString(offsets[3], object.isarCurrentViewId);
-  writer.writeString(offsets[4], object.id);
-  writer.writeBool(offsets[5], object.isLocal);
-  writer.writeString(offsets[6], object.isarViews);
-  writer.writeString(offsets[7], object.localAddress);
-  writer.writeBool(offsets[8], object.preferLocalNetwork);
-  writer.writeString(offsets[9], object.serverId);
+  writer.writeString(offsets[1], object.publicAddress);
+  writer.writeString(offsets[2], object.isarCurrentViewId);
+  writer.writeString(offsets[3], object.id);
+  writer.writeBool(offsets[4], object.isLocal);
+  writer.writeString(offsets[5], object.isarViews);
+  writer.writeString(offsets[6], object.localAddress);
+  writer.writeBool(offsets[7], object.preferLocalNetwork);
+  writer.writeString(offsets[8], object.serverId);
 }
 
 FinampUser _finampUserDeserialize(
@@ -3918,15 +3914,15 @@ FinampUser _finampUserDeserialize(
 ) {
   final object = FinampUser(
     accessToken: reader.readString(offsets[0]),
-    publicAddress: reader.readString(offsets[2]),
-    id: reader.readString(offsets[4]),
-    isLocal: reader.readBool(offsets[5]),
-    localAddress: reader.readString(offsets[7]),
-    preferLocalNetwork: reader.readBool(offsets[8]),
-    serverId: reader.readString(offsets[9]),
+    publicAddress: reader.readString(offsets[1]),
+    id: reader.readString(offsets[3]),
+    isLocal: reader.readBool(offsets[4]),
+    localAddress: reader.readString(offsets[6]),
+    preferLocalNetwork: reader.readBool(offsets[7]),
+    serverId: reader.readString(offsets[8]),
   );
-  object.isarCurrentViewId = reader.readStringOrNull(offsets[3]);
-  object.isarViews = reader.readString(offsets[6]);
+  object.isarCurrentViewId = reader.readStringOrNull(offsets[2]);
+  object.isarViews = reader.readString(offsets[5]);
   return object;
 }
 
@@ -3942,20 +3938,18 @@ P _finampUserDeserializeProp<P>(
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
-    case 3:
       return (reader.readStringOrNull(offset)) as P;
-    case 4:
+    case 3:
       return (reader.readString(offset)) as P;
-    case 5:
+    case 4:
       return (reader.readBool(offset)) as P;
+    case 5:
+      return (reader.readString(offset)) as P;
     case 6:
       return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readString(offset)) as P;
-    case 8:
       return (reader.readBool(offset)) as P;
-    case 9:
+    case 8:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -4197,154 +4191,6 @@ extension FinampUserQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'accessToken', value: ''),
-      );
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'baseURL',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  baseURLGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'baseURL',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'baseURL',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'baseURL',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'baseURL',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'baseURL',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLContains(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'baseURL',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLMatches(
-    String pattern, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.matches(
-          property: r'baseURL',
-          wildcard: pattern,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'baseURL', value: ''),
-      );
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  baseURLIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'baseURL', value: ''),
       );
     });
   }
@@ -5329,18 +5175,6 @@ extension FinampUserQuerySortBy
     });
   }
 
-  QueryBuilder<FinampUser, FinampUser, QAfterSortBy> sortByBaseURL() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'baseURL', Sort.asc);
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterSortBy> sortByBaseURLDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'baseURL', Sort.desc);
-    });
-  }
-
   QueryBuilder<FinampUser, FinampUser, QAfterSortBy> sortByPublicAddress() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'baseUrl', Sort.asc);
@@ -5452,18 +5286,6 @@ extension FinampUserQuerySortThenBy
   QueryBuilder<FinampUser, FinampUser, QAfterSortBy> thenByAccessTokenDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'accessToken', Sort.desc);
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterSortBy> thenByBaseURL() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'baseURL', Sort.asc);
-    });
-  }
-
-  QueryBuilder<FinampUser, FinampUser, QAfterSortBy> thenByBaseURLDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'baseURL', Sort.desc);
     });
   }
 
@@ -5589,14 +5411,6 @@ extension FinampUserQueryWhereDistinct
     });
   }
 
-  QueryBuilder<FinampUser, FinampUser, QDistinct> distinctByBaseURL({
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'baseURL', caseSensitive: caseSensitive);
-    });
-  }
-
   QueryBuilder<FinampUser, FinampUser, QDistinct> distinctByPublicAddress({
     bool caseSensitive = true,
   }) {
@@ -5673,12 +5487,6 @@ extension FinampUserQueryProperty
   QueryBuilder<FinampUser, String, QQueryOperations> accessTokenProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'accessToken');
-    });
-  }
-
-  QueryBuilder<FinampUser, String, QQueryOperations> baseURLProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'baseURL');
     });
   }
 
@@ -5875,7 +5683,7 @@ const DownloadItemSchema = CollectionSchema(
   getId: _downloadItemGetId,
   getLinks: _downloadItemGetLinks,
   attach: _downloadItemAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _downloadItemEstimateSize(
@@ -6049,11 +5857,10 @@ P _downloadItemDeserializeProp<P>(
           as P;
     case 2:
       return (reader.readObjectOrNull<DownloadProfile>(
-            offset,
-            DownloadProfileSchema.deserialize,
-            allOffsets,
-          ))
-          as P;
+        offset,
+        DownloadProfileSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
@@ -6072,22 +5879,20 @@ P _downloadItemDeserializeProp<P>(
           as P;
     case 10:
       return (reader.readObjectOrNull<DownloadProfile>(
-            offset,
-            DownloadProfileSchema.deserialize,
-            allOffsets,
-          ))
-          as P;
+        offset,
+        DownloadProfileSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 11:
       return (_DownloadItemtypeValueEnumMap[reader.readByteOrNull(offset)] ??
               DownloadItemType.collection)
           as P;
     case 12:
       return (reader.readObjectOrNull<DownloadProfile>(
-            offset,
-            DownloadProfileSchema.deserialize,
-            allOffsets,
-          ))
-          as P;
+        offset,
+        DownloadProfileSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 13:
       return (reader.readStringOrNull(offset)) as P;
     default:
@@ -8601,7 +8406,7 @@ const DownloadedLyricsSchema = CollectionSchema(
   getId: _downloadedLyricsGetId,
   getLinks: _downloadedLyricsGetLinks,
   attach: _downloadedLyricsAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _downloadedLyricsEstimateSize(
@@ -9525,8 +9330,8 @@ FinampCollection _$FinampCollectionFromJson(Map json) => FinampCollection(
 Map<String, dynamic> _$FinampCollectionToJson(FinampCollection instance) =>
     <String, dynamic>{
       'Type': _$FinampCollectionTypeEnumMap[instance.type]!,
-      if (instance.library?.toJson() case final value?) 'Library': value,
-      if (instance.item?.toJson() case final value?) 'Item': value,
+      'Library': ?instance.library?.toJson(),
+      'Item': ?instance.item?.toJson(),
     };
 
 const _$FinampCollectionTypeEnumMap = {
@@ -9705,11 +9510,8 @@ Map<String, dynamic> _$HomeScreenSectionConfigurationToJson(
 ) => <String, dynamic>{
   'base': instance.base,
   'sortConfig': instance.sortConfig,
-  if (instance.customSectionTitle case final value?)
-    'customSectionTitle': value,
-  if (_$HomeScreenSectionPresetTypeEnumMap[instance.presetType]
-      case final value?)
-    'presetType': value,
+  'customSectionTitle': ?instance.customSectionTitle,
+  'presetType': ?_$HomeScreenSectionPresetTypeEnumMap[instance.presetType],
   'hashCode': instance.hashCode,
   'id': instance.id,
 };
@@ -9823,16 +9625,14 @@ QuickActionConfig _$QuickActionConfigFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$QuickActionConfigToJson(QuickActionConfig instance) =>
     <String, dynamic>{
       'action': _$FinampQuickActionsEnumMap[instance.action]!,
-      if (_$JsonConverterToJson<String, BaseItemId>(
-            instance.itemId,
-            const BaseItemIdConverter().toJson,
-          )
-          case final value?)
-        'itemId': value,
-      if (instance.itemName case final value?) 'itemName': value,
-      if (instance.itemTypes?.map((e) => _$ContentTypeEnumMap[e]!).toList()
-          case final value?)
-        'itemTypes': value,
+      'itemId': ?_$JsonConverterToJson<String, BaseItemId>(
+        instance.itemId,
+        const BaseItemIdConverter().toJson,
+      ),
+      'itemName': ?instance.itemName,
+      'itemTypes': ?instance.itemTypes
+          ?.map((e) => _$ContentTypeEnumMap[e]!)
+          .toList(),
     };
 
 const _$FinampQuickActionsEnumMap = {

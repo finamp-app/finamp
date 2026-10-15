@@ -30,9 +30,8 @@ class LockDownloadMenuEntry extends ConsumerWidget implements HideableMenuEntry 
         if (parent.type == DownloadItemType.finampCollection) {
           switch (parent.finampCollection!.type) {
             case FinampCollectionType.collectionWithLibraryFilter:
-              parentName = AppLocalizations.of(
-                context,
-              )!.itemTypeSubtitle(BaseItemDtoType.fromItem(parent.finampCollection!.item!).name, parent.name);
+              parentName = AppLocalizations.of(context)!
+                  .itemTypeSubtitle(BaseItemDtoType.fromItem(parent.finampCollection!.item!).name, parent.name);
             case _:
               parentName = parent.name;
           }

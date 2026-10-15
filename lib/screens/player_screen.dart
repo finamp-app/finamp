@@ -153,8 +153,8 @@ class _PlayerScreenContent extends ConsumerWidget {
 
     final isLyricsLoading = metadata.isLoading || metadata.isRefreshing;
     final isLyricsAvailable =
-        (metadata.valueOrNull?.hasLyrics ?? false) &&
-        (metadata.valueOrNull?.lyrics != null || metadata.isLoading) &&
+        (metadata.value?.hasLyrics ?? false) &&
+        (metadata.value?.lyrics != null || metadata.isLoading) &&
         !metadata.hasError;
 
     return SafeArea(

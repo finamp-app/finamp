@@ -132,11 +132,11 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
     final artistsAsync = ref.watch(genreCuratedItemsProvider(widget.parent, BaseItemDtoType.artist, widget.library));
 
     final (tracks, trackCount, genreCuratedItemSelectionTypeTracks, newDisabledTrackFilters) =
-        tracksAsync.valueOrNull ?? (null, null, null, null);
+        tracksAsync.value ?? (null, null, null, null);
     final (albums, albumCount, genreCuratedItemSelectionTypeAlbums, newDisabledAlbumFilters) =
-        albumsAsync.valueOrNull ?? (null, null, null, null);
+        albumsAsync.value ?? (null, null, null, null);
     final (artists, artistCount, genreCuratedItemSelectionTypeArtists, newDisabledArtistFilters) =
-        artistsAsync.valueOrNull ?? (null, null, null, null);
+        artistsAsync.value ?? (null, null, null, null);
 
     final isLoading = tracks == null || albums == null || artists == null;
 

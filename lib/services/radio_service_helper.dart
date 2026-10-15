@@ -17,6 +17,7 @@ import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -918,8 +919,8 @@ final currentRadioAvailabilityStatusProvider = Provider<RadioModeAvailabilitySta
   return !radioEnabled ? RadioModeAvailabilityStatus.disabled : radioModeAvailable;
 });
 
-final radioModeAvailabilityStatusProvider =
-    AutoDisposeProviderFamily<RadioModeAvailabilityStatus, (RadioMode, BaseItemDto?)>((
+final radioModeAvailabilityStatusProvider = Provider.autoDispose
+    .family<RadioModeAvailabilityStatus, (RadioMode, BaseItemDto?)>((
       ref,
       (RadioMode radioMode, BaseItemDto? source) arguments,
     ) {
@@ -943,7 +944,7 @@ final radioModeAvailabilityStatusProvider =
     });
 
 final _randomAndReshuffleRadioModeAvailabilityStatusProvider =
-    ProviderFamily<RadioModeAvailabilityStatus, BaseItemDto?>((ref, BaseItemDto? baseItem) {
+    Provider.family<RadioModeAvailabilityStatus, BaseItemDto?>((ref, BaseItemDto? baseItem) {
       if (baseItem != null) {
         final downloadsService = GetIt.instance<DownloadsService>();
 

@@ -279,10 +279,8 @@ class _DownloadDialogState extends ConsumerState<DownloadDialog> {
               child: Text(
                 AppLocalizations.of(context)!.largeDownloadWarning(widget.trackCount!),
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.warning,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge!
+                    .copyWith(color: Theme.of(context).colorScheme.warning, fontWeight: FontWeight.bold),
               ),
             ),
         ],

@@ -49,9 +49,8 @@ class _CustomDownloadLocationFormState extends State<CustomDownloadLocationForm>
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 style: selectedDirectory == null
-                                    ? Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium?.copyWith(color: Theme.of(context).hintColor)
+                                    ? Theme.of(context).textTheme.titleMedium
+                                          ?.copyWith(color: Theme.of(context).hintColor)
                                     : Theme.of(context).textTheme.titleMedium,
                               ),
                             ),
@@ -77,9 +76,8 @@ class _CustomDownloadLocationFormState extends State<CustomDownloadLocationForm>
                       padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                       child: Text(
                         field.errorText ?? AppLocalizations.of(context)!.unknownError,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+                        style: Theme.of(context).textTheme.bodySmall
+                            ?.copyWith(color: Theme.of(context).colorScheme.error),
                       ),
                     ),
                 ],
