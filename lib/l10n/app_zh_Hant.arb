@@ -458,7 +458,7 @@
     "@playbackModeLocal": {
         "description": "Feature chip that is shown when tracks are being played from local downloads, without using the server"
     },
-    "kiloBitsPerSecondLabel": "{bitrate} kbps",
+    "kiloBitsPerSecondLabel": "{bitrate} KiB/s",
     "@kiloBitsPerSecondLabel": {
         "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
         "placeholders": {
@@ -609,7 +609,7 @@
     "bufferDisableSizeConstraintsTitle": "不要限制緩衝區大小",
     "bufferDisableSizeConstraintsSubtitle": "關閉「緩衝區大小」的限制，無論檔案大小多大，緩衝區都會依照設定的「緩衝區持續時間」載入。不過，這可能會導致程式當機，並且需要重新啟動才能生效。",
     "bufferSizeTitle": "緩衝區大小",
-    "bufferSizeSubtitle": "緩衝區大小 (MB)。變更後需要重新啟動應用程式",
+    "bufferSizeSubtitle": "緩衝區大小 (MiB)。變更後需要重新啟動應用程式",
     "skipToPreviousTrackButtonTooltip": "從頭播放或切換至前一首",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -819,7 +819,7 @@
     "@loopModeAllButtonLabel": {
         "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop all mode"
     },
-    "queuesScreen": "恢復播放",
+    "queuesScreen": "歷史播放佇列",
     "@queuesScreen": {
         "description": "Title for the screen where older now playing queues can be restored"
     },
@@ -1035,7 +1035,7 @@
     "@volumeNormalizationModeTrackBased": {
         "description": "'Track-based' option for the replay gain mode dropdown. In track-based mode, the track gain is always used, regardless of whether an album is playing or not."
     },
-    "startInstantMixForIndividualTracksSwitchSubtitle": "啟用後，在「歌曲」分頁點選單一歌曲時，將會自動播放該歌曲的隨機混播，而非僅播放該歌曲本身。",
+    "startInstantMixForIndividualTracksSwitchSubtitle": "啟用後，在「歌曲」分頁點選單一歌曲時，將會以該歌曲為基礎自動開始即時混播，而非依序播放歌曲。",
     "repairComplete": "下載內容已成功修復。",
     "@repairComplete": {
         "description": "Message displayed after download repair completes."
@@ -3452,11 +3452,11 @@
             }
         }
     },
-    "clientCertificate": "mTLS(SSL) 用戶端憑證",
+    "clientCertificate": "用戶端憑證（mTLS）",
     "@clientCertificate": {
         "description": "Title for the setting that allows managing SSL client certificates used for authentication"
     },
-    "clientCertificateUnavailable": "尚未設定憑證，用戶端驗證已停用",
+    "clientCertificateUnavailable": "尚未設定憑證，額外的用戶端驗證已停用",
     "@clientCertificateUnavailable": {
         "description": "Message shown when the user has no SSL client certificate available to use."
     },
@@ -3464,7 +3464,7 @@
     "@clientCertificateInstalled": {
         "description": "Message shown when the user has successfully installed an SSL client certificate."
     },
-    "clientCertificateDescription": "TLS用戶端憑證（.p12 或 .pfx）可用來讓Jellyfin伺服器驗證此裝置。僅在伺服器已設定雙向TLS時才需要。",
+    "clientCertificateDescription": "TLS 用戶端憑證（.p12 或 .pfx）可用來讓 Jellyfin 伺服器驗證此裝置。僅在伺服器已設定雙向 TLS 時才需要。",
     "@clientCertificateDescription": {
         "description": "Explanatory text in the client certificate settings menu describing what a client certificate is used for"
     },
@@ -3645,5 +3645,52 @@
         "description": "Subtitle explaining the verbose logging toggle"
     },
     "perTabGridMode": "依分頁個別選擇",
-    "showFastScrollerSubtitle": "顯示或隱藏音樂分頁右側的字母索引，可快速跳至指定字母。"
+    "showFastScrollerSubtitle": "顯示或隱藏音樂分頁右側的字母索引，可快速跳至指定字母。",
+    "inAlbumOrPlaylist": "專輯/播放清單順序",
+    "@inAlbumOrPlaylist": {
+        "description": "Sorting order for tracks in an album or playlist (by disc, then index, then name"
+    },
+    "discUnknown": "未知光碟",
+    "@discUnknown": {
+        "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
+    },
+    "discUnknownOfAlbum": "[未知光碟] {albumName}",
+    "@discUnknownOfAlbum": {
+        "description": "Used when a single disc of album is opened, but the disc number is unknown, then album name is replaced with this string",
+        "placeholders": {
+            "albumName": {
+                "type": "String"
+            }
+        }
+    },
+    "advanced": "進階",
+    "@advanced": {
+        "description": "Label for the button on the login screen that opens the advanced options screen, and the title of that screen."
+    },
+    "clientCertificatesUnsupported": "此平台不支援用戶端憑證",
+    "@clientCertificatesUnsupported": {
+        "description": "Message shown when client certificates are not supported on the user's current platform."
+    },
+    "quickActionBanner": "看看一些常用的設定選項！",
+    "@quickActionBanner": {
+        "description": "Banner directing new users to the quick settings, where they can adjust the most commonly used settings"
+    },
+    "themeSettingTitle": "應用程式色彩主題 (深色/淺色)",
+    "@themeSettingTitle": {
+        "description": "Title for the setting that allows you to override the system theme and force dark or light mode"
+    },
+    "perTabGridModeScreen": "設定各分頁的檢視類型",
+    "perTabAlbumGrid": "僅專輯使用網格檢視",
+    "quickSettingsScreen": "快速設定",
+    "quickSettingsScreenDescription": "透過這些基本選項，依照你的偏好自訂 Finamp。你隨時都可以從「設定」回到這裡。",
+    "quickSettingsTabsLink": "重新排列及隱藏分頁",
+    "quickSettingsTranscodeLink": "所有轉碼設定",
+    "quickSettingsLayoutLink": "所有版面配置與主題設定",
+    "quickSettingsAllSettingsLink": "所有設定",
+    "quickSettingsNetworkLink": "設定伺服器的本機位址",
+    "releaseDateFormatNumerical": "短格式數字日期",
+    "@releaseDateFormatNumerical": {
+        "description": "Date format option for the release date of an album, showing the date in a short numerical format. Changes based on locale such as DD/MM/YYYY for en_gb and MM/DD/YYYY for en_us."
+    },
+    "loginFlowLocalNetworkServersNoResults": "尚未偵測到伺服器，請嘗試手動輸入伺服器位址。"
 }

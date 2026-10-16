@@ -1715,5 +1715,88 @@
     "customizeHomeScreen": "Ana ekranı düzenle",
     "@customizeHomeScreen": {
         "description": "Label for home screen customize button"
-    }
+    },
+    "activeLibraries": "Aktif Kütüphaneler",
+    "@activeLibraries": {
+        "description": "Active Libraries"
+    },
+    "discUnknown": "Bilinmeyen Disk",
+    "@discUnknown": {
+        "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
+    },
+    "verboseLogging": "Detaylı Loglama",
+    "@verboseLogging": {
+        "description": "Title for the toggle that enables detailed logging on the logs screen"
+    },
+    "verboseLoggingSubtitle": "Detaylı logları hata reporları için tutar. Daha iyi bir oynatma performansı için, bunu kapalı tutun.",
+    "@verboseLoggingSubtitle": {
+        "description": "Subtitle explaining the verbose logging toggle"
+    },
+    "inAlbumOrPlaylist": "Albüm/Çalma Listesi Sıralaması",
+    "@inAlbumOrPlaylist": {
+        "description": "Sorting order for tracks in an album or playlist (by disc, then index, then name"
+    },
+    "perTabGridMode": "Sekme başına seç",
+    "showFastScrollerSubtitle": "Müzik sekmelerinin sağ tarafında duran ve harflere atlamayı sağlayan alfabetik karakterlei gösterin veya gizleyin.",
+    "playOnStaleDelaySubtitle": "Bir istek alındıktan sonra, uzaktan 'Şurda Oynat' oturumunun ne kadar süre boyunca aktif kabul edileceği. Oturum aktif kabul edildiğinde oynatma durumu daha sık güncellenir; bu internet kullanımının artmasına yol açabilir.",
+    "@playOnStaleDelaySubtitle": {
+        "description": "Description of the setting that controls how long a PlayOn remote session is considered active"
+    },
+    "enablePlayonTitle": "'Şurda Oynat' Desteğini Aç",
+    "@enablePlayonTitle": {
+        "description": "Label for the setting to enable Jellyfin's 'Play On' feature (remote control)"
+    },
+    "enablePlayonSubtitle": "Jellyfin'in 'Şurda Oynat' (Finamp'i uzaktan başka program ile kontrol etme) özelliğini açar. Eğer proxy'niz ya da sunucunuz websocketleri desteklemiyorsa bunu kapatın.",
+    "@enablePlayonSubtitle": {
+        "description": "Description of the setting to enable Jellyfin's 'Play On' feature (remote control)"
+    },
+    "playOnReconnectionDelay": "'Şurda Oynat' Oturumu Yeniden Bağlanma Gecikmesi",
+    "@playOnReconnectionDelay": {
+        "description": "Label for the setting that controls the reconnection attempts frequency of a disconnected PlayOn session"
+    },
+    "loginFlowLocalNetworkServersNoResults": "Hiçbir sunucu algılanmadı - sunucu adresini elle kendiniz girmeniz gerekebilir.",
+    "quickSettingsNetworkLink": "Sunucunuzun yerel adresini ayarlayın",
+    "quickSettingsAllSettingsLink": "Tüm Ayarlar",
+    "quickSettingsLayoutLink": "Tüm düzen & tema ayarları",
+    "quickSettingsTranscodeLink": "Tüm transcode ayarları",
+    "quickSettingsTabsLink": "Sekmeleri yeniden düzenleyin ya da gizleyin",
+    "quickSettingsScreenDescription": "Finamp'i kendinize göre burdaki ana ayarlar ile özelleştirin. Herhangi an ayarlardan buraya geri gelebilirsiniz.",
+    "quickSettingsScreen": "Hızlı Ayarlar",
+    "themeSettingTitle": "Uygulama renk teması (siyah/beyaz)",
+    "@themeSettingTitle": {
+        "description": "Title for the setting that allows you to override the system theme and force dark or light mode"
+    },
+    "allTracks": "Tüm Parçalar (\"{trackName}\" tarafından)",
+    "@allTracks": {
+        "description": "Queue source when playing from tracks screen.",
+        "placeholders": {
+            "trackName": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "addSpecialDownloads": "Özel indirme ekle",
+    "@addSpecialDownloads": {
+        "description": "Button on downloads screen which allows adding special downloads, such as all playlists or all favorites."
+    },
+    "collapsePlayer": "Oynatıcıyı kenar paneline küçült",
+    "maximizePlayer": "Oynatıcıyı büyüt",
+    "applyChangesOnClose": "Değişiklikler menüyü kapattığınızda uygulanacaktır",
+    "@applyChangesOnClose": {
+        "description": "Notification on sort and filter menu that currently pending changes will be automatically applied on close."
+    },
+    "cancelChanges": "Değişiklikleri iptal et",
+    "@cancelChanges": {
+        "description": "Button on sort and filter menu that clears any pending changes."
+    },
+    "clientCertificatePasswordHint": "Şifre",
+    "@clientCertificatePasswordHint": {
+        "description": "Hint text for the password input field when importing a client certificate."
+    },
+    "advanced": "Gelişmiş",
+    "@advanced": {
+        "description": "Label for the button on the login screen that opens the advanced options screen, and the title of that screen."
+    },
+    "retry": "Tekrar dene"
 }

@@ -556,7 +556,7 @@
     "@accentColorTitle": {
         "description": "Title for the accent color picker sheet"
     },
-    "systemAccentColor": "Brug System Accent",
+    "systemAccentColor": "Brug System Accent Farve",
     "@systemAccentColor": {
         "description": "Title of the System Accent Color setting."
     },
@@ -616,7 +616,7 @@
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
     },
-    "kiloBitsPerSecondLabel": "{bitrate} kbps",
+    "kiloBitsPerSecondLabel": "{bitrate} KiB/s",
     "@kiloBitsPerSecondLabel": {
         "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
         "placeholders": {
@@ -643,7 +643,7 @@
         "description": "Menu label for starting a radio from a playlist, album, etc."
     },
     "bufferSizeTitle": "Buffer Størrelse",
-    "bufferSizeSubtitle": "Størrelse af bufferen i MB. Kræver en genstart",
+    "bufferSizeSubtitle": "Størrelse af bufferen i MiB. Kræver en genstart",
     "skipToPreviousTrackButtonTooltip": "Spring til begyndelsen af sidste track",
     "@skipToPreviousTrackButtonTooltip": {
         "description": "Tooltip for the button that skips to the beginning of the current track or to the previous track"
@@ -684,7 +684,7 @@
     "@moveAddToQueue": {
         "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
     },
-    "yourLikes": "Dine Likes",
+    "yourLikes": "Dine Likes (fra \"{trackName}\")",
     "@yourLikes": {
         "description": "Title for the queue source when the user is playing their liked tracks"
     },
@@ -1319,7 +1319,7 @@
     "@quickConnectAuthorizationMenuTitle": {
         "description": "Title for the quick connect authorization menu that allows the user to authorize a quick connect request from another device"
     },
-    "quickConnectAuthorizationMenuStateTitleProcessing": "Prøver at Autorisere Anmodning",
+    "quickConnectAuthorizationMenuStateTitleProcessing": "Autoriserer Anmodning",
     "@quickConnectAuthorizationMenuStateTitleProcessing": {
         "description": "Title for the quick connect authorization menu state info (above the input field) while a request is being processed"
     },
@@ -1397,7 +1397,7 @@
     "@previousTracksPersistenceModeSelectorTitle": {
         "description": "Title for setting that allows to override state of previous tracks header in queue list"
     },
-    "previousTracksPersistenceModeSelectorSubtitle": "Hvis du åbner kø panelet, de tidligere spor valg skal være...",
+    "previousTracksPersistenceModeSelectorSubtitle": "Hvis du åbner kø panelet, de tidligere spor valg skal være…",
     "@previousTracksPersistenceModeSelectorSubtitle": {
         "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
     },
@@ -1546,7 +1546,7 @@
     "@shuffleSomeToQueue": {
         "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
     },
-    "confirmPlayNext": "{type, select, track{Track} album{Album} artist{Artist} playlist{Playlist} genre{Genre} other{Item}} vil spille efter",
+    "confirmPlayNext": "{type, select, track{Track} album{Album} artist{Artist} playlist{Playlist} genre{Genre} disc{Disc} other{Item}} vil spille efter",
     "@confirmPlayNext": {
         "description": "A confirmation message that is shown after successfully adding a track to the front of the \"Next Up\" queue",
         "placeholders": {
@@ -1636,7 +1636,7 @@
     "@playbackSpeedIncreaseLabel": {
         "description": "Label for the button in the speed menu that increases the playback speed."
     },
-    "queuesScreen": "Gendan Spiller Nu",
+    "queuesScreen": "Forbi Køerne",
     "@queuesScreen": {
         "description": "Title for the screen where older now playing queues can be restored"
     },
@@ -1910,5 +1910,9 @@
     "serverSharingMenuDescription": "Deling af din server addresse kan være brugbart til at sætte nye klienter op på samme lokale netværk som din Jellyfin server,",
     "@serverSharingMenuDescription": {
         "description": "Description text shown in the server sharing menu, right below the controls"
+    },
+    "customizeHomeScreen": "Personliggør Hjemmeskærm",
+    "@customizeHomeScreen": {
+        "description": "Label for home screen customize button"
     }
 }

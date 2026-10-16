@@ -799,7 +799,7 @@
     "@loopModeAllButtonLabel": {
         "description": "Label for the button that toggles the loop mode between off, loop one, and loop all, while the queue is in loop all mode"
     },
-    "queuesScreen": "Επαναφορά προγούμενης αναπαραγωγής",
+    "queuesScreen": "Προηγούμενες ουρές αναπαραγωγής",
     "@queuesScreen": {
         "description": "Title for the screen where older now playing queues can be restored"
     },
@@ -1937,5 +1937,104 @@
     "showFavoriteButtonOnMediaNotificationSubtitle": "Καθορίζει αν η ειδοποίηση πολυμέσων έχει κουμπί αγαπημένων. Αυτό σας επιτρέπει να προσθέτετε/αφαιρείτε το κομμάτι που παίζει στα/από τα αγαπημένα σας χωρίς να ανοίγετε την εφαρμογή. Αποκρύπτεται όταν είστε εκτός σύνδεσης.",
     "@showFavoriteButtonOnMediaNotificationSubtitle": {
         "description": "Subtitle for the setting that controls if the media notification has a favorite button."
+    },
+    "inAlbumOrPlaylist": "Σειρά Άλμπουμ/Λίστας Αναπαραγωγής",
+    "@inAlbumOrPlaylist": {
+        "description": "Sorting order for tracks in an album or playlist (by disc, then index, then name"
+    },
+    "discUnknown": "Δίσκος Άγνωστος",
+    "@discUnknown": {
+        "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
+    },
+    "showFastScrollerSubtitle": "Εμφάνιση ή απόκρυψη της αλφαβητικής λίστας στα δεξιά των καρτελών μουσικής, η οποία επιτρέπει τη γρήγορη μετάβαση σε συγκεκριμένο γράμμα.",
+    "amoledThemeSubtitle": "Αντικαθιστά τον σκούρο συνδυασμό χρωμάτων με ένα καθαρά μαύρο θέμα.",
+    "volumeNormalizationIOSBaseGainEditorSubtitle": "Επιλέξτε αντιστάθμιση ενίσχυσης έντασης (σε dB)",
+    "@volumeNormalizationIOSBaseGainEditorSubtitle": {
+        "description": "Subtitle for the input that sets the replay gain base gain on iOS and other non-Android platforms"
+    },
+    "multichannelHandlingOption": "{option, select, stereoDownmixLossy{Μίξη μόνο των απωλεστικών σε στέρεο} stereoDownmixAll{Μίξη όλων σε στέρεο} fixedBitrate{Χωρίς μίξη} other{{option}} }",
+    "@multichannelHandlingOption": {
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        },
+        "description": "Options in multi-channel handling dropdown"
+    },
+    "oneLineMarqueeTextButton": "Αυτόματη κύλιση μεγάλων τίτλων",
+    "oneLineMarqueeTextButtonSubtitle": "Αυτόματη κύλιση των τίτλων κομματιών που είναι πολύ μεγάλοι για να εμφανιστούν σε δύο γραμμές",
+    "suppressPlayerPadding": "Κατάργηση περιθωρίων στα χειριστήρια αναπαραγωγής",
+    "enableAutoScroll": "Ενεργοποίηση αυτόματης κύλισης",
+    "@enableAutoScroll": {
+        "description": "Tooltip for button that can be used to re-enable auto scroll on the lyrics view after the user manually scrolled"
+    },
+    "quickActions": "Γρήγορες ενέργειες",
+    "@quickActions": {
+        "description": "Title for the short menu that can be shown when long-pressing on the menu button on the player screen. Currently only used for adding to and removing from playlists."
+    },
+    "cacheLibraryImagesSettings": "Προσωρινή αποθήκευση εικόνων τρέχουσας βιβλιοθήκης",
+    "showProgressOnNowPlayingBarSubtitle": "Καθορίζει αν ο ενσωματωμένος μίνι αναπαραγωγέας / η μπάρα αναπαραγωγής στο κάτω μέρος της οθόνης μουσικής λειτουργεί ως γραμμή προόδου.",
+    "@showProgressOnNowPlayingBarSubtitle": {
+        "description": "Subtitle for the setting that controls if the now playing bar / miniplayer at the bottom of the music screen functions as a progress bar"
+    },
+    "showSeekControlsOnMediaNotificationSubtitle": "Καθορίζει αν η ειδοποίηση πολυμέσων διαθέτει διαδραστική γραμμή προόδου. Σας επιτρέπει να αλλάζετε τη θέση αναπαραγωγής χωρίς να ανοίξετε την εφαρμογή.",
+    "@showSeekControlsOnMediaNotificationSubtitle": {
+        "description": "Subtitle for the setting that controls if the media notification has a seekable progress bar."
+    },
+    "lyricsEmptyStateLoading": "Φόρτωση στίχων…",
+    "@lyricsEmptyStateLoading": {
+        "description": "Message shown while lyrics are being loaded"
+    },
+    "lyricsEmptyStateFailed": "Δεν ήταν δυνατή η φόρτωση των στίχων",
+    "@lyricsEmptyStateFailed": {
+        "description": "Message shown when lyrics failed to load"
+    },
+    "lyricsEmptyStateNoLyrics": "Δεν υπάρχουν διαθέσιμοι στίχοι",
+    "@lyricsEmptyStateNoLyrics": {
+        "description": "Message shown when no lyrics are available for the current track"
+    },
+    "lyricsMissingLyricLinePlaceholder": "λείπει στίχος",
+    "@lyricsMissingLyricLinePlaceholder": {
+        "description": "Placeholder text for missing lyric lines in synchronized lyrics"
+    },
+    "alignmentOptionStart": "Αρχή",
+    "@alignmentOptionStart": {
+        "description": "Alignment option for things like the lyrics view. Start means left-aligned in LTR languages and right-aligned in RTL languages."
+    },
+    "alignmentOptionCenter": "Κέντρο",
+    "@alignmentOptionCenter": {
+        "description": "Alignment option for things like the lyrics view. Center means centered."
+    },
+    "alignmentOptionEnd": "Τέλος",
+    "@alignmentOptionEnd": {
+        "description": "Alignment option for things like the lyrics view. End means right-aligned in LTR languages and left-aligned in RTL languages."
+    },
+    "fontSizeOptionSmall": "Μικρό",
+    "@fontSizeOptionSmall": {
+        "description": "Font size option for things like the lyrics view. Small means a smaller font size."
+    },
+    "fontSizeOptionMedium": "Μεσαίο",
+    "@fontSizeOptionMedium": {
+        "description": "Font size option for things like the lyrics view. Medium means a medium font size."
+    },
+    "fontSizeOptionLarge": "Μεγάλο",
+    "@fontSizeOptionLarge": {
+        "description": "Font size option for things like the lyrics view. Large means a larger font size."
+    },
+    "lyricsAlignmentTitle": "Στοίχιση στίχων",
+    "@lyricsAlignmentTitle": {
+        "description": "Title for the setting that controls the alignment of lyrics in the lyrics view"
+    },
+    "lyricsAlignmentSubtitle": "Καθορίζει τη στοίχιση των στίχων στην προβολή στίχων.",
+    "@lyricsAlignmentSubtitle": {
+        "description": "Subtitle for the setting that controls the alignment of lyrics in the lyrics view"
+    },
+    "lyricsFontSizeTitle": "Μέγεθος γραμματοσειράς στίχων",
+    "@lyricsFontSizeTitle": {
+        "description": "Title for the setting that controls the font size of lyrics in the lyrics view"
+    },
+    "lyricsFontSizeSubtitle": "Καθορίζει το μέγεθος γραμματοσειράς των στίχων στην προβολή στίχων.",
+    "@lyricsFontSizeSubtitle": {
+        "description": "Subtitle for the setting that controls the font size of lyrics in the lyrics view"
     }
 }

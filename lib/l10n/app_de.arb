@@ -68,7 +68,7 @@
     "budget": "Budget",
     "criticRating": "Kritikerbewertung",
     "dateAdded": "Datum hinzugefügt",
-    "datePlayed": "Datum gespielt",
+    "datePlayed": "Datum zuletzt gespielt",
     "playCount": "Wiedergaben",
     "revenue": "Einspielergebnis",
     "downloadCount": "{count,plural, =1{{count} Download} other{{count} Downloads}}",
@@ -132,8 +132,8 @@
     "enterLowPriorityStateOnPause": "Niedrige-Priorität-Modus beim Pausieren aktivieren",
     "shuffleAllTrackCount": "Anzahl zufälliger Tracks",
     "shuffleAllTrackCountSubtitle": "Die Anzahl der zu ladenden Tracks, wenn der Zufällig-Button im Titel-Tab oder auf der Genreseite benutzt wird.",
-    "viewType": "Ansichtsart",
-    "viewTypeSubtitle": "Ansichtsart auf der Musikseite",
+    "viewType": "Musikseiten-Anzeigeart",
+    "viewTypeSubtitle": "Kontrolliert den Raster- oder Listenmodus für alle Musikseiten-Tabs mit Ausnahme des Home Screens.",
     "landscape": "Querformat",
     "showTextOnGridViewSubtitle": "Ob Text (Titel, Künstler etc.) auf dem Raster des Musikbildschirms angezeigt werden soll. Text auf dem Home-Screen wird immer angezeigt.",
     "useCoverAsBackground": "Zeige verschwommene Cover als Player-Hintergrund",
@@ -504,7 +504,7 @@
     "@playbackModeTranscoding": {
         "description": "Feature chip that is shown when tracks are being transcoded by the server"
     },
-    "kiloBitsPerSecondLabel": "{bitrate} kbps",
+    "kiloBitsPerSecondLabel": "{bitrate} KiB/s",
     "@kiloBitsPerSecondLabel": {
         "description": "Label for the bitrate of a track or for transcoding. The value will be the bitrate in kilobits per second.",
         "placeholders": {
@@ -997,7 +997,7 @@
             }
         }
     },
-    "confirmShuffleNext": "Wird zufällig als nächstes gespielt",
+    "confirmShuffleNext": "Wird zufällig als Nächstes gespielt",
     "@confirmShuffleNext": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the front of the \"Next Up\" queue"
     },
@@ -1005,7 +1005,7 @@
     "@confirmShuffleToNextUp": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the \"Next Up\" queue"
     },
-    "shareOfflineListens": "Exportiere Offline-Wiedergaben",
+    "shareOfflineListens": "Offline-Wiedergaben teilen",
     "@shareOfflineListens": {
         "description": "Button for exporting the JSON file containing any playback events that couldn't be submitted to the server, either because offline mode was enabled or the connection failed"
     },
@@ -1191,7 +1191,7 @@
     "@confirmShuffleToQueue": {
         "description": "A confirmation message that is shown after successfully shuffling a list (album, playlist, etc.) to the end of the regular queue"
     },
-    "playbackSpeedFeatureText": "x{speed}-fache Geschwindigkeit",
+    "playbackSpeedFeatureText": "{speed}-fache Geschwindigkeit",
     "@playbackSpeedFeatureText": {
         "description": "Label for the feature chip that is shown if the playback speed is different from x1, {speed} is the current playback speed.",
         "placeholders": {
@@ -1227,7 +1227,7 @@
     "bufferDisableSizeConstraintsTitle": "Puffergröße nicht limitieren",
     "bufferDisableSizeConstraintsSubtitle": "Deaktiviert die Begrenzung der Puffergröße. Der Puffer wird immer bis zur eingestellten Pufferdauer gefüllt, selbst bei sehr großen Dateien. Kann zu Abstürzen führen. Neustart erforderlich.",
     "bufferSizeTitle": "Puffergröße",
-    "bufferSizeSubtitle": "Die Größe des Puffers in MB. Neustart erforderlich",
+    "bufferSizeSubtitle": "Die Größe des Puffers in MiB. Neustart erforderlich",
     "playCountValue": "{playCount,plural,=1{{playCount} Wiedergabe} other{{playCount} Wiedergaben}}",
     "@playCountValue": {
         "placeholders": {
@@ -1326,7 +1326,7 @@
     "@shuffleAlbumsNext": {
         "description": "Label for action that shuffles all albums of an artist or genre and adds them at the start of Next Up"
     },
-    "startInstantMixForIndividualTracksSwitchSubtitle": "Startet beim Tippen auf einen Titel im \"Titel\"-Tab einen Sofort-Mix, anstatt nur einen einzelnen Titel abzuspielen.",
+    "startInstantMixForIndividualTracksSwitchSubtitle": "Startet beim Tippen auf einen Titel im \"Titel\"-Tab einen Sofort-Mix, anstatt die Titel in Reihenfolge abzuspielen.",
     "maxConcurrentDownloadsSubtitle": "Eine Erhöhung der gleichzeitigen Downloads kann ein erhöhtes Herunterladen im Hintergrund erlauben, kann aber bei sehr großen Downloads zu Fehlern oder zu exzessiven Verzögerungen führen.",
     "@maxConcurrentDownloadsSubtitle": {
         "description": "Description of setting controlling max concurrent downloads."
@@ -1692,7 +1692,7 @@
     "@outputMenuButtonTitle": {
         "description": "Button title for opening the output menu/panel"
     },
-    "libraryDownloads": "Bibliothek Downloads",
+    "libraryDownloads": "Bibliothek-Downloads",
     "@libraryDownloads": {
         "description": "Title for the library downloads section on the downloads screen."
     },
@@ -1709,7 +1709,7 @@
     "@networkSettingsTitle": {
         "description": "Title for the network settings screen"
     },
-    "missingSchemaError": "Url muss mit http(s):// beginnen",
+    "missingSchemaError": "URL muss mit http(s):// beginnen",
     "@missingSchemaError": {
         "description": "Snackbar message when the user changes their home/public address but it doesn't start with http"
     },
@@ -1718,7 +1718,7 @@
         "description": "Button to test the public and local url inside the network settings tab"
     },
     "autoSwitchItemCurationTypeTitle": "Element-Kuratierungstyp automatisch wechseln",
-    "showArtistsTracksSection": "Titel Section einblenden",
+    "showArtistsTracksSection": "Abschnitt der Titel einblenden",
     "stopAndClearQueue": "Playback stoppen und Warteschlange leeren",
     "@stopAndClearQueue": {
         "description": "Label for a button that stops playback and removes all tracks from the queue."
@@ -1744,11 +1744,11 @@
     "@genreItemSectionFilterChipOrderSubtitle": {
         "description": "Description of the setting that controls the order of item sections filter chips."
     },
-    "artistItemSectionFilterChipOrderTitle": "Titel Section Filter Reihenfolge",
+    "artistItemSectionFilterChipOrderTitle": "Filterreihenfolge für Abschnitt der Titel",
     "@artistItemSectionFilterChipOrderTitle": {
         "description": "Label for the setting that controls the order of the tracks sections filter chips."
     },
-    "artistItemSectionFilterChipOrderSubtitle": "Legt die Reihenfolge der für die Titel Section zur Verfügung stehenden Filter fest.",
+    "artistItemSectionFilterChipOrderSubtitle": "Legt die Reihenfolge der für den Abschnitt der Titel zur Verfügung stehenden Filter fest.",
     "@artistItemSectionFilterChipOrderSubtitle": {
         "description": "Description of the setting that controls the order of the tracks sections filter chips."
     },
@@ -1797,7 +1797,7 @@
     "@startupErrorWorkaround": {
         "description": "The subtitle for how to manually recover from a startup error"
     },
-    "showArtistsTracksSectionSubtitle": "Ob eine Section mit bis zu 5 Titel angezeigt werden soll. Wenn aktiviert, kannst du zwischen Oft gespielt, Favoriten, Zufällig, Neu veröffentlicht, Kürzlich hinzugefügt und Kürzlich gehört wechseln.",
+    "showArtistsTracksSectionSubtitle": "Ob ein Abschnitt mit bis zu fünf Titeln angezeigt werden soll. Wenn aktiviert, kannst du zwischen \"Oft gespielt\", \"Favoriten\", \"Zufällig\", \"Neu veröffentlicht\", \"Kürzlich hinzugefügt\" und \"Kürzlich gehört\" wechseln.",
     "genreFilterArtistScreensSubtitle": "Wenn aktiviert, werden in den Künstlerseiten (die durch ein Genre geöffnet wurden) nur die Titel und Alben angezeigt, die das entsprechende Genre aufweisen. (Der Genre Filter kann jederzeit manuell entfernt werden, um alle Titel und Alben anzuzeigen.)",
     "@genreFilterArtistScreensSubtitle": {
         "description": "Description of the setting that controls if a genreFilter should get applied to ArtistScreens when accessing the ArtistScreens through a Genre."
@@ -2100,7 +2100,7 @@
     "@autoOfflineOptionUnreachable": {
         "description": "This is shown when the autoOffline feature is set to Unreachable, this means offline mode will be automatically enabled when - after a network change - the server cant be pinged"
     },
-    "syncPlaybackSpeedAndPitchLabel": "Wiedergabegeschwindigkeit und Tonhöhe synchronisieren",
+    "syncPlaybackSpeedAndPitchLabel": "Tempo & Tonhöhe synchronisieren",
     "@syncPlaybackSpeedAndPitchLabel": {
         "description": "Label for the checkbox that toggled is the pitch is adjusted along with the playback speed, or if the pitch is kept constant. Shown in the speed submenu on the track menu"
     },
@@ -2179,7 +2179,7 @@
     "@quickConnectAuthorizationMenuStateSubtitleIdle": {
         "description": "Subtitle for the quick connect authorization menu state info (above the input field) while the code hasn't been submitted yet"
     },
-    "quickConnectAuthorizationMenuStateTitleProcessing": "Versuche, die Anfrage zu autorisieren",
+    "quickConnectAuthorizationMenuStateTitleProcessing": "Autorisiere Anfrage",
     "@quickConnectAuthorizationMenuStateTitleProcessing": {
         "description": "Title for the quick connect authorization menu state info (above the input field) while a request is being processed"
     },
@@ -2311,7 +2311,7 @@
         "description": "Label shown on drag handles of track list  tiles in the queue list"
     },
     "shuffleSome": "Zufällig",
-    "playbackActionPageNewQueue": "Neue Warteschleife",
+    "playbackActionPageNewQueue": "Neue Warteschlange",
     "@playbackActionPageNewQueue": {
         "description": "Label for the playback action page that contains all actions related to starting a new queue"
     },
@@ -2447,17 +2447,17 @@
     "@discardChangesConfirmButton": {
         "description": "Positive action button for the dialog shown when the user tries to leave the playlist edit screen with unsaved changes"
     },
-    "accentColor": "Akzent Farbe",
+    "accentColor": "Akzentfarbe",
     "@accentColor": {
         "description": "Title of the accent color setting"
     },
-    "accentColorTitle": "Wähle eine Akzent Farbe",
+    "accentColorTitle": "Wähle eine Akzentfarbe",
     "@accentColorTitle": {
         "description": "Title for the accent color picker sheet"
     },
     "defaultWord": "Standard",
     "useDefaultButton": "Zurücksetzen auf Standard-Akzentfarbe",
-    "colorCode": "Farb Code (Hex)",
+    "colorCode": "Farbcode (Hex)",
     "@colorCode": {
         "description": "Label for a text field where the user can manually enter a color in hexadecimal format"
     },
@@ -2470,7 +2470,7 @@
     "@systemAccentColor": {
         "description": "Title of the System Accent Color setting."
     },
-    "systemAccentColorHasPriorityInfo": "Benutzerdefinierte Akzenfarben gesperrt, da Systemfarben benutzt werden",
+    "systemAccentColorHasPriorityInfo": "Benutzerdefinierte Akzentfarben gesperrt, da Systemfarben benutzt werden",
     "@systemAccentColorHasPriorityInfo": {
         "description": "Text under the AccentColorTitle which is only visible when the system color is enabled since the system color will be prioritized over custom accent color"
     },
@@ -2478,12 +2478,12 @@
     "@amoledTheme": {
         "description": "Schalter, welches dunkelgrau mit schwarz beim dunklen Farbschema ersetzt"
     },
-    "amoledThemeSubtitle": "Ersetzt das dunkle Farbschema mit einem puren schwarzen Thema.",
+    "amoledThemeSubtitle": "Ersetzt das dunkle Farbschema mit einem reinen schwarzen Thema.",
     "useMonochromeIcon": "Monochromes Logo benutzen",
     "@useMonochromeIcon": {
         "description": "Toggles the Finamp icon between classic and it being monochromic. This does not change the outside-app-icon"
     },
-    "useMonochromeIconSubtitle": "Dies betrifft nur das Logo in der App selbst, nicht das im Launcher.",
+    "useMonochromeIconSubtitle": "Dies betrifft nur das Logo in der App selbst, nicht das Logo im Launcher.",
     "@useMonochromeIconSubtitle": {
         "description": "Subtitle for the toggle that switches the Finamp icon between classic and it being monochromic."
     },
@@ -2516,11 +2516,11 @@
     "@movePlayNext": {
         "description": "Used for moving a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
-    "moveAddToNextUp": "Zu \"Als Nächstes\" bewegen",
+    "moveAddToNextUp": "Zu \"Als Nächstes\" verschieben",
     "@moveAddToNextUp": {
         "description": "Used for moving a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
-    "moveAddToQueue": "Ans Ende bewegen",
+    "moveAddToQueue": "Ans Ende verschieben",
     "@moveAddToQueue": {
         "description": "Used for moving a track to the end of the queue, to play after all prior tracks from the queue have played"
     },
@@ -2722,7 +2722,7 @@
     "@explicit": {
         "description": "Label for content that is considered explicit, usually marked by an 'E' in music apps"
     },
-    "lyricsEmptyStateLoading": "Songtexte werden geladen...",
+    "lyricsEmptyStateLoading": "Songtexte werden geladen…",
     "@lyricsEmptyStateLoading": {
         "description": "Message shown while lyrics are being loaded"
     },
@@ -2795,7 +2795,7 @@
     "@previousTracksPersistenceModeSelectorTitle": {
         "description": "Title for setting that allows to override state of previous tracks header in queue list"
     },
-    "previousTracksPersistenceModeSelectorSubtitle": "Wenn du die Warteschlange öffnest, sollte der \"Vorherige Tracks\"-Abschnitt ... sein.",
+    "previousTracksPersistenceModeSelectorSubtitle": "Wenn du die Warteschlange öffnest, sollte der \"Vorherige Tracks\"-Abschnitt … sein.",
     "@previousTracksPersistenceModeSelectorSubtitle": {
         "description": "Subtitle for setting that allows to override state of previous tracks header in queue list"
     },
@@ -2944,7 +2944,7 @@
     "@sortFilter": {
         "description": "title for Sort & Filter menu"
     },
-    "editSection": "Section bearbeiten",
+    "editSection": "Abschnitt bearbeiten",
     "@editSection": {
         "description": "Label for edit home section menu entry"
     },
@@ -2986,7 +2986,7 @@
     "@sectionMenuSubtitle": {
         "description": "Subtitle for home screen sections edit menu"
     },
-    "sectionType": "Section Typ",
+    "sectionType": "Abschnittsart",
     "@sectionType": {
         "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
     },
@@ -3006,11 +3006,11 @@
     "@currentLibrary": {
         "description": "Title for dynamic current library option in home screen section editor library selector dropdown"
     },
-    "loading": "Lade...",
+    "loading": "Lade…",
     "@loading": {
         "description": "Message when items or libraries are loading in home screen section editor"
     },
-    "sectionTitle": "Section Titel",
+    "sectionTitle": "Abschnittsname",
     "@sectionTitle": {
         "description": "Title for custom section title editor in home screen section editor"
     },
@@ -3018,11 +3018,11 @@
     "@egFavoriteTracks": {
         "description": "Placeholder text in custom section title editor in home screen section editor"
     },
-    "customSectionTitleRequired": "Bitte gib der manuellen Section einen Titel",
+    "customSectionTitleRequired": "Bitte gib dem benutzerdefinierten Abschnitt einen Namen",
     "@customSectionTitleRequired": {
         "description": "Message when a custom section title is needed in home screen section editor"
     },
-    "editHomeScreenSection": "Home-Screen Section bearbeiten",
+    "editHomeScreenSection": "Abschnitt \"Home-Screen\" bearbeiten",
     "@editHomeScreenSection": {
         "description": "Title for home screen section editor menu"
     },
@@ -3265,11 +3265,11 @@
     "@addNewAction": {
         "description": "Button to add a new quick action"
     },
-    "removeSection": "Section entfernen",
+    "removeSection": "Abschnitt entfernen",
     "@removeSection": {
         "description": "Button to remove a home screen section"
     },
-    "addNewSection": "Neue Section hinzufügen",
+    "addNewSection": "Neuen Abschnitt hinzufügen",
     "@addNewSection": {
         "description": "Button to add a new home screen section"
     },
@@ -3387,7 +3387,7 @@
     "@homeRecentAlbumsDownloadWarning": {
         "description": "Warning presented when pressing the download button on certain home screen sections.  This is shown because the behavior of the 5 latest albums download is not a 100% match to the home sections."
     },
-    "alreadyRandomized": "Diese Section wird bereits in zufälliger Reihenfolge präsentiert",
+    "alreadyRandomized": "Dieser Abschnitt wird bereits in zufälliger Reihenfolge präsentiert",
     "@alreadyRandomized": {
         "description": "Tooltip for shuffle button on home screen sections using a random sort order, where it is disabled due to being unneeded"
     },
@@ -3585,7 +3585,7 @@
     "@inAlbumOrPlaylist": {
         "description": "Sorting order for tracks in an album or playlist (by disc, then index, then name"
     },
-    "discUnknown": "Disc unbekannt",
+    "discUnknown": "CD unbekannt",
     "@discUnknown": {
         "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
     },
@@ -3619,5 +3619,33 @@
     "perTabAlbumGrid": "Nur Alben im Raster",
     "quickSettingsScreen": "Schnelleinstellungen",
     "quickSettingsTranscodeLink": "Alle Transkodierungseinstellungen",
-    "quickSettingsAllSettingsLink": "Alle Einstellungen"
+    "quickSettingsAllSettingsLink": "Alle Einstellungen",
+    "perTabGridMode": "Je Tab auswählen",
+    "showFastScrollerSubtitle": "Zeige oder verstecke die Alphabet-Liste rechts von Musiktabs. Das erlaubt das direkte Springen zu Buchstaben.",
+    "downloadDialogBitrateLabel": "Bitrate:",
+    "@downloadDialogBitrateLabel": {
+        "description": "Label for the original vs. transcoded bitrate line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogPath": "Pfad: {path}",
+    "@downloadDialogPath": {
+        "description": "Shows the file system path of the selected download location in the download dialog.",
+        "placeholders": {
+            "path": {
+                "type": "String",
+                "example": "/storage/emulated/0/Android/data/com.unicornsonlsd.finamp/files"
+            }
+        }
+    },
+    "downloadDialogTranscodeFilesTitle": "Dateien transkodieren?",
+    "@downloadDialogTranscodeFilesTitle": {
+        "description": "Title of the checkbox in the download dialog that toggles whether the downloaded tracks are transcoded."
+    },
+    "downloadDialogFileSizeLabel": "Dateigröße:",
+    "@downloadDialogFileSizeLabel": {
+        "description": "Label for the original vs. transcoded file size line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogFormatLabel": "Format:",
+    "@downloadDialogFormatLabel": {
+        "description": "Label for the original vs. transcoded audio format line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    }
 }
