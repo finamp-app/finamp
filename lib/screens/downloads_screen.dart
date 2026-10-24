@@ -10,7 +10,6 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-
 import '../components/Buttons/simple_button.dart';
 import '../extensions/localizations.dart';
 import 'downloads_settings_screen.dart';
@@ -23,6 +22,7 @@ class DownloadsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.downloads),
