@@ -240,6 +240,9 @@ class FinampSettingsHelper {
     FinampSetters.setPreferNextUpPrepending(DefaultSettings.preferNextUpPrepending);
     FinampSetters.setRememberLastUsedPlaybackActionRowPage(DefaultSettings.rememberLastUsedPlaybackActionRowPage);
     FinampSetters.setPreviousTracksPersistenceMode(DefaultSettings.previousTracksPersistenceMode);
+    FinampSetters.setCloseToTray(DefaultSettings.closeToTray);
+    FinampSetters.setMinimizeToTray(DefaultSettings.minimizeToTray);
+    FinampSetters.setStartMinimizedToTray(DefaultSettings.startMinimizedToTray);
 
     Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", finampSettingsTemp);
   }

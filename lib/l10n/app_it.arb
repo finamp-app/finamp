@@ -3008,5 +3008,20 @@
     "sectionType": "Tipo di sezione",
     "@sectionType": {
         "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
-    }
+    },
+    "closeToTrayTitle": "Chiudi nell'area di notifica",
+    "closeToTraySubtitle": "Lascia Finamp in esecuzione nell'area di notifica quando chiudi la finestra. Usa \"Esci\" dal menu dell'icona per uscire.",
+    "minimizeToTrayTitle": "Minimizza nell'area di notifica",
+    "minimizeToTraySubtitle": "Nascondi la finestra nell'area di notifica quando viene minimizzata.",
+    "minimizeToTrayWaylandNote": "Nascondi la finestra nell'area di notifica quando viene minimizzata. Non supportato su Wayland, che non segnala alle app quando vengono minimizzate: usa \"Chiudi nell'area di notifica\".",
+    "startMinimizedToTrayTitle": "Avvia nell'area di notifica",
+    "startMinimizedToTraySubtitle": "Avvia Finamp con la finestra nascosta nell'area di notifica. Puoi anche usare l'opzione --minimized da riga di comando.",
+    "trayShowWindow": "Mostra Finamp",
+    "trayHideWindow": "Nascondi Finamp",
+    "trayPlay": "Riproduci",
+    "trayPause": "Pausa",
+    "trayPrevious": "Precedente",
+    "trayNext": "Successivo",
+    "trayQuit": "Esci da Finamp",
+    "trayNothingPlaying": "Nessuna riproduzione"
 }
