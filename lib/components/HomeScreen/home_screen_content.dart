@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
@@ -46,6 +47,20 @@ class HomeScreenContent extends ConsumerStatefulWidget {
 
 class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
     with AutomaticKeepAliveClientMixin<HomeScreenContent> {
+  StreamSubscription<void>? _musicScreenRefreshSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _musicScreenRefreshSubscription = musicScreenRefreshStream.stream.listen((_) => _refresh());
+  }
+
+  @override
+  void dispose() {
+    _musicScreenRefreshSubscription?.cancel();
+    super.dispose();
+  }
+
   // tabs on the music screen should be kept alive
   @override
   bool get wantKeepAlive => true;

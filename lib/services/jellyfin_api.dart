@@ -587,6 +587,13 @@ abstract class JellyfinApi extends ChopperService {
   Future<Response<dynamic>> pingServer();
 
   static JellyfinApi create({required bool inForeground, required bool verboseLogging}) {
+    return _$JellyfinApi(createClient(inForeground: inForeground, verboseLogging: verboseLogging));
+  }
+
+  /// Creates the transport used by an existing generated service. Keeping the
+  /// service instance lets callers replace stale pooled sockets after a
+  /// network hand-off without changing the API surface they are using.
+  static ChopperClient createClient({required bool inForeground, required bool verboseLogging}) {
     // Body logging can be very excessive, so we do not perform it by default.  If in debug mode or configured for verbose
     // logging, body log foreground requests but keep disabled for verbose getItems calls in background.  If using verbose
     // logs in debug mode, body log every request.
@@ -594,7 +601,7 @@ abstract class JellyfinApi extends ChopperService {
         ? Level.body
         : Level.headers;
 
-    final client = ChopperClient(
+    return ChopperClient(
       client: http.IOClient(
         HttpClient()
           ..connectionTimeout = const Duration(
@@ -614,9 +621,6 @@ abstract class JellyfinApi extends ChopperService {
         HttpAggregateLoggingInterceptor(level: chopperHttpLogLevel),
       ],
     );
-
-    // The generated class with the ChopperClient passed in
-    return _$JellyfinApi(client);
   }
 }
 
