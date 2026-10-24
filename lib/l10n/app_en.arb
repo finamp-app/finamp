@@ -1748,6 +1748,14 @@
     "prioritizePlayerCoverSubtitle": "Prioritize showing a larger album cover on player screen. Non-critical controls will be hidden more aggressively at small screen sizes.",
     "suppressPlayerPadding": "Suppress player controls padding",
     "suppressPlayerPaddingSubtitle": "Fully minimizes padding between player screen controls when album cover is not at full size.",
+    "redownloadItem": "Redownload",
+    "@redownloadItem": {
+        "description": "Menu entry to replace the downloaded files and metadata of an already downloaded item with fresh copies from the server, without removing the download."
+    },
+    "redownloadQueued": "Redownload started",
+    "@redownloadQueued": {
+        "description": "Snackbar confirmation shown after the user starts redownloading an already downloaded item."
+    },
     "lockDownload": "Always Keep on Device",
     "@lockDownload": {
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
