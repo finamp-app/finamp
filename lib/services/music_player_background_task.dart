@@ -418,6 +418,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
         ),
       ),
       audioPipeline: _audioPipeline,
+      useProxyForRequestHeaders: false,
     );
 
     try {
@@ -1372,8 +1373,17 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       if (queueItem.item.extras!["isOffline"] as bool) {
         return Future.error("Offline mode enabled but downloaded track not found.");
       } else {
-        final trackUri = await _trackUri(queueItem.item);
-        return AudioSource.uri(trackUri, tag: queueItem);
+        final headers = GetIt.instance<FinampUserHelper>().authorizationHeaders;
+        // header support seems to be a bit dicey on iOS, so we'll avoid it and use ApiKey instead whenever possible
+        if (headers.length > 1) {
+          final trackUri = await _trackUri(queueItem.item, addToken: false);
+          return AudioSource.uri(trackUri, tag: queueItem, headers: headers);
+        } else {
+          // If we only have one header, it is Authorization, so we can just add ApiKey to the Uri instead.
+          final trackUri = await _trackUri(queueItem.item, addToken: true);
+          return AudioSource.uri(trackUri, tag: queueItem);
+        }
+
         // if (queueItem.item.extras!["shouldTranscode"] == true) {
         //   return HlsAudioSource(trackUri, tag: queueItem);
         // } else {
@@ -1392,7 +1402,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
     }
   }
 
-  Future<Uri> _trackUri(MediaItem mediaItem) async {
+  Future<Uri> _trackUri(MediaItem mediaItem, {required bool addToken}) async {
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
     // When creating the MediaItem (usually in AudioServiceHelper), we specify
     // whether or not to transcode. We used to pull from FinampSettings here,
@@ -1408,7 +1418,9 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
     // We include the user token as a query parameter because just_audio used to
     // have issues with headers in HLS, and this solution still works fine
-    queryParameters["ApiKey"] = finampUserHelper.currentUser!.accessToken;
+    if (addToken) {
+      queryParameters["ApiKey"] = finampUserHelper.currentUser!.accessToken;
+    }
     // // indicate which play session this stream belongs to, this will be referenced when reporting playback progress
     // queryParameters["PlaySessionId"] = _order.id; //!!! this currently breaks transcoding for some reason
 
