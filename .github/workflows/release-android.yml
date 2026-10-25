@@ -30,6 +30,7 @@ jobs:
         run: python3 -m unittest discover -s .github/scripts -p 'test_android_signing.py' -v
 
   release-android:
+    name: Android release (${{ matrix.format }})
     needs: check-signing
     # No release credentials are available to PRs, branch dispatches, or forks.
     if: >-
@@ -38,9 +39,25 @@ jobs:
       startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - format: apk
+            build-target: apk
+            keystore-secret: ANDROID_APK_KEYSTORE_BASE64
+            store-password-secret: ANDROID_APK_STORE_PASSWORD
+            key-alias-secret: ANDROID_APK_KEY_ALIAS
+            key-password-secret: ANDROID_APK_KEY_PASSWORD
+          - format: aab
+            build-target: appbundle
+            keystore-secret: ANDROID_PLAY_UPLOAD_KEYSTORE_BASE64
+            store-password-secret: ANDROID_PLAY_UPLOAD_STORE_PASSWORD
+            key-alias-secret: ANDROID_PLAY_UPLOAD_KEY_ALIAS
+            key-password-secret: ANDROID_PLAY_UPLOAD_KEY_PASSWORD
     environment: android-release
     concurrency:
-      group: android-release-${{ github.ref }}
+      group: android-release-${{ github.ref }}-${{ matrix.format }}
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v6
@@ -66,43 +83,54 @@ jobs:
       - run: flutter pub get
       - name: Configure release signing
         env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets[matrix.keystore-secret] }}
+          ANDROID_STORE_PASSWORD: ${{ secrets[matrix.store-password-secret] }}
+          ANDROID_KEY_ALIAS: ${{ secrets[matrix.key-alias-secret] }}
+          ANDROID_KEY_PASSWORD: ${{ secrets[matrix.key-password-secret] }}
         run: python3 .github/scripts/android_signing.py
-      - name: Build release APK
+      - name: Build release artifact
+        env:
+          BUILD_TARGET: ${{ matrix.build-target }}
         # --no-pub can leave integration_test in the generated release registrant:
         # https://github.com/flutter/flutter/issues/169336
-        run: flutter build apk --release
-      - name: Build release app bundle
-        # Run pub get again for the localization workaround used by build.yml.
         run: |
           flutter pub get
-          flutter build appbundle --release
-      - name: Verify release signatures
-        env:
-          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          flutter build "$BUILD_TARGET" --release
+      - name: Verify release APK signature
+        if: matrix.format == 'apk'
         run: |
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs build/app/outputs/flutter-apk/app-release.apk
+      - name: Verify Play upload signature
+        if: matrix.format == 'aab'
+        env:
+          ANDROID_STORE_PASSWORD: ${{ secrets[matrix.store-password-secret] }}
+        run: |
           jarsigner -verify -strict -keystore "$RUNNER_TEMP/finamp-release.jks" -storepass:env ANDROID_STORE_PASSWORD build/app/outputs/bundle/release/app-release.aab
       - name: Package artifacts
         env:
           RELEASE_TAG: ${{ github.ref_name }}
+          ARTIFACT_FORMAT: ${{ matrix.format }}
+          ANDROID_STORE_PASSWORD: ${{ secrets[matrix.store-password-secret] }}
+          ANDROID_KEY_ALIAS: ${{ secrets[matrix.key-alias-secret] }}
         run: |
           mkdir -p android-release
-          cp build/app/outputs/flutter-apk/app-release.apk "android-release/Finamp-${RELEASE_TAG}-universal.apk"
-          cp build/app/outputs/bundle/release/app-release.aab "android-release/Finamp-${RELEASE_TAG}.aab"
-          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging build/app/outputs/flutter-apk/app-release.apk > android-release/apk-manifest.txt
-          grep -q "^package: name='com.unicornsonlsd.finamp' " android-release/apk-manifest.txt
+          if [ "$ARTIFACT_FORMAT" = apk ]; then
+            cp build/app/outputs/flutter-apk/app-release.apk "android-release/Finamp-${RELEASE_TAG}-universal.apk"
+            "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging build/app/outputs/flutter-apk/app-release.apk > android-release/apk-manifest.txt
+            grep -q "^package: name='com.unicornsonlsd.finamp' " android-release/apk-manifest.txt
+          else
+            cp build/app/outputs/bundle/release/app-release.aab "android-release/Finamp-${RELEASE_TAG}.aab"
+          fi
+          # Public certificate only; never upload the keystore or key.properties.
+          keytool -exportcert -rfc -keystore "$RUNNER_TEMP/finamp-release.jks" -storepass:env ANDROID_STORE_PASSWORD -alias "$ANDROID_KEY_ALIAS" > android-release/signing-certificate.pem
           flutter --version --machine > android-release/flutter-version.json
           git rev-parse HEAD > android-release/commit.txt
           cp pubspec.lock android-release/pubspec.lock
           cd android-release
-          sha256sum -- *.apk *.aab > SHA256SUMS
+          sha256sum -- *."$ARTIFACT_FORMAT" signing-certificate.pem > SHA256SUMS
       - uses: actions/upload-artifact@v6
         with:
-          name: finamp-android-release-${{ github.ref_name }}
+          name: finamp-android-release-${{ github.ref_name }}-${{ matrix.format }}
           path: android-release/
           if-no-files-found: error
           compression-level: 0

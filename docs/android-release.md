@@ -1,8 +1,9 @@
 # Android release artifacts
 
 The `Android release artifacts` workflow builds a signed universal APK and an
-AAB from a release tag. It stores them, with SHA-256 checksums, as a GitHub Actions
-artifact. It does **not** publish a GitHub release or change a Google Play track.
+AAB from a release tag. It stores them, with SHA-256 checksums, as separate
+GitHub Actions artifacts, one per channel. It does **not** publish a GitHub release
+or change a Google Play track.
 This is the artifact-building part of the Android release automation discussed
 in [#1769](https://github.com/finamp-app/finamp/pull/1769).
 
@@ -13,20 +14,29 @@ Before running this workflow with production credentials:
 1. Create the `android-release` GitHub environment. Restrict it to release tags
    and configure the required reviewers appropriate for the project. The job
    also checks that it is running on a tag in `finamp-app/finamp`.
-2. Add these **environment secrets**, not repository-wide secrets:
+2. Add the following **environment secrets**, not repository-wide secrets.
+   Each signing step receives only its channel's four values; the jobs use
+   separate runners and never switch signing keys inside a shared Gradle build.
 
-   | Secret | Value |
-   | --- | --- |
-   | `ANDROID_KEYSTORE_BASE64` | Base64-encoded existing release keystore; line wrapping is supported |
-   | `ANDROID_STORE_PASSWORD` | Keystore password |
-   | `ANDROID_KEY_ALIAS` | Existing release key alias |
-   | `ANDROID_KEY_PASSWORD` | Private key password |
+   | GitHub APK secret | Play upload AAB secret | Value |
+   | --- | --- | --- |
+   | `ANDROID_APK_KEYSTORE_BASE64` | `ANDROID_PLAY_UPLOAD_KEYSTORE_BASE64` | Base64-encoded existing channel keystore; wrapped base64 is supported |
+   | `ANDROID_APK_STORE_PASSWORD` | `ANDROID_PLAY_UPLOAD_STORE_PASSWORD` | Keystore password |
+   | `ANDROID_APK_KEY_ALIAS` | `ANDROID_PLAY_UPLOAD_KEY_ALIAS` | Existing channel key alias |
+   | `ANDROID_APK_KEY_PASSWORD` | `ANDROID_PLAY_UPLOAD_KEY_PASSWORD` | Private key password |
 
-3. Confirm that this key is both the existing GitHub APK signing key and the
-   upload key registered in Play Console. Play App Signing may use a different
-   key to sign the APKs it delivers to users; that key is not needed here.
-   If the GitHub APK and Play upload keys differ, do not use this single-key
-   workflow for both channels; separate signing configurations are needed.
+   These replace the earlier single `ANDROID_*` secret set. There is no fallback
+   to a different channel's key when a value is missing. If the APK signing key
+   and Play upload key are confirmed to be the same, maintainers can explicitly
+   populate both sets with the same values.
+3. Confirm the GitHub APK certificate matches an existing official GitHub APK,
+   and confirm the AAB upload certificate matches the **upload key certificate**
+   registered in Play Console. Play App Signing may use a third, different key
+   for the APKs it delivers to users; that private key is not needed here.
+   The [Android signing guide](https://developer.android.com/studio/publish/app-signing)
+   requires the AAB to be upload-key-signed before it is sent to Play. An inability
+   to update a GitHub installation with a Play installation does not establish
+   whether the GitHub APK key and the Play **upload** key are the same.
 4. Check `version:` in `pubspec.yaml` before tagging. The AAB uses its build
    number as `versionCode`; it must be greater than previous Play uploads.
    The workflow uses the same stable Flutter channel as the existing builds.
@@ -52,15 +62,19 @@ The release commands deliberately omit `--no-pub`: Flutter needs to regenerate
 the release plugin registrant, excluding `integration_test`. See
 [flutter/flutter#169336](https://github.com/flutter/flutter/issues/169336).
 
-Download the `finamp-android-release-<tag>` artifact from the successful run.
-Verify `SHA256SUMS` and review the APK certificate printed in the build log.
+Download both `finamp-android-release-<tag>-apk` and
+`finamp-android-release-<tag>-aab` artifacts from the same successful run.
+Verify `SHA256SUMS` and compare each included public `signing-certificate.pem`
+against its channel's existing certificate. Do not combine artifacts from
+unrelated source commits. Review the APK certificate printed in the build log.
 The artifact also records the source commit, Flutter version, resolved dependency
-lockfile, and APK manifest summary (including the package ID, version, target SDK,
-and supported ABIs).
+lockfile, and public signing certificate. The APK artifact additionally includes
+a manifest summary (package ID, version, target SDK, and supported ABIs).
 Upload the AAB to the intended Play testing track, review Play Console's
 validation and device availability, then test installation and upgrade through
-that track before promoting a release. Attach the APK and checksums to the
-corresponding GitHub release after review.
+that track before promoting a release. Review/test the GitHub APK upgrade
+separately; cross-channel upgrades are not a promise of this workflow. Attach
+the APK and checksums to the corresponding GitHub release after review.
 
 An artifact build does not demonstrate that an app is installable from Google
 Play. In particular, the availability reports in
@@ -74,6 +88,10 @@ With Python 3 and Java 17 on `PATH`, run:
 ```sh
 python3 -m unittest discover -s .github/scripts -p 'test_android_signing.py' -v
 ```
+
+The tests also generate two disposable keys, create isolated channel signing
+configurations, sign JAR fixtures using each key, and verify that cross-channel
+verification is rejected. No production credentials are required.
 
 The tests round-trip passwords containing whitespace, separators, backslashes,
 and Unicode through Java's actual `Properties` parser. They also check missing
