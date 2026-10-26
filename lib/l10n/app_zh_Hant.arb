@@ -3692,5 +3692,39 @@
     "@releaseDateFormatNumerical": {
         "description": "Date format option for the release date of an album, showing the date in a short numerical format. Changes based on locale such as DD/MM/YYYY for en_gb and MM/DD/YYYY for en_us."
     },
-    "loginFlowLocalNetworkServersNoResults": "尚未偵測到伺服器，請嘗試手動輸入伺服器位址。"
+    "loginFlowLocalNetworkServersNoResults": "尚未偵測到伺服器，請嘗試手動輸入伺服器位址。",
+    "downloadDialogDownloadLocationLabel": "下載位置",
+    "@downloadDialogDownloadLocationLabel": {
+        "description": "Label for the dropdown in the download dialog that selects where the download is stored. Only shown when multiple download locations are available."
+    },
+    "downloadDialogPath": "路徑：{path}",
+    "@downloadDialogPath": {
+        "description": "Shows the file system path of the selected download location in the download dialog.",
+        "placeholders": {
+            "path": {
+                "type": "String",
+                "example": "/storage/emulated/0/Android/data/com.unicornsonlsd.finamp/files"
+            }
+        }
+    },
+    "downloadDialogTranscodeFilesTitle": "是否轉檔？",
+    "@downloadDialogTranscodeFilesTitle": {
+        "description": "Title of the checkbox in the download dialog that toggles whether the downloaded tracks are transcoded."
+    },
+    "downloadDialogFileSizeLabel": "檔案大小：",
+    "@downloadDialogFileSizeLabel": {
+        "description": "Label for the original vs. transcoded file size line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogFormatLabel": "格式：",
+    "@downloadDialogFormatLabel": {
+        "description": "Label for the original vs. transcoded audio format line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogBitrateLabel": "位元率：",
+    "@downloadDialogBitrateLabel": {
+        "description": "Label for the original vs. transcoded bitrate line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogTranscodedIntoSemanticLabel": "轉碼為",
+    "@downloadDialogTranscodedIntoSemanticLabel": {
+        "description": "Screen reader label for the arrow icon in the download dialog's transcode summary. It sits between the original value and the transcoded value, e.g. 'FLAC, transcoded into, OPUS'."
+    }
 }
