@@ -3699,5 +3699,13 @@
             }
         },
         "description": "Descriptions of different pieces of advanced track info."
+    },
+    "verboseLogging": "תיעוד מפורט",
+    "@verboseLogging": {
+        "description": "Title for the toggle that enables detailed logging on the logs screen"
+    },
+    "verboseLoggingSubtitle": "שמור תיאורים מפורטים עבור דיווחי תקלות. השאר את זה כבוי בשביל ביצועי השמעה טובים יותר.",
+    "@verboseLoggingSubtitle": {
+        "description": "Subtitle explaining the verbose logging toggle"
     }
 }
