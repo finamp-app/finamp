@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -20,7 +20,27 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		D7E03F9A2ED4FFB100EEBE11 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E03F982ED4FFAE00EEBE11 /* SceneDelegate.swift */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
+		E12D4A2E88D606EE55E0DC32 /* FinampWatch Complication.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 578A8693777956157EC48FC1 /* FinampWatch Complication.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		031C3B3FE8DAFF6ABC19845A /* FinampWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 01EFA190308E05480006CA30 /* FinampWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A1B2C3D4E5F6A7B8C9D0E1F3 /* WatchBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* WatchBridge.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C3DAFF6C8F03B9D6C03C4F6C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 01EFA18F308E05480006CA30;
+			remoteInfo = "FinampWatch Watch App";
+		};
+		7C66041FF88A763D2427377D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 57490DAAF4DC199F28FA2A79;
+			remoteInfo = "FinampWatch Complication";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
@@ -31,6 +51,28 @@
 			files = (
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2AB094EBFBCBCA0CCE3B02D3 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				031C3B3FE8DAFF6ABC19845A /* FinampWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D09CAEC16BA4322960525C3B /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				E12D4A2E88D606EE55E0DC32 /* FinampWatch Complication.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -136,7 +178,37 @@
 		FB7427A67C90F0206B85CCB6 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBA6030E2DB170CE0055CBBC /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
+		578A8693777956157EC48FC1 /* FinampWatch Complication.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "FinampWatch Complication.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		01EFA190308E05480006CA30 /* FinampWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FinampWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* WatchBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchBridge.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F4 /* FinampWatch.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = FinampWatch.xcconfig; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F5 /* FinampWatchComplication.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = FinampWatchComplication.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		01EFA191308E05480006CA30 /* FinampWatch Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = "FinampWatch Watch App";
+			sourceTree = "<group>";
+		};
+		AFE231A90E54E78288634B72 /* FinampWatch Complication */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = "FinampWatch Complication";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		97C146EB1CF9000F007C117D /* Frameworks */ = {
@@ -146,6 +218,20 @@
 				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 				1A7A01C825617F84005D4731 /* libsqlite3.tbd in Frameworks */,
 				23119D278A5EBCAEDB53CE23 /* Pods_Runner.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01EFA18D308E05480006CA30 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		397365A205F005568B5CA2F5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +277,10 @@
 				97C146EF1CF9000F007C117D /* Products */,
 				17DBD18F82197DAAAF6A81C9 /* Pods */,
 				4ACC266EDBF72BDB7F9715BE /* Frameworks */,
+				01EFA191308E05480006CA30 /* FinampWatch Watch App */,
+				AFE231A90E54E78288634B72 /* FinampWatch Complication */,
+				A1B2C3D4E5F6A7B8C9D0E1F4 /* FinampWatch.xcconfig */,
+				A1B2C3D4E5F6A7B8C9D0E1F5 /* FinampWatchComplication.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -198,6 +288,8 @@
 			isa = PBXGroup;
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
+				01EFA190308E05480006CA30 /* FinampWatch Watch App.app */,
+				578A8693777956157EC48FC1 /* FinampWatch Complication.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -218,6 +310,7 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* WatchBridge.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -238,17 +331,61 @@
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
+				2AB094EBFBCBCA0CCE3B02D3 /* Embed Watch Content */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				EA10DADE9639BB3D0A9BCBCE /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				9A06905A2862BED6AF7AB721 /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
+		};
+		01EFA18F308E05480006CA30 /* FinampWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 01EFA19B308E054A0006CA30 /* Build configuration list for PBXNativeTarget "FinampWatch Watch App" */;
+			buildPhases = (
+				01EFA18C308E05480006CA30 /* Sources */,
+				01EFA18D308E05480006CA30 /* Frameworks */,
+				01EFA18E308E05480006CA30 /* Resources */,
+				D09CAEC16BA4322960525C3B /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				62E9ED31D9933D972CA6519D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				01EFA191308E05480006CA30 /* FinampWatch Watch App */,
+			);
+			name = "FinampWatch Watch App";
+			productName = "FinampWatch Watch App";
+			productReference = 01EFA190308E05480006CA30 /* FinampWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		57490DAAF4DC199F28FA2A79 /* FinampWatch Complication */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EE4D1702D822773EBB88CE60 /* Build configuration list for PBXNativeTarget "FinampWatch Complication" */;
+			buildPhases = (
+				28CF5038C4FFE8E384BAD912 /* Sources */,
+				397365A205F005568B5CA2F5 /* Frameworks */,
+				19F2255B48CEA4F103557A8E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				AFE231A90E54E78288634B72 /* FinampWatch Complication */,
+			);
+			name = "FinampWatch Complication";
+			productName = "FinampWatch Complication";
+			productReference = 578A8693777956157EC48FC1 /* FinampWatch Complication.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -320,6 +457,8 @@
 			projectRoot = "";
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
+				01EFA18F308E05480006CA30 /* FinampWatch Watch App */,
+				57490DAAF4DC199F28FA2A79 /* FinampWatch Complication */,
 			);
 		};
 /* End PBXProject section */
@@ -336,6 +475,20 @@
 				1AB3434A28AEB3BA00B8C792 /* Info-Debug.plist in Resources */,
 				1AB3434B28AEB3BA00B8C792 /* Info-Profile.plist in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01EFA18E308E05480006CA30 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		19F2255B48CEA4F103557A8E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -422,10 +575,39 @@
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				D7E03F9A2ED4FFB100EEBE11 /* SceneDelegate.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F3 /* WatchBridge.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01EFA18C308E05480006CA30 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		28CF5038C4FFE8E384BAD912 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9A06905A2862BED6AF7AB721 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "FinampWatch Watch App";
+			target = 01EFA18F308E05480006CA30 /* FinampWatch Watch App */;
+			targetProxy = C3DAFF6C8F03B9D6C03C4F6C /* PBXContainerItemProxy */;
+		};
+		62E9ED31D9933D972CA6519D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 57490DAAF4DC199F28FA2A79 /* FinampWatch Complication */;
+			targetProxy = 7C66041FF88A763D2427377D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		97C146FA1CF9000F007C117D /* Main.storyboard */ = {
@@ -789,6 +971,54 @@
 			};
 			name = Release;
 		};
+		01EFA198308E054A0006CA30 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1B2C3D4E5F6A7B8C9D0E1F4 /* FinampWatch.xcconfig */;
+			buildSettings = {
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		01EFA199308E054A0006CA30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1B2C3D4E5F6A7B8C9D0E1F4 /* FinampWatch.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		01EFA19A308E054A0006CA30 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1B2C3D4E5F6A7B8C9D0E1F4 /* FinampWatch.xcconfig */;
+			buildSettings = {
+			};
+			name = Profile;
+		};
+		6C8A0E44E58CDDFA9E3EE161 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1B2C3D4E5F6A7B8C9D0E1F5 /* FinampWatchComplication.xcconfig */;
+			buildSettings = {
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		6FA3F2ED53A64356C058B05B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1B2C3D4E5F6A7B8C9D0E1F5 /* FinampWatchComplication.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		7143D915EC61C64ECFAF3DF0 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1B2C3D4E5F6A7B8C9D0E1F5 /* FinampWatchComplication.xcconfig */;
+			buildSettings = {
+			};
+			name = Profile;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -808,6 +1038,26 @@
 				97C147061CF9000F007C117D /* Debug */,
 				97C147071CF9000F007C117D /* Release */,
 				249021D4217E4FDB00AE95B9 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		01EFA19B308E054A0006CA30 /* Build configuration list for PBXNativeTarget "FinampWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01EFA198308E054A0006CA30 /* Debug */,
+				01EFA199308E054A0006CA30 /* Release */,
+				01EFA19A308E054A0006CA30 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EE4D1702D822773EBB88CE60 /* Build configuration list for PBXNativeTarget "FinampWatch Complication" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6C8A0E44E58CDDFA9E3EE161 /* Debug */,
+				6FA3F2ED53A64356C058B05B /* Release */,
+				7143D915EC61C64ECFAF3DF0 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
