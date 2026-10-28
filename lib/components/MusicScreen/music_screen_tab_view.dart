@@ -105,8 +105,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     if (letter.isEmpty) return;
 
     letterToSearch = letter;
-    var codePointToScrollTo = (widget.contentType == ContentType.tracks ? letter.toUpperCase() : letter.toLowerCase())
-        .codeUnitAt(0);
+    var codePointToScrollTo = letter.toLowerCase().codeUnitAt(0);
 
     if (letter == '#') {
       codePointToScrollTo = 0;
