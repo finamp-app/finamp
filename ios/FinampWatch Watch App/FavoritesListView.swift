@@ -27,17 +27,7 @@ struct FavoritesListView: View {
                         .frame(maxWidth: .infinity)
                 case .loaded(let items):
                     ForEach(items) { item in
-                        NavigationLink(
-                            value: isArtists ? LibraryDestination.artistAlbums(item) : .tracks(item, type: "albums")
-                        ) {
-                            CoverRow(
-                                item: item,
-                                placeholderSymbol: kind.placeholderSymbol,
-                                coverFraction: kind.coverFraction,
-                                circular: isArtists
-                            )
-                        }
-                        .buttonStyle(.plain)
+                        CollectionLink(item: item, kind: kind)
                     }
                 }
             }

@@ -61,10 +61,6 @@ struct CollectionView: View {
 
     private var collectionFavorite: Bool { FavoriteOverrides.shared.value(for: collection) }
 
-    private func toggleCollectionFavorite() async {
-        await FavoriteOverrides.shared.toggle(collection)
-    }
-
     private func header(_ tracks: [LibraryItem]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top, spacing: 8) {
@@ -86,19 +82,7 @@ struct CollectionView: View {
                         Marquee {
                             HStack(spacing: 8) {
                                 ForEach(headerArtists) { artist in
-                                    HStack(spacing: 4) {
-                                        CoverView(
-                                            item: artist,
-                                            placeholderSymbol: LibraryKind.artists.placeholderSymbol,
-                                            circular: true
-                                        )
-                                        .frame(width: 16, height: 16)
-                                        Text(artist.name)
-                                            .font(.footnote)
-                                            .foregroundStyle(Color.finampBlue)
-                                            .lineLimit(1)
-                                            .fixedSize()
-                                    }
+                                    ArtistLabel(artist: artist, color: .finampBlue)
                                     .contentShape(Rectangle())
                                     .onTapGesture { open(.artistAlbums(artist)) }
                                     .accessibilityAddTraits(.isButton)
@@ -131,7 +115,7 @@ struct CollectionView: View {
                         title: "Like",
                         systemImage: collectionFavorite ? "heart.fill" : "heart",
                         tint: collectionFavorite ? .finampPurple : .finampBlue
-                    ) { await toggleCollectionFavorite() }
+                    ) { await FavoriteOverrides.shared.toggle(collection) }
                 }
             }
         }
@@ -145,7 +129,7 @@ struct CollectionView: View {
             id: collection.artistID,
             name: collection.subtitle,
             subtitle: "",
-            artworkKey: collection.artistArtworkURL.isEmpty ? "" : "artist-\(collection.artistID)",
+            artworkKey: "artist-\(collection.artistID)",
             artworkURL: collection.artistArtworkURL
         )]
     }

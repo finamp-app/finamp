@@ -13,6 +13,12 @@ struct HomePage: View {
     @State private var path: [LibraryDestination] = []
     @State private var showSettings = false
 
+    private static let favoriteCards: [(destination: LibraryDestination, title: String, kind: LibraryKind)] = [
+        (.favoriteAlbums, String(localized: "Favorite Albums"), .albums),
+        (.favoriteArtists, String(localized: "Favorite Artists"), .artists),
+        (.favorites, String(localized: "Favorite Tracks"), .tracks),
+    ]
+
     var body: some View {
         LibraryNavigationStack(path: $path) {
             ScrollView {
@@ -79,31 +85,17 @@ struct HomePage: View {
                             }
                         }
                         SectionHeader(title: String(localized: "Favorites"))
-                        NavigationLink(value: LibraryDestination.favoriteAlbums) {
-                            HomeCard(
-                                item: LibraryItem(id: "favoriteAlbums", name: String(localized: "Favorite Albums"), subtitle: "", artworkKey: ""),
-                                placeholderSymbol: LibraryKind.albums.placeholderSymbol,
-                                favoriteBadge: true
-                            )
+                        ForEach(Self.favoriteCards, id: \.title) { card in
+                            NavigationLink(value: card.destination) {
+                                HomeCard(
+                                    item: LibraryItem(id: card.destination.screenKey, name: card.title, subtitle: "", artworkKey: ""),
+                                    placeholderSymbol: card.kind.placeholderSymbol,
+                                    circular: card.kind == .artists,
+                                    favoriteBadge: true
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
-                        NavigationLink(value: LibraryDestination.favoriteArtists) {
-                            HomeCard(
-                                item: LibraryItem(id: "favoriteArtists", name: String(localized: "Favorite Artists"), subtitle: "", artworkKey: ""),
-                                placeholderSymbol: LibraryKind.artists.placeholderSymbol,
-                                circular: true,
-                                favoriteBadge: true
-                            )
-                        }
-                        .buttonStyle(.plain)
-                        NavigationLink(value: LibraryDestination.favorites) {
-                            HomeCard(
-                                item: LibraryItem(id: "favorites", name: String(localized: "Favorite Tracks"), subtitle: "", artworkKey: ""),
-                                placeholderSymbol: LibraryKind.tracks.placeholderSymbol,
-                                favoriteBadge: true
-                            )
-                        }
-                        .buttonStyle(.plain)
                         HomeSection(title: String(localized: "Newly Added Albums"), items: sections.newAlbums) { album in
                             NavigationLink(value: LibraryDestination.tracks(album, type: "albums")) {
                                 HomeCard(item: album, placeholderSymbol: LibraryKind.albums.placeholderSymbol)

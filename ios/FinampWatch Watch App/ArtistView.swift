@@ -33,14 +33,7 @@ struct ArtistView: View {
                         .foregroundStyle(Color.fgSecondary)
                 case .loaded(let albums):
                     ForEach(albums) { album in
-                        NavigationLink(value: LibraryDestination.tracks(album, type: "albums")) {
-                            CoverRow(
-                                item: album,
-                                placeholderSymbol: LibraryKind.albums.placeholderSymbol,
-                                coverFraction: LibraryKind.albums.coverFraction
-                            )
-                        }
-                        .buttonStyle(.plain)
+                        CollectionLink(item: album, kind: .albums)
                     }
                 }
             }

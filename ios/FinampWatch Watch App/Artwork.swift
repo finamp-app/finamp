@@ -24,7 +24,9 @@ final class ArtworkStore {
         return cache
     }()
     private var inFlight: [String: Task<UIImage?, Never>] = [:]
-    private var waiting: [String: [CheckedContinuation<UIImage?, Never>]] = [:]
+    /// One phone request per key: `image(for:size:)` already joins callers of the same key.
+    private var waiting: [String: CheckedContinuation<UIImage?, Never>] = [:]
+    private var writesSinceTrim = 0
     private var queue: [Request] = []
     private var isSending = false
     private let directory: URL = {
@@ -86,8 +88,7 @@ final class ArtworkStore {
             switch await download(item.artworkURL, size: size) {
             case .image(let data):
                 if let image = UIImage(data: data) {
-                    try? data.write(to: file(for: key))
-                    memory.setObject(image, forKey: key as NSString)
+                    store(image, data: data, key: key)
                     return image
                 }
             case .unreachable:
@@ -123,11 +124,7 @@ final class ArtworkStore {
 
     private func viaPhone(_ item: LibraryItem, size: Int, key: String) async -> UIImage? {
         await withCheckedContinuation { continuation in
-            if waiting[key] != nil {
-                waiting[key]?.append(continuation)
-                return
-            }
-            waiting[key] = [continuation]
+            waiting[key] = continuation
             queue.append(Request(key: key, id: item.id, size: size))
             sendNextBatch()
         }
@@ -152,8 +149,7 @@ final class ArtworkStore {
                 for request in batch {
                     let replyKey = "\(request.id)-\(request.size)"
                     if let data = reply.covers[replyKey], let image = UIImage(data: data) {
-                        try? data.write(to: file(for: request.key))
-                        memory.setObject(image, forKey: request.key as NSString)
+                        store(image, data: data, key: request.key)
                         resolve(request.key, with: image)
                     } else if reply.missing.contains(replyKey) {
                         resolve(request.key, with: nil)
@@ -172,8 +168,17 @@ final class ArtworkStore {
     }
 
     private func resolve(_ key: String, with image: UIImage?) {
-        for continuation in waiting.removeValue(forKey: key) ?? [] {
-            continuation.resume(returning: image)
+        waiting.removeValue(forKey: key)?.resume(returning: image)
+    }
+
+    /// Caches a cover in memory and on disk, trimming the disk cache every 50 writes, not only at launch.
+    private func store(_ image: UIImage, data: Data, key: String) {
+        try? data.write(to: file(for: key))
+        memory.setObject(image, forKey: key as NSString)
+        writesSinceTrim += 1
+        if writesSinceTrim >= 50 {
+            writesSinceTrim = 0
+            trimDiskCache()
         }
     }
 }

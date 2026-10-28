@@ -28,6 +28,42 @@ struct CoverRow: View {
     }
 }
 
+/// A cover row that opens an artist's albums or a collection's tracks.
+struct CollectionLink: View {
+    let item: LibraryItem
+    let kind: LibraryKind
+
+    var body: some View {
+        NavigationLink(value: kind == .artists ? .artistAlbums(item) : LibraryDestination.tracks(item, type: kind.type)) {
+            CoverRow(
+                item: item,
+                placeholderSymbol: kind.placeholderSymbol,
+                coverFraction: kind.coverFraction,
+                circular: kind == .artists
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// An artist's round photo and name, as shown in artist links.
+struct ArtistLabel: View {
+    let artist: LibraryItem
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 4) {
+            CoverView(item: artist, placeholderSymbol: LibraryKind.artists.placeholderSymbol, circular: true)
+                .frame(width: 16, height: 16)
+            Text(artist.name)
+                .font(.footnote)
+                .foregroundStyle(color)
+                .lineLimit(1)
+                .fixedSize()
+        }
+    }
+}
+
 /// A track row with an optional favourite action.
 struct TrackRow: View {
     let track: LibraryItem

@@ -975,7 +975,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A1B2C3D4E5F6A7B8C9D0E1F4 /* FinampWatch.xcconfig */;
 			buildSettings = {
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -999,7 +998,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A1B2C3D4E5F6A7B8C9D0E1F5 /* FinampWatchComplication.xcconfig */;
 			buildSettings = {
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};

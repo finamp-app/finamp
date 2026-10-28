@@ -199,7 +199,10 @@ class WatchHandler {
     _pushIfChanged('account', _account());
     container.listen(finampSettingsProvider.shouldTranscode, (_, enabled) => _pushIfChanged('transcoding', enabled));
     _pushIfChanged('transcoding', FinampSettingsHelper.finampSettings.shouldTranscode);
-    container.listen(finampSettingsProvider.isOffline, (_, offline) => _pushIfChanged('offline', offline));
+    container.listen(finampSettingsProvider.isOffline, (_, offline) {
+      _childrenCache = null; // may list tracks that can't play in the new mode
+      _pushIfChanged('offline', offline);
+    });
     // Finamp's volume (its output menu's slider), so an open Output sheet on the watch follows it
     container.listen(finampSettingsProvider.currentVolume, (_, volume) => _pushIfChanged('volume', volume));
     _pushIfChanged('volume', FinampSettingsHelper.finampSettings.currentVolume);
@@ -1115,7 +1118,14 @@ class WatchHandler {
     );
     stream.addListener(listener);
 
-    final imageInfo = await completer.future;
+    // Decoding can stall while Finamp is in the background; answer before the watch's 30 s limit
+    final imageInfo = await completer.future.timeout(
+      const Duration(seconds: 25),
+      onTimeout: () {
+        stream.removeListener(listener);
+        return null;
+      },
+    );
     if (imageInfo == null) return null;
     final image = imageInfo.image;
     final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);

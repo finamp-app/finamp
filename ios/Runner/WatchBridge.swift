@@ -212,6 +212,11 @@ private func artworksReply(_ result: Any?, request: Any?) -> [String: Any] {
     for (item, entry) in zip(requested, results) {
         guard let id = item["id"] as? String, let size = item["size"] as? Int else { continue }
         let key = "\(id)-\(size)"
+        // The same bounds as the Flutter side, which only checks the size it decodes at
+        guard (16...1200).contains(size) else {
+            missing.append(key)
+            continue
+        }
         // A downloaded cover comes as its encoded file (no width), others as raw pixels
         let width = entry["width"] as? Int ?? 0
         let data = (entry["data"] as? FlutterStandardTypedData)?.data

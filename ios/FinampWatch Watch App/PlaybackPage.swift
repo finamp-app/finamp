@@ -367,19 +367,7 @@ struct PlaybackPage: View {
                         Button {
                             path = LibraryPath.opening(.artistAlbums(artist), in: path)
                         } label: {
-                            HStack(spacing: 4) {
-                                CoverView(
-                                    item: artist,
-                                    placeholderSymbol: LibraryKind.artists.placeholderSymbol,
-                                    circular: true
-                                )
-                                .frame(width: 16, height: 16)
-                                Text(artist.name)
-                                    .font(.footnote)
-                                    .foregroundStyle(.white.opacity(0.9))
-                                    .lineLimit(1)
-                                    .fixedSize()
-                            }
+                            ArtistLabel(artist: artist, color: .white.opacity(0.9))
                             .padding(.leading, 2)
                             .padding(.trailing, 6)
                             .padding(.vertical, 2)
@@ -443,6 +431,7 @@ struct QueueView: View {
 /// Wait for the phone's volume before binding the crown to avoid a placeholder jump.
 struct OutputSheet: View {
     @State private var output: (route: String, routeType: String)?
+    @State private var error: String?
     @State private var pickerMessage: LocalizedStringKey?
     @State private var showPickerMessage = false
 
@@ -450,6 +439,8 @@ struct OutputSheet: View {
         Group {
             if let output {
                 OutputControls(route: output.route, routeType: output.routeType, initialVolume: initialVolume)
+            } else if let error {
+                RetryView(message: error) { await load() }
             } else {
                 VStack(spacing: 10) {
                     Circle().fill(Color.listFill).frame(width: 28, height: 28)
@@ -477,14 +468,21 @@ struct OutputSheet: View {
         .alert(Text(pickerMessage ?? ""), isPresented: $showPickerMessage) {
             Button("OK", role: .cancel) {}
         }
-        .task {
-            guard output == nil, let loaded = try? await PhoneConnection.shared.output() else { return }
-            initialVolume = loaded.volume
-            output = (loaded.route, loaded.routeType)
-        }
+        .task { if output == nil { await load() } }
     }
 
     @State private var initialVolume = 1.0
+
+    private func load() async {
+        error = nil
+        do {
+            let loaded = try await PhoneConnection.shared.output()
+            initialVolume = loaded.volume
+            output = (loaded.route, loaded.routeType)
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
 
     private func openPicker() async {
         do {

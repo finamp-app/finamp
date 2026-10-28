@@ -38,7 +38,7 @@ struct LibraryItem: Identifiable, Hashable {
                 id: id,
                 name: artist["name"] as? String ?? "",
                 subtitle: "",
-                artworkKey: url.isEmpty ? "" : "artist-\(id)",
+                artworkKey: id.isEmpty ? "" : "artist-\(id)",
                 artworkURL: url
             )
         }
@@ -400,19 +400,26 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     }
 
     nonisolated private static func send(_ method: String, _ args: [String: Any]) async throws -> [String: Any] {
-        try await withCheckedThrowingContinuation { continuation in
-            WCSession.default.sendMessage(
-                ["method": method, "args": args],
-                replyHandler: { reply in
-                    if let message = reply["error"] as? String {
-                        continuation.resume(throwing: reply["code"] as? String == "server"
-                            ? PhoneError.serverUnreachable : PhoneError.phone(message))
-                    } else {
-                        continuation.resume(returning: reply)
-                    }
-                },
-                errorHandler: { error in continuation.resume(throwing: error) }
-            )
+        let gate = ReplyGate()
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                guard gate.start(continuation) else { return }
+                WCSession.default.sendMessage(
+                    ["method": method, "args": args],
+                    replyHandler: { reply in
+                        if let message = reply["error"] as? String {
+                            gate.finish(.failure(reply["code"] as? String == "server"
+                                ? PhoneError.serverUnreachable : PhoneError.phone(message)))
+                        } else {
+                            gate.finish(.success(reply))
+                        }
+                    },
+                    errorHandler: { error in gate.finish(.failure(error)) }
+                )
+            }
+        } onCancel: {
+            // The timeout cancels the request; WatchConnectivity may still answer much later
+            gate.finish(.failure(CancellationError()))
         }
     }
 
@@ -437,4 +444,32 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
 
 extension Notification.Name {
     static let phoneBecameReachable = Notification.Name("phoneBecameReachable")
+}
+
+/// Resumes a request exactly once: on its reply, its error or its cancellation, whichever comes first.
+nonisolated private final class ReplyGate: @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuation: CheckedContinuation<[String: Any], Error>?
+    private var result: Result<[String: Any], Error>?
+
+    /// False when the request was cancelled before it started.
+    func start(_ continuation: CheckedContinuation<[String: Any], Error>) -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        if let result {
+            continuation.resume(with: result)
+            return false
+        }
+        self.continuation = continuation
+        return true
+    }
+
+    func finish(_ result: Result<[String: Any], Error>) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard self.result == nil else { return }
+        self.result = result
+        continuation?.resume(with: result)
+        continuation = nil
+    }
 }

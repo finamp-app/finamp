@@ -1,19 +1,11 @@
 import SwiftUI
 
 /// The watch's browsable library categories.
-enum LibraryKind {
+enum LibraryKind: String {
     case artists, albums, playlists, tracks, downloads
 
     /// The `type` expected by the phone's WatchHandler.
-    var type: String {
-        switch self {
-        case .artists: return "artists"
-        case .albums: return "albums"
-        case .playlists: return "playlists"
-        case .tracks: return "tracks"
-        case .downloads: return "downloads"
-        }
-    }
+    var type: String { rawValue }
 
     var title: String {
         switch self {
@@ -66,6 +58,8 @@ struct LibraryPage: View {
     @State private var hasMore = true
     @State private var isLoadingMore = false
     @State private var isReloading = false
+    /// Changes when the list restarts from its first page, so a page requested before is dropped.
+    @State private var generation = 0
     @State private var path: [LibraryDestination] = []
 
     var body: some View {
@@ -136,30 +130,18 @@ struct LibraryPage: View {
     private func row(_ item: LibraryItem, index: Int) -> some View {
         switch kind {
         case .albums, .playlists, .artists:
-            Self.collectionRow(item, as: kind)
+            CollectionLink(item: item, kind: kind)
         case .downloads:
             let itemKind = Self.downloadKind(item.kind)
             VStack(alignment: .leading, spacing: 6) {
                 if index == 0 || items?[index - 1].kind != item.kind {
                     SectionHeader(title: itemKind.title)
                 }
-                Self.collectionRow(item, as: itemKind)
+                CollectionLink(item: item, kind: itemKind)
             }
         case .tracks:
             trackRow(item, index: index)
         }
-    }
-
-    private static func collectionRow(_ item: LibraryItem, as kind: LibraryKind) -> some View {
-        NavigationLink(value: kind == .artists ? .artistAlbums(item) : LibraryDestination.tracks(item, type: kind.type)) {
-            CoverRow(
-                item: item,
-                placeholderSymbol: kind.placeholderSymbol,
-                coverFraction: kind.coverFraction,
-                circular: kind == .artists
-            )
-        }
-        .buttonStyle(.plain)
     }
 
     private static func downloadKind(_ kind: String) -> LibraryKind {
@@ -180,20 +162,21 @@ struct LibraryPage: View {
         )
     }
 
-    /// Refreshes the first page while retaining later pages; errors replace only empty content.
+    /// Refreshes the first page; later pages stay only while it holds the same items, since any change shifts them.
+    /// Errors replace only empty content.
     private func reload() async {
         guard !isReloading else { return }
         isReloading = true
         defer { isReloading = false }
         do {
             let firstPage = try await PhoneConnection.shared.list(kind.type, offset: 0, limit: Self.pageSize)
-            if let current = items, current.count > Self.pageSize {
-                // Exclude items now in the refreshed first page to keep row ids unique.
-                let fresh = Set(firstPage.map(\.id))
-                items = firstPage + current.dropFirst(Self.pageSize).filter { !fresh.contains($0.id) }
+            if let current = items, current.count > Self.pageSize,
+               current.prefix(Self.pageSize).map(\.id) == firstPage.map(\.id) {
+                items = firstPage + current.dropFirst(Self.pageSize)
             } else {
                 items = firstPage
                 hasMore = firstPage.count == Self.pageSize
+                generation += 1
             }
             error = nil
         } catch {
@@ -205,10 +188,12 @@ struct LibraryPage: View {
         guard let current = items, hasMore, !isLoadingMore else { return }
         isLoadingMore = true
         defer { isLoadingMore = false }
+        let started = generation
         do {
             let page = try await PhoneConnection.shared.list(kind.type, offset: current.count, limit: Self.pageSize)
-            let known = Set(current.map(\.id))
-            items = current + page.filter { !known.contains($0.id) }
+            guard generation == started, let latest = items else { return }
+            let known = Set(latest.map(\.id))
+            items = latest + page.filter { !known.contains($0.id) }
             hasMore = page.count == Self.pageSize
         } catch {
             // Scrolling to the end again retries.
