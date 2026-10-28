@@ -21,6 +21,7 @@ import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/playback_history_service.dart';
 import 'package:finamp/services/radio_service_helper.dart';
+import 'package:finamp/services/track_artist_order.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -171,6 +172,15 @@ class QueueService {
       _providers.listen(finampSettingsProvider.radioEnabled, (_, _) => unawaited(maybeAddRadioTracks()));
       _providers.listen(finampSettingsProvider.radioMode, (_, _) => unawaited(maybeAddRadioTracks()));
       _providers.listen(finampSettingsProvider.isOffline, (_, _) => unawaited(maybeAddRadioTracks()));
+      _providers.listen(finampSettingsProvider.trackArtistOrder, (_, order) {
+        updateQueueArtistOrder(getQueue().fullQueue, order);
+        refreshQueueStream();
+        _audioHandler.queue.add(getQueue().fullQueue.map((track) => track.item).toList());
+        final currentItem = _audioHandler.mediaItem.valueOrNull;
+        if (currentItem != null && currentItem.id == _currentTrack?.item.id) {
+          _audioHandler.mediaItem.add(currentItem.copyWith(artist: _currentTrack!.item.artist));
+        }
+      });
       _providers.listen(FinampUserHelper.finampCurrentUserProvider, (_, _) => unawaited(maybeAddRadioTracks()));
     });
 
@@ -303,7 +313,10 @@ class QueueService {
           artUri = Uri(scheme: "content", host: packageInfo.packageName, path: artUri.path);
         }
         if (!force && _audioHandler.mediaItem.valueOrNull?.id != currentMediaItem?.id) return;
-        currentMediaItem = currentMediaItem?.copyWith(artUri: artUri);
+        currentMediaItem = currentMediaItem?.copyWith(
+          artUri: artUri,
+          artist: trackArtistNames(item, FinampSettingsHelper.finampSettings.trackArtistOrder),
+        );
         _audioHandler.mediaItem.add(currentMediaItem);
       }
 
@@ -1577,7 +1590,7 @@ class QueueService {
       playable:
           isItemPlayable, // this dictates whether clicking on an item will try to play it or browse it in media browsers like Android Auto
       album: item.album,
-      artist: item.artists?.sortedBy((e) => e).join(", ") ?? item.albumArtist,
+      artist: trackArtistNames(item, FinampSettingsHelper.finampSettings.trackArtistOrder),
       title: item.name ?? "unknown",
       extras: {
         //!!! this ID has to be consistent across the transcoding URL and the playback reporting status, otherwise the server won't show that we're transcoding
