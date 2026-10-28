@@ -116,7 +116,7 @@ class WatchHandler {
             GetIt.instance<MusicPlayerBackgroundTask>().setVolume((arguments['volume'] as double).clamp(0.0, 1.0));
             return true;
           case 'watchState':
-            if (arguments['available'] == true) _startPushing();
+            arguments['available'] == true ? _startPushing() : _stopPushing();
             return true;
           // Finamp settings the watch shows: "Enable Transcoding" and "Offline Mode"
           case 'settings':
@@ -180,44 +180,69 @@ class WatchHandler {
 
   static bool _pushing = false;
 
+  /// Cancels what `_startPushing` listens to.
+  static final List<void Function()> _stopListening = [];
+
   /// Pushes state changes and sends the initial theme, account, transcoding and offline settings.
   static void _startPushing() {
     if (_pushing) return;
     _pushing = true;
     final container = GetIt.instance<ProviderContainer>();
-    GetIt.instance<QueueService>().getCurrentTrackStream().listen((_) => _scheduleNowPlayingPush());
-    GetIt.instance<MusicPlayerBackgroundTask>().playbackState.listen((_) => _scheduleNowPlayingPush());
-    // Metadata arrives after the track; this also keeps the provider alive.
-    container.listen(currentTrackMetadataProvider, (_, _) => _scheduleNowPlayingPush());
-    container.listen(brightnessProvider, (_, _) => _pushIfChanged('theme', _theme()));
+    _stopListening.addAll([
+      GetIt.instance<QueueService>().getCurrentTrackStream().listen((_) => _scheduleNowPlayingPush()).cancel,
+      GetIt.instance<MusicPlayerBackgroundTask>().playbackState.listen((_) => _scheduleNowPlayingPush()).cancel,
+      // Metadata arrives after the track; this also keeps the provider alive.
+      container.listen(currentTrackMetadataProvider, (_, _) => _scheduleNowPlayingPush()).close,
+      container.listen(brightnessProvider, (_, _) => _pushIfChanged('theme', _theme())).close,
+      // The user provider also fires on address changes; only an account change clears the cache.
+      container.listen(FinampUserHelper.finampCurrentUserProvider, (_, _) {
+        final account = _account();
+        if (account != _lastPushedValues['account']) {
+          _sentItems.clear();
+          _playlistFirstTracks.clear();
+          _childrenCache = null;
+        }
+        _pushIfChanged('account', account);
+      }).close,
+      container
+          .listen(finampSettingsProvider.shouldTranscode, (_, enabled) => _pushIfChanged('transcoding', enabled))
+          .close,
+      container.listen(finampSettingsProvider.isOffline, (_, offline) {
+        _childrenCache = null; // may list tracks that can't play in the new mode
+        _pushIfChanged('offline', offline);
+      }).close,
+      // Finamp's volume (its output menu's slider), so an open Output sheet on the watch follows it
+      container.listen(finampSettingsProvider.currentVolume, (_, volume) => _pushIfChanged('volume', volume)).close,
+      // While AirPlay plays, Finamp's volume has no effect and its slider is disabled; the watch does the same
+      container
+          .listen(
+            airPlayActiveProvider,
+            (_, airPlay) => _pushIfChanged('airPlay', airPlay.valueOrNull ?? false),
+            fireImmediately: true,
+          )
+          .close,
+    ]);
     _pushIfChanged('theme', _theme());
-    // The user provider also fires on address changes; only an account change clears the cache.
-    container.listen(FinampUserHelper.finampCurrentUserProvider, (_, _) {
-      final account = _account();
-      if (account != _lastPushedValues['account']) {
-        _sentItems.clear();
-        _playlistFirstTracks.clear();
-        _childrenCache = null;
-      }
-      _pushIfChanged('account', account);
-    });
     _pushIfChanged('account', _account());
-    container.listen(finampSettingsProvider.shouldTranscode, (_, enabled) => _pushIfChanged('transcoding', enabled));
     _pushIfChanged('transcoding', FinampSettingsHelper.finampSettings.shouldTranscode);
-    container.listen(finampSettingsProvider.isOffline, (_, offline) {
-      _childrenCache = null; // may list tracks that can't play in the new mode
-      _pushIfChanged('offline', offline);
-    });
-    // Finamp's volume (its output menu's slider), so an open Output sheet on the watch follows it
-    container.listen(finampSettingsProvider.currentVolume, (_, volume) => _pushIfChanged('volume', volume));
     _pushIfChanged('volume', FinampSettingsHelper.finampSettings.currentVolume);
-    // While AirPlay plays, Finamp's volume has no effect and its slider is disabled; the watch does the same
-    container.listen(
-      airPlayActiveProvider,
-      (_, airPlay) => _pushIfChanged('airPlay', airPlay.valueOrNull ?? false),
-      fireImmediately: true,
-    );
     _pushIfChanged('offline', FinampSettingsHelper.finampSettings.isOffline);
+  }
+
+  /// Stops all of it when the watch app is removed or the watch unpaired; a reinstalled app gets everything again.
+  static void _stopPushing() {
+    if (!_pushing) return;
+    _pushing = false;
+    for (final stop in _stopListening) {
+      stop();
+    }
+    _stopListening.clear();
+    _nowPlayingPushTimer?.cancel();
+    _favoriteSubscription?.close();
+    _favoriteSubscription = null;
+    _favoriteSubscriptionItem = null;
+    _lastPushed = null;
+    _lastPushedValues.clear();
   }
 
   static Timer? _nowPlayingPushTimer;
