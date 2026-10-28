@@ -4,6 +4,8 @@ import SwiftUI
 struct SettingsView: View {
     @Bindable private var theme = ThemeStore.shared
     private var phone = PhoneSettings.shared
+    /// Finamp's own question; unanswered, the queue keeps unavailable tracks or the old transcoding.
+    @State private var reload: ReloadQuestion?
 
     var body: some View {
         NavigationStack {
@@ -57,6 +59,16 @@ struct SettingsView: View {
             .containerBackground(Color.appBackground, for: .navigation)
         }
         .tint(Color.finampBlue)
+        .alert(
+            Text(verbatim: reload?.text ?? ""),
+            isPresented: Binding(get: { reload != nil }, set: { if !$0 { reload = nil } }),
+            presenting: reload
+        ) { question in
+            Button(question.button) {
+                Task { try? await PhoneConnection.shared.reloadQueue(archive: question.archive) }
+            }
+            Button("Cancel", role: .cancel) {}
+        }
         .task {
             if let settings = try? await PhoneConnection.shared.settings() {
                 phone.transcoding = settings.transcoding
@@ -81,7 +93,7 @@ struct SettingsView: View {
         let previous = phone[keyPath: value]
         phone[keyPath: value] = enabled
         do {
-            try await PhoneConnection.shared.setSetting(name, enabled)
+            reload = try await PhoneConnection.shared.setSetting(name, enabled)
         } catch {
             phone[keyPath: value] = previous
         }

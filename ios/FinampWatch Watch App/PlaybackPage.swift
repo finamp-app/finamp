@@ -9,6 +9,7 @@ struct NowPlaying: Equatable {
     var artist = ""
     var artworkKey = ""
     var artworkURL = ""
+    var blurHash = ""
     var albumID = ""
     var album = ""
     var albumArtist = ""
@@ -43,6 +44,7 @@ final class NowPlayingStore {
             artist: state["artist"] as? String ?? "",
             artworkKey: state["artworkKey"] as? String ?? "",
             artworkURL: state["artworkUrl"] as? String ?? "",
+            blurHash: state["blurHash"] as? String ?? "",
             albumID: state["albumId"] as? String ?? "",
             album: state["album"] as? String ?? "",
             albumArtist: state["albumArtist"] as? String ?? "",
@@ -67,8 +69,14 @@ struct PlaybackPage: View {
 
     @State private var store = NowPlayingStore.shared
     @State private var artwork: UIImage?
+    /// The key `artwork` belongs to; until the new track's cover arrives its BlurHash is shown instead.
+    @State private var artworkFor = ""
     @State private var showSystemPlayer = false
     @State private var showQueue = false
+    /// The crown sets Finamp's volume here too; the audio line shows it while the crown turns.
+    @State private var crownVolume = PhoneVolume.shared.value ?? 1
+    @State private var showVolume = false
+    @State private var hideVolume: Task<Void, Never>?
 
     private var nowPlaying: NowPlaying { store.nowPlaying }
 
@@ -119,6 +127,14 @@ struct PlaybackPage: View {
             background
             if nowPlaying.hasTrack {
                 controls
+                    .phoneVolumeCrown($crownVolume, enabled: isActive) {
+                        showVolume = true
+                        hideVolume?.cancel()
+                        hideVolume = Task {
+                            try? await Task.sleep(for: .seconds(1.5))
+                            if !Task.isCancelled { showVolume = false }
+                        }
+                    }
             } else {
                 VStack(spacing: 8) {
                     Image(systemName: "music.note")
@@ -169,7 +185,11 @@ struct PlaybackPage: View {
                 artworkKey: nowPlaying.artworkKey,
                 artworkURL: nowPlaying.artworkURL
             )
-            artwork = await ArtworkStore.shared.image(for: item, size: artworkPixels)
+            let loaded = await ArtworkStore.shared.image(for: item, size: artworkPixels)
+            withAnimation(.easeIn(duration: 0.7)) {
+                artwork = loaded
+                artworkFor = nowPlaying.artworkKey
+            }
         }
         .onChange(of: isActive, initial: true) { _, active in
             if active { Task { try? await PhoneConnection.shared.refreshNowPlaying() } }
@@ -178,7 +198,8 @@ struct PlaybackPage: View {
 
     @ViewBuilder
     private var background: some View {
-        if let artwork {
+        let current = artworkFor == nowPlaying.artworkKey ? artwork : nil
+        if let artwork = current ?? BlurHash.image(nowPlaying.blurHash) ?? artwork {
             // An overlay clips the square cover without widening the page on taller screens.
             Color.clear
                 .overlay {
@@ -253,7 +274,12 @@ struct PlaybackPage: View {
             }
 
             VStack(alignment: .leading, spacing: 3) {
-                if !nowPlaying.audio.isEmpty {
+                if showVolume {
+                    Label("Finamp volume \(Int((crownVolume * 100).rounded()))%", systemImage: "speaker.wave.2.fill")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.white.opacity(0.9))
+                        .frame(maxWidth: .infinity)
+                } else if !nowPlaying.audio.isEmpty {
                     Text(nowPlaying.audio)
                         .font(.system(size: 10))
                         .foregroundStyle(.white.opacity(0.6))
@@ -261,7 +287,7 @@ struct PlaybackPage: View {
                         .minimumScaleFactor(0.8)
                         .frame(maxWidth: .infinity)
                 }
-                if let lowered = PhoneVolume.shared.lowered {
+                if !showVolume, let lowered = PhoneVolume.shared.lowered {
                     Label("Finamp volume \(lowered)%", systemImage: "speaker.wave.1.fill")
                         .font(.system(size: 10))
                         .foregroundStyle(.white.opacity(0.6))
@@ -519,9 +545,6 @@ private struct OutputControls: View {
     let route: String
     let routeType: String
     @State private var volume: Double
-    /// The phone echoes the crown's own changes; only a change while the crown is still is the phone's.
-    @State private var lastCrownChange = Date.distantPast
-    @State private var applyingPhoneVolume = false
     private var phoneVolume = PhoneVolume.shared
 
     init(route: String, routeType: String, initialVolume: Double) {
@@ -562,22 +585,7 @@ private struct OutputControls: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, 6)
-        .focusable(!phoneVolume.airPlay)
-        .digitalCrownRotation($volume, from: 0, through: 1, by: 0.02, sensitivity: .low, isContinuous: false,
-                               isHapticFeedbackEnabled: true)
-        .onChange(of: volume) { _, new in
-            if applyingPhoneVolume {
-                applyingPhoneVolume = false
-                return
-            }
-            lastCrownChange = .now
-            PhoneConnection.shared.setVolume(new)
-        }
-        .onChange(of: phoneVolume.value) { _, new in
-            guard let new, Date.now.timeIntervalSince(lastCrownChange) > 1.5, abs(new - volume) > 0.005 else { return }
-            applyingPhoneVolume = true
-            volume = new
-        }
+        .phoneVolumeCrown($volume)
     }
 
     private var routeSymbol: String {
@@ -587,6 +595,51 @@ private struct OutputControls: View {
         case "carAudio": return "car.fill"
         default: return "iphone"
         }
+    }
+}
+
+extension View {
+    /// Binds the Digital Crown to Finamp's volume on the phone; off during AirPlay, as Finamp disables its slider.
+    func phoneVolumeCrown(_ volume: Binding<Double>, enabled: Bool = true, onTurn: @escaping () -> Void = {}) -> some View {
+        modifier(PhoneVolumeCrown(volume: volume, enabled: enabled, onTurn: onTurn))
+    }
+}
+
+/// Sends crown turns as Finamp's volume (one message in flight) and follows the phone's own changes, except just after
+/// the crown moved, since the phone echoes those.
+private struct PhoneVolumeCrown: ViewModifier {
+    @Binding var volume: Double
+    let enabled: Bool
+    let onTurn: () -> Void
+    @State private var lastCrownChange = Date.distantPast
+    @State private var applyingPhoneVolume = false
+    private var phoneVolume = PhoneVolume.shared
+
+    init(volume: Binding<Double>, enabled: Bool, onTurn: @escaping () -> Void) {
+        _volume = volume
+        self.enabled = enabled
+        self.onTurn = onTurn
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .focusable(enabled && !phoneVolume.airPlay)
+            .digitalCrownRotation($volume, from: 0, through: 1, by: 0.02, sensitivity: .low, isContinuous: false,
+                                  isHapticFeedbackEnabled: true)
+            .onChange(of: volume) { _, new in
+                if applyingPhoneVolume {
+                    applyingPhoneVolume = false
+                    return
+                }
+                lastCrownChange = .now
+                onTurn()
+                PhoneConnection.shared.setVolume(new)
+            }
+            .onChange(of: phoneVolume.value) { _, new in
+                guard let new, Date.now.timeIntervalSince(lastCrownChange) > 1.5, abs(new - volume) > 0.005 else { return }
+                applyingPhoneVolume = true
+                volume = new
+            }
     }
 }
 

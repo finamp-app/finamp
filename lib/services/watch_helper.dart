@@ -14,6 +14,7 @@ import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/models/music_slices.dart';
 import 'package:finamp/services/album_image_provider.dart';
+import 'package:finamp/services/data_source_service.dart' show SourceChangeGenericType;
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
@@ -123,8 +124,9 @@ class WatchHandler {
             final settings = FinampSettingsHelper.finampSettings;
             return {'transcoding': settings.shouldTranscode, 'offline': settings.isOffline};
           case 'setSetting':
+            final name = arguments['name'] as String;
             final enabled = arguments['enabled'] as bool;
-            switch (arguments['name']) {
+            switch (name) {
               case 'transcoding':
                 FinampSetters.setShouldTranscode(enabled);
               case 'offline':
@@ -132,6 +134,16 @@ class WatchHandler {
               default:
                 throw PlatformException(code: "unknown", message: "Unknown setting");
             }
+            final question = _reloadQuestion(name, enabled);
+            return question == null
+                ? true
+                : {
+                    'reload': question,
+                    'reloadButton': GlobalSnackbar.requireL10n.autoReloadPromptReloadButton,
+                    'archive': name == 'offline',
+                  };
+          case 'reloadQueue':
+            await GetIt.instance<QueueService>().reloadQueue(archiveQueue: arguments['archive'] == true);
             return true;
           case 'favorite':
             return await _setFavorite(arguments['id'] as String, arguments['favorite'] as bool);
@@ -179,6 +191,24 @@ class WatchHandler {
   }
 
   static bool _pushing = false;
+
+  /// The "reload the queue?" question Finamp shows on the phone after this change (as DataSourceService decides), so the
+  /// watch can ask it too; null when Finamp reloads by itself or nothing needs reloading. Unanswered, the queue keeps
+  /// tracks that are no longer available or the old transcoding.
+  static String? _reloadQuestion(String name, bool enabled) {
+    if (FinampSettingsHelper.finampSettings.autoReloadQueue) return null;
+    final queue = GetIt.instance<QueueService>().getQueue();
+    if (queue.trackCount == 0) return null;
+    final l10n = GlobalSnackbar.requireL10n;
+    if (name == 'offline') {
+      if (!enabled || queue.undownloadedTracks == 0) return null;
+      return "${l10n.autoReloadPrompt(SourceChangeGenericType.network.name)}. "
+          "${l10n.autoReloadPromptMissingTracks(queue.undownloadedTracks)}";
+    }
+    final transcodedTracksQueued = queue.fullQueue.any((item) => item.item.extras?["shouldTranscode"] == true);
+    if (!enabled && !transcodedTracksQueued) return null;
+    return l10n.autoReloadPrompt(SourceChangeGenericType.transcoding.name);
+  }
 
   /// Cancels what `_startPushing` listens to.
   static final List<void Function()> _stopListening = [];
@@ -311,6 +341,7 @@ class WatchHandler {
       'artist': current.item.artist ?? item.artists?.join(", ") ?? "",
       'artworkKey': _artworkKey(item),
       'artworkUrl': _artworkUrl(item),
+      'blurHash': item.blurHash ?? "",
       'albumId': item.albumId?.raw ?? "",
       'album': item.album ?? "",
       'albumArtist': item.albumArtists?.firstOrNull?.name ?? item.albumArtist ?? "",
@@ -615,6 +646,7 @@ class WatchHandler {
             'artistId': _mainArtist(item)?.id.raw ?? "",
             'artworkKey': _artworkKey(item),
             'artworkUrl': _artworkUrl(item),
+            'blurHash': item.blurHash ?? "",
             'artistArtworkUrl': _imageUrlFor(_mainArtist(item)?.id),
             'duration': (item.runTimeTicksDuration() ?? Duration.zero).inMilliseconds / 1000,
             'year': item.productionYear ?? 0,

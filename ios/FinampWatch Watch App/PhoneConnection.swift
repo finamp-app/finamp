@@ -18,6 +18,8 @@ struct LibraryItem: Identifiable, Hashable {
     var trackCount = 0
     /// Token-free Jellyfin URL; empty when only the phone can provide the cover.
     var artworkURL = ""
+    /// The cover's BlurHash, drawn until the cover arrives; empty when unknown.
+    var blurHash = ""
     /// Album's album artist or track's first artist; empty when unknown.
     var artistID = ""
     /// Artist photo URL; empty when unknown.
@@ -108,6 +110,13 @@ struct ArtistInfo {
     let favorite: Bool
     let downloaded: Bool
     let downloadLock: String?
+}
+
+/// Finamp's question after a settings change; `archive` keeps the old queue, as Finamp does for Offline Mode.
+struct ReloadQuestion {
+    let text: String
+    let button: String
+    let archive: Bool
 }
 
 /// A download question requested by the phone.
@@ -300,9 +309,21 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         return (result["transcoding"] as? Bool ?? false, result["offline"] as? Bool ?? false)
     }
 
-    /// Changes one of those settings ("transcoding" or "offline") on the phone.
-    func setSetting(_ name: String, _ enabled: Bool) async throws {
-        _ = try await request("setSetting", ["name": name, "enabled": enabled])
+    /// Changes one of those settings ("transcoding" or "offline") on the phone. Returns Finamp's "reload the queue?"
+    /// question when the change needs it and Finamp doesn't reload by itself.
+    func setSetting(_ name: String, _ enabled: Bool) async throws -> ReloadQuestion? {
+        let reply = try await request("setSetting", ["name": name, "enabled": enabled])["result"] as? [String: Any]
+        guard let question = reply?["reload"] as? String else { return nil }
+        return ReloadQuestion(
+            text: question,
+            button: reply?["reloadButton"] as? String ?? "",
+            archive: reply?["archive"] as? Bool ?? false
+        )
+    }
+
+    /// Reloads Finamp's queue, as its own "Reload" snackbar button does.
+    func reloadQueue(archive: Bool) async throws {
+        _ = try await request("reloadQueue", ["archive": archive])
     }
 
     func artistInfo(_ id: String) async throws -> ArtistInfo {
@@ -360,6 +381,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
                 year: row["year"] as? Int ?? 0,
                 trackCount: row["trackCount"] as? Int ?? 0,
                 artworkURL: row["artworkUrl"] as? String ?? "",
+                blurHash: row["blurHash"] as? String ?? "",
                 artistID: row["artistId"] as? String ?? "",
                 artistArtworkURL: row["artistArtworkUrl"] as? String ?? "",
                 favorite: row["favorite"] as? Bool ?? false,

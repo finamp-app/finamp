@@ -199,12 +199,16 @@ struct CoverView: View {
             .overlay {
                 if let image {
                     Image(uiImage: image).resizable().scaledToFill()
+                } else if let blur = BlurHash.image(item.blurHash) {
+                    Image(uiImage: blur).resizable().scaledToFill()
                 } else {
                     Image(systemName: placeholderSymbol)
                         .font(.title2)
                         .foregroundStyle(.white)
                 }
             }
+            // The cover fades in over its BlurHash, as in Finamp's album images
+            .animation(.easeIn(duration: 0.7), value: image)
             .aspectRatio(1, contentMode: .fit)
             .clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 8)))
             .onGeometryChange(for: Int.self) { proxy in
