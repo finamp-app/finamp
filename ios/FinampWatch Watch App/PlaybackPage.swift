@@ -585,7 +585,7 @@ private struct OutputControls: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, 6)
-        .phoneVolumeCrown($volume)
+        .phoneVolumeCrown($volume, showsBar: false)
     }
 
     private var routeSymbol: String {
@@ -600,8 +600,11 @@ private struct OutputControls: View {
 
 extension View {
     /// Binds the Digital Crown to Finamp's volume on the phone; off during AirPlay, as Finamp disables its slider.
-    func phoneVolumeCrown(_ volume: Binding<Double>, enabled: Bool = true, onTurn: @escaping () -> Void = {}) -> some View {
-        modifier(PhoneVolumeCrown(volume: volume, enabled: enabled, onTurn: onTurn))
+    /// `showsBar` adds a volume bar beside the crown, for screens without their own.
+    func phoneVolumeCrown(
+        _ volume: Binding<Double>, enabled: Bool = true, showsBar: Bool = true, onTurn: @escaping () -> Void = {}
+    ) -> some View {
+        modifier(PhoneVolumeCrown(volume: volume, enabled: enabled, showsBar: showsBar, onTurn: onTurn))
     }
 }
 
@@ -610,22 +613,46 @@ extension View {
 private struct PhoneVolumeCrown: ViewModifier {
     @Binding var volume: Double
     let enabled: Bool
+    let showsBar: Bool
     let onTurn: () -> Void
     @State private var lastCrownChange = Date.distantPast
     @State private var applyingPhoneVolume = false
+    /// A continuous crown position; only its changes matter. A bounded binding makes watchOS draw a scroll bar that
+    /// moves down as the value rises.
+    @State private var crown = 500.0
     private var phoneVolume = PhoneVolume.shared
 
-    init(volume: Binding<Double>, enabled: Bool, onTurn: @escaping () -> Void) {
+    init(volume: Binding<Double>, enabled: Bool, showsBar: Bool, onTurn: @escaping () -> Void) {
         _volume = volume
         self.enabled = enabled
+        self.showsBar = showsBar
         self.onTurn = onTurn
     }
 
     func body(content: Content) -> some View {
         content
             .focusable(enabled && !phoneVolume.airPlay)
-            .digitalCrownRotation($volume, from: 0, through: 1, by: 0.02, sensitivity: .low, isContinuous: false,
+            .digitalCrownRotation($crown, from: 0, through: 1000, by: 0.02, sensitivity: .low, isContinuous: true,
                                   isHapticFeedbackEnabled: true)
+            .onChange(of: crown) { old, new in
+                let step = new - old
+                // A jump means the position wrapped at an end of its range
+                guard abs(step) < 1 else { return }
+                let next = min(1, max(0, volume + step))
+                if next != volume { volume = next }
+            }
+            // Beside the crown, a bar that fills upward with the volume
+            .digitalCrownAccessory {
+                Capsule()
+                    .fill(Color.white.opacity(0.25))
+                    .frame(width: 5, height: 40)
+                    .overlay(alignment: .bottom) {
+                        Capsule()
+                            .fill(Color.finampBlue)
+                            .frame(width: 5, height: max(5, 40 * volume))
+                    }
+            }
+            .digitalCrownAccessory(showsBar ? .automatic : .hidden)
             .onChange(of: volume) { _, new in
                 if applyingPhoneVolume {
                     applyingPhoneVolume = false
