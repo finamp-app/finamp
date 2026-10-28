@@ -339,7 +339,12 @@ class FinampMusicScreenHeader extends ConsumerWidget implements PreferredSizeWid
                     children: [
                       Icon(TablerIcons.bulb, size: 22.0, color: ColorScheme.of(context).onPrimaryContainer),
                       Expanded(
-                        child: Text(context.l10n.quickActionBanner, maxLines: 1, overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          context.l10n.quickActionBanner,
+                          style: TextStyle(color: ColorScheme.of(context).onPrimaryContainer),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       IconButton(
                         icon: Icon(TablerIcons.x, size: 22.0, color: ColorScheme.of(context).onPrimaryContainer),
