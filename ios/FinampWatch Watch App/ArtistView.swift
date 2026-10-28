@@ -6,6 +6,9 @@ struct ArtistView: View {
     let onPlay: () -> Void
 
     @State private var state: ListState = .loading
+    @State private var hasMore = false
+    @State private var isLoadingMore = false
+    private static let pageSize = 50
     @State private var info: ArtistInfo?
     /// Measured column widths used to centre the icons.
     @State private var leftColumnWidth: CGFloat = 0
@@ -34,6 +37,11 @@ struct ArtistView: View {
                 case .loaded(let albums):
                     ForEach(albums) { album in
                         CollectionLink(item: album, kind: .albums)
+                            .onAppear {
+                                if albums.suffix(pagePrefetchRows).contains(where: { $0.id == album.id }) {
+                                    Task { await loadMore() }
+                                }
+                            }
                     }
                 }
             }
@@ -59,9 +67,9 @@ struct ArtistView: View {
                             symbol: "music.note"
                         )
                     }
-                    if case .loaded(let albums) = state {
+                    if let albums = albumCount {
                         count(
-                            albums.count == 1 ? String(localized: "1 album") : String(localized: "\(albums.count) albums"),
+                            albums == 1 ? String(localized: "1 album") : String(localized: "\(albums) albums"),
                             symbol: "opticaldisc"
                         )
                     }
@@ -95,6 +103,13 @@ struct ArtistView: View {
         }
     }
 
+    /// The phone's count, or the loaded list's once every page is in.
+    private var albumCount: Int? {
+        if let info { return info.albums }
+        if case .loaded(let albums) = state, !hasMore { return albums.count }
+        return nil
+    }
+
     private func count(_ text: String, symbol: String) -> some View {
         Label(text, systemImage: symbol)
             .font(.caption2)
@@ -104,11 +119,25 @@ struct ArtistView: View {
     private func load() async {
         state = .loading
         do {
-            state = .loaded(try await PhoneConnection.shared.list("artists", parentId: artist.id))
+            let first = try await PhoneConnection.shared.list("artists", parentId: artist.id, limit: Self.pageSize)
+            hasMore = !first.isEmpty
+            state = .loaded(first)
         } catch {
             state = .failed(error.localizedDescription)
         }
         info = try? await PhoneConnection.shared.artistInfo(artist.id)
+    }
+
+    private func loadMore() async {
+        guard hasMore, !isLoadingMore, case .loaded(let current) = state else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        guard let page = try? await PhoneConnection.shared.list(
+            "artists", parentId: artist.id, offset: current.count, limit: Self.pageSize
+        ) else { return }
+        let known = Set(current.map(\.id))
+        state = .loaded(current + page.filter { !known.contains($0.id) })
+        hasMore = !page.isEmpty
     }
 
     private func play(shuffle: Bool = false, albumShuffle: Bool = false) async {

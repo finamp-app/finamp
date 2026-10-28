@@ -6,10 +6,10 @@ struct CollectionView: View {
     let type: String
     let onPlay: () -> Void
     @State private var state: ListState = .loading
-    /// Albums and playlists load a page at a time as the list scrolls; favourites come at once.
+    /// Tracks load a page at a time as the list scrolls.
     @State private var hasMore = false
     @State private var isLoadingMore = false
-    private static let pageSize = 100
+    private static let pageSize = 50
     @Environment(\.openLibraryDestination) private var open
     /// Refresh on opening: a parent download can change the lock after the list loads.
     @State private var downloadState: (downloaded: Bool, lock: String?)?
@@ -42,7 +42,9 @@ struct CollectionView: View {
                         )
                         .listRowBackground(TrackRowBackground(isPlaying: NowPlayingStore.shared.nowPlaying.id == track.id))
                         .onAppear {
-                            if track.id == tracks.last?.id { Task { await loadMore() } }
+                            if tracks.suffix(pagePrefetchRows).contains(where: { $0.id == track.id }) {
+                                Task { await loadMore() }
+                            }
                         }
                     }
                 }
@@ -96,9 +98,12 @@ struct CollectionView: View {
                             .foregroundStyle(Color.finampBlue)
                             .lineLimit(1)
                     }
-                    Text(trackSummary(tracks))
-                        .font(.caption2)
-                        .foregroundStyle(Color.fgSecondary)
+                    // Favourites have no count of their own until every page is in
+                    if collection.trackCount > 0 || !hasMore {
+                        Text(trackSummary(tracks))
+                            .font(.caption2)
+                            .foregroundStyle(Color.fgSecondary)
+                    }
                     if collection.year > 0 {
                         Text(String(collection.year))
                             .font(.caption2)
@@ -153,9 +158,8 @@ struct CollectionView: View {
     private func load() async {
         state = .loading
         do {
-            let paged = type != "favorites"
             let first = try await PhoneConnection.shared.list(type, parentId: collection.id, limit: Self.pageSize)
-            hasMore = paged && first.count == Self.pageSize
+            hasMore = !first.isEmpty
             state = .loaded(first)
         } catch {
             state = .failed(error.localizedDescription)
@@ -174,7 +178,7 @@ struct CollectionView: View {
         ) else { return }
         let known = Set(current.map(\.id))
         state = .loaded(current + page.filter { !known.contains($0.id) })
-        hasMore = page.count == Self.pageSize
+        hasMore = !page.isEmpty
     }
 
     private func play(startId: String? = nil, shuffle: Bool = false) async {

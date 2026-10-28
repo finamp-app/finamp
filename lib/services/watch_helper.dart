@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
@@ -49,10 +50,14 @@ const _homeSectionSize = 8;
 const _recentlyPlayedLimit = 6;
 const _searchSectionSize = 5;
 const _favoritesLimit = 200;
+
+/// Favourite tracks queued when playing them, so a track tapped deep in the paged list is included.
+const _favoriteTracksQueueLimit = 1000;
 const _queueLimit = 30;
 
-/// Caps an artist's album list to fit WatchConnectivity; album and playlist tracks are paged instead.
-const _collectionLimit = 250;
+/// WatchConnectivity fails replies over about 64 KB, so a list page ends early once its rows pass this (as JSON)
+/// and the watch asks for the rest.
+const _replyBudget = 40 * 1024;
 
 /// Favourite albums/artists fetched at once when playing them all.
 const _parallelFetches = 8;
@@ -359,7 +364,7 @@ class WatchHandler {
     return ContentType.values.byName(type);
   }
 
-  /// Returns a paged library root or a collection's children, capped at [_collectionLimit].
+  /// Returns a page of a library root, a favourites list or a collection's children, kept under [_replyBudget].
   static Future<List<Map<String, Object>>> _list(Map<String, dynamic> arguments) async {
     final type = arguments['type'] as String;
     final offset = arguments['offset'] as int? ?? 0;
@@ -367,27 +372,32 @@ class WatchHandler {
     final parentId = arguments['parentId'] as String?;
     final List<BaseItemDto> items;
     if (type == 'favorites') {
-      items = await _favorites(ContentType.tracks);
+      items = await _favorites(ContentType.tracks, offset: offset, limit: limit);
     } else if (type == 'downloads') {
       items = (await _downloads()).skip(offset).take(limit).toList();
     } else if (type == 'favoriteAlbums') {
-      items = await _favorites(ContentType.albums);
+      items = await _favorites(ContentType.albums, offset: offset, limit: limit);
     } else if (type == 'favoriteArtists') {
-      items = await _favorites(_contentType('artists'));
+      items = await _favorites(_contentType('artists'), offset: offset, limit: limit);
     } else if (parentId == null) {
       items = await _tabPage(_contentType(type), offset, limit);
     } else {
-      // Albums and playlists come a page at a time, from the full list kept since the first page; an artist's albums
-      // come at once
+      // A collection's tracks or an artist's albums come a page at a time, from the full list kept since the first page
       final parent = await _itemById(parentId);
-      if (BaseItemDtoType.fromItem(parent) == BaseItemDtoType.artist) {
-        items = (await _children(parent)).take(_collectionLimit).toList();
-      } else {
-        if (offset == 0 || _childrenCache?.$1 != parentId) _childrenCache = (parentId, await _children(parent));
-        items = _childrenCache!.$2.skip(offset).take(limit).toList();
-      }
+      if (offset == 0 || _childrenCache?.$1 != parentId) _childrenCache = (parentId, await _children(parent));
+      items = _childrenCache!.$2.skip(offset).take(limit).toList();
     }
-    return _rows(items);
+    return _withinReplyBudget(_rows(items));
+  }
+
+  /// Ends a page early once its rows pass [_replyBudget]; the watch asks for the rest from where it stopped.
+  static List<Map<String, Object>> _withinReplyBudget(List<Map<String, Object>> rows) {
+    var bytes = 0;
+    for (final (index, row) in rows.indexed) {
+      bytes += utf8.encode(jsonEncode(row)).length;
+      if (bytes > _replyBudget && index > 0) return rows.sublist(0, index);
+    }
+    return rows;
   }
 
   /// Reuse controllers because each new instance leaves cached sort state behind.
@@ -563,8 +573,8 @@ class WatchHandler {
     return {'artists': sections[0], 'albums': sections[1], 'playlists': sections[2], 'tracks': sections[3]};
   }
 
-  static Future<List<BaseItemDto>> _favorites(ContentType contentType) =>
-      _query(contentType, limit: _favoritesLimit, isFavorite: true, sortBy: "SortName");
+  static Future<List<BaseItemDto>> _favorites(ContentType contentType, {int offset = 0, int limit = _favoritesLimit}) =>
+      _query(contentType, offset: offset, limit: limit, isFavorite: true, sortBy: "SortName");
 
   /// Values must be non-null property-list types for WatchConnectivity.
   static List<Map<String, Object>> _rows(List<BaseItemDto> items) {
@@ -869,7 +879,7 @@ class WatchHandler {
     switch (arguments['type']) {
       case 'favorites':
         await _playTrackList(
-          await _favorites(ContentType.tracks),
+          await _favorites(ContentType.tracks, limit: _favoriteTracksQueueLimit),
           arguments,
           QueueItemSource.rawId(
             type: QueueItemSourceType.favorites,
@@ -952,8 +962,12 @@ class WatchHandler {
     final item = await _itemById(id);
     final artist = Artist<Track>.fromItem(item);
     final tracks = await _readOnce(getChildTracksProvider(item: artist).future);
+    // The album list the watch is paging through, when it's this artist's
+    final cached = _childrenCache;
+    final albums = cached != null && cached.$1 == id ? cached.$2 : await _children(item);
     return {
       'tracks': tracks.length,
+      'albums': albums.length,
       'favorite': GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item)),
       ..._downloadState(item),
     };

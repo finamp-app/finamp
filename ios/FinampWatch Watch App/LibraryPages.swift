@@ -36,6 +36,9 @@ enum LibraryKind: String {
     }
 }
 
+/// Rows from the end at which a list asks for its next page, so the page arrives before it's needed.
+let pagePrefetchRows = 10
+
 /// Loading state for unpaged lists.
 enum ListState {
     case loading
@@ -79,7 +82,7 @@ struct LibraryPage: View {
                                     TrackRowBackground(isPlaying: NowPlayingStore.shared.nowPlaying.id == item.id)
                                 )
                                 .onAppear {
-                                    if index == items.count - 1 { Task { await loadMore() } }
+                                    if index >= items.count - pagePrefetchRows { Task { await loadMore() } }
                                 }
                         }
                         if isLoadingMore {
@@ -93,7 +96,7 @@ struct LibraryPage: View {
                             ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                                 row(item, index: index)
                                     .onAppear {
-                                        if index == items.count - 1 { Task { await loadMore() } }
+                                        if index >= items.count - pagePrefetchRows { Task { await loadMore() } }
                                     }
                             }
                             if isLoadingMore {
@@ -170,12 +173,12 @@ struct LibraryPage: View {
         defer { isReloading = false }
         do {
             let firstPage = try await PhoneConnection.shared.list(kind.type, offset: 0, limit: Self.pageSize)
-            if let current = items, current.count > Self.pageSize,
-               current.prefix(Self.pageSize).map(\.id) == firstPage.map(\.id) {
-                items = firstPage + current.dropFirst(Self.pageSize)
+            if let current = items, !firstPage.isEmpty, current.count > firstPage.count,
+               current.prefix(firstPage.count).map(\.id) == firstPage.map(\.id) {
+                items = firstPage + current.dropFirst(firstPage.count)
             } else {
                 items = firstPage
-                hasMore = firstPage.count == Self.pageSize
+                hasMore = !firstPage.isEmpty
                 generation += 1
             }
             error = nil
@@ -194,7 +197,7 @@ struct LibraryPage: View {
             guard generation == started, let latest = items else { return }
             let known = Set(latest.map(\.id))
             items = latest + page.filter { !known.contains($0.id) }
-            hasMore = page.count == Self.pageSize
+            hasMore = !page.isEmpty
         } catch {
             // Scrolling to the end again retries.
         }

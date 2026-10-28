@@ -7,6 +7,9 @@ struct FavoritesListView: View {
     let type: String
     let onPlay: () -> Void
     @State private var state: ListState = .loading
+    @State private var hasMore = false
+    @State private var isLoadingMore = false
+    private static let pageSize = 50
 
     private var isArtists: Bool { type == "favoriteArtists" }
     private var kind: LibraryKind { isArtists ? .artists : .albums }
@@ -28,6 +31,11 @@ struct FavoritesListView: View {
                 case .loaded(let items):
                     ForEach(items) { item in
                         CollectionLink(item: item, kind: kind)
+                            .onAppear {
+                                if items.suffix(pagePrefetchRows).contains(where: { $0.id == item.id }) {
+                                    Task { await loadMore() }
+                                }
+                            }
                     }
                 }
             }
@@ -46,7 +54,7 @@ struct FavoritesListView: View {
                         .font(.headline.weight(.bold))
                         .foregroundStyle(Color.fgPrimary)
                         .lineLimit(3)
-                    if case .loaded(let items) = state {
+                    if case .loaded(let items) = state, !hasMore {
                         Text(countText(items.count))
                             .font(.caption2)
                             .foregroundStyle(Color.fgSecondary)
@@ -72,10 +80,23 @@ struct FavoritesListView: View {
     private func load() async {
         state = .loading
         do {
-            state = .loaded(try await PhoneConnection.shared.list(type))
+            let first = try await PhoneConnection.shared.list(type, limit: Self.pageSize)
+            hasMore = !first.isEmpty
+            state = .loaded(first)
         } catch {
             state = .failed(error.localizedDescription)
         }
+    }
+
+    private func loadMore() async {
+        guard hasMore, !isLoadingMore, case .loaded(let current) = state else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        guard let page = try? await PhoneConnection.shared.list(type, offset: current.count, limit: Self.pageSize)
+        else { return }
+        let known = Set(current.map(\.id))
+        state = .loaded(current + page.filter { !known.contains($0.id) })
+        hasMore = !page.isEmpty
     }
 
     private func play(shuffle: Bool) async {

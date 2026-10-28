@@ -104,6 +104,7 @@ enum DownloadReply {
 
 struct ArtistInfo {
     let tracks: Int
+    let albums: Int
     let favorite: Bool
     let downloaded: Bool
     let downloadLock: String?
@@ -168,7 +169,8 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         if let airPlay = values["airPlay"] as? Bool { PhoneVolume.shared.airPlay = airPlay }
     }
 
-    /// Pages roots, or an album's or playlist's tracks, with `offset` and `limit`; an artist's albums come at once.
+    /// Pages roots, favourites and a collection's children (tracks, or an artist's albums) with `offset` and `limit`.
+    /// The phone ends a page early when its rows are large, so only an empty page means the end.
     /// `artists` follows the phone's artist type setting; other types are Finamp ContentType names.
     func list(_ type: String, parentId: String? = nil, offset: Int = 0, limit: Int = 50) async throws -> [LibraryItem] {
         var args: [String: Any] = ["type": type, "offset": offset, "limit": limit]
@@ -310,6 +312,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         }
         return ArtistInfo(
             tracks: reply["tracks"] as? Int ?? 0,
+            albums: reply["albums"] as? Int ?? 0,
             favorite: reply["favorite"] as? Bool ?? false,
             downloaded: reply["downloaded"] as? Bool ?? false,
             downloadLock: reply["downloadLock"] as? String
