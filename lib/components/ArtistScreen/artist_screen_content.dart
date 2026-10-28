@@ -71,6 +71,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
 
   Future<void> _refresh() async {
     ref.invalidate(getArtistTracksSectionProvider);
+    ref.invalidate(getArtistTrackCountsProvider);
     ref.invalidate(getArtistAlbumsProvider);
     ref.invalidate(getPerformingArtistAlbumsProvider);
     ref.invalidate(getPerformingArtistTracksProvider);
@@ -160,8 +161,6 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
 
     final disableDownloads = sortConfig.filters.isNotEmpty;
 
-    List<BaseItemDto> allChildren = [];
-
     /// Similarly to the sections on the genreScreen, we can let the tracks section auto-switch
     /// when there are no items to show for the currently selected type. In this case, the provider
     /// will use the next available filter, fetch its items and return those in addition to a set
@@ -195,25 +194,15 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
           ),
         )
         .valueOrNull;
-    final allPerformingArtistTracksAsync = ref
+    final trackCounts = ref
         .watch(
-          getPerformingArtistTracksProvider(
+          getArtistTrackCountsProvider(
             artist: widget.parent,
             libraryFilter: widget.library?.id,
             genreFilter: sortConfig.genreFilter?.id,
           ),
         )
         .valueOrNull;
-
-    final allTracks = ref.watch(
-      getArtistTracksProvider(
-        artist: widget.parent,
-        libraryFilter: widget.library?.id,
-        genreFilter: sortConfig.genreFilter?.id,
-        sortAndFilterConfiguration: albumsSortConfig,
-        sortLikeAlbums: true,
-      ).future,
-    );
 
     final isLoading = topTracksAsync == null || albumArtistAlbumsAsync == null || performingArtistAlbumsAsync == null;
 
@@ -256,11 +245,10 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         ? _applySortAndFilterLocally(appearsOnAlbumsList, appearsOnSortConfig)
         : <BaseItemDto>[];
 
-    final allPerformingArtistTracks = allPerformingArtistTracksAsync ?? [];
-
-    // Combine Children to get correct ChildrenCount
-    // for the Download Status Sync Display for Artists
-    allChildren = [...(albumArtistAlbumsAsync ?? []), ...allPerformingArtistTracks];
+    // Artist downloads have albums plus performing tracks as direct children.
+    final downloadChildCount = albumArtistAlbumsAsync != null && trackCounts != null
+        ? albumArtistAlbumsAsync.length + trackCounts.performing
+        : null;
 
     return RefreshIndicator(
       onRefresh: _refresh,
@@ -284,7 +272,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
             pinned: true,
             flexibleSpace: ArtistScreenContentFlexibleSpaceBar(
               parentItem: widget.parent,
-              allTracks: allTracks,
+              trackCount: trackCounts?.total,
               albumCount: albumArtistAlbums.length,
               controller: controller,
             ),
@@ -299,7 +287,8 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                       item: widget.parent,
                     ),
                   ),
-                  children: allChildren,
+                  children: trackCounts == null ? null : albumArtistAlbumsAsync,
+                  childrenCount: downloadChildCount,
                   downloadDisabled: disableDownloads,
                   customTooltip: disableDownloads
                       ? AppLocalizations.of(context)!.downloadButtonDisabledGenreFilterTooltip
