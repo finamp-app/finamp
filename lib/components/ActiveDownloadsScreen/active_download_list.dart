@@ -1,14 +1,16 @@
+import 'package:finamp/services/downloads_service.dart';
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 import '../../models/finamp_models.dart';
-import 'download_error_list_tile.dart';
+import 'active_download_list_tile.dart';
 
-class DownloadErrorList extends StatelessWidget {
-  const DownloadErrorList({required this.state, required this.children, super.key});
+class ActiveDownloadList extends StatelessWidget {
+  const ActiveDownloadList({required this.state, required this.children, super.key, required this.downloadsService});
 
   final DownloadItemState state;
+  final DownloadsService downloadsService;
   final List<DownloadStub> children;
 
   @override
@@ -30,7 +32,11 @@ class DownloadErrorList extends StatelessWidget {
       sliver: SliverList.builder(
         itemCount: children.length,
         itemBuilder: (context, index) {
-          return DownloadErrorListTile(downloadTask: children[index], showType: state == DownloadItemState.syncFailed);
+          return ActiveDownloadListTile(
+            downloadTask: children[index],
+            showType: state == DownloadItemState.syncFailed,
+            downloadsService: downloadsService,
+          );
         },
       ),
     );
