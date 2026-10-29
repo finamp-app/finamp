@@ -55,7 +55,8 @@ private final class WatchBridge: NSObject, WCSessionDelegate {
         }
         context[key] = value
         let session = WCSession.default
-        guard session.activationState == .activated, session.isPaired, session.isWatchAppInstalled else { return }
+        // Not gated on isWatchAppInstalled: iOS can report false for an installed watch app that is sending requests
+        guard session.activationState == .activated, session.isPaired else { return }
         try? session.updateApplicationContext(context)
         if session.isReachable {
             session.sendMessage([key: value], replyHandler: nil, errorHandler: nil)

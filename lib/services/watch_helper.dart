@@ -93,6 +93,8 @@ class WatchHandler {
     _watchChannel.setMethodCallHandler((call) async {
       final arguments = Map<String, dynamic>.from(call.arguments as Map? ?? {});
       _logger.fine("Watch request: ${call.method} $arguments");
+      // A request proves the watch app is installed, even when iOS's installed flag says otherwise
+      if (call.method != 'watchState') _startPushing();
       try {
         switch (call.method) {
           case 'list':
@@ -280,9 +282,10 @@ class WatchHandler {
   static ProviderSubscription<bool>? _favoriteSubscription;
   static BaseItemId? _favoriteSubscriptionItem;
 
-  /// Coalesces bursts of player events into one push.
+  /// Coalesces bursts of player events into one push, sent 150 ms after the first. While a track loads, events can keep
+  /// coming for seconds, and restarting the wait on each one delayed the push by up to 5 s.
   static void _scheduleNowPlayingPush() {
-    _nowPlayingPushTimer?.cancel();
+    if (_nowPlayingPushTimer?.isActive ?? false) return;
     _nowPlayingPushTimer = Timer(const Duration(milliseconds: 150), _pushNowPlaying);
   }
 

@@ -34,8 +34,11 @@ final class NowPlayingStore {
     static let shared = NowPlayingStore()
 
     var nowPlaying = NowPlaying()
+    /// When the phone last sent now playing, pushed or asked for.
+    @ObservationIgnored private(set) var receivedAt = Date.distantPast
 
     func update(from state: [String: Any]) {
+        receivedAt = .now
         ThemeStore.shared.apply(state["theme"])
         nowPlaying = NowPlaying(
             hasTrack: state["hasTrack"] as? Bool ?? false,
@@ -193,6 +196,16 @@ struct PlaybackPage: View {
         }
         .onChange(of: isActive, initial: true) { _, active in
             if active { Task { try? await PhoneConnection.shared.refreshNowPlaying() } }
+        }
+        // Pushes are the normal path; if none arrive, ask, so the page can't go stale while it's on screen
+        .task(id: isActive) {
+            guard isActive else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(10))
+                if Date.now.timeIntervalSince(store.receivedAt) >= 10 {
+                    try? await PhoneConnection.shared.refreshNowPlaying()
+                }
+            }
         }
     }
 
