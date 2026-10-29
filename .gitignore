@@ -141,3 +141,6 @@ app.*.map.json
 
 # Integration testing artifacts
 integration_test/testing
+
+# Local Claude Code agent memory
+/memory/
