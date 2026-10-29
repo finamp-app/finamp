@@ -3755,7 +3755,7 @@
     "@downloadDialogDownloadLocationLabel": {
         "description": "Label for the dropdown in the download dialog that selects where the download is stored. Only shown when multiple download locations are available."
     },
-    "downloadDialogPath": "Path: {path}",
+    "downloadDialogPath": "Lokasi: {path}",
     "@downloadDialogPath": {
         "description": "Shows the file system path of the selected download location in the download dialog.",
         "placeholders": {
