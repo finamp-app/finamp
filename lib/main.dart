@@ -373,7 +373,9 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
     WindowOptions windowOptions = WindowOptions(
       size: screenSize?.size ?? Size(1200, 800),
       center: screenSize == null,
-      backgroundColor: Colors.transparent,
+      // On macOS 27, the title bar has no background of its own, so a transparent window background makes it
+      // see-through. Keep the default, theme-aware window background there.
+      backgroundColor: Platform.isMacOS ? null : Colors.transparent,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
       minimumSize: Size(400, 250),
