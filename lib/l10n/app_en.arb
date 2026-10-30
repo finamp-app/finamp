@@ -3799,5 +3799,11 @@
     "quickSettingsLayoutLink": "All layout & theme settings",
     "quickSettingsAllSettingsLink": "All Settings",
     "quickSettingsNetworkLink": "Configure the local address for your server",
-  "loginFlowLocalNetworkServersNoResults": "No servers detected yet - you may need to manually enter the server address."
+  "loginFlowLocalNetworkServersNoResults": "No servers detected yet - you may need to manually enter the server address.",
+    "customHeaders": "Custom HTPP Headers",
+    "httpHeaderNotAuth": "Name used internally.",
+    "httpHeaderConflict": "Duplicate header name.",
+    "followRedirectsTitle": "Enable Redirects",
+    "followRedirectsSubtitle": "Allows Finamp to follow HTTP redirects, including ones to different domains than the one configured.  Potentially incompatible with custom HTTP headers.",
+    "advancedLoginOptionsWarning": "Advanced authentication options for unusual server setups.  These are provided on a best-effort basis and may not function correctly on all platforms."
 }

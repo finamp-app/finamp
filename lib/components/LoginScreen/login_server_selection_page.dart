@@ -1,5 +1,5 @@
-import 'package:finamp/components/LoginScreen/server_discovery_status.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
+import 'package:finamp/components/LoginScreen/server_discovery_status.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/jellyfin_models.dart';
@@ -16,6 +16,8 @@ import 'package:logging/logging.dart';
 
 import 'login_flow.dart';
 
+final loginServerSelectionKey = GlobalKey<LoginServerSelectionPageState>();
+
 class LoginServerSelectionPage extends ConsumerStatefulWidget {
   static const routeName = "login/server-selection";
 
@@ -25,10 +27,10 @@ class LoginServerSelectionPage extends ConsumerStatefulWidget {
   const LoginServerSelectionPage({super.key, required this.serverState, this.onServerSelected});
 
   @override
-  ConsumerState<LoginServerSelectionPage> createState() => _LoginServerSelectionPageState();
+  ConsumerState<LoginServerSelectionPage> createState() => LoginServerSelectionPageState();
 }
 
-class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionPage> {
+class LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionPage> {
   static final _loginServerSelectionPageLogger = Logger("LoginServerSelectionPage");
 
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
@@ -101,6 +103,13 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
   void deactivate() {
     widget.serverState.clientDiscoveryHandler.dispose();
     super.deactivate();
+  }
+
+  void retryServerURLCheck() {
+    // Allows the advanced options menu to recheck server connectivity
+    if ((widget.serverState.baseUrl ?? "") != "") {
+      widget.serverState.onBaseUrlChanged(widget.serverState.baseUrl!);
+    }
   }
 
   @override

@@ -33,6 +33,7 @@ class JellyfinApiHelper {
   final jellyfinApi = jellyfin_api.JellyfinApi.create(
     inForeground: true,
     verboseLogging: FinampSettingsHelper.finampSettings.verboseLogging,
+    followRedirects: FinampSettingsHelper.finampSettings.followRedirects,
   );
   static final _jellyfinApiHelperLogger = Logger("JellyfinApiHelper");
 
@@ -46,6 +47,7 @@ class JellyfinApiHelper {
   List<BaseItemDto> selectedMixGenres = [];
 
   Uri? baseUrlTemp;
+  Map<String, String>? customHeadersTemp;
 
   final String defaultFields = jellyfin_api.defaultFields;
 
@@ -74,10 +76,44 @@ class JellyfinApiHelper {
       FinampSettingsHelper.finampSettings.deviceId,
       loggingPort.sendPort,
       FinampSettingsHelper.finampSettings.verboseLogging,
+      FinampSettingsHelper.finampSettings.followRedirects,
     ));
     Future.sync(() async {
       _workerIsolatePort = await startupPort.first as SendPort?;
     });
+  }
+
+  void setUpSettingsListener() {
+    final container = GetIt.instance<ProviderContainer>();
+    container.listen(finampSettingsProvider.verboseLogging, _updateChopperClient);
+    container.listen(finampSettingsProvider.followRedirects, _updateChopperClient);
+  }
+
+  void _updateChopperClient(_, _) {
+    final oldClient = jellyfinApi.client;
+    final verbose = FinampSettingsHelper.finampSettings.verboseLogging;
+    final redirects = FinampSettingsHelper.finampSettings.followRedirects;
+    final newClient = jellyfin_api.JellyfinApi.buildChopper(
+      inForeground: true,
+      verboseLogging: verbose,
+      followRedirects: redirects,
+    );
+    jellyfinApi.client = newClient;
+    oldClient.dispose();
+    try {
+      runInIsolate<void>((api) async {
+        final oldClient2 = api.client;
+        final newClient2 = jellyfin_api.JellyfinApi.buildChopper(
+          inForeground: false,
+          verboseLogging: verbose,
+          followRedirects: redirects,
+        );
+        api.client = newClient2;
+        oldClient2.dispose();
+      }, allowFallback: false);
+    } catch (e) {
+      _jellyfinApiHelperLogger.warning("Error updating chopper client in background: $e", e);
+    }
   }
 
   SendPort? _workerIsolatePort;
@@ -85,7 +121,7 @@ class JellyfinApiHelper {
   /// This should only be run in a worker isolate
   /// Sets up singletons and listens for work.
   static Future<void> _processRequestsBackground(
-    (SendPort, RootIsolateToken, ClientCertificate?, String, SendPort, bool) input,
+    (SendPort, RootIsolateToken, ClientCertificate?, String, SendPort, bool, bool) input,
   ) async {
     BackgroundIsolateBinaryMessenger.ensureInitialized(input.$2);
     ReceivePort requestPort = ReceivePort();
@@ -130,6 +166,7 @@ class JellyfinApiHelper {
     jellyfin_api.JellyfinApi backgroundApi = jellyfin_api.JellyfinApi.create(
       inForeground: false,
       verboseLogging: input.$6,
+      followRedirects: input.$7,
     );
     await for (var request in requestPort) {
       var (func, outputPort) = request as (Future<dynamic> Function(jellyfin_api.JellyfinApi), SendPort);
@@ -144,8 +181,9 @@ class JellyfinApiHelper {
   }
 
   /// Runs the given function in a background isolate, supplying a valid API instance.
-  Future<T> runInIsolate<T>(Future<T> Function(jellyfin_api.JellyfinApi) func) async {
+  Future<T> runInIsolate<T>(Future<T> Function(jellyfin_api.JellyfinApi) func, {bool allowFallback = true}) async {
     if (_workerIsolatePort == null) {
+      if (!allowFallback) throw "Background worker is not running.";
       return func(jellyfinApi);
     }
     ReceivePort port = ReceivePort();
@@ -661,11 +699,13 @@ class JellyfinApiHelper {
       accessToken: newUserAuthenticationResult.accessToken!,
       serverId: newUserAuthenticationResult.serverId!,
       views: {},
+      customHeaders: customHeadersTemp ?? {},
     );
 
     await _finampUserHelper.saveUser(newUser);
-    baseUrlTemp =
-        null; // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    baseUrlTemp = null;
+    customHeadersTemp = null;
   }
 
   /// Authenticates a user and saves the login details
@@ -690,11 +730,13 @@ class JellyfinApiHelper {
       accessToken: newUserAuthenticationResult.accessToken!,
       serverId: newUserAuthenticationResult.serverId!,
       views: {},
+      customHeaders: customHeadersTemp ?? {},
     );
 
     await _finampUserHelper.saveUser(newUser);
-    baseUrlTemp =
-        null; // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    baseUrlTemp = null;
+    customHeadersTemp = null;
   }
 
   /// Gets the current user.

@@ -25,7 +25,16 @@ class FinampUserHelper {
   }
 
   Future<void> setAuthHeader() async {
-    authorizationHeader = await jellyfin_api.getAuthHeader(deviceId: deviceId);
+    authorizationHeaders = await buildHeaders(currentUser?.customHeaders ?? <String, String>{});
+  }
+
+  static const httpAuthorizationHeader = "Authorization";
+
+  Future<Map<String, String>> buildHeaders(Map<String, String> customHeaders) async {
+    final jellyfinAuth = await jellyfin_api.getAuthHeader(deviceId: deviceId);
+    final headers = Map.of(customHeaders);
+    headers[httpAuthorizationHeader] = jellyfinAuth;
+    return headers;
   }
 
   final _isar = GetIt.instance<Isar>();
@@ -47,7 +56,7 @@ class FinampUserHelper {
 
   Iterable<FinampUser> get finampUsers => _isar.finampUsers.where().findAllSync();
 
-  late String authorizationHeader;
+  late Map<String, String> authorizationHeaders;
 
   static final Provider<FinampUser?> finampCurrentUserProvider = Provider((ref) {
     return GetIt.instance<FinampUserHelper>().currentUser;
