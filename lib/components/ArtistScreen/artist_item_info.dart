@@ -15,6 +15,7 @@ class ArtistItemInfo extends ConsumerWidget {
     super.key,
     required this.item,
     required this.itemTracks,
+    this.trackCountHasError = false,
     required this.itemAlbums,
     required this.sortConfig,
     this.sortConfigController,
@@ -22,6 +23,7 @@ class ArtistItemInfo extends ConsumerWidget {
 
   final BaseItemDto item;
   final int? itemTracks;
+  final bool trackCountHasError;
   final int itemAlbums;
   final SortAndFilterConfiguration sortConfig;
   final SortAndFilterController? sortConfigController;
@@ -33,15 +35,18 @@ class ArtistItemInfo extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        if (itemTracks != null)
-          IconAndText(
-            iconData: Icons.music_note,
-            textSpan: TextSpan(
-              text: ref.watch(finampSettingsProvider.isOffline)
-                  ? AppLocalizations.of(context)!.offlineTrackCountArtist(itemTracks!)
-                  : AppLocalizations.of(context)!.trackCount(itemTracks!),
-            ),
+        IconAndText(
+          iconData: Icons.music_note,
+          textSpan: TextSpan(
+            text: itemTracks == null
+                ? (trackCountHasError
+                      ? AppLocalizations.of(context)!.errorLoadingItems
+                      : AppLocalizations.of(context)!.loading)
+                : ref.watch(finampSettingsProvider.isOffline)
+                ? AppLocalizations.of(context)!.offlineTrackCountArtist(itemTracks!)
+                : AppLocalizations.of(context)!.trackCount(itemTracks!),
           ),
+        ),
         IconAndText(
           iconData: TablerIcons.disc,
           textSpan: TextSpan(text: AppLocalizations.of(context)!.albumCount(itemAlbums)),

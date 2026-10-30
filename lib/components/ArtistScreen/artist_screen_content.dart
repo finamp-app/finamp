@@ -71,7 +71,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
 
   Future<void> _refresh() async {
     ref.invalidate(getArtistTracksSectionProvider);
-    ref.invalidate(getArtistTrackCountsProvider);
+    ref.invalidate(getArtistTrackCountProvider);
     ref.invalidate(getArtistAlbumsProvider);
     ref.invalidate(getPerformingArtistAlbumsProvider);
     ref.invalidate(getPerformingArtistTracksProvider);
@@ -194,15 +194,13 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
           ),
         )
         .valueOrNull;
-    final trackCounts = ref
-        .watch(
-          getArtistTrackCountsProvider(
-            artist: widget.parent,
-            libraryFilter: widget.library?.id,
-            genreFilter: sortConfig.genreFilter?.id,
-          ),
-        )
-        .valueOrNull;
+    final trackCountProvider = getArtistTrackCountProvider(
+      artist: widget.parent,
+      libraryFilter: widget.library?.id,
+      genreFilter: sortConfig.genreFilter?.id,
+    );
+    final trackCountAsync = ref.watch(trackCountProvider);
+    final trackCount = trackCountAsync.valueOrNull;
 
     final isLoading = topTracksAsync == null || albumArtistAlbumsAsync == null || performingArtistAlbumsAsync == null;
 
@@ -245,9 +243,11 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
         ? _applySortAndFilterLocally(appearsOnAlbumsList, appearsOnSortConfig)
         : <BaseItemDto>[];
 
-    // Artist downloads have albums plus performing tracks as direct children.
-    final downloadChildCount = albumArtistAlbumsAsync != null && trackCounts != null
-        ? albumArtistAlbumsAsync.length + trackCounts.performing
+    // Match _getFinampCollectionChildren: album-artist albums plus ALL tracks
+    // returned by ArtistIds (both credit types). An album and its tracks are
+    // separate direct links; getStatus compares those links, not unique files.
+    final downloadChildCount = albumArtistAlbumsAsync != null && trackCount != null
+        ? albumArtistAlbumsAsync.length + trackCount
         : null;
 
     return RefreshIndicator(
@@ -272,7 +272,8 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
             pinned: true,
             flexibleSpace: ArtistScreenContentFlexibleSpaceBar(
               parentItem: widget.parent,
-              trackCount: trackCounts?.total,
+              trackCount: trackCount,
+              trackCountHasError: trackCountAsync.hasError,
               albumCount: albumArtistAlbums.length,
               controller: controller,
             ),
@@ -287,8 +288,10 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
                       item: widget.parent,
                     ),
                   ),
-                  children: trackCounts == null ? null : albumArtistAlbumsAsync,
                   childrenCount: downloadChildCount,
+                  // Includes guest appearances without enumerating track DTOs or
+                  // counting tracks twice through their album and direct link.
+                  getDownloadSizeTrackCount: () => ref.read(trackCountProvider.future),
                   downloadDisabled: disableDownloads,
                   customTooltip: disableDownloads
                       ? AppLocalizations.of(context)!.downloadButtonDisabledGenreFilterTooltip

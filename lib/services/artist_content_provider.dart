@@ -135,10 +135,10 @@ Future<(List<BaseItemDto>, CuratedItemSelectionType, Set<CuratedItemSelectionTyp
   return (filteredResult, currentSelectionType, disabledFilters);
 }
 
-/// Counts for the header and the artist download's direct track children.
+/// Distinct tracks with an album-artist OR track-artist credit.
 /// Rendering an online artist page must not fetch every track just to count it.
 @riverpod
-Future<({int total, int performing})> getArtistTrackCounts(
+Future<int> getArtistTrackCount(
   Ref ref, {
   required BaseItemDto artist,
   LibraryId? libraryFilter,
@@ -148,10 +148,7 @@ Future<({int total, int performing})> getArtistTrackCounts(
     final tracks = await ref.watch(
       getArtistTracksProvider(artist: artist, libraryFilter: libraryFilter, genreFilter: genreFilter).future,
     );
-    final performing = await ref.watch(
-      getPerformingArtistTracksProvider(artist: artist, libraryFilter: libraryFilter, genreFilter: genreFilter).future,
-    );
-    return (total: tracks.length, performing: performing.length);
+    return tracks.length;
   }
 
   final result = await GetIt.instance<JellyfinApiHelper>().getItemsWithTotalRecordCount(
@@ -169,7 +166,7 @@ Future<({int total, int performing})> getArtistTrackCounts(
   }
   // Jellyfin's ArtistIds filter includes both track and album artist credits.
   // It already returns their union, so overlapping credits are counted once.
-  return (total: count, performing: count);
+  return count;
 }
 
 // Get Albums where the artist is an album artist
@@ -262,9 +259,9 @@ Future<List<BaseItemDto>> getPerformingArtistAlbums(
   }
 }
 
-// Fetch every performing artist track
-// (note that this intentionally also includes tracks
-// where the artist is also an album artist)
+// Online ArtistIds returns both track-artist and album-artist credits, even
+// album-only credits. Keep that existing playback/download behavior here;
+// this provider's historical name does not mean a pure performing-artist set.
 @riverpod
 Future<List<BaseItemDto>> getPerformingArtistTracks(
   Ref ref, {

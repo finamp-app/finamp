@@ -194,13 +194,13 @@ void main() {
     final (tracks, _, _) = await container.read(getArtistTracksSectionProvider(artist: artist).future);
     expect(tracks, isEmpty);
     final counts = await container.read(
-      getArtistTrackCountsProvider(
+      getArtistTrackCountProvider(
         artist: artist,
         libraryFilter: const LibraryId('library'),
         genreFilter: const BaseItemId('genre'),
       ).future,
     );
-    expect(counts, (total: 10, performing: 10));
+    expect(counts, 10);
     expect(api.calls, hasLength(1));
     final call = api.calls.single;
     expect(call.memberName, #getItemsWithTotalRecordCount);
@@ -216,9 +216,9 @@ void main() {
     test('count metadata handles $total without inventing a loaded zero', () async {
       final api = FixtureArtistApi()..total = total;
       final container = await fixtureContainer(api);
-      final result = container.read(getArtistTrackCountsProvider(artist: artist).future);
+      final result = container.read(getArtistTrackCountProvider(artist: artist).future);
       if (total == 0) {
-        expect(await result, (total: 0, performing: 0));
+        expect(await result, 0);
       } else {
         await expectLater(result, throwsFormatException);
       }
@@ -228,14 +228,14 @@ void main() {
   test('metadata errors do not trigger a full-discography fallback', () async {
     final api = FixtureArtistApi()..countFails = true;
     final container = await fixtureContainer(api);
-    await expectLater(container.read(getArtistTrackCountsProvider(artist: artist).future), throwsFormatException);
+    await expectLater(container.read(getArtistTrackCountProvider(artist: artist).future), throwsFormatException);
     expect(api.calls.map((call) => call.memberName), [#getItemsWithTotalRecordCount]);
   });
 
   test('playback still enumerates and deduplicates the complete discography on demand', () async {
     final api = FixtureArtistApi();
     final container = await fixtureContainer(api);
-    await container.read(getArtistTrackCountsProvider(artist: artist).future);
+    await container.read(getArtistTrackCountProvider(artist: artist).future);
     expect(api.calls.where((call) => call.memberName == #getItems), isEmpty);
     final tracks = await container.read(getArtistTracksProvider(artist: artist, onlyFavorites: true).future);
     expect(tracks.map((item) => item.id).toSet(), hasLength(10));
@@ -253,12 +253,14 @@ void main() {
       overrides: [
         finampSettingsProvider.overrideWith((ref) => Stream.value(settings(offline: true))),
         getArtistTracksProvider(artist: artist).overrideWith((ref) async => [track(0), track(1), track(2)]),
-        getPerformingArtistTracksProvider(artist: artist).overrideWith((ref) async => [track(1), track(2)]),
+        getPerformingArtistTracksProvider(artist: artist).overrideWith((ref) async {
+          throw StateError('The union is already available from the local artist tracks');
+        }),
       ],
     );
     addTearDown(container.dispose);
     await container.read(finampSettingsProvider.future);
-    expect(await container.read(getArtistTrackCountsProvider(artist: artist).future), (total: 3, performing: 2));
+    expect(await container.read(getArtistTrackCountProvider(artist: artist).future), 3);
     expect(api.calls, isEmpty);
   });
 
@@ -288,7 +290,8 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.byIcon(Icons.music_note), count == null ? findsNothing : findsOneWidget);
+      expect(find.byIcon(Icons.music_note), findsOneWidget);
+      if (count == null) expect(find.text('Loading…', findRichText: true), findsOneWidget);
       expect(find.text('498 Albums', findRichText: true), findsOneWidget);
       if (count != null) expect(find.text('$count Tracks', findRichText: true), findsOneWidget);
     });

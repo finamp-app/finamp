@@ -246,38 +246,37 @@ class _GetArtistTracksSectionProviderElement
       (origin as GetArtistTracksSectionProvider).genreFilter;
 }
 
-String _$getArtistTrackCountsHash() =>
-    r'14f3fb7266ae4097f3f2152bfac1297c3f2bbb9b';
+String _$getArtistTrackCountHash() =>
+    r'f9760ad4a29654a567fcc011a3e58c756a7ac552';
 
-/// Counts for the header and the artist download's direct track children.
+/// Distinct tracks with an album-artist OR track-artist credit.
 /// Rendering an online artist page must not fetch every track just to count it.
 ///
-/// Copied from [getArtistTrackCounts].
-@ProviderFor(getArtistTrackCounts)
-const getArtistTrackCountsProvider = GetArtistTrackCountsFamily();
+/// Copied from [getArtistTrackCount].
+@ProviderFor(getArtistTrackCount)
+const getArtistTrackCountProvider = GetArtistTrackCountFamily();
 
-/// Counts for the header and the artist download's direct track children.
+/// Distinct tracks with an album-artist OR track-artist credit.
 /// Rendering an online artist page must not fetch every track just to count it.
 ///
-/// Copied from [getArtistTrackCounts].
-class GetArtistTrackCountsFamily
-    extends Family<AsyncValue<({int total, int performing})>> {
-  /// Counts for the header and the artist download's direct track children.
+/// Copied from [getArtistTrackCount].
+class GetArtistTrackCountFamily extends Family<AsyncValue<int>> {
+  /// Distinct tracks with an album-artist OR track-artist credit.
   /// Rendering an online artist page must not fetch every track just to count it.
   ///
-  /// Copied from [getArtistTrackCounts].
-  const GetArtistTrackCountsFamily();
+  /// Copied from [getArtistTrackCount].
+  const GetArtistTrackCountFamily();
 
-  /// Counts for the header and the artist download's direct track children.
+  /// Distinct tracks with an album-artist OR track-artist credit.
   /// Rendering an online artist page must not fetch every track just to count it.
   ///
-  /// Copied from [getArtistTrackCounts].
-  GetArtistTrackCountsProvider call({
+  /// Copied from [getArtistTrackCount].
+  GetArtistTrackCountProvider call({
     required BaseItemDto artist,
     LibraryId? libraryFilter,
     BaseItemId? genreFilter,
   }) {
-    return GetArtistTrackCountsProvider(
+    return GetArtistTrackCountProvider(
       artist: artist,
       libraryFilter: libraryFilter,
       genreFilter: genreFilter,
@@ -285,8 +284,8 @@ class GetArtistTrackCountsFamily
   }
 
   @override
-  GetArtistTrackCountsProvider getProviderOverride(
-    covariant GetArtistTrackCountsProvider provider,
+  GetArtistTrackCountProvider getProviderOverride(
+    covariant GetArtistTrackCountProvider provider,
   ) {
     return call(
       artist: provider.artist,
@@ -307,44 +306,43 @@ class GetArtistTrackCountsFamily
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'getArtistTrackCountsProvider';
+  String? get name => r'getArtistTrackCountProvider';
 }
 
-/// Counts for the header and the artist download's direct track children.
+/// Distinct tracks with an album-artist OR track-artist credit.
 /// Rendering an online artist page must not fetch every track just to count it.
 ///
-/// Copied from [getArtistTrackCounts].
-class GetArtistTrackCountsProvider
-    extends AutoDisposeFutureProvider<({int total, int performing})> {
-  /// Counts for the header and the artist download's direct track children.
+/// Copied from [getArtistTrackCount].
+class GetArtistTrackCountProvider extends AutoDisposeFutureProvider<int> {
+  /// Distinct tracks with an album-artist OR track-artist credit.
   /// Rendering an online artist page must not fetch every track just to count it.
   ///
-  /// Copied from [getArtistTrackCounts].
-  GetArtistTrackCountsProvider({
+  /// Copied from [getArtistTrackCount].
+  GetArtistTrackCountProvider({
     required BaseItemDto artist,
     LibraryId? libraryFilter,
     BaseItemId? genreFilter,
   }) : this._internal(
-         (ref) => getArtistTrackCounts(
-           ref as GetArtistTrackCountsRef,
+         (ref) => getArtistTrackCount(
+           ref as GetArtistTrackCountRef,
            artist: artist,
            libraryFilter: libraryFilter,
            genreFilter: genreFilter,
          ),
-         from: getArtistTrackCountsProvider,
-         name: r'getArtistTrackCountsProvider',
+         from: getArtistTrackCountProvider,
+         name: r'getArtistTrackCountProvider',
          debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
              ? null
-             : _$getArtistTrackCountsHash,
-         dependencies: GetArtistTrackCountsFamily._dependencies,
+             : _$getArtistTrackCountHash,
+         dependencies: GetArtistTrackCountFamily._dependencies,
          allTransitiveDependencies:
-             GetArtistTrackCountsFamily._allTransitiveDependencies,
+             GetArtistTrackCountFamily._allTransitiveDependencies,
          artist: artist,
          libraryFilter: libraryFilter,
          genreFilter: genreFilter,
        );
 
-  GetArtistTrackCountsProvider._internal(
+  GetArtistTrackCountProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -362,15 +360,12 @@ class GetArtistTrackCountsProvider
 
   @override
   Override overrideWith(
-    FutureOr<({int total, int performing})> Function(
-      GetArtistTrackCountsRef provider,
-    )
-    create,
+    FutureOr<int> Function(GetArtistTrackCountRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: GetArtistTrackCountsProvider._internal(
-        (ref) => create(ref as GetArtistTrackCountsRef),
+      override: GetArtistTrackCountProvider._internal(
+        (ref) => create(ref as GetArtistTrackCountRef),
         from: from,
         name: null,
         dependencies: null,
@@ -384,14 +379,13 @@ class GetArtistTrackCountsProvider
   }
 
   @override
-  AutoDisposeFutureProviderElement<({int total, int performing})>
-  createElement() {
-    return _GetArtistTrackCountsProviderElement(this);
+  AutoDisposeFutureProviderElement<int> createElement() {
+    return _GetArtistTrackCountProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is GetArtistTrackCountsProvider &&
+    return other is GetArtistTrackCountProvider &&
         other.artist == artist &&
         other.libraryFilter == libraryFilter &&
         other.genreFilter == genreFilter;
@@ -410,8 +404,7 @@ class GetArtistTrackCountsProvider
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin GetArtistTrackCountsRef
-    on AutoDisposeFutureProviderRef<({int total, int performing})> {
+mixin GetArtistTrackCountRef on AutoDisposeFutureProviderRef<int> {
   /// The parameter `artist` of this provider.
   BaseItemDto get artist;
 
@@ -422,19 +415,19 @@ mixin GetArtistTrackCountsRef
   BaseItemId? get genreFilter;
 }
 
-class _GetArtistTrackCountsProviderElement
-    extends AutoDisposeFutureProviderElement<({int total, int performing})>
-    with GetArtistTrackCountsRef {
-  _GetArtistTrackCountsProviderElement(super.provider);
+class _GetArtistTrackCountProviderElement
+    extends AutoDisposeFutureProviderElement<int>
+    with GetArtistTrackCountRef {
+  _GetArtistTrackCountProviderElement(super.provider);
 
   @override
-  BaseItemDto get artist => (origin as GetArtistTrackCountsProvider).artist;
+  BaseItemDto get artist => (origin as GetArtistTrackCountProvider).artist;
   @override
   LibraryId? get libraryFilter =>
-      (origin as GetArtistTrackCountsProvider).libraryFilter;
+      (origin as GetArtistTrackCountProvider).libraryFilter;
   @override
   BaseItemId? get genreFilter =>
-      (origin as GetArtistTrackCountsProvider).genreFilter;
+      (origin as GetArtistTrackCountProvider).genreFilter;
 }
 
 String _$getArtistAlbumsHash() => r'9604fbf0b816367ec52ebadceaf2d1ed242dd1b7';
