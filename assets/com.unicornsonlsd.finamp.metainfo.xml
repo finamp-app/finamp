@@ -95,7 +95,7 @@
           <li>New playback options</li>
           <li>Vastly improved download system</li>
           <li>Automatic offline mode</li>
-          <li>Android Auto and CarPlay (<strong>only if installed via Play Store or enabled in Android Auto Developer Settings!</strong>)</li>
+          <li>Android Auto and CarPlay (<em>only if installed via Play Store or enabled in Android Auto Developer Settings!</em>)</li>
           <li>Support for custom certs and mTLS</li>
           <li>Desktop and Tablet Support</li>
           <li>Tons of bug fixes</li>
