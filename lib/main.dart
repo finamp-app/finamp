@@ -36,6 +36,8 @@ import 'package:finamp/screens/quick_settings_screen.dart';
 import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/android_auto_helper.dart';
 import 'package:finamp/services/audio_service_smtc.dart';
+import 'package:finamp/services/macos_now_playing.dart';
+import 'package:audio_service_platform_interface/audio_service_platform_interface.dart';
 import 'package:finamp/services/carplay_helper.dart';
 import 'package:finamp/services/client_certificate_installer.dart';
 import 'package:finamp/services/data_source_service.dart';
@@ -428,6 +430,10 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
 }
 
 Future<void> _setupPlaybackServices() async {
+  final macosNowPlaying = Platform.isMacOS ? MacosNowPlaying() : null;
+  if (macosNowPlaying != null) {
+    AudioServicePlatform.instance = macosNowPlaying;
+  }
   if (Platform.isWindows) {
     AudioServiceSMTC.registerWith();
   }
@@ -466,6 +472,7 @@ Future<void> _setupPlaybackServices() async {
     cacheManager: StubImageCache(),
   );
 
+  macosNowPlaying?.attach(audioHandler);
   GetIt.instance.registerSingleton<MusicPlayerBackgroundTask>(audioHandler);
   var queueService = QueueService();
   GetIt.instance.registerSingleton(queueService);
