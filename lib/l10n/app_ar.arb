@@ -136,7 +136,7 @@
     "viewType": "نوع العرض",
     "viewTypeSubtitle": "نوع عرض شاشة الموسيقى",
     "showTextOnGridView": "عرض النص في عرض الشبكة",
-    "showTextOnGridViewSubtitle": "إظهار أو إخفاء النص (العنوان، الفنان، إلخ) في شاشة العرض الشبكي للموسيقى.",
+    "showTextOnGridViewSubtitle": "إظهار أو إخفاء النص (العنوان، الفنان، إلخ) في شاشة العرض الشبكي للموسيقى. يظهر النص دائما في شاشة الاستقبال، متجاهِلًا هذا الإعداد.",
     "useCoverAsBackgroundSubtitle": "ما إذا كان سيتم استخدام غلاف الأغنية المموّه كخلفية في أجزاء مختلفة من التطبيق.",
     "theme": "المظهر",
     "light": "الفاتح",
@@ -2854,5 +2854,23 @@
     "previousTracksPersistenceModeExpanded": "موسع (ظاهر)",
     "@previousTracksPersistenceModeExpanded": {
         "description": "Overrides saved value to expand previous tracks header on queue list open"
-    }
+    },
+    "verboseLoggingSubtitle": "احتفظ بسجلات مفصلة للإبلاغ عن الأخطاء البرمجية. اترك هذا الإعداد غير مشغَّل للحصول على أداء قراءة أحسن.",
+    "@verboseLoggingSubtitle": {
+        "description": "Subtitle explaining the verbose logging toggle"
+    },
+    "activeLibraries": "المكتبات النشطة",
+    "@activeLibraries": {
+        "description": "Active Libraries"
+    },
+    "inAlbumOrPlaylist": "ترتيب الألبومات/قوائم القراءة",
+    "@inAlbumOrPlaylist": {
+        "description": "Sorting order for tracks in an album or playlist (by disc, then index, then name"
+    },
+    "discUnknown": "قرص غير معروف",
+    "@discUnknown": {
+        "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
+    },
+    "perTabGridMode": "الاختيار حسب التبويب",
+    "showFastScrollerSubtitle": "إظهار أو إخفاء قائمة الحروف على يمين تبويبات الموسيقى والتي تسمح بالقفز إلى الحروف."
 }
