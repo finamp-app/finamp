@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -28,13 +26,13 @@ class ArtistScreenContentFlexibleSpaceBar extends ConsumerWidget {
   const ArtistScreenContentFlexibleSpaceBar({
     super.key,
     required this.parentItem,
-    required this.allTracks,
+    required this.trackCount,
     required this.albumCount,
     required this.controller,
   });
 
   final BaseItemDto parentItem;
-  final Future<List<BaseItemDto>?> allTracks;
+  final AsyncValue<int> trackCount;
   final int albumCount;
   final SortAndFilterController controller;
 
@@ -58,17 +56,12 @@ class ArtistScreenContentFlexibleSpaceBar extends ConsumerWidget {
                     const SizedBox(width: 4),
                     Expanded(
                       flex: 2,
-                      child: FutureBuilder(
-                        future: allTracks,
-                        builder: (context, snapshot) {
-                          return ArtistItemInfo(
-                            item: parentItem,
-                            itemTracks: snapshot.data?.length ?? 0,
-                            itemAlbums: albumCount,
-                            sortConfigController: controller,
-                            sortConfig: sortConfig,
-                          );
-                        },
+                      child: ArtistItemInfo(
+                        item: parentItem,
+                        itemTracks: trackCount,
+                        itemAlbums: albumCount,
+                        sortConfigController: controller,
+                        sortConfig: sortConfig,
                       ),
                     ),
                   ],
