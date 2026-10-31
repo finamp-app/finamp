@@ -20,7 +20,8 @@ permissions:
   contents: write
 
 env:
-  if_condition: &integration_if false
+  if_condition: &integration_if github.event_name == 'workflow_dispatch' ||
+    (github.event_name == 'push' && github.repository == 'finamp-app/finamp' )
 
 # Due to a flutter bug, flutter build is not generating localizations
 # workaround by always running flutter pub get immediately before building,
