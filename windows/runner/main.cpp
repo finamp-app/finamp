@@ -16,7 +16,7 @@ bool SendAppLinkToInstance(const std::wstring& title) {
 
   EnumWindows([](HWND w, LPARAM lp) -> BOOL {
     auto* d = reinterpret_cast<EnumData*>(lp);
-    if (!IsWindowVisible(w)) return TRUE;
+    // Match hidden windows too so a second launch restores Finamp from the system tray.
     wchar_t cls[256];
     if (!GetClassName(w, cls, 256)) return TRUE;
     if (wcscmp(cls, L"FLUTTER_RUNNER_WIN32_WINDOW") != 0) return TRUE;
@@ -51,7 +51,7 @@ bool SendAppLinkToInstance(const std::wstring& title) {
           break;
     }
 
-    SetWindowPos(0, HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE);
+    SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE);
     SetForegroundWindow(hwnd);
     // END (Optional) Restore
 
