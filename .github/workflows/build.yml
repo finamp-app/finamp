@@ -72,6 +72,23 @@ jobs:
         # Include arch as linux aarch64 include isar overriding
         # arch can be removed later once isar aarch64 is easily available on pub.dev and overriding is not needed anymore
         pub-cache-key: "flutter-pub-:os:-:channel:-:version:-:arch:-:hash:"
+
+    - name: Setup Android Keys
+      env:
+        ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        ANDROID_KEYSTORE_PATH: android/app/keystore.jks
+        ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      if: env.ANDROID_KEYSTORE_BASE64 != ""
+      run:
+        echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > $ANDROID_KEYSTORE_PATH
+        cat > android/key.properties << EOF
+        storePassword=$ANDROID_KEYSTORE_PASSWORD
+        keyPassword=$ANDROID_KEY_PASSWORD
+        keyAlias=$ANDROID_KEY_ALIAS
+        storeFile=$ANDROID_KEYSTORE_PATH
+        EOF
     
     - name: Gradle cache
       uses: actions/cache@v5
