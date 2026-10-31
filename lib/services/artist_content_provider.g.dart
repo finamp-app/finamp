@@ -833,7 +833,7 @@ class _GetPerformingArtistAlbumsProviderElement
 }
 
 String _$getPerformingArtistTracksHash() =>
-    r'2bf1c967f60b7500e63aa849972e549497b43356';
+    r'36ea5cce538739f595ba04777bccca6e78778aa2';
 
 /// See also [getPerformingArtistTracks].
 @ProviderFor(getPerformingArtistTracks)

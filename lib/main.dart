@@ -353,7 +353,7 @@ Future<void> _setupProviders() async {
   await initImageCache();
 
   DataSourceService.create();
-  AutoOffline.startWatching();
+  await startNetworkAutomation();
 
   unawaited(
     Stream<void>.periodic(Duration(seconds: 1)).forEach((_) {

@@ -291,7 +291,7 @@ Future<List<BaseItemDto>> getPerformingArtistTracks(
       );
       // Now we remove every track where the artist is NOT an performing artist...
       final filteredPerformingArtistTracks = performingArtistAlbumTracks.where((track) {
-        return track.artistItems?.any((artist) => artist.id == artist.id) ?? false;
+        return track.artistItems?.any((credit) => credit.id == artist.id) ?? false;
       });
       // and add the tracks to the list
       performingArtistTracks.addAll(filteredPerformingArtistTracks);

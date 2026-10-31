@@ -18,7 +18,9 @@ import '../../services/favorite_provider.dart';
 import '../album_image.dart';
 
 class PlayerScreenAlbumImage extends ConsumerWidget {
-  const PlayerScreenAlbumImage({super.key});
+  const PlayerScreenAlbumImage({super.key, this.showHiddenPlayerActions = false});
+
+  final bool showHiddenPlayerActions;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,6 +50,7 @@ class PlayerScreenAlbumImage extends ConsumerWidget {
                   context: context,
                   item: queueItem!.baseItem,
                   showPlaybackControls: true,
+                  showHiddenPlayerActions: showHiddenPlayerActions,
                   // show controls on player screen
                   parentItem: inPlaylist ? queueItem.source.item : null,
                 );
