@@ -12,6 +12,7 @@ import '../../screens/artist_screen.dart';
 import '../../services/downloads_service.dart';
 import '../../services/finamp_settings_helper.dart';
 import '../../services/jellyfin_api_helper.dart';
+import '../../services/track_artist_order.dart';
 import '../album_image.dart';
 
 part 'artist_chip.g.dart';
@@ -31,7 +32,7 @@ Future<BaseItemDto?> artistItem(Ref ref, BaseItemId id) async {
       : jellyfinApiHelper.getItemById(id);
 }
 
-class ArtistChips extends StatelessWidget {
+class ArtistChips extends ConsumerWidget {
   const ArtistChips({super.key, this.backgroundColor, this.color, this.baseItem, this.artistType = ArtistType.artist});
 
   final BaseItemDto? baseItem;
@@ -40,11 +41,18 @@ class ArtistChips extends StatelessWidget {
   final ArtistType artistType;
 
   @override
-  Widget build(BuildContext context) {
-    final artists = ((artistType == ArtistType.albumArtist) ? baseItem?.albumArtists : baseItem?.artistItems) ?? [];
-    final filteredArtists = {
-      for (var artist in artists) artist.id: artist,
-    }.values.sortedBy((e) => e.name ?? '').toList();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final List<TrackArtistCredit> filteredArtists;
+    if (artistType == ArtistType.albumArtist) {
+      filteredArtists = {for (final artist in baseItem?.albumArtists ?? <NameIdPair>[]) artist.id: artist}.values
+          .sortedBy((artist) => artist.name ?? '')
+          .map((artist) => TrackArtistCredit(name: artist.name, id: artist.id))
+          .toList();
+    } else {
+      filteredArtists = baseItem == null
+          ? []
+          : orderedTrackArtists(baseItem!, ref.watch(finampSettingsProvider.trackArtistOrder));
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -55,15 +63,26 @@ class ArtistChips extends StatelessWidget {
           runSpacing: 4.0,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: filteredArtists.isEmpty
-              ? [ArtistChip(backgroundColor: backgroundColor, color: color, artist: null, key: const ValueKey(null))]
+              ? [
+                  ArtistChip(
+                    backgroundColor: backgroundColor,
+                    color: color,
+                    artist: null,
+                    fallbackName: baseItem?.albumArtist,
+                    key: const ValueKey(null),
+                  ),
+                ]
               : List.generate(filteredArtists.length, (index) {
                   final currentArtist = filteredArtists[index];
 
                   return ArtistChip(
                     backgroundColor: backgroundColor,
                     color: color,
-                    artist: BaseItemDto(id: currentArtist.id, name: currentArtist.name, type: "MusicArtist"),
-                    key: ValueKey(currentArtist.id),
+                    artist: currentArtist.id == null
+                        ? null
+                        : BaseItemDto(id: currentArtist.id!, name: currentArtist.name, type: "MusicArtist"),
+                    fallbackName: currentArtist.name,
+                    key: ValueKey(currentArtist.id ?? currentArtist.name),
                   );
                 }),
         ),
@@ -73,9 +92,10 @@ class ArtistChips extends StatelessWidget {
 }
 
 class ArtistChip extends ConsumerWidget {
-  const ArtistChip({super.key, this.backgroundColor, this.color, this.artist});
+  const ArtistChip({super.key, this.backgroundColor, this.color, this.artist, this.fallbackName});
 
   final BaseItemDto? artist;
+  final String? fallbackName;
   final Color? backgroundColor;
   final Color? color;
 
@@ -89,23 +109,32 @@ class ArtistChip extends ConsumerWidget {
     } else {
       localArtist = artist;
     }
-    return _ArtistChipContent(item: localArtist, backgroundColor: localBackgroundColor, color: localColor);
+    return _ArtistChipContent(
+      item: localArtist,
+      backgroundColor: localBackgroundColor,
+      color: localColor,
+      fallbackName: fallbackName,
+    );
   }
 }
 
 class _ArtistChipContent extends StatelessWidget {
-  const _ArtistChipContent({required this.item, required this.backgroundColor, required this.color});
+  const _ArtistChipContent({required this.item, required this.backgroundColor, required this.color, this.fallbackName});
 
   final BaseItemDto? item;
   final Color backgroundColor;
   final Color color;
+  final String? fallbackName;
 
   @override
   Widget build(BuildContext context) {
     // We do this so that we can pass the track item here to show an actual value
     // instead of empty
     bool isArtist = item?.isArtist ?? false;
-    final name = isArtist ? item?.name : (item?.artists?.firstOrNull ?? item?.albumArtist);
+    final name =
+        (isArtist ? item?.name : (item?.artists?.firstOrNull ?? item?.albumArtist)) ??
+        fallbackName ??
+        AppLocalizations.of(context)!.unknownArtist;
 
     return Semantics.fromProperties(
       properties: SemanticsProperties(label: "$name (${AppLocalizations.of(context)!.artist})", button: true),
@@ -131,7 +160,7 @@ class _ArtistChipContent extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: Text(
-                      name ?? AppLocalizations.of(context)!.unknownArtist,
+                      name,
                       style: TextStyle(color: color, overflow: TextOverflow.ellipsis),
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,

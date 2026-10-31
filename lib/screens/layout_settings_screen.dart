@@ -21,6 +21,7 @@ import '../components/LayoutSettingsScreen/amoled_theme.dart';
 import '../components/LayoutSettingsScreen/show_artist_chip_image_toggle.dart';
 import '../components/LayoutSettingsScreen/show_text_on_grid_view_selector.dart';
 import '../components/LayoutSettingsScreen/theme_selector.dart';
+import '../components/LayoutSettingsScreen/track_artist_order_selector.dart';
 import '../components/LayoutSettingsScreen/use_cover_as_background_toggle.dart';
 import '../components/finamp_app_bar_back_button.dart';
 import '../extensions/localizations.dart';
@@ -104,6 +105,7 @@ class _LayoutSettingsScreenState extends ConsumerState<LayoutSettingsScreen> {
           const ShowTextOnGridViewSelector(),
           const UseCoverAsBackgroundToggle(),
           const ShowArtistChipImageToggle(),
+          const TrackArtistOrderSelector(),
           const AllowSplitScreenSwitch(),
           const ShowProgressOnNowPlayingBarToggle(),
         ],

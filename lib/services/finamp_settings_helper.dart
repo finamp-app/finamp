@@ -136,6 +136,7 @@ class FinampSettingsHelper {
     finampSettingsTemp.showTextOnGridView = DefaultSettings.showTextOnGridView;
     FinampSetters.setUseCoverAsBackground(DefaultSettings.useCoverAsBackground);
     finampSettingsTemp.showArtistChipImage = DefaultSettings.showArtistChipImage;
+    finampSettingsTemp.trackArtistOrder = DefaultSettings.trackArtistOrder;
     finampSettingsTemp.allowSplitScreen = DefaultSettings.allowSplitScreen;
     finampSettingsTemp.showProgressOnNowPlayingBar = DefaultSettings.showProgressOnNowPlayingBar;
     finampSettingsTemp.autoSwitchItemCurationType = DefaultSettings.autoSwitchItemCurationType;
