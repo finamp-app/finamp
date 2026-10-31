@@ -281,7 +281,7 @@ void main() {
             home: Scaffold(
               body: ArtistItemInfo(
                 item: artist,
-                itemTracks: count,
+                itemTracks: count == null ? const AsyncLoading<int>() : AsyncData(count),
                 itemAlbums: 498,
                 sortConfig: SortAndFilterConfiguration.defaultSort,
               ),
@@ -296,4 +296,34 @@ void main() {
       if (count != null) expect(find.text('$count Tracks', findRichText: true), findsOneWidget);
     });
   }
+
+  testWidgets('artist info displays a count error without hiding the album count', (tester) async {
+    final container = ProviderContainer(
+      overrides: [finampSettingsProvider.overrideWith((ref) => Stream.value(settings()))],
+    );
+    addTearDown(container.dispose);
+    await container.read(finampSettingsProvider.future);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: ArtistItemInfo(
+              item: artist,
+              itemTracks: AsyncError<int>(StateError('count failed'), StackTrace.current),
+              itemAlbums: 498,
+              sortConfig: SortAndFilterConfiguration.defaultSort,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final localization = AppLocalizations.of(tester.element(find.byType(ArtistItemInfo)))!;
+    expect(find.text(localization.errorLoadingItems, findRichText: true), findsOneWidget);
+    expect(find.text('498 Albums', findRichText: true), findsOneWidget);
+  });
 }

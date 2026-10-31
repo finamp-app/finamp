@@ -272,8 +272,7 @@ class _ArtistScreenContentState extends ConsumerState<ArtistScreenContent> {
             pinned: true,
             flexibleSpace: ArtistScreenContentFlexibleSpaceBar(
               parentItem: widget.parent,
-              trackCount: trackCount,
-              trackCountHasError: trackCountAsync.hasError,
+              trackCount: trackCountAsync,
               albumCount: albumArtistAlbums.length,
               controller: controller,
             ),

@@ -27,14 +27,12 @@ class ArtistScreenContentFlexibleSpaceBar extends ConsumerWidget {
     super.key,
     required this.parentItem,
     required this.trackCount,
-    this.trackCountHasError = false,
     required this.albumCount,
     required this.controller,
   });
 
   final BaseItemDto parentItem;
-  final int? trackCount;
-  final bool trackCountHasError;
+  final AsyncValue<int> trackCount;
   final int albumCount;
   final SortAndFilterController controller;
 
@@ -61,7 +59,6 @@ class ArtistScreenContentFlexibleSpaceBar extends ConsumerWidget {
                       child: ArtistItemInfo(
                         item: parentItem,
                         itemTracks: trackCount,
-                        trackCountHasError: trackCountHasError,
                         itemAlbums: albumCount,
                         sortConfigController: controller,
                         sortConfig: sortConfig,

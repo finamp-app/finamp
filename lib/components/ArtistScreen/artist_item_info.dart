@@ -15,15 +15,13 @@ class ArtistItemInfo extends ConsumerWidget {
     super.key,
     required this.item,
     required this.itemTracks,
-    this.trackCountHasError = false,
     required this.itemAlbums,
     required this.sortConfig,
     this.sortConfigController,
   });
 
   final BaseItemDto item;
-  final int? itemTracks;
-  final bool trackCountHasError;
+  final AsyncValue<int> itemTracks;
   final int itemAlbums;
   final SortAndFilterConfiguration sortConfig;
   final SortAndFilterController? sortConfigController;
@@ -31,6 +29,7 @@ class ArtistItemInfo extends ConsumerWidget {
   // TODO: see if there's a way to expand this column to the row that it's in
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final trackCount = itemTracks.valueOrNull;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -38,13 +37,13 @@ class ArtistItemInfo extends ConsumerWidget {
         IconAndText(
           iconData: Icons.music_note,
           textSpan: TextSpan(
-            text: itemTracks == null
-                ? (trackCountHasError
+            text: trackCount == null
+                ? (itemTracks.hasError
                       ? AppLocalizations.of(context)!.errorLoadingItems
                       : AppLocalizations.of(context)!.loading)
                 : ref.watch(finampSettingsProvider.isOffline)
-                ? AppLocalizations.of(context)!.offlineTrackCountArtist(itemTracks!)
-                : AppLocalizations.of(context)!.trackCount(itemTracks!),
+                ? AppLocalizations.of(context)!.offlineTrackCountArtist(trackCount)
+                : AppLocalizations.of(context)!.trackCount(trackCount),
           ),
         ),
         IconAndText(
