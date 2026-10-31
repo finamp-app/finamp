@@ -33,9 +33,10 @@ dependencies:
   # just_audio: ^0.10.5
   just_audio:
     # TODO switch back to official just_audio once https://github.com/ryanheise/just_audio/pull/1555 is merged
+    # Also need exoplayer updated to 1.11.0
     git:
-      url: https://github.com/LennartEnns/just_audio_fork.git
-      ref: 6dfdd07d19f6f037d3f4ff04c397639e4632c687
+      url: https://github.com/Komodo5197/just_audio.git
+      ref: 10f7a32c85cc07e6669a18263aaf8d1153b2ba31
       path: just_audio
   just_audio_media_kit:
     git:

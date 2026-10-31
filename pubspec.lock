@@ -1025,9 +1025,9 @@ packages:
     dependency: "direct main"
     description:
       path: just_audio
-      ref: "6dfdd07d19f6f037d3f4ff04c397639e4632c687"
-      resolved-ref: "6dfdd07d19f6f037d3f4ff04c397639e4632c687"
-      url: "https://github.com/LennartEnns/just_audio_fork.git"
+      ref: "10f7a32c85cc07e6669a18263aaf8d1153b2ba31"
+      resolved-ref: "10f7a32c85cc07e6669a18263aaf8d1153b2ba31"
+      url: "https://github.com/Komodo5197/just_audio.git"
     source: git
     version: "0.10.6"
   just_audio_media_kit:
