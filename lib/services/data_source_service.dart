@@ -91,6 +91,13 @@ class DataSourceService {
     Future<void> handleNetworkQueueReload() async {
       if (queueInfo.undownloadedTracks == 0) return;
       if (FinampSettingsHelper.finampSettings.autoReloadQueue) {
+        // Entering offline mode can only restore downloaded tracks.  Do not
+        // replace a queue with an empty one when none of its tracks are
+        // available locally.
+        if (event == SourceChangeType.toOffline && queueInfo.undownloadedTracks == queueInfo.trackCount) {
+          _dataSourceServiceLogger.info("Skipping automatic offline queue reload: no tracks are downloaded");
+          return;
+        }
         await _reloadQueueOutsideProviderCallback(queueService);
         return;
       }
