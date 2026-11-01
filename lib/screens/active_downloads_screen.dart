@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../components/DownloadsErrorScreen/download_error_list.dart';
+import '../components/ActiveDownloadsScreen/active_download_list.dart';
 import '../components/global_snackbar.dart';
 import '../components/padded_custom_scrollview.dart';
 import '../models/finamp_models.dart';
 import '../services/downloads_service.dart';
 
-class ActiveDownloadsScreen extends StatelessWidget {
+class ActiveDownloadsScreen extends ConsumerWidget {
   const ActiveDownloadsScreen({super.key});
 
   static const routeName = "/downloads/errors";
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final downloadsService = GetIt.instance<DownloadsService>();
+
     var stream =
         Rx.combineLatest4<
           List<DownloadStub>,
@@ -66,13 +68,29 @@ class ActiveDownloadsScreen extends StatelessWidget {
               return PaddedCustomScrollview(
                 slivers: [
                   if (snapshot.data![0].isNotEmpty)
-                    DownloadErrorList(state: DownloadItemState.syncFailed, children: snapshot.data![0]),
+                    ActiveDownloadList(
+                      state: DownloadItemState.syncFailed,
+                      downloadsService: downloadsService,
+                      children: snapshot.data![0],
+                    ),
                   if (snapshot.data![1].isNotEmpty)
-                    DownloadErrorList(state: DownloadItemState.failed, children: snapshot.data![1]),
+                    ActiveDownloadList(
+                      state: DownloadItemState.failed,
+                      downloadsService: downloadsService,
+                      children: snapshot.data![1],
+                    ),
                   if (snapshot.data![2].isNotEmpty)
-                    DownloadErrorList(state: DownloadItemState.downloading, children: snapshot.data![2]),
+                    ActiveDownloadList(
+                      state: DownloadItemState.downloading,
+                      downloadsService: downloadsService,
+                      children: snapshot.data![2],
+                    ),
                   if (snapshot.data![3].isNotEmpty)
-                    DownloadErrorList(state: DownloadItemState.enqueued, children: snapshot.data![3]),
+                    ActiveDownloadList(
+                      state: DownloadItemState.enqueued,
+                      downloadsService: downloadsService,
+                      children: snapshot.data![3],
+                    ),
                 ],
               );
             }
@@ -89,6 +107,40 @@ class ActiveDownloadsScreen extends StatelessWidget {
           }
         },
       ),
+    );
+  }
+}
+
+class DownloadsProgressLinearIndicator extends StatelessWidget {
+  const DownloadsProgressLinearIndicator({
+    super.key,
+    required this.progressValue,
+    this.minHeight = 12,
+    this.widthFactor = 1,
+  });
+
+  final double progressValue;
+  final double minHeight;
+  final double widthFactor;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: progressValue),
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+      builder: (context, animatedValue, child) {
+        return FractionallySizedBox(
+          widthFactor: widthFactor,
+          child: LinearProgressIndicator(
+            value: animatedValue,
+            minHeight: minHeight,
+            borderRadius: BorderRadius.circular(minHeight / 2),
+            semanticsLabel: AppLocalizations.of(context)!.downloadProgress,
+            semanticsValue: '${(animatedValue * 100).round()}%',
+          ),
+        );
+      },
     );
   }
 }
