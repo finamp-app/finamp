@@ -81,6 +81,11 @@ struct PlaybackPage: View {
     @State private var showVolume = false
     @State private var hideVolume: Task<Void, Never>?
 
+    @Environment(\.fontResolutionContext) private var fontContext
+    private var titleSize: CGFloat { TextSize.current(.title3, in: fontContext) * 0.9 }
+    /// The audio line, volume and times: 10 pt at Large, growing with Caption 2.
+    private var smallSize: CGFloat { 10 * TextSize.current(.caption2, in: fontContext) / TextSize.atLarge(.caption2) }
+
     private var nowPlaying: NowPlaying { store.nowPlaying }
 
     private var cornerIconColor: Color { artwork == nil ? Color.fgPrimary : .white }
@@ -142,6 +147,7 @@ struct PlaybackPage: View {
                 VStack(spacing: 8) {
                     Image(systemName: "music.note")
                         .font(.largeTitle)
+                        .fixedIconSize()
                         .foregroundStyle(.finampGradient)
                     Text("Nothing playing")
                         .font(.headline)
@@ -248,7 +254,7 @@ struct PlaybackPage: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Marquee {
                         Text(nowPlaying.title)
-                            .font(.system(size: UIFont.preferredFont(forTextStyle: .title3).pointSize * 0.9))
+                            .font(.system(size: titleSize))
                             .lineLimit(1)
                     }
                     artistLine
@@ -272,6 +278,7 @@ struct PlaybackPage: View {
                 } label: {
                     Image(systemName: nowPlaying.favorite ? "heart.fill" : "heart")
                         .font(.body.weight(.semibold))
+                        .fixedIconSize()
                         .foregroundStyle(.white)
                         .frame(width: 34, height: 34)
                         .background {
@@ -289,12 +296,12 @@ struct PlaybackPage: View {
             VStack(alignment: .leading, spacing: 3) {
                 if showVolume {
                     Label("Finamp volume \(Int((crownVolume * 100).rounded()))%", systemImage: "speaker.wave.2.fill")
-                        .font(.system(size: 10))
+                        .font(.system(size: smallSize))
                         .foregroundStyle(.white.opacity(0.9))
                         .frame(maxWidth: .infinity)
                 } else if !nowPlaying.audio.isEmpty {
                     Text(nowPlaying.audio)
-                        .font(.system(size: 10))
+                        .font(.system(size: smallSize))
                         .foregroundStyle(.white.opacity(0.6))
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
@@ -302,7 +309,7 @@ struct PlaybackPage: View {
                 }
                 if !showVolume, let lowered = PhoneVolume.shared.lowered {
                     Label("Finamp volume \(lowered)%", systemImage: "speaker.wave.1.fill")
-                        .font(.system(size: 10))
+                        .font(.system(size: smallSize))
                         .foregroundStyle(.white.opacity(0.6))
                         .frame(maxWidth: .infinity)
                 }
@@ -315,7 +322,7 @@ struct PlaybackPage: View {
                         Text("-" + formatDuration(nowPlaying.duration - position))
                             .foregroundStyle(.white.opacity(0.75))
                     }
-                    .font(.system(size: 10).monospacedDigit())
+                    .font(.system(size: smallSize).monospacedDigit())
                 }
             }
             .padding(.bottom, -3)
@@ -570,6 +577,7 @@ private struct OutputControls: View {
         VStack(spacing: isSmallWatch ? 4 : 8) {
             Image(systemName: routeSymbol)
                 .font(.title2)
+                .fixedIconSize()
                 .foregroundStyle(.finampGradient)
             Text("Playing on")
                 .font(.caption2)
@@ -579,10 +587,10 @@ private struct OutputControls: View {
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
             HStack(spacing: 6) {
-                Image(systemName: "speaker.fill").font(.caption2)
+                Image(systemName: "speaker.fill").font(.caption2).fixedIconSize()
                 ProgressView(value: phoneVolume.airPlay ? 1 : volume)
                     .tint(Color.finampBlue)
-                Image(systemName: "speaker.wave.3.fill").font(.caption2)
+                Image(systemName: "speaker.wave.3.fill").font(.caption2).fixedIconSize()
             }
             .foregroundStyle(Color.fgSecondary)
             Group {

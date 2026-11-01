@@ -204,6 +204,7 @@ struct CoverView: View {
                 } else {
                     Image(systemName: placeholderSymbol)
                         .font(.title2)
+                        .fixedIconSize()
                         .foregroundStyle(.white)
                 }
             }

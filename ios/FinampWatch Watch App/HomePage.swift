@@ -176,6 +176,7 @@ struct QuickActionButton: View {
             VStack(spacing: 3) {
                 FinampIcon(systemName: action.systemImage, size: 19)
                     .font(.body.weight(.semibold))
+                    .fixedIconSize()
                     .foregroundStyle(Color.finampBlue)
                 Text(action.title)
                     .font(.caption2)

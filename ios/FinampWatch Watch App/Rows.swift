@@ -7,13 +7,15 @@ struct CoverRow: View {
     let coverFraction: CGFloat
     var circular = false
 
+    @Environment(\.fontResolutionContext) private var fontContext
+
     var body: some View {
         HStack(spacing: 10) {
             CoverView(item: item, placeholderSymbol: placeholderSymbol, circular: circular)
                 .containerRelativeFrame(.horizontal) { width, _ in width * coverFraction }
             VStack(alignment: .leading, spacing: 0) {
                 Text(item.name)
-                    .font(.system(size: UIFont.preferredFont(forTextStyle: .title3).pointSize * 0.88))
+                    .font(.system(size: TextSize.current(.title3, in: fontContext) * 0.88))
                     .lineLimit(2)
                 if !item.subtitle.isEmpty {
                     Text(item.subtitle)
@@ -75,9 +77,10 @@ struct TrackRow: View {
     var enlarged = false
 
     @State private var store = NowPlayingStore.shared
+    @Environment(\.fontResolutionContext) private var fontContext
 
     /// Use relative sizes because watchOS text styles below footnote differ by only a few points.
-    private static let footnoteSize = UIFont.preferredFont(forTextStyle: .footnote).pointSize
+    private var footnoteSize: CGFloat { TextSize.current(.footnote, in: fontContext) }
 
     private var scale: CGFloat { enlarged ? 1.13 : 1 }
 
@@ -88,7 +91,7 @@ struct TrackRow: View {
             HStack(spacing: 6) {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(track.name)
-                        .font(.system(size: Self.footnoteSize * scale, weight: .medium))
+                        .font(.system(size: footnoteSize * scale, weight: .medium))
                         .foregroundStyle(isPlaying ? Color.finampBlue : Color.fgPrimary)
                         .lineLimit(1)
                     HStack(spacing: 4) {
@@ -100,7 +103,7 @@ struct TrackRow: View {
                                 .monospacedDigit()
                         }
                     }
-                    .font(.system(size: Self.footnoteSize * 0.75 * scale))
+                    .font(.system(size: footnoteSize * 0.75 * scale))
                     .foregroundStyle(Color.fgSecondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -111,7 +114,7 @@ struct TrackRow: View {
             if let onFavorite {
                 Button(action: onFavorite) {
                     Image(systemName: favorite ? "heart.fill" : "heart")
-                        .font(.system(size: Self.footnoteSize * (enlarged ? 2 : 1), weight: .semibold))
+                        .font(.system(size: TextSize.atLarge(.footnote) * (enlarged ? 2 : 1), weight: .semibold))
                         .foregroundStyle(favorite ? Color.finampPurple : Color.fgSecondary)
                         .frame(width: enlarged ? 36 : 22, height: enlarged ? nil : 22)
                 }

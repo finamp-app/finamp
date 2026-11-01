@@ -18,6 +18,7 @@ struct LabeledIconButton: View {
             VStack(spacing: 2) {
                 FinampIcon(systemName: systemImage, size: 22)
                     .font(.title3)
+                    .fixedIconSize()
                     .foregroundStyle(tint)
                 Text(title)
                     .font(.caption2)
@@ -43,6 +44,7 @@ struct RetryView: View {
         VStack(spacing: 8) {
             Image(systemName: isServer ? "wifi.slash" : "iphone.slash")
                 .font(.title2)
+                .fixedIconSize()
                 .foregroundStyle(.finampGradient)
             Text(message)
                 .font(.footnote)
@@ -65,6 +67,43 @@ struct RetryView: View {
         if isServer { return "Turn on Offline Mode in Settings to play your downloads" }
         let phoneUnavailable = [PhoneError.notReachable.localizedDescription, PhoneError.noAnswer.localizedDescription, "Finamp is still starting"]
         return phoneUnavailable.contains(message) ? "Open Finamp on your iPhone" : nil
+    }
+}
+
+/// Text style sizes for text sized in points. On watchOS 26 and later they follow Text Size live, up to the app's cap;
+/// before that they are the system's sizes, read when the view is built.
+enum TextSize {
+    /// The style's size in a view's environment.
+    static func current(_ style: Font.TextStyle, in context: Font.Context) -> CGFloat {
+        if #available(watchOS 26.0, *) {
+            return Font.system(style).resolve(in: context).pointSize
+        }
+        return UIFont.preferredFont(forTextStyle: uiStyle(style)).pointSize
+    }
+
+    /// The style's size at Large, the text size the layout was designed at.
+    static func atLarge(_ style: Font.TextStyle) -> CGFloat {
+        if #available(watchOS 26.0, *) {
+            var environment = EnvironmentValues()
+            environment.dynamicTypeSize = .large
+            return Font.system(style).resolve(in: environment.fontResolutionContext).pointSize
+        }
+        return UIFont.preferredFont(forTextStyle: uiStyle(style)).pointSize
+    }
+
+    private static func uiStyle(_ style: Font.TextStyle) -> UIFont.TextStyle {
+        switch style {
+        case .title3: .title3
+        case .caption2: .caption2
+        default: .footnote
+        }
+    }
+}
+
+extension View {
+    /// Keeps an icon at its Large size, so only text follows Text Size.
+    func fixedIconSize() -> some View {
+        dynamicTypeSize(.large)
     }
 }
 
