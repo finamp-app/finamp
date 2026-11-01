@@ -112,14 +112,7 @@ class PlayerButtons extends ConsumerWidget {
       mediaStateProvider.select((x) => x.playbackState.playing && x.fadeDirection != FadeDirection.fadeOut),
     );
 
-    final completed = ref.watch(
-      mediaStateProvider.select(
-        (x) =>
-            x.playbackState.updatePosition == Duration.zero &&
-            !x.playbackState.playing &&
-            x.playbackState.queueIndex == 0,
-      ),
-    );
+    final completed = ref.watch(mediaStateProvider.select((x) => x.playbackState.isCompletedQueue));
 
     if (playing) {
       return Icon(
@@ -127,13 +120,7 @@ class PlayerButtons extends ConsumerWidget {
         shadows: shadow ? <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)] : null,
         size: 32,
       );
-    } else if (!completed) {
-      return Icon(
-        TablerIcons.player_play,
-        shadows: shadow ? <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)] : null,
-        size: 32,
-      );
-    } else {
+    } else if (completed) {
       // Tabler icons seems to be missing the desired resume icon, so I've rotated eject
       return RotatedBox(
         quarterTurns: 1,
@@ -142,6 +129,12 @@ class PlayerButtons extends ConsumerWidget {
           shadows: shadow ? <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)] : null,
           size: 32,
         ),
+      );
+    } else {
+      return Icon(
+        TablerIcons.player_play,
+        shadows: shadow ? <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)] : null,
+        size: 32,
       );
     }
   }

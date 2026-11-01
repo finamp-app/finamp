@@ -34,3 +34,8 @@ final mediaStateProvider = StreamProvider.autoDispose<MediaState>((_) => mediaSt
         audioHandler.fadeState.value.fadeDirection,
       );
 });
+
+extension QueueCompletion on PlaybackState {
+  /// Whether we believe this is a queue that just completed in the no-looping repeat mode and wrapped back to the start
+  bool get isCompletedQueue => updatePosition == Duration.zero && !playing && queueIndex == 0;
+}
