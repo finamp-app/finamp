@@ -80,12 +80,22 @@ private final class WatchBridge: NSObject, WCSessionDelegate {
         return session.activationState == .activated && session.isPaired && session.isWatchAppInstalled
     }
 
-    /// Flushes state held before activation and tells Flutter whether to start pushing.
+    /// The installed flag at the previous watch state change.
+    private var wasInstalled = false
+
+    /// Flushes state held before activation and tells Flutter to start pushing, or to stop once the watch app is gone.
     private func watchStateDidChange() {
         DispatchQueue.main.async { [self] in
-            let available = isWatchAppAvailable
-            if available, !context.isEmpty { try? WCSession.default.updateApplicationContext(context) }
-            watchChannel?.invokeMethod("watchState", arguments: ["available": available])
+            let session = WCSession.default
+            let paired = session.activationState == .activated && session.isPaired
+            let installed = isWatchAppAvailable
+            // iOS can keep reporting false for an installed app, so only unpairing or a change to false means it's gone
+            let removed = !paired || (wasInstalled && !installed)
+            wasInstalled = installed
+            if paired, !context.isEmpty { try? session.updateApplicationContext(context) }
+            if installed || removed {
+                watchChannel?.invokeMethod("watchState", arguments: ["available": installed])
+            }
         }
     }
 

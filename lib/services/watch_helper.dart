@@ -83,8 +83,15 @@ class WatchHandler {
   /// The full child list of the collection the watch is paging through, by parent id.
   static (String, List<BaseItemDto>)? _childrenCache;
 
-  /// Retains sent items so later artwork requests can resolve them by id.
+  /// Retains recently sent items so later artwork requests can resolve them by id; least recently used first out.
   static final Map<BaseItemId, BaseItemDto> _sentItems = {};
+  static const _sentItemsLimit = 500;
+
+  static void _rememberSent(BaseItemDto item) {
+    _sentItems.remove(item.id);
+    _sentItems[item.id] = item;
+    if (_sentItems.length > _sentItemsLimit) _sentItems.remove(_sentItems.keys.first);
+  }
 
   /// Call once during app initialization.
   static void setup() {
@@ -331,7 +338,7 @@ class WatchHandler {
       };
     }
 
-    _sentItems[item.id] = item;
+    _rememberSent(item);
     _watchFavorite(item);
     final elapsed = playbackState.playing
         ? now.difference(playbackState.updateTime).inMilliseconds / 1000 * playbackState.speed
@@ -638,7 +645,7 @@ class WatchHandler {
   /// Values must be non-null property-list types for WatchConnectivity.
   static List<Map<String, Object>> _rows(List<BaseItemDto> items) {
     for (final item in items) {
-      _sentItems[item.id] = item;
+      _rememberSent(item);
     }
     return items
         .map(
@@ -1043,10 +1050,14 @@ class WatchHandler {
   static Future<BaseItemDto> _itemById(String id) async {
     if (!_jellyfinId.hasMatch(id)) throw PlatformException(code: "invalid", message: "Invalid item id");
     final known = _sentItems[BaseItemId(id)];
-    if (known != null) return known;
+    if (known != null) {
+      _rememberSent(known);
+      return known;
+    }
     final item = await _readOnce(itemByIdProvider(BaseItemId(id)).future);
     if (item == null) throw PlatformException(code: "unknown", message: "Unknown item");
-    return _sentItems[item.id] = item;
+    _rememberSent(item);
+    return item;
   }
 
   /// Runs `fetch` for every item with at most [_parallelFetches] in flight, results in input order.
