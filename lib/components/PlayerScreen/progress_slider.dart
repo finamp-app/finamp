@@ -137,8 +137,12 @@ class _ProgressSliderDuration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showRemaining = Platform.isIOS || Platform.isMacOS;
-    final currentPosition = Duration(seconds: (position.inMilliseconds / 1000).round());
     final roundedDuration = Duration(seconds: ((itemDuration?.inMilliseconds ?? 0) / 1000).round());
+    // A remote session's reported position can briefly overshoot the track's
+    // duration at track boundaries (stale ticks from the previous update);
+    // clamp so remaining time doesn't flash negative for a moment.
+    final rawPosition = Duration(seconds: (position.inMilliseconds / 1000).round());
+    final currentPosition = rawPosition > roundedDuration ? roundedDuration : rawPosition;
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
