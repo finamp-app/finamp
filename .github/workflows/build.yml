@@ -30,6 +30,8 @@ jobs:
   build-android:
     name: Build for Android
     runs-on: ubuntu-latest
+    env:
+      HAS_ANDROID_KEYS: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
     steps:
     - name: Clone repository
       uses: actions/checkout@v6
@@ -80,8 +82,8 @@ jobs:
         ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-      if: env.ANDROID_KEYSTORE_BASE64 != ""
-      run:
+      if: env.HAS_ANDROID_KEYS == 'true'
+      run: |
         echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > $ANDROID_KEYSTORE_PATH
         cat > android/key.properties << EOF
         storePassword=$ANDROID_KEYSTORE_PASSWORD
@@ -112,13 +114,30 @@ jobs:
     - run: flutter doctor
     - run: flutter pub get
 
-    - run: flutter build apk --debug --no-pub
+    - name: Build debug APK
+      run: flutter build apk --debug --no-pub
+
+    - name: Build release APK
+      id: build-release-apk
+      if: env.HAS_ANDROID_KEYS == 'true'
+      run: flutter build apk --release --no-pub
+
+    - name: Build release bundle
+      if: env.HAS_ANDROID_KEYS == 'true'
+      run: flutter build bundle --release
 
     - uses: actions/upload-artifact@v6
       with:
         name: finamp-android-debug.apk
         path: build/app/outputs/flutter-apk/app-debug.apk
         compression-level: 0 # no compression
+
+    - uses: actions/upload-artifact@v6
+      if: steps.build-release-apk.outcome == 'success'
+      with:
+        name: finamp-android-release.apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+        compression-level: 0 # still no compression
 
     - run: flutter build appbundle --debug --no-pub
 
