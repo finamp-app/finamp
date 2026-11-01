@@ -78,13 +78,13 @@ jobs:
     - name: Setup Android Keys
       env:
         ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-        ANDROID_KEYSTORE_PATH: android/app/keystore.jks
+        ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android/app/keystore.jks
         ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
       if: env.HAS_ANDROID_KEYS == 'true'
       run: |
-        echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > $ANDROID_KEYSTORE_PATH
+        echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
         cat > android/key.properties << EOF
         storePassword=$ANDROID_KEYSTORE_PASSWORD
         keyPassword=$ANDROID_KEY_PASSWORD
@@ -120,11 +120,12 @@ jobs:
     - name: Build release APK
       id: build-release-apk
       if: env.HAS_ANDROID_KEYS == 'true'
-      run: flutter build apk --release --no-pub
+      run: flutter build apk --release
 
     - name: Build release bundle
+      id: build-release-bundle
       if: env.HAS_ANDROID_KEYS == 'true'
-      run: flutter build bundle --release
+      run: flutter build appbundle --release
 
     - uses: actions/upload-artifact@v6
       with:
@@ -138,6 +139,14 @@ jobs:
         name: finamp-android-release.apk
         path: build/app/outputs/flutter-apk/app-release.apk
         compression-level: 0 # still no compression
+
+    - uses: actions/upload-artifact@v6
+      if: steps.build-release-bundle.outcome == 'success'
+      with:
+        name: finamp-android-release.aab
+        path: build/app/outputs/bundle/release/app-release.aab
+        if-no-files-found: error
+        compression-level: 0
 
     - run: flutter build appbundle --debug --no-pub
 
