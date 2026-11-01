@@ -1275,6 +1275,14 @@
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
     "noMusicLibrariesBody": "Finamp could not find any music libraries. Please ensure that your Jellyfin server contains at least one library with the content type set to \"Music\".",
+    "noMusicLibrariesLogsCTA": "If you think this is an error, please help us to fix it by sharing these logs with us:",
+    "@noMusicLibrariesLogsCTA": {
+        "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
+    },
+    "noMusicLibrariesLogout": "You can also try logging out and trying again.",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
     "refresh": "Refresh",
     "moreInfo": "More Info",
     "volumeNormalizationSettingsTitle": "Volume Normalization",
@@ -3799,5 +3807,5 @@
     "quickSettingsLayoutLink": "All layout & theme settings",
     "quickSettingsAllSettingsLink": "All Settings",
     "quickSettingsNetworkLink": "Configure the local address for your server",
-  "loginFlowLocalNetworkServersNoResults": "No servers detected yet - you may need to manually enter the server address."
+    "loginFlowLocalNetworkServersNoResults": "No servers detected yet - you may need to manually enter the server address."
 }
