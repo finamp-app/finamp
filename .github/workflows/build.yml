@@ -120,11 +120,11 @@ jobs:
     - name: Build release APK
       id: build-release-apk
       if: env.HAS_ANDROID_KEYS == 'true'
-      run: flutter build apk --release --no-pub
+      run: flutter build apk --release
 
     - name: Build release bundle
       if: env.HAS_ANDROID_KEYS == 'true'
-      run: flutter build appbundle --release --no-pub
+      run: flutter build appbundle --release
 
     - uses: actions/upload-artifact@v6
       with:
