@@ -2,20 +2,13 @@ import 'package:finamp/services/android_startup_autoplay_guard.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('AndroidStartupAutoplayGuard.hasCompletedStartupGracePeriod', () {
-    test('suppresses autoplay before three minutes', () {
-      expect(
-        AndroidStartupAutoplayGuard.hasCompletedStartupGracePeriod(const Duration(minutes: 2, seconds: 59)),
-        isFalse,
-      );
+  group('AndroidStartupAutoplayGuard.mayAutoplayWhileKeyguardLocked', () {
+    test('suppresses autoplay while the keyguard is locked', () {
+      expect(AndroidStartupAutoplayGuard.mayAutoplayWhileKeyguardLocked(true), isFalse);
     });
 
-    test('allows autoplay at and after three minutes', () {
-      expect(AndroidStartupAutoplayGuard.hasCompletedStartupGracePeriod(const Duration(minutes: 3)), isTrue);
-      expect(
-        AndroidStartupAutoplayGuard.hasCompletedStartupGracePeriod(const Duration(minutes: 3, seconds: 1)),
-        isTrue,
-      );
+    test('allows autoplay after the keyguard is unlocked', () {
+      expect(AndroidStartupAutoplayGuard.mayAutoplayWhileKeyguardLocked(false), isTrue);
     });
   });
 }

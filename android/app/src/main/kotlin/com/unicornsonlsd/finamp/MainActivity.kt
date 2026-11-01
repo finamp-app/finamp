@@ -1,11 +1,11 @@
 package com.unicornsonlsd.finamp
 
+import android.app.KeyguardManager
 import android.app.UiModeManager
 import android.content.Intent
 import android.content.Intent.CATEGORY_APP_MUSIC
 import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import android.provider.MediaStore.INTENT_ACTION_MUSIC_PLAYER
 import android.provider.Settings
 import android.system.ErrnoException
@@ -197,7 +197,10 @@ class MainActivity : AudioServiceActivity() {
             ANDROID_STARTUP_CHANNEL,
         ).setMethodCallHandler { call, result ->
             when (call.method) {
-                "getElapsedRealtimeMillis" -> result.success(SystemClock.elapsedRealtime())
+                "getIsKeyguardLocked" -> {
+                    val keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
+                    result.success(keyguardManager.isKeyguardLocked)
+                }
                 else -> {
                     Log.e(ANDROID_STARTUP_CHANNEL_LOG_TAG, "Method not found: '${call.method}'")
                     result.notImplemented()
