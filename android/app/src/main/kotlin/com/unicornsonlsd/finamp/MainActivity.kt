@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.Intent.CATEGORY_APP_MUSIC
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.provider.MediaStore.INTENT_ACTION_MUSIC_PLAYER
 import android.provider.Settings
 import android.system.ErrnoException
@@ -42,6 +43,9 @@ class MainActivity : AudioServiceActivity() {
 
         private const val SET_NATIVE_THEME_CHANNEL = "com.unicornsonlsd.finamp/set_native_theme"
         private const val SET_NATIVE_THEME_CHANNEL_LOG_TAG = "setNativeThemeChannel"
+
+        private const val ANDROID_STARTUP_CHANNEL = "com.unicornsonlsd.finamp/android_startup"
+        private const val ANDROID_STARTUP_CHANNEL_LOG_TAG = "AndroidStartupChannel"
     }
 
     private lateinit var mediaRouter: MediaRouter
@@ -184,6 +188,18 @@ class MainActivity : AudioServiceActivity() {
                 }
                 else -> {
                     Log.e(SET_NATIVE_THEME_CHANNEL_LOG_TAG, "Method not found: '${call.method}'")
+                    result.notImplemented()
+                }
+            }
+        }
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            ANDROID_STARTUP_CHANNEL,
+        ).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "getElapsedRealtimeMillis" -> result.success(SystemClock.elapsedRealtime())
+                else -> {
+                    Log.e(ANDROID_STARTUP_CHANNEL_LOG_TAG, "Method not found: '${call.method}'")
                     result.notImplemented()
                 }
             }
