@@ -1,5 +1,6 @@
 package com.unicornsonlsd.finamp
 
+import android.app.KeyguardManager
 import android.app.UiModeManager
 import android.content.Intent
 import android.content.Intent.CATEGORY_APP_MUSIC
@@ -42,6 +43,9 @@ class MainActivity : AudioServiceActivity() {
 
         private const val SET_NATIVE_THEME_CHANNEL = "com.unicornsonlsd.finamp/set_native_theme"
         private const val SET_NATIVE_THEME_CHANNEL_LOG_TAG = "setNativeThemeChannel"
+
+        private const val ANDROID_STARTUP_CHANNEL = "com.unicornsonlsd.finamp/android_startup"
+        private const val ANDROID_STARTUP_CHANNEL_LOG_TAG = "AndroidStartupChannel"
     }
 
     private lateinit var mediaRouter: MediaRouter
@@ -184,6 +188,21 @@ class MainActivity : AudioServiceActivity() {
                 }
                 else -> {
                     Log.e(SET_NATIVE_THEME_CHANNEL_LOG_TAG, "Method not found: '${call.method}'")
+                    result.notImplemented()
+                }
+            }
+        }
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            ANDROID_STARTUP_CHANNEL,
+        ).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "getIsKeyguardLocked" -> {
+                    val keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
+                    result.success(keyguardManager.isKeyguardLocked)
+                }
+                else -> {
+                    Log.e(ANDROID_STARTUP_CHANNEL_LOG_TAG, "Method not found: '${call.method}'")
                     result.notImplemented()
                 }
             }
