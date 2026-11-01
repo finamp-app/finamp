@@ -124,7 +124,7 @@ jobs:
 
     - name: Build release bundle
       if: env.HAS_ANDROID_KEYS == 'true'
-      run: flutter build bundle --release
+      run: flutter build appbundle --release --no-pub
 
     - uses: actions/upload-artifact@v6
       with:
