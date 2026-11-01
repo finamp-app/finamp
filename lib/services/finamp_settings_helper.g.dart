@@ -1317,6 +1317,14 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setTrackArtistOrder(TrackArtistOrder newTrackArtistOrder) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.trackArtistOrder = newTrackArtistOrder;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1763,6 +1771,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ) => finampSettingsProvider.select(
     (value) => value.requireValue.perTabContentViewType[tabContentType],
   );
+  ProviderListenable<TrackArtistOrder> get trackArtistOrder =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.trackArtistOrder,
+      );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:finamp/services/track_artist_order.dart';
 import 'package:finamp/components/AddToPlaylistScreen/add_to_playlist_button.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/extensions/string.dart';
@@ -753,7 +754,8 @@ class TrackListItemTile extends ConsumerWidget {
           AppLocalizations.of(context)!.unknownArtist;
     } else {
       artistsString =
-          baseItem.artists?.sortedBy((e) => e).joinNonNull(", ") ?? AppLocalizations.of(context)!.unknownArtist;
+          trackArtistNames(baseItem, ref.watch(finampSettingsProvider.trackArtistOrder)) ??
+          AppLocalizations.of(context)!.unknownArtist;
     }
     final downloadedIndicator = DownloadedIndicator(
       item: DownloadStub.fromItem(item: baseItem, type: DownloadItemType.track),

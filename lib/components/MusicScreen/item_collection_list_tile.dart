@@ -51,6 +51,7 @@ class ItemCollectionListTile extends ConsumerWidget {
     final isOnDesktop = Platform.isMacOS || Platform.isWindows || Platform.isLinux;
     final subtitle = (itemType != BaseItemDtoType.album || !albumShowsYearAndDurationInstead)
         ? generateSubtitle(
+            trackArtistOrder: ref.watch(finampSettingsProvider.trackArtistOrder),
             item: item,
             parentType: parentType,
             context: context,

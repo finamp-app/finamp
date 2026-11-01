@@ -108,6 +108,7 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(SubtitleProfileAdapter());
     registerAdapter(TabsHomeSectionAdapter());
     registerAdapter(TileAdditionalInfoTypeAdapter());
+    registerAdapter(TrackArtistOrderAdapter());
     registerAdapter(TranscodeDownloadsSettingAdapter());
     registerAdapter(TranscodingProfileAdapter());
     registerAdapter(UserConfigurationAdapter());
@@ -221,6 +222,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(SubtitleProfileAdapter());
     registerAdapter(TabsHomeSectionAdapter());
     registerAdapter(TileAdditionalInfoTypeAdapter());
+    registerAdapter(TrackArtistOrderAdapter());
     registerAdapter(TranscodeDownloadsSettingAdapter());
     registerAdapter(TranscodingProfileAdapter());
     registerAdapter(UserConfigurationAdapter());
