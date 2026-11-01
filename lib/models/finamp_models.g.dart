@@ -2377,6 +2377,8 @@ class SavedQueueStateAdapter extends TypeAdapter<SavedQueueState> {
         return SavedQueueState.pendingSave;
       case 6:
         return SavedQueueState.failedOversized;
+      case 7:
+        return SavedQueueState.canceled;
       default:
         return SavedQueueState.preInit;
     }
@@ -2399,6 +2401,8 @@ class SavedQueueStateAdapter extends TypeAdapter<SavedQueueState> {
         writer.writeByte(5);
       case SavedQueueState.failedOversized:
         writer.writeByte(6);
+      case SavedQueueState.canceled:
+        writer.writeByte(7);
     }
   }
 

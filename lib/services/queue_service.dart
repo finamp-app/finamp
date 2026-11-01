@@ -36,6 +36,8 @@ import 'package:uuid/uuid.dart';
 import '../extensions/localizations.dart';
 import '../models/music_slices.dart';
 
+enum OversizedSavedQueueHandling { abort, truncate, loadFully }
+
 /// A track queueing service for Finamp.
 class QueueService {
   static const savedQueueSource = QueueItemSource.rawId(
@@ -99,8 +101,6 @@ class QueueService {
   SavedQueueState _savedQueueState = SavedQueueState.preInit;
   FinampStorableQueueInfo? _failedSavedQueue;
   static const int _maxSavedQueues = 60;
-  // This is just used to suppress the error message when loading is canceled deliberately
-  bool _queueLoadCanceled = false;
 
   static int get queueRadioLimit =>
       ((FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit) * 0.5).ceil();
@@ -138,7 +138,7 @@ class QueueService {
       // pausing/seeking is occurring
       // We also update on every track switch.
       if ((_saveUpdateCycleCount >= 5 && !_audioHandler.paused) || _saveUpdateImmediate) {
-        if (_savedQueueState == SavedQueueState.pendingSave && !_audioHandler.paused) {
+        if (_savedQueueState.isPending && !_audioHandler.paused) {
           _savedQueueState = SavedQueueState.saving;
         }
         if (_savedQueueState == SavedQueueState.saving) {
@@ -398,15 +398,7 @@ class QueueService {
           }
 
           if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup && !await _hasInitialPlayLink()) {
-            if (info.trackCount >=
-                (FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit)) {
-              _savedQueueState = SavedQueueState.failedOversized;
-              _failedSavedQueue = info;
-              refreshQueueStream();
-              _queueServiceLogger.info("Aborting auto-restore of large queue with ${info.trackCount} tracks");
-            } else {
-              await loadSavedQueue(info);
-            }
+            await loadSavedQueue(info);
           } else {
             _savedQueueState = SavedQueueState.pendingSave;
           }
@@ -439,16 +431,17 @@ class QueueService {
     }
   }
 
-  Future<void> retryQueueLoad() async {
+  Future<void> retryQueueLoad({
+    OversizedSavedQueueHandling oversizeHandling = OversizedSavedQueueHandling.abort,
+  }) async {
     if (_savedQueueState.isFailed && _failedSavedQueue != null) {
-      await loadSavedQueue(_failedSavedQueue!);
+      await loadSavedQueue(_failedSavedQueue!, oversizeHandling: oversizeHandling);
     }
   }
 
   Future<void> cancelQueueLoad() async {
     if (_savedQueueState == SavedQueueState.loading || _savedQueueState.isFailed) {
-      _savedQueueState = SavedQueueState.pendingSave;
-      _queueLoadCanceled = true;
+      _savedQueueState = SavedQueueState.canceled;
       refreshQueueStream();
     }
   }
@@ -457,6 +450,7 @@ class QueueService {
     FinampStorableQueueInfo info, {
     Map<jellyfin_models.BaseItemId, jellyfin_models.BaseItemDto>? existingItems,
     bool isReload = false,
+    OversizedSavedQueueHandling oversizeHandling = OversizedSavedQueueHandling.abort,
   }) async {
     final playbackHistoryService = GetIt.instance<PlaybackHistoryService>();
     if (_savedQueueState == SavedQueueState.loading) {
@@ -467,6 +461,22 @@ class QueueService {
     SavedQueueState finalState = SavedQueueState.failed;
     try {
       _savedQueueState = SavedQueueState.loading;
+      if (info.trackCount >=
+          (FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit)) {
+        switch (oversizeHandling) {
+          case OversizedSavedQueueHandling.abort:
+            finalState = SavedQueueState.failedOversized;
+            _queueServiceLogger.info("Aborting auto-restore of large queue with ${info.trackCount} tracks");
+            return;
+          case OversizedSavedQueueHandling.truncate:
+            info = FinampStorableQueueInfo.truncateToSize(
+              info,
+              FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit,
+            );
+          case OversizedSavedQueueHandling.loadFully:
+            break;
+        }
+      }
       if (info.trackCount == 0) {
         finalState = SavedQueueState.pendingSave;
         return;
@@ -585,8 +595,11 @@ class QueueService {
       int droppedTracks = info.trackCount - loadedTracks;
 
       if (_savedQueueState != SavedQueueState.loading) {
-        if (_queueLoadCanceled) return;
-        return Future.error("Loading of saved Queue was interrupted.");
+        if (_savedQueueState == SavedQueueState.canceled) {
+          return;
+        } else {
+          throw "Loading of saved Queue was interrupted.";
+        }
       }
 
       if (loadedTracks > 0) {
@@ -622,7 +635,7 @@ class QueueService {
       // Do not overwrite state or bump reporting if loading was interrupted by the user starting a new queue
       if (_savedQueueState == SavedQueueState.loading) {
         _savedQueueState = finalState;
-        if (finalState == SavedQueueState.failed) {
+        if (finalState.isFailed) {
           _failedSavedQueue = info;
         }
         refreshQueueStream();
@@ -630,7 +643,6 @@ class QueueService {
           unawaited(playbackHistoryService.reportRestoredSessionStatus());
         });
       }
-      _queueLoadCanceled = false;
     }
   }
 
@@ -963,7 +975,7 @@ class QueueService {
     queueServiceLogger.info("Stopping playback");
 
     archiveSavedQueue();
-    if (_savedQueueState == SavedQueueState.pendingSave) {
+    if (_savedQueueState.isPending) {
       _savedQueueState = SavedQueueState.saving;
     }
 
@@ -1002,7 +1014,7 @@ class QueueService {
     }
 
     try {
-      if (_savedQueueState == SavedQueueState.pendingSave) {
+      if (_savedQueueState.isPending) {
         _savedQueueState = SavedQueueState.saving;
       }
       List<FinampQueueItem> queueItems = [];
@@ -1046,7 +1058,7 @@ class QueueService {
     }
 
     try {
-      if (_savedQueueState == SavedQueueState.pendingSave) {
+      if (_savedQueueState.isPending) {
         _savedQueueState = SavedQueueState.saving;
       }
       List<FinampQueueItem> queueItems = [];
@@ -1091,7 +1103,7 @@ class QueueService {
     }
 
     try {
-      if (_savedQueueState == SavedQueueState.pendingSave) {
+      if (_savedQueueState.isPending) {
         _savedQueueState = SavedQueueState.saving;
       }
       List<FinampQueueItem> queueItems = [];

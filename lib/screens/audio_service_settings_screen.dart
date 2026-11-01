@@ -317,11 +317,7 @@ class _MaxQueueSizeListTileState extends ConsumerState<MaxQueueSizeListTile> {
           onChanged: (value) {
             var valueInt = int.tryParse(value);
 
-            if (valueInt != null && !valueInt.isNegative) {
-              if (valueInt < 100) {
-                _controller.text = "100";
-                valueInt = 100;
-              }
+            if (valueInt != null && valueInt > 0) {
               FinampSetters.setPlayerQueueLimit(valueInt);
             }
           },

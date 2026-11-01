@@ -2591,9 +2591,13 @@ enum SavedQueueState {
   @HiveField(5)
   pendingSave,
   @HiveField(6)
-  failedOversized;
+  failedOversized,
+  @HiveField(7)
+  canceled;
 
   bool get isFailed => this == failed || this == failedOversized;
+  bool get isPending => this == pendingSave || this == canceled;
+  bool get isRestoring => this == loading || this == failed || this == failedOversized;
 }
 
 @HiveType(typeId: 63)
@@ -3969,6 +3973,40 @@ class FinampStorableQueueInfo extends FinampStorableQueueInfoLegacy {
     );
   }
 
+  factory FinampStorableQueueInfo.truncateToSize(FinampStorableQueueInfo original, int maxSize) {
+    int neededRemovals = original.trackCount - maxSize;
+    var nextUp = original.nextUp;
+    var queue = original.queue;
+
+    neededRemovals -= original.packedPreviousTracks.length ~/ 16;
+    if (neededRemovals >= 0) {
+      final queueRemovals = min(neededRemovals, queue.length);
+      queue = queue.slice(0, queue.length - queueRemovals);
+      neededRemovals -= queueRemovals;
+    }
+    if (neededRemovals >= 0) {
+      final nextUpRemovals = min(neededRemovals, nextUp.length);
+      nextUp = nextUp.slice(0, nextUp.length - nextUpRemovals);
+      neededRemovals -= nextUpRemovals;
+    }
+
+    assert(neededRemovals <= 0);
+
+    return FinampStorableQueueInfo(
+      // Just truncate the entire previous queue - no need to ride the oversized line
+      packedPreviousTracks: packIds([]),
+      packedCurrentTrack: original.packedCurrentTrack,
+      currentTrackSeek: original.currentTrackSeek,
+      packedNextUp: packIds(nextUp),
+      packedQueue: packIds(queue),
+      creation: original.creation,
+      sourceList: original.sourceList,
+      sourceIndex: original.sourceIndex,
+      trackSourceIndexes: original.trackSourceIndexes,
+      packedShuffleOrder: original.packedShuffleOrder,
+    );
+  }
+
   @HiveField(0)
   final Uint8List packedPreviousTracks;
   List<BaseItemId> get previousTracks => _unpackIds(packedPreviousTracks);
@@ -4482,6 +4520,7 @@ enum FinampQuickActions {
   surpriseMe(true),
   @HiveField(9)
   playSpecificItem(true);
+
   // ID 10 moved upwards for more sensible user-facing ordering
   //TODO support album/artist shuffle (requires queue support)
 

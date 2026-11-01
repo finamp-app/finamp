@@ -67,15 +67,16 @@ class NowPlayingBar extends ConsumerWidget {
     );
   }
 
-  Widget buildLoadingQueueBar(
-    WidgetRef ref,
-    SavedQueueState state,
-    void Function()? retryCallback,
-    void Function() cancelCallback,
-  ) {
-    assert(state == SavedQueueState.loading || (state.isFailed && retryCallback != null));
+  Widget buildLoadingQueueBar(WidgetRef ref, SavedQueueState state) {
+    assert(state.isRestoring);
     final progressBackgroundColor = getProgressBackgroundColor(ref).withOpacity(0.5);
     var context = ref.context;
+    final queueService = GetIt.instance<QueueService>();
+    final retryCallback = switch (state) {
+      SavedQueueState.failed => queueService.retryQueueLoad,
+      SavedQueueState.failedOversized => openPlayerScreen,
+      _ => null,
+    };
 
     return SimpleGestureDetector(
       onTap: retryCallback,
@@ -85,10 +86,10 @@ class NowPlayingBar extends ConsumerWidget {
         confirmDismiss: (direction) async {
           if (direction == DismissDirection.down) {
             FeedbackHelper.feedback(FeedbackType.light);
-            cancelCallback();
+            await queueService.cancelQueueLoad();
           } else if (retryCallback != null && direction == DismissDirection.up) {
             FeedbackHelper.feedback(FeedbackType.light);
-            retryCallback();
+            await retryCallback();
           }
           return false;
         },
@@ -548,17 +549,8 @@ class NowPlayingBar extends ConsumerWidget {
                 stream: queueService.getQueueStream(),
                 initialData: queueService.getQueue(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData &&
-                      snapshot.data!.saveState == SavedQueueState.loading &&
-                      !usingPlayerSplitScreen) {
-                    return buildLoadingQueueBar(ref, snapshot.data!.saveState, null, queueService.cancelQueueLoad);
-                  } else if (snapshot.hasData && snapshot.data!.saveState.isFailed && !usingPlayerSplitScreen) {
-                    return buildLoadingQueueBar(
-                      ref,
-                      snapshot.data!.saveState,
-                      queueService.retryQueueLoad,
-                      queueService.cancelQueueLoad,
-                    );
+                  if (snapshot.hasData && snapshot.data!.saveState.isRestoring && !usingPlayerSplitScreen) {
+                    return buildLoadingQueueBar(ref, snapshot.data!.saveState);
                   } else if (snapshot.hasData && snapshot.data!.currentTrack != null && !usingPlayerSplitScreen) {
                     return buildNowPlayingBar(ref, snapshot.data!.currentTrack!);
                   } else {
