@@ -13,6 +13,7 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/services/album_image_provider.dart';
+import 'package:finamp/services/android_startup_autoplay_guard.dart';
 import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -416,7 +417,7 @@ class QueueService {
         }
 
         if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup && !await _hasInitialPlayLink()) {
-          await loadSavedQueue(info);
+          await loadSavedQueue(info, isInitialLoad: true);
         } else {
           _savedQueueState = SavedQueueState.pendingSave;
         }
@@ -481,6 +482,7 @@ class QueueService {
     FinampStorableQueueInfo info, {
     Map<jellyfin_models.BaseItemId, jellyfin_models.BaseItemDto>? existingItems,
     bool isReload = false,
+    bool isInitialLoad = false,
   }) async {
     final playbackHistoryService = GetIt.instance<PlaybackHistoryService>();
     if (_savedQueueState == SavedQueueState.loading) {
@@ -613,6 +615,11 @@ class QueueService {
       }
 
       if (loadedTracks > 0) {
+        final shouldAutoplay =
+            !isReload &&
+            FinampSettingsHelper.finampSettings.autoplayRestoredQueue &&
+            droppedTracks == 0 &&
+            (!isInitialLoad || await AndroidStartupAutoplayGuard.mayAutoplayInitialQueue());
         await _replaceWholeQueue(
           isRestoredQueue: true,
           itemList: items,
@@ -624,9 +631,7 @@ class QueueService {
               ? Duration(milliseconds: info.currentTrackSeek!)
               : null,
           order: order == null ? FinampPlaybackOrder.linear : FinampPlaybackOrder.shuffled,
-          beginPlaying: isReload
-              ? (_audioHandler.playbackState.valueOrNull?.playing ?? false)
-              : (FinampSettingsHelper.finampSettings.autoplayRestoredQueue && droppedTracks == 0),
+          beginPlaying: isReload ? (_audioHandler.playbackState.valueOrNull?.playing ?? false) : shouldAutoplay,
           source: info.source.withItem(idMap[jellyfin_models.BaseItemId(info.source.id)]),
         );
       }
