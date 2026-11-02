@@ -191,6 +191,7 @@ class DefaultSettings {
   static const playOnReconnectionDelay = 5;
   static const enablePlayon = true;
   static const showArtistChipImage = true;
+  static const trackArtistOrder = TrackArtistOrder.albumArtistsFirst;
   static const trackOfflineFavorites = true;
   static const showProgressOnNowPlayingBar = true;
   static const startInstantMixForIndividualTracks = false;
@@ -466,6 +467,7 @@ class FinampSettings {
     this.clientCertificate = DefaultSettings.clientCertificate,
     this.showQuickActionsBanner = DefaultSettings.showQuickActionsBanner,
     this.perTabContentViewType = DefaultSettings.perTabContentViewType,
+    this.trackArtistOrder = DefaultSettings.trackArtistOrder,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -969,6 +971,9 @@ class FinampSettings {
   @HiveField(160, defaultValue: DefaultSettings.perTabContentViewType)
   @SettingsHelperMap("tabContentType")
   Map<ContentType, ContentViewType> perTabContentViewType;
+
+  @HiveField(161, defaultValue: DefaultSettings.trackArtistOrder)
+  TrackArtistOrder trackArtistOrder;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
@@ -4848,4 +4853,23 @@ class ClientCertificate {
 
   @HiveField(1)
   final String password;
+}
+
+@HiveType(typeId: 128)
+enum TrackArtistOrder {
+  @HiveField(0)
+  albumArtistsFirst,
+  @HiveField(1)
+  metadata,
+  @HiveField(2)
+  firstArtistFirst,
+  @HiveField(3)
+  alphabetical;
+
+  String toLocalisedString(AppLocalizations l10n) => switch (this) {
+    albumArtistsFirst => l10n.trackArtistOrderAlbumArtistsFirst,
+    metadata => l10n.trackArtistOrderMetadata,
+    firstArtistFirst => l10n.trackArtistOrderFirstArtistFirst,
+    alphabetical => l10n.trackArtistOrderAlphabetical,
+  };
 }

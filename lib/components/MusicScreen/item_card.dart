@@ -8,6 +8,7 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/generate_subtitle.dart';
+import 'package:finamp/services/track_artist_order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -97,6 +98,7 @@ class _ItemCollectionCardText extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final subtitle = generateSubtitle(
+      trackArtistOrder: ref.watch(finampSettingsProvider.trackArtistOrder),
       context: context,
       item: item,
       artistType: ref.watch(finampSettingsProvider.defaultArtistType),
@@ -204,9 +206,9 @@ class HomeScreenQueueTile extends ConsumerWidget {
                 if (track?.name != null)
                   // exclude subtitle line 1 if track name is null
                   Text(
-                    AppLocalizations.of(
-                      context,
-                    )!.queueRestoreSubtitle1("${track!.name!} - ${track.artists!.join(", ")}"),
+                    AppLocalizations.of(context)!.queueRestoreSubtitle1(
+                      "${track!.name!} - ${trackArtistNames(track, ref.watch(finampSettingsProvider.trackArtistOrder)) ?? AppLocalizations.of(context)!.unknownArtist}",
+                    ),
                     style: TextTheme.of(context).bodySmall!.copyWith(fontSize: 11, fontStyle: FontStyle.italic),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

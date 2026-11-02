@@ -3799,5 +3799,11 @@
     "quickSettingsLayoutLink": "All layout & theme settings",
     "quickSettingsAllSettingsLink": "All Settings",
     "quickSettingsNetworkLink": "Configure the local address for your server",
-  "loginFlowLocalNetworkServersNoResults": "No servers detected yet - you may need to manually enter the server address."
+  "loginFlowLocalNetworkServersNoResults": "No servers detected yet - you may need to manually enter the server address.",
+    "trackArtistOrderTitle": "Song artist order",
+    "trackArtistOrderSubtitle": "Album artists first places credited album artists before other song artists sorted alphabetically. If no album artist matches, metadata order is kept.",
+    "trackArtistOrderAlbumArtistsFirst": "Album artists first",
+    "trackArtistOrderMetadata": "Metadata order",
+    "trackArtistOrderFirstArtistFirst": "First credited artist first",
+    "trackArtistOrderAlphabetical": "Alphabetical"
 }
