@@ -35,7 +35,7 @@ dependencies:
     # TODO switch back to official just_audio once https://github.com/ryanheise/just_audio/pull/1555 is merged
     # Also need exoplayer updated to 1.11.0
     git:
-      url: https://github.com/Komodo5197/just_audio.git
+      url: https://github.com/finamp-app/just_audio.git
       ref: 10f7a32c85cc07e6669a18263aaf8d1153b2ba31
       path: just_audio
   just_audio_media_kit:
@@ -127,11 +127,7 @@ dependencies:
     git:
       url: https://github.com/Komodo5197/flutter-balanced-text.git
       ref: a6e93dad04f650734eaa6fa4d332800c7523b2a7
-  # Use https://github.com/MrJai/flutter_to_airplay/pull/40 to add macOS airplay support
-  flutter_to_airplay:
-    git:
-      url: https://github.com/obiwantoby/flutter_to_airplay.git
-      ref: 2d09182f60fe95529446ee50cc54340827895af9
+  flutter_to_airplay: ^2.2.0
   flutter_blurhash: ^0.9.1
   scroll_to_index: ^3.0.1
   window_manager: ^0.5.1
