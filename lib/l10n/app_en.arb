@@ -3813,7 +3813,7 @@
   "startMinimizedToTraySubtitle": "Start Finamp with the window hidden in the system tray. You can also pass --minimized on the command line.",
   "trayShowWindow": "Show Finamp",
   "@trayShowWindow": {"description": "System tray menu entry that shows the main window"},
-  "trayHideWindow": "Hide Finamp",
+  "trayHideWindow": "Collapse Finamp to tray",
   "@trayHideWindow": {"description": "System tray menu entry that hides the main window to the tray"},
   "trayQuit": "Quit Finamp",
   "@trayQuit": {"description": "System tray menu entry that fully quits the app"},
