@@ -732,12 +732,11 @@ packages:
   flutter_to_airplay:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "2d09182f60fe95529446ee50cc54340827895af9"
-      resolved-ref: "2d09182f60fe95529446ee50cc54340827895af9"
-      url: "https://github.com/obiwantoby/flutter_to_airplay.git"
-    source: git
-    version: "2.1.0"
+      name: flutter_to_airplay
+      sha256: "35a3b20465630828236b3adc31ca699d8ad9ad1210a4dbb75834b11cf55aeac3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.0"
   flutter_user_certificates_android:
     dependency: "direct main"
     description:
@@ -1025,9 +1024,9 @@ packages:
     dependency: "direct main"
     description:
       path: just_audio
-      ref: "6dfdd07d19f6f037d3f4ff04c397639e4632c687"
-      resolved-ref: "6dfdd07d19f6f037d3f4ff04c397639e4632c687"
-      url: "https://github.com/LennartEnns/just_audio_fork.git"
+      ref: "10f7a32c85cc07e6669a18263aaf8d1153b2ba31"
+      resolved-ref: "10f7a32c85cc07e6669a18263aaf8d1153b2ba31"
+      url: "https://github.com/finamp-app/just_audio.git"
     source: git
     version: "0.10.6"
   just_audio_media_kit:
