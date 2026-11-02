@@ -212,7 +212,7 @@ class ItemCollectionListTile extends ConsumerWidget {
           if (downloadedIndicator.isVisible(ref) || item.isExplicit)
             WidgetSpan(child: SizedBox(width: (additionalInfo != null) ? 5.0 : 2.0)),
           if (additionalInfo != null) ...[
-            ?additionalInfoIcon,
+            if (additionalInfoIcon != null) additionalInfoIcon,
             additionalInfo,
             if ((itemType == BaseItemDtoType.album && albumShowsYearAndDurationInstead) || subtitle != null) ...[
               const WidgetSpan(child: SizedBox(width: 10.0)),
