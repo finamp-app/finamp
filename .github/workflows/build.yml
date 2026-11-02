@@ -140,14 +140,6 @@ jobs:
         path: build/app/outputs/flutter-apk/app-release.apk
         compression-level: 0 # still no compression
 
-    - uses: actions/upload-artifact@v6
-      if: steps.build-release-bundle.outcome == 'success'
-      with:
-        name: finamp-android-release.aab
-        path: build/app/outputs/bundle/release/app-release.aab
-        if-no-files-found: error
-        compression-level: 0
-
     - run: flutter build appbundle --debug --no-pub
 
     - name: Enable KVM group perms
