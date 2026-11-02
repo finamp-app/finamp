@@ -9664,33 +9664,14 @@ Map<String, dynamic> _$FinampOutputRouteToJson(FinampOutputRoute instance) =>
       'iconUri': instance.iconUri,
     };
 
-QueuesHomeSection _$QueuesHomeSectionFromJson(Map<String, dynamic> json) =>
-    QueuesHomeSection();
-
 Map<String, dynamic> _$QueuesHomeSectionToJson(QueuesHomeSection instance) =>
     <String, dynamic>{};
-
-TabsHomeSection _$TabsHomeSectionFromJson(Map<String, dynamic> json) =>
-    TabsHomeSection(
-      libraryId: const LibraryIdConverter().fromJson(
-        json['libraryId'] as String,
-      ),
-      contentType: $enumDecode(_$ContentTypeEnumMap, json['contentType']),
-    );
 
 Map<String, dynamic> _$TabsHomeSectionToJson(TabsHomeSection instance) =>
     <String, dynamic>{
       'contentType': _$ContentTypeEnumMap[instance.contentType]!,
       'libraryId': const LibraryIdConverter().toJson(instance.libraryId),
     };
-
-CollectionHomeSection _$CollectionHomeSectionFromJson(
-  Map<String, dynamic> json,
-) => CollectionHomeSection(
-  itemId: const BaseItemIdConverter().fromJson(json['itemId'] as String),
-  libraryId: const LibraryIdConverter().fromJson(json['libraryId'] as String),
-  contentType: $enumDecode(_$ContentTypeEnumMap, json['contentType']),
-);
 
 Map<String, dynamic> _$CollectionHomeSectionToJson(
   CollectionHomeSection instance,
