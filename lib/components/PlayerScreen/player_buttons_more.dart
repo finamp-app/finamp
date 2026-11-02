@@ -16,8 +16,9 @@ class PlayerButtonsMore extends ConsumerWidget {
   final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
   final BaseItemDto? item;
   final FinampQueueItem? queueItem;
+  final bool showHiddenPlayerActions;
 
-  PlayerButtonsMore({super.key, required this.item, required this.queueItem});
+  PlayerButtonsMore({super.key, required this.item, required this.queueItem, this.showHiddenPlayerActions = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,6 +39,7 @@ class PlayerButtonsMore extends ConsumerWidget {
               context: context,
               item: item!,
               showPlaybackControls: true, // show controls on player screen
+              showHiddenPlayerActions: showHiddenPlayerActions,
               parentItem: inPlaylist ? queueItem!.source.item : null,
               showQueueActions: true,
             );

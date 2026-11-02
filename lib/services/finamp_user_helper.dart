@@ -45,6 +45,13 @@ class FinampUserHelper {
   FinampUser? get currentUser => _currentUserCache ??= _isar.finampUsers.getSync(0);
   FinampUser? _currentUserCache;
 
+  /// The background API isolate receives network hand-off notifications before
+  /// Isar's cross-isolate watcher is guaranteed to run.  Clear its snapshot so
+  /// the next request reads the newly selected local/public address directly.
+  void refreshCurrentUser() {
+    _currentUserCache = null;
+  }
+
   Iterable<FinampUser> get finampUsers => _isar.finampUsers.where().findAllSync();
 
   late String authorizationHeader;
