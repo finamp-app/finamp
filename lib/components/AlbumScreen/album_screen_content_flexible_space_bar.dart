@@ -63,6 +63,7 @@ class AlbumScreenContentFlexibleSpaceBar extends ConsumerWidget {
                   item: BaseItemDtoType.fromItem(parentItem) == BaseItemDtoType.playlist
                       ? Playlist(parentItem, sortConfig: sortConfig)
                       : Album.fromItem(parentItem),
+                  trackCount: items?.length ?? parentItem.childCount,
                   popContext: false,
                 ),
                 if (BaseItemDtoType.fromItem(parentItem) == BaseItemDtoType.playlist) ...[

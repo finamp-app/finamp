@@ -3799,5 +3799,32 @@
     "quickSettingsLayoutLink": "All layout & theme settings",
     "quickSettingsAllSettingsLink": "All Settings",
     "quickSettingsNetworkLink": "Configure the local address for your server",
-  "loginFlowLocalNetworkServersNoResults": "No servers detected yet - you may need to manually enter the server address."
+  "loginFlowLocalNetworkServersNoResults": "No servers detected yet - you may need to manually enter the server address.",
+    "quickSettingsNetworkLink": "Configure the local address for your server",
+    "queueAutorestoreOversized": "Restore aborted - Saved queue is excessively large.",
+    "oversizedQueueItemTruncated": "Oversized item truncated from {itemSize} to {maxSize} tracks.",
+    "@oversizedQueueItemTruncated": {
+        "description": "Message displayed if an item is truncated while being added to queue",
+        "placeholders": {
+            "itemSize": {
+                "type": "int"
+            },
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueSizeLimitTitle": "Queue track limit",
+    "queueSizeLimitSubtitle": "Applies a soft cap to the queue by limiting the size of individual items added.  Excessively large queues may still be created through the addition of multiple items to one queue.  Attempting to play a queue too large for a device may result in app crashes.",
+    "oversizedQueueContinue": "Attempt to load anyway",
+    "oversizedQueueTruncate": "Truncate queue to {maxSize} tracks",
+    "@oversizedQueueTruncate": {
+        "description": "Button to truncate oversized queues while restoring",
+        "placeholders": {
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueRestoreCancel": "Cancel Restore"
 }

@@ -35,7 +35,11 @@ int calculateRadioTracksNeeded() {
   final queueService = GetIt.instance<QueueService>();
   final currentQueue = queueService.getQueue();
   if (FinampSettingsHelper.finampSettings.radioEnabled) {
-    if (![SavedQueueState.saving, SavedQueueState.pendingSave].contains(currentQueue.saveState)) {
+    if (![
+      SavedQueueState.saving,
+      SavedQueueState.pendingSave,
+      SavedQueueState.canceled,
+    ].contains(currentQueue.saveState)) {
       return 0;
     }
     final queueSize = currentQueue.nextUp.length + currentQueue.queue.length;

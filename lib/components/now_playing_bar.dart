@@ -24,6 +24,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
+import '../extensions/localizations.dart';
 import '../models/jellyfin_models.dart' as jellyfin_models;
 import '../screens/player_screen.dart';
 import '../services/current_album_image_provider.dart';
@@ -66,67 +67,84 @@ class NowPlayingBar extends ConsumerWidget {
     );
   }
 
-  Widget buildLoadingQueueBar(WidgetRef ref, void Function()? retryCallback) {
+  Widget buildLoadingQueueBar(WidgetRef ref, SavedQueueState state) {
+    assert(state.isRestoring);
     final progressBackgroundColor = getProgressBackgroundColor(ref).withValues(alpha: 0.5);
     var context = ref.context;
+    final queueService = GetIt.instance<QueueService>();
+    final retryCallback = switch (state) {
+      SavedQueueState.failed => queueService.retryQueueLoad,
+      SavedQueueState.failedOversized => openPlayerScreen,
+      _ => null,
+    };
 
     return SimpleGestureDetector(
-      onVerticalSwipe: (direction) {
-        if (direction == SwipeDirection.up && retryCallback != null) {
-          retryCallback();
-        }
-      },
       onTap: retryCallback,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 12.0, bottom: 12.0, right: 12.0),
-        child: Container(
-          decoration: getShadow(ref.context),
-          child: Material(
-            shadowColor: ColorScheme.of(
-              context,
-            ).primary.withValues(alpha: Theme.brightnessOf(context) == Brightness.light ? 0.75 : 0.3),
-            borderRadius: BorderRadius.circular(12.0),
-            clipBehavior: Clip.antiAlias,
-            color: Theme.brightnessOf(context) == Brightness.dark
-                ? IconTheme.of(context).color!.withValues(alpha: 0.1)
-                : Theme.of(context).cardColor,
-            elevation: 8.0,
-            child: Container(
-              width: MediaQuery.widthOf(context),
-              height: albumImageSize,
-              padding: EdgeInsets.zero,
+      child: Dismissible(
+        key: const Key("NowPlayingBar"),
+        direction: retryCallback == null ? DismissDirection.down : DismissDirection.vertical,
+        confirmDismiss: (direction) async {
+          if (direction == DismissDirection.down) {
+            FeedbackHelper.feedback(FeedbackType.light);
+            await queueService.cancelQueueLoad();
+          } else if (retryCallback != null && direction == DismissDirection.up) {
+            FeedbackHelper.feedback(FeedbackType.light);
+            await retryCallback();
+          }
+          return false;
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(left: 12.0, bottom: 12.0, right: 12.0),
+          child: Container(
+            decoration: getShadow(ref.context),
+            child: Material(
+              shadowColor: ColorScheme.of(
+                context,
+              ).primary.withValues(alpha: Theme.brightnessOf(context) == Brightness.light ? 0.75 : 0.3),
+              borderRadius: BorderRadius.circular(12.0),
+              clipBehavior: Clip.antiAlias,
+              color: Theme.brightnessOf(context) == Brightness.dark
+                  ? IconTheme.of(context).color!.withValues(alpha: 0.1)
+                  : Theme.of(context).cardColor,
+              elevation: 8.0,
               child: Container(
-                clipBehavior: Clip.antiAlias,
-                decoration: ShapeDecoration(
-                  color: progressBackgroundColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: albumImageSize,
-                      height: albumImageSize,
-                      decoration: const ShapeDecoration(shape: Border(), color: Color.fromRGBO(0, 0, 0, 0.3)),
-                      child: (retryCallback != null)
-                          ? const Icon(Icons.refresh, size: albumImageSize)
-                          : const Center(child: CircularProgressIndicator.adaptive()),
-                    ),
-                    Expanded(
-                      child: Container(
+                width: MediaQuery.widthOf(context),
+                height: albumImageSize,
+                padding: EdgeInsets.zero,
+                child: Container(
+                  clipBehavior: Clip.antiAlias,
+                  decoration: ShapeDecoration(
+                    color: progressBackgroundColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: albumImageSize,
                         height: albumImageSize,
-                        padding: const EdgeInsets.only(left: 12, right: 4),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          (retryCallback != null)
-                              ? AppLocalizations.of(context)!.queueRetryMessage
-                              : AppLocalizations.of(context)!.queueLoadingMessage,
+                        decoration: const ShapeDecoration(shape: Border(), color: Color.fromRGBO(0, 0, 0, 0.3)),
+                        child: (retryCallback != null)
+                            ? const Icon(Icons.refresh, size: albumImageSize)
+                            : const Center(child: CircularProgressIndicator.adaptive()),
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: albumImageSize,
+                          padding: const EdgeInsets.only(left: 12, right: 4),
+                          alignment: Alignment.centerLeft,
+                          child: Text(switch (state) {
+                            SavedQueueState.loading => context.l10n.queueLoadingMessage,
+                            SavedQueueState.failed => context.l10n.queueRetryMessage,
+                            SavedQueueState.failedOversized => context.l10n.queueAutorestoreOversized,
+                            _ => "ERROR",
+                          }),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -531,14 +549,8 @@ class NowPlayingBar extends ConsumerWidget {
                 stream: queueService.getQueueStream(),
                 initialData: queueService.getQueue(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData &&
-                      snapshot.data!.saveState == SavedQueueState.loading &&
-                      !usingPlayerSplitScreen) {
-                    return buildLoadingQueueBar(ref, null);
-                  } else if (snapshot.hasData &&
-                      snapshot.data!.saveState == SavedQueueState.failed &&
-                      !usingPlayerSplitScreen) {
-                    return buildLoadingQueueBar(ref, queueService.retryQueueLoad);
+                  if (snapshot.hasData && snapshot.data!.saveState.isRestoring && !usingPlayerSplitScreen) {
+                    return buildLoadingQueueBar(ref, snapshot.data!.saveState);
                   } else if (snapshot.hasData && snapshot.data!.currentTrack != null && !usingPlayerSplitScreen) {
                     return buildNowPlayingBar(ref, snapshot.data!.currentTrack!);
                   } else {
