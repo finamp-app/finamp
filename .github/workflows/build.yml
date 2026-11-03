@@ -115,6 +115,7 @@ jobs:
     - run: flutter pub get
 
     - name: Build debug APK
+      id: build-debug-apk  
       run: flutter build apk --debug --no-pub
 
     - name: Build release APK
@@ -128,6 +129,7 @@ jobs:
       run: flutter build appbundle --release
 
     - uses: actions/upload-artifact@v6
+      if: steps.build-deb-apk.outcome == 'success'  
       with:
         name: finamp-android-debug.apk
         path: build/app/outputs/flutter-apk/app-debug.apk
@@ -139,6 +141,13 @@ jobs:
         name: finamp-android-release.apk
         path: build/app/outputs/flutter-apk/app-release.apk
         compression-level: 0 # still no compression
+
+    - uses: actions/upload-artifact@v6
+      if: steps.build-release-bundle.outcome == 'success'
+      with:
+        name: finamp-android-release.aab
+        path: build/app/outputs/bundle/release/app-release.aab
+        compression-level: 0 # STILL no compression
 
     - name: Enable KVM group perms
       if: *integration_if
