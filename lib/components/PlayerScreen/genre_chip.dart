@@ -38,7 +38,7 @@ class GenreIconAndText extends StatelessWidget {
         children: [
           Icon(
             TablerIcons.color_swatch,
-            color: theme.iconTheme.color?.withOpacity(theme.brightness == Brightness.light ? 0.38 : 0.5),
+            color: theme.iconTheme.color?.withValues(alpha: theme.brightness == Brightness.light ? 0.38 : 0.5),
           ),
           const SizedBox(width: 4),
           Expanded(
@@ -46,7 +46,7 @@ class GenreIconAndText extends StatelessWidget {
                 ? GenreChips(
                     parentType: BaseItemDtoType.fromItem(parent),
                     genres: genres,
-                    backgroundColor: IconTheme.of(context).color!.withOpacity(0.1),
+                    backgroundColor: IconTheme.of(context).color!.withValues(alpha: 0.1),
                     sortConfig: sortConfig,
                     sortConfigController: sortConfigController,
                   )
@@ -165,6 +165,9 @@ class _GenreChipContent extends ConsumerWidget {
     final applyFilterOnGenreChipTap = ref.watch(finampSettingsProvider.applyFilterOnGenreChipTap);
     final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
     final isarDownloader = GetIt.instance<DownloadsService>();
+    final navigator = Navigator.of(context);
+    final genreId = genre.id;
+    final genreFilterUpdater = updateGenreFilter;
 
     bool applyGenreFilter = alternativeAction ? !applyFilterOnGenreChipTap : applyFilterOnGenreChipTap;
 
@@ -179,14 +182,14 @@ class _GenreChipContent extends ConsumerWidget {
       // so we have to get the gneres BaseItemDto in a different way.
       genreItem = await getPlaylistGenreBaseItemDto(genre.name!, isOffline);
     } else if (isOffline) {
-      genreItem = (await isarDownloader.getCollectionInfo(id: genre.id!))?.baseItem;
+      genreItem = (await isarDownloader.getCollectionInfo(id: genreId))?.baseItem;
     } else {
-      genreItem = await jellyfinApiHelper.getItemById(genre.id!);
+      genreItem = await jellyfinApiHelper.getItemById(genreId);
     }
 
     if (genreItem != null) {
-      if (applyGenreFilter && updateGenreFilter != null) {
-        updateGenreFilter!(genreItem);
+      if (applyGenreFilter && genreFilterUpdater != null) {
+        genreFilterUpdater(genreItem);
         if (!alternativeAction) {
           GlobalSnackbar.message(
             (context) => AppLocalizations.of(context)!.applyFilterOnGenreChipTapPrompt,
@@ -194,8 +197,8 @@ class _GenreChipContent extends ConsumerWidget {
               return SnackBarAction(
                 label: AppLocalizations.of(context)!.applyFilterOnGenreChipTapPromptButton,
                 onPressed: () {
-                  updateGenreFilter!(null);
-                  unawaited(Navigator.of(context).pushNamed(GenreScreen.routeName, arguments: genreItem));
+                  genreFilterUpdater(null);
+                  unawaited(navigator.pushNamed(GenreScreen.routeName, arguments: genreItem));
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 },
               );
@@ -203,7 +206,7 @@ class _GenreChipContent extends ConsumerWidget {
           );
         }
       } else {
-        unawaited(Navigator.of(context).pushNamed(GenreScreen.routeName, arguments: genreItem));
+        unawaited(navigator.pushNamed(GenreScreen.routeName, arguments: genreItem));
       }
     } else {
       GlobalSnackbar.message(
@@ -221,7 +224,7 @@ class _GenreChipContent extends ConsumerWidget {
       excludeSemantics: true,
       container: true,
       child: Material(
-        color: backgroundColor ?? Colors.white.withOpacity(0.1),
+        color: backgroundColor ?? Colors.white.withValues(alpha: 0.1),
         borderRadius: _borderRadius,
         child: InkWell(
           borderRadius: _borderRadius,

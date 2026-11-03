@@ -110,8 +110,10 @@
 					<dict>
 						<key>UISceneConfigurationName</key>
 						<string>CarPlay Configuration</string>
+						<key>UISceneClassName</key>
+						<string>CPTemplateApplicationScene</string>
 						<key>UISceneDelegateClassName</key>
-						<string>$(PRODUCT_MODULE_NAME).CarPlaySceneDelegate</string>
+						<string>flutter_carplay.FlutterCarPlaySceneDelegate</string>
 					</dict>
 				</array>
 				<key>UIWindowSceneSessionRoleApplication</key>
@@ -119,8 +121,10 @@
 					<dict>
 						<key>UISceneConfigurationName</key>
 						<string>Default Configuration</string>
+						<key>UISceneClassName</key>
+						<string>UIWindowScene</string>
 						<key>UISceneDelegateClassName</key>
-						<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+						<string>SceneDelegate</string>
 						<key>UISceneStoryboardFile</key>
 						<string>Main</string>
 					</dict>

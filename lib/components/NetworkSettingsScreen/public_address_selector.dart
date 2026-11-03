@@ -1,7 +1,6 @@
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
-import 'package:finamp/services/network_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -44,7 +43,6 @@ class _PublicAddressSelector extends ConsumerState<PublicAddressSelector> {
                 return GlobalSnackbar.message((context) => AppLocalizations.of(context)!.missingSchemaError);
               }
               GetIt.instance<FinampUserHelper>().currentUser?.update(newPublicAddress: value);
-              await changeTargetUrl();
             },
           ),
         ],

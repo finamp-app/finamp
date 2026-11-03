@@ -6,7 +6,6 @@ import 'package:finamp/components/MusicScreen/offline_mode_status_label.dart';
 import 'package:finamp/components/MusicScreen/offline_mode_switch_list_tile.dart';
 import 'package:finamp/components/MusicScreen/view_list_tile.dart';
 import 'package:finamp/components/finamp_icon.dart';
-import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/screens/downloads_screen.dart';
@@ -15,7 +14,6 @@ import 'package:finamp/screens/playback_history_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
 import 'package:finamp/screens/settings_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
-import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/server_info_provider.dart';
@@ -69,7 +67,7 @@ class MusicScreenDrawer extends ConsumerWidget {
                               56,
                               56,
                               overrideColor: ref.watch(finampSettingsProvider.isOffline)
-                                  ? TextTheme.of(context).bodyMedium?.color?.withOpacity(0.6)
+                                  ? TextTheme.of(context).bodyMedium?.color?.withValues(alpha: 0.6)
                                   : null,
                             ),
                             SizedBox(height: 8),

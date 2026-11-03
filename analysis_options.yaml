@@ -10,6 +10,8 @@ analyzer:
   plugins:
     - custom_lint
   exclude:
+    - "lib/**/*.g.dart"
+    - "lib/l10n/app_localizations*.dart"
     - lib/**.chopper.dart
     - lib/color_schemes.g.dart
     - build/**

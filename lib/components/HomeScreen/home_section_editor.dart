@@ -99,6 +99,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
   // TODO the tab types should probably just be separate widgets.
 
   String tabTitle = "";
+  late final TextEditingController tabTitleController;
   LibraryId tabLibrary = currentLibraryPlaceholder;
   ContentType tabContent = ContentType.tracks;
   StaticSortAndFilterController tabSortController = StaticSortAndFilterController(
@@ -131,7 +132,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
             : "");
 
     switch (widget.initialState.base) {
-      case QueuesHomeSection section:
+      case QueuesHomeSection():
         selectedSectionType = _SectionType.queue;
       case TabsHomeSection section:
         selectedSectionType = _SectionType.tab;
@@ -145,7 +146,8 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
         collectionTitle = initialTitle;
         collectionLibrary = section.libraryId;
     }
-    ;
+
+    tabTitleController = TextEditingController(text: tabTitle);
 
     searchListener.addListener(() {
       setState(() {
@@ -191,6 +193,7 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
 
   @override
   void dispose() {
+    tabTitleController.dispose();
     searchListener.dispose();
     super.dispose();
   }
@@ -524,13 +527,12 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
               child: Text(context.l10n.sectionTitle, style: Theme.of(context).textTheme.bodyMedium),
             ),
             TextField(
-              controller: TextEditingController(text: tabTitle)
-                ..selection = TextSelection.fromPosition(TextPosition(offset: tabTitle.length)),
+              controller: tabTitleController,
               decoration: InputDecoration(
                 hintText: context.l10n.egFavoriteTracks,
                 filled: true,
                 fillColor: Color.alphaBlend(
-                  ColorScheme.of(context).onSurface.withOpacity(0.1),
+                  ColorScheme.of(context).onSurface.withValues(alpha: 0.1),
                   ColorScheme.of(context).surface,
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
@@ -538,7 +540,9 @@ class _HomeScreenSectionConfigurationMenuState extends ConsumerState<HomeScreenS
                 border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
               ),
               onChanged: (newValue) {
-                tabTitle = newValue;
+                setState(() {
+                  tabTitle = newValue;
+                });
               },
             ),
           ],

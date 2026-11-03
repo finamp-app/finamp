@@ -290,9 +290,16 @@ class _TracksSliverListState extends ConsumerState<TracksSliverList> {
         // When user selects track from disc other than first, index number is
         // incorrect and track with the same index on first disc is played instead.
         // Adding this offset ensures playback starts for nth track on correct disc.
-        final indexOffset = widget.childrenForQueue.indexWhere(
-          (element) => element.id == widget.childrenForList[index].id,
-        );
+        final currentId = widget.childrenForList[index].id;
+        final dupesBefore = widget.childrenForList.take(index).where((element) => element.id == currentId).length;
+        final indexOffset =
+            widget.childrenForQueue.indexed
+                .where((element) => element.$2.id == currentId)
+                // assuming duplicates are only possible when childrenForQueue is a sparse sublist of childrenForList
+                .skip(dupesBefore)
+                .firstOrNull // it is null for unplayable tracks
+                ?.$1 ??
+            -1;
 
         final BaseItemDto item = widget.childrenForList[index];
 

@@ -19,14 +19,16 @@ class ReleaseDateHelper {
       return baseItem?.productionYear?.toString();
     }
     switch (format) {
-      case ReleaseDateFormat.year:
+      case ReleaseDateFormat.year: // Example: 2022
         return DateFormat.y(locale).format(premiereDate);
-      case ReleaseDateFormat.iso:
+      case ReleaseDateFormat.iso: // Example: 2022-03-02
         return premiereDate.toIso8601String().split("T").first;
-      case ReleaseDateFormat.monthYear:
-        return "${DateFormat.MMMM(locale).format(premiereDate)} ${DateFormat.y(locale).format(premiereDate)}";
-      case ReleaseDateFormat.monthDayYear:
-        return "${DateFormat.MMMM(locale).format(premiereDate)} ${DateFormat.d(locale).format(premiereDate)}, ${DateFormat.y(locale).format(premiereDate)}";
+      case ReleaseDateFormat.monthYear: // Example: March, 2022
+        return DateFormat.yMMMM(locale).format(premiereDate);
+      case ReleaseDateFormat.monthDayYear: // Example: March 2, 2022 (en_us) or 2 March 2022 (en_gb)
+        return DateFormat.yMMMMd(locale).format(premiereDate);
+      case ReleaseDateFormat.numerical: // Example: 3/2/2022 (en_us) or 02/03/2022 (en_gb)
+        return DateFormat.yMd(locale).format(premiereDate);
     }
   }
 }

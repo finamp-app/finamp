@@ -62,9 +62,7 @@ class _LyricsScreenContentState extends ConsumerState<_LyricsScreenContent> {
     return SimpleGestureDetector(
       onVerticalSwipe: (direction) {
         if (direction == SwipeDirection.up) {
-          // This should never actually be called until widget finishes build and controller is initialized
-          if (!FinampSettingsHelper.finampSettings.disableGesture ||
-              !controller.shouldShow(PlayerHideable.bottomActions)) {
+          if (!FinampSettingsHelper.finampSettings.disableGesture) {
             showQueueBottomSheet(context, ref);
           }
         }
@@ -87,7 +85,7 @@ class _LyricsScreenContentState extends ConsumerState<_LyricsScreenContent> {
           title: PlayerScreenAppBarTitle(maxLines: maxLines),
           leading: FinampAppBarBackButton(dismissDirection: AxisDirection.left),
           actions: [
-            if (Platform.isIOS)
+            if (Platform.isIOS || Platform.isMacOS)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: AirPlayRoutePickerView(
@@ -469,7 +467,7 @@ class _LyricLine extends ConsumerWidget {
     final cueHighlightStyle = currentLineStyle.copyWith(color: highlightColor);
     final cueGreyStyle = currentLineStyle.copyWith(color: Colors.white);
     final cueFadeStyle = currentLineStyle.copyWith(
-      color: Color.alphaBlend(highlightColor.withOpacity(0.6), Colors.white),
+      color: Color.alphaBlend(highlightColor.withValues(alpha: 0.6), Colors.white),
     );
 
     return GestureDetector(
@@ -733,10 +731,10 @@ class LyricsListMask extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [
             Colors.transparent,
-            Colors.white.withOpacity(0.5),
+            Colors.white.withValues(alpha: 0.5),
             Colors.white,
             Colors.white,
-            Colors.white.withOpacity(0.5),
+            Colors.white.withValues(alpha: 0.5),
             Colors.transparent,
           ],
           stops: const [0.0, 0.05, 0.10, 0.90, 0.95, 1.0],

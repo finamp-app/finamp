@@ -1,5 +1,4 @@
 import 'package:finamp/components/Buttons/cta_medium.dart';
-import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/NetworkSettingsScreen/active_network_display.dart';
 import 'package:finamp/components/NetworkSettingsScreen/auto_offline_selector.dart';
@@ -57,7 +56,7 @@ class _NetworkSettingsScreenState extends State<NetworkSettingsScreen> {
                   // Ensure any pending edits in the local network address field are committed first
                   final widgetState = localNetworkAddressKey.currentState;
                   if (widgetState != null) {
-                    await widgetState.commitIfChanged();
+                    widgetState.commitIfChanged();
                   }
                   final [public, private] = await Future.wait([
                     GetIt.instance<JellyfinApiHelper>().pingPublicServer(),

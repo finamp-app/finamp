@@ -25,7 +25,7 @@ class MenuEntry extends ConsumerWidget {
       color: Colors.transparent,
       child: ListTile(
         enabled: enabled,
-        leading: Icon(icon, color: enabled ? iconColor : iconColor.withOpacity(0.5)),
+        leading: Icon(icon, color: enabled ? iconColor : iconColor.withValues(alpha: 0.5)),
         title: Text(title),
         onTap: onTap,
       ),

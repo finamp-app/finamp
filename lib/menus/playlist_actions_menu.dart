@@ -30,7 +30,7 @@ Future<void> showPlaylistActionsMenu({
 
   var playlistsFuture = jellyfinApiHelper.getItems(includeItemTypes: "Playlist", sortBy: "SortName");
 
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     item: items.length == 1 ? items.first : null,
     routeName: playlistActionsMenuRouteName,
@@ -50,7 +50,7 @@ Future<void> showPlaylistActionsMenu({
                 leading: AspectRatio(
                   aspectRatio: 1.0,
                   child: DecoratedBox(
-                    decoration: BoxDecoration(color: themeColor.withOpacity(0.3)),
+                    decoration: BoxDecoration(color: themeColor.withValues(alpha: 0.3)),
                     child: const Center(child: Icon(TablerIcons.heart, size: 36.0, color: Colors.white)),
                   ),
                 ),

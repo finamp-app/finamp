@@ -90,6 +90,16 @@ extension type const ResolvedSortConfig._(SortAndFilterConfiguration config) imp
     return ResolvedSortConfig._(config.copyWith(genreFilter: genre));
   }
 
+  /// Replaces any existing letter filter with [letter] ("A".."Z" or "#") and forces ascending sort-name order.
+  ResolvedSortConfig copyWithLetter(String letter) {
+    final processedFilters = config.filters.toSet();
+    processedFilters.removeWhere((x) => x.type == ItemFilterType.startsWithCharacter);
+    processedFilters.add(ItemFilter(type: ItemFilterType.startsWithCharacter, extras: letter));
+    return ResolvedSortConfig._(
+      config.copyWith(sortBy: SortBy.sortName, sortOrder: SortOrder.ascending, filters: processedFilters),
+    );
+  }
+
   ResolvedSortConfig.skipResolving(this.config);
 
   static const defaultSort = ResolvedSortConfig._(
@@ -276,10 +286,10 @@ class SortAndFilterRow extends ConsumerWidget {
                                 fontWeight: activeFilterCount > 0 ? FontWeight.w600 : FontWeight.normal,
                                 iconColor: activeFilterCount > 0
                                     ? ColorScheme.of(context).primary
-                                    : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
+                                    : TextTheme.of(context).bodyMedium?.color?.withValues(alpha: 0.7),
                                 textColor: activeFilterCount > 0
                                     ? ColorScheme.of(context).primary
-                                    : TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
+                                    : TextTheme.of(context).bodyMedium?.color?.withValues(alpha: 0.7),
                                 onPressed: showMenu,
                               ),
                         if (showChips)
@@ -353,8 +363,8 @@ class ActiveFilterChip extends StatelessWidget {
       text: text,
       label: l10n.removeFilter,
       icon: TablerIcons.x,
-      iconColor: TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
-      backgroundColor: ColorScheme.of(context).primary.withOpacity(0.1),
+      iconColor: TextTheme.of(context).bodyMedium?.color?.withValues(alpha: 0.7),
+      backgroundColor: ColorScheme.of(context).primary.withValues(alpha: 0.1),
       iconPosition: IconPosition.end,
       onPressed: onRemove,
       onPressedSecondary: onSecondaryPress,
@@ -660,7 +670,7 @@ class _SortAndFilterMenuState extends ConsumerState<SortAndFilterMenu>
                   context.l10n.applyChangesOnClose,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontStyle: FontStyle.italic,
-                    color: TextTheme.of(context).bodyMedium?.color?.withOpacity(0.7),
+                    color: TextTheme.of(context).bodyMedium?.color?.withValues(alpha: 0.7),
                   ),
                 ),
               )

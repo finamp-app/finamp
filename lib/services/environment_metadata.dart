@@ -16,7 +16,7 @@ import 'finamp_user_helper.dart';
 
 part 'environment_metadata.g.dart';
 
-const _SharedPreferencesVersionHistoryKey = 'version_history';
+const _sharedPreferencesVersionHistoryKey = 'version_history';
 final _environmentMetadataLogger = Logger('EnvironmentMetadata');
 
 /// Contains information about the current device (id, model, OS, platform).
@@ -121,12 +121,12 @@ class AppInfo {
 
     List<String>? history;
     try {
-      history = List<String>.from((await prefs.getStringList(_SharedPreferencesVersionHistoryKey) ?? <String>[]));
+      history = List<String>.from((await prefs.getStringList(_sharedPreferencesVersionHistoryKey) ?? <String>[]));
       final previousVersion = history.isNotEmpty ? history.last : null;
 
       if (previousVersion != currentVersion) {
         history.add(currentVersion);
-        await prefs.setStringList(_SharedPreferencesVersionHistoryKey, history);
+        await prefs.setStringList(_sharedPreferencesVersionHistoryKey, history);
       }
     } catch (e) {
       _environmentMetadataLogger.warning("Failed to update version history: $e");

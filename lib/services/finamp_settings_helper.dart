@@ -64,6 +64,7 @@ class FinampSettingsHelper {
     finampSettingsTemp.showSeekControlsOnMediaNotification = DefaultSettings.showSeekControlsOnMediaNotification;
     finampSettingsTemp.oneLineMarqueeTextButton = DefaultSettings.oneLineMarqueeTextButton;
     finampSettingsTemp.tileAdditionalInfoType = DefaultSettings.tileAdditionalInfoType;
+    finampSettingsTemp.releaseDateFormat = DefaultSettings.releaseDateFormat;
 
     Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", finampSettingsTemp);
   }
@@ -288,7 +289,7 @@ class FinampSettingsHelper {
   }) {
     return IconButton(
       onPressed: () async {
-        await showDialog(
+        await showDialog<void>(
           context: context,
           builder: (context) => ConfirmationPromptDialog(
             promptText: isGlobal

@@ -7,34 +7,15 @@ import 'package:logging/logging.dart';
 import '../models/finamp_models.dart';
 import 'android_auto_helper.dart';
 import 'audio_service_helper.dart';
+import 'music_player_background_task.dart';
+import 'queue_service.dart';
 
-/// iOS-specific helpers for playback state sync and Siri media intents.
+/// iOS-specific helpers for Siri media intents.
 
 final _logger = Logger('IosHelpers');
 
-/// Syncs playback state to iOS's MPNowPlayingInfoCenter.
-///
-/// TODO: This is a workaround because audio_service doesn't set
-/// MPNowPlayingInfoCenter.playbackState on iOS (only on macOS).
-/// This causes CarPlay's Now Playing screen to not reflect the correct
-/// play/pause state when playback is started from the phone.
-/// Consider contributing a fix upstream to audio_service.
-class IosPlaybackStateSync {
-  static const _channel = MethodChannel('com.unicornsonlsd.finamp-ios/playback_state');
-
-  /// Sets the playback state on iOS's MPNowPlayingInfoCenter.
-  /// This is needed for CarPlay to show the correct play/pause state.
-  static Future<void> setPlaybackState({required bool isPlaying}) async {
-    if (!Platform.isIOS) return;
-
-    try {
-      await _channel.invokeMethod('setPlaybackState', {'isPlaying': isPlaying});
-      _logger.fine('Set iOS playback state to ${isPlaying ? "playing" : "paused"}');
-    } catch (e) {
-      _logger.warning('Failed to set iOS playback state: $e');
-    }
-  }
-}
+/// Queries Siri sends when the user names no specific media, like "Play music on Finamp".
+const _genericMediaQueries = {'music', 'some music', 'my music', 'songs', 'something'};
 
 /// Handles Siri media intent commands from iOS.
 ///
@@ -92,6 +73,19 @@ class IosSiriHandler {
     // Shuffle with no specific query
     if (shuffle && query == null && artist == null && album == null) {
       await _shuffleAll();
+      return;
+    }
+
+    final isGenericRequest =
+        artist == null &&
+        album == null &&
+        genre == null &&
+        mediaType == null &&
+        (query == null || query.trim().isEmpty || _genericMediaQueries.contains(query.trim().toLowerCase()));
+    if (isGenericRequest) {
+      if (shuffle || !await _resumeQueue()) {
+        await _shuffleAll();
+      }
       return;
     }
 
@@ -164,6 +158,25 @@ class IosSiriHandler {
   static Future<void> _shuffleAll() async {
     final audioServiceHelper = GetIt.instance<AudioServiceHelper>();
     await audioServiceHelper.shuffleAll(onlyShowFavorites: false, itemCount: DefaultSettings.quickShuffleItemCount);
+  }
+
+  /// Returns false when there is no queue to resume.
+  static Future<bool> _resumeQueue() async {
+    final queueService = GetIt.instance<QueueService>();
+    // Keep a queue that is still loading rather than shuffling over it
+    if (queueService.getQueue().saveState == SavedQueueState.loading) {
+      return true;
+    }
+    try {
+      if (queueService.getCurrentTrack() == null && !await queueService.ensureQueueLoaded()) {
+        return false;
+      }
+    } catch (e) {
+      _logger.warning("Siri could not restore the saved queue: $e");
+      return false;
+    }
+    await GetIt.instance<MusicPlayerBackgroundTask>().play();
+    return true;
   }
 
   /// Handles Siri "Search for X on Finamp" voice commands

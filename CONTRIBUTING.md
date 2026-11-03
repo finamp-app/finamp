@@ -307,6 +307,13 @@ Finamp uses Weblate to manage translations: **<https://hosted.weblate.org/engage
 Feel free to add new languages if yours isn't there yet.  
 If you have any questions, such as the context of a string, you can ask in the [Translation Discussions](https://github.com/jmshrv/finamp/discussions/categories/translations). There's also a channel on our [Discord server](https://discord.gg/xh9SZ73jWk) for potentially getting a reply faster.
 
+## Generating Assets
+
+### Icon PNGs (based on the SVG)
+
+- Foreground (Android): `convert -trim -gravity center -background none -resize 2160x2160 -extent 4320x4320 icon_foreground.svg icon_foreground.png`
+- Combined (iOS): `convert -trim -gravity center -background "#000B25" -resize 3240x3240 -extent 4320x4320 icon_foreground.svg icon_combined.png`
+
 ## Packaging
 
 ### Linux

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/services/discovery_response_parser.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -43,10 +44,11 @@ class JellyfinServerClientDiscovery {
           if (event == RawSocketEvent.read) {
             final datagram = _discoverySocket.receive();
             if (datagram != null) {
-              _clientDiscoveryLogger.finest("Received datagram: ${utf8.decode(datagram.data)}");
-              final response = ClientDiscoveryResponse.fromJson(
-                jsonDecode(utf8.decode(datagram.data)) as Map<String, dynamic>,
-              );
+              final response = parseDiscoveryResponse(datagram.data);
+              if (response == null) {
+                _clientDiscoveryLogger.fine("Ignoring invalid discovery response from ${datagram.address}");
+                return;
+              }
               _clientDiscoveryLogger.info(
                 "Received discovery response from ${datagram.address}:${datagram.port}: ${jsonEncode(response)}",
               );

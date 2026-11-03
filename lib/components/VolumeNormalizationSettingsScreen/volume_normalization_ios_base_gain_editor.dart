@@ -34,7 +34,7 @@ class _VolumeNormalizationIOSBaseGainEditorState extends ConsumerState<VolumeNor
         dialogContent: AppLocalizations.of(context)!.volumeNormalizationIOSBaseGainEditorDescription,
       ),
       trailing: SizedBox(
-        width: 50 * MediaQuery.textScaleFactorOf(context),
+        width: MediaQuery.textScalerOf(context).scale(50),
         child: TextField(
           controller: _controller,
           textAlign: TextAlign.center,

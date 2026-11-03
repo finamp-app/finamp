@@ -1,0 +1,25 @@
+Finamp's redesign is now finally stable and has been released to F-Droid!
+
+Here's what's new:
+
+<ul>
+<li>Customizable Home Tab</li>
+<li>Many redesigned screens & menus</li>
+<li>Lyrics support</li>
+<li>Volume normalization</li>
+<li>Adaptive theme</li>
+<li>Auto-restore queue</li>
+<li>New playback options</li>
+<li>Vastly improved download system</li>
+<li>Automatic offline mode</li>
+<li>Android Auto & CarPlay (<strong>only if installed via Play Store or enabled in Android Auto Developer Settings!</strong>)</li>
+<li>Support for custom certs & mTLS</li>
+<li>Desktop & Tablet Support</li>
+<li>Tons of bug fixes</li>
+<li>Jellyfin 12.0 compatibility</li>
+<li>and much, much more!</li>
+</ul>
+
+Full release notes: <a href="https://github.com/finamp-app/finamp/releases/1.0.1">https://github.com/finamp-app/finamp/releases/1.0.1</a>
+
+Thank you for using Finamp!

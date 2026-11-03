@@ -45,16 +45,16 @@ class _SpeedSliderState extends State<SpeedSlider> {
       data: SliderTheme.of(context).copyWith(
         thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 24 / 2.0),
         trackHeight: 24.0,
-        inactiveTrackColor: widget.iconColor.withOpacity(0.3),
+        inactiveTrackColor: widget.iconColor.withValues(alpha: 0.3),
         activeTrackColor: FinampSettingsHelper.finampSettings.playbackSpeed > speedSliderMax
-            ? widget.iconColor.withOpacity(0.4)
-            : widget.iconColor.withOpacity(0.6),
-        showValueIndicator: ShowValueIndicator.always,
+            ? widget.iconColor.withValues(alpha: 0.4)
+            : widget.iconColor.withValues(alpha: 0.6),
+        showValueIndicator: ShowValueIndicator.onDrag,
         valueIndicatorColor: Color.lerp(Theme.of(context).cardColor, widget.iconColor, 0.6),
         valueIndicatorTextStyle: Theme.of(context).textTheme.labelLarge,
         valueIndicatorShape: const RectangularSliderValueIndicatorShape(),
         tickMarkShape: const RoundSliderTickMarkShape(tickMarkRadius: 1.5),
-        activeTickMarkColor: widget.iconColor.withOpacity(0.9),
+        activeTickMarkColor: widget.iconColor.withValues(alpha: 0.9),
         overlayShape: SliderComponentShape.noOverlay, // get rid of padding
       ),
       child: ExcludeSemantics(
@@ -245,7 +245,7 @@ class _SpeedMenuState extends State<SpeedMenu> {
                             borderSide: BorderSide.none,
                           ),
                           filled: true,
-                          fillColor: widget.iconColor.withOpacity(0.08),
+                          fillColor: widget.iconColor.withValues(alpha: 0.08),
                         ),
                         keyboardType: TextInputType.numberWithOptions(decimal: true),
                         onFieldSubmitted: (val) {

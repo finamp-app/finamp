@@ -27,7 +27,7 @@
           overlays = [ fenix.overlays.default ];
         };
         lib = pkgs.lib;
-        buildToolsVersion = "35.0.0";
+        buildToolsVersion = "36.0.0";
         androidComposition = pkgs.androidenv.composeAndroidPackages {
           cmdLineToolsVersion = "8.0";
           toolsVersion = "26.1.1";
@@ -50,10 +50,16 @@
             "arm64-v8a"
           ];
           includeNDK = true;
-          ndkVersions = [ "27.0.12077973" ];
+          ndkVersions = [ "28.2.13676358" ];
           cmakeVersions = [ "3.22.1" ];
         };
         androidSdk = androidComposition.androidsdk;
+        androidRustTargets = [
+          "armv7-linux-androideabi"
+          "aarch64-linux-android"
+          "i686-linux-android"
+          "x86_64-linux-android"
+        ];
         rustupStub = let
           flavorName = "stable";
 
@@ -86,7 +92,7 @@
               # This handles rustup "target" "list" "--toolchain" "stable-x86_64-unknown-linux-gnu" "--installed"
               # if cross-compiling (e.g. for android), add all four targets here (idk separator though) and to fenix
               # Currently looks like discord rpc is not enabled on mobile
-              echo "${targetName}"
+              printf "${builtins.concatStringsSep "\n" ([targetName] ++ androidRustTargets)}"
             else
               echo "Can't run $*"
               exit 2
@@ -113,11 +119,11 @@
               dbus
             ] ++ (if withFenix then [
               rustupStub
-              (with pkgs.fenix; combine [
+              (with pkgs.fenix; combine ([
                 stable.cargo
                 stable.rustc
                 # rust-src in case of any issues
-              ])
+              ] ++ (map (x: targets.${x}.stable.rust-std) androidRustTargets)))
             ] else [
               rustup
             ]);

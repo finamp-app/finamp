@@ -1,5 +1,0 @@
-Foreground (Android)
-convert -trim -gravity center -background none -resize 2160x2160 -extent 4320x4320 icon_foreground.svg icon_foreground.png
-
-Combined (iOS)
-convert -trim -gravity center -background "#000B25" -resize 3240x3240 -extent 4320x4320 icon_foreground.svg icon_combined.png

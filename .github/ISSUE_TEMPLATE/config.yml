@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Got an idea? Open a Discussion!
+    url: https://github.com/jmshrv/finamp/discussions
+    about: "If you're not yet sure if something is a good feature request, you can use this to discuss it with us!" 
+  - name: Finamp Beta Testers Discord Server
+    url: https://discord.gg/xh9SZ73jWk
+    about: We use Discord for more efficient and casual discussion. This is the best place to get answers quickly!

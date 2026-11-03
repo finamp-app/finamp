@@ -89,6 +89,6 @@ class OfflineListenLogHelper {
     final file = await _logFile;
     final xFile = XFile(file.path, mimeType: "application/json");
 
-    await Share.shareXFiles([xFile]);
+    await SharePlus.instance.share(ShareParams(files: [xFile]));
   }
 }

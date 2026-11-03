@@ -130,7 +130,7 @@ class _ViewSelectorState extends State<ViewSelector> {
                     onTap: () async {
                       final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
-                      await jellyfinApiHelper.logoutCurrentUser().onError((_, __) {});
+                      await jellyfinApiHelper.logoutCurrentUser().onError((_, _) {});
 
                       if (!context.mounted) return;
 
@@ -161,7 +161,8 @@ class _ViewSelectorState extends State<ViewSelector> {
 
         // allow calling _submitChoice() while selector is being built by delaying
         // navigation changes
-        Future.microtask(() => Navigator.of(context).pushNamedAndRemoveUntil(MusicScreen.routeName, (route) => false));
+        final navigator = Navigator.of(context);
+        Future.microtask(() => navigator.pushNamedAndRemoveUntil(MusicScreen.routeName, (route) => false));
       } catch (e) {
         GlobalSnackbar.error(e);
       }

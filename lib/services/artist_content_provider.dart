@@ -71,28 +71,19 @@ Future<(List<BaseItemDto>, CuratedItemSelectionType, Set<CuratedItemSelectionTyp
         limit: 5,
         includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
       );
-      // For everything except Favorites we can re-use the data from the other provider
-      // The other provider would not limit the favorites but run a separate call anyway
-      // so we would get a lot of overhead and therefore we are just doing it right here
-      final List<BaseItemDto>? topPerformingArtistTracks = (selectionType != CuratedItemSelectionType.favorites)
-          ? await ref.watch(
-              getPerformingArtistTracksProvider(
-                artist: artist,
-                libraryFilter: libraryFilter?.id,
-                genreFilter: genreFilter,
-              ).future,
-            )
-          : await jellyfinApiHelper.getItems(
-              libraryFilter: libraryFilter?.id,
-              parentItem: artist,
-              genreFilter: genreFilter,
-              artistType: ArtistType.artist,
-              sortBy: sortBy.jellyfinName(ContentType.tracks),
-              sortOrder: SortOrder.descending.name,
-              isFavorite: true,
-              limit: 5,
-              includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
-            );
+      // The preview only needs the top five from each set, with the same ordering.
+      // Leave full-discography loading to playback actions.
+      final List<BaseItemDto>? topPerformingArtistTracks = await jellyfinApiHelper.getItems(
+        libraryFilter: libraryFilter?.id,
+        parentItem: artist,
+        genreFilter: genreFilter,
+        artistType: ArtistType.artist,
+        sortBy: sortBy.jellyfinName(ContentType.tracks),
+        sortOrder: SortOrder.descending.name,
+        isFavorite: (selectionType == CuratedItemSelectionType.favorites) ? true : null,
+        limit: 5,
+        includeItemTypes: BaseItemDtoType.track.jellyfinName,
+      );
 
       final Map<String, BaseItemDto> distinctMap = {
         for (final track in [...?topAlbumArtistTracks, ...?topPerformingArtistTracks]) track.id.toString(): track,
@@ -142,6 +133,40 @@ Future<(List<BaseItemDto>, CuratedItemSelectionType, Set<CuratedItemSelectionTyp
   }
 
   return (filteredResult, currentSelectionType, disabledFilters);
+}
+
+/// Distinct tracks with an album-artist OR track-artist credit.
+/// Rendering an online artist page must not fetch every track just to count it.
+@riverpod
+Future<int> getArtistTrackCount(
+  Ref ref, {
+  required BaseItemDto artist,
+  LibraryId? libraryFilter,
+  BaseItemId? genreFilter,
+}) async {
+  if (ref.watch(finampSettingsProvider.isOffline)) {
+    final tracks = await ref.watch(
+      getArtistTracksProvider(artist: artist, libraryFilter: libraryFilter, genreFilter: genreFilter).future,
+    );
+    return tracks.length;
+  }
+
+  final result = await GetIt.instance<JellyfinApiHelper>().getItemsWithTotalRecordCount(
+    parentItem: artist,
+    libraryFilter: libraryFilter?.resolve(ref),
+    genreFilter: genreFilter,
+    artistType: ArtistType.artist,
+    includeItemTypes: BaseItemDtoType.track.jellyfinName,
+    fields: '',
+    limit: 1,
+  );
+  final count = result.totalRecordCount;
+  if (count < 0) {
+    throw const FormatException('Invalid artist track count');
+  }
+  // Jellyfin's ArtistIds filter includes both track and album artist credits.
+  // It already returns their union, so overlapping credits are counted once.
+  return count;
 }
 
 // Get Albums where the artist is an album artist
@@ -234,9 +259,9 @@ Future<List<BaseItemDto>> getPerformingArtistAlbums(
   }
 }
 
-// Fetch every performing artist track
-// (note that this intentionally also includes tracks
-// where the artist is also an album artist)
+// Online ArtistIds returns both track-artist and album-artist credits, even
+// album-only credits. Keep that existing playback/download behavior here;
+// this provider's historical name does not mean a pure performing-artist set.
 @riverpod
 Future<List<BaseItemDto>> getPerformingArtistTracks(
   Ref ref, {
@@ -266,7 +291,7 @@ Future<List<BaseItemDto>> getPerformingArtistTracks(
       );
       // Now we remove every track where the artist is NOT an performing artist...
       final filteredPerformingArtistTracks = performingArtistAlbumTracks.where((track) {
-        return track.artistItems?.any((artist) => artist.id == artist.id) ?? false;
+        return track.artistItems?.any((credit) => credit.id == artist.id) ?? false;
       });
       // and add the tracks to the list
       performingArtistTracks.addAll(filteredPerformingArtistTracks);

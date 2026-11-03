@@ -4,8 +4,6 @@ import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/GenreScreen/genre_count_column.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/components/curated_item_filter_row.dart';
-import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
-import 'package:finamp/services/genre_screen_provider.dart';
 import 'package:finamp/components/curated_item_sections.dart';
 import 'package:finamp/components/favorite_button.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
@@ -198,8 +196,8 @@ class _GenreScreenContentState extends ConsumerState<GenreScreenContent> {
     }
 
     final countsTextColor = IconTheme.of(context).color;
-    final countsSubtitleColor = IconTheme.of(context).color!.withOpacity(0.6);
-    final countsBorderColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.2);
+    final countsSubtitleColor = IconTheme.of(context).color!.withValues(alpha: 0.6);
+    final countsBorderColor = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
     final countsBackgroundColor = Theme.of(context).colorScheme.surface;
 
     return PaddedCustomScrollview(

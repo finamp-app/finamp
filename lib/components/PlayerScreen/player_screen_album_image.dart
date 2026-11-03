@@ -18,7 +18,9 @@ import '../../services/favorite_provider.dart';
 import '../album_image.dart';
 
 class PlayerScreenAlbumImage extends ConsumerWidget {
-  const PlayerScreenAlbumImage({super.key});
+  const PlayerScreenAlbumImage({super.key, this.showHiddenPlayerActions = false});
+
+  final bool showHiddenPlayerActions;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,6 +50,7 @@ class PlayerScreenAlbumImage extends ConsumerWidget {
                   context: context,
                   item: queueItem!.baseItem,
                   showPlaybackControls: true,
+                  showHiddenPlayerActions: showHiddenPlayerActions,
                   // show controls on player screen
                   parentItem: inPlaylist ? queueItem.source.item : null,
                 );
@@ -94,7 +97,11 @@ class PlayerScreenAlbumImage extends ConsumerWidget {
                       autoScale: false,
                       decoration: BoxDecoration(
                         boxShadow: [
-                          BoxShadow(blurRadius: 24, offset: const Offset(0, 4), color: Colors.black.withOpacity(0.3)),
+                          BoxShadow(
+                            blurRadius: 24,
+                            offset: const Offset(0, 4),
+                            color: Colors.black.withValues(alpha: 0.3),
+                          ),
                         ],
                       ),
                     ),

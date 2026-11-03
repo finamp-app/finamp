@@ -68,7 +68,7 @@ Future<void> showModalPlaylistMenu({
     return (stackHeight, menu);
   }
 
-  await showThemedBottomSheet(
+  await showThemedBottomSheet<void>(
     context: context,
     item: item,
     routeName: playlistMenuRouteName,

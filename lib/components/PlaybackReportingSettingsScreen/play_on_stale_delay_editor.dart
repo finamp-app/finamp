@@ -28,7 +28,7 @@ class _PlayOnStaleDelayEditorState extends State<PlayOnStaleDelayEditor> {
         ),
       ),
       trailing: SizedBox(
-        width: 50 * MediaQuery.textScaleFactorOf(context),
+        width: MediaQuery.textScalerOf(context).scale(50),
         child: TextField(
           controller: _controller,
           textAlign: TextAlign.center,

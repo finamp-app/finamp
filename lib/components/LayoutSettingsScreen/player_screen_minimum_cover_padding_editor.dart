@@ -21,7 +21,7 @@ class _PlayerScreenMinimumCoverPaddingEditorState extends State<PlayerScreenMini
       title: Text(AppLocalizations.of(context)!.playerScreenMinimumCoverPaddingEditorTitle),
       subtitle: Text(AppLocalizations.of(context)!.playerScreenMinimumCoverPaddingEditorSubtitle),
       trailing: SizedBox(
-        width: 50 * MediaQuery.textScaleFactorOf(context),
+        width: MediaQuery.textScalerOf(context).scale(50),
         child: TextField(
           controller: _controller,
           textAlign: TextAlign.center,

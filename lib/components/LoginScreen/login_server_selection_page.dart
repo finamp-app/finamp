@@ -1,3 +1,4 @@
+import 'package:finamp/components/LoginScreen/server_discovery_status.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
 import 'package:finamp/components/finamp_icon.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -231,23 +232,9 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
                     // show loading indicator below list of discovered servers
                     return Padding(
                       padding: const EdgeInsets.only(top: 12.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: SizedBox(
-                              height: 20.0,
-                              width: 20.0,
-                              child: CircularProgressIndicator(strokeWidth: 2.0),
-                            ),
-                          ),
-                          const SizedBox(width: 8.0),
-                          Text(
-                            AppLocalizations.of(context)!.loginFlowLocalNetworkServersScanningForServers,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
+                      child: ServerDiscoveryStatus(
+                        key: ObjectKey(widget.serverState.clientDiscoveryHandler),
+                        hasServers: widget.serverState.discoveredServers.isNotEmpty,
                       ),
                     );
                   }
@@ -277,7 +264,7 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
           color: Theme.of(context).iconTheme.color,
           icon: const Icon(Icons.info),
           tooltip: AppLocalizations.of(context)!.serverUrlInfoButtonTooltip,
-          onPressed: () => showDialog(
+          onPressed: () => showDialog<void>(
             context: context,
             builder: (context) => AlertDialog(
               content: Text(AppLocalizations.of(context)!.internalExternalIpExplanation),
@@ -314,12 +301,12 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
               onChanged: (value) async {
                 widget.serverState.manualServer = null;
                 widget.serverState.baseUrl = value;
-                if (formKey.currentState?.validate() == true) {
+                if (formKey.currentState?.validate() ?? false) {
                   widget.serverState.onBaseUrlChanged(value);
                 }
               },
               validator: (value) {
-                if (value?.isEmpty == true) {
+                if (value?.isEmpty ?? false) {
                   return AppLocalizations.of(context)!.emptyServerUrl;
                 }
                 return null;

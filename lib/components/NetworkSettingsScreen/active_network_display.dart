@@ -16,7 +16,7 @@ class ActiveNetworkDisplay extends ConsumerWidget {
 
     return ValueListenableBuilder<Box<FinampSettings>>(
       valueListenable: FinampSettingsHelper.finampSettingsListener,
-      builder: (context, box, __) {
+      builder: (context, box, _) {
         return ListTile(
           leading: Icon(Icons.router_outlined),
           title: Text(AppLocalizations.of(context)!.preferLocalNetworkActiveAddressInfoText),

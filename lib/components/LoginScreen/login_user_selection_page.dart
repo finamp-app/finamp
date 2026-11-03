@@ -16,7 +16,6 @@ final _quickConnectLogger = Logger("QuickConnect");
 
 class LoginUserSelectionPage extends StatefulWidget {
   static const routeName = "login/user-selection";
-  static final _loginUserSelectionPageLogger = Logger("LoginUserSelectionPage");
 
   final ServerState serverState;
   final ConnectionState connectionState;
@@ -40,7 +39,7 @@ class _LoginUserSelectionPageState extends State<LoginUserSelectionPage> {
 
   void waitForQuickConnect() async {
     await Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
       final quickConnectState = await jellyfinApiHelper.updateQuickConnect(widget.connectionState.quickConnectState!);
       widget.connectionState.quickConnectState = quickConnectState;
       _quickConnectLogger.fine("Quick connect state: ${quickConnectState.toString()}");
@@ -217,7 +216,7 @@ class QuickConnectSection extends StatelessWidget {
                   AppLocalizations.of(context)!.loginFlowQuickConnectInstructions,
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
                     fontWeight: FontWeight.w300,
-                    color: Theme.of(context).textTheme.bodySmall!.color!.withOpacity(0.9),
+                    color: Theme.of(context).textTheme.bodySmall!.color!.withValues(alpha: 0.9),
                   ),
                   textAlign: TextAlign.center,
                 ),

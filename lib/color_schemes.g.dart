@@ -107,3 +107,9 @@ ColorScheme getColorScheme(Color? color, Brightness brightness, bool amoledTheme
 
   return scheme;
 }
+
+extension WarningColorScheme on ColorScheme {
+  bool get _isLightMode => brightness == Brightness.light;
+
+  Color get warning => _isLightMode ? const Color(0xFFE4572E) : Color(0xFFFFC759);
+}

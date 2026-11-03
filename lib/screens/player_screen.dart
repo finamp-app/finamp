@@ -111,8 +111,8 @@ class PlayerScreen extends StatelessWidget {
         ),
         backgroundColor: Color.alphaBlend(
           Theme.brightnessOf(context) == Brightness.dark
-              ? IconTheme.of(context).color!.withOpacity(0.35)
-              : IconTheme.of(context).color!.withOpacity(0.5),
+              ? IconTheme.of(context).color!.withValues(alpha: 0.35)
+              : IconTheme.of(context).color!.withValues(alpha: 0.5),
           Theme.brightnessOf(context) == Brightness.dark ? Colors.black : Colors.white,
         ),
         // Required for sleep timer input
@@ -210,17 +210,14 @@ class _PlayerScreenContent extends ConsumerWidget {
               Navigator.of(context).pop();
             }
           } else if (direction == SwipeDirection.up) {
-            // This should never actually be called until widget finishes build and controller is initialized
-            if (!FinampSettingsHelper.finampSettings.disableGesture ||
-                !controller.shouldShow(PlayerHideable.bottomActions)) {
+            if (!FinampSettingsHelper.finampSettings.disableGesture) {
               showQueueBottomSheet(context, ref);
             }
           }
         },
         onHorizontalSwipe: (direction) {
           if (direction == SwipeDirection.left && isLyricsAvailable) {
-            if (!FinampSettingsHelper.finampSettings.disableGesture ||
-                !controller.shouldShow(PlayerHideable.bottomActions)) {
+            if (!FinampSettingsHelper.finampSettings.disableGesture) {
               Navigator.of(context).push(
                 _buildSlideRouteTransition(
                   playerScreen,
@@ -331,7 +328,12 @@ class _PlayerScreenContent extends ConsumerWidget {
                                     bottom: constraints.maxHeight * 0.03,
                                     right: max(0, constraints.maxHeight * 0.03 - 20),
                                   ),
-                                  child: Hero(tag: "player", child: const PlayerScreenAlbumImage()),
+                                  child: Hero(
+                                    tag: "player",
+                                    child: PlayerScreenAlbumImage(
+                                      showHiddenPlayerActions: !controller.shouldShow(PlayerHideable.bottomActions),
+                                    ),
+                                  ),
                                 ),
                               ),
                               const Spacer(),
@@ -367,7 +369,9 @@ class _PlayerScreenContent extends ConsumerWidget {
                               SizedBox(
                                 height: controller.albumSize.height,
                                 width: controller.albumSize.width,
-                                child: const PlayerScreenAlbumImage(),
+                                child: PlayerScreenAlbumImage(
+                                  showHiddenPlayerActions: !controller.shouldShow(PlayerHideable.bottomActions),
+                                ),
                               ),
                               SizedBox(
                                 height: controller.controlsSize.height,

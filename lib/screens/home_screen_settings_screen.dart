@@ -97,7 +97,7 @@ class QuickActionsSelector extends ConsumerWidget {
                   type: MaterialType.transparency,
                   child: ListTile(
                     tileColor: Color.alphaBlend(
-                      ColorScheme.of(context).primary.withOpacity(0.05),
+                      ColorScheme.of(context).primary.withValues(alpha: 0.05),
                       ColorScheme.of(context).surface,
                     ),
                     title: _ResponsiveListTile(
@@ -138,10 +138,7 @@ class QuickActionsSelector extends ConsumerWidget {
               );
             },
             itemCount: quickActions.length,
-            onReorder: (originalIndex, newIndex) {
-              if (originalIndex < newIndex) {
-                newIndex -= 1;
-              }
+            onReorderItem: (originalIndex, newIndex) {
               final action = quickActions[originalIndex];
               final newActions = [...quickActions];
               newActions.removeAt(originalIndex);
@@ -201,8 +198,7 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
             itemCount: sections.length,
             onReorderStart: (_) => FeedbackHelper.feedback(FeedbackType.light),
             proxyDecorator: (child, _, _) => Material(type: MaterialType.transparency, child: child),
-            onReorder: (originalIndex, newIndex) {
-              if (originalIndex < newIndex) newIndex -= 1;
+            onReorderItem: (originalIndex, newIndex) {
               final section = sections[originalIndex];
               final newSections = [...sections];
               newSections.removeAt(originalIndex);
@@ -221,7 +217,7 @@ class HomeScreenSectionsSelector extends ConsumerWidget {
                   type: MaterialType.transparency,
                   child: ListTile(
                     tileColor: Color.alphaBlend(
-                      ColorScheme.of(context).primary.withOpacity(0.05),
+                      ColorScheme.of(context).primary.withValues(alpha: 0.05),
                       ColorScheme.of(context).surface,
                     ),
                     title: _ResponsiveListTile(
@@ -401,7 +397,7 @@ class _GlobalSearchBoxState extends ConsumerState<GlobalSearchBox> {
             hintText: MaterialLocalizations.of(context).searchFieldLabel,
             filled: true,
             fillColor: Color.alphaBlend(
-              ColorScheme.of(context).onSurface.withOpacity(0.1),
+              ColorScheme.of(context).onSurface.withValues(alpha: 0.1),
               ColorScheme.of(context).surface,
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
@@ -501,7 +497,7 @@ class _GlobalSearchBoxState extends ConsumerState<GlobalSearchBox> {
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
         ),
         backgroundColor: WidgetStateProperty.all<Color>(
-          Color.alphaBlend(ColorScheme.of(context).onSurface.withOpacity(0.2), ColorScheme.of(context).surface),
+          Color.alphaBlend(ColorScheme.of(context).onSurface.withValues(alpha: 0.2), ColorScheme.of(context).surface),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -510,8 +506,8 @@ class _GlobalSearchBoxState extends ConsumerState<GlobalSearchBox> {
         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide.none),
         filled: true,
         fillColor: Color.alphaBlend(
-          ColorScheme.of(context).primary.withOpacity(0.075),
-          ColorScheme.of(context).onSurface.withOpacity(0.1),
+          ColorScheme.of(context).primary.withValues(alpha: 0.075),
+          ColorScheme.of(context).onSurface.withValues(alpha: 0.1),
         ),
         visualDensity: VisualDensity(horizontal: -4.0, vertical: -4.0),
         errorBorder: InputBorder.none,
@@ -531,8 +527,8 @@ class _GlobalSearchBoxState extends ConsumerState<GlobalSearchBox> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.0),
         color: Color.alphaBlend(
-          ColorScheme.of(context).primary.withOpacity(0.075),
-          ColorScheme.of(context).onSurface.withOpacity(0.1),
+          ColorScheme.of(context).primary.withValues(alpha: 0.075),
+          ColorScheme.of(context).onSurface.withValues(alpha: 0.1),
         ),
       ),
       child: child,
@@ -577,7 +573,7 @@ class _ResponsiveListTile extends StatelessWidget {
                     child: DefaultTextStyle(
                       style: Theme.of(
                         context,
-                      ).textTheme.bodySmall!.copyWith(color: ColorScheme.of(context).onSurface.withOpacity(0.6)),
+                      ).textTheme.bodySmall!.copyWith(color: ColorScheme.of(context).onSurface.withValues(alpha: 0.6)),
                       child: Wrap(spacing: 12.0, runSpacing: 4.0, children: subtitleWidgets ?? []),
                     ),
                   ),
@@ -610,9 +606,9 @@ class _ResponsiveListTile extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 2.0),
                       child: DefaultTextStyle(
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall!.copyWith(color: ColorScheme.of(context).onSurface.withOpacity(0.6)),
+                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: ColorScheme.of(context).onSurface.withValues(alpha: 0.6),
+                        ),
                         child: Wrap(spacing: 12.0, runSpacing: 4.0, children: subtitleWidgets ?? []),
                       ),
                     ),
@@ -657,18 +653,18 @@ class _TargetItemTypesSelectorState extends ConsumerState<TargetItemTypesSelecto
         final isSelected = selected.contains(itemType);
         return Theme(
           data: Theme.of(context).copyWith(
-            splashColor: ColorScheme.of(context).primary.withOpacity(0.15),
-            highlightColor: ColorScheme.of(context).primary.withOpacity(0.05),
+            splashColor: ColorScheme.of(context).primary.withValues(alpha: 0.15),
+            highlightColor: ColorScheme.of(context).primary.withValues(alpha: 0.05),
           ),
           child: FilterChip(
             label: Text(itemType.toLocalisedString(context.l10n)),
             selected: isSelected,
-            //selectedColor: Color.alphaBlend(ColorScheme.of(context).primary.withOpacity(0.15), Colors.transparent),
+            //selectedColor: Color.alphaBlend(ColorScheme.of(context).primary.withValues(alpha: 0.15), Colors.transparent),
             backgroundColor: Colors.transparent,
             side: BorderSide(
               color: isSelected
-                  ? ColorScheme.of(context).primary.withOpacity(0.5)
-                  : ColorScheme.of(context).outline.withOpacity(0.3),
+                  ? ColorScheme.of(context).primary.withValues(alpha: 0.5)
+                  : ColorScheme.of(context).outline.withValues(alpha: 0.3),
               width: 1.25,
             ),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
