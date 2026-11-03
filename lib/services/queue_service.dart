@@ -459,20 +459,19 @@ class QueueService {
     _queueServiceLogger.info("Loading stored queue: $info");
 
     SavedQueueState finalState = SavedQueueState.failed;
+    // min/max queue indexes to truncate to
+    (int, int)? truncateLimits;
     try {
       _savedQueueState = SavedQueueState.loading;
-      if (info.trackCount >=
-          (FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit)) {
+      final maxSize = FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit;
+      if (info.trackCount > maxSize) {
         switch (oversizeHandling) {
           case OversizedSavedQueueHandling.abort:
             finalState = SavedQueueState.failedOversized;
             _queueServiceLogger.info("Aborting auto-restore of large queue with ${info.trackCount} tracks");
             return;
           case OversizedSavedQueueHandling.truncate:
-            info = FinampStorableQueueInfo.truncateToSize(
-              info,
-              FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit,
-            );
+            truncateLimits = (info.previousTracks.length, min(info.trackCount, maxSize + info.previousTracks.length));
           case OversizedSavedQueueHandling.loadFully:
             break;
         }
@@ -485,6 +484,10 @@ class QueueService {
 
       List<jellyfin_models.BaseItemId> allIds =
           info.previousTracks + ((info.currentTrack == null) ? [] : [info.currentTrack!]) + info.nextUp + info.queue;
+      // No need to load items for tracks we will truncate
+      if (truncateLimits != null) {
+        allIds = allIds.sublist(truncateLimits.$1, truncateLimits.$2);
+      }
       allIds.addAll(info.sourceList.where((x) => x.wantsItem).map((x) => jellyfin_models.BaseItemId(x.id)));
       Map<jellyfin_models.BaseItemId, jellyfin_models.BaseItemDto> idMap = existingItems ?? {};
 
@@ -562,7 +565,12 @@ class QueueService {
       int i = 0;
       int j = 0;
       void processTrack(jellyfin_models.BaseItemId id) {
-        if (idMap.containsKey(id) && idMap[id] != null) {
+        bool truncated = false;
+        if (truncateLimits != null) {
+          final truncateIndex = order == null ? i : order.indexOf(i);
+          truncated = truncateIndex < truncateLimits.$1 || truncateIndex >= truncateLimits.$2;
+        }
+        if (!truncated && idMap.containsKey(id) && idMap[id] != null) {
           items.add(idMap[id]!);
           sources.add(allSources[i].withItem(idMap[jellyfin_models.BaseItemId(allSources[i].id)]));
           postDropIndices.add(j);
@@ -592,7 +600,9 @@ class QueueService {
       assert(order == null || order.length == items.length);
 
       int loadedTracks = items.length;
-      int droppedTracks = info.trackCount - loadedTracks;
+      // Truncations are directly user-confirmed and do not need to count as dropped tracks.
+      int expectedTracks = truncateLimits == null ? info.trackCount : truncateLimits.$2 - truncateLimits.$1;
+      int droppedTracks = expectedTracks - loadedTracks;
 
       if (_savedQueueState != SavedQueueState.loading) {
         if (_savedQueueState == SavedQueueState.canceled) {

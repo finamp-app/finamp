@@ -3932,10 +3932,7 @@ class FinampStorableQueueInfo extends FinampStorableQueueInfoLegacy {
     assert(sourceIndexes.length == info.trackCount);
     assert(sourceList.isNotEmpty);
 
-    // BitBuffer throws exception attempting to write 0 bit entries, so create empty buffer manually.
-    final buffer = sourceList.length == 1
-        ? BitBuffer()
-        : BitBuffer.fromBits(sourceIndexes, bitsPerIndex: (sourceList.length - 1).bitLength);
+    final packedSources = _packIntList(sourceIndexes, sourceList.length - 1);
 
     // Validate shuffle order matches queue tracks
     assert(shuffleOrder.length == info.trackCount);
@@ -3956,9 +3953,7 @@ class FinampStorableQueueInfo extends FinampStorableQueueInfoLegacy {
 
     assert(validateNextUp(), shuffleOrder.toString());
 
-    final packedOrder = info.trackCount <= 1
-        ? BitBuffer()
-        : BitBuffer.fromBits(shuffleOrder, bitsPerIndex: (info.trackCount - 1).bitLength);
+    final packedOrder = _packIntList(shuffleOrder, info.trackCount - 1);
     return FinampStorableQueueInfo(
       packedPreviousTracks: packIds(info.previousTracks.map<BaseItemId>((track) => track.baseItemId).toList()),
       packedCurrentTrack: info.currentTrack == null ? Uint8List(0) : packIds([info.currentTrack!.baseItemId]),
@@ -3968,42 +3963,8 @@ class FinampStorableQueueInfo extends FinampStorableQueueInfoLegacy {
       creation: DateTime.now().millisecondsSinceEpoch,
       sourceList: sourceList,
       sourceIndex: queueSource,
-      trackSourceIndexes: buffer.toUInt8List(),
-      packedShuffleOrder: order == FinampPlaybackOrder.shuffled ? packedOrder.toUInt8List() : null,
-    );
-  }
-
-  factory FinampStorableQueueInfo.truncateToSize(FinampStorableQueueInfo original, int maxSize) {
-    int neededRemovals = original.trackCount - maxSize;
-    var nextUp = original.nextUp;
-    var queue = original.queue;
-
-    neededRemovals -= original.packedPreviousTracks.length ~/ 16;
-    if (neededRemovals >= 0) {
-      final queueRemovals = min(neededRemovals, queue.length);
-      queue = queue.slice(0, queue.length - queueRemovals);
-      neededRemovals -= queueRemovals;
-    }
-    if (neededRemovals >= 0) {
-      final nextUpRemovals = min(neededRemovals, nextUp.length);
-      nextUp = nextUp.slice(0, nextUp.length - nextUpRemovals);
-      neededRemovals -= nextUpRemovals;
-    }
-
-    assert(neededRemovals <= 0);
-
-    return FinampStorableQueueInfo(
-      // Just truncate the entire previous queue - no need to ride the oversized line
-      packedPreviousTracks: packIds([]),
-      packedCurrentTrack: original.packedCurrentTrack,
-      currentTrackSeek: original.currentTrackSeek,
-      packedNextUp: packIds(nextUp),
-      packedQueue: packIds(queue),
-      creation: original.creation,
-      sourceList: original.sourceList,
-      sourceIndex: original.sourceIndex,
-      trackSourceIndexes: original.trackSourceIndexes,
-      packedShuffleOrder: original.packedShuffleOrder,
+      trackSourceIndexes: packedSources,
+      packedShuffleOrder: order == FinampPlaybackOrder.shuffled ? packedOrder : null,
     );
   }
 
@@ -4093,6 +4054,13 @@ class FinampStorableQueueInfo extends FinampStorableQueueInfoLegacy {
       buffer[i] = int.parse(hex, radix: 16);
     }
     return buffer;
+  }
+
+  static Uint8List _packIntList(List<int> source, int max) {
+    // BitBuffer throws exception attempting to write 0 bit entries, so create empty buffer manually.
+    final buffer = max <= 0 ? BitBuffer() : BitBuffer.fromBits(source, bitsPerIndex: max.bitLength);
+
+    return buffer.toUInt8List();
   }
 
   @override
