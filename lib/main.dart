@@ -354,6 +354,7 @@ Future<void> setupHive() async {
 }
 
 Future<void> _setupProviders() async {
+  _mainLog.warning("start setup providers");
   var container = ProviderContainer(observers: [FinampProviderObserver()]);
   GetIt.instance.registerSingleton<ProviderContainer>(container);
   // Make sure that finampSettingsProvider always has a value available
@@ -361,9 +362,17 @@ Future<void> _setupProviders() async {
   await container.read(finampSettingsProvider.future);
 
   await initImageCache();
+  _mainLog.warning("done image cache");
 
   DataSourceService.create();
-  await startNetworkAutomation();
+  await startNetworkAutomation().timeout(
+    Duration(seconds: 10),
+    onTimeout: () {
+      _mainLog.warning("hit big timeout");
+    },
+  );
+
+  _mainLog.warning("done network automation");
 
   unawaited(
     Stream<void>.periodic(Duration(seconds: 1)).forEach((_) {

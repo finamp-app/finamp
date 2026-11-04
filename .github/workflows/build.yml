@@ -12,8 +12,7 @@ on:
     tags:
       - '*.*.*'
     branches:
-      - main
-      - redesign
+      - linux-ci-test
 
 # set permission so that actions can modify repo contents, which is needed to add release assets
 permissions:
