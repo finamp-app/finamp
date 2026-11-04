@@ -85,6 +85,11 @@ Future<void> startNetworkAutomation() async {
 
     _networkAutomationLogger.info('Setting active server to ${isLocal ? 'local' : 'public'}');
     user.update(newIsLocal: isLocal);
+    // The transport reset is deliberately performed as soon as Android
+    // reports a change, before the reachability probe has selected an
+    // endpoint. Refresh the worker once that choice is persisted, otherwise
+    // list requests can keep using its cached former local/public URL.
+    unawaited(GetIt.instance<JellyfinApiHelper>().refreshWorkerUser());
     _schedulePlayOnReconnect();
   }, fireImmediately: true);
 
