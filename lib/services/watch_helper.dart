@@ -56,6 +56,9 @@ const _favoritesLimit = 200;
 const _favoriteTracksQueueLimit = 1000;
 const _queueLimit = 30;
 
+/// Upcoming covers the watch loads ahead, so a track change shows its cover at once.
+const _upNextCoverCount = 2;
+
 /// WatchConnectivity fails replies over about 64 KB, so a list page ends early once its rows pass this (as JSON)
 /// and the watch asks for the rest.
 const _replyBudget = 40 * 1024;
@@ -363,6 +366,7 @@ class WatchHandler {
       'updatedAt': now.millisecondsSinceEpoch / 1000,
       'playing': playbackState.playing,
       'favorite': GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item)),
+      'upNext': _upNextCovers(),
       'theme': _theme(),
     };
   }
@@ -374,6 +378,21 @@ class WatchHandler {
     final index = [...queue.nextUp, ...queue.queue].indexWhere((track) => track.id == id);
     if (index < 0) throw PlatformException(code: "gone", message: "That track has already played");
     await queueService.skipByOffset(index + 1);
+  }
+
+  /// The next tracks' covers in play order, fewer near the end; a repeated queue continues from its start.
+  static List<Map<String, Object>> _upNextCovers() {
+    final queueService = GetIt.instance<QueueService>();
+    final queue = queueService.getQueue();
+    return [
+      ...queue.nextUp,
+      ...queue.queue,
+      if (queueService.loopMode == FinampLoopMode.all) ...queue.previousTracks,
+    ].map((track) => track.baseItem).nonNulls.take(_upNextCoverCount).map((item) {
+      // The watch asks for covers by id when it can't reach the server
+      _rememberSent(item);
+      return {'id': item.id.raw, 'artworkKey': _artworkKey(item), 'artworkUrl': _artworkUrl(item)};
+    }).toList();
   }
 
   /// Upcoming rows, next-up first; `skipTo` takes a row's `id`.

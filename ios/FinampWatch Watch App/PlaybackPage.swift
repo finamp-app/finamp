@@ -22,6 +22,8 @@ struct NowPlaying: Equatable {
     var updatedAt = Date()
     var playing = false
     var favorite = false
+    /// The next tracks' covers, loaded ahead while Playback is on screen.
+    var upNext: [LibraryItem] = []
 
     func position(at date: Date) -> Double {
         let elapsed = playing ? date.timeIntervalSince(updatedAt) : 0
@@ -58,7 +60,16 @@ final class NowPlayingStore {
             position: state["position"] as? Double ?? 0,
             updatedAt: Date(timeIntervalSince1970: state["updatedAt"] as? Double ?? Date().timeIntervalSince1970),
             playing: state["playing"] as? Bool ?? false,
-            favorite: state["favorite"] as? Bool ?? false
+            favorite: state["favorite"] as? Bool ?? false,
+            upNext: (state["upNext"] as? [[String: Any]] ?? []).map { row in
+                LibraryItem(
+                    id: row["id"] as? String ?? "",
+                    name: "",
+                    subtitle: "",
+                    artworkKey: row["artworkKey"] as? String ?? "",
+                    artworkURL: row["artworkUrl"] as? String ?? ""
+                )
+            }
         )
         if nowPlaying.hasTrack, let favorite = state["favorite"] as? Bool {
             FavoriteOverrides.shared.phoneReported(nowPlaying.id, favorite)
@@ -91,6 +102,16 @@ struct PlaybackPage: View {
     private var nowPlaying: NowPlaying { store.nowPlaying }
 
     private var cornerIconColor: Color { artwork == nil ? Color.fgPrimary : .white }
+
+    private var currentCover: LibraryItem {
+        LibraryItem(
+            id: nowPlaying.id,
+            name: nowPlaying.title,
+            subtitle: "",
+            artworkKey: nowPlaying.artworkKey,
+            artworkURL: nowPlaying.artworkURL
+        )
+    }
 
     /// Full-screen pixel size rounded to the same cache buckets as other covers.
     private var artworkPixels: Int {
@@ -189,18 +210,22 @@ struct PlaybackPage: View {
                 artwork = nil
                 return
             }
-            let item = LibraryItem(
-                id: nowPlaying.id,
-                name: nowPlaying.title,
-                subtitle: "",
-                artworkKey: nowPlaying.artworkKey,
-                artworkURL: nowPlaying.artworkURL
-            )
-            let loaded = await ArtworkStore.shared.image(for: item, size: artworkPixels)
+            let loaded = await ArtworkStore.shared.image(for: currentCover, size: artworkPixels)
             withAnimation(.easeIn(duration: 0.7)) {
                 artwork = loaded
                 artworkFor = nowPlaying.artworkKey
                 artworkAlbum = nowPlaying.albumID
+            }
+        }
+        // Loads the next tracks' covers after the current one, so a track change shows its cover at once.
+        // Cached covers return without a download, and this runs again only when the upcoming covers change.
+        .task(id: isActive ? nowPlaying.upNext.map(\.artworkKey) : []) {
+            guard isActive else { return }
+            if !nowPlaying.artworkKey.isEmpty {
+                _ = await ArtworkStore.shared.image(for: currentCover, size: artworkPixels)
+            }
+            for next in nowPlaying.upNext where !next.artworkKey.isEmpty && !Task.isCancelled {
+                _ = await ArtworkStore.shared.image(for: next, size: artworkPixels)
             }
         }
         .onChange(of: isActive, initial: true) { _, active in
