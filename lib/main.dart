@@ -38,6 +38,7 @@ import 'package:finamp/services/android_auto_helper.dart';
 import 'package:finamp/services/audio_service_smtc.dart';
 import 'package:finamp/services/carplay_helper.dart';
 import 'package:finamp/services/client_certificate_installer.dart';
+import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/data_source_service.dart';
 import 'package:finamp/services/dbus_manager.dart';
 import 'package:finamp/services/discord_rpc.dart';
@@ -357,7 +358,12 @@ Future<void> _setupProviders({bool integrationTesting = false}) async {
   var container = ProviderContainer(
     observers: [FinampProviderObserver()],
     overrides: integrationTesting
-        ? [albumImageProvider.overrideWith((_, request) => AlbumImageInfo.empty(request))]
+        ? [
+            albumImageProvider.overrideWith((_, request) => AlbumImageInfo.empty(request)),
+            currentAlbumImageProvider.overrideWithValue(
+              AlbumImageInfo.empty(AlbumImageRequest(item: BaseItemDto(id: BaseItemId("test")))),
+            ),
+          ]
         : [],
   );
   GetIt.instance.registerSingleton<ProviderContainer>(container);
