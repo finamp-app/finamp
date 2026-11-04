@@ -30,7 +30,7 @@ Finamp comes with a bunch of features, including these:
   - (i.e. "Material You" & equivalents for other platforms)
 - Easily switch to a previous queue from hours or days ago
 - A radio feature that always keeps the music playing with something related
-  - And you get to choose between 5 different modes to cater to *your* listening habits
+  - And you get to choose between 5 different modes to cater to <i>your</i> listening habits
 - AudioMuse integration (https://github.com/NeptuneHub/AudioMuse-AI) for an enhanced radio mode powered by sonic analysis
   - You'll have to set up AudioMuse and install the AudioMuse Jellyfin plugin to use this in Finamp
 - Solid customization options, including tabs that can be hidden and reordered
