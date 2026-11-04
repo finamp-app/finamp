@@ -49,7 +49,10 @@ void main() async {
         (e, stack) {
           // Linux throws DBusServiceUnknownException due to dbus service org.freedesktop.UPower
           // missing in CI.  Ignore.
-          if (e is DBusServiceUnknownException) return;
+          if (e is DBusServiceUnknownException) {
+            debugPrint("Ignoring dbus exception $e");
+            return;
+          }
 
           if (mainErrors != null) {
             mainErrors!.add(FlutterErrorDetails(exception: e, stack: stack));
