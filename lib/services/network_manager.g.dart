@@ -12,7 +12,7 @@ part of 'network_manager.dart';
 // **************************************************************************
 
 String _$networkConnectivityHash() =>
-    r'6c8f510498e50f03b535b02fa6c6dd918139531f';
+    r'd0d2b9bec37781496addb3c28d5e149c8dcac3bb';
 
 /// See also [networkConnectivity].
 @ProviderFor(networkConnectivity)
@@ -32,7 +32,7 @@ final networkConnectivityProvider =
 typedef NetworkConnectivityRef =
     AutoDisposeFutureProviderRef<FinampConnectivityState>;
 String _$serverReachabilityHash() =>
-    r'9b8bc559910358843facffa0f3755cdbff2b3350';
+    r'4ebfb3e70f06102f8be8e9a971bb26e35fb40f59';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -173,7 +173,7 @@ class _ServerReachabilityProviderElement
   ServerPingType get target => (origin as ServerReachabilityProvider).target;
 }
 
-String _$setOfflineModeHash() => r'c773e8cd1740aea23bc465d7c09a9982979d9507';
+String _$setOfflineModeHash() => r'e9a5fb87ef7a67c95109dbd3f0fe9537ed1f4a84';
 
 /// See also [setOfflineMode].
 @ProviderFor(setOfflineMode)
