@@ -31,11 +31,11 @@ Future<void> startNetworkAutomation() async {
   _networkAutomationLogger.warning("Starting network automation");
   final container = GetIt.instance<ProviderContainer>();
   // checkConnectivity seems to hang in Linux CI
-  _latestConnectivity = await Connectivity().checkConnectivity().timeout(
+  _latestConnectivity = await Future.delayed(Duration(seconds: 40), () => <ConnectivityResult>[]).timeout(
     Duration(seconds: 1),
     onTimeout: () {
       _networkAutomationLogger.warning("hit network automation timeout");
-      return [];
+      return <ConnectivityResult>[];
     },
   );
   _networkAutomationLogger.warning("passed connectivity check");

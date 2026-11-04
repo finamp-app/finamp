@@ -20,6 +20,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 void main() async {
+  //LiveTestWidgetsFlutterBinding.ensureInitialized();
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   /// The ProviderContainer initialized by main().
@@ -64,7 +65,11 @@ void main() async {
       ),
     );
 
-    await Future<void>.delayed(Duration(seconds: 30));
+    for (int i = 0; i < 6; i++) {
+      await Future<void>.delayed(Duration(seconds: 5));
+      await IntegrationTestWidgetsFlutterBinding().pump(Duration(seconds: 5));
+    }
+    //await Future<void>.delayed(Duration(seconds: 30));
   });
 
   // These integration tests all rely on the previous one working.  Not good practice, but whatever.
@@ -80,7 +85,7 @@ void main() async {
       }
 
       expect(mainErrors!.length, equals(0));
-      expect(mainCompleted, equals(true));
+      expect(mainCompleted, equals(true), reason: "main function failed to complete in 30 seconds");
 
       mainErrors = null;
 
