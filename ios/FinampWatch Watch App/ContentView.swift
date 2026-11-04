@@ -10,6 +10,8 @@ enum WatchPage: String, Hashable {
 
 struct ContentView: View {
     @State private var page: WatchPage = .initial
+    /// Dimmed or wrist down: nothing on screen needs live updates. Return to Clock then suspends the app.
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         if AccountStore.shared.isLoggedOut {
@@ -25,7 +27,8 @@ struct ContentView: View {
         TabView(selection: $page) {
             HomePage(isActive: page == .home, onPlay: { page = .playback })
                 .tag(WatchPage.home)
-            PlaybackPage(isActive: page == .playback)
+            // Inactive while dimmed: no polling or ticking, and one refresh when the screen is raised
+            PlaybackPage(isActive: page == .playback && scenePhase == .active)
                 .tag(WatchPage.playback)
             LibraryPage(kind: .artists, isActive: page == .artists, onPlay: { page = .playback })
                 .tag(WatchPage.artists)

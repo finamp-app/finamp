@@ -317,7 +317,8 @@ struct PlaybackPage: View {
                         .foregroundStyle(.white.opacity(0.6))
                         .frame(maxWidth: .infinity)
                 }
-                TimelineView(.periodic(from: .now, by: 1)) { context in
+                // Ticks every second only while the page is on screen and the watch is raised
+                TimelineView(.periodic(from: .now, by: isActive ? 1 : 60)) { context in
                     let position = nowPlaying.position(at: context.date)
                     HStack(spacing: 6) {
                         Text(formatDuration(position))
@@ -722,6 +723,8 @@ struct Marquee<Content: View>: View {
 
     @State private var contentSize: CGSize = .zero
     @State private var containerWidth: CGFloat = 0
+    /// Redrawn every frame while scrolling, so it stops while the screen is dimmed.
+    @Environment(\.scenePhase) private var scenePhase
 
     private let gap: CGFloat = 24
     /// Points per second.
@@ -740,7 +743,7 @@ struct Marquee<Content: View>: View {
                         .fixedSize()
                         .hidden()
                         .onGeometryChange(for: CGSize.self) { $0.size } action: { contentSize = $0 }
-                    if contentSize.width > containerWidth + 1 {
+                    if contentSize.width > containerWidth + 1, scenePhase == .active {
                         TimelineView(.animation) { context in
                             let cycle = Double((contentSize.width + gap) / speed) + pause
                             let time = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: cycle)
