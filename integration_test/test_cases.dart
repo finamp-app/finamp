@@ -20,7 +20,6 @@ import 'package:integration_test/integration_test.dart';
 import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 void main() async {
-  //LiveTestWidgetsFlutterBinding.ensureInitialized();
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   /// The ProviderContainer initialized by main().
@@ -65,11 +64,7 @@ void main() async {
       ),
     );
 
-    for (int i = 0; i < 6; i++) {
-      await Future<void>.delayed(Duration(seconds: 5));
-      //await binding.pump(Duration(seconds: 5));
-    }
-    //await Future<void>.delayed(Duration(seconds: 30));
+    await Future<void>.delayed(Duration(seconds: 30));
   });
 
   // These integration tests all rely on the previous one working.  Not good practice, but whatever.
@@ -110,10 +105,11 @@ void main() async {
 
       // Verify FinampApp loaded.
       expect(find.byType(LoginScreen), findsOneWidget);
+
+      await tester.pumpWidget(SizedBox.shrink());
+      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
     });
     testWidgets('Log in to demo server', (tester) async {
-      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
-      await container!.pump();
       GetIt.instance.registerSingleton(ProviderContainer(parent: container));
       await tester.pumpWidget(app.Finamp());
       await tester.pumpAndSettle();
@@ -147,9 +143,11 @@ void main() async {
 
       // Verify login is complete and Music screen loaded
       expect(find.byType(MusicScreen), findsOneWidget);
+
+      await tester.pumpWidget(SizedBox.shrink());
+      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
     });
     testWidgets('Start playing a track', (tester) async {
-      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
       await container!.pump();
       GetIt.instance.registerSingleton(ProviderContainer(parent: container));
       await tester.pumpWidget(app.Finamp());
@@ -180,6 +178,9 @@ void main() async {
 
       // Verify track has been playing for 30 seconds as expected.
       expect(playbackPosition.inSeconds, inInclusiveRange(15, 40));
+
+      await tester.pumpWidget(SizedBox.shrink());
+      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
     });
     // TODO add test where we migrate from old settings data?
   });
