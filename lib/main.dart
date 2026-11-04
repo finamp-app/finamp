@@ -161,7 +161,7 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
     _mainLog.info("Setup offline listen tracking");
     await _setupDownloadsHelper();
     _mainLog.info("Setup downloads service");
-    await _setupProviders();
+    await _setupProviders(integrationTesting: integrationTesting);
     _mainLog.info("Setup providers");
     await _setupOSIntegration(args);
     _mainLog.info("Setup os integrations");
@@ -353,8 +353,13 @@ Future<void> setupHive() async {
   GetIt.instance.registerSingleton(isar);
 }
 
-Future<void> _setupProviders() async {
-  var container = ProviderContainer(observers: [FinampProviderObserver()]);
+Future<void> _setupProviders({bool integrationTesting = false}) async {
+  var container = ProviderContainer(
+    observers: [FinampProviderObserver()],
+    overrides: integrationTesting
+        ? [albumImageProvider.overrideWith((_, request) => AlbumImageInfo.empty(request))]
+        : [],
+  );
   GetIt.instance.registerSingleton<ProviderContainer>(container);
   // Make sure that finampSettingsProvider always has a value available
   container.listen(finampSettingsProvider, (_, _) {});

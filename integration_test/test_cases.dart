@@ -95,10 +95,10 @@ void main() async {
       // and a bunch of strange issues with providers were occurring. Giving each test its own child ProviderContainer
       // which inherits the global persistent providers from the original one set up in main seems to have solved those, but it's
       // all still a bit mysterious.
-      container = GetIt.instance<ProviderContainer>();
-      GetIt.instance.unregister<ProviderContainer>();
+      //container = GetIt.instance<ProviderContainer>();
+      //GetIt.instance.unregister<ProviderContainer>();
       //await container!.pump();
-      GetIt.instance.registerSingleton(ProviderContainer(parent: container));
+      //GetIt.instance.registerSingleton(ProviderContainer(parent: container));
 
       // This makes the screen sized correctly when watching integration test.
       // I don't know why this works or is needed.

@@ -32,6 +32,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/music_slices.dart';
+import 'current_album_image_provider.dart';
 
 /// A track queueing service for Finamp.
 class QueueService {
@@ -164,7 +165,7 @@ class QueueService {
     // Schedule for after queue service is registered
     Future.microtask(() {
       // Keep currentAlbumImageProvider alive to provide precaching
-      // _providers.listen(currentAlbumImageProvider, (_, _) {});
+      _providers.listen(currentAlbumImageProvider, (_, _) {});
 
       // check if new radio tracks are needed whenever the radio mode or connectivity is changed
       _providers.listen(finampSettingsProvider.radioEnabled, (_, _) => unawaited(maybeAddRadioTracks()));
