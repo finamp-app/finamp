@@ -13,7 +13,6 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/services/album_image_provider.dart';
-import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
@@ -165,7 +164,7 @@ class QueueService {
     // Schedule for after queue service is registered
     Future.microtask(() {
       // Keep currentAlbumImageProvider alive to provide precaching
-      _providers.listen(currentAlbumImageProvider, (_, _) {});
+      // _providers.listen(currentAlbumImageProvider, (_, _) {});
 
       // check if new radio tracks are needed whenever the radio mode or connectivity is changed
       _providers.listen(finampSettingsProvider.radioEnabled, (_, _) => unawaited(maybeAddRadioTracks()));

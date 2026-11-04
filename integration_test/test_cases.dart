@@ -20,7 +20,8 @@ import 'package:integration_test/integration_test.dart';
 import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 void main() async {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  //binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive;
 
   /// The ProviderContainer initialized by main().
   /// All tests should create and attach to descendants of this to avoid errors.
@@ -96,7 +97,7 @@ void main() async {
       // all still a bit mysterious.
       container = GetIt.instance<ProviderContainer>();
       GetIt.instance.unregister<ProviderContainer>();
-      await container!.pump();
+      //await container!.pump();
       GetIt.instance.registerSingleton(ProviderContainer(parent: container));
 
       // This makes the screen sized correctly when watching integration test.
@@ -109,12 +110,15 @@ void main() async {
       // Verify FinampApp loaded.
       expect(find.byType(LoginScreen), findsOneWidget);
 
-      await tester.pumpWidget(SizedBox.shrink());
-      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
-      await container!.pump();
+      await tester.pumpWidget(Container(color: Colors.white));
+      //GetIt.instance<ProviderContainer>().invalidate(currentAlbumImageProvider);
+      //await GetIt.instance<ProviderContainer>().pump();
+      //GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
+      //await container!.pump();
     });
     testWidgets('Log in to demo server', (tester) async {
-      GetIt.instance.registerSingleton(ProviderContainer(parent: container));
+      //GetIt.instance.registerSingleton(ProviderContainer(parent: container));
+      //GetIt.instance<ProviderContainer>().invalidate(currentAlbumImageProvider);
       await tester.pumpWidget(app.Finamp());
       await tester.pumpAndSettle();
 
@@ -148,13 +152,16 @@ void main() async {
       // Verify login is complete and Music screen loaded
       expect(find.byType(MusicScreen), findsOneWidget);
 
-      await tester.pumpWidget(SizedBox.shrink());
-      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
-      await container!.pump();
+      await tester.pumpWidget(Container(color: Colors.white));
+      //GetIt.instance<ProviderContainer>().invalidate(currentAlbumImageProvider);
+      //await GetIt.instance<ProviderContainer>().pump();
+      //GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
+      //await container!.pump();
     });
     testWidgets('Start playing a track', (tester) async {
-      await container!.pump();
-      GetIt.instance.registerSingleton(ProviderContainer(parent: container));
+      //await container!.pump();
+      //GetIt.instance.registerSingleton(ProviderContainer(parent: container));
+      // GetIt.instance<ProviderContainer>().invalidate(currentAlbumImageProvider);
       await tester.pumpWidget(app.Finamp());
       await tester.pump();
       FinampSetters.setAllowSplitScreen(false);
@@ -184,9 +191,11 @@ void main() async {
       // Verify track has been playing for 30 seconds as expected.
       expect(playbackPosition.inSeconds, inInclusiveRange(15, 40));
 
-      await tester.pumpWidget(SizedBox.shrink());
-      GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
-      await container!.pump();
+      await tester.pumpWidget(Container(color: Colors.white));
+      //GetIt.instance<ProviderContainer>().invalidate(currentAlbumImageProvider);
+      //await GetIt.instance<ProviderContainer>().pump();
+      //GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
+      //await container!.pump();
     });
     // TODO add test where we migrate from old settings data?
   });
