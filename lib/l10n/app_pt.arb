@@ -2842,7 +2842,7 @@
     "@losslessNoBitrate": {
         "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
     },
-    "home": "Ecrã Inicial",
+    "home": "Área Inicial",
     "@home": {
         "description": "Label for the home/main screen"
     },
