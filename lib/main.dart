@@ -176,8 +176,8 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
     await _setupDiscordRpc();
     _mainLog.info("Setup Discord RPC");
   } catch (error, trace) {
+    Logger("ErrorApp").severe(error, null, trace);
     if (!integrationTesting) {
-      Logger("ErrorApp").severe(error, null, trace);
       runApp(FinampErrorApp(error: error, trace: trace));
       return;
     } else {
