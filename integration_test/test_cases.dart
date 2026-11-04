@@ -111,6 +111,7 @@ void main() async {
 
       await tester.pumpWidget(SizedBox.shrink());
       GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
+      await container!.pump();
     });
     testWidgets('Log in to demo server', (tester) async {
       GetIt.instance.registerSingleton(ProviderContainer(parent: container));
@@ -149,6 +150,7 @@ void main() async {
 
       await tester.pumpWidget(SizedBox.shrink());
       GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
+      await container!.pump();
     });
     testWidgets('Start playing a track', (tester) async {
       await container!.pump();
@@ -184,6 +186,7 @@ void main() async {
 
       await tester.pumpWidget(SizedBox.shrink());
       GetIt.instance.unregister<ProviderContainer>(disposingFunction: (old) => old.dispose());
+      await container!.pump();
     });
     // TODO add test where we migrate from old settings data?
   });
