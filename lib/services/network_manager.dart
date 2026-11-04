@@ -29,8 +29,13 @@ Timer? _playOnReconnectRetry;
 
 Future<void> startNetworkAutomation() async {
   final container = GetIt.instance<ProviderContainer>();
-  // checkConnectivity seems to hang in Linux CI
-  _latestConnectivity = await Connectivity().checkConnectivity().timeout(Duration(seconds: 1), onTimeout: () => []);
+  try {
+    _latestConnectivity = await Connectivity().checkConnectivity().timeout(Duration(seconds: 3));
+  } catch (e) {
+    _networkAutomationLogger.severe("Error conducting initial connectivity check: $e", e);
+    _latestConnectivity = [];
+  }
+
   Connectivity().onConnectivityChanged.listen(_onConnectivityChange);
 
   container.listen(setLocalUrlProvider, (_, isLocal) {
