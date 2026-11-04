@@ -195,15 +195,14 @@ extension WaitForElement on WidgetTester {
     while (true) {
       await pump(Duration(seconds: 1));
       if (any(finder)) {
+        // Give a second for item to settle
+        await pump(Duration(seconds: 1));
         return;
       }
       if (i >= seconds) {
         throw "$finder never found expected widget after $seconds seconds.";
       }
       i++;
-      if (realtime) {
-        //await Future<void>.delayed(Duration(seconds: 1));
-      }
     }
   }
 }
