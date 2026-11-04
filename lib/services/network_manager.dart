@@ -28,17 +28,9 @@ late List<ConnectivityResult> _latestConnectivity;
 Timer? _playOnReconnectRetry;
 
 Future<void> startNetworkAutomation() async {
-  _networkAutomationLogger.warning("Starting network automation");
   final container = GetIt.instance<ProviderContainer>();
   // checkConnectivity seems to hang in Linux CI
-  _latestConnectivity = await Future.delayed(Duration(seconds: 40), () => <ConnectivityResult>[]).timeout(
-    Duration(seconds: 1),
-    onTimeout: () {
-      _networkAutomationLogger.warning("hit network automation timeout");
-      return <ConnectivityResult>[];
-    },
-  );
-  _networkAutomationLogger.warning("passed connectivity check");
+  _latestConnectivity = await Connectivity().checkConnectivity().timeout(Duration(seconds: 1), onTimeout: () => []);
   Connectivity().onConnectivityChanged.listen(_onConnectivityChange);
 
   container.listen(setLocalUrlProvider, (_, isLocal) {
@@ -82,8 +74,6 @@ Future<void> startNetworkAutomation() async {
       _schedulePlayOnReconnect();
     }
   }, fireImmediately: true);
-
-  _networkAutomationLogger.warning("ending network automation");
 }
 
 int _getDownloads() {

@@ -20,7 +20,6 @@ import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 void main() async {
   LiveTestWidgetsFlutterBinding.ensureInitialized();
-  //IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   /// The ProviderContainer initialized by main().
   /// All tests should create and attach to descendants of this to avoid errors.
@@ -64,10 +63,6 @@ void main() async {
       ),
     );
 
-    /*for (int i = 0; i < 6; i++) {
-      await Future<void>.delayed(Duration(seconds: 5));
-      await IntegrationTestWidgetsFlutterBinding().pump(Duration(seconds: 5));
-    }*/
     await Future<void>.delayed(Duration(seconds: 30));
   });
 
@@ -197,7 +192,7 @@ extension WaitForElement on WidgetTester {
       }
       i++;
       if (realtime) {
-        await Future<void>.delayed(Duration(seconds: 1));
+        //await Future<void>.delayed(Duration(seconds: 1));
       }
     }
   }
