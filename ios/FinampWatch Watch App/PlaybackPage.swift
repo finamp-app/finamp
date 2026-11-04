@@ -74,6 +74,8 @@ struct PlaybackPage: View {
     @State private var artwork: UIImage?
     /// The key `artwork` belongs to; until the new track's cover arrives its BlurHash is shown instead.
     @State private var artworkFor = ""
+    /// The album `artwork` belongs to: its tracks often carry their own copy of the cover, so it stays while the next copy loads.
+    @State private var artworkAlbum = ""
     @State private var showSystemPlayer = false
     @State private var showQueue = false
     /// The crown sets Finamp's volume here too; the audio line shows it while the crown turns.
@@ -198,6 +200,7 @@ struct PlaybackPage: View {
             withAnimation(.easeIn(duration: 0.7)) {
                 artwork = loaded
                 artworkFor = nowPlaying.artworkKey
+                artworkAlbum = nowPlaying.albumID
             }
         }
         .onChange(of: isActive, initial: true) { _, active in
@@ -218,7 +221,8 @@ struct PlaybackPage: View {
     @ViewBuilder
     private var background: some View {
         let current = artworkFor == nowPlaying.artworkKey ? artwork : nil
-        if let artwork = current ?? BlurHash.image(nowPlaying.blurHash) ?? artwork {
+        let sameAlbum = !nowPlaying.albumID.isEmpty && artworkAlbum == nowPlaying.albumID ? artwork : nil
+        if let artwork = current ?? sameAlbum ?? BlurHash.image(nowPlaying.blurHash) ?? artwork {
             // An overlay clips the square cover without widening the page on taller screens.
             Color.clear
                 .overlay {
