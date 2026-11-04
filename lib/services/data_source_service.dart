@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:core';
 
 import 'package:finamp/components/global_snackbar.dart';
@@ -18,11 +17,77 @@ enum SourceChangeGenericType { network, transcoding }
 
 enum SourceChangeType { toLocalUrl, toRemoteUrl, toOffline, toOnline, toDirectPlay, toTranscoding }
 
+enum NetworkQueueReloadAction { none, automatic, manualPrompt }
+
+/// A manual queue-reload prompt already explains why Offline Mode changed and
+/// gives the user an action to take. Do not cover it with the less useful
+/// generic automatic-offline notification.
+bool shouldShowAutoOfflineNotification({
+  required bool isOffline,
+  required NetworkQueueReloadAction queueReloadAction,
+}) => !isOffline || queueReloadAction != NetworkQueueReloadAction.manualPrompt;
+
+bool canAutomaticallyReloadOfflineQueue({
+  required int trackCount,
+  required int undownloadedTracks,
+  required int maximumDroppedTracksPercentage,
+}) {
+  if (trackCount <= 0) return false;
+  final maximum = maximumDroppedTracksPercentage.clamp(0, 100).toInt();
+  return undownloadedTracks * 100 <= trackCount * maximum;
+}
+
+int offlineQueueLossPercentage({required int trackCount, required int undownloadedTracks}) {
+  if (trackCount <= 0 || undownloadedTracks <= 0) return 0;
+  return ((undownloadedTracks * 100) / trackCount).ceil().clamp(0, 100).toInt();
+}
+
+/// A URL hand-off is not a queue source change while Offline Mode is active.
+/// In particular, this avoids reloading an archived/pre-offline queue during
+/// the brief interval between a transport returning and Offline Mode clearing.
+bool shouldReloadQueueForUrlChange({required bool isOffline}) => !isOffline;
+
+NetworkQueueReloadAction decideNetworkQueueReloadAction({
+  required bool autoReloadQueue,
+  required SourceChangeType event,
+  required int trackCount,
+  required int undownloadedTracks,
+  required int maximumDroppedTracksPercentage,
+}) {
+  if (undownloadedTracks == 0) return NetworkQueueReloadAction.none;
+  if (!autoReloadQueue) return NetworkQueueReloadAction.manualPrompt;
+  if (event != SourceChangeType.toOffline ||
+      canAutomaticallyReloadOfflineQueue(
+        trackCount: trackCount,
+        undownloadedTracks: undownloadedTracks,
+        maximumDroppedTracksPercentage: maximumDroppedTracksPercentage,
+      )) {
+    return NetworkQueueReloadAction.automatic;
+  }
+  return NetworkQueueReloadAction.manualPrompt;
+}
+
 class DataSourceService {
   // A URL change can be delivered by a provider while Flutter is building a
   // frame. Queue requests must run after that synchronous callback, but must
   // not wait for a rendered frame: the app can be in the background.
   static Future<void>? _scheduledQueueReload;
+
+  /// Returns whether the generic Offline Mode notification adds information
+  /// beyond the queue prompt that this network change will display.
+  static bool shouldShowAutoOfflineNotificationForCurrentQueue({required bool isOffline}) {
+    if (!isOffline || !GetIt.instance.isRegistered<QueueService>()) return true;
+
+    final queueInfo = GetIt.instance<QueueService>().getQueue();
+    final action = decideNetworkQueueReloadAction(
+      autoReloadQueue: FinampSettingsHelper.finampSettings.autoReloadQueue,
+      event: SourceChangeType.toOffline,
+      trackCount: queueInfo.trackCount,
+      undownloadedTracks: queueInfo.undownloadedTracks,
+      maximumDroppedTracksPercentage: FinampSettingsHelper.finampSettings.autoReloadQueueMaxDroppedTracksPercentage,
+    );
+    return shouldShowAutoOfflineNotification(isOffline: isOffline, queueReloadAction: action);
+  }
 
   static Future<void> _reloadQueueOutsideProviderCallback(QueueService queueService) {
     final currentReload = _scheduledQueueReload;
@@ -89,17 +154,23 @@ class DataSourceService {
     final queueInfo = queueService.getQueue();
 
     Future<void> handleNetworkQueueReload() async {
-      if (queueInfo.undownloadedTracks == 0) return;
-      if (FinampSettingsHelper.finampSettings.autoReloadQueue) {
-        // Entering offline mode can only restore downloaded tracks.  Do not
-        // replace a queue with an empty one when none of its tracks are
-        // available locally.
-        if (event == SourceChangeType.toOffline && queueInfo.undownloadedTracks == queueInfo.trackCount) {
-          _dataSourceServiceLogger.info("Skipping automatic offline queue reload: no tracks are downloaded");
-          return;
-        }
+      final action = decideNetworkQueueReloadAction(
+        autoReloadQueue: FinampSettingsHelper.finampSettings.autoReloadQueue,
+        event: event,
+        trackCount: queueInfo.trackCount,
+        undownloadedTracks: queueInfo.undownloadedTracks,
+        maximumDroppedTracksPercentage: FinampSettingsHelper.finampSettings.autoReloadQueueMaxDroppedTracksPercentage,
+      );
+      if (action == NetworkQueueReloadAction.none) return;
+      if (action == NetworkQueueReloadAction.automatic) {
         await _reloadQueueOutsideProviderCallback(queueService);
         return;
+      }
+
+      final offlineLossLimitExceeded =
+          FinampSettingsHelper.finampSettings.autoReloadQueue && event == SourceChangeType.toOffline;
+      if (offlineLossLimitExceeded) {
+        _dataSourceServiceLogger.info("Skipping automatic offline queue reload: too many tracks would be removed");
       }
 
       GlobalSnackbar.message(
@@ -110,6 +181,9 @@ class DataSourceService {
           )!.autoReloadPromptMissingTracks(queueInfo.undownloadedTracks);
           if (event == SourceChangeType.toOffline) {
             // Warn about tracks unavailable after an offline reload, before it happens.
+            if (offlineLossLimitExceeded) {
+              return "$reloadPrompt. ${AppLocalizations.of(context)!.autoReloadPromptLossLimitExceeded(queueInfo.undownloadedTracks, queueInfo.trackCount, offlineQueueLossPercentage(trackCount: queueInfo.trackCount, undownloadedTracks: queueInfo.undownloadedTracks), FinampSettingsHelper.finampSettings.autoReloadQueueMaxDroppedTracksPercentage)}";
+            }
             return "$reloadPrompt. $reloadPromptMissingTracks";
           }
           return reloadPrompt;
@@ -130,6 +204,10 @@ class DataSourceService {
       switch (event) {
         case SourceChangeType.toLocalUrl:
         case SourceChangeType.toRemoteUrl:
+          if (!shouldReloadQueueForUrlChange(isOffline: FinampSettingsHelper.finampSettings.isOffline)) {
+            _dataSourceServiceLogger.info("Skipping URL-triggered queue reload while Offline Mode is active");
+            break;
+          }
           await handleNetworkQueueReload();
           break;
         case SourceChangeType.toOffline:

@@ -193,6 +193,9 @@ class FinampSettingsHelper {
     FinampSetters.setBufferDisableSizeConstraints(DefaultSettings.bufferDisableSizeConstraints);
     FinampSetters.setAutoloadLastQueueOnStartup(DefaultSettings.autoLoadLastQueueOnStartup);
     FinampSetters.setAutoReloadQueue(DefaultSettings.autoReloadQueue);
+    FinampSetters.setAutoReloadQueueMaxDroppedTracksPercentage(
+      DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage,
+    );
     FinampSetters.setClearQueueOnStopEvent(DefaultSettings.clearQueueOnStopEvent);
     FinampSetters.setAutoplayRestoredQueue(DefaultSettings.autoplayRestoredQueue);
     FinampSetters.setDuckOnAudioInterruption(DefaultSettings.duckOnAudioInterruption);

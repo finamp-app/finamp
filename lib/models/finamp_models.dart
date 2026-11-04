@@ -242,6 +242,7 @@ class DefaultSettings {
   static const preferLocalNetwork = false;
   static const localNetworkAddress = "http://0.0.0.0:8096";
   static const autoReloadQueue = false;
+  static const autoReloadQueueMaxDroppedTracksPercentage = 30;
   static const genreCuratedItemSelectionTypeTracks = CuratedItemSelectionType.mostPlayed;
   static const genreCuratedItemSelectionTypeAlbums = CuratedItemSelectionType.latestReleases;
   static const genreCuratedItemSelectionTypeArtists = CuratedItemSelectionType.favorites;
@@ -420,6 +421,7 @@ class FinampSettings {
     this.audioFadeOutDuration = DefaultSettings.audioFadeOutDuration,
     this.audioFadeInDuration = DefaultSettings.audioFadeInDuration,
     this.autoReloadQueue = DefaultSettings.autoReloadQueue,
+    this.autoReloadQueueMaxDroppedTracksPercentage = DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage,
     this.screenSize,
     this.genreCuratedItemSelectionTypeTracks = DefaultSettings.genreCuratedItemSelectionTypeTracks,
     this.genreCuratedItemSelectionTypeAlbums = DefaultSettings.genreCuratedItemSelectionTypeAlbums,
@@ -781,6 +783,9 @@ class FinampSettings {
 
   @HiveField(97, defaultValue: DefaultSettings.autoReloadQueue)
   bool autoReloadQueue;
+
+  @HiveField(164, defaultValue: DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage)
+  int autoReloadQueueMaxDroppedTracksPercentage;
 
   @HiveField(98, defaultValue: DefaultSettings.showShuffleButtonOnMediaNotification)
   bool showShuffleButtonOnMediaNotification;

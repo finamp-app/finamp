@@ -2398,6 +2398,23 @@
     "@autoReloadQueueSubtitle": {
         "description": "Subtitle for the setting that controls if the queue is automatically reloaded when the source changes"
     },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Automatic Queue Reload Track Loss Limit",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "When switching to offline mode, only reload automatically if no more than this percentage of tracks would be removed. You can always reload manually.",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "Maximum removed tracks: {percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
     "clearQueueOnStopEventTitle": "Clear Queue On External Stop",
     "@clearQueueOnStopEventTitle": {
         "description": "Title for the setting that controls if OS stop commands clear the queue."
@@ -2580,6 +2597,24 @@
         "description": "Additional prompt text shown when the queue needs to be reloaded after changing network settings and some undownloaded tracks are in the queue",
         "placeholders": {
             "amountUndownloadedTracks": {
+                "type": "int"
+            }
+        }
+    },
+    "autoReloadPromptLossLimitExceeded": "Reloading would remove about {removedPercentage}% of the queue ({amountUndownloadedTracks} of {trackCount} tracks), exceeding your configured {maximumDroppedTracksPercentage}% limit.",
+    "@autoReloadPromptLossLimitExceeded": {
+        "description": "Additional prompt text shown when an automatic offline queue reload exceeds the configured track-loss limit.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "trackCount": {
+                "type": "int"
+            },
+            "removedPercentage": {
+                "type": "int"
+            },
+            "maximumDroppedTracksPercentage": {
                 "type": "int"
             }
         }

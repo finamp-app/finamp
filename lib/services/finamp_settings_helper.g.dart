@@ -769,6 +769,17 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setAutoReloadQueueMaxDroppedTracksPercentage(
+    int newAutoReloadQueueMaxDroppedTracksPercentage,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.autoReloadQueueMaxDroppedTracksPercentage =
+        newAutoReloadQueueMaxDroppedTracksPercentage;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setShowShuffleButtonOnMediaNotification(
     bool newShowShuffleButtonOnMediaNotification,
   ) {
@@ -1613,6 +1624,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ProviderListenable<bool> get autoReloadQueue => finampSettingsProvider.select(
     (value) => value.requireValue.autoReloadQueue,
   );
+  ProviderListenable<int> get autoReloadQueueMaxDroppedTracksPercentage =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.autoReloadQueueMaxDroppedTracksPercentage,
+      );
   ProviderListenable<bool> get showShuffleButtonOnMediaNotification =>
       finampSettingsProvider.select(
         (value) => value.requireValue.showShuffleButtonOnMediaNotification,

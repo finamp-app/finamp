@@ -210,11 +210,48 @@ class AutoReloadQueueToggle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SwitchListTile.adaptive(
-      title: Text(AppLocalizations.of(context)!.autoReloadQueueTitle),
-      subtitle: Text(AppLocalizations.of(context)!.autoReloadQueueSubtitle),
-      value: ref.watch(finampSettingsProvider.autoReloadQueue),
-      onChanged: FinampSetters.setAutoReloadQueue,
+    final autoReloadQueue = ref.watch(finampSettingsProvider.autoReloadQueue);
+    return Column(
+      children: [
+        SwitchListTile.adaptive(
+          title: Text(AppLocalizations.of(context)!.autoReloadQueueTitle),
+          subtitle: Text(AppLocalizations.of(context)!.autoReloadQueueSubtitle),
+          value: autoReloadQueue,
+          onChanged: FinampSetters.setAutoReloadQueue,
+        ),
+        if (autoReloadQueue) const AutoReloadQueueMaxDroppedTracksPercentageSelector(),
+      ],
+    );
+  }
+}
+
+class AutoReloadQueueMaxDroppedTracksPercentageSelector extends ConsumerWidget {
+  const AutoReloadQueueMaxDroppedTracksPercentageSelector({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final maximum = ref.watch(finampSettingsProvider.autoReloadQueueMaxDroppedTracksPercentage).clamp(0, 100).toInt();
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      children: [
+        ListTile(
+          title: Text(l10n.autoReloadQueueMaxDroppedTracksPercentageTitle),
+          subtitle: Text(l10n.autoReloadQueueMaxDroppedTracksPercentageSubtitle),
+        ),
+        Slider(
+          min: 0,
+          max: 100,
+          divisions: 100,
+          value: maximum.toDouble(),
+          label: l10n.autoReloadQueueMaxDroppedTracksPercentageLabel(maximum),
+          onChanged: (value) => FinampSetters.setAutoReloadQueueMaxDroppedTracksPercentage(value.round()),
+        ),
+        Text(
+          l10n.autoReloadQueueMaxDroppedTracksPercentageLabel(maximum),
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        SizedBox(height: 12),
+      ],
     );
   }
 }
