@@ -16,12 +16,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 void main() async {
-  //LiveTestWidgetsFlutterBinding.ensureInitialized();
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  LiveTestWidgetsFlutterBinding.ensureInitialized();
+  //IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   /// The ProviderContainer initialized by main().
   /// All tests should create and attach to descendants of this to avoid errors.
@@ -65,11 +64,11 @@ void main() async {
       ),
     );
 
-    for (int i = 0; i < 6; i++) {
+    /*for (int i = 0; i < 6; i++) {
       await Future<void>.delayed(Duration(seconds: 5));
       await IntegrationTestWidgetsFlutterBinding().pump(Duration(seconds: 5));
-    }
-    //await Future<void>.delayed(Duration(seconds: 30));
+    }*/
+    await Future<void>.delayed(Duration(seconds: 30));
   });
 
   // These integration tests all rely on the previous one working.  Not good practice, but whatever.
