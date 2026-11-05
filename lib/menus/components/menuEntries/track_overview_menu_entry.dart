@@ -4,6 +4,7 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class TrackOverviewMenuEntry extends ConsumerWidget implements HideableMenuEntry {
   const TrackOverviewMenuEntry({super.key, required this.itemId});
@@ -16,7 +17,7 @@ class TrackOverviewMenuEntry extends ConsumerWidget implements HideableMenuEntry
   @override
   Widget build(BuildContext context, WidgetRef ref) => MenuEntry(
     title: context.l10n.trackInformation,
-    icon: Icons.info_outline,
+    icon: TablerIcons.info_circle,
     onTap: () => showDialog<void>(
       context: context,
       builder: (context) => Consumer(

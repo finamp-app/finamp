@@ -253,7 +253,6 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
     }
 
     return [
-      TrackOverviewMenuEntry(itemId: widget.item.id),
       if (widget.queueInfo != null) RestoreQueueMenuEntry(queueInfo: widget.queueInfo!),
       AddToPlaylistMenuEntry(item: playableItem, queueItem: queueItem),
       RemoveFromCurrentPlaylistMenuEntry(
@@ -267,6 +266,7 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
       StartRadioMenuEntry(baseItem: widget.item),
       AdaptiveDownloadLockDeleteMenuEntry(baseItem: widget.item),
       ToggleFavoriteMenuEntry(baseItem: widget.item),
+      TrackOverviewMenuEntry(itemId: widget.item.id),
       if (widget.showQueueActions) CreatePlaylistFromCurrentQueueMenuEntry(),
       if (widget.showQueueActions) ClearQueueMenuEntry(baseItem: widget.item),
       DeleteFromServerMenuEntry(baseItem: widget.item),

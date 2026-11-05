@@ -9,6 +9,7 @@ import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
 const trackId = BaseItemId('track-with-notes');
@@ -38,6 +39,7 @@ Future<void> openTrackInformation(WidgetTester tester, Future<BaseItemDto?> Func
       ),
     ),
   );
+  expect(find.byIcon(TablerIcons.info_circle), findsOneWidget);
   await tester.tap(find.text('Track information'));
   await tester.pumpAndSettle();
 }

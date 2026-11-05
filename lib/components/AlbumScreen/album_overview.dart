@@ -3,6 +3,7 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 /// Shows the server-provided album overview when one is available.
 class AlbumOverview extends ConsumerWidget {
@@ -26,7 +27,7 @@ class AlbumOverview extends ConsumerWidget {
             actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.close))],
           ),
         ),
-        icon: const Icon(Icons.info_outline),
+        icon: const Icon(TablerIcons.info_circle),
         label: Text(context.l10n.albumInformation),
       ),
     );

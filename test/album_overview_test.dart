@@ -9,6 +9,7 @@ import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
 const albumId = BaseItemId('album-with-notes');
@@ -67,6 +68,7 @@ void main() {
 
   testWidgets('opens a readable album description supplied by the server', (tester) async {
     await showAlbum(tester, 'A sample credit.\nA second paragraph.');
+    expect(find.byIcon(TablerIcons.info_circle), findsOneWidget);
 
     await tester.tap(find.text('Album information'));
     await tester.pumpAndSettle();

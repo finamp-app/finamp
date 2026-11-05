@@ -19,6 +19,9 @@ import 'package:finamp/models/theme_mode_adapter.dart';
 import 'package:finamp/models/locale_adapter.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:finamp/menus/track_menu.dart';
+import 'package:finamp/menus/components/menuEntries/add_to_playlist_menu_entry.dart';
+import 'package:finamp/menus/components/menuEntries/toggle_favorite_menu_entry.dart';
+import 'package:finamp/menus/components/menuEntries/track_overview_menu_entry.dart';
 import 'package:finamp/menus/output_menu.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
@@ -456,7 +459,17 @@ void main() {
   }
   testWidgets('ordinary library track menus do not gain player actions', (tester) async {
     await mount(tester, playerMenu: false);
-    expect(menuTile('Track information'), findsOneWidget);
+    final delegates = tester.widgetList<SliverList>(
+      find.descendant(of: find.byType(TrackMenu), matching: find.byType(SliverList)),
+    );
+    final entries = delegates
+        .map((list) => list.delegate)
+        .whereType<SliverChildListDelegate>()
+        .firstWhere((delegate) => delegate.children.any((entry) => entry is TrackOverviewMenuEntry))
+        .children;
+    final informationIndex = entries.indexWhere((entry) => entry is TrackOverviewMenuEntry);
+    expect(informationIndex, greaterThan(entries.indexWhere((entry) => entry is AddToPlaylistMenuEntry)));
+    expect(informationIndex, greaterThan(entries.indexWhere((entry) => entry is ToggleFavoriteMenuEntry)));
     for (final title in ['Output', 'Queue', 'Lyrics']) {
       expect(menuTile(title), findsNothing);
     }
