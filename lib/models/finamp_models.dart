@@ -333,6 +333,9 @@ class DefaultSettings {
   static const useAndroidGainEffect = true;
   static const ClientCertificate? clientCertificate = null;
   static const showQuickActionsBanner = true;
+  static const closeToTray = false;
+  static const minimizeToTray = false;
+  static const startMinimizedToTray = false;
   static const followRedirects = false;
 }
 
@@ -482,6 +485,9 @@ class FinampSettings {
     this.clientCertificate = DefaultSettings.clientCertificate,
     this.showQuickActionsBanner = DefaultSettings.showQuickActionsBanner,
     this.perTabContentViewType = DefaultSettings.perTabContentViewType,
+    this.closeToTray = DefaultSettings.closeToTray,
+    this.minimizeToTray = DefaultSettings.minimizeToTray,
+    this.startMinimizedToTray = DefaultSettings.startMinimizedToTray,
     this.followRedirects = DefaultSettings.followRedirects,
   });
 
@@ -987,7 +993,19 @@ class FinampSettings {
   @SettingsHelperMap("tabContentType")
   Map<ContentType, ContentViewType> perTabContentViewType;
 
-  @HiveField(161, defaultValue: DefaultSettings.followRedirects)
+  /// Desktop only: hide the window to the system tray instead of quitting when it is closed.
+  @HiveField(161, defaultValue: DefaultSettings.closeToTray)
+  bool closeToTray;
+
+  /// Desktop only: hide the window to the system tray when it is minimized.
+  @HiveField(162, defaultValue: DefaultSettings.minimizeToTray)
+  bool minimizeToTray;
+
+  /// Desktop only: start with the window hidden in the system tray.
+  @HiveField(163, defaultValue: DefaultSettings.startMinimizedToTray)
+  bool startMinimizedToTray;
+
+  @HiveField(164, defaultValue: DefaultSettings.followRedirects)
   bool followRedirects;
 
   static Future<FinampSettings> create() async {

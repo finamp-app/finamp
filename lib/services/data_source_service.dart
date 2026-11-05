@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:core';
 
 import 'package:finamp/components/global_snackbar.dart';
@@ -18,6 +19,25 @@ enum SourceChangeGenericType { network, transcoding }
 enum SourceChangeType { toLocalUrl, toRemoteUrl, toOffline, toOnline, toDirectPlay, toTranscoding }
 
 class DataSourceService {
+  // A URL change can be delivered by a provider while Flutter is building a
+  // frame. Queue requests must run after that synchronous callback, but must
+  // not wait for a rendered frame: the app can be in the background.
+  static Future<void>? _scheduledQueueReload;
+
+  static Future<void> _reloadQueueOutsideProviderCallback(QueueService queueService) {
+    final currentReload = _scheduledQueueReload;
+    if (currentReload != null) return currentReload;
+
+    late final Future<void> reload;
+    reload = Future<void>.delayed(Duration.zero).then((_) => queueService.reloadQueue()).whenComplete(() {
+      if (identical(_scheduledQueueReload, reload)) {
+        _scheduledQueueReload = null;
+      }
+    });
+    _scheduledQueueReload = reload;
+    return reload;
+  }
+
   static void create() {
     final FinampUserHelper finampUserHelper = GetIt.instance<FinampUserHelper>();
     final ref = GetIt.instance<ProviderContainer>();
@@ -68,43 +88,45 @@ class DataSourceService {
 
     final queueInfo = queueService.getQueue();
 
+    Future<void> handleNetworkQueueReload() async {
+      if (queueInfo.undownloadedTracks == 0) return;
+      if (FinampSettingsHelper.finampSettings.autoReloadQueue) {
+        await _reloadQueueOutsideProviderCallback(queueService);
+        return;
+      }
+
+      GlobalSnackbar.message(
+        (context) {
+          final reloadPrompt = AppLocalizations.of(context)!.autoReloadPrompt(SourceChangeGenericType.network.name);
+          final reloadPromptMissingTracks = AppLocalizations.of(
+            context,
+          )!.autoReloadPromptMissingTracks(queueInfo.undownloadedTracks);
+          if (event == SourceChangeType.toOffline) {
+            // Warn about tracks unavailable after an offline reload, before it happens.
+            return "$reloadPrompt. $reloadPromptMissingTracks";
+          }
+          return reloadPrompt;
+        },
+        action: (context) => SnackBarAction(
+          label: AppLocalizations.of(context)!.autoReloadPromptReloadButton,
+          onPressed: () {
+            // Archived queues are not overwritten and can always be restored.
+            queueService.reloadQueue(archiveQueue: event == SourceChangeType.toOffline);
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+        isConfirmation: false,
+      );
+    }
+
     if (queueInfo.trackCount > 0) {
       switch (event) {
         case SourceChangeType.toLocalUrl:
         case SourceChangeType.toRemoteUrl:
+          await handleNetworkQueueReload();
+          break;
         case SourceChangeType.toOffline:
-          if (queueInfo.undownloadedTracks > 0) {
-            if (FinampSettingsHelper.finampSettings.autoReloadQueue) {
-              await queueService.reloadQueue();
-            } else {
-              GlobalSnackbar.message(
-                (context) {
-                  final reloadPrompt = AppLocalizations.of(
-                    context,
-                  )!.autoReloadPrompt(SourceChangeGenericType.network.name);
-                  final reloadPromptMissingTracks = AppLocalizations.of(
-                    context,
-                  )!.autoReloadPromptMissingTracks(queueInfo.undownloadedTracks);
-                  if (event == SourceChangeType.toOffline && queueInfo.undownloadedTracks > 0) {
-                    // we want to warn the user about undownloaded tracks that won't be available after reloading the queue, before they actually reload
-                    return "$reloadPrompt. $reloadPromptMissingTracks";
-                  } else {
-                    return reloadPrompt;
-                  }
-                },
-                action: (context) => SnackBarAction(
-                  label: AppLocalizations.of(context)!.autoReloadPromptReloadButton,
-                  onPressed: () {
-                    // archived queues are not overwritten and can always be restored again
-                    bool archivalNeeded = event == SourceChangeType.toOffline;
-                    queueService.reloadQueue(archiveQueue: archivalNeeded);
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  },
-                ),
-                isConfirmation: false,
-              );
-            }
-          }
+          await handleNetworkQueueReload();
           break;
         case SourceChangeType.toOnline:
           // nop, queue won't change since Finamp prefers downloaded data anyway
@@ -115,7 +137,7 @@ class DataSourceService {
           final transcodingItemsExist = queueInfo.fullQueue.any((item) => item.item.extras?["shouldTranscode"] == true);
           if (event == SourceChangeType.toTranscoding || transcodingItemsExist) {
             if (FinampSettingsHelper.finampSettings.autoReloadQueue) {
-              await queueService.reloadQueue();
+              await _reloadQueueOutsideProviderCallback(queueService);
             } else {
               GlobalSnackbar.message(
                 (context) => AppLocalizations.of(context)!.autoReloadPrompt(SourceChangeGenericType.transcoding.name),

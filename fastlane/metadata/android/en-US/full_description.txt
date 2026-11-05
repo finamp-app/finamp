@@ -1,22 +1,48 @@
-Finamp is a Jellyfin music player for Android and iOS. Its main feature is the ability to download songs for offline listening.
+Finamp is a <br>free</br> Jellyfin music player for Android, iOS and Desktop. It allows you to stream and download the music you own. It has a modern but <br>thought-through</br> design, a ton of features, is customizable, and respects your <br>privacy</br>!
 
-Translations
+You <b>need</b> access to a Jellyfin server (https://jellyfin.org) or you <b>won't be able to use Finamp at all</b>!
 
-Finamp uses Weblate to manage translations: https://hosted.weblate.org/engage/finamp/
+Finamp comes with a bunch of features, including these:
 
-Feel free to add new languages if yours isn't there yet. If you have any questions, such as the context of a string, you can ask in the Translation Discussions (https://github.com/jmshrv/finamp/discussions/categories/translations).
+- Gapless playback
+- Shallow library browsing, to quickly get into your music
+- Volume normalization (aka "ReplayGain") for tracks and albums
+- Lyrics, time-synced lyrics, and even word-by-word cue highlighting
+- Flexible transcoding options
+  - Choose between AAC, OPUS, Vorbis, and FLAC codecs
+  - Supports downmixing & lossless transcoding to FLAC, for maximum compatibility
+- Dedicated offline mode with automatic connectivity detection
+- A powerful download system that does it all
+  - Download individual tracks, albums, entire artists & genres, or your whole library
+  - Download all your favorites in one go
+  - Download the newest additions to your library
+  - Transcode all downloads to take up less space on your device
+  - Customizable download locations
+  - And keeps all of these downloads up-to-date automatically as things change on the server
+- Advanced playback options:
+  - Choose between shuffling or playing in order
+  - Choose if you want to play now, add to "Next Up", or after everything else
+- Android Auto & Apple CarPlay support
+- Desktop & Tablet Support with a split-screen layout
+- A Customizable Home Tab
+- List views & grid views with adjustable density
+- Adaptive app color theme based on your system colors
+  - (i.e. "Material You" & equivalents for other platforms)
+- Easily switch to a previous queue from hours or days ago
+- A radio feature that always keeps the music playing with something related
+  - And you get to choose between 5 different modes to cater to *your* listening habits
+- AudioMuse integration (https://github.com/NeptuneHub/AudioMuse-AI) for an enhanced radio mode powered by sonic analysis
+  - You'll have to set up AudioMuse and install the AudioMuse Jellyfin plugin to use this in Finamp
+- Solid customization options, including tabs that can be hidden and reordered
+- Support for several languages
+- Jellyfin 12+ compatibility
+  - But should also work on older versions down to 10.8.x!
+- and a lot more!
 
-Known Issues
+Have a feature request or want to report a bug? Head over to our GitHub and open an issue there:  
+https://github.com/finamp-app/finamp/issues
 
-This app is still a work in progress, and has some bugs/issues that haven't been fixed yet. Here is a list of currently known issues:
+Finamp is a third-party client for Jellyfin, we have no official ties to the Jellyfin project, but want to see the Jellyfin community thrive.  
+Install Finamp today to enjoy your music, on your terms.
 
-<li>Deleting large items (such as playlists) will cause the app to freeze for a few seconds</li>
-<li>Download indicators occasionally don't update</li>
-
-Planned Features
-
-<li>Transcoding support for downloads</li>
-<li>Multiple users/servers</li>
-<li>Translation support</li>
-
-Name source: https://www.reddit.com/r/jellyfin/comments/hjxshn/jellyamp_crossplatform_desktop_music_player/fwqs5i0/
+Thank you for using Finamp!

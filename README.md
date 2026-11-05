@@ -16,7 +16,7 @@
 
 ## TL;DR
 
-Finamp is a **free** Jellyfin music player for Android, iOS and Desktop. It allows you to Stream and Download the music you own. It has a **modern design** that should feel familiar right-away, a few **customizations** and of course **privacy**!
+Finamp is a **free** Jellyfin music player for Android, iOS and Desktop. It allows you to stream and download the music you own. It has a modern but **thought-through** design, a ton of features, is customizable, and respects your **privacy**!
 
 > [!IMPORTANT]
 > You **need** access to a [Jellyfin](https://jellyfin.org) server or you **won't be able to use Finamp at all**.  
@@ -52,21 +52,6 @@ Aside from using the [Issues](https://github.com/jmshrv/finamp/issues) and [Disc
 We post release notes and announcements there too, and you'll likely get a reply more quickly there compared to GitHub.
 
 ## Installing Finamp
-
-- Android:
-  - [Google Play](https://play.google.com/store/apps/details?id=com.unicornsonlsd.finamp)
-  - [F-Droid](https://f-droid.org/en/packages/com.unicornsonlsd.finamp/)
-  - `.apk`: see the [GitHub release](https://github.com/finamp-app/finamp/releases/1.0.1)
-- iOS:
-  - [App Store](https://apps.apple.com/us/app/finamp/id1574922594)
-- Linux:
-  - [Flathub](https://flathub.org/en/apps/com.unicornsonlsd.finamp)
-  - [AUR](https://aur.archlinux.org/packages/finamp)
-- Windows:
-  - `.msix`: see the [GitHub release](https://github.com/finamp-app/finamp/releases/latest)
-  - `.zip` (for manual install): see the [GitHub release](https://github.com/finamp-app/finamp/releases/latest)
-- macOS:
-  - `.app`: see the [GitHub release](https://github.com/finamp-app/finamp/releases/latest)
 
 #### Android
 
@@ -104,7 +89,7 @@ Alternatively, you could download the [plain zip archive](https://github.com/fin
 ### Code
 
 Just like any [FOSS software](https://en.wikipedia.org/wiki/Free_and_open-source_software) Finamp also relies on your contributions!
-If you are interested you can consult the [Contribution Guidelines](https://github.com/jmshrv/finamp/blob/main/CONTRIBUTING.md) to get stated. Anything helps!
+If you are interested you can consult the [Contribution Guidelines](https://github.com/jmshrv/finamp/blob/main/CONTRIBUTING.md) to get started. Anything helps!
 
 If you have any questions, just reach out to us on GitHub or [Discord](https://discord.gg/xh9SZ73jWk) (`#contributing`)`!
 

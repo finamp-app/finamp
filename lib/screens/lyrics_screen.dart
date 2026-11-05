@@ -62,9 +62,7 @@ class _LyricsScreenContentState extends ConsumerState<_LyricsScreenContent> {
     return SimpleGestureDetector(
       onVerticalSwipe: (direction) {
         if (direction == SwipeDirection.up) {
-          // This should never actually be called until widget finishes build and controller is initialized
-          if (!FinampSettingsHelper.finampSettings.disableGesture ||
-              !controller.shouldShow(PlayerHideable.bottomActions)) {
+          if (!FinampSettingsHelper.finampSettings.disableGesture) {
             showQueueBottomSheet(context, ref);
           }
         }

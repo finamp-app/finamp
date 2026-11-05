@@ -20,12 +20,6 @@ const String defaultFields = "ChildCount,DateCreated,DateLastMediaAdded,Etag,Gen
 
 @ChopperApi()
 abstract class JellyfinApi extends ChopperService {
-  static JellyfinApi create({required bool inForeground, required bool verboseLogging, required bool followRedirects}) {
-    return _$JellyfinApi(
-      buildChopper(inForeground: inForeground, verboseLogging: verboseLogging, followRedirects: followRedirects),
-    );
-  }
-
   @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
   @GET(path: "/System/Info/Public")
   Future<dynamic> getPublicServerInfo();
@@ -592,7 +586,14 @@ abstract class JellyfinApi extends ChopperService {
   @GET(path: "/System/Endpoint", optionalBody: true)
   Future<Response<dynamic>> pingServer();
 
-  static ChopperClient buildChopper({
+  static JellyfinApi create({required bool inForeground, required bool verboseLogging}) {
+    return _$JellyfinApi(createClient(inForeground: inForeground, verboseLogging: verboseLogging));
+  }
+
+  /// Creates the transport used by an existing generated service. Keeping the
+  /// service instance lets callers replace stale pooled sockets after a
+  /// network hand-off without changing the API surface they are using.
+  static ChopperClient createClient({
     required bool inForeground,
     required bool verboseLogging,
     required bool followRedirects,

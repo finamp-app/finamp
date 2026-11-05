@@ -1,0 +1,102 @@
+name: Bug Report
+description: Use this template to report bugs, unexpected behavior and accessibility problems.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Bug Report
+        Thank you for opening a bug report! Please take the time to properly and thoughtfully fill
+        out this form to make it easier for us to work with you :)
+        If you notice you cant fully express your issue in this template, you can always
+        [open a blank template](https://github.com/flloschy/finamp/issues/new?template=BLANK_ISSUE)
+        with all the creative freedom you'll need
+        ⚠️ One Info before you start filling everything out. ⚠️
+        If you are *not* using the Beta/Redesign already please only report **critical / app breaking** issues.
+        This is because the beta version is likely to already have all the features and bug fixes you might be searching for.
+  
+  - type: checkboxes
+    id: updated
+    attributes:
+      label: Are you using the newest Version?
+      description: Did you make sure you are already using the [newest version of Finamp](https://github.com/jmshrv/finamp/releases) and there isn't an issue about this already?
+      options:
+        - label: Yes, the issue happens on the newest version
+          required: true
+        - label: No, there aren't any open issues about this. I checked!
+          required: true
+
+  - type: checkboxes
+    id: type
+    attributes:
+      label: Type of Report
+      description: You can select multiple if applicable
+      options:
+        - label: The app is unusable
+        - label: Something isn't quite right
+        - label: Some functionality isn't accessible to me
+        - label: Accessibility
+        - label: None of the above
+  
+  - type: input
+    id: version
+    attributes: 
+      label: The exact version of the app
+      description: You can find the app version inside the settings screen at the top right (the circle with the i)
+      placeholder: 0.9.18 (beta)
+    validations:
+      required: true
+  
+  - type: checkboxes
+    id: affects
+    attributes:
+      label: Affected Devices/Platform
+      options:
+        - label: Android
+        - label: Android Auto
+        - label: iOS
+        - label: Linux
+        - label: MacOS (iOS version)
+        - label: MacOS (native)
+        - label: Windows
+  
+  - type: input
+    id: device
+    attributes: 
+      label: Device
+      description: If you think the device you are using is part of the problem please fill give some details here
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: Description & Steps to Reproduce
+      description: Please describe what the issue precisely is and if possible how you can reproduce it. Additionally a screen-recoding is always welcome! (for legal reasons preferably without audio)
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        Please state the approximate/exact time of the issue here
+        and upload the log file. You may need to put the text file into a
+        .zip due to file size.
+        To get the logs Open the side menu, click "Logs", and then use the
+        *share* button at the top right to get the log file.  
+        You can use the following link to open Finamp's "Logs" screen: [🔗 Logs Screen](https://intradeus.github.io/http-protocol-redirector?r=finamp://internal/logs)
+      value: |
+        <details>
+        
+          <summary>Logs</summary>
+          
+          PLACE YOUR *FULL* LOGS HERE, or attach them as a file
+          you may censor any private information (although Finamp tries to remove that automatically), just please don't edit out larger sections.
+          
+        </details> 
+    validations:
+      required: true
+
+  - type: textarea
+    id: others
+    attributes:
+      label: Additional Information
+      description: If you want to add something which doesn't fit in the above categories feel free to add this here :)

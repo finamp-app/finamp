@@ -199,6 +199,8 @@ class QueueService {
         .toList();
     _latestShuffleIndices = _audioHandler.sequenceState.shuffleIndices;
 
+    final previousTrackId = _currentTrack?.id;
+
     _queuePreviousTracks.clear();
     _queueNextUp.clear();
     _queue.clear();
@@ -324,7 +326,9 @@ class QueueService {
     _audioHandler.queueTitle.add("Finamp");
 
     if (_savedQueueState == SavedQueueState.saving) {
-      _saveCurrentQueue(withPosition: false);
+      // Keep the seek position unless the track changed, otherwise a paused queue restores from the start
+      final sameTrack = _currentTrack != null && _currentTrack!.id == previousTrackId;
+      _saveCurrentQueue(withPosition: sameTrack);
       _queueServiceLogger.finest("Saved new rebuilt queue");
       _saveUpdateImmediate = false;
       _saveUpdateCycleCount = 0;

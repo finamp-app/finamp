@@ -1,1 +1,1 @@
-Finamp is a music player for Jellyfin.
+An open source music player made for Jellyfin

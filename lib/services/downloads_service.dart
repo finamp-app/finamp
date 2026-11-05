@@ -1129,17 +1129,22 @@ class DownloadsService {
 
     for (final image in downloadedImagesBox.values) {
       BaseItemDto baseItem;
-      var hiveTrack = downloadedItemsBox.get(image.requiredBy.first);
+      var hiveTrack = downloadedItemsBox.get(image.requiredBy.firstOrNull);
       if (hiveTrack != null) {
         baseItem = hiveTrack.track;
       } else {
-        var hiveParent = downloadedParentsBox.get(image.requiredBy.first);
+        var hiveParent = downloadedParentsBox.get(image.requiredBy.firstOrNull);
         if (hiveParent != null) {
           baseItem = hiveParent.item;
         } else {
           _downloadsLogger.severe("Could not find item associated with image during migration to isar.");
           continue;
         }
+      }
+
+      if ((baseItem.blurHash ?? baseItem.imageId) == null) {
+        _downloadsLogger.severe("Image is associated with a non-image BaseItemDto during migration to isar.");
+        continue;
       }
 
       var isarItem = DownloadStub.fromItem(
