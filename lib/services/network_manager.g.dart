@@ -173,7 +173,7 @@ class _ServerReachabilityProviderElement
   ServerPingType get target => (origin as ServerReachabilityProvider).target;
 }
 
-String _$setOfflineModeHash() => r'e9a5fb87ef7a67c95109dbd3f0fe9537ed1f4a84';
+String _$setOfflineModeHash() => r'9cd2949a359bd7abe42ca3c2eb2ffb832fe1a90a';
 
 /// See also [setOfflineMode].
 @ProviderFor(setOfflineMode)

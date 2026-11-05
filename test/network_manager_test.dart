@@ -72,4 +72,45 @@ void main() {
       );
     });
   });
+
+  group('shouldDelayOfflineModeExit', () {
+    test('keeps the app offline until the restored route has been selected', () {
+      expect(
+        shouldDelayOfflineModeExit(
+          isOffline: true,
+          state: FinampConnectivityState.localNetwork,
+          selectedLocalUrl: null,
+        ),
+        isTrue,
+      );
+    });
+
+    test('does not delay once a local or public route is known', () {
+      for (final selectedLocalUrl in [true, false]) {
+        expect(
+          shouldDelayOfflineModeExit(
+            isOffline: true,
+            state: FinampConnectivityState.localNetwork,
+            selectedLocalUrl: selectedLocalUrl,
+          ),
+          isFalse,
+        );
+      }
+    });
+
+    test('does not wait while disconnected or when already online', () {
+      expect(
+        shouldDelayOfflineModeExit(isOffline: true, state: FinampConnectivityState.none, selectedLocalUrl: null),
+        isFalse,
+      );
+      expect(
+        shouldDelayOfflineModeExit(
+          isOffline: false,
+          state: FinampConnectivityState.localNetwork,
+          selectedLocalUrl: null,
+        ),
+        isFalse,
+      );
+    });
+  });
 }

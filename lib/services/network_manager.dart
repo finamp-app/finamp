@@ -73,6 +73,18 @@ bool? offlineModeForConnectivity({
   }
 }
 
+/// While recovering from Offline Mode, wait until the selected server route is
+/// known. Otherwise consumers can start requests on the previous public/local
+/// URL during the small gap between Android reporting a usable transport and
+/// the reachability probe selecting its endpoint.
+bool shouldDelayOfflineModeExit({
+  required bool isOffline,
+  required FinampConnectivityState? state,
+  required bool? selectedLocalUrl,
+}) {
+  return isOffline && state != null && state != FinampConnectivityState.none && selectedLocalUrl == null;
+}
+
 Future<void> startNetworkAutomation() async {
   final container = GetIt.instance<ProviderContainer>();
   _latestConnectivity = await Connectivity().checkConnectivity();
@@ -202,6 +214,18 @@ bool? setOfflineMode(Ref ref) {
 
   final autoOffline = ref.watch(finampSettingsProvider.autoOffline);
   final state = ref.watch(networkConnectivityProvider).value;
+  // Do not expose the newly restored transport to data providers before the
+  // local/public choice is complete. Requests started in that gap retain the
+  // former route and can leave the home lists in a failed Future state even
+  // though the selected server becomes reachable a moment later.
+  final selectedLocalUrl = ref.watch(setLocalUrlProvider);
+  if (shouldDelayOfflineModeExit(
+    isOffline: FinampSettingsHelper.finampSettings.isOffline,
+    state: state,
+    selectedLocalUrl: selectedLocalUrl,
+  )) {
+    return null;
+  }
 
   switch (autoOffline) {
     case AutoOfflineOption.disconnected:
