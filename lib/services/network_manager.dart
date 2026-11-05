@@ -53,7 +53,7 @@ Future<void> startNetworkAutomation() async {
     if (isOffline == null || isOffline == FinampSettingsHelper.finampSettings.isOffline) return;
     _networkAutomationLogger.info('Setting offline mode to $isOffline');
     FinampSetters.setIsOffline(isOffline);
-    if (DataSourceService.shouldShowAutoOfflineNotificationForCurrentQueue(isOffline: isOffline)) {
+    if (!DataSourceService.willShowQueueReloadPrompt(isOffline: isOffline)) {
       GlobalSnackbar.message(
         (context) => AppLocalizations.of(context)!.autoOfflineNotification(isOffline ? 'enabled' : 'disabled'),
       );

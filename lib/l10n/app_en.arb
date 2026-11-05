@@ -2601,7 +2601,7 @@
             }
         }
     },
-    "autoReloadPromptLossLimitExceeded": "Reloading would remove about {removedPercentage}% of the queue ({amountUndownloadedTracks} of {trackCount} tracks), exceeding your configured {maximumDroppedTracksPercentage}% limit.",
+    "autoReloadPromptLossLimitExceeded": "Reloading would remove about {removedPercentage}% of the queue ({amountUndownloadedTracks} of {trackCount} tracks).",
     "@autoReloadPromptLossLimitExceeded": {
         "description": "Additional prompt text shown when an automatic offline queue reload exceeds the configured track-loss limit.",
         "placeholders": {
@@ -2612,9 +2612,6 @@
                 "type": "int"
             },
             "removedPercentage": {
-                "type": "int"
-            },
-            "maximumDroppedTracksPercentage": {
                 "type": "int"
             }
         }

@@ -48,6 +48,11 @@ class _AudioServiceSettingsScreenState extends State<AudioServiceSettingsScreen>
           const LoadQueueOnStartupSelector(),
           const AutoplayRestoredQueueToggle(),
           const AutoReloadQueueToggle(),
+          Consumer(
+            builder: (context, ref, child) => ref.watch(finampSettingsProvider.autoReloadQueue)
+                ? const AutoReloadQueueMaxDroppedTracksPercentageSelector()
+                : const SizedBox.shrink(),
+          ),
           const ClearQueueOnStopToggle(),
         ],
       ),
@@ -210,17 +215,11 @@ class AutoReloadQueueToggle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final autoReloadQueue = ref.watch(finampSettingsProvider.autoReloadQueue);
-    return Column(
-      children: [
-        SwitchListTile.adaptive(
-          title: Text(AppLocalizations.of(context)!.autoReloadQueueTitle),
-          subtitle: Text(AppLocalizations.of(context)!.autoReloadQueueSubtitle),
-          value: autoReloadQueue,
-          onChanged: FinampSetters.setAutoReloadQueue,
-        ),
-        if (autoReloadQueue) const AutoReloadQueueMaxDroppedTracksPercentageSelector(),
-      ],
+    return SwitchListTile.adaptive(
+      title: Text(AppLocalizations.of(context)!.autoReloadQueueTitle),
+      subtitle: Text(AppLocalizations.of(context)!.autoReloadQueueSubtitle),
+      value: ref.watch(finampSettingsProvider.autoReloadQueue),
+      onChanged: FinampSetters.setAutoReloadQueue,
     );
   }
 }

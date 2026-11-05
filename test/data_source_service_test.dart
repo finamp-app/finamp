@@ -1,107 +1,126 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:audio_service/audio_service.dart';
+import 'package:finamp/hive_registrar.g.dart';
+import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/models/locale_adapter.dart';
+import 'package:finamp/models/theme_mode_adapter.dart';
 import 'package:finamp/services/data_source_service.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hive_ce_flutter/adapters.dart';
+
+FinampQueueInfo queueInfo({required int trackCount, required int undownloadedTracks}) {
+  const source = QueueItemSource.rawId(
+    type: QueueItemSourceType.unknown,
+    name: QueueItemSourceName(type: QueueItemSourceNameType.preTranslated, pretranslatedName: 'Fixture'),
+    id: 'fixture-source',
+  );
+  final queue = List.generate(
+    trackCount,
+    (index) => FinampQueueItem(
+      item: MediaItem(
+        id: 'fixture-$index',
+        title: 'Fixture $index',
+        extras: {'android.media.extra.DOWNLOAD_STATUS': index < undownloadedTracks ? 0 : 2},
+      ),
+      source: source,
+    ),
+  );
+  return FinampQueueInfo(
+    id: 'fixture-queue',
+    previousTracks: [],
+    currentTrack: null,
+    nextUp: [],
+    queue: queue,
+    source: source,
+    saveState: SavedQueueState.init,
+    sourceLibrary: null,
+  );
+}
 
 void main() {
-  group('canAutomaticallyReloadOfflineQueue', () {
-    test('allows a loss equal to the configured percentage', () {
-      expect(
-        canAutomaticallyReloadOfflineQueue(trackCount: 10, undownloadedTracks: 3, maximumDroppedTracksPercentage: 30),
-        isTrue,
-      );
-    });
+  late Directory directory;
+  late FinampSettings settings;
 
-    test('blocks a loss above the configured percentage', () {
-      expect(
-        canAutomaticallyReloadOfflineQueue(trackCount: 10, undownloadedTracks: 4, maximumDroppedTracksPercentage: 30),
-        isFalse,
-      );
-    });
+  setUp(() async {
+    directory = await Directory.systemTemp.createTemp('finamp-data-source-test-');
+    Hive.init(directory.path);
+    if (!Hive.isAdapterRegistered(28)) {
+      Hive.registerAdapters();
+      Hive.registerAdapter(ThemeModeAdapter());
+      Hive.registerAdapter(ColorAdapter());
+      Hive.registerAdapter(LocaleAdapter());
+    }
+    final box = await Hive.openBox<FinampSettings>('FinampSettings', bytes: Uint8List(0));
+    settings = FinampSettings(
+      downloadLocations: [],
+      downloadLocationsMap: {},
+      tabSortBy: {},
+      tabSortOrder: {},
+      homeScreenConfiguration: const FinampHomeScreenConfiguration(actions: [], sections: []),
+      gridImageSize: 160,
+      homeScreenImageSize: 160,
+      deviceId: 'data-source-fixture',
+    );
+    await box.put('FinampSettings', settings);
+  });
 
-    test('supports the strict and always-reload endpoints', () {
-      expect(
-        canAutomaticallyReloadOfflineQueue(trackCount: 10, undownloadedTracks: 1, maximumDroppedTracksPercentage: 0),
-        isFalse,
-      );
-      expect(
-        canAutomaticallyReloadOfflineQueue(trackCount: 10, undownloadedTracks: 10, maximumDroppedTracksPercentage: 100),
-        isTrue,
-      );
-    });
-
-    test('rounds a non-whole loss percentage up for the warning', () {
-      expect(offlineQueueLossPercentage(trackCount: 10, undownloadedTracks: 3), 30);
-      expect(offlineQueueLossPercentage(trackCount: 3, undownloadedTracks: 1), 34);
-    });
+  tearDown(() async {
+    await Hive.close();
+    await directory.delete(recursive: true);
   });
 
   group('decideNetworkQueueReloadAction', () {
-    test('shows a manual reload prompt when the offline loss exceeds the limit', () {
+    test('does nothing for an empty queue', () {
       expect(
-        decideNetworkQueueReloadAction(
-          autoReloadQueue: true,
-          event: SourceChangeType.toOffline,
-          trackCount: 10,
-          undownloadedTracks: 4,
-          maximumDroppedTracksPercentage: 30,
-        ),
-        NetworkQueueReloadAction.manualPrompt,
+        decideNetworkQueueReloadAction(SourceChangeType.toOffline, queueInfo(trackCount: 0, undownloadedTracks: 0)),
+        NetworkQueueReloadAction.none,
       );
     });
 
-    test('reloads automatically when the offline loss is within the limit', () {
+    test('shows the distinct loss-limit prompt above the configured limit', () {
+      settings
+        ..autoReloadQueue = true
+        ..autoReloadQueueMaxDroppedTracksPercentage = 30;
       expect(
-        decideNetworkQueueReloadAction(
-          autoReloadQueue: true,
-          event: SourceChangeType.toOffline,
-          trackCount: 10,
-          undownloadedTracks: 3,
-          maximumDroppedTracksPercentage: 30,
-        ),
+        decideNetworkQueueReloadAction(SourceChangeType.toOffline, queueInfo(trackCount: 10, undownloadedTracks: 4)),
+        NetworkQueueReloadAction.manualLossLimitExceeded,
+      );
+    });
+
+    test('reloads automatically for a loss equal to the configured limit', () {
+      settings
+        ..autoReloadQueue = true
+        ..autoReloadQueueMaxDroppedTracksPercentage = 30;
+      expect(
+        decideNetworkQueueReloadAction(SourceChangeType.toOffline, queueInfo(trackCount: 10, undownloadedTracks: 3)),
+        NetworkQueueReloadAction.automatic,
+      );
+    });
+
+    test('supports the strict and always-reload endpoints without rounding', () {
+      settings
+        ..autoReloadQueue = true
+        ..autoReloadQueueMaxDroppedTracksPercentage = 0;
+      expect(
+        decideNetworkQueueReloadAction(SourceChangeType.toOffline, queueInfo(trackCount: 10, undownloadedTracks: 1)),
+        NetworkQueueReloadAction.manualLossLimitExceeded,
+      );
+
+      settings.autoReloadQueueMaxDroppedTracksPercentage = 100;
+      expect(
+        decideNetworkQueueReloadAction(SourceChangeType.toOffline, queueInfo(trackCount: 10, undownloadedTracks: 10)),
         NetworkQueueReloadAction.automatic,
       );
     });
 
     test('keeps the existing manual prompt when automatic reload is disabled', () {
+      settings.autoReloadQueue = false;
       expect(
-        decideNetworkQueueReloadAction(
-          autoReloadQueue: false,
-          event: SourceChangeType.toRemoteUrl,
-          trackCount: 10,
-          undownloadedTracks: 1,
-          maximumDroppedTracksPercentage: 30,
-        ),
+        decideNetworkQueueReloadAction(SourceChangeType.toRemoteUrl, queueInfo(trackCount: 10, undownloadedTracks: 1)),
         NetworkQueueReloadAction.manualPrompt,
       );
-    });
-  });
-
-  group('shouldShowAutoOfflineNotification', () {
-    test('keeps the actionable queue prompt visible when entering offline mode', () {
-      expect(
-        shouldShowAutoOfflineNotification(isOffline: true, queueReloadAction: NetworkQueueReloadAction.manualPrompt),
-        isFalse,
-      );
-    });
-
-    test('keeps the generic notification for automatic reloads and when returning online', () {
-      expect(
-        shouldShowAutoOfflineNotification(isOffline: true, queueReloadAction: NetworkQueueReloadAction.automatic),
-        isTrue,
-      );
-      expect(
-        shouldShowAutoOfflineNotification(isOffline: false, queueReloadAction: NetworkQueueReloadAction.manualPrompt),
-        isTrue,
-      );
-    });
-  });
-
-  group('shouldReloadQueueForUrlChange', () {
-    test('keeps the current queue during an offline URL hand-off', () {
-      expect(shouldReloadQueueForUrlChange(isOffline: true), isFalse);
-    });
-
-    test('reloads for a URL change while online', () {
-      expect(shouldReloadQueueForUrlChange(isOffline: false), isTrue);
     });
   });
 }

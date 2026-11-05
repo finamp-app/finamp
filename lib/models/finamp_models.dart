@@ -784,9 +784,6 @@ class FinampSettings {
   @HiveField(97, defaultValue: DefaultSettings.autoReloadQueue)
   bool autoReloadQueue;
 
-  @HiveField(164, defaultValue: DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage)
-  int autoReloadQueueMaxDroppedTracksPercentage;
-
   @HiveField(98, defaultValue: DefaultSettings.showShuffleButtonOnMediaNotification)
   bool showShuffleButtonOnMediaNotification;
 
@@ -992,6 +989,9 @@ class FinampSettings {
   /// Desktop only: start with the window hidden in the system tray.
   @HiveField(163, defaultValue: DefaultSettings.startMinimizedToTray)
   bool startMinimizedToTray;
+
+  @HiveField(164, defaultValue: DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage)
+  int autoReloadQueueMaxDroppedTracksPercentage;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
