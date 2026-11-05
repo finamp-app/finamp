@@ -4,7 +4,9 @@
 import 'dart:io' show Platform;
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -163,12 +165,18 @@ class ServerInfo {
   final int serverPort;
   final String serverProtocol;
   final String serverVersion;
+  final List<String> customHeaders;
+  final bool mTLS;
+  final bool allowRedirects;
 
   ServerInfo({
     required this.serverAddressType,
     required this.serverPort,
     required this.serverProtocol,
     required this.serverVersion,
+    required this.customHeaders,
+    required this.mTLS,
+    required this.allowRedirects,
   });
 
   factory ServerInfo.fromJson(Map<String, dynamic> json) => _$ServerInfoFromJson(json);
@@ -190,7 +198,14 @@ class ServerInfo {
     try {
       serverInfo = await jellyfinApiHelper?.loadServerPublicInfo(timeout: Duration(milliseconds: 2500));
     } catch (e) {
-      _environmentMetadataLogger.warning("Failed to load server info: $e");
+      _environmentMetadataLogger.warning("Failed to load server info: $e", e);
+    }
+
+    FinampSettings? settings;
+    try {
+      settings = FinampSettingsHelper.finampSettings;
+    } catch (e) {
+      _environmentMetadataLogger.warning("Failed to load settings info: $e", e);
     }
 
     final uri = Uri.parse(user.baseURL);
@@ -203,6 +218,9 @@ class ServerInfo {
       serverPort: uri.hasPort ? uri.port : (uri.scheme == 'https' ? 443 : 80),
       serverProtocol: uri.scheme,
       serverVersion: serverInfo?.version ?? 'Unknown',
+      customHeaders: user.customHeaders.keys.toList(),
+      mTLS: settings?.clientCertificate != null,
+      allowRedirects: settings?.followRedirects ?? false,
     );
   }
 
@@ -211,7 +229,10 @@ class ServerInfo {
       "  Address Type: $serverAddressType\n"
       "  Port: $serverPort\n"
       "  Protocol: $serverProtocol\n"
-      "  Version: $serverVersion";
+      "  Version: $serverVersion\n"
+      "  Custom headers: ${customHeaders.isEmpty ? "None" : customHeaders.join(", ")}"
+      "  mTLS: $mTLS\n"
+      "  Redirects allowed: $allowRedirects";
 }
 
 /// Encapsulates device, app, and server info for logging.

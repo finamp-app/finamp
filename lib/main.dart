@@ -364,6 +364,7 @@ Future<void> _setupProviders() async {
 
   DataSourceService.create();
   await startNetworkAutomation();
+  GetIt.instance<JellyfinApiHelper>().setUpSettingsListener();
 
   unawaited(
     Stream<void>.periodic(Duration(seconds: 1)).forEach((_) {

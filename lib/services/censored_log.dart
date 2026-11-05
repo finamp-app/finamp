@@ -48,6 +48,10 @@ extension CensoredMessage on LogRecord {
         );
         workingLogString = workingLogString.replaceAll(CaseInsensitivePattern(user.accessToken), "TOKEN");
         workingLogString = workingLogString.replaceAll(CaseInsensitivePattern(user.id), "USER_ID");
+
+        for (final headerVal in user.customHeaders.values) {
+          workingLogString = workingLogString.replaceAll(CaseInsensitivePattern(headerVal), "HTTP-TOKEN");
+        }
       }
     }
 
