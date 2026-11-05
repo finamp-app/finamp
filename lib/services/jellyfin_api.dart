@@ -586,8 +586,10 @@ abstract class JellyfinApi extends ChopperService {
   @GET(path: "/System/Endpoint", optionalBody: true)
   Future<Response<dynamic>> pingServer();
 
-  static JellyfinApi create({required bool inForeground, required bool verboseLogging}) {
-    return _$JellyfinApi(createClient(inForeground: inForeground, verboseLogging: verboseLogging));
+  static JellyfinApi create({required bool inForeground, required bool verboseLogging, required bool followRedirects}) {
+    return _$JellyfinApi(
+      createClient(inForeground: inForeground, verboseLogging: verboseLogging, followRedirects: followRedirects),
+    );
   }
 
   /// Creates the transport used by an existing generated service. Keeping the
