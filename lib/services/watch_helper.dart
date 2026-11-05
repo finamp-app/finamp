@@ -127,7 +127,9 @@ class WatchHandler {
           case 'output':
             return await _output();
           case 'setVolume':
-            GetIt.instance<MusicPlayerBackgroundTask>().setVolume((arguments['volume'] as double).clamp(0.0, 1.0));
+            GetIt.instance<MusicPlayerBackgroundTask>().setVolume(
+              (arguments['volume'] as num).toDouble().clamp(0.0, 1.0),
+            );
             return true;
           case 'watchState':
             arguments['available'] == true ? _startPushing() : _stopPushing();
