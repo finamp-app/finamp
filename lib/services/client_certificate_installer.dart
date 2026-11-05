@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:background_downloader/background_downloader.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -112,6 +113,14 @@ class ClientCertificateInstaller {
         _logger.warning('Failed to install client certificate in Android SSL context: $e');
       }
     }
+
+    // Install certificate into background_downloader singleton
+    await FileDownloader().configure(
+      desktopConfig: (
+        Config.mTLS,
+        MTLSConfig(certificateBytes: cert.data, privateKeyBytes: cert.data, password: cert.password),
+      ),
+    );
   }
 
   /// Installs the given [cert] into [context].
@@ -138,5 +147,7 @@ class ClientCertificateInstaller {
         _logger.warning('Failed to clear client certificate from Android SSL context: $e');
       }
     }
+
+    await FileDownloader().configure(desktopConfig: (Config.mTLS, false));
   }
 }
