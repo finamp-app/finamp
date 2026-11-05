@@ -456,6 +456,7 @@ void main() {
   }
   testWidgets('ordinary library track menus do not gain player actions', (tester) async {
     await mount(tester, playerMenu: false);
+    expect(menuTile('Track information'), findsOneWidget);
     for (final title in ['Output', 'Queue', 'Lyrics']) {
       expect(menuTile(title), findsNothing);
     }
