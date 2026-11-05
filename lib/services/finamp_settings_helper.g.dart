@@ -769,17 +769,6 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setAutoReloadQueueMaxDroppedTracksPercentage(
-    int newAutoReloadQueueMaxDroppedTracksPercentage,
-  ) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.autoReloadQueueMaxDroppedTracksPercentage =
-        newAutoReloadQueueMaxDroppedTracksPercentage;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
   static void setShowShuffleButtonOnMediaNotification(
     bool newShowShuffleButtonOnMediaNotification,
   ) {
@@ -1352,6 +1341,17 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setAutoReloadQueueMaxDroppedTracksPercentage(
+    int newAutoReloadQueueMaxDroppedTracksPercentage,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.autoReloadQueueMaxDroppedTracksPercentage =
+        newAutoReloadQueueMaxDroppedTracksPercentage;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1624,10 +1624,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ProviderListenable<bool> get autoReloadQueue => finampSettingsProvider.select(
     (value) => value.requireValue.autoReloadQueue,
   );
-  ProviderListenable<int> get autoReloadQueueMaxDroppedTracksPercentage =>
-      finampSettingsProvider.select(
-        (value) => value.requireValue.autoReloadQueueMaxDroppedTracksPercentage,
-      );
   ProviderListenable<bool> get showShuffleButtonOnMediaNotification =>
       finampSettingsProvider.select(
         (value) => value.requireValue.showShuffleButtonOnMediaNotification,
@@ -1809,6 +1805,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   );
   ProviderListenable<bool> get startMinimizedToTray => finampSettingsProvider
       .select((value) => value.requireValue.startMinimizedToTray);
+  ProviderListenable<int> get autoReloadQueueMaxDroppedTracksPercentage =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.autoReloadQueueMaxDroppedTracksPercentage,
+      );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,
