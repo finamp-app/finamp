@@ -7,6 +7,7 @@ import 'dart:ui' as ui;
 import 'package:audio_session/audio_session.dart';
 import 'package:chopper/chopper.dart' show Response;
 import 'package:collection/collection.dart';
+import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
@@ -235,7 +236,16 @@ class WatchHandler {
       GetIt.instance<MusicPlayerBackgroundTask>().playbackState.listen((_) => _scheduleNowPlayingPush()).cancel,
       // Metadata arrives after the track; this also keeps the provider alive.
       container.listen(currentTrackMetadataProvider, (_, _) => _scheduleNowPlayingPush()).close,
-      container.listen(brightnessProvider, (_, _) => _pushIfChanged('theme', _theme())).close,
+      container.listen(brightnessProvider, (_, _) {
+        _pushIfChanged('theme', _theme());
+        _pushIfChanged('accent', _accent());
+      }).close,
+      // The watch uses the accent Finamp shows, so a custom or system accent reaches it too
+      container.listen(finampSettingsProvider.accentColor, (_, _) => _pushIfChanged('accent', _accent())).close,
+      container.listen(finampSettingsProvider.systemAccentColor, (_, _) => _pushIfChanged('accent', _accent())).close,
+      container
+          .listen(finampSettingsProvider.useSystemAccentColor, (_, _) => _pushIfChanged('accent', _accent()))
+          .close,
       // The user provider also fires on address changes; only an account change clears the cache.
       container.listen(FinampUserHelper.finampCurrentUserProvider, (_, _) {
         final account = _account();
@@ -265,6 +275,7 @@ class WatchHandler {
           .close,
     ]);
     _pushIfChanged('theme', _theme());
+    _pushIfChanged('accent', _accent());
     _pushIfChanged('account', _account());
     _pushIfChanged('transcoding', FinampSettingsHelper.finampSettings.shouldTranscode);
     _pushIfChanged('volume', FinampSettingsHelper.finampSettings.currentVolume);
@@ -565,6 +576,14 @@ class WatchHandler {
   }
 
   /// Returns "light" or "dark", resolving the system theme on the phone.
+  /// The accent Finamp shows in the current theme, as ARGB: its own colour scheme from the user's accent setting.
+  static int _accent() {
+    final settings = FinampSettingsHelper.finampSettings;
+    final seed = settings.useSystemAccentColor ? settings.systemAccentColor : settings.accentColor;
+    final brightness = _theme() == 'light' ? ui.Brightness.light : ui.Brightness.dark;
+    return getColorScheme(seed, brightness, settings.amoledTheme).primary.toARGB32();
+  }
+
   static String _theme() {
     final brightness = switch (FinampSettingsHelper.finampSettings.themeMode) {
       ThemeMode.light => ui.Brightness.light,

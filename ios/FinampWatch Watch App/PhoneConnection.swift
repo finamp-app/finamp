@@ -168,6 +168,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     /// Applies the theme before other state so the first frame has the correct appearance.
     private func apply(_ values: [String: Any]) {
         ThemeStore.shared.apply(values["theme"])
+        ThemeStore.shared.applyAccent(values["accent"])
         AccountStore.shared.apply(values["account"])
         if let state = values["nowPlaying"] as? [String: Any] {
             NowPlayingStore.shared.update(from: state)

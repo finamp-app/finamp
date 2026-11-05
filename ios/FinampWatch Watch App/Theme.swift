@@ -1,14 +1,17 @@
 import SwiftUI
 
-// Matches jellyfinBlueColor and jellyfinPurpleColor in lib/color_schemes.g.dart.
 extension Color {
-    static let finampBlue = Color(red: 0x00 / 255, green: 0xA4 / 255, blue: 0xDC / 255)
+    /// The accent Finamp shows on the phone (pushed as `accent`, so a custom accent reaches the watch too);
+    /// Jellyfin blue until the phone has sent it.
+    static var finampBlue: Color { ThemeStore.shared.accent ?? jellyfinBlue }
+    // Matches jellyfinBlueColor and jellyfinPurpleColor in lib/color_schemes.g.dart; the logo gradient keeps them.
+    static let jellyfinBlue = Color(red: 0x00 / 255, green: 0xA4 / 255, blue: 0xDC / 255)
     static let finampPurple = Color(red: 0xAA / 255, green: 0x5C / 255, blue: 0xC3 / 255)
 }
 
 extension ShapeStyle where Self == LinearGradient {
     static var finampGradient: LinearGradient {
-        LinearGradient(colors: [.finampPurple, .finampBlue], startPoint: .topLeading, endPoint: .bottomTrailing)
+        LinearGradient(colors: [.finampPurple, .jellyfinBlue], startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 }
 
@@ -46,6 +49,22 @@ final class ThemeStore {
         case .dark: false
         case .light: true
         }
+    }
+
+    /// Finamp's accent as ARGB, kept for launches before the phone replies; nil until the phone has sent one.
+    private var accentARGB = UserDefaults.standard.object(forKey: "accentARGB") as? Int {
+        didSet { UserDefaults.standard.set(accentARGB, forKey: "accentARGB") }
+    }
+
+    var accent: Color? {
+        accentARGB.map { argb in
+            Color(red: Double((argb >> 16) & 0xFF) / 255, green: Double((argb >> 8) & 0xFF) / 255, blue: Double(argb & 0xFF) / 255)
+        }
+    }
+
+    func applyAccent(_ value: Any?) {
+        guard let argb = (value as? NSNumber)?.intValue, argb != accentARGB else { return }
+        accentARGB = argb
     }
 
     func apply(_ theme: Any?) {
