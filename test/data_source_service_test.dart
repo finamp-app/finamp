@@ -72,6 +72,13 @@ void main() {
   });
 
   group('decideNetworkQueueReloadAction', () {
+    test('does nothing when returning online', () {
+      expect(
+        decideNetworkQueueReloadAction(SourceChangeType.toOnline, queueInfo(trackCount: 10, undownloadedTracks: 10)),
+        NetworkQueueReloadAction.none,
+      );
+    });
+
     test('does nothing for an empty queue', () {
       expect(
         decideNetworkQueueReloadAction(SourceChangeType.toOffline, queueInfo(trackCount: 0, undownloadedTracks: 0)),

@@ -21,6 +21,10 @@ enum SourceChangeType { toLocalUrl, toRemoteUrl, toOffline, toOnline, toDirectPl
 enum NetworkQueueReloadAction { none, automatic, manualPrompt, manualLossLimitExceeded }
 
 NetworkQueueReloadAction decideNetworkQueueReloadAction(SourceChangeType event, FinampQueueInfo queueInfo) {
+  // Returning online does not alter the active queue: Finamp already prefers
+  // downloaded tracks, so there is nothing to reload.
+  if (event == SourceChangeType.toOnline) return NetworkQueueReloadAction.none;
+
   if (queueInfo.trackCount == 0 || queueInfo.undownloadedTracks == 0) {
     return NetworkQueueReloadAction.none;
   }
@@ -141,11 +145,9 @@ class DataSourceService {
               final removedPercentage = queueInfo.undownloadedTracks == queueInfo.trackCount
                   ? 100
                   : roundedPercentage.clamp(1, 99);
-              final lossLimitExplanation = AppLocalizations.of(context)!.autoReloadPromptLossLimitExceeded(
-                queueInfo.undownloadedTracks,
-                queueInfo.trackCount,
-                removedPercentage,
-              );
+              final lossLimitExplanation = AppLocalizations.of(
+                context,
+              )!.autoReloadPromptLossLimitExceeded(queueInfo.undownloadedTracks, removedPercentage);
               return "$reloadPrompt. $lossLimitExplanation";
             }
             return "$reloadPrompt. $reloadPromptMissingTracks";

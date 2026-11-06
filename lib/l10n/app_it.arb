@@ -2706,14 +2706,11 @@
             }
         }
     },
-    "autoReloadPromptLossLimitExceeded": "Ricaricando verrebbe rimosso circa il {removedPercentage}% della coda ({amountUndownloadedTracks} brani su {trackCount}).",
+    "autoReloadPromptLossLimitExceeded": "Ricaricando verrebbe rimosso il {removedPercentage}% della coda ({amountUndownloadedTracks} brani).",
     "@autoReloadPromptLossLimitExceeded": {
         "description": "Additional prompt text shown when an automatic offline queue reload exceeds the configured track-loss limit.",
         "placeholders": {
             "amountUndownloadedTracks": {
-                "type": "int"
-            },
-            "trackCount": {
                 "type": "int"
             },
             "removedPercentage": {
