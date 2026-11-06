@@ -24,6 +24,22 @@ enum FinampConnectivityState { localNetwork, cellular, none }
 
 enum ServerPingType { local, remote, active }
 
+bool shouldNotifyPausedDownloads({
+  required FinampConnectivityState state,
+  required bool isOffline,
+  required int activeDownloads,
+  required bool requireWifiForDownloads,
+  required bool isMobilePlatform,
+}) {
+  // A cellular transport alone does not mean Finamp chose Offline Mode. Keep
+  // the existing download-manager constraint, but only surface this message
+  // once the app has actually entered Offline Mode.
+  if (!isOffline || activeDownloads == 0 || state == FinampConnectivityState.localNetwork) {
+    return false;
+  }
+  return state == FinampConnectivityState.none || (isMobilePlatform && requireWifiForDownloads);
+}
+
 late List<ConnectivityResult> _latestConnectivity;
 Timer? _playOnReconnectRetry;
 
@@ -49,29 +65,36 @@ Future<void> startNetworkAutomation() async {
   }, fireImmediately: true);
 
   container.listen(setOfflineModeProvider, (_, isOffline) {
-    if (isOffline == null || isOffline == FinampSettingsHelper.finampSettings.isOffline) return;
+    if (isOffline == null || isOffline == FinampSettingsHelper.finampSettings.isOffline) {
+      return;
+    }
     _networkAutomationLogger.info('Setting offline mode to $isOffline');
     GlobalSnackbar.message(
       (context) => AppLocalizations.of(context)!.autoOfflineNotification(isOffline ? 'enabled' : 'disabled'),
     );
     FinampSetters.setIsOffline(isOffline);
+
+    // Notify at the point Offline Mode actually changes, rather than when a
+    // transport event arrives. During a reconnect the connectivity provider
+    // can publish before this listener has cleared the previous offline
+    // state, which used to show a misleading "downloads paused" message.
+    if (!isOffline) return;
+    final state = container.read(networkConnectivityProvider).value;
+    if (state == null) return;
+    if (shouldNotifyPausedDownloads(
+      state: state,
+      isOffline: isOffline,
+      activeDownloads: _getDownloads(),
+      requireWifiForDownloads: FinampSettingsHelper.finampSettings.requireWifiForDownloads,
+      isMobilePlatform: Platform.isAndroid || Platform.isIOS,
+    )) {
+      GlobalSnackbar.message((context) => AppLocalizations.of(context)!.downloadPaused);
+    }
   }, fireImmediately: true);
 
   container.listen(networkConnectivityProvider, (_, value) {
     final state = value.value;
     if (state == null) return;
-
-    if (state != FinampConnectivityState.localNetwork) {
-      final activeDownloads = _getDownloads();
-      if (activeDownloads > 0) {
-        if (state == FinampConnectivityState.none) {
-          GlobalSnackbar.message((context) => AppLocalizations.of(context)!.downloadPaused);
-        } else if ((Platform.isAndroid || Platform.isIOS) &&
-            FinampSettingsHelper.finampSettings.requireWifiForDownloads) {
-          GlobalSnackbar.message((context) => AppLocalizations.of(context)!.downloadPaused);
-        }
-      }
-    }
 
     // Reconnect after every usable transport transition, including a return
     // from mobile data to Wi-Fi where the selected URL may not change.
