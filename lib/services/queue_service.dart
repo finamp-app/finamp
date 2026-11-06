@@ -403,6 +403,10 @@ class QueueService {
     if (_savedQueueState != SavedQueueState.preInit) return;
     try {
       _savedQueueState = SavedQueueState.init;
+      // Capture the lock state before the asynchronous restore starts. A user
+      // who starts restoring while unlocked may lock the screen while items
+      // load and should still get the playback they requested.
+      final mayAutoplayInitialQueue = await AndroidStartupAutoplayGuard.mayAutoplayInitialQueue();
       archiveSavedQueue(inInit: true);
       var info = _queuesBox.get("latest");
       if (info != null) {
@@ -416,7 +420,7 @@ class QueueService {
         }
 
         if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup && !await _hasInitialPlayLink()) {
-          await loadSavedQueue(info, isInitialLoad: true);
+          await loadSavedQueue(info, isInitialLoad: true, mayAutoplayInitialQueue: mayAutoplayInitialQueue);
         } else {
           _savedQueueState = SavedQueueState.pendingSave;
         }
@@ -492,6 +496,7 @@ class QueueService {
     bool isReload = false,
     OversizedSavedQueueHandling oversizeHandling = OversizedSavedQueueHandling.abort,
     bool isInitialLoad = false,
+    bool? mayAutoplayInitialQueue,
   }) async {
     final playbackHistoryService = GetIt.instance<PlaybackHistoryService>();
     if (_savedQueueState == SavedQueueState.loading) {
@@ -658,7 +663,7 @@ class QueueService {
             !isReload &&
             FinampSettingsHelper.finampSettings.autoplayRestoredQueue &&
             droppedTracks == 0 &&
-            (!isInitialLoad || await AndroidStartupAutoplayGuard.mayAutoplayInitialQueue());
+            (!isInitialLoad || (mayAutoplayInitialQueue ?? false));
         await _replaceWholeQueue(
           isRestoredQueue: true,
           itemList: items,

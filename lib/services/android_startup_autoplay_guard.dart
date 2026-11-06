@@ -10,15 +10,17 @@ class AndroidStartupAutoplayGuard {
   static final _logger = Logger('AndroidStartupAutoplayGuard');
 
   /// Returns whether an automatic queue restore may begin playback for the
-  /// current Android lock state.
+  /// Android lock state captured when startup restoration begins.
   static bool mayAutoplayWhileKeyguardLocked(bool isKeyguardLocked) => !isKeyguardLocked;
 
-  /// Returns whether the automatic queue restore that happens during app
+  /// Captures whether the automatic queue restore that happens during app
   /// startup may begin playing.
   ///
   /// Non-Android platforms keep their current behavior. On Android, failure
   /// to read the keyguard state is handled conservatively by leaving the queue
-  /// paused rather than unexpectedly starting audio in the background.
+  /// paused rather than unexpectedly starting audio in the background. The
+  /// caller retains this snapshot for the whole restore, so locking the screen
+  /// after a restore has begun does not alter the requested playback behavior.
   static Future<bool> mayAutoplayInitialQueue() async {
     if (!Platform.isAndroid) return true;
 
