@@ -1,4 +1,4 @@
-Finamp is a <br>free</br> Jellyfin music player for Android, iOS and Desktop. It allows you to stream and download the music you own. It has a modern but <br>thought-through</br> design, a ton of features, is customizable, and respects your <br>privacy</br>!
+Finamp is a <b>free</b> Jellyfin music player for Android, iOS and Desktop. It allows you to stream and download the music you own. It has a modern but <b>thought-through</b> design, a ton of features, is customizable, and respects your <b>privacy</b>!
 
 You <b>need</b> access to a Jellyfin server (https://jellyfin.org) or you <b>won't be able to use Finamp at all</b>!
 
