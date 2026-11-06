@@ -70,6 +70,53 @@ class DataSourceService {
     return reload;
   }
 
+  static Future<void> _handleNetworkQueueReload({
+    required SourceChangeType event,
+    required FinampQueueInfo queueInfo,
+    required QueueService queueService,
+  }) async {
+    final action = decideNetworkQueueReloadAction(event, queueInfo);
+    if (action == NetworkQueueReloadAction.none) return;
+    if (action == NetworkQueueReloadAction.automatic) {
+      await _reloadQueueOutsideProviderCallback(queueService);
+      return;
+    }
+
+    if (action == NetworkQueueReloadAction.manualLossLimitExceeded) {
+      _dataSourceServiceLogger.info("Skipping automatic offline queue reload: too many tracks would be removed");
+    }
+
+    GlobalSnackbar.message(
+      (context) {
+        final localizations = AppLocalizations.of(context)!;
+        final reloadPrompt = localizations.autoReloadPrompt(SourceChangeGenericType.network.name);
+        if (event != SourceChangeType.toOffline) return reloadPrompt;
+
+        // Every actionable offline prompt removes the same unavailable tracks.
+        // Show both their absolute count and their share of the queue, whether
+        // the prompt comes from a disabled automatic reload or from its limit.
+        final roundedPercentage = (queueInfo.undownloadedTracks * 100 / queueInfo.trackCount).round();
+        final removedPercentage = queueInfo.undownloadedTracks == queueInfo.trackCount
+            ? 100
+            : roundedPercentage.clamp(1, 99);
+        final droppedTracksExplanation = localizations.autoReloadPromptDroppedTracks(
+          queueInfo.undownloadedTracks,
+          removedPercentage,
+        );
+        return "$reloadPrompt. $droppedTracksExplanation";
+      },
+      action: (context) => SnackBarAction(
+        label: AppLocalizations.of(context)!.autoReloadPromptReloadButton,
+        onPressed: () {
+          // Archived queues are not overwritten and can always be restored.
+          queueService.reloadQueue(archiveQueue: event == SourceChangeType.toOffline);
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
+      isConfirmation: false,
+    );
+  }
+
   static void create() {
     final FinampUserHelper finampUserHelper = GetIt.instance<FinampUserHelper>();
     final ref = GetIt.instance<ProviderContainer>();
@@ -120,52 +167,6 @@ class DataSourceService {
 
     final queueInfo = queueService.getQueue();
 
-    Future<void> handleNetworkQueueReload() async {
-      final action = decideNetworkQueueReloadAction(event, queueInfo);
-      if (action == NetworkQueueReloadAction.none) return;
-      if (action == NetworkQueueReloadAction.automatic) {
-        await _reloadQueueOutsideProviderCallback(queueService);
-        return;
-      }
-
-      if (action == NetworkQueueReloadAction.manualLossLimitExceeded) {
-        _dataSourceServiceLogger.info("Skipping automatic offline queue reload: too many tracks would be removed");
-      }
-
-      GlobalSnackbar.message(
-        (context) {
-          final reloadPrompt = AppLocalizations.of(context)!.autoReloadPrompt(SourceChangeGenericType.network.name);
-          final reloadPromptMissingTracks = AppLocalizations.of(
-            context,
-          )!.autoReloadPromptMissingTracks(queueInfo.undownloadedTracks);
-          if (event == SourceChangeType.toOffline) {
-            // Warn about tracks unavailable after an offline reload, before it happens.
-            if (action == NetworkQueueReloadAction.manualLossLimitExceeded) {
-              final roundedPercentage = (queueInfo.undownloadedTracks * 100 / queueInfo.trackCount).round();
-              final removedPercentage = queueInfo.undownloadedTracks == queueInfo.trackCount
-                  ? 100
-                  : roundedPercentage.clamp(1, 99);
-              final lossLimitExplanation = AppLocalizations.of(
-                context,
-              )!.autoReloadPromptLossLimitExceeded(queueInfo.undownloadedTracks, removedPercentage);
-              return "$reloadPrompt. $lossLimitExplanation";
-            }
-            return "$reloadPrompt. $reloadPromptMissingTracks";
-          }
-          return reloadPrompt;
-        },
-        action: (context) => SnackBarAction(
-          label: AppLocalizations.of(context)!.autoReloadPromptReloadButton,
-          onPressed: () {
-            // Archived queues are not overwritten and can always be restored.
-            queueService.reloadQueue(archiveQueue: event == SourceChangeType.toOffline);
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          },
-        ),
-        isConfirmation: false,
-      );
-    }
-
     switch (event) {
       case SourceChangeType.toLocalUrl:
       case SourceChangeType.toRemoteUrl:
@@ -175,10 +176,10 @@ class DataSourceService {
           _dataSourceServiceLogger.info("Skipping URL-triggered queue reload while Offline Mode is active");
           break;
         }
-        await handleNetworkQueueReload();
+        await _handleNetworkQueueReload(event: event, queueInfo: queueInfo, queueService: queueService);
         break;
       case SourceChangeType.toOffline:
-        await handleNetworkQueueReload();
+        await _handleNetworkQueueReload(event: event, queueInfo: queueInfo, queueService: queueService);
         break;
       case SourceChangeType.toOnline:
         // nop, queue won't change since Finamp prefers downloaded data anyway
