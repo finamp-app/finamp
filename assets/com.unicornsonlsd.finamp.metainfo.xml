@@ -58,6 +58,20 @@
   </screenshots>
   <launchable type="desktop-id">com.unicornsonlsd.finamp.desktop</launchable>
   <releases>
+    <release version="1.0.3" date="2026-11-06">
+      <description>
+        <p>This is a hotfix for version 1.0.1.</p>
+        <p>
+          Here's what's new:
+        </p>
+        <ul>
+          <li>Fix startup error "Could not initialize IsarCore" when downloading from F-Droid.</li>
+        </ul>
+        <p>
+          <em>Thank you for using Finamp!</em>
+        </p>
+      </description>
+    </release>
     <release version="1.0.2" date="2026-10-18">
       <url
         type="details"
