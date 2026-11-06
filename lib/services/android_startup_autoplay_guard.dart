@@ -32,9 +32,11 @@ class AndroidStartupAutoplayGuard {
       }
 
       final mayAutoplay = mayAutoplayWhileKeyguardLocked(isKeyguardLocked);
-      if (!mayAutoplay) {
-        _logger.info('Suppressing startup autoplay: Android keyguard is locked');
-      }
+      _logger.info(
+        mayAutoplay
+            ? 'Allowing startup autoplay: Android keyguard is unlocked'
+            : 'Suppressing startup autoplay: Android keyguard is locked',
+      );
       return mayAutoplay;
     } catch (e) {
       _logger.warning('Could not determine Android keyguard state; suppressing startup autoplay: $e');

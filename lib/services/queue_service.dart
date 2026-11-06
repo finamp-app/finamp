@@ -620,11 +620,19 @@ class QueueService {
       }
 
       if (loadedTracks > 0) {
+        final autoplayRestoredQueue = FinampSettingsHelper.finampSettings.autoplayRestoredQueue;
         final shouldAutoplay =
             !isReload &&
-            FinampSettingsHelper.finampSettings.autoplayRestoredQueue &&
+            autoplayRestoredQueue &&
             droppedTracks == 0 &&
             (!isInitialLoad || (mayAutoplayInitialQueue ?? false));
+        if (isInitialLoad) {
+          _queueServiceLogger.info(
+            'Initial queue autoplay ${shouldAutoplay ? 'enabled' : 'paused'} '
+            '(setting: $autoplayRestoredQueue, dropped tracks: $droppedTracks, '
+            'Android startup guard: $mayAutoplayInitialQueue)',
+          );
+        }
         await _replaceWholeQueue(
           isRestoredQueue: true,
           itemList: items,
