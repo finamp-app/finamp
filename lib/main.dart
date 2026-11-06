@@ -178,6 +178,10 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
   } catch (error, trace) {
     Logger("ErrorApp").severe(error, null, trace);
     if (!integrationTesting) {
+      // Ensure the window is visible on startup error even if _setupOSIntegration already
+      // opted out of showing the window on the first frame.
+      await TrayService.setNativeStartHidden(false);
+      await TrayService.showMacOSWindowIfNotStartHidden();
       runApp(FinampErrorApp(error: error, trace: trace));
       return;
     } else {
@@ -216,6 +220,9 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
 
   // Integration testing will launch the widgets itself, so just return
   if (!integrationTesting) {
+    if (TrayService.shouldStartHidden(args)) {
+      await TrayService.setNativeStartHidden(true);
+    }
     runApp(const Finamp());
   }
 }
@@ -378,8 +385,12 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
   // set up window manager on desktop, mainly to restrict minimum size
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     final screenSize = FinampSettingsHelper.finampSettings.screenSize;
+    final startHidden = TrayService.shouldStartHidden(commandLineArgs);
     WidgetsFlutterBinding.ensureInitialized();
     await windowManager.ensureInitialized();
+    if (startHidden) {
+      await TrayService.setNativeStartHidden(true);
+    }
     WindowOptions windowOptions = WindowOptions(
       size: screenSize?.size ?? Size(1200, 800),
       center: screenSize == null,
@@ -401,11 +412,9 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
         if (commandLineArgs.contains("--fullscreen")) {
           await windowManager.setFullScreen(true);
         }
-        if (TrayService.shouldStartHidden(commandLineArgs)) {
-          // Start in the system tray. Both native runners show the window on their own (Linux right away,
-          // Windows on the first frame), so wait for that to have happened and then hide it.
-          await WidgetsBinding.instance.waitUntilFirstFrameRasterized;
-          await windowManager.hide();
+        if (startHidden) {
+          // The native runner keeps the window hidden on the first frame when
+          // startHidden is set, so do not show or focus it here.
           return;
         }
         await windowManager.show();
