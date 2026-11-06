@@ -306,6 +306,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? Duration.zero
             : fields[87] as Duration,
         autoReloadQueue: fields[97] == null ? false : fields[97] as bool,
+        autoReloadQueueMaxDroppedTracksPercentage: fields[164] == null
+            ? 30
+            : (fields[164] as num).toInt(),
         screenSize: fields[100] as ScreenSize?,
         genreCuratedItemSelectionTypeTracks: fields[101] == null
             ? CuratedItemSelectionType.mostPlayed
@@ -489,7 +492,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(152)
+      ..writeByte(153)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -793,7 +796,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(162)
       ..write(obj.minimizeToTray)
       ..writeByte(163)
-      ..write(obj.startMinimizedToTray);
+      ..write(obj.startMinimizedToTray)
+      ..writeByte(164)
+      ..write(obj.autoReloadQueueMaxDroppedTracksPercentage);
   }
 
   @override

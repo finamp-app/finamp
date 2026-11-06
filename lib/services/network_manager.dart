@@ -5,6 +5,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/downloads_service.dart';
+import 'package:finamp/services/data_source_service.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/playon_service.dart';
@@ -51,10 +52,12 @@ Future<void> startNetworkAutomation() async {
   container.listen(setOfflineModeProvider, (_, isOffline) {
     if (isOffline == null || isOffline == FinampSettingsHelper.finampSettings.isOffline) return;
     _networkAutomationLogger.info('Setting offline mode to $isOffline');
-    GlobalSnackbar.message(
-      (context) => AppLocalizations.of(context)!.autoOfflineNotification(isOffline ? 'enabled' : 'disabled'),
-    );
     FinampSetters.setIsOffline(isOffline);
+    if (!DataSourceService.willShowQueueReloadPrompt(isOffline: isOffline)) {
+      GlobalSnackbar.message(
+        (context) => AppLocalizations.of(context)!.autoOfflineNotification(isOffline ? 'enabled' : 'disabled'),
+      );
+    }
   }, fireImmediately: true);
 
   container.listen(networkConnectivityProvider, (_, value) {
