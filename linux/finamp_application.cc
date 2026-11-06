@@ -64,6 +64,16 @@ static void finamp_application_activate(GApplication* application) {
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
 
   FlView* view = fl_view_new(project);
+  // Enforce the minimum window size natively instead of through window_manager.
+  // window_manager calls gdk_window_set_geometry_hints() on the GdkWindow directly,
+  // which GtkWindow overwrites with its own hints whenever it recomputes them
+  // (e.g. on unmap/remap when hiding to the tray, or after maximizing).
+  // GtkWindow always derives its minimum size hint from its children's size request,
+  // so this survives hide/show, accounts for the header bar, and on Wayland GDK also
+  // clamps incoming xdg_toplevel configure sizes to it, so the Flutter view doesn't get
+  // smaller than this even on compositors that ignore set_min_size.
+  // Keep in sync with kMinimumWindowSize in lib/components/minimum_layout_size.dart.
+  gtk_widget_set_size_request(GTK_WIDGET(view), 400, 250);
   gtk_widget_show(GTK_WIDGET(view));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
 
