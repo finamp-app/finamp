@@ -25,6 +25,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  finamp_android_startup:
+    path: packages/finamp_android_startup
 
   background_downloader: ^9.2.3
   json_annotation: ^4.8.1

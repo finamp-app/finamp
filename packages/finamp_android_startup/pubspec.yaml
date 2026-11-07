@@ -1,0 +1,18 @@
+name: finamp_android_startup
+description: Android startup state channel for Finamp.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.unicornsonlsd.finamp.androidstartup
+        pluginClass: FinampAndroidStartupPlugin
