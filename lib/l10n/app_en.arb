@@ -226,6 +226,22 @@
     "sortBy": "Sort by",
     "title": "Title",
     "album": "Album",
+    "albumInformation": "Album information",
+    "@albumInformation": {
+        "description": "Button and dialog title for the album description from the server."
+    },
+    "trackInformation": "Track information",
+    "@trackInformation": {
+        "description": "Menu entry and dialog title for the track description from the server."
+    },
+    "noItemInformation": "No information available.",
+    "@noItemInformation": {
+        "description": "Shown when an album or track has no server-provided description."
+    },
+    "itemInformationError": "Could not load information.",
+    "@itemInformationError": {
+        "description": "Shown when fetching a track description fails."
+    },
     "albumArtist": "Album Artist",
     "albumArtists": "Album Artists",
     "performingArtists": "Performing Artists",

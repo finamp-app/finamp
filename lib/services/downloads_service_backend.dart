@@ -1244,7 +1244,7 @@ class DownloadsSyncService {
       }
       _metadataCache[id] = itemFetch.future;
       item = await _jellyfinApiData
-          .getItemByIdBatched(id, "${_jellyfinApiData.defaultFields},sortName,MediaSources,People")
+          .getItemByIdBatched(id, "${_jellyfinApiData.defaultFields},sortName,MediaSources,People,Overview")
           .then((value) => value == null ? null : DownloadStub.fromItem(item: value, type: type));
       _downloadsService.resetConnectionErrors();
       itemFetch.complete(item);
@@ -1275,12 +1275,12 @@ class DownloadsSyncService {
       case BaseItemDtoType.playlist || BaseItemDtoType.album:
         childType = DownloadItemType.track;
         childFilter = BaseItemDtoType.track;
-        fields = "${_jellyfinApiData.defaultFields},MediaSources,SortName,People";
+        fields = "${_jellyfinApiData.defaultFields},MediaSources,SortName,People,Overview";
         sortOrder = "ParentIndexNumber,IndexNumber,SortName";
       case BaseItemDtoType.artist || BaseItemDtoType.genre || BaseItemDtoType.library:
         childType = DownloadItemType.collection;
         childFilter = BaseItemDtoType.album;
-        fields = "${_jellyfinApiData.defaultFields},SortName";
+        fields = "${_jellyfinApiData.defaultFields},SortName,Overview";
       case _:
         _syncLogger.severe("Unknown collection type ${parent.baseItemType} for ${parent.name}");
         return Future.value([]);
@@ -1317,7 +1317,7 @@ class DownloadsSyncService {
               parentItem: item,
               includeItemTypes: BaseItemDtoType.track.jellyfinName,
               recursive: false,
-              fields: "${_jellyfinApiData.defaultFields},MediaSources,SortName,People",
+              fields: "${_jellyfinApiData.defaultFields},MediaSources,SortName,People,Overview",
             ) ??
             [];
         childItems.addAll(trackChildItems);
@@ -1336,7 +1336,7 @@ class DownloadsSyncService {
               includeItemTypes: BaseItemDtoType.track.jellyfinName,
               filters: "Artist=${parent.name}",
               artistType: ArtistType.artist,
-              fields: "${_jellyfinApiData.defaultFields},MediaSources,SortName,People",
+              fields: "${_jellyfinApiData.defaultFields},MediaSources,SortName,People,Overview",
             ) ??
             [];
         var artistTrackChildStubs = artistTrackChildItems.map(
@@ -1368,7 +1368,7 @@ class DownloadsSyncService {
   Future<List<DownloadStub>> _getFinampCollectionChildren(DownloadStub parent) async {
     assert(parent.type == DownloadItemType.finampCollection);
     FinampCollection collection = parent.finampCollection!;
-    final String fields = "${_jellyfinApiData.defaultFields},MediaSources,SortName,People";
+    final String fields = "${_jellyfinApiData.defaultFields},MediaSources,SortName,People,Overview";
     try {
       List<BaseItemDto> outputItems;
       DownloadItemType? typeOverride;
