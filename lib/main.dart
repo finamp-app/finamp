@@ -9,6 +9,7 @@ import 'package:background_downloader/background_downloader.dart';
 import 'package:collection/collection.dart';
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/Buttons/cta_medium.dart';
+import 'package:finamp/components/minimum_layout_size.dart';
 import 'package:finamp/gen/assets.gen.dart';
 import 'package:finamp/hive_registrar.g.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -386,7 +387,10 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
-      minimumSize: Size(400, 250),
+      // On Linux, window_manager sets the geometry hints directly on the GdkWindow, where GTK resets them
+      // (e.g. when the window is hidden to the tray). The minimum size is set natively on the FlView in
+      // linux/finamp_application.cc instead.
+      minimumSize: Platform.isLinux ? null : kMinimumWindowSize,
       // This matches the size of the iPhone 5, which is probably the smallest screen size worth testing against
       //minimumSize: Size(336, 607),
     );
