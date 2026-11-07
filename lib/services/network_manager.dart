@@ -21,12 +21,70 @@ part 'network_manager.g.dart';
 
 final _networkAutomationLogger = Logger('Network Automation');
 
-enum FinampConnectivityState { localNetwork, cellular, none }
+enum FinampConnectivityState { localNetwork, cellular, vpn, none }
 
 enum ServerPingType { local, remote, active }
 
 late List<ConnectivityResult> _latestConnectivity;
 Timer? _playOnReconnectRetry;
+
+FinampConnectivityState connectivityStateFromResults(List<ConnectivityResult> results) {
+  if (results.contains(ConnectivityResult.ethernet) || results.contains(ConnectivityResult.wifi)) {
+    return FinampConnectivityState.localNetwork;
+  }
+  if (results.contains(ConnectivityResult.none) || results.isEmpty) {
+    return FinampConnectivityState.none;
+  }
+  if (results.contains(ConnectivityResult.mobile)) {
+    return FinampConnectivityState.cellular;
+  }
+
+  // A VPN normally appears alongside Wi-Fi or mobile data. When it is the
+  // only reported transport, Android cannot tell us whether the tunnel still
+  // reaches the server, so let reachability checks make that decision.
+  if (results.every((result) => result == ConnectivityResult.vpn)) {
+    return FinampConnectivityState.vpn;
+  }
+  return FinampConnectivityState.cellular;
+}
+
+bool? offlineModeForConnectivity({
+  required AutoOfflineOption autoOffline,
+  required FinampConnectivityState? state,
+  bool? activeServerReachable,
+  bool? localServerReachable,
+}) {
+  switch (autoOffline) {
+    case AutoOfflineOption.disconnected:
+      if (state == null) return null;
+      if (state != FinampConnectivityState.vpn) {
+        return state == FinampConnectivityState.none;
+      }
+      return activeServerReachable == null ? null : !activeServerReachable;
+    case AutoOfflineOption.network:
+      if (state == null) return null;
+      if (state != FinampConnectivityState.vpn) {
+        return state != FinampConnectivityState.localNetwork;
+      }
+      return localServerReachable == null ? null : !localServerReachable;
+    case AutoOfflineOption.unreachable:
+      return activeServerReachable == null ? null : !activeServerReachable;
+    case AutoOfflineOption.disabled:
+      return null;
+  }
+}
+
+/// While recovering from Offline Mode, wait until the selected server route is
+/// known. Otherwise consumers can start requests on the previous public/local
+/// URL during the small gap between Android reporting a usable transport and
+/// the reachability probe selecting its endpoint.
+bool shouldDelayOfflineModeExit({
+  required bool isOffline,
+  required FinampConnectivityState? state,
+  required bool? selectedLocalUrl,
+}) {
+  return isOffline && state != null && state != FinampConnectivityState.none && selectedLocalUrl == null;
+}
 
 Future<void> startNetworkAutomation() async {
   final container = GetIt.instance<ProviderContainer>();
@@ -46,11 +104,18 @@ Future<void> startNetworkAutomation() async {
 
     _networkAutomationLogger.info('Setting active server to ${isLocal ? 'local' : 'public'}');
     user.update(newIsLocal: isLocal);
+    // The transport reset is deliberately performed as soon as Android
+    // reports a change, before the reachability probe has selected an
+    // endpoint. Refresh the worker once that choice is persisted, otherwise
+    // list requests can keep using its cached former local/public URL.
+    unawaited(GetIt.instance<JellyfinApiHelper>().refreshWorkerUser());
     _schedulePlayOnReconnect();
   }, fireImmediately: true);
 
   container.listen(setOfflineModeProvider, (_, isOffline) {
-    if (isOffline == null || isOffline == FinampSettingsHelper.finampSettings.isOffline) return;
+    if (isOffline == null || isOffline == FinampSettingsHelper.finampSettings.isOffline) {
+      return;
+    }
     _networkAutomationLogger.info('Setting offline mode to $isOffline');
     FinampSetters.setIsOffline(isOffline);
     if (!DataSourceService.willShowQueueReloadPrompt(isOffline: isOffline)) {
@@ -116,12 +181,7 @@ Future<FinampConnectivityState> networkConnectivity(Ref ref) async {
   // callback invalidates this provider: Riverpod discards an older delayed
   // build, so only the latest rebuild may publish a connectivity state.
   await Future<void>.delayed(const Duration(seconds: 7));
-  final results = _latestConnectivity;
-  if (results.contains(ConnectivityResult.ethernet) || results.contains(ConnectivityResult.wifi)) {
-    return FinampConnectivityState.localNetwork;
-  }
-  if (results.contains(ConnectivityResult.none)) return FinampConnectivityState.none;
-  return FinampConnectivityState.cellular;
+  return connectivityStateFromResults(_latestConnectivity);
 }
 
 @riverpod
@@ -138,9 +198,12 @@ Future<bool?> serverReachability(Ref ref, ServerPingType target) async {
   final api = GetIt.instance<JellyfinApiHelper>();
   switch (target) {
     case ServerPingType.local:
-      // Never probe a private address after Android has reported that the
-      // local transport is gone: select the public endpoint immediately.
-      return state == FinampConnectivityState.localNetwork ? api.pingLocalServer() : false;
+      // A VPN-only transport can still route to a private Jellyfin server.
+      // Probe it before falling back to the public endpoint or declaring the
+      // app offline.
+      return state == FinampConnectivityState.localNetwork || state == FinampConnectivityState.vpn
+          ? api.pingLocalServer()
+          : false;
     case ServerPingType.remote:
       return api.pingPublicServer();
     case ServerPingType.active:
@@ -158,18 +221,42 @@ Future<bool?> serverReachability(Ref ref, ServerPingType target) async {
 bool? setOfflineMode(Ref ref) {
   if (!ref.watch(finampSettingsProvider.autoOfflineListenerActive)) return null;
 
-  switch (ref.watch(finampSettingsProvider.autoOffline)) {
+  final autoOffline = ref.watch(finampSettingsProvider.autoOffline);
+  final state = ref.watch(networkConnectivityProvider).value;
+  // Do not expose the newly restored transport to data providers before the
+  // local/public choice is complete. Requests started in that gap retain the
+  // former route and can leave the home lists in a failed Future state even
+  // though the selected server becomes reachable a moment later.
+  final selectedLocalUrl = ref.watch(setLocalUrlProvider);
+  if (shouldDelayOfflineModeExit(
+    isOffline: FinampSettingsHelper.finampSettings.isOffline,
+    state: state,
+    selectedLocalUrl: selectedLocalUrl,
+  )) {
+    return null;
+  }
+
+  switch (autoOffline) {
     case AutoOfflineOption.disconnected:
-      final state = ref.watch(networkConnectivityProvider).value;
-      return state == null ? null : state == FinampConnectivityState.none;
+      if (state == FinampConnectivityState.vpn) {
+        // A VPN reported without its underlying transport is ambiguous. The
+        // active endpoint is local when the tunnel can reach it, otherwise it
+        // is public; go offline only after that endpoint cannot be reached.
+        final reachable = ref.watch(serverReachabilityProvider(ServerPingType.active)).value;
+        return offlineModeForConnectivity(autoOffline: autoOffline, state: state, activeServerReachable: reachable);
+      }
+      return offlineModeForConnectivity(autoOffline: autoOffline, state: state);
     case AutoOfflineOption.network:
-      final state = ref.watch(networkConnectivityProvider).value;
-      return state == null ? null : state != FinampConnectivityState.localNetwork;
+      if (state == FinampConnectivityState.vpn) {
+        final localReachable = ref.watch(setLocalUrlProvider);
+        return offlineModeForConnectivity(autoOffline: autoOffline, state: state, localServerReachable: localReachable);
+      }
+      return offlineModeForConnectivity(autoOffline: autoOffline, state: state);
     case AutoOfflineOption.unreachable:
       final reachable = ref.watch(serverReachabilityProvider(ServerPingType.active)).value;
-      return reachable == null ? null : !reachable;
+      return offlineModeForConnectivity(autoOffline: autoOffline, state: state, activeServerReachable: reachable);
     case AutoOfflineOption.disabled:
-      return null;
+      return offlineModeForConnectivity(autoOffline: autoOffline, state: state);
   }
 }
 

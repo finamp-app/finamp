@@ -173,6 +173,22 @@ class JellyfinApiHelper {
     }
   }
 
+  /// Refreshes the worker isolate's cached user after the active server URL
+  /// changes. A connectivity event arrives before route selection finishes,
+  /// so the connection reset at that point can otherwise retain the previous
+  /// public/local address in the worker while the foreground has moved on.
+  Future<void> refreshWorkerUser() async {
+    if (_workerIsolatePort == null) return;
+
+    try {
+      await runInIsolate<void>((_) async {
+        GetIt.instance<FinampUserHelper>().refreshCurrentUser();
+      }, allowForegroundFallback: false);
+    } catch (error, stack) {
+      _jellyfinApiHelperLogger.warning("Could not refresh the background worker user", error, stack);
+    }
+  }
+
   /// Runs the given function in a background isolate, supplying a valid API instance.
   Future<T> runInIsolate<T>(
     Future<T> Function(jellyfin_api.JellyfinApi) func, {
