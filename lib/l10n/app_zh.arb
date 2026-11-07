@@ -3776,5 +3776,34 @@
                 "example": "Rick Astley - Never Gonna Give You Up"
             }
         }
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "自动队列重载时的曲目丢失限制",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "切换至离线模式时，仅在待移除曲目占比不超过此比例的情况下，才自动重新加载。您随时可以手动进行重新加载。",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "最多移除的曲目：{percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "autoReloadPromptDroppedTracks": "这将从队列中移除 {removedPercentage}% 的内容（{amountUndownloadedTracks} 首曲目）。",
+    "@autoReloadPromptDroppedTracks": {
+        "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "removedPercentage": {
+                "type": "int"
+            }
+        }
     }
 }
