@@ -25,19 +25,20 @@ enum FinampConnectivityState { localNetwork, cellular, none }
 enum ServerPingType { local, remote, active }
 
 bool shouldNotifyPausedDownloads({
-  required FinampConnectivityState state,
-  required bool isOffline,
+  required FinampConnectivityState? previousState,
+  required FinampConnectivityState currentState,
   required int activeDownloads,
   required bool requireWifiForDownloads,
   required bool isMobilePlatform,
 }) {
-  // A cellular transport alone does not mean Finamp chose Offline Mode. Keep
-  // the existing download-manager constraint, but only surface this message
-  // once the app has actually entered Offline Mode.
-  if (!isOffline || activeDownloads == 0 || state == FinampConnectivityState.localNetwork) {
-    return false;
-  }
-  return state == FinampConnectivityState.none || (isMobilePlatform && requireWifiForDownloads);
+  // Offline Mode and a download-policy pause are distinct: the former already
+  // has its own status message. This notification is useful only when the
+  // downloads setting stops an otherwise usable cellular hand-off.
+  return previousState == FinampConnectivityState.localNetwork &&
+      currentState == FinampConnectivityState.cellular &&
+      activeDownloads > 0 &&
+      requireWifiForDownloads &&
+      isMobilePlatform;
 }
 
 late List<ConnectivityResult> _latestConnectivity;
@@ -67,28 +68,21 @@ Future<void> startNetworkAutomation() async {
       (context) => AppLocalizations.of(context)!.autoOfflineNotification(isOffline ? 'enabled' : 'disabled'),
     );
     FinampSetters.setIsOffline(isOffline);
+  }, fireImmediately: true);
 
-    // Notify at the point Offline Mode actually changes, rather than when a
-    // transport event arrives. During a reconnect the connectivity provider
-    // can publish before this listener has cleared the previous offline
-    // state, which used to show a misleading "downloads paused" message.
-    if (!isOffline) return;
-    final state = container.read(networkConnectivityProvider).value;
+  container.listen(networkConnectivityProvider, (previous, value) {
+    final state = value.value;
     if (state == null) return;
+
     if (shouldNotifyPausedDownloads(
-      state: state,
-      isOffline: isOffline,
+      previousState: previous?.value,
+      currentState: state,
       activeDownloads: _getDownloads(),
       requireWifiForDownloads: FinampSettingsHelper.finampSettings.requireWifiForDownloads,
       isMobilePlatform: Platform.isAndroid || Platform.isIOS,
     )) {
       GlobalSnackbar.message((context) => AppLocalizations.of(context)!.downloadPaused);
     }
-  }, fireImmediately: true);
-
-  container.listen(networkConnectivityProvider, (_, value) {
-    final state = value.value;
-    if (state == null) return;
 
     // Reconnect after every usable transport transition, including a return
     // from mobile data to Wi-Fi where the selected URL may not change.

@@ -3,11 +3,44 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('shouldNotifyPausedDownloads', () {
-    test('does not warn during a cellular-to-Wi-Fi hand-off before Offline Mode is entered', () {
+    test('warns when Wi-Fi-only downloads pause after a local-to-cellular hand-off', () {
       expect(
         shouldNotifyPausedDownloads(
-          state: FinampConnectivityState.cellular,
-          isOffline: false,
+          previousState: FinampConnectivityState.localNetwork,
+          currentState: FinampConnectivityState.cellular,
+          activeDownloads: 1,
+          requireWifiForDownloads: true,
+          isMobilePlatform: true,
+        ),
+        isTrue,
+      );
+    });
+
+    test('does not warn for Offline Mode or a non-cellular hand-off', () {
+      expect(
+        shouldNotifyPausedDownloads(
+          previousState: FinampConnectivityState.none,
+          currentState: FinampConnectivityState.localNetwork,
+          activeDownloads: 1,
+          requireWifiForDownloads: true,
+          isMobilePlatform: true,
+        ),
+        isFalse,
+      );
+      expect(
+        shouldNotifyPausedDownloads(
+          previousState: FinampConnectivityState.localNetwork,
+          currentState: FinampConnectivityState.none,
+          activeDownloads: 1,
+          requireWifiForDownloads: true,
+          isMobilePlatform: true,
+        ),
+        isFalse,
+      );
+      expect(
+        shouldNotifyPausedDownloads(
+          previousState: FinampConnectivityState.cellular,
+          currentState: FinampConnectivityState.localNetwork,
           activeDownloads: 1,
           requireWifiForDownloads: true,
           isMobilePlatform: true,
@@ -16,37 +49,34 @@ void main() {
       );
     });
 
-    test('warns for cellular downloads only after Offline Mode is active', () {
+    test('does not warn without active downloads, Wi-Fi-only downloads, or a mobile platform', () {
       expect(
         shouldNotifyPausedDownloads(
-          state: FinampConnectivityState.cellular,
-          isOffline: true,
-          activeDownloads: 1,
+          previousState: FinampConnectivityState.localNetwork,
+          currentState: FinampConnectivityState.cellular,
+          activeDownloads: 0,
           requireWifiForDownloads: true,
           isMobilePlatform: true,
         ),
-        isTrue,
+        isFalse,
       );
-    });
-
-    test('warns when offline with active downloads, but not after a local transport returns', () {
       expect(
         shouldNotifyPausedDownloads(
-          state: FinampConnectivityState.none,
-          isOffline: true,
+          previousState: FinampConnectivityState.localNetwork,
+          currentState: FinampConnectivityState.cellular,
           activeDownloads: 1,
           requireWifiForDownloads: false,
-          isMobilePlatform: false,
+          isMobilePlatform: true,
         ),
-        isTrue,
+        isFalse,
       );
       expect(
         shouldNotifyPausedDownloads(
-          state: FinampConnectivityState.localNetwork,
-          isOffline: true,
+          previousState: FinampConnectivityState.localNetwork,
+          currentState: FinampConnectivityState.cellular,
           activeDownloads: 1,
           requireWifiForDownloads: true,
-          isMobilePlatform: true,
+          isMobilePlatform: false,
         ),
         isFalse,
       );
