@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/gen/assets.gen.dart';
+import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/l10n/app_localizations_en.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -30,6 +32,61 @@ class TrayService with WindowListener {
 
   /// Command-line flag to start with the window hidden in the tray.
   static const startMinimizedFlag = "--minimized";
+
+  /// Native runner channel used to prevent the initial window from being shown on the
+  /// first frame when starting minimized in the system tray.
+  static const _windowChannel = MethodChannel("finamp/window");
+
+  /// Tells the native runner whether to keep the window hidden on the first frame.
+  ///
+  /// By default the native runners show the window on the first frame so any startup
+  /// error screen is always visible even if `window_manager` hasn't been initialized.
+  static Future<void> setNativeStartHidden(bool hidden) async {
+    if (!isSupported) return;
+    try {
+      await _windowChannel.invokeMethod<void>("setStartHidden", hidden);
+    } catch (e, stack) {
+      _logger.warning("Failed to set native startHidden flag", e, stack);
+    }
+  }
+
+  /// Ensures the macOS window is shown on the first frame if not starting hidden
+  /// (for example when `FinampErrorApp` is displayed before `window_manager` runs).
+  static Future<void> showMacOSWindowIfNotStartHidden() async {
+    if (!Platform.isMacOS) return;
+    try {
+      await _windowChannel.invokeMethod<void>("showIfNotStartHidden");
+    } catch (e, stack) {
+      _logger.warning("Failed to show macOS window on startup error", e, stack);
+    }
+  }
+
+  /// Resolves [AppLocalizations] from the configured or system locale without requiring
+  /// a [BuildContext] or a rendered frame (so the tray menu is localized immediately
+  /// even when starting hidden with zero frames drawn).
+  @visibleForTesting
+  static AppLocalizations resolveLocalizations({Locale? preferredLocale, List<Locale>? systemLocales}) {
+    Locale? configured = preferredLocale;
+    if (configured == null) {
+      try {
+        configured = FinampSettingsHelper.finampSettings.locale;
+      } catch (_) {
+        configured = null;
+      }
+    }
+    final candidates = <Locale>[?configured, ...(systemLocales ?? WidgetsBinding.instance.platformDispatcher.locales)];
+    // Put English first in supportedLocales so basicLocaleListResolution falls back to
+    // English instead of the first alphabetical locale (same as MaterialApp in main.dart).
+    final resolved = basicLocaleListResolution(
+      candidates,
+      [const Locale("en")].followedBy(AppLocalizations.supportedLocales),
+    );
+    try {
+      return lookupAppLocalizations(resolved);
+    } catch (_) {
+      return AppLocalizationsEn();
+    }
+  }
 
   /// Whether we are running in a Linux Wayland session. Wayland doesn't tell clients when
   /// they get minimized, so "minimize to tray" can't work there.
@@ -70,8 +127,11 @@ class TrayService with WindowListener {
     container.listen(finampSettingsProvider.closeToTray, (_, _) => unawaited(_applySettings()));
     container.listen(finampSettingsProvider.minimizeToTray, (_, _) => unawaited(_applySettings()));
     container.listen(finampSettingsProvider.startMinimizedToTray, (_, _) => unawaited(_applySettings()));
-    // Menu labels are localized, rebuild them once the new locale is in effect.
-    container.listen(finampSettingsProvider.locale, (_, _) => _refreshMenuAfterFrame());
+    // Menu labels are localized, rebuild them when the locale changes.
+    container.listen(finampSettingsProvider.locale, (_, _) {
+      _lastMenuSignature = null;
+      _refreshMenu();
+    });
 
     _audioHandler.mediaItem.distinct().listen((item) {
       _currentItem = item;
@@ -79,8 +139,6 @@ class TrayService with WindowListener {
     });
 
     unawaited(_applySettings());
-    // Localizations are only fully available once MaterialApp has been built.
-    _refreshMenuAfterFrame();
   }
 
   bool get _trayWanted {
@@ -155,13 +213,6 @@ class TrayService with WindowListener {
     return (artist != null && artist.isNotEmpty) ? "$artist - ${item.title}" : item.title;
   }
 
-  void _refreshMenuAfterFrame() {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      _lastMenuSignature = null;
-      _refreshMenu();
-    });
-  }
-
   tray.MenuItem? _createItem(String label, {bool enabled = true, void Function()? onClick}) {
     final item = tray.MenuItem.createWithLabelAndType(label, tray.MenuItemType.normal);
     if (item == null) return null;
@@ -179,7 +230,7 @@ class TrayService with WindowListener {
   void _refreshMenu() {
     final trayIcon = _trayIcon;
     if (trayIcon == null) return;
-    final l10n = GlobalSnackbar.requireL10n;
+    final l10n = resolveLocalizations();
     final nowPlaying = _nowPlayingText;
     final hasTrack = _currentItem != null;
 
