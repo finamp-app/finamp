@@ -3789,5 +3789,34 @@
                 "example": "Rick Astley - Never Gonna Give You Up"
             }
         }
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Limite de Perda de Pistas ao Recarregar Automaticamente a Fila",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "Quando se muda para modo offline, apenas recarrega automaticamente se não mais do que esta percentagem de faixas devem ser removidas. Pode sempre recarregar manualmente.",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "Máximo de faixas removidas: {percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "autoReloadPromptDroppedTracks": "Isto irá remover {removedPercentage}% de ({amountUndownloadedTracks} faixas em fila).",
+    "@autoReloadPromptDroppedTracks": {
+        "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "removedPercentage": {
+                "type": "int"
+            }
+        }
     }
 }
