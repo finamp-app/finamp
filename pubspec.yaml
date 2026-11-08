@@ -26,7 +26,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  background_downloader: ^9.5.9
+  # background_downloader 9.6.0 is incompatible with old analyzer version and causes build_runner failures
+  background_downloader: 9.5.9
   json_annotation: ^4.8.1
   chopper: ^8.0.0
   get_it: ^8.2.0
