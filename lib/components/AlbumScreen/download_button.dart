@@ -22,6 +22,7 @@ class DownloadButton extends ConsumerWidget {
     required this.item,
     this.children,
     this.childrenCount,
+    this.getDownloadSizeTrackCount,
     this.isLibrary = false,
     this.downloadDisabled = false,
     this.customTooltip,
@@ -33,6 +34,9 @@ class DownloadButton extends ConsumerWidget {
   final DownloadStub item;
   final List<BaseItemDto>? children;
   final int? childrenCount;
+
+  /// Resolve the size-warning track count separately from direct download links.
+  final Future<int> Function()? getDownloadSizeTrackCount;
   final bool isLibrary;
   final bool downloadDisabled;
   final String? customTooltip;
@@ -92,12 +96,21 @@ class DownloadButton extends ConsumerWidget {
               ),
             );
           } else {
-            int? trackCount = switch (item.baseItemType) {
-              BaseItemDtoType.album || BaseItemDtoType.playlist => children?.length,
-              BaseItemDtoType.artist ||
-              BaseItemDtoType.genre => children?.fold<int>(0, (count, item) => count + (item.childCount ?? 0)),
-              _ => null,
-            };
+            int? trackCount;
+            try {
+              trackCount =
+                  await getDownloadSizeTrackCount?.call() ??
+                  switch (item.baseItemType) {
+                    BaseItemDtoType.album || BaseItemDtoType.playlist => children?.length,
+                    BaseItemDtoType.artist ||
+                    BaseItemDtoType.genre => children?.fold<int>(0, (count, item) => count + (item.childCount ?? 0)),
+                    _ => null,
+                  };
+            } catch (e) {
+              GlobalSnackbar.error(e);
+              return;
+            }
+            if (!context.mounted) return;
             await DownloadDialog.show(context, item, viewId, trackCount: trackCount);
           }
         },

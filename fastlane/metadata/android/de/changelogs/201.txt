@@ -23,3 +23,4 @@ Here's what's new:
 Full release notes: <a href="https://github.com/finamp-app/finamp/releases/1.0.1">https://github.com/finamp-app/finamp/releases/1.0.1</a>
 
 Danke, dass du Finamp nutzt!
+

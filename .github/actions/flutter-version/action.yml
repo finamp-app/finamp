@@ -1,0 +1,16 @@
+name: Flutter version
+description: Reads the pinned Flutter version from the .flutter-version file at the repository root
+
+outputs:
+  version:
+    description: The pinned Flutter version
+    value: ${{ steps.read-version.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Read pinned Flutter version
+      id: read-version
+      shell: bash
+      # Strip whitespace so Windows checkouts with CRLF line endings still yield a clean version
+      run: echo "version=$(tr -d '[:space:]' < .flutter-version)" >> "$GITHUB_OUTPUT"
