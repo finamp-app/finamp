@@ -3752,5 +3752,13 @@
     "quickSettingsLayoutLink": "모든 레이아웃 및 테마 설정",
     "quickSettingsAllSettingsLink": "모든 설정",
     "quickSettingsNetworkLink": "서버의 근거리 네트워크 주소 설정",
-    "loginFlowLocalNetworkServersNoResults": "서버가 아직 찾을 수 없습니다 - 서버 주소를 직접 입력해야 할 수 있습니다."
+    "loginFlowLocalNetworkServersNoResults": "서버가 아직 찾을 수 없습니다 - 서버 주소를 직접 입력해야 할 수 있습니다.",
+    "noMusicLibrariesLogsCTA": "이 상황이 오류라고 생각한다면 로그를 우리에게 공유해주세요. 문제를 고치는데 도움이 됩니다.",
+    "@noMusicLibrariesLogsCTA": {
+        "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
+    },
+    "noMusicLibrariesLogout": "로그아웃 했다가 다시 로그인을 시도해보는 것도 좋습니다.",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    }
 }
