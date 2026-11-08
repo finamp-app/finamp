@@ -94,7 +94,7 @@ jobs:
         restore-keys: ${{ runner.os }}-android-dart-build-
 
     - run: flutter doctor
-    - run: flutter pub get --enforce-lockfile
+    - run: flutter pub get
 
     - run: flutter build apk --debug --no-pub
 
@@ -191,7 +191,7 @@ jobs:
         restore-keys: ${{ runner.os }}-dart-build-
 
     - run: flutter doctor
-    - run: flutter pub get --enforce-lockfile
+    - run: flutter pub get
 
     - run: flutter build ios --release --no-pub --no-codesign
 
@@ -261,7 +261,7 @@ jobs:
         restore-keys: ${{ runner.os }}-${{ matrix.arch }}-${{ steps.java-version.outputs.version }}-dart-build-
 
     - run: flutter doctor
-    - run: flutter pub get --enforce-lockfile
+    - run: flutter pub get
 
     - name: Clone isar repository
       if: matrix.arch == 'arm64'
@@ -364,7 +364,7 @@ jobs:
         pub-cache: true
 
     - run: flutter doctor
-    - run: flutter pub get --enforce-lockfile
+    - run: flutter pub get
 
     - name: Cache Dart build cache
       uses: actions/cache@v5
