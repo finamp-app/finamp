@@ -27,31 +27,22 @@ class OneLineMarqueeHelper extends ConsumerWidget {
         textPainter.dispose();
 
         if (isOverflowing) {
-          return Container(
-            alignment: Alignment.centerLeft,
-            height: style.fontSize ?? 16.0,
-            width: constraints.maxWidth,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Marquee(
-                    key: key,
-                    text: text,
-                    style: style,
-                    scrollAxis: Axis.horizontal,
-                    blankSpace: 20.0,
-                    velocity: 50.0,
-                    pauseAfterRound: const Duration(seconds: 3),
-                    accelerationDuration: const Duration(seconds: 1),
-                    accelerationCurve: Curves.linear,
-                    decelerationDuration: const Duration(milliseconds: 500),
-                    decelerationCurve: Curves.easeOut,
-                    textDirection: TextDirection.ltr,
-                  ),
-                ),
-                Positioned(left: 0, child: Container(width: 20, color: Theme.of(context).scaffoldBackgroundColor)),
-                Positioned(right: 0, child: Container(width: 20, color: Theme.of(context).scaffoldBackgroundColor)),
-              ],
+          return SizedBox(
+            // The player screen marque uses this height, so why not here?
+            height: 20.0,
+            child: Marquee(
+              key: key,
+              text: text,
+              style: style,
+              scrollAxis: Axis.horizontal,
+              blankSpace: 20.0,
+              velocity: 50.0,
+              pauseAfterRound: const Duration(seconds: 3),
+              accelerationDuration: const Duration(seconds: 1),
+              accelerationCurve: Curves.linear,
+              decelerationDuration: const Duration(milliseconds: 500),
+              decelerationCurve: Curves.easeOut,
+              textDirection: TextDirection.ltr,
             ),
           );
         } else {

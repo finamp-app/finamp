@@ -137,17 +137,20 @@ class _PlayerScreenContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var controller = PlayerHideableController();
+    final controller = PlayerHideableController();
 
-    var screenOrientation = MediaQuery.orientationOf(context);
+    final screenOrientation = MediaQuery.orientationOf(context);
+    final textScaler = MediaQuery.textScalerOf(context);
     double toolbarHeight = _defaultToolbarHeight;
     int maxToolbarLines = _defaultMaxToolbarLines;
 
     // If in landscape, only show 2 lines in toolbar instead of 3
-    if (screenOrientation == Orientation.landscape) {
+    if (screenOrientation == Orientation.landscape || textScaler.scale(14) > 18) {
       toolbarHeight = 36.0;
       maxToolbarLines = 1;
     }
+    toolbarHeight =
+        toolbarHeight - 14 - 16 * maxToolbarLines + textScaler.scale(14) + maxToolbarLines * textScaler.scale(16);
 
     final metadata = ref.watch(currentTrackMetadataProvider).unwrapPrevious();
 
@@ -463,15 +466,15 @@ class _PlayerScreenContent extends ConsumerWidget {
 }
 
 enum PlayerHideable {
-  bigPlayButton(14, 14, 1),
-  bottomActions(0, 27, 2),
-  progressSlider(0, 20, 4),
-  twoLineTitle(0, 46, 3),
-  features(0, 20, 3),
-  loopShuffleButtons(96, 0, 0),
-  unhideableElements(144, 165, 0),
-  controlsPaddingSmall(0, 8, 2),
-  controlsPaddingBig(0, 12, 1);
+  bigPlayButton(14, 14, 1, null),
+  bottomActions(0, 27, 2, 14),
+  progressSlider(0, 20, 4, 11),
+  twoLineTitle(0, 46, 3, 18),
+  features(0, 20, 3, 11),
+  loopShuffleButtons(96, 0, 0, null),
+  unhideableElements(144, 165, 0, 40),
+  controlsPaddingSmall(0, 8, 2, null),
+  controlsPaddingBig(0, 12, 1, null);
 
   // The width/height added to the overall player screen when this item is shown.
   // Calculated by shrinking player screen control area until overflow both with
@@ -485,7 +488,10 @@ enum PlayerHideable {
   // Needs to be multiplied by finampSettings.prioritizeCoverFactor.
   final double maxShrink;
 
-  const PlayerHideable(this.width, this.height, this.maxShrink);
+  // Font size of internal text, to allow size to be updated by textScaler.
+  final double? textHeight;
+
+  const PlayerHideable(this.width, this.height, this.maxShrink, this.textHeight);
 }
 
 /// Controls what elements of the player screen are shown/hidden.
@@ -504,6 +510,7 @@ class PlayerHideableController {
   Size? _target;
   Size? _album;
   bool? _useLandscape;
+  TextScaler? _textScale;
 
   /// Update player screen hidden elements based on usable area in portrait mode.
   void _updateLayoutPortrait(Size size, WidgetRef ref) {
@@ -622,6 +629,7 @@ class PlayerHideableController {
     _target = null;
     _album = null;
     _useLandscape = null;
+    _textScale = MediaQuery.textScalerOf(ref.context);
     _visible = List.from(PlayerHideable.values);
     if (ref.watch(finampSettingsProvider.hidePlayerBottomActions)) {
       _visible.remove(PlayerHideable.bottomActions);
@@ -647,6 +655,10 @@ class PlayerHideableController {
     double width = 0;
     for (var element in _visible) {
       height += element.height;
+      if (_textScale != null && element.textHeight != null) {
+        height -= element.textHeight!;
+        height += _textScale!.scale(element.textHeight!);
+      }
       width += element.width;
     }
     return Size(width, height);
