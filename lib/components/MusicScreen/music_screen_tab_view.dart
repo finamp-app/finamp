@@ -116,6 +116,14 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     final itemList = state.items ?? [];
     SortBy? tabSortBy = widget.sortConfig.sortBy;
     bool reversed = widget.sortConfig.sortOrder == SortOrder.descending;
+    // Offline track names are sorted by their original spelling, but letter
+    // matching folds case and accents. A later page can still contain a match.
+    final scanOfflineTracks =
+        letter != '#' &&
+        widget.contentType == ContentType.tracks &&
+        tabSortBy == SortBy.sortName &&
+        (ref.read(finampSettingsProvider.isOffline) || widget.sortConfig.onlyShowFullyDownloadedFilter);
+    int? offlineFallbackIndex;
     for (var i = 0; i < itemList.length; i++) {
       String sortName;
       switch (itemList[i]) {
@@ -156,6 +164,12 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         letterToSearch = null;
         return;
       } else if (reversed ? comparisonResult < 0 : comparisonResult > 0) {
+        // A normalized comparison cannot prove that a later offline track
+        // won't match when the original names have a different ordering.
+        if (scanOfflineTracks) {
+          offlineFallbackIndex ??= (i - 1).clamp(0, itemList.length - 1);
+          continue;
+        }
         // If the letter is before the current item, there was no previous match (letter doesn't seem to exist in library)
         // scroll to the previous item instead
         timer?.cancel();
@@ -172,6 +186,15 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     }
 
     timer?.cancel();
+    if (scanOfflineTracks && !state.hasNextPage && offlineFallbackIndex != null) {
+      await controller.scrollToIndex(
+        offlineFallbackIndex,
+        duration: _getAnimationDurationForOffsetToIndex(offlineFallbackIndex),
+        preferPosition: AutoScrollPosition.middle,
+      );
+      letterToSearch = null;
+      return;
+    }
     if (!state.hasNextPage) {
       letterToSearch = null;
     } else {

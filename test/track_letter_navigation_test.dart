@@ -118,6 +118,7 @@ Future<AlphabetList> mount(
   bool offline = false,
   bool descending = false,
   bool albumArtists = false,
+  bool fullyDownloaded = false,
   LoadedRows? pager,
 }) async {
   tester.view.physicalSize = const Size(390, 500);
@@ -159,7 +160,7 @@ Future<AlphabetList> mount(
     SortAndFilterConfiguration(
       sortBy: albumArtists ? SortBy.albumArtist : SortBy.sortName,
       sortOrder: descending ? SortOrder.descending : SortOrder.ascending,
-      filters: {},
+      filters: fullyDownloaded ? {ItemFilter(type: ItemFilterType.isFullyDownloaded)} : {},
     ),
   );
   final request = MusicScreenPlayable<Track>(
@@ -202,7 +203,90 @@ Future<void> expectJump(WidgetTester tester, AlphabetList alphabet, String lette
   expect(rect.bottom, lessThan(500));
 }
 
+List<Track> mixedTracks({int groupSize = 12, bool descending = false, bool accented = false}) {
+  final names = [
+    '01 Numbers',
+    for (var i = 1; i <= groupSize; i++) 'A Title ${i.toString().padLeft(2, '0')}',
+    for (var i = 1; i <= groupSize; i++) 'Z Title ${i.toString().padLeft(2, '0')}',
+    for (var i = 1; i <= groupSize; i++) 'b Title ${i.toString().padLeft(2, '0')}',
+    if (accented)
+      for (var i = 1; i <= groupSize; i++) 'é Title ${i.toString().padLeft(2, '0')}',
+  ];
+  final items = [
+    for (var i = 0; i < names.length; i++)
+      BaseItemDto(
+        id: BaseItemId('mixed-$i'),
+        type: 'Audio',
+        name: names[i],
+        sortName: names[i].toLowerCase(),
+        albumArtists: [NameIdPair(id: const BaseItemId('credit'), name: 'Z Lead')],
+        artists: ['Z Lead'],
+        userData: UserItemDataDto(playbackPositionTicks: 0, playCount: 0, isFavorite: false, played: false),
+        runTimeTicks: 40000000,
+      ),
+  ];
+  return sortItems(
+    items,
+    SortBy.sortName,
+    descending ? SortOrder.descending : SortOrder.ascending,
+  ).map(Track.fromItem).toList();
+}
+
 void main() {
+  testWidgets('offline jump finds lowercase B after uppercase titles in actual sort order', (tester) async {
+    final rows = mixedTracks();
+    expect(rows[13].item.name, 'Z Title 01');
+    expect(rows[25].item.name, 'b Title 01');
+    final alphabet = await mount(tester, rows, offline: true);
+    await expectJump(tester, alphabet, 'B', rows[25]);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+  });
+  testWidgets('offline jump finds accented names after uppercase Z titles', (tester) async {
+    final rows = mixedTracks(accented: true);
+    expect(rows[37].item.name, 'é Title 01');
+    final alphabet = await mount(tester, rows, offline: true);
+    await expectJump(tester, alphabet, 'E', rows[37]);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+  });
+  testWidgets('fully downloaded filter searches mixed-case tracks while online', (tester) async {
+    final rows = mixedTracks();
+    final alphabet = await mount(tester, rows, fullyDownloaded: true);
+    await expectJump(tester, alphabet, 'B', rows[25]);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+  });
+  testWidgets('offline jump continues past an overshoot to find a later page', (tester) async {
+    final rows = mixedTracks(groupSize: 60);
+    final pager = LoadedRows(rows.take(100).toList(), nextRows: rows.skip(100).toList());
+    final alphabet = await mount(tester, rows, offline: true, pager: pager);
+    await expectJump(tester, alphabet, 'B', rows[121]);
+    expect(pager.pageRequests, 1);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+  });
+  testWidgets('offline descending jump searches beyond lowercase titles', (tester) async {
+    final rows = mixedTracks(descending: true);
+    final alphabet = await mount(tester, rows, offline: true, descending: true);
+    expect(rows[12].item.name, 'Z Title 12');
+    await expectJump(tester, alphabet, 'Z', rows[12]);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+  });
+  testWidgets('offline missing letter falls back after all pages are checked', (tester) async {
+    final rows = mixedTracks(groupSize: 60);
+    final pager = LoadedRows(rows.take(100).toList(), nextRows: rows.skip(100).toList());
+    final alphabet = await mount(tester, rows, offline: true, pager: pager);
+    alphabet.callback('C');
+    await tester.pumpAndSettle();
+    expect(pager.pageRequests, 1);
+    final fallback = find.byWidgetPredicate((widget) => widget is TrackListTile && widget.item.id == rows[60].item.id);
+    expect(fallback, findsOneWidget);
+    expect(tester.getRect(fallback).center.dy, inInclusiveRange(150, 350));
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+  });
   testWidgets('Tracks M jump reaches the first M title beyond the numeric and A rows', (tester) async {
     final rows = tracks();
     final alphabet = await mount(tester, rows);
