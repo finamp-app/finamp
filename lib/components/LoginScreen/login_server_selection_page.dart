@@ -255,7 +255,7 @@ class _LoginServerSelectionPageState extends ConsumerState<LoginServerSelectionP
     InputDecoration inputFieldDecoration(String placeholder) {
       return InputDecoration(
         filled: true,
-        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        fillColor: Theme.of(context).colorScheme.surfaceVariant,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
         label: Text(placeholder),
         floatingLabelBehavior: FloatingLabelBehavior.never,
