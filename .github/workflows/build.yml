@@ -12,16 +12,20 @@ on:
     tags:
       - '*.*.*'
     branches:
-      - main
+      - legacy
       - redesign
+      - main
+      - '*hotfix*'
 
 # set permission so that actions can modify repo contents, which is needed to add release assets
 permissions:
   contents: write
 
 env:
-  if_condition: &integration_if github.event_name == 'workflow_dispatch' ||
+  if_condition_integration: &do_integration github.event_name == 'workflow_dispatch' ||
     (github.event_name == 'push' && github.repository == 'finamp-app/finamp' )
+  # Release assets are only uploaded for tagged pushes
+  if_condition_release: &do_release github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
 
 # Due to a flutter bug, flutter build is not generating localizations
 # workaround by always running flutter pub get immediately before building,
@@ -54,19 +58,16 @@ jobs:
         df -h
 
     # Use the same flutter setup as the linux build to allow sharing the pub cache and it utilizing the same cache key
-    - name: Determine Flutter stable version
-      uses: subosito/flutter-action@v2
+    - name: Determine Flutter version
       id: flutter-version
-      with:
-        architecture: 'x64'
-        channel: 'stable'
-        dry-run: true
+      uses: ./.github/actions/flutter-version
+
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         # Prebuilt ARM linux builds are not provided, so build flutter from source
         channel: master
-        flutter-version: "${{ steps.flutter-version.outputs.VERSION }}"
+        flutter-version: ${{ steps.flutter-version.outputs.version }}
         cache: false
         pub-cache: true
         # Include arch as linux aarch64 include isar overriding
@@ -93,7 +94,7 @@ jobs:
         restore-keys: ${{ runner.os }}-android-dart-build-
 
     - run: flutter doctor
-    - run: flutter pub get
+    - run: flutter pub get --enforce-lockfile
 
     - run: flutter build apk --debug --no-pub
 
@@ -106,14 +107,14 @@ jobs:
     - run: flutter build appbundle --debug --no-pub
 
     - name: Enable KVM group perms
-      if: *integration_if
+      if: *do_integration
       run: |
         echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
         sudo udevadm control --reload-rules
         sudo udevadm trigger --name-match=kvm
 
     - name: Run Integration tests on api 36
-      if: *integration_if
+      if: *do_integration
       timeout-minutes: 20
       # android emulator is flaky so we retry once
       uses: Wandalen/wretry.action@v3.8.0
@@ -131,7 +132,7 @@ jobs:
             timeout 13m flutter test integration_test/test_cases.dart -d emulator
 
     - name: Run Integration tests on api 25
-      if: *integration_if
+      if: *do_integration
       timeout-minutes: 20
       # android emulator is flaky so we retry once
       uses: Wandalen/wretry.action@v3.8.0
@@ -159,10 +160,15 @@ jobs:
       with:
         xcode-version: latest-stable
 
+    - name: Determine Flutter version
+      id: flutter-version
+      uses: ./.github/actions/flutter-version
+
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
+        flutter-version: ${{ steps.flutter-version.outputs.version }}
         cache: false
         pub-cache: true
 
@@ -185,12 +191,12 @@ jobs:
         restore-keys: ${{ runner.os }}-dart-build-
 
     - run: flutter doctor
-    - run: flutter pub get
+    - run: flutter pub get --enforce-lockfile
 
     - run: flutter build ios --release --no-pub --no-codesign
 
     - name: Start simulator
-      if: *integration_if
+      if: *do_integration
       uses: futureware-tech/simulator-action@v5
       with:
         model: 'iPhone 17'
@@ -200,7 +206,7 @@ jobs:
         boot_timeout_seconds: 360
 
     - name: Run Integration Tests
-      if: *integration_if
+      if: *do_integration
       run: flutter test integration_test/test_cases.dart -d 'iPhone 17'
 
   build-linux:
@@ -229,20 +235,16 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential cmake ninja-build libgtk-3-dev libmpv-dev
 
-    - name: Determine Flutter stable version
-      uses: subosito/flutter-action@v2
+    - name: Determine Flutter version
       id: flutter-version
-      with:
-        architecture: 'x64'
-        channel: 'stable'
-        dry-run: true
+      uses: ./.github/actions/flutter-version
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         # Prebuilt ARM linux builds are not provided, so build flutter from source
         channel: master
-        flutter-version: "${{ steps.flutter-version.outputs.VERSION }}"
+        flutter-version: ${{ steps.flutter-version.outputs.version }}
         cache: false
         pub-cache: true
         # Include arch as linux aarch64 include isar overriding
@@ -259,7 +261,7 @@ jobs:
         restore-keys: ${{ runner.os }}-${{ matrix.arch }}-${{ steps.java-version.outputs.version }}-dart-build-
 
     - run: flutter doctor
-    - run: flutter pub get
+    - run: flutter pub get --enforce-lockfile
 
     - name: Clone isar repository
       if: matrix.arch == 'arm64'
@@ -314,7 +316,7 @@ jobs:
         compression-level: 0 # no compression
 
     - name: Upload release archive
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      if: *do_release
       uses: alexellis/upload-assets@0.5.0
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -322,7 +324,7 @@ jobs:
         asset_paths: '["./${{ env.TAR_NAME }}"]'
 
     - name: Run Integration Tests
-      if: *integration_if
+      if: *do_integration
       run: |
         set +e
         xvfb-run flutter test integration_test/test_cases.dart -d linux
@@ -349,15 +351,20 @@ jobs:
     - name: Set up Rust (for smtc_windows)
       uses: hecrj/setup-rust-action@v2
 
+    - name: Determine Flutter version
+      id: flutter-version
+      uses: ./.github/actions/flutter-version
+
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
+        flutter-version: ${{ steps.flutter-version.outputs.version }}
         cache: false
         pub-cache: true
 
     - run: flutter doctor
-    - run: flutter pub get
+    - run: flutter pub get --enforce-lockfile
 
     - name: Cache Dart build cache
       uses: actions/cache@v5
@@ -400,13 +407,13 @@ jobs:
         compression-level: 0 # no compression
 
     - name: Prepare release archive
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      if: *do_release
       run: |
         # zip folder
         powershell -Command "Compress-Archive -Path './build/windows/x64/runner/Release/*' -DestinationPath './${{ env.BASE_NAME }}.zip'"
 
     - name: Upload release archive
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      if: *do_release
       uses: alexellis/upload-assets@0.5.0
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -415,7 +422,7 @@ jobs:
         asset_paths: '["./${{ env.BASE_NAME }}.msix", "./${{ env.BASE_NAME }}.zip"]'
 
     - name: Run Integration Tests
-      if: *integration_if
+      if: *do_integration
       shell: bash
       run: |
         set +e
@@ -438,5 +445,5 @@ jobs:
   #       channel: 'stable'
   #       architecture: x64
   #   - run: flutter doctor
-  #   - run: flutter pub get
+  #   - run: flutter pub get --enforce-lockfile
   #   - run: flutter build macos --release --no-pub
