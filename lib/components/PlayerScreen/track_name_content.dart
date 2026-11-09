@@ -62,7 +62,9 @@ class TrackNameContent extends ConsumerWidget {
                 final wouldOverflow = textPainter.didExceedMaxLines;
                 textPainter.dispose();
 
-                if (wouldOverflow && ref.watch(finampSettingsProvider.oneLineMarqueeTextButton)) {
+                // Setting controls preference between marquee and two line clipped title.  If we only have one
+                // line, always marquee.  TODO add another setting to disable this?
+                if (wouldOverflow && (ref.watch(finampSettingsProvider.oneLineMarqueeTextButton) || !isTwoLineMode)) {
                   return SizedBox(
                     width: 280,
                     height: 12 + MediaQuery.textScalerOf(context).scale(18),
