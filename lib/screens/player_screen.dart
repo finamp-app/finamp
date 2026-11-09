@@ -466,15 +466,15 @@ class _PlayerScreenContent extends ConsumerWidget {
 }
 
 enum PlayerHideable {
-  bigPlayButton(14, 14, 1, null),
-  bottomActions(0, 27, 2, 14),
-  progressSlider(0, 20, 4, 11),
-  twoLineTitle(0, 46, 3, 18),
-  features(0, 20, 3, 11),
-  loopShuffleButtons(96, 0, 0, null),
-  unhideableElements(144, 165, 0, 40),
-  controlsPaddingSmall(0, 8, 2, null),
-  controlsPaddingBig(0, 12, 1, null);
+  bigPlayButton(14, 14, 1, []),
+  bottomActions(0, 27, 2, [14]),
+  progressSlider(0, 20, 4, [11]),
+  twoLineTitle(0, 46, 3, [18]),
+  features(0, 20, 3, [11]),
+  loopShuffleButtons(96, 0, 0, []),
+  unhideableElements(144, 165, 0, [18, 14, 14]),
+  controlsPaddingSmall(0, 8, 2, []),
+  controlsPaddingBig(0, 12, 1, []);
 
   // The width/height added to the overall player screen when this item is shown.
   // Calculated by shrinking player screen control area until overflow both with
@@ -489,7 +489,7 @@ enum PlayerHideable {
   final double maxShrink;
 
   // Font size of internal text, to allow size to be updated by textScaler.
-  final double? textHeight;
+  final List<double> textHeight;
 
   const PlayerHideable(this.width, this.height, this.maxShrink, this.textHeight);
 }
@@ -655,9 +655,12 @@ class PlayerHideableController {
     double width = 0;
     for (var element in _visible) {
       height += element.height;
-      if (_textScale != null && element.textHeight != null) {
-        height -= element.textHeight!;
-        height += _textScale!.scale(element.textHeight!);
+
+      if (_textScale != null) {
+        for (final text in element.textHeight) {
+          height -= text;
+          height += _textScale!.scale(text);
+        }
       }
       width += element.width;
     }

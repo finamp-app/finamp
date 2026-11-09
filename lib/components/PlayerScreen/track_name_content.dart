@@ -75,7 +75,7 @@ class TrackNameContent extends ConsumerWidget {
                   );
                 } else if (isTwoLineMode) {
                   return SizedBox(
-                    height: 10.0 + 2 * MediaQuery.textScalerOf(context).scale(18),
+                    height: 4.0 + 2.4 * MediaQuery.textScalerOf(context).scale(18),
                     child: Center(
                       child: Text(
                         text,
