@@ -10,42 +10,9 @@
 struct _FinampApplication {
   GtkApplication parent_instance;
   char** dart_entrypoint_arguments;
-  FlMethodChannel* window_channel;
-  gboolean start_hidden;
 };
 
 G_DEFINE_TYPE(FinampApplication, finamp_application, GTK_TYPE_APPLICATION);
-
-// Called when the first Flutter frame has been rendered.
-static void first_frame_cb(FinampApplication* self, FlView* view) {
-  if (!self->start_hidden) {
-    gtk_widget_show(gtk_widget_get_toplevel(GTK_WIDGET(view)));
-  }
-}
-
-// Handles calls on the "finamp/window" channel.
-static void window_method_call_cb(FlMethodChannel* channel,
-                                  FlMethodCall* method_call,
-                                  gpointer user_data) {
-  FinampApplication* self = FINAMP_APPLICATION(user_data);
-  const gchar* method = fl_method_call_get_name(method_call);
-
-  g_autoptr(FlMethodResponse) response = nullptr;
-  if (g_strcmp0(method, "setStartHidden") == 0) {
-    FlValue* args = fl_method_call_get_args(method_call);
-    if (args != nullptr && fl_value_get_type(args) == FL_VALUE_TYPE_BOOL) {
-      self->start_hidden = fl_value_get_bool(args);
-    }
-    response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
-  } else {
-    response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
-  }
-
-  g_autoptr(GError) error = nullptr;
-  if (!fl_method_call_respond(method_call, response, &error)) {
-    g_warning("Failed to send method call response: %s", error->message);
-  }
-}
 
 // Implements GApplication::activate.
 static void finamp_application_activate(GApplication* application) {
@@ -91,6 +58,7 @@ static void finamp_application_activate(GApplication* application) {
   }
 
   gtk_window_set_default_size(window, 1280, 720);
+  gtk_widget_realize(GTK_WIDGET(window));
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
@@ -99,22 +67,7 @@ static void finamp_application_activate(GApplication* application) {
   gtk_widget_show(GTK_WIDGET(view));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
 
-  // Show the window when Flutter renders its first frame (unless Dart opted out for
-  // starting minimized in the system tray). Realizing the widget up-front creates the
-  // underlying GdkWindow so window_manager and the engine can configure and render into
-  // it before it is mapped on screen.
-  g_signal_connect_swapped(view, "first-frame", G_CALLBACK(first_frame_cb), self);
-  gtk_widget_realize(GTK_WIDGET(view));
-
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
-
-  FlEngine* engine = fl_view_get_engine(view);
-  g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
-  self->window_channel = fl_method_channel_new(
-      fl_engine_get_binary_messenger(engine), "finamp/window",
-      FL_METHOD_CODEC(codec));
-  fl_method_channel_set_method_call_handler(
-      self->window_channel, window_method_call_cb, self, nullptr);
 
   gtk_widget_grab_focus(GTK_WIDGET(view));
 }
@@ -142,7 +95,6 @@ static gboolean finamp_application_local_command_line(GApplication* application,
 static void finamp_application_dispose(GObject* object) {
   FinampApplication* self = FINAMP_APPLICATION(object);
   g_clear_pointer(&self->dart_entrypoint_arguments, g_strfreev);
-  g_clear_object(&self->window_channel);
   G_OBJECT_CLASS(finamp_application_parent_class)->dispose(object);
 }
 

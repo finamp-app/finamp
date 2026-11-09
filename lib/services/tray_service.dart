@@ -7,7 +7,6 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/l10n/app_localizations_en.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -32,34 +31,6 @@ class TrayService with WindowListener {
 
   /// Command-line flag to start with the window hidden in the tray.
   static const startMinimizedFlag = "--minimized";
-
-  /// Native runner channel used to prevent the initial window from being shown on the
-  /// first frame when starting minimized in the system tray.
-  static const _windowChannel = MethodChannel("finamp/window");
-
-  /// Tells the native runner whether to keep the window hidden on the first frame.
-  ///
-  /// By default the native runners show the window on the first frame so any startup
-  /// error screen is always visible even if `window_manager` hasn't been initialized.
-  static Future<void> setNativeStartHidden(bool hidden) async {
-    if (!isSupported) return;
-    try {
-      await _windowChannel.invokeMethod<void>("setStartHidden", hidden);
-    } catch (e, stack) {
-      _logger.warning("Failed to set native startHidden flag", e, stack);
-    }
-  }
-
-  /// Ensures the macOS window is shown on the first frame if not starting hidden
-  /// (for example when `FinampErrorApp` is displayed before `window_manager` runs).
-  static Future<void> showMacOSWindowIfNotStartHidden() async {
-    if (!Platform.isMacOS) return;
-    try {
-      await _windowChannel.invokeMethod<void>("showIfNotStartHidden");
-    } catch (e, stack) {
-      _logger.warning("Failed to show macOS window on startup error", e, stack);
-    }
-  }
 
   /// Resolves [AppLocalizations] from the configured or system locale without requiring
   /// a [BuildContext] or a rendered frame (so the tray menu is localized immediately

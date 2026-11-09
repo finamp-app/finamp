@@ -178,10 +178,14 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
   } catch (error, trace) {
     Logger("ErrorApp").severe(error, null, trace);
     if (!integrationTesting) {
-      // Ensure the window is visible on startup error even if _setupOSIntegration already
-      // opted out of showing the window on the first frame.
-      await TrayService.setNativeStartHidden(false);
-      await TrayService.showMacOSWindowIfNotStartHidden();
+      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+        try {
+          WidgetsFlutterBinding.ensureInitialized();
+          await windowManager.ensureInitialized();
+          await windowManager.show();
+          await windowManager.focus();
+        } catch (_) {}
+      }
       runApp(FinampErrorApp(error: error, trace: trace));
       return;
     } else {
@@ -220,9 +224,6 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
 
   // Integration testing will launch the widgets itself, so just return
   if (!integrationTesting) {
-    if (TrayService.shouldStartHidden(args)) {
-      await TrayService.setNativeStartHidden(true);
-    }
     runApp(const Finamp());
   }
 }
@@ -388,9 +389,6 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
     final startHidden = TrayService.shouldStartHidden(commandLineArgs);
     WidgetsFlutterBinding.ensureInitialized();
     await windowManager.ensureInitialized();
-    if (startHidden) {
-      await TrayService.setNativeStartHidden(true);
-    }
     WindowOptions windowOptions = WindowOptions(
       size: screenSize?.size ?? Size(1200, 800),
       center: screenSize == null,
@@ -413,8 +411,7 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
           await windowManager.setFullScreen(true);
         }
         if (startHidden) {
-          // The native runner keeps the window hidden on the first frame when
-          // startHidden is set, so do not show or focus it here.
+          // The window was left hidden at launch by native runners, so keep it hidden in tray.
           return;
         }
         await windowManager.show();
