@@ -57,6 +57,7 @@ class TrackNameContent extends ConsumerWidget {
                   text: textSpan,
                   textDirection: TextDirection.ltr,
                   maxLines: isTwoLineMode ? 2 : 1,
+                  textScaler: MediaQuery.textScalerOf(context),
                 )..layout(maxWidth: constraints.maxWidth - padding);
 
                 final wouldOverflow = textPainter.didExceedMaxLines;
