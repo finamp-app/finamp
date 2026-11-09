@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:finamp/components/global_snackbar.dart';
-import 'package:finamp/components/minimum_layout_size.dart';
 import 'package:finamp/screens/lyrics_screen.dart';
 import 'package:finamp/screens/splash_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -35,17 +35,10 @@ double? _playerWidth;
 /// Smallest size at which the split screen is used.
 const Size _splitScreenMinSize = Size(800, 500);
 
-/// How long the window size has to stay on one side of [_splitScreenMinSize] before
-/// switching in or out of split screen on desktop.
-///
-/// Some platforms briefly report a stale size, e.g. GTK on Wayland reports the default
-/// window size when a hidden window is shown again, before the compositor sends the
-/// real one. Switching immediately would reparent the main navigator back and forth and
-/// pop the player route from it.
-const Duration _splitScreenSwitchDelay = Duration(milliseconds: 150);
+final bool _isDesktop = Platform.isLinux || Platform.isWindows || Platform.isMacOS;
 
 Widget buildPlayerSplitScreenScaffold(BuildContext context, Widget? widget) {
-  Widget content = LayoutBuilder(
+  return LayoutBuilder(
     builder: (context, constraints) {
       // Only use split screen if wide enough to easily show both views and tall enough
       // that a landscape full-screen player is not preferred instead
@@ -53,30 +46,18 @@ Widget buildPlayerSplitScreenScaffold(BuildContext context, Widget? widget) {
           constraints.maxWidth >= _splitScreenMinSize.width && constraints.maxHeight >= _splitScreenMinSize.height;
       return DelayedFlag(
         value: bigEnough,
-        delay: isDesktopWindow ? _splitScreenSwitchDelay : Duration.zero,
+        waitForNextFrame: _isDesktop,
         builder: (context, bigEnough) {
           if (!bigEnough) {
             _inSplitScreen = false;
             splitScreenAvailable.value = false;
             return widget!;
           }
-          // While a switch out of split screen is pending, the window may already be
-          // smaller than the split screen supports. Keep laying it out at the minimum
-          // split screen size (clipped) until the switch happens.
-          return MinimumLayoutSize(
-            minSize: _splitScreenMinSize,
-            child: LayoutBuilder(builder: (context, constraints) => _buildSplitScreen(context, constraints, widget)),
-          );
+          return _buildSplitScreen(context, constraints, widget);
         },
       );
     },
   );
-  if (isDesktopWindow) {
-    // Window managers which ignore the minimum window size could otherwise make every
-    // widget overflow.
-    content = MinimumLayoutSize(minSize: kMinimumWindowSize, child: content);
-  }
-  return content;
 }
 
 Widget _buildSplitScreen(BuildContext context, BoxConstraints constraints, Widget? widget) {
@@ -188,16 +169,15 @@ Widget _buildSplitScreen(BuildContext context, BoxConstraints constraints, Widge
   );
 }
 
-/// Builds with a copy of [value] that only follows changes once they have persisted for [delay].
-///
-/// If [value] returns to the currently used value before [delay] has passed, the pending
-/// change is discarded. A zero [delay] applies changes immediately.
+/// Builds with [value], but when [waitForNextFrame] is true, delays updating by one frame
+/// to discard transient single-frame size changes (such as when GTK remaps a surface
+/// on Wayland before the compositor sends the actual configure event).
 @visibleForTesting
 class DelayedFlag extends StatefulWidget {
-  const DelayedFlag({super.key, required this.value, required this.delay, required this.builder});
+  const DelayedFlag({super.key, required this.value, this.waitForNextFrame = false, required this.builder});
 
   final bool value;
-  final Duration delay;
+  final bool waitForNextFrame;
   final Widget Function(BuildContext context, bool value) builder;
 
   @override
@@ -206,34 +186,26 @@ class DelayedFlag extends StatefulWidget {
 
 class _DelayedFlagState extends State<DelayedFlag> {
   late bool _value = widget.value;
-  Timer? _pending;
+  bool _frameCallbackScheduled = false;
 
   @override
   void didUpdateWidget(covariant DelayedFlag oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.value == _value) {
-      _pending?.cancel();
-      _pending = null;
-    } else if (widget.delay == Duration.zero) {
-      _pending?.cancel();
-      _pending = null;
+      _frameCallbackScheduled = false;
+    } else if (!widget.waitForNextFrame) {
+      _frameCallbackScheduled = false;
       _value = widget.value;
-    } else {
-      // Don't restart a pending timer, so continuously resizing across the threshold
-      // still switches after [delay].
-      _pending ??= Timer(widget.delay, () {
-        _pending = null;
-        if (mounted && widget.value != _value) {
+    } else if (!_frameCallbackScheduled) {
+      _frameCallbackScheduled = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _frameCallbackScheduled = false;
+        if (widget.value != _value) {
           setState(() => _value = widget.value);
         }
       });
     }
-  }
-
-  @override
-  void dispose() {
-    _pending?.cancel();
-    super.dispose();
   }
 
   @override
