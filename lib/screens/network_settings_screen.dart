@@ -56,7 +56,7 @@ class _NetworkSettingsScreenState extends State<NetworkSettingsScreen> {
                   // Ensure any pending edits in the local network address field are committed first
                   final widgetState = localNetworkAddressKey.currentState;
                   if (widgetState != null) {
-                    await widgetState.commitIfChanged();
+                    widgetState.commitIfChanged();
                   }
                   final [public, private] = await Future.wait([
                     GetIt.instance<JellyfinApiHelper>().pingPublicServer(),

@@ -58,6 +58,7 @@ import 'package:finamp/services/playon_service.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/remote_session_service.dart';
 import 'package:finamp/services/theme_provider.dart';
+import 'package:finamp/services/tray_service.dart';
 import 'package:finamp/services/ui_overlay_setter_observer.dart';
 import 'package:finamp/services/widget_bindings_observer_provider.dart';
 import 'package:flutter/foundation.dart';
@@ -171,11 +172,13 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
     _mainLog.info("Setup audio player");
     await _setupKeepScreenOnHelper();
     _mainLog.info("Setup KeepScreenOnHelper");
+    _setupTrayService(args);
+    _mainLog.info("Setup tray service");
     await _setupDiscordRpc();
     _mainLog.info("Setup Discord RPC");
   } catch (error, trace) {
+    Logger("ErrorApp").severe(error, null, trace);
     if (!integrationTesting) {
-      Logger("ErrorApp").severe(error, null, trace);
       runApp(FinampErrorApp(error: error, trace: trace));
       return;
     } else {
@@ -303,6 +306,13 @@ Future<void> _setupKeepScreenOnHelper() async {
   GetIt.instance.registerSingleton(KeepScreenOnHelper());
 }
 
+void _setupTrayService(List<String> commandLineArgs) {
+  if (!TrayService.isSupported) return;
+  final trayService = TrayService(startedHidden: TrayService.shouldStartHidden(commandLineArgs));
+  GetIt.instance.registerSingleton(trayService);
+  trayService.init();
+}
+
 Future<void> setupHive() async {
   final dir = (Platform.isAndroid || Platform.isIOS)
       ? await getApplicationDocumentsDirectory()
@@ -354,7 +364,7 @@ Future<void> _setupProviders() async {
   await initImageCache();
 
   DataSourceService.create();
-  AutoOffline.startWatching();
+  await startNetworkAutomation();
 
   unawaited(
     Stream<void>.periodic(Duration(seconds: 1)).forEach((_) {
@@ -391,6 +401,13 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
         });
         if (commandLineArgs.contains("--fullscreen")) {
           await windowManager.setFullScreen(true);
+        }
+        if (TrayService.shouldStartHidden(commandLineArgs)) {
+          // Start in the system tray. Both native runners show the window on their own (Linux right away,
+          // Windows on the first frame), so wait for that to have happened and then hide it.
+          await WidgetsBinding.instance.waitUntilFirstFrameRasterized;
+          await windowManager.hide();
+          return;
         }
         await windowManager.show();
         await windowManager.focus();
@@ -939,6 +956,11 @@ class _FinampState extends State<Finamp> with WindowListener {
   @override
   void onWindowClose() async {
     if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+      return;
+    }
+
+    // Close was intercepted to hide the window to the tray (see TrayService), keep playing.
+    if (await windowManager.isPreventClose()) {
       return;
     }
 

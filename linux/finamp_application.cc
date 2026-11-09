@@ -21,7 +21,9 @@ static void finamp_application_activate(GApplication* application) {
   // handle link handling
   GList* windows = gtk_application_get_windows(GTK_APPLICATION(application));
   if (windows) {
-      // If there is already a window, we just present it and do not create a new one
+      // If there is already a window, we just present it and do not create a new one.
+      // Also call gtk_widget_show in case the window was hidden to the system tray.
+    gtk_widget_show(GTK_WIDGET(windows->data));
     gtk_window_present(GTK_WINDOW(windows->data));
     return;
   }
