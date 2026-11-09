@@ -203,6 +203,15 @@ Future<void> expectJump(WidgetTester tester, AlphabetList alphabet, String lette
   expect(rect.bottom, lessThan(500));
 }
 
+Future<void> expectFallback(WidgetTester tester, AlphabetList alphabet, String letter, Track target) async {
+  alphabet.callback(letter);
+  await tester.pumpAndSettle();
+  expect(tester.takeException(), isNull);
+  final tile = find.byWidgetPredicate((widget) => widget is TrackListTile && widget.item.id == target.item.id);
+  expect(tile, findsOneWidget);
+  expect(tester.getRect(tile).center.dy, inInclusiveRange(150, 350));
+}
+
 List<Track> mixedTracks({int groupSize = 12, bool descending = false, bool accented = false}) {
   final names = [
     '01 Numbers',
@@ -233,35 +242,169 @@ List<Track> mixedTracks({int groupSize = 12, bool descending = false, bool accen
 }
 
 void main() {
-  testWidgets('offline jump finds lowercase B after uppercase titles in actual sort order', (tester) async {
+  // Offline raw sorting can group uppercase names before lowercase names.
+  // Jellyfin's online Name sort can also interleave case and accents.
+  for (final offline in [false, true]) {
+    testWidgets('missing uppercase B stops at A before C (offline: $offline)', (tester) async {
+      final rows = [
+        for (final letter in ['A', 'C', 'Z', 'a', 'b', 'z'])
+          for (var i = 0; i < 12; i++)
+            Track.fromItem(
+              BaseItemDto(
+                id: BaseItemId('$letter-$i'),
+                type: 'Audio',
+                name: '$letter title $i',
+                userData: UserItemDataDto(playbackPositionTicks: 0, playCount: 0, isFavorite: false, played: false),
+                runTimeTicks: 40000000,
+              ),
+            ),
+      ];
+      final alphabet = await mount(tester, rows, offline: offline);
+      alphabet.callback('B');
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      final fallback = find.byWidgetPredicate(
+        (widget) => widget is TrackListTile && widget.item.id == rows[11].item.id,
+      );
+      expect(fallback, findsOneWidget);
+      expect(tester.getRect(fallback).center.dy, inInclusiveRange(150, 350));
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+    });
+  }
+  for (final offline in [false, true]) {
+    testWidgets('uppercase B wins over a later lowercase b (offline: $offline)', (tester) async {
+      final rows = [
+        for (final letter in ['A', 'B', 'C', 'Z', 'a', 'b', 'z'])
+          for (var i = 0; i < 12; i++)
+            Track.fromItem(
+              BaseItemDto(
+                id: BaseItemId('present-$letter-$i'),
+                type: 'Audio',
+                name: '$letter title $i',
+                userData: UserItemDataDto(playbackPositionTicks: 0, playCount: 0, isFavorite: false, played: false),
+                runTimeTicks: 40000000,
+              ),
+            ),
+      ];
+      final alphabet = await mount(tester, rows, offline: offline);
+      await expectJump(tester, alphabet, 'B', rows[12]);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+    });
+  }
+  for (final hasUppercaseB in [false, true]) {
+    testWidgets('online Jellyfin Name ordering skips accents and lowercase before B (uppercase B: $hasUppercaseB)', (
+      tester,
+    ) async {
+      final names = [
+        'Ä Accent',
+        for (var i = 0; i < 12; i++) 'a lower $i',
+        for (var i = 0; i < 12; i++) 'A upper $i',
+        for (var i = 0; i < 12; i++) 'b lower $i',
+        if (hasUppercaseB)
+          for (var i = 0; i < 12; i++) 'B upper $i',
+        for (var i = 0; i < 12; i++) 'C upper $i',
+      ];
+      final rows = [
+        for (var i = 0; i < names.length; i++)
+          Track.fromItem(
+            BaseItemDto(
+              id: BaseItemId('server-name-$i'),
+              type: 'Audio',
+              name: names[i],
+              userData: UserItemDataDto(playbackPositionTicks: 0, playCount: 0, isFavorite: false, played: false),
+              runTimeTicks: 40000000,
+            ),
+          ),
+      ];
+      final alphabet = await mount(tester, rows);
+      if (hasUppercaseB) {
+        await expectJump(tester, alphabet, 'B', rows[37]);
+      } else {
+        await expectFallback(tester, alphabet, 'B', rows[24]);
+      }
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+    });
+  }
+  for (final offline in [false, true]) {
+    testWidgets('lowercase-only library falls back before b without stalling (offline: $offline)', (tester) async {
+      final names = [
+        for (final c in ['a', 'b', 'c'])
+          for (var i = 0; i < 12; i++) '$c title $i',
+      ];
+      final rows = [
+        for (var i = 0; i < names.length; i++)
+          Track.fromItem(
+            BaseItemDto(
+              id: BaseItemId('lowercase-$i'),
+              type: 'Audio',
+              name: names[i],
+              userData: UserItemDataDto(playbackPositionTicks: 0, playCount: 0, isFavorite: false, played: false),
+              runTimeTicks: 40000000,
+            ),
+          ),
+      ];
+      final alphabet = await mount(tester, rows, offline: offline);
+      await expectFallback(tester, alphabet, 'B', rows[11]);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+    });
+  }
+  for (final offline in [false, true]) {
+    testWidgets('lowercase-only descending falls back after c (offline: $offline)', (tester) async {
+      final names = [
+        for (final c in ['c', 'b', 'a'])
+          for (var i = 0; i < 12; i++) '$c title $i',
+      ];
+      final rows = [
+        for (var i = 0; i < names.length; i++)
+          Track.fromItem(
+            BaseItemDto(
+              id: BaseItemId('lowercase-desc-$i'),
+              type: 'Audio',
+              name: names[i],
+              userData: UserItemDataDto(playbackPositionTicks: 0, playCount: 0, isFavorite: false, played: false),
+              runTimeTicks: 40000000,
+            ),
+          ),
+      ];
+      final alphabet = await mount(tester, rows, offline: offline, descending: true);
+      await expectFallback(tester, alphabet, 'B', rows[11]);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+    });
+  }
+  testWidgets('offline missing uppercase B falls back before lowercase b', (tester) async {
     final rows = mixedTracks();
     expect(rows[13].item.name, 'Z Title 01');
     expect(rows[25].item.name, 'b Title 01');
     final alphabet = await mount(tester, rows, offline: true);
-    await expectJump(tester, alphabet, 'B', rows[25]);
+    await expectFallback(tester, alphabet, 'B', rows[12]);
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
   });
-  testWidgets('offline jump finds accented names after uppercase Z titles', (tester) async {
+  testWidgets('offline accented titles do not change the uppercase E fallback', (tester) async {
     final rows = mixedTracks(accented: true);
     expect(rows[37].item.name, 'é Title 01');
     final alphabet = await mount(tester, rows, offline: true);
-    await expectJump(tester, alphabet, 'E', rows[37]);
+    await expectFallback(tester, alphabet, 'E', rows[12]);
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
   });
-  testWidgets('fully downloaded filter searches mixed-case tracks while online', (tester) async {
+  testWidgets('fully downloaded filter uses the uppercase position', (tester) async {
     final rows = mixedTracks();
     final alphabet = await mount(tester, rows, fullyDownloaded: true);
-    await expectJump(tester, alphabet, 'B', rows[25]);
+    await expectFallback(tester, alphabet, 'B', rows[12]);
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
   });
-  testWidgets('offline jump continues past an overshoot to find a later page', (tester) async {
-    final rows = mixedTracks(groupSize: 60);
-    final pager = LoadedRows(rows.take(100).toList(), nextRows: rows.skip(100).toList());
+  testWidgets('offline jump loads a later page containing the uppercase target', (tester) async {
+    final rows = tracks(targetIndex: 140);
+    final pager = LoadedRows(rows.take(120).toList(), nextRows: rows.skip(120).toList());
     final alphabet = await mount(tester, rows, offline: true, pager: pager);
-    await expectJump(tester, alphabet, 'B', rows[121]);
+    await expectJump(tester, alphabet, 'M', rows[140]);
     expect(pager.pageRequests, 1);
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
@@ -274,7 +417,7 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
   });
-  testWidgets('offline missing letter falls back after all pages are checked', (tester) async {
+  testWidgets('offline missing letter falls back to its uppercase position', (tester) async {
     final rows = mixedTracks(groupSize: 60);
     final pager = LoadedRows(rows.take(100).toList(), nextRows: rows.skip(100).toList());
     final alphabet = await mount(tester, rows, offline: true, pager: pager);
@@ -305,15 +448,15 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
   });
-  testWidgets('mixed-case and accented titles use the selected ASCII letter', (tester) async {
-    final rows = tracks(target: 'Écho');
+  testWidgets('online accented titles respect the original server ordering', (tester) async {
+    final rows = mixedTracks(accented: true);
     final alphabet = await mount(tester, rows);
-    await expectJump(tester, alphabet, 'E', rows[40]);
+    await expectFallback(tester, alphabet, 'E', rows[12]);
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
   });
   testWidgets('offline Tracks use the same letter comparison', (tester) async {
-    final rows = tracks(target: 'mIDNIGHT');
+    final rows = tracks(target: 'Midnight');
     final alphabet = await mount(tester, rows, offline: true);
     await expectJump(tester, alphabet, 'M', rows[40]);
     await tester.pumpWidget(const SizedBox());

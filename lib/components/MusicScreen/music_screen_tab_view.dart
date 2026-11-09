@@ -105,7 +105,11 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     if (letter.isEmpty) return;
 
     letterToSearch = letter;
-    var codePointToScrollTo = letter.toLowerCase().codeUnitAt(0);
+    final tabSortBy = widget.sortConfig.sortBy;
+    // Track name order can differ between Jellyfin versions and offline storage.
+    // Prefer the original uppercase initial without assuming one collation.
+    final rawTrackNames = widget.contentType == ContentType.tracks && tabSortBy == SortBy.sortName;
+    var codePointToScrollTo = (rawTrackNames ? letter.toUpperCase() : letter.toLowerCase()).codeUnitAt(0);
 
     if (letter == '#') {
       codePointToScrollTo = 0;
@@ -114,16 +118,20 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     //TODO use binary search to improve performance for already loaded pages
     final state = ref.read(pageControl);
     final itemList = state.items ?? [];
-    SortBy? tabSortBy = widget.sortConfig.sortBy;
-    bool reversed = widget.sortConfig.sortOrder == SortOrder.descending;
-    // Offline track names are sorted by their original spelling, but letter
-    // matching folds case and accents. A later page can still contain a match.
-    final scanOfflineTracks =
-        letter != '#' &&
-        widget.contentType == ContentType.tracks &&
-        tabSortBy == SortBy.sortName &&
-        (ref.read(finampSettingsProvider.isOffline) || widget.sortConfig.onlyShowFullyDownloadedFilter);
-    int? offlineFallbackIndex;
+    final bool reversed = widget.sortConfig.sortOrder == SortOrder.descending;
+    int? lastUppercaseIndex;
+    int? lastOtherIndex;
+
+    Future<void> scrollToFallback(int index) async {
+      timer?.cancel();
+      await controller.scrollToIndex(
+        index,
+        duration: _getAnimationDurationForOffsetToIndex(index),
+        preferPosition: AutoScrollPosition.middle,
+      );
+      letterToSearch = null;
+    }
+
     for (var i = 0; i < itemList.length; i++) {
       String sortName;
       switch (itemList[i]) {
@@ -149,9 +157,28 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
           // TODO: Handle this case.
           throw UnsupportedError("This shouldn't happen.");
       }
-      sortName = removeDiacritics(sortName).toLowerCase();
+      if (!rawTrackNames) sortName = removeDiacritics(sortName).toLowerCase();
       if (sortName.isEmpty) continue; // assume empty names are at the start
       int itemCodePoint = sortName.codeUnitAt(0);
+      if (rawTrackNames && letter != '#' && (itemCodePoint < 65 || itemCodePoint > 90)) {
+        // Jellyfin's Name sort can interleave lowercase and accented titles
+        // with uppercase titles. They must not stop an uppercase jump early.
+        final normalized = removeDiacritics(sortName).toUpperCase();
+        if (normalized.isNotEmpty) {
+          final otherComparison = normalized.codeUnitAt(0) - codePointToScrollTo;
+          if (reversed ? otherComparison < 0 : otherComparison > 0) {
+            // In raw descending order lowercase names can precede every
+            // uppercase name, so they cannot bound the search yet.
+            if (reversed && lastUppercaseIndex == null) continue;
+            await scrollToFallback(lastUppercaseIndex ?? lastOtherIndex ?? 0);
+            return;
+          }
+          if (reversed ? otherComparison > 0 : otherComparison < 0) {
+            lastOtherIndex = i;
+          }
+        }
+        continue;
+      }
       final comparisonResult = itemCodePoint - codePointToScrollTo;
       if (comparisonResult == 0) {
         timer?.cancel();
@@ -164,38 +191,23 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         letterToSearch = null;
         return;
       } else if (reversed ? comparisonResult < 0 : comparisonResult > 0) {
-        // A normalized comparison cannot prove that a later offline track
-        // won't match when the original names have a different ordering.
-        if (scanOfflineTracks) {
-          offlineFallbackIndex ??= (i - 1).clamp(0, itemList.length - 1);
-          continue;
-        }
         // If the letter is before the current item, there was no previous match (letter doesn't seem to exist in library)
         // scroll to the previous item instead
-        timer?.cancel();
-        await controller.scrollToIndex(
-          (i - 1).clamp(0, itemList.length - 1),
-          // duration: scrollDuration,
-          duration: _getAnimationDurationForOffsetToIndex(i),
-          preferPosition: AutoScrollPosition.middle,
-        );
-
-        letterToSearch = null;
+        final fallback = rawTrackNames && letter != '#'
+            ? lastUppercaseIndex ?? lastOtherIndex ?? (i - 1).clamp(0, itemList.length - 1)
+            : (i - 1).clamp(0, itemList.length - 1);
+        await scrollToFallback(fallback);
         return;
       }
+      if (rawTrackNames && letter != '#') lastUppercaseIndex = i;
     }
 
     timer?.cancel();
-    if (scanOfflineTracks && !state.hasNextPage && offlineFallbackIndex != null) {
-      await controller.scrollToIndex(
-        offlineFallbackIndex,
-        duration: _getAnimationDurationForOffsetToIndex(offlineFallbackIndex),
-        preferPosition: AutoScrollPosition.middle,
-      );
-      letterToSearch = null;
-      return;
-    }
     if (!state.hasNextPage) {
+      if (rawTrackNames && letter != '#' && itemList.isNotEmpty) {
+        await scrollToFallback(lastUppercaseIndex ?? lastOtherIndex ?? 0);
+        return;
+      }
       letterToSearch = null;
     } else {
       timer = Timer(const Duration(seconds: 8), () {
