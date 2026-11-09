@@ -39,8 +39,10 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 trackCount, favorite, downloaded, downloadLock?, kind, artists?}`.
 
 **Now playing:** `{hasTrack, id, title, artist, artworkKey, artworkUrl, blurHash, albumId, album, albumArtist,
-albumArtistId, artists, audio, duration, position, updatedAt, playing, favorite, upNext, theme}`; `upNext` holds the
-next two tracks' `{id, artworkKey, artworkUrl}` so the watch can load their covers ahead.
+albumArtistId, artists, audio, duration, position, updatedAt, playing, advancing, favorite, upNext, theme}`; `upNext`
+holds the next two tracks' `{id, artworkKey, artworkUrl}` so the watch can load their covers ahead. The watch counts
+`position` on from `updatedAt` only while `advancing` (playing and not loading or buffering), so its time stops with
+the phone's when a track can't load; `playing` still sets the play/pause button.
 
 ## Pushes (phone → watch)
 

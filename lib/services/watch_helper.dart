@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:audio_service/audio_service.dart' show AudioProcessingState;
 import 'package:audio_session/audio_session.dart';
 import 'package:chopper/chopper.dart' show Response;
 import 'package:collection/collection.dart';
@@ -327,7 +328,7 @@ class WatchHandler {
       );
       final expected =
           (last['position'] as double) +
-          ((last['playing'] as bool) ? (state['updatedAt'] as double) - (last['updatedAt'] as double) : 0);
+          ((last['advancing'] as bool) ? (state['updatedAt'] as double) - (last['updatedAt'] as double) : 0);
       if (unchanged && ((state['position'] as double) - expected).abs() < 2) return;
     }
     _lastPushed = state;
@@ -338,7 +339,8 @@ class WatchHandler {
     );
   }
 
-  /// `position` is seconds at `updatedAt` (Unix seconds); the watch extrapolates while playing.
+  /// `position` is seconds at `updatedAt` (Unix seconds); the watch extrapolates while `advancing`. `playing` stays true
+  /// while a track loads or buffers (the play button's state); `advancing` is false then, so the watch's time waits too.
   static Map<String, Object> _nowPlaying() {
     final current = GetIt.instance<QueueService>().getCurrentTrack();
     final playbackState = GetIt.instance<MusicPlayerBackgroundTask>().playbackState.value;
@@ -348,6 +350,7 @@ class WatchHandler {
       return {
         'hasTrack': false,
         'playing': false,
+        'advancing': false,
         'position': 0.0,
         'updatedAt': now.millisecondsSinceEpoch / 1000,
         'theme': _theme(),
@@ -356,10 +359,6 @@ class WatchHandler {
 
     _rememberSent(item);
     _watchFavorite(item);
-    final elapsed = playbackState.playing
-        ? now.difference(playbackState.updateTime).inMilliseconds / 1000 * playbackState.speed
-        : 0.0;
-    final position = playbackState.updatePosition.inMilliseconds / 1000 + elapsed;
     return {
       'hasTrack': true,
       'id': item.id.raw,
@@ -375,9 +374,11 @@ class WatchHandler {
       'artists': _artists(item.artistItems),
       'audio': _audioInfo(current),
       'duration': (current.item.duration ?? item.runTimeTicksDuration() ?? Duration.zero).inMilliseconds / 1000,
-      'position': position,
+      // Advances only while playing and ready, like Finamp's own progress bar.
+      'position': playbackState.position.inMilliseconds / 1000,
       'updatedAt': now.millisecondsSinceEpoch / 1000,
       'playing': playbackState.playing,
+      'advancing': playbackState.playing && playbackState.processingState == AudioProcessingState.ready,
       'favorite': GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item)),
       'upNext': _upNextCovers(),
       'theme': _theme(),

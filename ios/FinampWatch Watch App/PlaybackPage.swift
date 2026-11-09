@@ -1,7 +1,7 @@
 import SwiftUI
 import WatchKit
 
-/// Phone playback state; position is in seconds at updatedAt and advances locally while playing.
+/// Phone playback state; position is in seconds at updatedAt and advances locally while advancing.
 struct NowPlaying: Equatable {
     var hasTrack = false
     var id = ""
@@ -21,12 +21,14 @@ struct NowPlaying: Equatable {
     var position: Double = 0
     var updatedAt = Date()
     var playing = false
+    /// Playing and not loading or buffering: the phone's time is moving.
+    var advancing = false
     var favorite = false
     /// The next tracks' covers, loaded ahead while Playback is on screen.
     var upNext: [LibraryItem] = []
 
     func position(at date: Date) -> Double {
-        let elapsed = playing ? date.timeIntervalSince(updatedAt) : 0
+        let elapsed = advancing ? date.timeIntervalSince(updatedAt) : 0
         return min(max(position + elapsed, 0), duration)
     }
 }
@@ -60,6 +62,7 @@ final class NowPlayingStore {
             position: state["position"] as? Double ?? 0,
             updatedAt: Date(timeIntervalSince1970: state["updatedAt"] as? Double ?? Date().timeIntervalSince1970),
             playing: state["playing"] as? Bool ?? false,
+            advancing: state["advancing"] as? Bool ?? false,
             favorite: state["favorite"] as? Bool ?? false,
             upNext: (state["upNext"] as? [[String: Any]] ?? []).map { row in
                 LibraryItem(
@@ -369,6 +372,7 @@ struct PlaybackPage: View {
                     store.nowPlaying.position = nowPlaying.position(at: now)
                     store.nowPlaying.updatedAt = now
                     store.nowPlaying.playing.toggle()
+                    store.nowPlaying.advancing = store.nowPlaying.playing
                     Task {
                         do {
                             try await PhoneConnection.shared.control("playPause")
