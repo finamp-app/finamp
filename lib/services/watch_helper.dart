@@ -39,6 +39,7 @@ import 'music_screen_provider.dart';
 import 'output_route_provider.dart';
 import 'queue_service.dart';
 import 'quick_actions_service.dart';
+import 'radio_service_helper.dart' show currentRadioAvailabilityStatusProvider, toggleRadio;
 import 'widget_bindings_observer_provider.dart';
 
 final _logger = Logger('WatchHandler');
@@ -239,6 +240,10 @@ class WatchHandler {
       GetIt.instance<MusicPlayerBackgroundTask>().playbackState.listen((_) => _scheduleNowPlayingPush()).cancel,
       // Metadata arrives after the track; this also keeps the provider alive.
       container.listen(currentTrackMetadataProvider, (_, _) => _scheduleNowPlayingPush()).close,
+      GetIt.instance<QueueService>().getLoopModeStream().listen((_) => _scheduleNowPlayingPush()).cancel,
+      GetIt.instance<QueueService>().getPlaybackOrderStream().listen((_) => _scheduleNowPlayingPush()).cancel,
+      container.listen(finampSettingsProvider.radioEnabled, (_, _) => _scheduleNowPlayingPush()).close,
+      container.listen(currentRadioAvailabilityStatusProvider, (_, _) => _scheduleNowPlayingPush()).close,
       container.listen(brightnessProvider, (_, _) {
         _pushIfChanged('theme', _theme());
         _pushIfChanged('accent', _accent());
@@ -359,6 +364,7 @@ class WatchHandler {
 
     _rememberSent(item);
     _watchFavorite(item);
+    final queueService = GetIt.instance<QueueService>();
     return {
       'hasTrack': true,
       'id': item.id.raw,
@@ -379,6 +385,11 @@ class WatchHandler {
       'updatedAt': now.millisecondsSinceEpoch / 1000,
       'playing': playbackState.playing,
       'advancing': playbackState.playing && playbackState.processingState == AudioProcessingState.ready,
+      'loop': queueService.loopMode.name,
+      'shuffled': queueService.playbackOrder == FinampPlaybackOrder.shuffled,
+      'radio': FinampSettingsHelper.finampSettings.radioEnabled,
+      // Finamp's queue shows the radio button in the accent colour only when radio can run for this queue.
+      'radioAvailable': GetIt.instance<ProviderContainer>().read(currentRadioAvailabilityStatusProvider).isAvailable,
       'favorite': GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item)),
       'upNext': _upNextCovers(),
       'theme': _theme(),
@@ -450,6 +461,13 @@ class WatchHandler {
         await audioHandler.skipToNext();
       case 'previous':
         await audioHandler.skipToPrevious();
+      // Like the buttons in Finamp's queue: looping waits while radio is on.
+      case 'toggleLoop':
+        if (!FinampSettingsHelper.finampSettings.radioEnabled) GetIt.instance<QueueService>().toggleLoopMode();
+      case 'togglePlaybackOrder':
+        await GetIt.instance<QueueService>().togglePlaybackOrder();
+      case 'toggleRadio':
+        toggleRadio();
     }
   }
 

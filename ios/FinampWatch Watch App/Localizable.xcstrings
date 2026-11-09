@@ -112,6 +112,9 @@
     "Finamp volume %lld%% · turn the crown" : {
 
     },
+    "In\nOrder" : {
+
+    },
     "Light" : {
 
     },
@@ -121,10 +124,22 @@
     "Log in to your server in Finamp on your iPhone." : {
 
     },
+    "Loop\nAll" : {
+
+    },
+    "Loop\nOne" : {
+
+    },
     "Newly Added Albums" : {
 
     },
     "Next" : {
+
+    },
+    "No\nLoop" : {
+
+    },
+    "No\nRadio" : {
 
     },
     "No albums" : {
@@ -145,6 +160,9 @@
     "No tracks" : {
 
     },
+    "Not available while radio is on" : {
+
+    },
     "Nothing downloaded on your iPhone" : {
 
     },
@@ -155,6 +173,9 @@
 
     },
     "Nothing up next" : {
+
+    },
+    "Now Playing" : {
 
     },
     "OK" : {
@@ -199,6 +220,9 @@
     "Queue" : {
 
     },
+    "Radio" : {
+
+    },
     "Recently Played" : {
 
     },
@@ -224,6 +248,9 @@
 
     },
     "Shuffle all" : {
+
+    },
+    "Shuffled" : {
 
     },
     "Theme" : {

@@ -22,7 +22,7 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 | `downloadState` | `id` | `{downloaded, downloadLock?}` |
 | `download` | `id`, `transcode?`, `locationId?`, `confirmed?` | `{status: downloading \| alreadyDownloaded}` or `{ask: transcode \| location \| confirm, …}` |
 | `favorite` | `id`, `favorite` | the resulting state (bool), or an error while offline |
-| `control` | `action`: `playPause`, `next`, `previous`, or `skipTo` + `id` | `true` |
+| `control` | `action`: `playPause`, `next`, `previous`, `toggleLoop`, `togglePlaybackOrder`, `toggleRadio`, or `skipTo` + `id` | `true` |
 | `nowPlaying` | — | the now-playing dict (below) |
 | `queue` | — | up to 30 upcoming rows |
 | `shuffleAll` | — | `true` |
@@ -39,10 +39,13 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 trackCount, favorite, downloaded, downloadLock?, kind, artists?}`.
 
 **Now playing:** `{hasTrack, id, title, artist, artworkKey, artworkUrl, blurHash, albumId, album, albumArtist,
-albumArtistId, artists, audio, duration, position, updatedAt, playing, advancing, favorite, upNext, theme}`; `upNext`
+albumArtistId, artists, audio, duration, position, updatedAt, playing, advancing, loop, shuffled, radio, radioAvailable,
+favorite, upNext, theme}`; `upNext`
 holds the next two tracks' `{id, artworkKey, artworkUrl}` so the watch can load their covers ahead. The watch counts
 `position` on from `updatedAt` only while `advancing` (playing and not loading or buffering), so its time stops with
-the phone's when a track can't load; `playing` still sets the play/pause button.
+the phone's when a track can't load; `playing` still sets the play/pause button. `loop` (`none` \| `one` \| `all`),
+`shuffled`, `radio` and `radioAvailable` (radio is on and can run for this queue) drive the queue's buttons; the
+`toggle…` actions cycle them as Finamp's queue does, and `toggleLoop` does nothing while radio is on.
 
 ## Pushes (phone → watch)
 

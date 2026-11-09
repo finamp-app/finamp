@@ -118,6 +118,12 @@ struct FinampIcon: View {
         "heart.circle": "tabler-heart-question",
         "clock.arrow.circlepath": "tabler-restore",
         "sparkles": "tabler-radio",
+        "repeat": "tabler-repeat",
+        "repeat.1": "tabler-repeat-once",
+        "repeat.off": "tabler-repeat-off",
+        "arrow.right": "tabler-arrows-right",
+        "radio": "tabler-radio",
+        "radio.off": "tabler-radio-off",
     ]
 
     var body: some View {

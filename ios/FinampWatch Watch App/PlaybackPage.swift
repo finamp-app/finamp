@@ -23,6 +23,13 @@ struct NowPlaying: Equatable {
     var playing = false
     /// Playing and not loading or buffering: the phone's time is moving.
     var advancing = false
+    /// Finamp's loop mode: "none", "one" or "all".
+    var loop = "none"
+    var shuffled = false
+    /// Radio replaces looping while it is on.
+    var radio = false
+    /// Radio is on and can run for this queue.
+    var radioAvailable = false
     var favorite = false
     /// The next tracks' covers, loaded ahead while Playback is on screen.
     var upNext: [LibraryItem] = []
@@ -63,6 +70,10 @@ final class NowPlayingStore {
             updatedAt: Date(timeIntervalSince1970: state["updatedAt"] as? Double ?? Date().timeIntervalSince1970),
             playing: state["playing"] as? Bool ?? false,
             advancing: state["advancing"] as? Bool ?? false,
+            loop: state["loop"] as? String ?? "none",
+            shuffled: state["shuffled"] as? Bool ?? false,
+            radio: state["radio"] as? Bool ?? false,
+            radioAvailable: state["radioAvailable"] as? Bool ?? false,
             favorite: state["favorite"] as? Bool ?? false,
             upNext: (state["upNext"] as? [[String: Any]] ?? []).map { row in
                 LibraryItem(
@@ -138,7 +149,10 @@ struct PlaybackPage: View {
                 .presentationBackground(Color.appBackground)
         }
         .sheet(isPresented: $showQueue) {
-            QueueView()
+            QueueView(onOpenArtist: { artist in
+                showQueue = false
+                path = LibraryPath.opening(.artistAlbums(artist), in: path)
+            })
                 .presentationBackground(Color.appBackground)
         }
     }
@@ -463,25 +477,34 @@ struct PlaybackPage: View {
 
 }
 
-/// Upcoming tracks, with tap-to-skip.
+/// The current track, Finamp's order, loop and radio buttons, and the upcoming tracks with tap-to-skip.
 struct QueueView: View {
+    /// Closes the sheet and opens the artist on Playback's stack.
+    let onOpenArtist: (LibraryItem) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var state: ListState = .loading
 
     var body: some View {
-        Group {
+        List {
+            // One row with its "Up Next" heading, so the first upcoming track shows below it on screen.
+            QueueHeader(onOrderChange: { await load() }, onOpenArtist: onOpenArtist)
+                .listRowBackground(Color.clear)
             switch state {
             case .loading:
-                ScrollView { SkeletonTrackRows(count: 5) }
+                SkeletonTrackRows(count: 5)
+                    .listRowBackground(Color.clear)
             case .failed(let message):
                 RetryView(message: message) { await load() }
+                    .listRowBackground(Color.clear)
             case .loaded(let tracks):
                 if tracks.isEmpty {
                     Text("Nothing up next")
                         .font(.footnote)
                         .foregroundStyle(Color.fgSecondary)
+                        .frame(maxWidth: .infinity)
+                        .listRowBackground(Color.clear)
                 } else {
-                    List(Array(tracks.enumerated()), id: \.offset) { index, track in
+                    ForEach(Array(tracks.enumerated()), id: \.offset) { _, track in
                         TrackRow(track: track, onTap: {
                             Task {
                                 try? await PhoneConnection.shared.skipTo(id: track.id)
@@ -494,7 +517,7 @@ struct QueueView: View {
                 }
             }
         }
-        .navigationTitle("Up Next")
+        .navigationTitle("Now Playing")
         .task { await load() }
     }
 
@@ -505,6 +528,142 @@ struct QueueView: View {
             state = .failed(error.localizedDescription)
         }
     }
+}
+
+/// The current track in the album header's layout, its own cover falling back to the album's, with the playback
+/// order, loop and radio buttons of Finamp's queue. Each tap moves to the next mode, as in Finamp; radio uses the mode
+/// chosen in Finamp.
+private struct QueueHeader: View {
+    /// Reloads the upcoming tracks, whose order the buttons change.
+    let onOrderChange: () async -> Void
+    let onOpenArtist: (LibraryItem) -> Void
+    private var store: NowPlayingStore { .shared }
+    private var nowPlaying: NowPlaying { store.nowPlaying }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            if nowPlaying.hasTrack {
+                HStack(alignment: .top, spacing: 8) {
+                    CoverView(
+                        item: LibraryItem(
+                            id: nowPlaying.id,
+                            name: nowPlaying.title,
+                            subtitle: "",
+                            artworkKey: nowPlaying.artworkKey,
+                            artworkURL: nowPlaying.artworkURL,
+                            blurHash: nowPlaying.blurHash
+                        ),
+                        placeholderSymbol: LibraryKind.tracks.placeholderSymbol
+                    )
+                    // Smaller than the album header's cover, leaving room for the labels.
+                    .containerRelativeFrame(.horizontal) { width, _ in width * 0.24 }
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(nowPlaying.title)
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(Color.fgPrimary)
+                            .lineLimit(3)
+                            // The list row otherwise keeps the title to one line on small watches.
+                            .fixedSize(horizontal: false, vertical: true)
+                        if !nowPlaying.artists.isEmpty {
+                            // As in the album header: a NavigationLink here would make the entire row tappable.
+                            Marquee {
+                                HStack(spacing: 8) {
+                                    ForEach(nowPlaying.artists) { artist in
+                                        ArtistLabel(artist: artist, color: .finampBlue)
+                                            .contentShape(Rectangle())
+                                            .onTapGesture { onOpenArtist(artist) }
+                                            .accessibilityAddTraits(.isButton)
+                                            .accessibilityLabel("Artist \(artist.name)")
+                                    }
+                                }
+                            }
+                        } else if !nowPlaying.artist.isEmpty {
+                            Text(nowPlaying.artist)
+                                .font(.footnote)
+                                .foregroundStyle(Color.finampBlue)
+                                .lineLimit(1)
+                        }
+                        if !nowPlaying.album.isEmpty {
+                            Text(nowPlaying.album)
+                                .font(.caption2)
+                                .foregroundStyle(Color.fgSecondary)
+                                .lineLimit(2)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            // Content-wide buttons with equal gaps; one word per line keeps every label the same size.
+            HStack(alignment: .top, spacing: 0) {
+                Spacer(minLength: 0)
+                LabeledIconButton(title: orderTitle, systemImage: orderIcon, tint: orderTint, titleLines: 2, fills: false) {
+                    await change(\.shuffled, to: !nowPlaying.shuffled, action: "togglePlaybackOrder")
+                    await onOrderChange()
+                }
+                Spacer(minLength: 0)
+                LabeledIconButton(title: loopTitle, systemImage: loopIcon, tint: loopTint, titleLines: 2, fills: false) {
+                    guard !nowPlaying.radio else { return }
+                    await change(\.loop, to: Self.nextLoop[nowPlaying.loop] ?? "all", action: "toggleLoop")
+                }
+                .accessibilityHint(nowPlaying.radio ? Text("Not available while radio is on") : Text(""))
+                Spacer(minLength: 0)
+                LabeledIconButton(
+                    title: nowPlaying.radio ? "Radio" : "No\nRadio",
+                    systemImage: nowPlaying.radio ? "radio" : "radio.off",
+                    tint: nowPlaying.radioAvailable ? .finampBlue : Color.fgPrimary.opacity(0.85),
+                    titleLines: 2,
+                    fills: false
+                ) {
+                    await change(\.radio, to: !nowPlaying.radio, action: "toggleRadio")
+                }
+                Spacer(minLength: 0)
+            }
+            SectionHeader(title: String(localized: "Up Next"))
+                .padding(.top, -6)
+        }
+    }
+
+    /// Finamp's cycle: all, one, none, then all again.
+    private static let nextLoop = ["all": "one", "one": "none", "none": "all"]
+
+    /// Shows the new mode at once; the phone's push confirms it, and a failed request restores the old one.
+    private func change<Value>(_ field: WritableKeyPath<NowPlaying, Value>, to value: Value, action: String) async {
+        let before = store.nowPlaying[keyPath: field]
+        store.nowPlaying[keyPath: field] = value
+        do {
+            try await PhoneConnection.shared.control(action)
+        } catch {
+            store.nowPlaying[keyPath: field] = before
+        }
+    }
+
+    private var loopTitle: LocalizedStringKey {
+        if nowPlaying.radio { return "No\nLoop" }
+        switch nowPlaying.loop {
+        case "all": return "Loop\nAll"
+        case "one": return "Loop\nOne"
+        default: return "No\nLoop"
+        }
+    }
+
+    private var loopIcon: String {
+        if nowPlaying.radio { return "repeat.off" }
+        switch nowPlaying.loop {
+        case "all": return "repeat"
+        case "one": return "repeat.1"
+        default: return "repeat.off"
+        }
+    }
+
+    /// Finamp's queue: the accent when on, the text colour when off, faded while radio is on.
+    private var loopTint: Color {
+        if nowPlaying.radio { return Color.fgPrimary.opacity(0.3) }
+        return nowPlaying.loop == "none" ? Color.fgPrimary.opacity(0.85) : .finampBlue
+    }
+
+    private var orderTitle: LocalizedStringKey { nowPlaying.shuffled ? "Shuffled" : "In\nOrder" }
+    private var orderIcon: String { nowPlaying.shuffled ? "shuffle" : "arrow.right" }
+    private var orderTint: Color { nowPlaying.shuffled ? .finampBlue : Color.fgPrimary.opacity(0.85) }
 }
 
 /// Phone output and crown volume controls; iOS requires output selection on the phone.
