@@ -8,7 +8,7 @@ import 'package:hive_ce/hive.dart';
 
 import 'support/artist_order_settings.dart';
 
-// Settings payload from before field 161 existed. IDs are the established Hive
+// Settings payload from before field 165 existed. IDs are the established Hive
 // schema; the reader under test is the actual generated production adapter.
 class PreArtistOrderSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
@@ -30,6 +30,10 @@ class PreArtistOrderSettingsAdapter extends TypeAdapter<FinampSettings> {
       147: obj.gridImageSize,
       150: obj.homeScreenImageSize,
       152: obj.deviceId,
+      161: obj.closeToTray,
+      162: obj.minimizeToTray,
+      163: obj.startMinimizedToTray,
+      164: obj.autoReloadQueueMaxDroppedTracksPercentage,
     };
     writer.writeByte(fields.length);
     for (final field in fields.entries) {
@@ -51,6 +55,10 @@ void main() {
     final original = artistOrderSettings()
       ..isOffline = true
       ..transcodeBitrate = 192000
+      ..closeToTray = true
+      ..minimizeToTray = true
+      ..startMinimizedToTray = true
+      ..autoReloadQueueMaxDroppedTracksPercentage = 42
       ..tabSortBy = {ContentType.tracks: SortBy.dateCreated}
       ..tabSortOrder = {ContentType.tracks: SortOrder.descending};
     await box.put('FinampSettings', original);
@@ -62,6 +70,10 @@ void main() {
     expect(restored.deviceId, original.deviceId);
     expect(restored.isOffline, isTrue);
     expect(restored.transcodeBitrate, 192000);
+    expect(restored.closeToTray, isTrue);
+    expect(restored.minimizeToTray, isTrue);
+    expect(restored.startMinimizedToTray, isTrue);
+    expect(restored.autoReloadQueueMaxDroppedTracksPercentage, 42);
     expect(restored.tabSortBy, original.tabSortBy);
     expect(restored.tabSortOrder, original.tabSortOrder);
     expect(restored.gridImageSize, original.gridImageSize);
@@ -70,11 +82,21 @@ void main() {
 
   for (final order in TrackArtistOrder.values) {
     test('$order survives closing and reopening settings', () async {
+      final settings = FinampSettingsHelper.finampSettings
+        ..closeToTray = true
+        ..minimizeToTray = true
+        ..startMinimizedToTray = true
+        ..autoReloadQueueMaxDroppedTracksPercentage = 42;
       FinampSetters.setTrackArtistOrder(order);
       await Hive.box<FinampSettings>('FinampSettings').close();
       final box = await Hive.openBox<FinampSettings>('FinampSettings');
       expect(box.get('FinampSettings')!.trackArtistOrder, order);
       expect(box.get('FinampSettings')!.deviceId, 'artist-order-test-device');
+      final restored = box.get('FinampSettings')!;
+      expect(restored.closeToTray, settings.closeToTray);
+      expect(restored.minimizeToTray, settings.minimizeToTray);
+      expect(restored.startMinimizedToTray, settings.startMinimizedToTray);
+      expect(restored.autoReloadQueueMaxDroppedTracksPercentage, settings.autoReloadQueueMaxDroppedTracksPercentage);
     });
   }
 

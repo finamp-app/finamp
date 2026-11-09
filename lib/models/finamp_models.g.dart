@@ -306,6 +306,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? Duration.zero
             : fields[87] as Duration,
         autoReloadQueue: fields[97] == null ? false : fields[97] as bool,
+        autoReloadQueueMaxDroppedTracksPercentage: fields[164] == null
+            ? 30
+            : (fields[164] as num).toInt(),
         screenSize: fields[100] as ScreenSize?,
         genreCuratedItemSelectionTypeTracks: fields[101] == null
             ? CuratedItemSelectionType.mostPlayed
@@ -463,9 +466,12 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
                 ContentType.genres: ContentViewType.list,
               }
             : (fields[160] as Map).cast<ContentType, ContentViewType>(),
-        trackArtistOrder: fields[161] == null
+        closeToTray: fields[161] == null ? false : fields[161] as bool,
+        minimizeToTray: fields[162] == null ? false : fields[162] as bool,
+        startMinimizedToTray: fields[163] == null ? false : fields[163] as bool,
+        trackArtistOrder: fields[165] == null
             ? TrackArtistOrder.albumArtistsFirst
-            : fields[161] as TrackArtistOrder,
+            : fields[165] as TrackArtistOrder,
       )
       ..sortBy = fields[7] as SortBy?
       ..sortOrder = fields[8] as SortOrder?
@@ -489,7 +495,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(150)
+      ..writeByte(154)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -789,6 +795,14 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(160)
       ..write(obj.perTabContentViewType)
       ..writeByte(161)
+      ..write(obj.closeToTray)
+      ..writeByte(162)
+      ..write(obj.minimizeToTray)
+      ..writeByte(163)
+      ..write(obj.startMinimizedToTray)
+      ..writeByte(164)
+      ..write(obj.autoReloadQueueMaxDroppedTracksPercentage)
+      ..writeByte(165)
       ..write(obj.trackArtistOrder);
   }
 

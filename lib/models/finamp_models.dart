@@ -243,6 +243,7 @@ class DefaultSettings {
   static const preferLocalNetwork = false;
   static const localNetworkAddress = "http://0.0.0.0:8096";
   static const autoReloadQueue = false;
+  static const autoReloadQueueMaxDroppedTracksPercentage = 30;
   static const genreCuratedItemSelectionTypeTracks = CuratedItemSelectionType.mostPlayed;
   static const genreCuratedItemSelectionTypeAlbums = CuratedItemSelectionType.latestReleases;
   static const genreCuratedItemSelectionTypeArtists = CuratedItemSelectionType.favorites;
@@ -319,6 +320,9 @@ class DefaultSettings {
   static const useAndroidGainEffect = true;
   static const ClientCertificate? clientCertificate = null;
   static const showQuickActionsBanner = true;
+  static const closeToTray = false;
+  static const minimizeToTray = false;
+  static const startMinimizedToTray = false;
 }
 
 @HiveType(typeId: 28)
@@ -418,6 +422,7 @@ class FinampSettings {
     this.audioFadeOutDuration = DefaultSettings.audioFadeOutDuration,
     this.audioFadeInDuration = DefaultSettings.audioFadeInDuration,
     this.autoReloadQueue = DefaultSettings.autoReloadQueue,
+    this.autoReloadQueueMaxDroppedTracksPercentage = DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage,
     this.screenSize,
     this.genreCuratedItemSelectionTypeTracks = DefaultSettings.genreCuratedItemSelectionTypeTracks,
     this.genreCuratedItemSelectionTypeAlbums = DefaultSettings.genreCuratedItemSelectionTypeAlbums,
@@ -467,6 +472,9 @@ class FinampSettings {
     this.clientCertificate = DefaultSettings.clientCertificate,
     this.showQuickActionsBanner = DefaultSettings.showQuickActionsBanner,
     this.perTabContentViewType = DefaultSettings.perTabContentViewType,
+    this.closeToTray = DefaultSettings.closeToTray,
+    this.minimizeToTray = DefaultSettings.minimizeToTray,
+    this.startMinimizedToTray = DefaultSettings.startMinimizedToTray,
     this.trackArtistOrder = DefaultSettings.trackArtistOrder,
   });
 
@@ -972,7 +980,22 @@ class FinampSettings {
   @SettingsHelperMap("tabContentType")
   Map<ContentType, ContentViewType> perTabContentViewType;
 
-  @HiveField(161, defaultValue: DefaultSettings.trackArtistOrder)
+  /// Desktop only: hide the window to the system tray instead of quitting when it is closed.
+  @HiveField(161, defaultValue: DefaultSettings.closeToTray)
+  bool closeToTray;
+
+  /// Desktop only: hide the window to the system tray when it is minimized.
+  @HiveField(162, defaultValue: DefaultSettings.minimizeToTray)
+  bool minimizeToTray;
+
+  /// Desktop only: start with the window hidden in the system tray.
+  @HiveField(163, defaultValue: DefaultSettings.startMinimizedToTray)
+  bool startMinimizedToTray;
+
+  @HiveField(164, defaultValue: DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage)
+  int autoReloadQueueMaxDroppedTracksPercentage;
+
+  @HiveField(165, defaultValue: DefaultSettings.trackArtistOrder)
   TrackArtistOrder trackArtistOrder;
 
   static Future<FinampSettings> create() async {

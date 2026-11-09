@@ -52,10 +52,24 @@ class $AssetsIconGen {
   List<AssetGenImage> get values => [iconCombined, iconSquareBgBlack, iconSquareBgWhite, iconWhiteNoborder];
 }
 
+class $AssetsTrayGen {
+  const $AssetsTrayGen();
+
+  /// File path: assets/tray/tray_icon.ico
+  String get trayIconIco => 'assets/tray/tray_icon.ico';
+
+  /// File path: assets/tray/tray_icon.png
+  AssetGenImage get trayIconPng => const AssetGenImage('assets/tray/tray_icon.png');
+
+  /// List of all assets
+  List<dynamic> get values => [trayIconIco, trayIconPng];
+}
+
 class Assets {
   const Assets._();
 
   static const $AssetsIconGen icon = $AssetsIconGen();
+  static const $AssetsTrayGen tray = $AssetsTrayGen();
   static const $ImagesGen images = $ImagesGen();
 }
 

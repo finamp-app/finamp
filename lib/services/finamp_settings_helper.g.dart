@@ -1317,6 +1317,41 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setCloseToTray(bool newCloseToTray) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.closeToTray = newCloseToTray;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setMinimizeToTray(bool newMinimizeToTray) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.minimizeToTray = newMinimizeToTray;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setStartMinimizedToTray(bool newStartMinimizedToTray) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.startMinimizedToTray = newStartMinimizedToTray;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setAutoReloadQueueMaxDroppedTracksPercentage(
+    int newAutoReloadQueueMaxDroppedTracksPercentage,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.autoReloadQueueMaxDroppedTracksPercentage =
+        newAutoReloadQueueMaxDroppedTracksPercentage;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setTrackArtistOrder(TrackArtistOrder newTrackArtistOrder) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.trackArtistOrder = newTrackArtistOrder;
@@ -1771,6 +1806,17 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ) => finampSettingsProvider.select(
     (value) => value.requireValue.perTabContentViewType[tabContentType],
   );
+  ProviderListenable<bool> get closeToTray =>
+      finampSettingsProvider.select((value) => value.requireValue.closeToTray);
+  ProviderListenable<bool> get minimizeToTray => finampSettingsProvider.select(
+    (value) => value.requireValue.minimizeToTray,
+  );
+  ProviderListenable<bool> get startMinimizedToTray => finampSettingsProvider
+      .select((value) => value.requireValue.startMinimizedToTray);
+  ProviderListenable<int> get autoReloadQueueMaxDroppedTracksPercentage =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.autoReloadQueueMaxDroppedTracksPercentage,
+      );
   ProviderListenable<TrackArtistOrder> get trackArtistOrder =>
       finampSettingsProvider.select(
         (value) => value.requireValue.trackArtistOrder,
