@@ -3784,5 +3784,87 @@
     "downloadDialogTranscodedIntoSemanticLabel": "Transkode menjadi",
     "@downloadDialogTranscodedIntoSemanticLabel": {
         "description": "Screen reader label for the arrow icon in the download dialog's transcode summary. It sits between the original value and the transcoded value, e.g. 'FLAC, transcoded into, OPUS'."
+    },
+    "noMusicLibrariesLogsCTA": "Jika anda yakin ini sebuah error, tolong bantu kami dengan membagikan log tersebut kepada kami:",
+    "@noMusicLibrariesLogsCTA": {
+        "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "Saat berpindah ke mode offline, hanya muat ulang jika tidak lebih dari persentase trek berikut dihapus. Anda tetap dapat memuat ulang secara manual.",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "Jumlah maksimal trek yang dapat dihapus: {percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "autoReloadPromptDroppedTracks": "Ini akan menghapus {removedPercentage}% dari antrean({amountUndownloadedTracks} trek).",
+    "@autoReloadPromptDroppedTracks": {
+        "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "removedPercentage": {
+                "type": "int"
+            }
+        }
+    },
+    "closeToTrayTitle": "Tutup ke baki sistem",
+    "@closeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray instead of quitting when it is closed"
+    },
+    "closeToTraySubtitle": "Biarkan Finamp berjalan di baki sistem ketika jendela ditutup. Gunakan \"Tutup\" dari baki sistem untuk keluar.",
+    "minimizeToTrayTitle": "Kecilkan ke baki sistem",
+    "@minimizeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray when it is minimized"
+    },
+    "minimizeToTraySubtitle": "Sembunyikan jendela ke baki sistem ketika dikecilkan.",
+    "minimizeToTrayWaylandNote": "Sembunyikan jendela ke baki sistem ketika dikecilkan. Tidak didukung dalam Wayland, dimana Wayland tidak memberikan input kepada aplikasi ketika jendela dikecilkan. Gunakan \"Tutup ke baki sistem\" sebagai gantinya.",
+    "@minimizeToTrayWaylandNote": {
+        "description": "Subtitle of the minimize to tray setting when running on a Linux Wayland session, where minimizing cannot be detected"
+    },
+    "startMinimizedToTrayTitle": "Mulai di baki sistem",
+    "@startMinimizedToTrayTitle": {
+        "description": "Desktop only. Title of the setting that starts Finamp with the window hidden in the system tray"
+    },
+    "startMinimizedToTraySubtitle": "Mulai Finamp dengan jendela tersembunyi dalam baki sistem. Anda juga dapat mengoper --minimized dalam command line.",
+    "trayShowWindow": "Tampilkan Finamp",
+    "@trayShowWindow": {
+        "description": "System tray menu entry that shows the main window"
+    },
+    "trayHideWindow": "Tutup jendela ke baki",
+    "@trayHideWindow": {
+        "description": "System tray menu entry that hides the main window to the tray"
+    },
+    "trayQuit": "Tutup Finamp",
+    "@trayQuit": {
+        "description": "System tray menu entry that fully quits the app"
+    },
+    "trayNothingPlaying": "Tidak ada yang diputar",
+    "@trayNothingPlaying": {
+        "description": "Disabled system tray menu entry shown in place of the current track when nothing is playing"
+    },
+    "trayTooltipPlaying": "{track} - Finamp",
+    "@trayTooltipPlaying": {
+        "description": "System tray icon tooltip shown while a track is loaded",
+        "placeholders": {
+            "track": {
+                "type": "String",
+                "example": "Rick Astley - Never Gonna Give You Up"
+            }
+        }
+    },
+    "noMusicLibrariesLogout": "Anda dapat keluar dan mencoba kembali.",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Batasan Otomatis Penghapusan pada Muat Ulang Antrian Trek",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
     }
 }
