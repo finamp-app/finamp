@@ -15,6 +15,23 @@ struct _FinampApplication {
 G_DEFINE_TYPE(FinampApplication, finamp_application, GTK_TYPE_APPLICATION);
 
 // Implements GApplication::activate.
+// When the window is unmapped (e.g. hidden to the system tray), update its
+// default size to the current allocated size. Otherwise, GTK falls back to
+// the initial 1280x720 default size when remapped, causing a window size reset
+// on floating window managers and a transient 1-frame 1280x720 size spike on
+// tiling Wayland compositors before xdg_toplevel configure events arrive.
+static void on_window_unmap(GtkWidget* widget, gpointer data) {
+  GtkWindow* window = GTK_WINDOW(widget);
+  if (!gtk_window_is_maximized(window)) {
+    gint width = 0;
+    gint height = 0;
+    gtk_window_get_size(window, &width, &height);
+    if (width > 0 && height > 0) {
+      gtk_window_set_default_size(window, width, height);
+    }
+  }
+}
+
 static void finamp_application_activate(GApplication* application) {
   FinampApplication* self = FINAMP_APPLICATION(application);
 
@@ -58,6 +75,7 @@ static void finamp_application_activate(GApplication* application) {
   }
 
   gtk_window_set_default_size(window, 1280, 720);
+  g_signal_connect(window, "unmap", G_CALLBACK(on_window_unmap), nullptr);
   gtk_widget_show(GTK_WIDGET(window));
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
