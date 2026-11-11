@@ -183,14 +183,17 @@ class WatchHandler {
           case 'artworks':
             return await _artworks(arguments);
           default:
-            throw MissingPluginException("Unknown watch method: ${call.method}");
+            // Not MissingPluginException: iOS reports that as "Finamp is still starting"
+            throw PlatformException(code: "unsupported", message: "Update Finamp on your iPhone");
         }
       } catch (error) {
         // One plain message for the watch, never the raw exception (which names the server and the user)
         if (_isNetworkError(error)) {
           throw PlatformException(code: "server", message: "Can't reach your Jellyfin server");
         }
-        rethrow;
+        if (error is PlatformException) rethrow;
+        _logger.warning("Watch request ${call.method} failed: $error");
+        throw PlatformException(code: "error", message: "Finamp couldn't do that on your iPhone");
       }
     });
 
@@ -468,6 +471,8 @@ class WatchHandler {
         await GetIt.instance<QueueService>().togglePlaybackOrder();
       case 'toggleRadio':
         toggleRadio();
+      default:
+        throw PlatformException(code: "unsupported", message: "Update Finamp on your iPhone");
     }
   }
 
@@ -642,7 +647,9 @@ class WatchHandler {
   static Future<void> _runQuickAction(int index, String? name) async {
     final actions = FinampSettingsHelper.finampSettings.homeScreenConfiguration.actions;
     final context = GlobalSnackbar.rawMaterialAppNavigatorKey.currentContext;
-    if (index < 0 || index >= actions.length || !_watchQuickActions.contains(actions[index].action)) return;
+    if (index < 0 || index >= actions.length || !_watchQuickActions.contains(actions[index].action)) {
+      throw PlatformException(code: "changed", message: "Quick actions changed on your iPhone");
+    }
     // Reject a stale index if the phone's quick actions were reordered.
     if (name != null && actions[index].action.name != name) {
       throw PlatformException(code: "changed", message: "Quick actions changed on your iPhone");
@@ -1186,8 +1193,13 @@ class WatchHandler {
     Map<String, dynamic> arguments,
     QueueItemSource source,
   ) async {
+    if (tracks.isEmpty) throw PlatformException(code: "empty", message: "Nothing to play");
     final startId = arguments['startId'] as String?;
     final startingIndex = tracks.indexWhere((track) => track.id.raw == startId);
+    // Never start another track in its place (e.g. a favourite past the queue limit)
+    if (startId != null && startingIndex < 0) {
+      throw PlatformException(code: "changed", message: "Couldn't find that track on your iPhone");
+    }
     await GetIt.instance<QueueService>().startPlayback(
       items: tracks,
       source: source,

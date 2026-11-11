@@ -435,7 +435,13 @@ struct PlaybackPage: View {
 
     private func transportButton(_ image: String, label: LocalizedStringKey, action: String) -> some View {
         Button {
-            Task { try? await PhoneConnection.shared.control(action) }
+            Task {
+                do {
+                    try await PhoneConnection.shared.control(action)
+                } catch {
+                    PhoneMessage.shared.text = error.localizedDescription
+                }
+            }
         } label: {
             Image(image)
                 .resizable()
@@ -511,7 +517,11 @@ struct QueueView: View {
                     ForEach(Array(tracks.enumerated()), id: \.offset) { _, track in
                         TrackRow(track: track, onTap: {
                             Task {
-                                try? await PhoneConnection.shared.skipTo(id: track.id)
+                                do {
+                                    try await PhoneConnection.shared.skipTo(id: track.id)
+                                } catch {
+                                    PhoneMessage.shared.text = error.localizedDescription
+                                }
                                 dismiss()
                             }
                         })

@@ -65,7 +65,13 @@ struct SettingsView: View {
             presenting: reload
         ) { question in
             Button(question.button) {
-                Task { try? await PhoneConnection.shared.reloadQueue(archive: question.archive) }
+                Task {
+                    do {
+                        try await PhoneConnection.shared.reloadQueue(archive: question.archive)
+                    } catch {
+                        PhoneMessage.shared.text = error.localizedDescription
+                    }
+                }
             }
             Button("Cancel", role: .cancel) {}
         }

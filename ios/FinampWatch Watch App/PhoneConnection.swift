@@ -192,7 +192,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
 
     /// Fetches Home sections in one round trip.
     func home() async throws -> HomeSections {
-        let sections = try await request("home", [:])["result"] as? [String: Any] ?? [:]
+        guard let sections = try await request("home", [:])["result"] as? [String: Any] else { throw PhoneError.unexpectedReply }
         let actions = ((sections["actions"] as? [[String: Any]]) ?? []).compactMap { row -> QuickAction? in
             guard let index = row["index"] as? Int else { return nil }
             return QuickAction(index: index, title: row["title"] as? String ?? "", action: row["action"] as? String ?? "")
@@ -206,7 +206,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     }
 
     func search(_ query: String) async throws -> SearchResults {
-        let sections = try await request("search", ["query": query])["result"] as? [String: Any] ?? [:]
+        guard let sections = try await request("search", ["query": query])["result"] as? [String: Any] else { throw PhoneError.unexpectedReply }
         return SearchResults(
             artists: Self.items(from: sections["artists"]),
             albums: Self.items(from: sections["albums"]),
@@ -217,7 +217,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
 
     /// Phone output route and Finamp volume (0–1).
     func output() async throws -> (route: String, routeType: String, volume: Double) {
-        let reply = try await request("output", [:])["result"] as? [String: Any] ?? [:]
+        guard let reply = try await request("output", [:])["result"] as? [String: Any] else { throw PhoneError.unexpectedReply }
         return (reply["route"] as? String ?? "", reply["routeType"] as? String ?? "", reply["volume"] as? Double ?? 1)
     }
 
@@ -328,7 +328,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     }
 
     func artistInfo(_ id: String) async throws -> ArtistInfo {
-        let reply = try await request("artistInfo", ["id": id])["result"] as? [String: Any] ?? [:]
+        guard let reply = try await request("artistInfo", ["id": id])["result"] as? [String: Any] else { throw PhoneError.unexpectedReply }
         if let favorite = reply["favorite"] as? Bool {
             FavoriteOverrides.shared.phoneReported(id, favorite)
         }
@@ -343,7 +343,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
 
     /// Fetches current download state; `lock` explains a dependency download, or is nil.
     func downloadState(_ id: String) async throws -> (downloaded: Bool, lock: String?) {
-        let reply = try await request("downloadState", ["id": id])["result"] as? [String: Any] ?? [:]
+        guard let reply = try await request("downloadState", ["id": id])["result"] as? [String: Any] else { throw PhoneError.unexpectedReply }
         return (reply["downloaded"] as? Bool ?? false, reply["downloadLock"] as? String)
     }
 
