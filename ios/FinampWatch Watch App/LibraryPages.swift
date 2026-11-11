@@ -1,10 +1,8 @@
 import SwiftUI
 
-/// The watch's browsable library categories.
 enum LibraryKind: String {
     case artists, albums, playlists, tracks, downloads
 
-    /// The `type` expected by the phone's WatchHandler.
     var type: String { rawValue }
 
     var title: String {
@@ -36,22 +34,19 @@ enum LibraryKind: String {
     }
 }
 
-/// Rows from the end at which a list asks for its next page, so the page arrives before it's needed.
+// Prefetch next page before reaching the end.
 let pagePrefetchRows = 10
 
-/// Loading state for unpaged lists.
 enum ListState {
     case loading
     case loaded([LibraryItem])
     case failed(String)
 }
 
-/// A paged library list that reloads when shown.
 struct LibraryPage: View {
     let kind: LibraryKind
-    /// Load only when visible; the page view creates all pages at launch.
+    // Page views are created at launch; only fetch while visible.
     let isActive: Bool
-    /// Returns to playback after starting music.
     let onPlay: () -> Void
 
     static let pageSize = 50
@@ -61,7 +56,7 @@ struct LibraryPage: View {
     @State private var hasMore = true
     @State private var isLoadingMore = false
     @State private var isReloading = false
-    /// Changes when the list restarts from its first page, so a page requested before is dropped.
+    // Invalidate in-flight pages on reload.
     @State private var generation = 0
     @State private var path: [LibraryDestination] = []
 
@@ -165,8 +160,7 @@ struct LibraryPage: View {
         )
     }
 
-    /// Refreshes the first page; later pages stay only while it holds the same items, since any change shifts them.
-    /// Errors replace only empty content.
+    // Keep later pages only if the first page has not shifted; errors replace empty content.
     private func reload() async {
         guard !isReloading else { return }
         isReloading = true
@@ -199,7 +193,7 @@ struct LibraryPage: View {
             items = latest + page.filter { !known.contains($0.id) }
             hasMore = !page.isEmpty
         } catch {
-            // Scrolling to the end again retries.
+            // Scrolling to the end again retries
         }
     }
 

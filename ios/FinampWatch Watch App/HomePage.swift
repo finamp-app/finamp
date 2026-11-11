@@ -1,10 +1,7 @@
 import SwiftUI
 
-/// Home quick actions, favourites and recent music.
 struct HomePage: View {
-    /// Loads only while this page is visible.
     let isActive: Bool
-    /// Returns to playback after starting music.
     let onPlay: () -> Void
 
     @State private var sections: HomeSections?
@@ -147,7 +144,7 @@ struct HomePage: View {
         }
     }
 
-    /// Keeps current sections visible during a reload.
+    // Retain current sections during reload.
     private func reload() async {
         guard !isReloading else { return }
         isReloading = true
@@ -164,7 +161,6 @@ struct HomePage: View {
     }
 }
 
-/// A Home quick action tile.
 struct QuickActionButton: View {
     let action: QuickAction
     let run: () async -> Void
@@ -194,7 +190,6 @@ struct QuickActionButton: View {
     }
 }
 
-/// A section header and cards, hidden when empty.
 struct HomeSection<Card: View>: View {
     let title: String
     let items: [LibraryItem]
@@ -223,7 +218,6 @@ struct SectionHeader: View {
     }
 }
 
-/// A Home card with a cover and title.
 struct HomeCard: View {
     let item: LibraryItem
     let placeholderSymbol: String
@@ -251,7 +245,6 @@ struct HomeCard: View {
     }
 }
 
-/// Search results grouped by item type.
 struct SearchResultsView: View {
     let query: String
     let onPlay: () -> Void
@@ -329,7 +322,6 @@ struct SearchResultsView: View {
     }
 }
 
-/// A favourites list symbol with a heart badge.
 struct FavoritesLogo: View {
     let symbol: String
     var circular = false

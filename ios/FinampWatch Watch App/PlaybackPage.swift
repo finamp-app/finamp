@@ -1,7 +1,7 @@
 import SwiftUI
 import WatchKit
 
-/// Phone playback state; position is in seconds at updatedAt and advances locally while advancing.
+// Phone playback state with local extrapolation.
 struct NowPlaying: Equatable {
     var hasTrack = false
     var id = ""
@@ -15,23 +15,18 @@ struct NowPlaying: Equatable {
     var albumArtist = ""
     var albumArtistID = ""
     var artists: [LibraryItem] = []
-    /// Playback mode, codec and bitrate; empty until the phone has metadata.
     var audio = ""
     var duration: Double = 0
     var position: Double = 0
     var updatedAt = Date()
     var playing = false
-    /// Playing and not loading or buffering: the phone's time is moving.
+    // Playing and ready; stays false while loading or buffering.
     var advancing = false
-    /// Finamp's loop mode: "none", "one" or "all".
     var loop = "none"
     var shuffled = false
-    /// Radio replaces looping while it is on.
     var radio = false
-    /// Radio is on and can run for this queue.
     var radioAvailable = false
     var favorite = false
-    /// The next tracks' covers, loaded ahead while Playback is on screen.
     var upNext: [LibraryItem] = []
 
     func position(at date: Date) -> Double {
@@ -45,7 +40,7 @@ final class NowPlayingStore {
     static let shared = NowPlayingStore()
 
     var nowPlaying = NowPlaying()
-    /// When the phone last sent now playing, pushed or asked for.
+    // When now playing last arrived, pushed or requested.
     @ObservationIgnored private(set) var receivedAt = Date.distantPast
 
     func update(from state: [String: Any]) {
@@ -91,26 +86,22 @@ final class NowPlayingStore {
     }
 }
 
-/// Playback controls for the phone's current track.
 struct PlaybackPage: View {
     let isActive: Bool
 
     @State private var store = NowPlayingStore.shared
     @State private var artwork: UIImage?
-    /// The key `artwork` belongs to; until the new track's cover arrives its BlurHash is shown instead.
     @State private var artworkFor = ""
-    /// The album `artwork` belongs to: its tracks often carry their own copy of the cover, so it stays while the next copy loads.
+    // Retain album artwork while track-specific cover loads.
     @State private var artworkAlbum = ""
     @State private var showSystemPlayer = false
     @State private var showQueue = false
-    /// The crown sets Finamp's volume here too; the audio line shows it while the crown turns.
     @State private var crownVolume = PhoneVolume.shared.value ?? 1
     @State private var showVolume = false
     @State private var hideVolume: Task<Void, Never>?
 
     @Environment(\.fontResolutionContext) private var fontContext
     private var titleSize: CGFloat { TextSize.current(.title3, in: fontContext) * 0.9 }
-    /// The audio line, volume and times: 10 pt at Large, growing with Caption 2.
     private var smallSize: CGFloat { 10 * TextSize.current(.caption2, in: fontContext) / TextSize.atLarge(.caption2) }
 
     private var nowPlaying: NowPlaying { store.nowPlaying }
@@ -127,7 +118,6 @@ struct PlaybackPage: View {
         )
     }
 
-    /// Full-screen pixel size rounded to the same cache buckets as other covers.
     private var artworkPixels: Int {
         let device = WKInterfaceDevice.current()
         let pixels = max(device.screenBounds.width, device.screenBounds.height) * device.screenScale
@@ -238,8 +228,7 @@ struct PlaybackPage: View {
                 artworkAlbum = album
             }
         }
-        // Loads the next tracks' covers after the current one, so a track change shows its cover at once.
-        // Cached covers return without a download, and this runs again only when the upcoming covers change.
+        // Preload upcoming covers to show them immediately on track change.
         .task(id: isActive ? nowPlaying.upNext.map(\.artworkKey) : []) {
             guard isActive else { return }
             if !nowPlaying.artworkKey.isEmpty {
@@ -311,7 +300,7 @@ struct PlaybackPage: View {
                 }
                 Spacer(minLength: 0)
                 Button {
-                    // Capture this track's id before sending; the phone's favourite state is authoritative.
+                    // Capture track ID before sending; phone favourite state is authoritative.
                     let id = nowPlaying.id
                     let new = !nowPlaying.favorite
                     store.nowPlaying.favorite = new
@@ -415,7 +404,7 @@ struct PlaybackPage: View {
             }
         }
         .padding(.horizontal, 6)
-        // Text stays light over the darkened cover in either theme.
+        // Light text over the darkened cover in either theme
         .foregroundStyle(.white)
         .padding(.bottom, Self.bottomGap)
         .ignoresSafeArea(edges: .bottom)
@@ -423,7 +412,7 @@ struct PlaybackPage: View {
 
     private static let playSize: CGFloat = 48
 
-    /// Model-specific page-dot heights require different gaps below the Play button.
+    // Model-specific page-dot heights require different gaps below the Play button.
     private static let bottomGap: CGFloat = {
         switch Int(WKInterfaceDevice.current().screenBounds.height) {
         case 197: return 8       // 40 mm
@@ -456,7 +445,6 @@ struct PlaybackPage: View {
         .accessibilityLabel(label)
     }
 
-    /// Artist links, falling back to names until the phone supplies artist details.
     @ViewBuilder
     private var artistLine: some View {
         if nowPlaying.artists.isEmpty {
@@ -487,9 +475,7 @@ struct PlaybackPage: View {
 
 }
 
-/// The current track, Finamp's order, loop and radio buttons, and the upcoming tracks with tap-to-skip.
 struct QueueView: View {
-    /// Closes the sheet and opens the artist on Playback's stack.
     let onOpenArtist: (LibraryItem) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var state: ListState = .loading
@@ -544,11 +530,8 @@ struct QueueView: View {
     }
 }
 
-/// The current track in the album header's layout, its own cover falling back to the album's, with the playback
-/// order, loop and radio buttons of Finamp's queue. Each tap moves to the next mode, as in Finamp; radio uses the mode
-/// chosen in Finamp.
+// Radio uses the mode selected on the phone.
 private struct QueueHeader: View {
-    /// Reloads the upcoming tracks, whose order the buttons change.
     let onOrderChange: () async -> Void
     let onOpenArtist: (LibraryItem) -> Void
     private var store: NowPlayingStore { .shared }
@@ -569,7 +552,6 @@ private struct QueueHeader: View {
                         ),
                         placeholderSymbol: LibraryKind.tracks.placeholderSymbol
                     )
-                    // Smaller than the album header's cover, leaving room for the labels.
                     .containerRelativeFrame(.horizontal) { width, _ in width * 0.24 }
                     VStack(alignment: .leading, spacing: 3) {
                         Text(nowPlaying.title)
@@ -579,7 +561,7 @@ private struct QueueHeader: View {
                             // The list row otherwise keeps the title to one line on small watches.
                             .fixedSize(horizontal: false, vertical: true)
                         if !nowPlaying.artists.isEmpty {
-                            // As in the album header: a NavigationLink here would make the entire row tappable.
+                            // A NavigationLink here would make the entire row tappable.
                             Marquee {
                                 HStack(spacing: 8) {
                                     ForEach(nowPlaying.artists) { artist in
@@ -607,7 +589,6 @@ private struct QueueHeader: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-            // Content-wide buttons with equal gaps; one word per line keeps every label the same size.
             HStack(alignment: .top, spacing: 0) {
                 Spacer(minLength: 0)
                 LabeledIconButton(title: orderTitle, systemImage: orderIcon, tint: orderTint, titleLines: 2, fills: false) {
@@ -637,10 +618,9 @@ private struct QueueHeader: View {
         }
     }
 
-    /// Finamp's cycle: all, one, none, then all again.
     private static let nextLoop = ["all": "one", "one": "none", "none": "all"]
 
-    /// Shows the new mode at once; the phone's push confirms it, and a failed request restores the old one.
+    // Optimistic update; restored on failure.
     private func change<Value>(_ field: WritableKeyPath<NowPlaying, Value>, to value: Value, action: String) async {
         let before = store.nowPlaying[keyPath: field]
         store.nowPlaying[keyPath: field] = value
@@ -669,7 +649,6 @@ private struct QueueHeader: View {
         }
     }
 
-    /// Finamp's queue: the accent when on, the text colour when off, faded while radio is on.
     private var loopTint: Color {
         if nowPlaying.radio { return Color.fgPrimary.opacity(0.3) }
         return nowPlaying.loop == "none" ? Color.fgPrimary.opacity(0.85) : .finampBlue
@@ -680,8 +659,7 @@ private struct QueueHeader: View {
     private var orderTint: Color { nowPlaying.shuffled ? .finampBlue : Color.fgPrimary.opacity(0.85) }
 }
 
-/// Phone output and crown volume controls; iOS requires output selection on the phone.
-/// Wait for the phone's volume before binding the crown to avoid a placeholder jump.
+// iOS requires output selection on the phone; wait for volume before binding the crown.
 struct OutputSheet: View {
     @State private var output: (route: String, routeType: String)?
     @State private var error: String?
@@ -749,25 +727,24 @@ struct OutputSheet: View {
     }
 }
 
-/// Tighter spacing for 40 mm and 41 mm watches.
+// Tighter spacing for 40 mm and 41 mm watches.
 private let isSmallWatch = WKInterfaceDevice.current().screenBounds.height < 220
 
-/// Output controls initialized with the phone's volume before the crown is bound.
-/// Finamp's own volume as the phone last pushed it (it multiplies with the iPhone's volume), and whether AirPlay
-/// plays, when Finamp's volume has no effect and Finamp disables it.
+// Finamp volume multiplies with iPhone volume and has no effect during AirPlay.
 @Observable
 final class PhoneVolume {
     static let shared = PhoneVolume()
     var value: Double?
     var airPlay = false
 
-    /// Finamp's volume when below 100% and it matters, so a lowered volume isn't forgotten.
+    // Shown only below 100% so a lowered volume isn't forgotten.
     var lowered: Int? {
         guard let value, value < 0.995, !airPlay else { return nil }
         return Int((value * 100).rounded())
     }
 }
 
+// Initialize with the phone volume so binding the crown does not cause a jump.
 private struct OutputControls: View {
     let route: String
     let routeType: String
@@ -827,8 +804,7 @@ private struct OutputControls: View {
 }
 
 extension View {
-    /// Binds the Digital Crown to Finamp's volume on the phone; off during AirPlay, as Finamp disables its slider.
-    /// `showsBar` adds a volume bar beside the crown, for screens without their own.
+    // Bind crown to volume; disabled during AirPlay.
     func phoneVolumeCrown(
         _ volume: Binding<Double>, enabled: Bool = true, showsBar: Bool = true, onTurn: @escaping () -> Void = {}
     ) -> some View {
@@ -836,17 +812,15 @@ extension View {
     }
 }
 
-/// Sends crown turns as Finamp's volume (one message in flight) and follows the phone's own changes, except just after
-/// the crown moved, since the phone echoes those.
 private struct PhoneVolumeCrown: ViewModifier {
     @Binding var volume: Double
     let enabled: Bool
     let showsBar: Bool
     let onTurn: () -> Void
+    // Ignore phone echoes briefly after crown turns.
     @State private var lastCrownChange = Date.distantPast
     @State private var applyingPhoneVolume = false
-    /// A continuous crown position; only its changes matter. A bounded binding makes watchOS draw a scroll bar that
-    /// moves down as the value rises.
+    // Use crown deltas; binding volume directly makes the scroll bar move downward as volume rises.
     @State private var crown = 500.0
     private var phoneVolume = PhoneVolume.shared
 
@@ -869,7 +843,6 @@ private struct PhoneVolumeCrown: ViewModifier {
                 let next = min(1, max(0, volume + step))
                 if next != volume { volume = next }
             }
-            // Beside the crown, a bar that fills upward with the volume
             .digitalCrownAccessory {
                 Capsule()
                     .fill(Color.white.opacity(0.25))
@@ -898,7 +871,6 @@ private struct PhoneVolumeCrown: ViewModifier {
     }
 }
 
-/// A playback progress line with a position dot.
 struct ProgressLine: View {
     let fraction: Double
 
@@ -919,17 +891,15 @@ struct ProgressLine: View {
     }
 }
 
-/// Scrolls overflowing content in a loop, pausing at the start.
 struct Marquee<Content: View>: View {
     @ViewBuilder let content: Content
 
     @State private var contentSize: CGSize = .zero
     @State private var containerWidth: CGFloat = 0
-    /// Redrawn every frame while scrolling, so it stops while the screen is dimmed.
+    // Pause scrolling while dimmed.
     @Environment(\.scenePhase) private var scenePhase
 
     private let gap: CGFloat = 24
-    /// Points per second.
     private let speed: CGFloat = 22
     private let pause: Double = 1.5
 

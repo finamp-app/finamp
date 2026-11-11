@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// Shares favourite state and optimistic changes across loaded screens.
+// Shares favourite state and optimistic changes across screens.
 @Observable
 final class FavoriteOverrides {
     static let shared = FavoriteOverrides()
 
     private var values: [String: Bool] = [:]
-    /// Pending edits must not be overwritten by an older phone reply.
+    // Avoid overwriting pending edits with an older phone reply.
     private var pending: Set<String> = []
 
     func value(for item: LibraryItem) -> Bool { values[item.id] ?? item.favorite }
@@ -20,7 +20,6 @@ final class FavoriteOverrides {
         values[id] = favorite
     }
 
-    /// Updates optimistically and reverts if the phone cannot be reached.
     func toggle(_ item: LibraryItem) async {
         let new = !value(for: item)
         values[item.id] = new
@@ -35,7 +34,6 @@ final class FavoriteOverrides {
     }
 }
 
-/// A message to show as an alert over the pages, e.g. Finamp refusing a change while offline.
 @Observable
 final class PhoneMessage {
     static let shared = PhoneMessage()
@@ -43,18 +41,14 @@ final class PhoneMessage {
 }
 
 extension View {
-    /// Adds a button to download the item on the phone.
     func phoneDownloadButton(for item: LibraryItem, downloaded: Bool, lock: String?, shown: Bool = true) -> some View {
         modifier(PhoneDownloadButton(item: item, initiallyDownloaded: downloaded, lock: lock, shown: shown))
     }
 }
 
-/// Downloads on the phone, presenting its download questions on the watch.
 private struct PhoneDownloadButton: ViewModifier {
     let item: LibraryItem
-    /// Initial state from the page, overridden by a download started here.
     let initiallyDownloaded: Bool
-    /// Shows the dependency lock explanation while still allowing a separate download.
     let lock: String?
     let shown: Bool
 
@@ -64,6 +58,7 @@ private struct PhoneDownloadButton: ViewModifier {
     @State private var downloadAnswers: [String: Any] = [:]
     @State private var showLock = false
 
+    // Prefer a download started here over the list row's snapshot.
     private var downloaded: Bool { isDownloaded ?? initiallyDownloaded }
     private var locked: Bool { lock != nil && !downloaded }
 
@@ -128,7 +123,7 @@ private struct PhoneDownloadButton: ViewModifier {
             }
     }
 
-    /// Repeats the request with accumulated answers until the phone starts downloading.
+    // Repeat request with answers until downloading starts.
     private func download(answers: [String: Any] = [:]) async {
         guard !downloaded else {
             downloadMessage = String(localized: "Downloaded on your iPhone")

@@ -1,22 +1,20 @@
 import SwiftUI
 
-/// An artist's albums and playback actions.
 struct ArtistView: View {
     let artist: LibraryItem
     let onPlay: () -> Void
 
     @State private var state: ListState = .loading
     @State private var hasMore = false
-    /// Rows received from the phone; the next page's offset, since repeated rows aren't shown twice.
+    // Count received rows, including duplicates, for the next offset.
     @State private var phoneOffset = 0
     @State private var isLoadingMore = false
     private static let pageSize = 50
     @State private var info: ArtistInfo?
-    /// Measured column widths used to centre the icons.
     @State private var leftColumnWidth: CGFloat = 0
     @State private var rightColumnWidth: CGFloat = 0
 
-    /// Uses the fetched favourite state because playback artist chips do not carry it.
+    // Playback artist chips do not carry favourite state.
     private var item: LibraryItem {
         var item = artist
         if let info { item.favorite = info.favorite }
@@ -105,7 +103,7 @@ struct ArtistView: View {
         }
     }
 
-    /// The phone's count, or the loaded list's once every page is in.
+    // Use the phone total, or the loaded count after the last page.
     private var albumCount: Int? {
         if let info { return info.albums }
         if case .loaded(let albums) = state, !hasMore { return albums.count }

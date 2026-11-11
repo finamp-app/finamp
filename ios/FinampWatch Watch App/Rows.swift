@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// A library cover, title and optional subtitle.
 struct CoverRow: View {
     let item: LibraryItem
     let placeholderSymbol: String
@@ -30,7 +29,6 @@ struct CoverRow: View {
     }
 }
 
-/// A cover row that opens an artist's albums or a collection's tracks.
 struct CollectionLink: View {
     let item: LibraryItem
     let kind: LibraryKind
@@ -48,7 +46,6 @@ struct CollectionLink: View {
     }
 }
 
-/// An artist's round photo and name, as shown in artist links.
 struct ArtistLabel: View {
     let artist: LibraryItem
     let color: Color
@@ -66,20 +63,17 @@ struct ArtistLabel: View {
     }
 }
 
-/// A track row with an optional favourite action.
 struct TrackRow: View {
     let track: LibraryItem
-    /// When set, shows a heart that invokes this action.
     var onFavorite: (() -> Void)? = nil
     var favorite = false
     var onTap: (() -> Void)? = nil
-    /// Enlarges text and the heart for full track lists.
     var enlarged = false
 
     @State private var store = NowPlayingStore.shared
     @Environment(\.fontResolutionContext) private var fontContext
 
-    /// Use relative sizes because watchOS text styles below footnote differ by only a few points.
+    // Relative sizes, since watchOS text styles below footnote differ by only a few points.
     private var footnoteSize: CGFloat { TextSize.current(.footnote, in: fontContext) }
 
     private var scale: CGFloat { enlarged ? 1.13 : 1 }
@@ -125,7 +119,6 @@ struct TrackRow: View {
     }
 }
 
-/// A themed row background that highlights the playing track.
 struct TrackRowBackground: View {
     let isPlaying: Bool
 
@@ -135,7 +128,6 @@ struct TrackRowBackground: View {
     }
 }
 
-/// Formats seconds as "3:07" or "1:02:45".
 func formatDuration(_ seconds: Double) -> String {
     let total = max(Int(seconds.rounded()), 0)
     let hours = total / 3600

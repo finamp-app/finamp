@@ -2,8 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// Keeps the watch (Swift), the phone (Dart) and lib/services/watch_protocol.md in step: the same requests and pushes
-/// on every side. It reads the sources as text, so it runs anywhere Flutter tests run, with no watch or Xcode.
+// Verifies that Swift, Dart, and watch_protocol.md declare the same requests and pushes.
 const _helper = 'lib/services/watch_helper.dart';
 const _protocol = 'lib/services/watch_protocol.md';
 const _watch = 'ios/FinampWatch Watch App/PhoneConnection.swift';
@@ -12,7 +11,6 @@ const _bridge = 'ios/Runner/WatchBridge.swift';
 Set<String> _names(String text, String pattern) =>
     RegExp(pattern, multiLine: true).allMatches(text).map((match) => match.group(1)!).toSet();
 
-/// The text between [start] and the next occurrence of [end].
 String _between(String text, String start, String end) {
   final from = text.indexOf(start);
   if (from == -1) throw StateError('missing "$start"');
@@ -26,7 +24,7 @@ void main() {
   final watch = File(_watch).readAsStringSync();
   final bridge = File(_bridge).readAsStringSync();
 
-  // WatchHandler's request switch: its own cases only, not the nested ones (indented further)
+  // Match top-level request switch cases only.
   final requestSwitch = _between(helper, 'switch (call.method) {', '\n          default:');
   final handled = _names(requestSwitch, r"^          case '(\w+)':")..remove('watchState'); // iOS's own query
   final answeredNatively = _names(bridge, r'method == "(\w+)"');

@@ -1,19 +1,17 @@
 import SwiftUI
 
-/// A collection's tracks and playback actions.
 struct CollectionView: View {
     let collection: LibraryItem
     let type: String
     let onPlay: () -> Void
     @State private var state: ListState = .loading
-    /// Tracks load a page at a time as the list scrolls.
     @State private var hasMore = false
-    /// Rows received from the phone; the next page's offset, since repeated rows aren't shown twice.
+    // Count received rows, including duplicates, for the next offset.
     @State private var phoneOffset = 0
     @State private var isLoadingMore = false
     private static let pageSize = 50
     @Environment(\.openLibraryDestination) private var open
-    /// Refresh on opening: a parent download can change the lock after the list loads.
+    // Refresh on appear; parent download can change lock state.
     @State private var downloadState: (downloaded: Bool, lock: String?)?
 
     var body: some View {
@@ -100,7 +98,6 @@ struct CollectionView: View {
                             .foregroundStyle(Color.finampBlue)
                             .lineLimit(1)
                     }
-                    // Favourites have no count of their own until every page is in
                     if collection.trackCount > 0 || !hasMore {
                         Text(trackSummary(tracks))
                             .font(.caption2)
@@ -128,7 +125,7 @@ struct CollectionView: View {
         }
     }
 
-    /// Falls back to the row's artist when the phone has not supplied the full artist list.
+    // Fall back to collection artist if full artist list is absent.
     private var headerArtists: [LibraryItem] {
         if !collection.artists.isEmpty { return collection.artists }
         guard !collection.artistID.isEmpty else { return [] }
@@ -142,7 +139,6 @@ struct CollectionView: View {
     }
 
     private func trackSummary(_ tracks: [LibraryItem]) -> String {
-        // The collection's own count and length when known, since a long list is only partly loaded
         let trackCount = max(collection.trackCount, tracks.count)
         let count = trackCount == 1 ? String(localized: "1 track") : String(localized: "\(trackCount) tracks")
         let total = collection.duration > 0 ? collection.duration : tracks.reduce(0) { $0 + $1.duration }

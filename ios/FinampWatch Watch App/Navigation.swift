@@ -1,8 +1,6 @@
 import SwiftUI
 
-/// A destination within a library page.
 enum LibraryDestination: Hashable {
-    /// A collection's tracks; `type` is "albums", "playlists" or "favorites".
     case tracks(LibraryItem, type: String)
     case artistAlbums(LibraryItem)
     case favoriteAlbums
@@ -16,7 +14,7 @@ enum LibraryDestination: Hashable {
 }
 
 extension LibraryDestination {
-    /// Identifies a screen independent of the extra fields carried by different entry points.
+    // Ignore metadata differences between entry points to the same screen.
     var screenKey: String {
         switch self {
         case .tracks(let item, let type): return "\(type):\(item.id)"
@@ -28,7 +26,7 @@ extension LibraryDestination {
     }
 }
 
-/// Moves an existing screen to the top so Back returns to the caller; drops oldest past maxDepth.
+// Move an existing screen to the top so Back returns to the caller; drop the oldest past maxDepth.
 enum LibraryPath {
     static let maxDepth = 10
 
@@ -39,7 +37,7 @@ enum LibraryPath {
         return path
     }
 
-    /// Routes SwiftUI pushes through `opening` while preserving pops.
+    // Deduplicate pushes while preserving pops.
     static func applying(_ new: [LibraryDestination], to old: [LibraryDestination]) -> [LibraryDestination] {
         guard new.count == old.count + 1, let pushed = new.last, Array(new.dropLast()) == old else { return new }
         return opening(pushed, in: old)
@@ -47,11 +45,10 @@ enum LibraryPath {
 }
 
 extension EnvironmentValues {
-    /// Opens without a NavigationLink, which would make an entire list row tappable.
+    // Open without NavigationLink so row parts remain independently tappable.
     @Entry var openLibraryDestination: (LibraryDestination) -> Void = { _ in }
 }
 
-/// Uses one destination path per page to avoid mixing SwiftUI presentation mechanisms.
 struct LibraryNavigationStack<Root: View>: View {
     @Binding var path: [LibraryDestination]
     @ViewBuilder let root: Root
@@ -67,7 +64,6 @@ struct LibraryNavigationStack<Root: View>: View {
 }
 
 extension View {
-    /// Registers the destinations shared by library pages.
     func libraryDestinations(onPlay: @escaping () -> Void) -> some View {
         navigationDestination(for: LibraryDestination.self) { destination in
             Group {

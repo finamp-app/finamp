@@ -1,13 +1,11 @@
 import CryptoKit
 import SwiftUI
 
-/// Caches covers from Jellyfin, with batched phone requests as a fallback.
-/// Cache keys include the image tag and pixel size to distinguish replacements and sizes.
+// Try Jellyfin directly, then batch requests through the phone.
 final class ArtworkStore {
     static let shared = ArtworkStore()
 
     private static let batchLimit = 10
-    /// Bounds memory and disk use during long scrolls.
     private static let memoryCountLimit = 120
     private static let diskLimitBytes = 40 * 1024 * 1024
     private static let diskTrimTargetBytes = 30 * 1024 * 1024
@@ -25,9 +23,9 @@ final class ArtworkStore {
         return cache
     }()
     private var inFlight: [String: Task<UIImage?, Never>] = [:]
-    /// Raised by `removeAll()`, so loads started before a logout don't refill the cache.
+    // Compare account generations before caching replies.
     private var generation = 0
-    /// One phone request per key: `image(for:size:)` already joins callers of the same key.
+    // One phone request per key: image(for:size:) joins callers of the same key.
     private var waiting: [String: CheckedContinuation<UIImage?, Never>] = [:]
     private var writesSinceTrim = 0
     private var queue: [Request] = []
@@ -43,13 +41,13 @@ final class ArtworkStore {
     }
 
     func removeAll() {
+        // Keep in-flight loads: a new request for the same key must join them, not replace their waiter
         generation += 1
         memory.removeAllObjects()
         try? FileManager.default.removeItem(at: directory)
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     }
 
-    /// Trims oldest files down to diskTrimTargetBytes after exceeding diskLimitBytes.
     private func trimDiskCache() {
         let keys: [URLResourceKey] = [.fileSizeKey, .contentModificationDateKey]
         guard let files = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: keys)
@@ -67,6 +65,7 @@ final class ArtworkStore {
     }
 
     func image(for item: LibraryItem, size: Int) async -> UIImage? {
+        // Include the image tag and size so replacements and resolutions stay separate.
         let key = "\(item.artworkKey)-\(size)"
         if let image = memory.object(forKey: key as NSString) { return image }
 
@@ -83,7 +82,7 @@ final class ArtworkStore {
         return image
     }
 
-    /// Pauses direct requests after a connection failure so every cover need not time out.
+    // Pause direct requests after failure to avoid repeated timeouts.
     private var directPausedUntil: Date?
     private static let directPause: TimeInterval = 5 * 60
 
@@ -107,13 +106,10 @@ final class ArtworkStore {
 
     private enum Download {
         case image(Data)
-        /// No cover or address, including HTTP errors.
         case none
-        /// Connection failed; pause direct requests.
         case unreachable
     }
 
-    /// Downloads a cover with its longer side capped at `size` pixels.
     private func download(_ address: String, size: Int) async -> Download {
         guard !address.isEmpty, var components = URLComponents(string: address) else { return .none }
         components.queryItems = (components.queryItems ?? []) + [
@@ -176,7 +172,6 @@ final class ArtworkStore {
         waiting.removeValue(forKey: key)?.resume(returning: image)
     }
 
-    /// Caches a cover in memory and on disk, trimming the disk cache every 50 writes, not only at launch.
     private func store(_ image: UIImage, data: Data, key: String) {
         try? data.write(to: file(for: key))
         memory.setObject(image, forKey: key as NSString)
@@ -188,13 +183,12 @@ final class ArtworkStore {
     }
 }
 
-/// A cached cover or placeholder, optionally circular.
 struct CoverView: View {
     let item: LibraryItem
     let placeholderSymbol: String
     var circular = false
     @State private var image: UIImage?
-    /// Rounds pixel sizes to multiples of 20 so similar slots share cached covers.
+    // Round sizes to share cached covers across similar slots.
     @State private var pixelSize = 0
     @Environment(\.displayScale) private var displayScale
 
@@ -213,7 +207,6 @@ struct CoverView: View {
                         .foregroundStyle(.white)
                 }
             }
-            // The cover fades in over its BlurHash, as in Finamp's album images
             .animation(.easeIn(duration: 0.7), value: image)
             .aspectRatio(1, contentMode: .fit)
             .clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 8)))

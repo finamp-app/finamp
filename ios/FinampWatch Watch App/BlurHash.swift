@@ -1,15 +1,12 @@
 import UIKit
 
-/// Decodes a cover's BlurHash (https://blurha.sh, the same hashes Finamp shows on the phone) into a small, blurred image
-/// drawn until the cover itself arrives.
 enum BlurHash {
     private static let cache = NSCache<NSString, UIImage>()
     private static let digits = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~")
     private static let values = Dictionary(uniqueKeysWithValues: digits.enumerated().map { ($1, $0) })
-    /// The image is scaled up to the cover's slot, so a few pixels are enough.
+    // The placeholder is scaled up, so a small canvas is enough.
     private static let side = 20
 
-    /// nil for an empty or malformed hash.
     static func image(_ hash: String) -> UIImage? {
         guard !hash.isEmpty else { return nil }
         if let cached = cache.object(forKey: hash as NSString) { return cached }
@@ -63,7 +60,6 @@ enum BlurHash {
         return UIImage(cgImage: image)
     }
 
-    /// Base 83, the hash's digits.
     private static func number(_ characters: ArraySlice<Character>) -> Int? {
         var value = 0
         for character in characters {
@@ -73,7 +69,7 @@ enum BlurHash {
         return value
     }
 
-    /// An AC component's quantised value (-9…9) back to -1…1, squared with its sign kept.
+    // Square the -9...9 component after scaling, keeping its sign.
     private static func signedSquare(_ quantised: Double) -> Double {
         let value = quantised / 9
         return value < 0 ? -(value * value) : value * value

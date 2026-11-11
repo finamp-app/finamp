@@ -1,10 +1,8 @@
 import SwiftUI
 
-/// The watch's theme and two of Finamp's settings on the phone.
 struct SettingsView: View {
     @Bindable private var theme = ThemeStore.shared
     private var phone = PhoneSettings.shared
-    /// Finamp's own question; unanswered, the queue keeps unavailable tracks or the old transcoding.
     @State private var reload: ReloadQuestion?
 
     var body: some View {
@@ -94,7 +92,7 @@ struct SettingsView: View {
         .listRowBackground(TrackRowBackground(isPlaying: false))
     }
 
-    /// Updates optimistically and reverts if the phone cannot be reached.
+    // Revert if phone cannot be reached.
     private func set(_ value: ReferenceWritableKeyPath<PhoneSettings, Bool?>, name: String, to enabled: Bool) async {
         let previous = phone[keyPath: value]
         phone[keyPath: value] = enabled
@@ -106,7 +104,7 @@ struct SettingsView: View {
     }
 }
 
-/// Finamp's settings on the phone as last fetched or pushed; nil until known.
+// nil until fetched or pushed by the phone.
 @Observable
 final class PhoneSettings {
     static let shared = PhoneSettings()

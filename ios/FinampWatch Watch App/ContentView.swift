@@ -1,7 +1,6 @@
 import SwiftUI
 import WatchKit
 
-/// The watch app's swipe pages, initially showing playback.
 enum WatchPage: String, Hashable {
     case home, playback, artists, albums, playlists, tracks, downloads
 
@@ -10,7 +9,7 @@ enum WatchPage: String, Hashable {
 
 struct ContentView: View {
     @State private var page: WatchPage = .initial
-    /// Dimmed or wrist down: nothing on screen needs live updates. Return to Clock then suspends the app.
+    // Dimmed or wrist down: nothing on screen needs live updates.
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -55,7 +54,6 @@ struct ContentView: View {
     }
 }
 
-/// Prompts the user to log in on the phone.
 struct LoggedOutView: View {
     var body: some View {
         VStack(spacing: 8) {

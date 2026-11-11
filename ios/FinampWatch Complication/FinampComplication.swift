@@ -1,7 +1,6 @@
 import SwiftUI
 import WidgetKit
 
-/// A static launcher complication that opens Finamp.
 @main
 struct FinampComplication: Widget {
     var body: some WidgetConfiguration {
@@ -71,7 +70,7 @@ struct LauncherView: View {
     }
 }
 
-/// Vector Finamp logo from images/finamp_cropped.svg, with support for tinted faces.
+// Vector Finamp logo from images/finamp_cropped.svg.
 private struct FinampLogo: View {
     @Environment(\.widgetRenderingMode) private var renderingMode
 
@@ -95,7 +94,7 @@ private struct FinampLogo: View {
         Color(red: Double(hex >> 16 & 0xFF) / 255, green: Double(hex >> 8 & 0xFF) / 255, blue: Double(hex & 0xFF) / 255)
     }
 
-    /// Maps gradient endpoints from the SVG's 1024-point canvas into the logo frame.
+    // SVG endpoints use the original 1024-point canvas.
     private static func fade(_ color: Color, from: (CGFloat, CGFloat), to: (CGFloat, CGFloat)) -> LinearGradient {
         let b = FinampLogoShape.bounds
         return LinearGradient(
@@ -106,15 +105,14 @@ private struct FinampLogo: View {
     }
 }
 
-/// SVG logo paths scaled to their own bounds.
 private struct FinampLogoShape: Shape {
     enum Part { case letter, play }
     let part: Part
 
-    /// Excludes the SVG canvas margins so the logo fills the frame.
+    // Exclude canvas margins so logo fills frame.
     static let bounds = CGRect(x: 129, y: 42, width: 766, height: 940)
 
-    /// Start point, then cubic curves as (control 1, control 2, end).
+    // Start point, then cubic curves as (control 1, control 2, end).
     private static let letter: (CGPoint, [(CGPoint, CGPoint, CGPoint)]) = (
         CGPoint(x: 328.327, y: 981.999), [
             (CGPoint(x: 512.498, y: 769.508), CGPoint(x: 37.2345, y: 154.135), CGPoint(x: 515.922, y: 233.788)),

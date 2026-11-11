@@ -1,13 +1,10 @@
 import SwiftUI
 
-/// An outline action button with a label below.
 struct LabeledIconButton: View {
     let title: LocalizedStringKey
     let systemImage: String
     var tint: Color = .finampBlue
-    /// Allows long labels to wrap instead of shrinking.
     var titleLines = 1
-    /// Fills the row when true; otherwise uses the button's intrinsic width.
     var fills = true
     let action: () async -> Void
 
@@ -35,7 +32,6 @@ struct LabeledIconButton: View {
     }
 }
 
-/// An error message with a retry action.
 struct RetryView: View {
     let message: String
     let retry: () async -> Void
@@ -62,7 +58,6 @@ struct RetryView: View {
 
     private var isServer: Bool { message == PhoneError.serverUnreachable.localizedDescription }
 
-    /// What to do about it, for the failures that have a remedy.
     private var hint: LocalizedStringKey? {
         if isServer { return "Turn on Offline Mode in Settings to play your downloads" }
         let phoneUnavailable = [PhoneError.notReachable.localizedDescription, PhoneError.noAnswer.localizedDescription, "Finamp is still starting"]
@@ -70,10 +65,8 @@ struct RetryView: View {
     }
 }
 
-/// Text style sizes for text sized in points. On watchOS 26 and later they follow Text Size live, up to the app's cap;
-/// before that they are the system's sizes, read when the view is built.
+// watchOS 26 resolves Text Size live; older versions use system sizes at view creation.
 enum TextSize {
-    /// The style's size in a view's environment.
     static func current(_ style: Font.TextStyle, in context: Font.Context) -> CGFloat {
         if #available(watchOS 26.0, *) {
             return Font.system(style).resolve(in: context).pointSize
@@ -81,7 +74,7 @@ enum TextSize {
         return UIFont.preferredFont(forTextStyle: uiStyle(style)).pointSize
     }
 
-    /// The style's size at Large, the text size the layout was designed at.
+    // Large is the baseline for relative layout sizes.
     static func atLarge(_ style: Font.TextStyle) -> CGFloat {
         if #available(watchOS 26.0, *) {
             var environment = EnvironmentValues()
@@ -101,16 +94,15 @@ enum TextSize {
 }
 
 extension View {
-    /// Keeps an icon at its Large size, so only text follows Text Size.
+    // Keep icons at Large size so only text scales.
     func fixedIconSize() -> some View {
         dynamicTypeSize(.large)
     }
 }
 
-/// Uses Finamp's Tabler icons where they differ from SF Symbols.
+// Tabler icons used where they differ from SF Symbols.
 struct FinampIcon: View {
     let systemName: String
-    /// Tabler icon side in points; these images do not scale with the font.
     let size: CGFloat
 
     private static let tabler = [

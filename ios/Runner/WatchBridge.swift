@@ -3,19 +3,20 @@ import Flutter
 import UIKit
 import WatchConnectivity
 
-// Relays watch requests to Flutter's WatchHandler and forwards state updates to the watch.
+// Relays watch requests to WatchHandler and forwards updates.
 
 private var watchChannel: FlutterMethodChannel?
 private let watchBridge = WatchBridge()
 
 extension AppDelegate {
     func setupWatchChannel() {
-        // Must match WatchHandler even when a personal build changes the bundle id.
+        // Must match WatchHandler even in builds with a different bundle ID.
         watchChannel = FlutterMethodChannel(
             name: "com.unicornsonlsd.finamp-ios/watch",
             binaryMessenger: flutterEngine.binaryMessenger
         )
         watchChannel?.setMethodCallHandler { call, result in
+            // Relay only state updates; queries such as watchState must be answered here.
             switch call.method {
             case "nowPlaying" where call.arguments is [String: Any],
                  "theme" where call.arguments is String,
@@ -44,19 +45,17 @@ private final class WatchBridge: NSObject, WCSessionDelegate {
         WCSession.default.activate()
     }
 
-    /// Keep all keys: updateApplicationContext replaces the entire context.
+    // updateApplicationContext replaces entire context; keep all keys.
     private var context: [String: Any] = [:]
 
-    /// Sends live when reachable and saves the value for the watch's next launch.
     func push(key: String, value: Any) {
         guard WCSession.isSupported() else { return }
-        // A different account's playback must not carry over to the next one
+        // Clear playback on account change.
         if key == "account", context["account"] as? String != value as? String {
             context["nowPlaying"] = nil
         }
         context[key] = value
         let session = WCSession.default
-        // Not gated on isWatchAppInstalled: iOS can report false for an installed watch app that is sending requests
         guard session.activationState == .activated, session.isPaired else { return }
         try? session.updateApplicationContext(context)
         if session.isReachable {
@@ -81,16 +80,14 @@ private final class WatchBridge: NSObject, WCSessionDelegate {
         return session.activationState == .activated && session.isPaired && session.isWatchAppInstalled
     }
 
-    /// The installed flag at the previous watch state change.
     private var wasInstalled = false
 
-    /// Flushes state held before activation and tells Flutter to start pushing, or to stop once the watch app is gone.
     private func watchStateDidChange() {
         DispatchQueue.main.async { [self] in
             let session = WCSession.default
             let paired = session.activationState == .activated && session.isPaired
             let installed = isWatchAppAvailable
-            // iOS can keep reporting false for an installed app, so only unpairing or a change to false means it's gone
+            // iOS can report false for an installed app; only unpairing or a false transition means removed.
             let removed = !paired || (wasInstalled && !installed)
             wasInstalled = installed
             if paired, !context.isEmpty { try? session.updateApplicationContext(context) }
@@ -113,7 +110,6 @@ private final class WatchBridge: NSObject, WCSessionDelegate {
             return
         }
 
-        // The output picker requires native iOS UI.
         if method == "showOutputPicker" {
             DispatchQueue.main.async {
                 replyHandler(["result": outputPicker.show() ? "shown" : "pending"])
@@ -132,7 +128,7 @@ private final class WatchBridge: NSObject, WCSessionDelegate {
                 } else if (result as AnyObject?) === FlutterMethodNotImplemented {
                     replyHandler(["error": "Finamp is still starting"])
                 } else if method == "artworks" {
-                    // Resizing and encoding up to a batch of covers would stall Finamp's UI on the main thread
+                    // Encode off main thread to avoid stalling Finamp UI.
                     let args = message["args"]
                     DispatchQueue.global(qos: .userInitiated).async {
                         replyHandler(artworksReply(result, request: args))
@@ -149,8 +145,7 @@ private final class WatchBridge: NSObject, WCSessionDelegate {
 
 private let outputPicker = OutputPicker()
 
-/// Presents the phone's output picker for watch requests.
-/// iOS has no public presentation method, so tap a hidden AVRoutePickerView button.
+// iOS has no public API to show route picker; tap hidden AVRoutePickerView button.
 private final class OutputPicker: NSObject, AVRoutePickerViewDelegate {
     private let picker = AVRoutePickerView()
     private var pendingSince: Date?
@@ -168,7 +163,7 @@ private final class OutputPicker: NSObject, AVRoutePickerViewDelegate {
         }
     }
 
-    /// Returns true if shown; otherwise queues the request for up to two minutes.
+    // Queue request up to two minutes if phone is locked.
     func show() -> Bool {
         let scene = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
@@ -179,7 +174,7 @@ private final class OutputPicker: NSObject, AVRoutePickerViewDelegate {
             return false
         }
         pendingSince = nil
-        // The picker must stay in the window as the menu's invisible anchor.
+        // Must stay in window as invisible anchor.
         picker.frame = CGRect(x: window.bounds.midX - 1, y: window.safeAreaInsets.top + 40, width: 2, height: 2)
         picker.alpha = 0.011
         if picker.window !== window { window.addSubview(picker) }
@@ -187,7 +182,7 @@ private final class OutputPicker: NSObject, AVRoutePickerViewDelegate {
         return true
     }
 
-    /// Remove the hidden picker after dismissal so it cannot intercept taps.
+    // Remove after dismissal so it cannot intercept taps.
     func routePickerViewDidEndPresentingRoutes(_ routePickerView: AVRoutePickerView) {
         picker.removeFromSuperview()
     }
@@ -200,10 +195,10 @@ private final class OutputPicker: NSObject, AVRoutePickerViewDelegate {
     }
 }
 
-/// Leaves room for metadata within WatchConnectivity's roughly 64 KB message limit.
+// Budget below WatchConnectivity's ~64 KB reply limit.
 private let artworksReplyBudget = 48 * 1024
 
-/// An image from Flutter's raw RGBA pixels (`ImageByteFormat.rawRgba`: 8 bits per channel, premultiplied alpha).
+// Flutter rawRgba uses premultiplied alpha.
 private func imageFromRGBA(_ pixels: Data, width: Int, height: Int) -> UIImage? {
     guard width > 0, height > 0, pixels.count >= width * height * 4,
           let provider = CGDataProvider(data: pixels as CFData),
@@ -216,8 +211,7 @@ private func imageFromRGBA(_ pixels: Data, width: Int, height: Int) -> UIImage? 
     return UIImage(cgImage: cgImage)
 }
 
-/// Returns JPEGs and missing keys as "<id>-<size>" so one item can have multiple sizes.
-/// Budget-deferred covers appear in neither set; the watch retries them.
+// Return JPEGs and missing keys as <id>-<size>; omit budget-deferred keys for retry.
 private func artworksReply(_ result: Any?, request: Any?) -> [String: Any] {
     let requested = ((request as? [String: Any])?["items"] as? [[String: Any]]) ?? []
     let results = (result as? [[String: Any]]) ?? []
@@ -228,12 +222,12 @@ private func artworksReply(_ result: Any?, request: Any?) -> [String: Any] {
     for (item, entry) in zip(requested, results) {
         guard let id = item["id"] as? String, let size = item["size"] as? Int else { continue }
         let key = "\(id)-\(size)"
-        // The same bounds as the Flutter side, which only checks the size it decodes at
+        // Reject out-of-range sizes; Dart clamps its decode size instead.
         guard (16...1200).contains(size) else {
             missing.append(key)
             continue
         }
-        // A downloaded cover comes as its encoded file (no width), others as raw pixels
+        // Downloaded covers arrive encoded; others as raw pixels.
         let width = entry["width"] as? Int ?? 0
         let data = (entry["data"] as? FlutterStandardTypedData)?.data
         let image = data.flatMap { width > 0 ? imageFromRGBA($0, width: width, height: entry["height"] as? Int ?? 0) : UIImage(data: $0) }
@@ -248,12 +242,12 @@ private func artworksReply(_ result: Any?, request: Any?) -> [String: Any] {
     return ["artworks": artworks, "missing": missing]
 }
 
-/// Fits JPEGs within the pixel size and reply budget to avoid PayloadTooLarge errors.
+// Fit within the pixel size and reply budget, or the reply fails with PayloadTooLarge.
 private func resizedJPEG(_ image: UIImage, maxSide: CGFloat) -> Data? {
     let pixelWidth = image.size.width * image.scale
     let pixelHeight = image.size.height * image.scale
     var side = min(maxSide, max(pixelWidth, pixelHeight))
-    // Try the requested size even below 64 px; 64 px only limits subsequent reductions.
+    // Try the requested size below 64 px too; only later reductions have that floor.
     repeat {
         let factor = side / max(pixelWidth, pixelHeight)
         let targetSize = CGSize(width: (pixelWidth * factor).rounded(), height: (pixelHeight * factor).rounded())

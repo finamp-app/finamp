@@ -44,10 +44,9 @@ import 'widget_bindings_observer_provider.dart';
 
 final _logger = Logger('WatchHandler');
 
-/// Default artwork side length in pixels when the request omits a size.
+// Decode fallback only; the iOS relay requires an explicit size.
 const _defaultWatchArtworkSize = 160;
 
-/// Page size for library roots.
 const _defaultPageSize = 50;
 
 const _homeSectionSize = 8;
@@ -55,41 +54,36 @@ const _recentlyPlayedLimit = 6;
 const _searchSectionSize = 5;
 const _favoritesLimit = 200;
 
-/// Favourite tracks queued when playing them, so a track tapped deep in the paged list is included.
 const _favoriteTracksQueueLimit = 1000;
 const _queueLimit = 30;
 
-/// Upcoming covers the watch loads ahead, so a track change shows its cover at once.
 const _upNextCoverCount = 2;
 
-/// WatchConnectivity fails replies over about 64 KB, so a list page ends early once its rows pass this (as JSON)
-/// and the watch asks for the rest.
+// Split pages early to stay under WatchConnectivity's ~64 KB reply limit.
 const _replyBudget = 40 * 1024;
 
-/// Favourite albums/artists fetched at once when playing them all.
+// Max concurrent item fetches.
 const _parallelFetches = 8;
 
-/// Scan limit for offline search and favourites, which cannot use server-side filters.
+// Cap offline scan without server-side filters.
 const _offlineLimit = 1000;
 
-/// Handles Apple Watch requests through the iOS bridge and Finamp's providers.
 class WatchHandler {
   static const _watchChannel = MethodChannel('com.unicornsonlsd.finamp-ios/watch');
 
-  /// Finamp's own test for "the server can't be reached" (as in GlobalSnackbar).
   static bool _isNetworkError(Object error) =>
       error is SocketException ||
       error is ClientException ||
       error is TimeoutException ||
       (error is Response && (error.error is SocketException || error.error is ClientException));
 
-  /// Jellyfin item ids are 32 hex digits; anything else from the watch is refused before it reaches a request.
+  // Refuse malformed IDs before sending a Jellyfin request.
   static final _jellyfinId = RegExp(r'^[0-9a-fA-F]{32}$');
 
-  /// The full child list of the collection the watch is paging through, by parent id.
+  // Full children retained while the watch pages through this parent.
   static (String, List<BaseItemDto>)? _childrenCache;
 
-  /// Retains recently sent items so later artwork requests can resolve them by id; least recently used first out.
+  // Cache recently sent items to resolve later artwork requests.
   static final Map<BaseItemId, BaseItemDto> _sentItems = {};
   static const _sentItemsLimit = 500;
 
@@ -99,14 +93,12 @@ class WatchHandler {
     if (_sentItems.length > _sentItemsLimit) _sentItems.remove(_sentItems.keys.first);
   }
 
-  /// Call once during app initialization.
   static void setup() {
     if (!Platform.isIOS) return;
 
     _watchChannel.setMethodCallHandler((call) async {
       final arguments = Map<String, dynamic>.from(call.arguments as Map? ?? {});
       _logger.fine("Watch request: ${call.method} $arguments");
-      // A request proves the watch app is installed, even when iOS's installed flag says otherwise
       if (call.method != 'watchState') _startPushing();
       try {
         switch (call.method) {
@@ -136,7 +128,6 @@ class WatchHandler {
           case 'watchState':
             arguments['available'] == true ? _startPushing() : _stopPushing();
             return true;
-          // Finamp settings the watch shows: "Enable Transcoding" and "Offline Mode"
           case 'settings':
             final settings = FinampSettingsHelper.finampSettings;
             return {'transcoding': settings.shouldTranscode, 'offline': settings.isOffline};
@@ -187,7 +178,7 @@ class WatchHandler {
             throw PlatformException(code: "unsupported", message: "Update Finamp on your iPhone");
         }
       } catch (error) {
-        // One plain message for the watch, never the raw exception (which names the server and the user)
+        // Send plain error message without exposing user/server details.
         if (_isNetworkError(error)) {
           throw PlatformException(code: "server", message: "Can't reach your Jellyfin server");
         }
@@ -197,7 +188,7 @@ class WatchHandler {
       }
     });
 
-    // Avoid player subscriptions on phones without the watch app.
+    // Avoid player subscriptions if watch app is not installed.
     unawaited(
       _watchChannel
           .invokeMethod<bool>('watchState')
@@ -212,9 +203,7 @@ class WatchHandler {
 
   static bool _pushing = false;
 
-  /// The "reload the queue?" question Finamp shows on the phone after this change (as DataSourceService decides), so the
-  /// watch can ask it too; null when Finamp reloads by itself or nothing needs reloading. Unanswered, the queue keeps
-  /// tracks that are no longer available or the old transcoding.
+  // Ask to reload affected tracks unless auto-reload is on; no answer keeps the old queue.
   static String? _reloadQuestion(String name, bool enabled) {
     if (FinampSettingsHelper.finampSettings.autoReloadQueue) return null;
     final queue = GetIt.instance<QueueService>().getQueue();
@@ -230,10 +219,8 @@ class WatchHandler {
     return l10n.autoReloadPrompt(SourceChangeGenericType.transcoding.name);
   }
 
-  /// Cancels what `_startPushing` listens to.
   static final List<void Function()> _stopListening = [];
 
-  /// Pushes state changes and sends the initial theme, account, transcoding and offline settings.
   static void _startPushing() {
     if (_pushing) return;
     _pushing = true;
@@ -251,13 +238,12 @@ class WatchHandler {
         _pushIfChanged('theme', _theme());
         _pushIfChanged('accent', _accent());
       }).close,
-      // The watch uses the accent Finamp shows, so a custom or system accent reaches it too
       container.listen(finampSettingsProvider.accentColor, (_, _) => _pushIfChanged('accent', _accent())).close,
       container.listen(finampSettingsProvider.systemAccentColor, (_, _) => _pushIfChanged('accent', _accent())).close,
       container
           .listen(finampSettingsProvider.useSystemAccentColor, (_, _) => _pushIfChanged('accent', _accent()))
           .close,
-      // The user provider also fires on address changes; only an account change clears the cache.
+      // Address changes also fire user provider; only account change clears cache.
       container.listen(FinampUserHelper.finampCurrentUserProvider, (_, _) {
         final account = _account();
         if (account != _lastPushedValues['account']) {
@@ -274,9 +260,8 @@ class WatchHandler {
         _childrenCache = null; // may list tracks that can't play in the new mode
         _pushIfChanged('offline', offline);
       }).close,
-      // Finamp's volume (its output menu's slider), so an open Output sheet on the watch follows it
       container.listen(finampSettingsProvider.currentVolume, (_, volume) => _pushIfChanged('volume', volume)).close,
-      // While AirPlay plays, Finamp's volume has no effect and its slider is disabled; the watch does the same
+      // Finamp volume has no effect during AirPlay; disable the watch slider too.
       container
           .listen(
             airPlayActiveProvider,
@@ -293,7 +278,6 @@ class WatchHandler {
     _pushIfChanged('offline', FinampSettingsHelper.finampSettings.isOffline);
   }
 
-  /// Stops all of it when the watch app is removed or the watch unpaired; a reinstalled app gets everything again.
   static void _stopPushing() {
     if (!_pushing) return;
     _pushing = false;
@@ -314,20 +298,19 @@ class WatchHandler {
   static ProviderSubscription<bool>? _favoriteSubscription;
   static BaseItemId? _favoriteSubscriptionItem;
 
-  /// Coalesces bursts of player events into one push, sent 150 ms after the first. While a track loads, events can keep
-  /// coming for seconds, and restarting the wait on each one delayed the push by up to 5 s.
+  // Coalesce player events into one push 150 ms after the first.
   static void _scheduleNowPlayingPush() {
     if (_nowPlayingPushTimer?.isActive ?? false) return;
     _nowPlayingPushTimer = Timer(const Duration(milliseconds: 150), _pushNowPlaying);
   }
 
-  /// Skips normal progress updates because the watch advances the position locally.
+  // Watch advances position locally; skip periodic progress pushes.
   static void _pushNowPlaying() {
     final state = _nowPlaying();
     final last = _lastPushed;
     if (last != null) {
       final unchanged = state.keys.every(
-        // Artist lists are rebuilt each time, so compare their contents.
+        // Compare artist list contents as lists are rebuilt each time.
         (key) =>
             key == 'position' ||
             key == 'updatedAt' ||
@@ -347,8 +330,7 @@ class WatchHandler {
     );
   }
 
-  /// `position` is seconds at `updatedAt` (Unix seconds); the watch extrapolates while `advancing`. `playing` stays true
-  /// while a track loads or buffers (the play button's state); `advancing` is false then, so the watch's time waits too.
+  // Position and updatedAt are seconds; the watch extrapolates only while advancing.
   static Map<String, Object> _nowPlaying() {
     final current = GetIt.instance<QueueService>().getCurrentTrack();
     final playbackState = GetIt.instance<MusicPlayerBackgroundTask>().playbackState.value;
@@ -383,15 +365,15 @@ class WatchHandler {
       'artists': _artists(item.artistItems),
       'audio': _audioInfo(current),
       'duration': (current.item.duration ?? item.runTimeTicksDuration() ?? Duration.zero).inMilliseconds / 1000,
-      // Advances only while playing and ready, like Finamp's own progress bar.
       'position': playbackState.position.inMilliseconds / 1000,
       'updatedAt': now.millisecondsSinceEpoch / 1000,
       'playing': playbackState.playing,
+      // Keep the watch clock still while loading or buffering.
       'advancing': playbackState.playing && playbackState.processingState == AudioProcessingState.ready,
       'loop': queueService.loopMode.name,
       'shuffled': queueService.playbackOrder == FinampPlaybackOrder.shuffled,
       'radio': FinampSettingsHelper.finampSettings.radioEnabled,
-      // Finamp's queue shows the radio button in the accent colour only when radio can run for this queue.
+      // Radio button uses accent colour only when available.
       'radioAvailable': GetIt.instance<ProviderContainer>().read(currentRadioAvailabilityStatusProvider).isAvailable,
       'favorite': GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item)),
       'upNext': _upNextCovers(),
@@ -399,7 +381,7 @@ class WatchHandler {
     };
   }
 
-  /// Jumps to an upcoming queue item by id, wherever it is now: the queue may have moved since the watch listed it.
+  // Find the item by ID: the queue may have moved since the watch listed it.
   static Future<void> _skipTo(String id) async {
     final queueService = GetIt.instance<QueueService>();
     final queue = queueService.getQueue();
@@ -408,7 +390,6 @@ class WatchHandler {
     await queueService.skipByOffset(index + 1);
   }
 
-  /// The next tracks' covers in play order, fewer near the end; a repeated queue continues from its start.
   static List<Map<String, Object>> _upNextCovers() {
     final queueService = GetIt.instance<QueueService>();
     final queue = queueService.getQueue();
@@ -417,13 +398,12 @@ class WatchHandler {
       ...queue.queue,
       if (queueService.loopMode == FinampLoopMode.all) ...queue.previousTracks,
     ].map((track) => track.baseItem).nonNulls.take(_upNextCoverCount).map((item) {
-      // The watch asks for covers by id when it can't reach the server
+      // Retain IDs for phone artwork fallback when direct requests fail.
       _rememberSent(item);
       return {'id': item.id.raw, 'artworkKey': _artworkKey(item), 'artworkUrl': _artworkUrl(item)};
     }).toList();
   }
 
-  /// Upcoming rows, next-up first; `skipTo` takes a row's `id`.
   static List<Map<String, Object>> _upcoming() {
     final queue = GetIt.instance<QueueService>().getQueue();
     return [...queue.nextUp, ...queue.queue]
@@ -440,7 +420,7 @@ class WatchHandler {
         .toList();
   }
 
-  /// Keeps the current track's favourite provider alive and pushes changes.
+  // Keep current track's favourite provider alive and push changes.
   static void _watchFavorite(BaseItemDto item) {
     if (_favoriteSubscriptionItem == item.id) return;
     _favoriteSubscription?.close();
@@ -464,7 +444,7 @@ class WatchHandler {
         await audioHandler.skipToNext();
       case 'previous':
         await audioHandler.skipToPrevious();
-      // Like the buttons in Finamp's queue: looping waits while radio is on.
+      // Looping waits while radio is on.
       case 'toggleLoop':
         if (!FinampSettingsHelper.finampSettings.radioEnabled) GetIt.instance<QueueService>().toggleLoopMode();
       case 'togglePlaybackOrder':
@@ -476,7 +456,6 @@ class WatchHandler {
     }
   }
 
-  /// `artists` follows the artist type setting; other values are [ContentType] names.
   static ContentType _contentType(String type) {
     if (type == 'artists') {
       return FinampSettingsHelper.finampSettings.defaultArtistType == ArtistType.albumArtist
@@ -486,7 +465,7 @@ class WatchHandler {
     return ContentType.values.byName(type);
   }
 
-  /// Returns a page of a library root, a favourites list or a collection's children, kept under [_replyBudget].
+  // Return a page of library items kept under [_replyBudget].
   static Future<List<Map<String, Object>>> _list(Map<String, dynamic> arguments) async {
     final type = arguments['type'] as String;
     final offset = arguments['offset'] as int? ?? 0;
@@ -504,7 +483,6 @@ class WatchHandler {
     } else if (parentId == null) {
       items = await _tabPage(_contentType(type), offset, limit);
     } else {
-      // A collection's tracks or an artist's albums come a page at a time, from the full list kept since the first page
       final parent = await _itemById(parentId);
       if (offset == 0 || _childrenCache?.$1 != parentId) _childrenCache = (parentId, await _children(parent));
       items = _childrenCache!.$2.skip(offset).take(limit).toList();
@@ -512,7 +490,6 @@ class WatchHandler {
     return _withinReplyBudget(_rows(items));
   }
 
-  /// Ends a page early once its rows pass [_replyBudget]; the watch asks for the rest from where it stopped.
   static List<Map<String, Object>> _withinReplyBudget(List<Map<String, Object>> rows) {
     var bytes = 0;
     for (final (index, row) in rows.indexed) {
@@ -522,7 +499,7 @@ class WatchHandler {
     return rows;
   }
 
-  /// Reuse controllers because each new instance leaves cached sort state behind.
+  // Reuse controllers to avoid leaking cached sort state.
   static final _tabSortControllers = <ContentType, SortAndFilterController>{};
 
   static final _artistAlbumsSortController = SortAndFilterController(
@@ -534,7 +511,6 @@ class WatchHandler {
     ),
   );
 
-  /// Loads a tab page with Finamp's sort, library and offline settings.
   static Future<List<BaseItemDto>> _tabPage(ContentType tab, int offset, int limit) async {
     return await _readOnce<List<BaseItemDto>?>(
           loadHomeSectionItemsProvider(request: _tabPlayable(tab), startIndex: offset, limit: limit).future,
@@ -557,7 +533,6 @@ class WatchHandler {
     );
   }
 
-  /// Loads collection children through the same providers as Finamp's screens.
   static Future<List<BaseItemDto>> _children(BaseItemDto parent) async {
     final FinampDisplayableOrPlayable playable = BaseItemDtoType.fromItem(parent) == BaseItemDtoType.artist
         ? Artist(
@@ -577,7 +552,6 @@ class WatchHandler {
     return children.whereType<FinampPlayableDto>().map((child) => child.item).toList();
   }
 
-  /// Returns Home sections together to save WatchConnectivity round trips.
   static Future<Map<String, Object>> _home() async {
     final sections = await Future.wait([
       _recentlyPlayed(),
@@ -600,14 +574,12 @@ class WatchHandler {
     );
   }
 
-  /// `user-id@server-id`, or "" when logged out; server ids survive local/public address changes.
+  // Server IDs survive local/public address changes.
   static String _account() {
     final user = GetIt.instance<FinampUserHelper>().currentUser;
     return user == null ? "" : "${user.id}@${user.serverId}";
   }
 
-  /// Returns "light" or "dark", resolving the system theme on the phone.
-  /// The accent Finamp shows in the current theme, as ARGB: its own colour scheme from the user's accent setting.
   static int _accent() {
     final settings = FinampSettingsHelper.finampSettings;
     final seed = settings.useSystemAccentColor ? settings.systemAccentColor : settings.accentColor;
@@ -624,7 +596,6 @@ class WatchHandler {
     return brightness == ui.Brightness.light ? 'light' : 'dark';
   }
 
-  /// Home quick actions that do not open a phone screen.
   static const _watchQuickActions = {
     FinampQuickActions.shuffleTracks,
     FinampQuickActions.playRandomItem,
@@ -633,7 +604,6 @@ class WatchHandler {
     FinampQuickActions.surpriseMe,
   };
 
-  /// Returns runnable actions with their configuration index, name and localised title.
   static List<Map<String, Object>> _quickActions() {
     final actions = FinampSettingsHelper.finampSettings.homeScreenConfiguration.actions;
     return [
@@ -643,14 +613,13 @@ class WatchHandler {
     ];
   }
 
-  /// Runs an allowed quick action through Finamp's handler.
   static Future<void> _runQuickAction(int index, String? name) async {
     final actions = FinampSettingsHelper.finampSettings.homeScreenConfiguration.actions;
     final context = GlobalSnackbar.rawMaterialAppNavigatorKey.currentContext;
     if (index < 0 || index >= actions.length || !_watchQuickActions.contains(actions[index].action)) {
       throw PlatformException(code: "changed", message: "Quick actions changed on your iPhone");
     }
-    // Reject a stale index if the phone's quick actions were reordered.
+    // Reject stale index if actions were reordered.
     if (name != null && actions[index].action.name != name) {
       throw PlatformException(code: "changed", message: "Quick actions changed on your iPhone");
     }
@@ -660,7 +629,7 @@ class WatchHandler {
     await QuickActionsService.handleAction(actions[index], context);
   }
 
-  /// Uses queue history so items appear when playback starts, before Jellyfin marks them played.
+  // Use queue history so items appear before Jellyfin marks them played.
   static Future<List<Map<String, Object>>> _recentlyPlayed() async {
     final queueService = GetIt.instance<QueueService>();
     final sources = [
@@ -685,7 +654,7 @@ class WatchHandler {
       } catch (_) {
         continue; // e.g. deleted from the server since
       }
-      // Offline, skip items with nothing downloaded; partly downloaded ones open on their downloaded children.
+      // Skip items with no downloaded tracks when offline.
       if (FinampSettingsHelper.finampSettings.isOffline &&
           (await _children(item).catchError((Object _) => <BaseItemDto>[])).isEmpty) {
         continue;
@@ -713,7 +682,7 @@ class WatchHandler {
   static Future<List<BaseItemDto>> _favorites(ContentType contentType, {int offset = 0, int limit = _favoritesLimit}) =>
       _query(contentType, offset: offset, limit: limit, isFavorite: true, sortBy: "SortName");
 
-  /// Values must be non-null property-list types for WatchConnectivity.
+  // WatchConnectivity requires non-null property-list values.
   static List<Map<String, Object>> _rows(List<BaseItemDto> items) {
     for (final item in items) {
       _rememberSent(item);
@@ -741,7 +710,6 @@ class WatchHandler {
         .toList();
   }
 
-  /// Queries one page; defaults to the tab's sort unless overridden.
   static Future<List<BaseItemDto>> _query(
     ContentType contentType, {
     int offset = 0,
@@ -753,7 +721,7 @@ class WatchHandler {
   }) async {
     final settings = FinampSettingsHelper.finampSettings;
     if (settings.isOffline) {
-      // Offline search and favourites must filter downloaded items locally.
+      // Filter downloaded items locally when offline.
       var items = await _tabPage(contentType, 0, _offlineLimit);
       if (searchTerm != null) {
         final needle = searchTerm.toLowerCase();
@@ -798,13 +766,12 @@ class WatchHandler {
       ? item.albumArtists?.firstOrNull
       : item.artistItems?.firstOrNull;
 
-  /// Token-free Jellyfin cover URL; empty when unavailable. The watch adds MaxWidth/MaxHeight.
+  // Token-free Jellyfin cover URL; watch adds MaxWidth/MaxHeight.
   static String _artworkUrl(BaseItemDto item) {
     if (FinampSettingsHelper.finampSettings.isOffline) return "";
     return GetIt.instance<JellyfinApiHelper>().getImageUrl(item: item)?.replace(userInfo: '').toString() ?? "";
   }
 
-  /// Token-free image URL by id; Jellyfin returns 404 for items without an image.
   static String _imageUrlFor(BaseItemId? id) {
     final user = GetIt.instance<FinampUserHelper>().currentUser;
     if (id == null || user == null || FinampSettingsHelper.finampSettings.isOffline) return "";
@@ -818,7 +785,6 @@ class WatchHandler {
         .toString();
   }
 
-  /// Playback mode, codec and bitrate; empty until playback metadata arrives.
   static String _audioInfo(FinampQueueItem current) {
     final metadata = GetIt.instance<ProviderContainer>().read(currentTrackMetadataProvider).valueOrNull;
     if (metadata == null) return "";
@@ -844,7 +810,6 @@ class WatchHandler {
     return [mode, if (format.isNotEmpty) format].join(" · ");
   }
 
-  /// Returns the phone's audio route and Finamp volume (0–1).
   static Future<Map<String, Object>> _output() async {
     final route = await AVAudioSession().currentRoute;
     final outputs = route.outputs;
@@ -855,7 +820,6 @@ class WatchHandler {
     };
   }
 
-  /// Returns user downloads in Finamp's artist, album and playlist sections.
   static Future<List<BaseItemDto>> _downloads() async {
     final downloads = GetIt.instance<DownloadsService>();
     final container = GetIt.instance<ProviderContainer>();
@@ -878,13 +842,13 @@ class WatchHandler {
     _ => '',
   };
 
-  /// Whether the item is required as its own download, including queued downloads.
+  // Whether item is required as its own download.
   static bool _isDownloaded(BaseItemDto item) {
     final stub = _downloadStub(item);
     return stub != null && GetIt.instance<DownloadsService>().getStatus(stub, null).isRequired;
   }
 
-  /// Download dependency tooltip; null if unlocked, empty if the requiring item is unknown.
+  // null means unlocked; empty means the requiring item is unknown.
   static String? _downloadLock(BaseItemDto item) {
     final stub = _downloadStub(item);
     if (stub == null) return null;
@@ -893,14 +857,12 @@ class WatchHandler {
     if (status == DownloadItemStatus.notNeeded || status.isRequired) return null;
     final parent = downloads.getFirstRequiringItem(stub);
     if (parent == null) return "";
-    // Artist downloads wrap a `noItem` collection; use the contained artist for the tooltip.
     final parentItem = parent.finampCollection?.item;
     final parentType = parentItem != null ? BaseItemDtoType.fromItem(parentItem) : parent.baseItemType;
     final l10n = GlobalSnackbar.requireL10n;
     return l10n.incidentalDownloadTooltip(l10n.itemTypeSubtitle(parentType.name, parent.name));
   }
 
-  /// Download stub for a collection or an artist's albums in the current library; null otherwise.
   static DownloadStub? _downloadStub(BaseItemDto item) => switch (BaseItemDtoType.fromItem(item)) {
     BaseItemDtoType.album ||
     BaseItemDtoType.playlist => DownloadStub.fromItem(type: DownloadItemType.collection, item: item),
@@ -914,18 +876,15 @@ class WatchHandler {
     _ => null,
   };
 
-  /// Returns the resulting favourite state, unchanged while offline.
   static Future<bool> _setFavorite(String id, bool favorite) async {
     final item = await _itemById(id);
-    // Finamp refuses favourite changes offline; tell the watch in Finamp's own words instead of silently not changing
+    // Inform watch if offline; Finamp refuses favourite changes offline.
     if (FinampSettingsHelper.finampSettings.isOffline) {
       throw PlatformException(code: "offline", message: GlobalSnackbar.requireL10n.notAvailableInOfflineMode);
     }
     return GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item).notifier).updateFavorite(favorite);
   }
 
-  /// Returns `{ask: …}` for required answers; repeat with `transcode`, `locationId` or `confirmed`.
-  /// Otherwise returns `{status: "downloading" | "alreadyDownloaded"}`.
   static Future<Map<String, Object>> _download(Map<String, dynamic> arguments) async {
     final item = await _itemById(arguments['id'] as String);
     if (_downloadStub(item) == null) {
@@ -972,7 +931,7 @@ class WatchHandler {
       }
     }
 
-    // Match DownloadDialog's warning count across all of an artist's albums.
+    // Limit warnings across all of an artist's albums.
     final trackCount = BaseItemDtoType.fromItem(item) == BaseItemDtoType.artist
         ? (await GetIt.instance<JellyfinApiHelper>().getItems(
                 parentItem: item,
@@ -999,11 +958,11 @@ class WatchHandler {
     return {'status': 'downloading'};
   }
 
-  /// Image id plus image tag, so replaced covers invalidate the watch cache; empty without a cover.
+  // Image ID and tag for cache validation.
   static String _artworkKey(BaseItemDto item) {
     final imageId = item.imageId;
     if (imageId == null) {
-      // Coverless playlists borrow their first track's album cover.
+      // Coverless playlists use their first track's album cover.
       return BaseItemDtoType.fromItem(item) == BaseItemDtoType.playlist ? "first-${item.id.raw}" : "";
     }
     final tag = item.hasOwnImage
@@ -1012,7 +971,7 @@ class WatchHandler {
     return "$imageId-${tag ?? ""}";
   }
 
-  /// Plays a collection from `startId`, or the displayed `offset`/`limit` page when `parentId` is absent.
+  // Start at startId within the collection, favourites or search results.
   static Future<void> _play(Map<String, dynamic> arguments) async {
     switch (arguments['type']) {
       case 'favorites':
@@ -1028,7 +987,7 @@ class WatchHandler {
         return;
       case 'favoriteAlbums':
         final albums = await _favorites(ContentType.albums);
-        // An unavailable album must not prevent the other favourites from playing.
+        // Skip unavailable albums so remaining favourites can play.
         final albumTracks = await _fetchAll(
           albums,
           (album) => _children(album).catchError((Object _) => <BaseItemDto>[]),
@@ -1077,13 +1036,13 @@ class WatchHandler {
 
     final parentId = arguments['parentId'] as String;
     final parent = await _itemById(parentId);
-    // The list the watch is showing, if it's this collection's (saves a server round trip)
+    // Reuse cached list if available to save server round trip.
     final cached = _childrenCache;
     final tracks = cached != null && cached.$1 == parentId ? cached.$2 : await _children(parent);
     await _playTrackList(tracks, arguments, QueueItemSource.fromBaseItem(parent));
   }
 
-  /// Uses Finamp's artist playback slices, including album shuffle.
+  // Artist playback slices including album shuffle.
   static Future<void> _playArtist(Map<String, dynamic> arguments) async {
     final artist = Artist<Track>.fromItem(await _itemById(arguments['parentId'] as String));
     final PlayableSlice slice;
@@ -1100,7 +1059,7 @@ class WatchHandler {
     final item = await _itemById(id);
     final artist = Artist<Track>.fromItem(item);
     final tracks = await _readOnce(getChildTracksProvider(item: artist).future);
-    // The album list the watch is paging through, when it's this artist's
+    // Reuse cached artist album list if available.
     final cached = _childrenCache;
     final albums = cached != null && cached.$1 == id ? cached.$2 : await _children(item);
     return {
@@ -1111,13 +1070,13 @@ class WatchHandler {
     };
   }
 
-  /// Reads current download state because the list row's copy can be stale.
+  // The list row's download state may be stale.
   static Map<String, Object> _downloadState(BaseItemDto item) => {
     'downloaded': _isDownloaded(item),
     'downloadLock': ?_downloadLock(item),
   };
 
-  /// Resolves sent items first, then Finamp's cached, offline-aware lookup.
+  // Resolve sent items or query cached lookup.
   static Future<BaseItemDto> _itemById(String id) async {
     if (!_jellyfinId.hasMatch(id)) throw PlatformException(code: "invalid", message: "Invalid item id");
     final known = _sentItems[BaseItemId(id)];
@@ -1131,7 +1090,7 @@ class WatchHandler {
     return item;
   }
 
-  /// Runs `fetch` for every item with at most [_parallelFetches] in flight, results in input order.
+  // Fetch items in input order with concurrency capped at [_parallelFetches].
   static Future<List<R>> _fetchAll<T, R>(List<T> items, Future<R> Function(T) fetch) async {
     final results = List<R?>.filled(items.length, null);
     var next = 0;
@@ -1146,7 +1105,7 @@ class WatchHandler {
     return results.cast<R>();
   }
 
-  /// Keeps an auto-disposed provider alive until its value arrives.
+  // Keep auto-disposed providers alive until their value arrives.
   static Future<T> _readOnce<T>(ProviderListenable<Future<T>> provider) async {
     final subscription = GetIt.instance<ProviderContainer>().listen(provider, (_, _) {});
     try {
@@ -1187,7 +1146,6 @@ class WatchHandler {
     id: id,
   );
 
-  /// Starts at `startId` (or the first track), honouring `shuffle`.
   static Future<void> _playTrackList(
     List<BaseItemDto> tracks,
     Map<String, dynamic> arguments,
@@ -1208,10 +1166,8 @@ class WatchHandler {
     );
   }
 
-  /// Batches covers to save round trips; returns `[{id, data, width, height}]` in request order.
-  /// `data` is raw RGBA pixels (the iOS side encodes the JPEG), omitted when no cover is available.
+  // Batch results stay in request order so iOS can pair them with IDs and sizes.
   static Future<List<Map<String, Object>>> _artworks(Map<String, dynamic> arguments) async {
-    // Bounded here, not only by the watch: at most a batch of 20, each between 16 and 1200 px
     final requests = (arguments['items'] as List).take(20).map((request) => Map<String, dynamic>.from(request as Map));
     return await Future.wait(
       requests.map((request) async {
@@ -1219,7 +1175,7 @@ class WatchHandler {
         final cover = await _artwork(id, (request['size'] as int? ?? _defaultWatchArtworkSize).clamp(16, 1200));
         return {
           'id': id,
-          // A downloaded cover comes encoded (width 0); others as raw pixels with their size
+          // Encoded files omit dimensions; RGBA pixels include width and height.
           if (cover != null) ...{
             'data': cover.data,
             if (cover.width > 0) ...{'width': cover.width, 'height': cover.height},
@@ -1229,7 +1185,7 @@ class WatchHandler {
     );
   }
 
-  /// Caches playlist cover lookups to avoid repeated requests for the first track.
+  // Cache playlist covers to avoid repeated lookups for first track.
   static final Map<BaseItemId, BaseItemDto?> _playlistFirstTracks = {};
 
   static Future<BaseItemDto?> _firstTrack(BaseItemDto playlist) async {
@@ -1242,7 +1198,7 @@ class WatchHandler {
     return _playlistFirstTracks[playlist.id] = tracks?.firstOrNull;
   }
 
-  /// Returns a cached cover's raw RGBA pixels, or null if unavailable. Raw pixels skip a costly PNG encode.
+  // Load saved file bytes or fetch RGBA pixels; null when unavailable.
   static Future<({Uint8List data, int width, int height})?> _artwork(String id, int size) async {
     BaseItemDto? item;
     try {
@@ -1259,14 +1215,13 @@ class WatchHandler {
     }
     if (item == null || item.imageId == null) return null;
 
-    // A downloaded cover: the file Finamp saved, sent as it is for the iOS side to decode. Flutter's image decoding
-    // below only completes while Finamp is in the foreground, which it often isn't when the watch asks.
+    // Send saved file as-is; Flutter decoding stalls while in background.
     final file = GetIt.instance<DownloadsService>().getImageDownload(item: item)?.file;
     if (file != null && await file.exists()) {
       return (data: await file.readAsBytes(), width: 0, height: 0);
     }
 
-    // Request the full size: iOS only scales down, so smaller sources would look blurry.
+    // Request the watch size; iOS scales down but does not enlarge smaller sources.
     final imageProvider = GetIt.instance<ProviderContainer>()
         .read(albumImageProvider(AlbumImageRequest(item: item, maxWidth: size, maxHeight: size)))
         .image;
@@ -1288,7 +1243,7 @@ class WatchHandler {
     );
     stream.addListener(listener);
 
-    // Decoding can stall while Finamp is in the background; answer before the watch's 30 s limit
+    // Image decoding stalls in background; answer before the watch's 30 s timeout.
     final imageInfo = await completer.future.timeout(
       const Duration(seconds: 25),
       onTimeout: () {

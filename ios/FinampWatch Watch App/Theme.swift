@@ -1,10 +1,8 @@
 import SwiftUI
 
 extension Color {
-    /// The accent Finamp shows on the phone (pushed as `accent`, so a custom accent reaches the watch too);
-    /// Jellyfin blue until the phone has sent it.
+    // Follows phone accent, falling back to Jellyfin blue.
     static var finampBlue: Color { ThemeStore.shared.accent ?? jellyfinBlue }
-    // Matches jellyfinBlueColor and jellyfinPurpleColor in lib/color_schemes.g.dart; the logo gradient keeps them.
     static let jellyfinBlue = Color(red: 0x00 / 255, green: 0xA4 / 255, blue: 0xDC / 255)
     static let finampPurple = Color(red: 0xAA / 255, green: 0x5C / 255, blue: 0xC3 / 255)
 }
@@ -15,7 +13,6 @@ extension ShapeStyle where Self == LinearGradient {
     }
 }
 
-/// Watch theme preference, following the phone by default.
 enum ThemeChoice: String, CaseIterable, Identifiable {
     case phone, dark, light
 
@@ -30,7 +27,7 @@ enum ThemeChoice: String, CaseIterable, Identifiable {
     }
 }
 
-/// Persists the watch preference and resolved phone theme for use before the phone replies.
+// Cache the resolved phone theme for launch, before the phone replies.
 @Observable
 final class ThemeStore {
     static let shared = ThemeStore()
@@ -51,7 +48,7 @@ final class ThemeStore {
         }
     }
 
-    /// Finamp's accent as ARGB, kept for launches before the phone replies; nil until the phone has sent one.
+    // Retain the accent for launches before the phone replies.
     private var accentARGB = UserDefaults.standard.object(forKey: "accentARGB") as? Int {
         didSet { UserDefaults.standard.set(accentARGB, forKey: "accentARGB") }
     }
@@ -74,14 +71,14 @@ final class ThemeStore {
     }
 }
 
-/// Remembers the phone's account and clears cached data on logout or account changes.
+// Clears cached data on logout or account change.
 @Observable
 final class AccountStore {
     static let shared = AccountStore()
 
-    /// Nil until first reported; an empty string means logged out.
+    // nil until reported; empty means logged out.
     private(set) var account = UserDefaults.standard.string(forKey: "account")
-    /// Changes force pages to rebuild for the new account.
+    // Force pages to rebuild for a different account.
     private(set) var generation = 0
 
     var isLoggedOut: Bool { account == "" }
@@ -91,7 +88,7 @@ final class AccountStore {
         let hadAccount = account != nil
         account = new
         UserDefaults.standard.set(new, forKey: "account")
-        // Keep data on first account discovery, but always clear on logout.
+        // Preserve data on first account discovery, but always clear on logout.
         guard hadAccount || new.isEmpty else { return }
         ArtworkStore.shared.removeAll()
         FavoriteOverrides.shared.removeAll()
@@ -101,16 +98,13 @@ final class AccountStore {
     }
 }
 
-// Read inside a view body to observe theme changes.
 extension Color {
     static var appBackground: Color { ThemeStore.shared.isLight ? .white : .black }
     static var fgPrimary: Color { ThemeStore.shared.isLight ? .black : .white }
     static var fgSecondary: Color { ThemeStore.shared.isLight ? Color(white: 0.42) : Color(white: 0.62) }
-    /// Background of every list row and card, so all lists look alike.
     static var listFill: Color { ThemeStore.shared.isLight ? .black.opacity(0.045) : .white.opacity(0.09) }
 }
 
-/// Finamp's logo tile for the current theme.
 struct FinampLogoTile: View {
     var size: CGFloat = 34
 
@@ -136,13 +130,12 @@ struct FinampLogoTile: View {
 }
 
 extension View {
-    /// Apply to each pushed screen to avoid watchOS's default black navigation background.
+    // Avoid watchOS's default black navigation background.
     func themedBackground() -> some View {
         modifier(ThemedBackground())
     }
 }
 
-/// Reads the background inside a modifier body so theme changes are observed.
 private struct ThemedBackground: ViewModifier {
     func body(content: Content) -> some View {
         content.containerBackground(Color.appBackground, for: .navigation)

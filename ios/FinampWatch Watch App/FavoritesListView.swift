@@ -1,14 +1,12 @@
 import SwiftUI
 
-/// Favourite albums or artists with collection playback actions.
 struct FavoritesListView: View {
     let title: String
-    /// "favoriteAlbums" or "favoriteArtists".
     let type: String
     let onPlay: () -> Void
     @State private var state: ListState = .loading
     @State private var hasMore = false
-    /// Rows received from the phone; the next page's offset, since repeated rows aren't shown twice.
+    // Count received rows, including duplicates, for the next offset.
     @State private var phoneOffset = 0
     @State private var isLoadingMore = false
     private static let pageSize = 50

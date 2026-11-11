@@ -1,35 +1,32 @@
 import Foundation
 import WatchConnectivity
 
-/// A library row received from the phone.
 struct LibraryItem: Identifiable, Hashable {
     let id: String
     let name: String
     let subtitle: String
-    /// Image id + image tag; empty without a cover.
+    // Image ID plus tag; empty when there is no cover.
     let artworkKey: String
-    /// Destination type for mixed lists; empty elsewhere.
+    // Destination type in mixed lists.
     var kind = ""
-    /// Seconds; 0 when unknown.
+    // Seconds; zero means unknown.
     var duration: Double = 0
-    /// Release year; 0 when unknown.
+    // Zero means unknown.
     var year = 0
-    /// An album's or playlist's number of tracks; 0 when unknown.
+    // Album or playlist total; zero means unknown.
     var trackCount = 0
-    /// Token-free Jellyfin URL; empty when only the phone can provide the cover.
+    // Token-free URL; empty when only the phone can supply the cover.
     var artworkURL = ""
-    /// The cover's BlurHash, drawn until the cover arrives; empty when unknown.
     var blurHash = ""
-    /// Album's album artist or track's first artist; empty when unknown.
+    // Album artist for albums, first artist for tracks.
     var artistID = ""
-    /// Artist photo URL; empty when unknown.
     var artistArtworkURL = ""
     var favorite = false
-    /// Downloaded or queued on the phone.
+    // Includes queued downloads.
     var downloaded = false
-    /// Dependency download explanation; nil when not locked.
+    // Dependency explanation; nil when unlocked.
     var downloadLock: String?
-    /// Album artists with photo URLs; empty for other item types.
+    // Album artists with photos; empty for other item types.
     var artists: [LibraryItem] = []
 
     static func artists(from value: Any?) -> [LibraryItem] {
@@ -54,7 +51,6 @@ struct HomeSections {
     let theme: String
 }
 
-/// A Home quick action, identified by its index in the phone's configuration.
 struct QuickAction: Identifiable, Hashable {
     let index: Int
     let title: String
@@ -62,7 +58,7 @@ struct QuickAction: Identifiable, Hashable {
 
     var id: Int { index }
 
-    /// Cached for Home's first frame, before the phone replies.
+    // Used for Home's first frame before the phone replies.
     static var cached: [QuickAction]? {
         get {
             guard let rows = UserDefaults.standard.array(forKey: "quickActions") as? [[String: Any]] else { return nil }
@@ -112,18 +108,15 @@ struct ArtistInfo {
     let downloadLock: String?
 }
 
-/// Finamp's question after a settings change; `archive` keeps the old queue, as Finamp does for Offline Mode.
 struct ReloadQuestion {
     let text: String
     let button: String
+    // Preserve the old queue when reloading.
     let archive: Bool
 }
 
-/// A download question requested by the phone.
 enum DownloadQuestion {
-    /// Asked only when transcoding is not set to always or never.
     case transcode(transcodedLabel: String)
-    /// Asked when several storage locations exist without a default.
     case location([DownloadLocationChoice])
     case confirm(message: String)
 }
@@ -136,11 +129,8 @@ struct DownloadLocationChoice: Hashable {
 enum PhoneError: LocalizedError {
     case notReachable
     case phone(String)
-    /// Finamp on the phone can't reach the Jellyfin server.
     case serverUnreachable
-    /// The phone accepted a request but never answered.
     case noAnswer
-    /// The watch cannot decode this reply, possibly due to a version mismatch.
     case unexpectedReply
 
     var errorDescription: String? {
@@ -154,7 +144,7 @@ enum PhoneError: LocalizedError {
     }
 }
 
-/// Sends requests through the paired phone; the watch holds no Jellyfin token.
+// The watch holds no Jellyfin token; requests go through the phone.
 final class PhoneConnection: NSObject, WCSessionDelegate {
     static let shared = PhoneConnection()
 
@@ -165,7 +155,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         apply(WCSession.default.receivedApplicationContext)
     }
 
-    /// Applies the theme before other state so the first frame has the correct appearance.
+    // Apply theme before other state so first frame renders correctly.
     private func apply(_ values: [String: Any]) {
         ThemeStore.shared.apply(values["theme"])
         ThemeStore.shared.applyAccent(values["accent"])
@@ -179,9 +169,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         if let airPlay = values["airPlay"] as? Bool { PhoneVolume.shared.airPlay = airPlay }
     }
 
-    /// Pages roots, favourites and a collection's children (tracks, or an artist's albums) with `offset` and `limit`.
-    /// The phone ends a page early when its rows are large, so only an empty page means the end.
-    /// `artists` follows the phone's artist type setting; other types are Finamp ContentType names.
+    // The phone can end pages early for byte limits; only an empty page means the end.
     func list(_ type: String, parentId: String? = nil, offset: Int = 0, limit: Int = 50) async throws -> [LibraryItem] {
         var args: [String: Any] = ["type": type, "offset": offset, "limit": limit]
         if let parentId { args["parentId"] = parentId }
@@ -190,7 +178,6 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         return Self.items(from: rows)
     }
 
-    /// Fetches Home sections in one round trip.
     func home() async throws -> HomeSections {
         guard let sections = try await request("home", [:])["result"] as? [String: Any] else { throw PhoneError.unexpectedReply }
         let actions = ((sections["actions"] as? [[String: Any]]) ?? []).compactMap { row -> QuickAction? in
@@ -215,7 +202,6 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         )
     }
 
-    /// Phone output route and Finamp volume (0–1).
     func output() async throws -> (route: String, routeType: String, volume: Double) {
         guard let reply = try await request("output", [:])["result"] as? [String: Any] else { throw PhoneError.unexpectedReply }
         return (reply["route"] as? String ?? "", reply["routeType"] as? String ?? "", reply["volume"] as? Double ?? 1)
@@ -224,8 +210,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     private var pendingVolume: Double?
     private var volumeInFlight = false
 
-    /// Sets Finamp volume (0–1), coalescing changes behind one in-flight message.
-    /// Sending every crown tick would queue stale values and delay volume changes.
+    // One message in flight: sending every crown tick would queue stale values and delay the volume.
     func setVolume(_ volume: Double) {
         pendingVolume = volume
         guard !volumeInFlight else { return }
@@ -240,7 +225,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     }
 
 
-    /// The phone checks `action` against `index` to reject a reordered quick-action list.
+    // The phone checks the action name against its current index after reordering.
     func runQuickAction(_ index: Int, action: String) async throws {
         _ = try await request("quickAction", ["index": index, "action": action])
     }
@@ -255,17 +240,15 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         }
     }
 
-    /// "playPause", "next" or "previous".
     func control(_ action: String) async throws {
         _ = try await request("control", ["action": action])
     }
 
-    /// Upcoming tracks; a row's `id` is what `skipTo` takes.
     func queue() async throws -> [LibraryItem] {
         Self.items(from: try await request("queue", [:])["result"])
     }
 
-    /// Returns the resulting favourite state, unchanged while Finamp is offline.
+    // Return the phone's authoritative state for optimistic UI updates.
     func setFavorite(_ id: String, _ favorite: Bool) async throws -> Bool {
         guard let result = try await request("favorite", ["id": id, "favorite": favorite])["result"] as? Bool else {
             throw PhoneError.unexpectedReply
@@ -273,7 +256,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         return result
     }
 
-    /// Returns a question or download status; repeat with accumulated answers for each question.
+    // Send download request, repeating with answers as needed.
     func download(_ id: String, answers: [String: Any] = [:]) async throws -> DownloadReply {
         let reply = try await request("download", answers.merging(["id": id]) { _, new in new })["result"]
             as? [String: Any] ?? [:]
@@ -297,12 +280,11 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         }
     }
 
-    /// Returns false when queued until Finamp is foregrounded on the phone (within two minutes).
+    // False means queued until the phone is foregrounded, for up to two minutes.
     func showOutputPicker() async throws -> Bool {
         try await request("showOutputPicker", [:])["result"] as? String == "shown"
     }
 
-    /// Finamp's "Enable Transcoding" and "Offline Mode" settings on the phone.
     func settings() async throws -> (transcoding: Bool, offline: Bool) {
         guard let result = try await request("settings", [:])["result"] as? [String: Any] else {
             throw PhoneError.unexpectedReply
@@ -310,8 +292,6 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         return (result["transcoding"] as? Bool ?? false, result["offline"] as? Bool ?? false)
     }
 
-    /// Changes one of those settings ("transcoding" or "offline") on the phone. Returns Finamp's "reload the queue?"
-    /// question when the change needs it and Finamp doesn't reload by itself.
     func setSetting(_ name: String, _ enabled: Bool) async throws -> ReloadQuestion? {
         let reply = try await request("setSetting", ["name": name, "enabled": enabled])["result"] as? [String: Any]
         guard let question = reply?["reload"] as? String else { return nil }
@@ -322,7 +302,6 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         )
     }
 
-    /// Reloads Finamp's queue, as its own "Reload" snackbar button does.
     func reloadQueue(archive: Bool) async throws {
         _ = try await request("reloadQueue", ["archive": archive])
     }
@@ -341,18 +320,15 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         )
     }
 
-    /// Fetches current download state; `lock` explains a dependency download, or is nil.
     func downloadState(_ id: String) async throws -> (downloaded: Bool, lock: String?) {
         guard let reply = try await request("downloadState", ["id": id])["result"] as? [String: Any] else { throw PhoneError.unexpectedReply }
         return (reply["downloaded"] as? Bool ?? false, reply["downloadLock"] as? String)
     }
 
-    /// Jumps to an upcoming queue row by its `id`; the phone finds where it is now.
     func skipTo(id: String) async throws {
         _ = try await request("control", ["action": "skipTo", "id": id])
     }
 
-    /// Plays a collection, favourites, or search results (`extra["query"]`), optionally from `startId`.
     func play(
         _ type: String,
         parentId: String? = nil,
@@ -393,13 +369,11 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         }
     }
 
-    /// Plays the Tracks tab from the track at `index`, as the phone does.
     func playTracks(index: Int, startId: String) async throws {
         _ = try await request("play", ["type": "tracks", "index": index, "startId": startId])
     }
 
-    /// JPEGs capped at `size` pixels on the longer side, keyed "<id>-<size>"; `missing` means no cover.
-    /// Keys in neither set exceeded the reply budget and must be retried.
+    // Keys are <id>-<size>; absent from both covers and missing means retry.
     func artworks(_ requests: [(id: String, size: Int)]) async throws -> (covers: [String: Data], missing: Set<String>) {
         let reply = try await request("artworks", ["items": requests.map { ["id": $0.id, "size": $0.size] }])
         return (reply["artworks"] as? [String: Data] ?? [:], Set(reply["missing"] as? [String] ?? []))
@@ -459,7 +433,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         DispatchQueue.main.async { self.apply(applicationContext) }
     }
 
-    /// Lets failed pages retry when the phone becomes reachable.
+    // Post notification when phone becomes reachable to retry failed loads.
     nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
         guard session.isReachable else { return }
         DispatchQueue.main.async {
@@ -472,13 +446,13 @@ extension Notification.Name {
     static let phoneBecameReachable = Notification.Name("phoneBecameReachable")
 }
 
-/// Resumes a request exactly once: on its reply, its error or its cancellation, whichever comes first.
+// Resumes continuation exactly once on reply, error, or cancellation.
 nonisolated private final class ReplyGate: @unchecked Sendable {
     private let lock = NSLock()
     private var continuation: CheckedContinuation<[String: Any], Error>?
     private var result: Result<[String: Any], Error>?
 
-    /// False when the request was cancelled before it started.
+    // Cancellation can arrive before the continuation is installed.
     func start(_ continuation: CheckedContinuation<[String: Any], Error>) -> Bool {
         lock.lock()
         defer { lock.unlock() }

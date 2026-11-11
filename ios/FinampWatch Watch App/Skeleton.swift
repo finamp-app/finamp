@@ -1,7 +1,6 @@
 import SwiftUI
 
 
-/// Shared opacity animation for loading placeholders.
 private struct Pulse: ViewModifier {
     @State private var dimmed = false
 
@@ -21,7 +20,6 @@ private extension Color {
     static var skeletonFill: Color { ThemeStore.shared.isLight ? .black.opacity(0.09) : .white.opacity(0.14) }
 }
 
-/// A text-line loading placeholder.
 struct SkeletonBar: View {
     var widthFraction: CGFloat = 1
     var height: CGFloat = 10
@@ -34,7 +32,6 @@ struct SkeletonBar: View {
     }
 }
 
-/// Loading placeholders for cover rows.
 struct SkeletonCoverRows: View {
     var count = 5
     var coverFraction: CGFloat = 0.24
@@ -65,7 +62,6 @@ struct SkeletonCoverRows: View {
     }
 }
 
-/// Loading placeholders for track rows.
 struct SkeletonTrackRows: View {
     var count = 6
 
@@ -89,7 +85,6 @@ struct SkeletonTrackRows: View {
     }
 }
 
-/// Loading placeholder for an album or playlist.
 struct SkeletonTrackList: View {
     var body: some View {
         ScrollView {
@@ -119,7 +114,6 @@ struct SkeletonTrackList: View {
     }
 }
 
-/// Loading placeholders for Home cards.
 struct SkeletonHomeCards: View {
     var count = 3
 
