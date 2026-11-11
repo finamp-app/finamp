@@ -214,6 +214,7 @@ class CustomHeadersTile extends StatelessWidget {
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
               floatingLabelBehavior: FloatingLabelBehavior.never,
+              label: Text(context.l10n.customHeaderNameLabel),
               border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
             ),
             onSaved: (newString) {
@@ -222,13 +223,7 @@ class CustomHeadersTile extends StatelessWidget {
             validator: (newString) {
               if (newString == null || newString == "") return context.l10n.required;
               if (newString == FinampUserHelper.httpAuthorizationHeader) return context.l10n.httpHeaderNotAuth;
-              int count = 0;
-              for (final field in customHeaders) {
-                if (field?.key == newString) {
-                  count++;
-                }
-              }
-              if (count != 1) {
+              if (customHeaders.where((x) => x?.key == newString).length != 1) {
                 return context.l10n.httpHeaderConflict;
               }
               return null;
@@ -249,6 +244,7 @@ class CustomHeadersTile extends StatelessWidget {
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
             floatingLabelBehavior: FloatingLabelBehavior.never,
+            label: Text(context.l10n.customHeaderValueLabel),
             border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
           ),
           validator: (newString) {

@@ -89,15 +89,11 @@ class FinampUser {
 
   @ignore
   Map<String, String> customHeaders;
-  List<String> get isarCustomHeaders => customHeaders.keys.followedBy(customHeaders.values).toList();
+  List<String> get isarCustomHeaders =>
+      customHeaders.entries.fold(<String>[], (l, entry) => [...l, entry.key, entry.value]);
   set isarCustomHeaders(List<String> raw) {
     assert(raw.length % 2 == 0);
-    final out = <String, String>{};
-    final midPoint = (raw.length / 2).round();
-    for (int i = 0; i < midPoint; i++) {
-      out[raw[i]] = raw[midPoint + i];
-    }
-    customHeaders = out;
+    customHeaders = raw.slices(2).fold({}, (map, entry) => {...map, entry.first: entry.last});
   }
 
   // We only need 1 user, the current user
