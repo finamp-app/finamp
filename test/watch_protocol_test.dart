@@ -35,6 +35,7 @@ void main() {
 
   final pushed = _names(helper, r"_pushIfChanged\('(\w+)'")..addAll(_names(helper, r"invokeMethod\('(nowPlaying)'"));
   final applied = _names(watch, r'values\["(\w+)"\]');
+  final relayed = _names(bridge, r'"(\w+)" where call\.arguments is'); // what iOS forwards to the watch
   final documentedPushes = _names(_between(protocol, '## Pushes', '## Flutter'), r'^\| `(\w+)` \|');
 
   test('every request the watch sends is answered on the phone', () {
@@ -49,7 +50,8 @@ void main() {
     expect(documentedRequests, equals(sent));
   });
 
-  test('the phone pushes exactly what the watch applies, as documented', () {
+  test('the phone pushes exactly what iOS forwards and the watch applies, as documented', () {
+    expect(relayed, equals(pushed));
     expect(applied, equals(pushed));
     expect(documentedPushes, equals(pushed));
   });

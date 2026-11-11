@@ -19,6 +19,7 @@ extension AppDelegate {
             switch call.method {
             case "nowPlaying" where call.arguments is [String: Any],
                  "theme" where call.arguments is String,
+                 "accent" where call.arguments is Int,
                  "account" where call.arguments is String,
                  "transcoding" where call.arguments is Bool,
                  "offline" where call.arguments is Bool,
@@ -131,7 +132,11 @@ private final class WatchBridge: NSObject, WCSessionDelegate {
                 } else if (result as AnyObject?) === FlutterMethodNotImplemented {
                     replyHandler(["error": "Finamp is still starting"])
                 } else if method == "artworks" {
-                    replyHandler(artworksReply(result, request: message["args"]))
+                    // Resizing and encoding up to a batch of covers would stall Finamp's UI on the main thread
+                    let args = message["args"]
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        replyHandler(artworksReply(result, request: args))
+                    }
                 } else if let result = result, !(result is NSNull) {
                     replyHandler(["result": result])
                 } else {

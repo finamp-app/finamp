@@ -227,11 +227,15 @@ struct PlaybackPage: View {
                 artwork = nil
                 return
             }
+            let key = nowPlaying.artworkKey
+            let album = nowPlaying.albumID
             let loaded = await ArtworkStore.shared.image(for: currentCover, size: artworkPixels)
+            // A slower load for an earlier track must not replace the current one's cover
+            guard !Task.isCancelled, key == nowPlaying.artworkKey else { return }
             withAnimation(.easeIn(duration: 0.7)) {
                 artwork = loaded
-                artworkFor = nowPlaying.artworkKey
-                artworkAlbum = nowPlaying.albumID
+                artworkFor = key
+                artworkAlbum = album
             }
         }
         // Loads the next tracks' covers after the current one, so a track change shows its cover at once.

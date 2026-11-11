@@ -531,7 +531,14 @@ class WatchHandler {
 
   /// Loads a tab page with Finamp's sort, library and offline settings.
   static Future<List<BaseItemDto>> _tabPage(ContentType tab, int offset, int limit) async {
-    final request = MusicScreenPlayable(
+    return await _readOnce<List<BaseItemDto>?>(
+          loadHomeSectionItemsProvider(request: _tabPlayable(tab), startIndex: offset, limit: limit).future,
+        ) ??
+        [];
+  }
+
+  static MusicScreenPlayable _tabPlayable(ContentType tab) {
+    return MusicScreenPlayable(
       tab: tab,
       library: currentLibraryPlaceholder,
       source: QueueItemSource.rawId(
@@ -543,10 +550,6 @@ class WatchHandler {
           .putIfAbsent(tab, () => SortAndFilterController.trackSettings(tab))
           .resolveConfig(),
     );
-    return await _readOnce<List<BaseItemDto>?>(
-          loadHomeSectionItemsProvider(request: request, startIndex: offset, limit: limit).future,
-        ) ??
-        [];
   }
 
   /// Loads collection children through the same providers as Finamp's screens.
@@ -585,7 +588,9 @@ class WatchHandler {
     _lastPushedValues[key] = value;
     unawaited(
       _watchChannel.invokeMethod(key, value).catchError((Object error) {
-        _logger.fine("Couldn't push the $key to the watch: $error");
+        // Forget it so the next push tries again
+        if (_lastPushedValues[key] == value) _lastPushedValues.remove(key);
+        _logger.warning("Couldn't push the $key to the watch: $error");
       }),
     );
   }
@@ -1144,13 +1149,22 @@ class WatchHandler {
     }
   }
 
+  // Load the queue the same way as the watch's list, so the tapped track is where the watch showed it
   static Future<void> _playTracksPage(Map<String, dynamic> arguments) async {
+    final index = arguments['index'] as int? ?? 0;
+    final start = max(0, index - 20); // a few earlier tracks, so Previous works
+    var tracks = await _tabPage(
+      ContentType.tracks,
+      start,
+      index - start + FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+    );
+    final startId = arguments['startId'] as String?;
+    // A changing sort (e.g. random) can move it out of this window: still start with the tapped track
+    if (startId != null && !tracks.any((track) => track.id.raw == startId)) {
+      tracks = [await _itemById(startId), ...tracks];
+    }
     await _playTrackList(
-      await _tabPage(
-        ContentType.tracks,
-        arguments['offset'] as int? ?? 0,
-        arguments['limit'] as int? ?? _defaultPageSize,
-      ),
+      tracks,
       arguments,
       QueueItemSource.rawId(
         type: QueueItemSourceType.allTracks,

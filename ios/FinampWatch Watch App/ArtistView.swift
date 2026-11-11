@@ -7,6 +7,8 @@ struct ArtistView: View {
 
     @State private var state: ListState = .loading
     @State private var hasMore = false
+    /// Rows received from the phone; the next page's offset, since repeated rows aren't shown twice.
+    @State private var phoneOffset = 0
     @State private var isLoadingMore = false
     private static let pageSize = 50
     @State private var info: ArtistInfo?
@@ -121,6 +123,7 @@ struct ArtistView: View {
         do {
             let first = try await PhoneConnection.shared.list("artists", parentId: artist.id, limit: Self.pageSize)
             hasMore = !first.isEmpty
+            phoneOffset = first.count
             state = .loaded(first)
         } catch {
             state = .failed(error.localizedDescription)
@@ -133,10 +136,11 @@ struct ArtistView: View {
         isLoadingMore = true
         defer { isLoadingMore = false }
         guard let page = try? await PhoneConnection.shared.list(
-            "artists", parentId: artist.id, offset: current.count, limit: Self.pageSize
+            "artists", parentId: artist.id, offset: phoneOffset, limit: Self.pageSize
         ) else { return }
         let known = Set(current.map(\.id))
         state = .loaded(current + page.filter { !known.contains($0.id) })
+        phoneOffset += page.count
         hasMore = !page.isEmpty
     }
 

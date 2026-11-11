@@ -17,7 +17,7 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 | `list` | `type`, `parentId?`, `offset`, `limit` | rows, paged; a page can end early (≤ 40 KB), only an empty page means the end. `type`: `artists`, `albums`, `playlists`, `tracks`, `favorites`, `favoriteAlbums`, `favoriteArtists`, `downloads`; with `parentId`: a collection's tracks or an artist's albums |
 | `home` | — | `{recent, newAlbums, actions, theme}` |
 | `search` | `query` | `{artists, albums, playlists, tracks}`, 5 each |
-| `play` | `type`, `parentId?`, `startId?`, `shuffle`; `artist` + `albumShuffle`; `tracks` + `offset`, `limit`, `startId`; `search` + `query` | `true` |
+| `play` | `type`, `parentId?`, `startId?`, `shuffle`; `artist` + `albumShuffle`; `tracks` + `index`, `startId`; `search` + `query` | `true` |
 | `artistInfo` | `id` | `{tracks, albums, favorite, downloaded, downloadLock?}` |
 | `downloadState` | `id` | `{downloaded, downloadLock?}` |
 | `download` | `id`, `transcode?`, `locationId?`, `confirmed?` | `{status: downloading \| alreadyDownloaded}` or `{ask: transcode \| location \| confirm, …}` |

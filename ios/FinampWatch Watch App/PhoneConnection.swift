@@ -393,9 +393,9 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         }
     }
 
-    /// Plays the displayed Tracks page from `startId`.
-    func playTracks(offset: Int, limit: Int, startId: String) async throws {
-        _ = try await request("play", ["type": "tracks", "offset": offset, "limit": limit, "startId": startId])
+    /// Plays the Tracks tab from the track at `index`, as the phone does.
+    func playTracks(index: Int, startId: String) async throws {
+        _ = try await request("play", ["type": "tracks", "index": index, "startId": startId])
     }
 
     /// JPEGs capped at `size` pixels on the longer side, keyed "<id>-<size>"; `missing` means no cover.

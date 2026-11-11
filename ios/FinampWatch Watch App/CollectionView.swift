@@ -8,6 +8,8 @@ struct CollectionView: View {
     @State private var state: ListState = .loading
     /// Tracks load a page at a time as the list scrolls.
     @State private var hasMore = false
+    /// Rows received from the phone; the next page's offset, since repeated rows aren't shown twice.
+    @State private var phoneOffset = 0
     @State private var isLoadingMore = false
     private static let pageSize = 50
     @Environment(\.openLibraryDestination) private var open
@@ -160,6 +162,7 @@ struct CollectionView: View {
         do {
             let first = try await PhoneConnection.shared.list(type, parentId: collection.id, limit: Self.pageSize)
             hasMore = !first.isEmpty
+            phoneOffset = first.count
             state = .loaded(first)
         } catch {
             state = .failed(error.localizedDescription)
@@ -174,10 +177,11 @@ struct CollectionView: View {
         isLoadingMore = true
         defer { isLoadingMore = false }
         guard let page = try? await PhoneConnection.shared.list(
-            type, parentId: collection.id, offset: current.count, limit: Self.pageSize
+            type, parentId: collection.id, offset: phoneOffset, limit: Self.pageSize
         ) else { return }
         let known = Set(current.map(\.id))
         state = .loaded(current + page.filter { !known.contains($0.id) })
+        phoneOffset += page.count
         hasMore = !page.isEmpty
     }
 

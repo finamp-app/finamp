@@ -203,14 +203,12 @@ struct LibraryPage: View {
         }
     }
 
-    /// Plays the displayed page from the selected track.
     private func playTrack(_ track: LibraryItem, index: Int) async {
-        let offset = index / Self.pageSize * Self.pageSize
         do {
-            try await PhoneConnection.shared.playTracks(offset: offset, limit: Self.pageSize, startId: track.id)
+            try await PhoneConnection.shared.playTracks(index: index, startId: track.id)
             onPlay()
         } catch {
-            self.error = error.localizedDescription
+            PhoneMessage.shared.text = error.localizedDescription
         }
     }
 }

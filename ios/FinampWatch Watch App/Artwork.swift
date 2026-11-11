@@ -16,6 +16,7 @@ final class ArtworkStore {
         let key: String
         let id: String
         let size: Int
+        let generation: Int
     }
 
     private let memory: NSCache<NSString, UIImage> = {
@@ -24,6 +25,8 @@ final class ArtworkStore {
         return cache
     }()
     private var inFlight: [String: Task<UIImage?, Never>] = [:]
+    /// Raised by `removeAll()`, so loads started before a logout don't refill the cache.
+    private var generation = 0
     /// One phone request per key: `image(for:size:)` already joins callers of the same key.
     private var waiting: [String: CheckedContinuation<UIImage?, Never>] = [:]
     private var writesSinceTrim = 0
@@ -40,6 +43,7 @@ final class ArtworkStore {
     }
 
     func removeAll() {
+        generation += 1
         memory.removeAllObjects()
         try? FileManager.default.removeItem(at: directory)
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -84,11 +88,12 @@ final class ArtworkStore {
     private static let directPause: TimeInterval = 5 * 60
 
     private func load(_ item: LibraryItem, size: Int, key: String) async -> UIImage? {
+        let started = generation
         if directPausedUntil.map({ Date() >= $0 }) ?? true {
             switch await download(item.artworkURL, size: size) {
             case .image(let data):
                 if let image = UIImage(data: data) {
-                    store(image, data: data, key: key)
+                    if started == generation { store(image, data: data, key: key) }
                     return image
                 }
             case .unreachable:
@@ -125,7 +130,7 @@ final class ArtworkStore {
     private func viaPhone(_ item: LibraryItem, size: Int, key: String) async -> UIImage? {
         await withCheckedContinuation { continuation in
             waiting[key] = continuation
-            queue.append(Request(key: key, id: item.id, size: size))
+            queue.append(Request(key: key, id: item.id, size: size, generation: generation))
             sendNextBatch()
         }
     }
@@ -149,7 +154,7 @@ final class ArtworkStore {
                 for request in batch {
                     let replyKey = "\(request.id)-\(request.size)"
                     if let data = reply.covers[replyKey], let image = UIImage(data: data) {
-                        store(image, data: data, key: request.key)
+                        if request.generation == generation { store(image, data: data, key: request.key) }
                         resolve(request.key, with: image)
                     } else if reply.missing.contains(replyKey) {
                         resolve(request.key, with: nil)
