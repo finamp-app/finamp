@@ -328,6 +328,58 @@ void main() {
       await tester.pumpAndSettle();
     });
   }
+  for (final onLaterPage in [false, true]) {
+    testWidgets('online jump skips punctuation before uppercase B (later page: $onLaterPage)', (tester) async {
+      // Jellyfin 12 cleans the leading punctuation before ordering by Name.
+      final names = [
+        for (var i = 0; i < 12; i++) '— Alpha $i',
+        for (var i = 0; i < 12; i++) 'B title $i',
+        for (var i = 0; i < 12; i++) 'C title $i',
+      ];
+      final rows = [
+        for (var i = 0; i < names.length; i++)
+          Track.fromItem(
+            BaseItemDto(
+              id: BaseItemId('punctuation-$i'),
+              type: 'Audio',
+              name: names[i],
+              userData: UserItemDataDto(playbackPositionTicks: 0, playCount: 0, isFavorite: false, played: false),
+              runTimeTicks: 40000000,
+            ),
+          ),
+      ];
+      final pager = onLaterPage ? LoadedRows(rows.take(12).toList(), nextRows: rows.skip(12).toList()) : null;
+      final alphabet = await mount(tester, rows, pager: pager);
+      await expectJump(tester, alphabet, 'B', rows[12]);
+      if (pager != null) expect(pager.pageRequests, 1);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+    });
+  }
+  testWidgets('descending online jump skips punctuation before uppercase B', (tester) async {
+    final names = [
+      for (var i = 0; i < 12; i++) 'Z title $i',
+      for (var i = 0; i < 12; i++) '! Yankee $i',
+      for (var i = 0; i < 12; i++) 'B title $i',
+      for (var i = 0; i < 12; i++) 'A title $i',
+    ];
+    final rows = [
+      for (var i = 0; i < names.length; i++)
+        Track.fromItem(
+          BaseItemDto(
+            id: BaseItemId('descending-punctuation-$i'),
+            type: 'Audio',
+            name: names[i],
+            userData: UserItemDataDto(playbackPositionTicks: 0, playCount: 0, isFavorite: false, played: false),
+            runTimeTicks: 40000000,
+          ),
+        ),
+    ];
+    final alphabet = await mount(tester, rows, descending: true);
+    await expectJump(tester, alphabet, 'B', rows[24]);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+  });
   for (final offline in [false, true]) {
     testWidgets('lowercase-only library falls back before b without stalling (offline: $offline)', (tester) async {
       final names = [

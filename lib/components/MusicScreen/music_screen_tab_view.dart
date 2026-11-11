@@ -165,7 +165,13 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
         // with uppercase titles. They must not stop an uppercase jump early.
         final normalized = removeDiacritics(sortName).toUpperCase();
         if (normalized.isNotEmpty) {
-          final otherComparison = normalized.codeUnitAt(0) - codePointToScrollTo;
+          final normalizedInitial = normalized.codeUnitAt(0);
+          // Symbols and unsupported initials do not indicate where Jellyfin's
+          // cleaned name sorts, so they cannot bound the uppercase search.
+          final isAsciiLetter = normalizedInitial >= 65 && normalizedInitial <= 90;
+          final isAsciiDigit = normalizedInitial >= 48 && normalizedInitial <= 57;
+          if (!isAsciiLetter && !isAsciiDigit) continue;
+          final otherComparison = normalizedInitial - codePointToScrollTo;
           if (reversed ? otherComparison < 0 : otherComparison > 0) {
             // In raw descending order lowercase names can precede every
             // uppercase name, so they cannot bound the search yet.
