@@ -3789,7 +3789,7 @@
     "@noMusicLibrariesLogsCTA": {
         "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
     },
-    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "Saat berpindah ke mode offline, hanya muat ulang jika tidak lebih dari persentase trek berikut dihapus. Anda tetap dapat memuat ulang secara manual.",
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "Saat berpindah ke mode offline, hanya otomatis muat ulang jika tidak lebih dari persentase trek berikut dihapus. Anda tetap dapat memuat ulang secara manual.",
     "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
         "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
     },
@@ -3802,7 +3802,7 @@
             }
         }
     },
-    "autoReloadPromptDroppedTracks": "Ini akan menghapus {removedPercentage}% dari antrean({amountUndownloadedTracks} trek).",
+    "autoReloadPromptDroppedTracks": "Ini akan menghapus {removedPercentage}% trek dari antrean({amountUndownloadedTracks}).",
     "@autoReloadPromptDroppedTracks": {
         "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
         "placeholders": {
@@ -3824,11 +3824,11 @@
         "description": "Desktop only. Title of the setting that hides the window to the system tray when it is minimized"
     },
     "minimizeToTraySubtitle": "Sembunyikan jendela ke baki sistem ketika dikecilkan.",
-    "minimizeToTrayWaylandNote": "Sembunyikan jendela ke baki sistem ketika dikecilkan. Tidak didukung dalam Wayland, dimana Wayland tidak memberikan input kepada aplikasi ketika jendela dikecilkan. Gunakan \"Tutup ke baki sistem\" sebagai gantinya.",
+    "minimizeToTrayWaylandNote": "Sembunyikan jendela ke baki sistem ketika dikecilkan. Tidak didukung di Wayland, yang tidak memberitahukan aplikasi saat jendela dikecilkan. Gunakan \"Tutup ke baki sistem\" sebagai gantinya.",
     "@minimizeToTrayWaylandNote": {
         "description": "Subtitle of the minimize to tray setting when running on a Linux Wayland session, where minimizing cannot be detected"
     },
-    "startMinimizedToTrayTitle": "Mulai di baki sistem",
+    "startMinimizedToTrayTitle": "Mulai dalam baki sistem",
     "@startMinimizedToTrayTitle": {
         "description": "Desktop only. Title of the setting that starts Finamp with the window hidden in the system tray"
     },
@@ -3863,7 +3863,7 @@
     "@noMusicLibrariesLogout": {
         "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
     },
-    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Batasan Otomatis Penghapusan pada Muat Ulang Antrian Trek",
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Batasan Penghapusan Otomatis saat Muat Ulang Antrian Trek",
     "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
         "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
     }
