@@ -129,6 +129,17 @@ extension Color {
         ThemeStore.shared.scheme?.onSurfaceVariant ?? (ThemeStore.shared.isLight ? Color(white: 0.42) : Color(white: 0.62))
     }
     static var listFill: Color { ThemeStore.shared.isLight ? .black.opacity(0.045) : .white.opacity(0.09) }
+    // primaryContainer / onPrimaryContainer of Finamp's fixed schemes (lib/color_schemes.g.dart).
+    static var container: Color {
+        ThemeStore.shared.scheme?.container
+            ?? (ThemeStore.shared.isLight ? Color(red: 0xC4 / 255, green: 0xE8 / 255, blue: 0xFF / 255)
+                : Color(red: 0x00 / 255, green: 0x4C / 255, blue: 0x68 / 255))
+    }
+    static var onContainer: Color {
+        ThemeStore.shared.scheme?.onContainer
+            ?? (ThemeStore.shared.isLight ? Color(red: 0x00 / 255, green: 0x1E / 255, blue: 0x2C / 255)
+                : Color(red: 0xC3 / 255, green: 0xE7 / 255, blue: 0xFF / 255))
+    }
 }
 
 struct FinampLogoTile: View {

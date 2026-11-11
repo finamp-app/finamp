@@ -41,6 +41,7 @@ struct SettingsView: View {
                     .navigationTitle("Theme")
                     .containerBackground(Color.appBackground, for: .navigation)
                     .accentTitle()
+                    .finampBackButton()
                 } label: {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Theme")
@@ -61,6 +62,7 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
             .accentTitle()
+            .finampCloseButton(systemName: "chevron.left")
             // Override watchOS's white form text for the light theme.
             .foregroundStyle(Color.fgPrimary)
             .containerBackground(Color.appBackground, for: .navigation)

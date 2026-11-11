@@ -79,7 +79,7 @@ private struct PhoneDownloadButton: ViewModifier {
                                 Task { await download() }
                             }
                         } label: {
-                            UpperIcon(systemName: icon, color: downloaded ? Color.finampBlue : Color.fgPrimary)
+                            UpperIcon(systemName: icon)
                         }
                         .upperButtonStyle()
                         .accessibilityLabel(

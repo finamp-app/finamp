@@ -106,7 +106,6 @@ struct PlaybackPage: View {
 
     private var nowPlaying: NowPlaying { store.nowPlaying }
 
-    private var cornerIconColor: Color { artwork == nil ? Color.fgPrimary : .white }
 
     private var currentCover: LibraryItem {
         LibraryItem(
@@ -136,6 +135,7 @@ struct PlaybackPage: View {
         // Override watchOS's dark sheet background for the light theme.
         .sheet(isPresented: $showSystemPlayer) {
             OutputSheet()
+                .finampCloseButton()
                 .presentationBackground(Color.appBackground)
         }
         .sheet(isPresented: $showQueue) {
@@ -143,6 +143,7 @@ struct PlaybackPage: View {
                 showQueue = false
                 path = LibraryPath.opening(.artistAlbums(artist), in: path)
             })
+                .finampCloseButton()
                 .presentationBackground(Color.appBackground)
         }
     }
@@ -196,7 +197,7 @@ struct PlaybackPage: View {
                 Button {
                     showSystemPlayer = true
                 } label: {
-                    UpperIcon(systemName: "iphone", color: cornerIconColor)
+                    UpperIcon(systemName: "iphone")
                 }
                 .upperButtonStyle()
                 .accessibilityLabel("Output and Volume")
@@ -205,7 +206,7 @@ struct PlaybackPage: View {
                 Button {
                     showQueue = true
                 } label: {
-                    UpperIcon(systemName: "list.bullet", color: cornerIconColor)
+                    UpperIcon(systemName: "list.bullet")
                 }
                 .upperButtonStyle()
                 .accessibilityLabel("Queue")

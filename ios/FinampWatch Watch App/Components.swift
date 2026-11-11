@@ -32,32 +32,55 @@ struct LabeledIconButton: View {
     }
 }
 
-// The round buttons at the top of a page. With accent colours on they draw their own accent circle, and the icon is
-// coloured against that circle; otherwise watchOS's circle and the given icon colour.
+// The buttons at the top of a page and sheet draw Finamp's container tile, shaped like the logo tile, instead of
+// watchOS's glass circle: the accent scheme's with accent colours on, Finamp's fixed scheme otherwise.
 struct UpperIcon: View {
     let systemName: String
-    var color: Color = .fgPrimary
+    private let size: CGFloat = 34
 
     var body: some View {
-        if let scheme = ThemeStore.shared.scheme {
-            Image(systemName: systemName)
-                .foregroundStyle(scheme.onContainer)
-                .frame(width: 32, height: 32)
-                .background(scheme.container, in: Circle())
-        } else {
-            Image(systemName: systemName)
-                .foregroundStyle(color)
-        }
+        Image(systemName: systemName)
+            .foregroundStyle(Color.onContainer)
+            .frame(width: size, height: size)
+            .background(Color.container, in: RoundedRectangle(cornerRadius: size * 0.26))
     }
 }
 
 extension View {
-    // Drops watchOS's own circle when UpperIcon draws the accent one.
-    @ViewBuilder func upperButtonStyle() -> some View {
-        if ThemeStore.shared.scheme != nil {
-            buttonStyle(.plain)
-        } else {
-            self
+    // Drops watchOS's own circle; UpperIcon draws Finamp's.
+    func upperButtonStyle() -> some View {
+        buttonStyle(.plain)
+    }
+
+    // A sheet's close button as an UpperIcon instead of watchOS's glass one.
+    func finampCloseButton(systemName: String = "xmark") -> some View {
+        modifier(FinampDismissButton(systemName: systemName, label: "Close", placement: .cancellationAction))
+    }
+
+    // A pushed page's back button as an UpperIcon instead of watchOS's glass one.
+    func finampBackButton() -> some View {
+        navigationBarBackButtonHidden(true)
+            .modifier(FinampDismissButton(systemName: "chevron.left", label: "Back", placement: .topBarLeading))
+    }
+}
+
+private struct FinampDismissButton: ViewModifier {
+    let systemName: String
+    let label: LocalizedStringKey
+    let placement: ToolbarItemPlacement
+    @Environment(\.dismiss) private var dismiss
+
+    func body(content: Content) -> some View {
+        content.toolbar {
+            ToolbarItem(placement: placement) {
+                Button {
+                    dismiss()
+                } label: {
+                    UpperIcon(systemName: systemName)
+                }
+                .upperButtonStyle()
+                .accessibilityLabel(label)
+            }
         }
     }
 }
