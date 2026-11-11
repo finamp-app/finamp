@@ -1341,9 +1341,12 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setFollowRedirects(bool newFollowRedirects) {
+  static void setAutoReloadQueueMaxDroppedTracksPercentage(
+    int newAutoReloadQueueMaxDroppedTracksPercentage,
+  ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.followRedirects = newFollowRedirects;
+    finampSettingsTemp.autoReloadQueueMaxDroppedTracksPercentage =
+        newAutoReloadQueueMaxDroppedTracksPercentage;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -1802,9 +1805,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   );
   ProviderListenable<bool> get startMinimizedToTray => finampSettingsProvider
       .select((value) => value.requireValue.startMinimizedToTray);
-  ProviderListenable<bool> get followRedirects => finampSettingsProvider.select(
-    (value) => value.requireValue.followRedirects,
-  );
+  ProviderListenable<int> get autoReloadQueueMaxDroppedTracksPercentage =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.autoReloadQueueMaxDroppedTracksPercentage,
+      );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,
