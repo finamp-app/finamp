@@ -121,12 +121,12 @@ struct HomePage: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     // watchOS's input sheet supplies text only on submit.
                     TextFieldLink(prompt: Text("Search")) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundStyle(Color.fgPrimary)
+                        UpperIcon(systemName: "magnifyingglass")
                     } onSubmit: { text in
                         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
                         if !trimmed.isEmpty { path = LibraryPath.opening(.search(trimmed), in: path) }
                     }
+                    .upperButtonStyle()
                     .accessibilityLabel("Search")
                 }
             }

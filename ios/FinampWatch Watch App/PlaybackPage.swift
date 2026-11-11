@@ -196,18 +196,18 @@ struct PlaybackPage: View {
                 Button {
                     showSystemPlayer = true
                 } label: {
-                    Image(systemName: "iphone")
-                        .foregroundStyle(cornerIconColor)
+                    UpperIcon(systemName: "iphone", color: cornerIconColor)
                 }
+                .upperButtonStyle()
                 .accessibilityLabel("Output and Volume")
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showQueue = true
                 } label: {
-                    Image(systemName: "list.bullet")
-                        .foregroundStyle(cornerIconColor)
+                    UpperIcon(systemName: "list.bullet", color: cornerIconColor)
                 }
+                .upperButtonStyle()
                 .accessibilityLabel("Queue")
                 .disabled(!nowPlaying.hasTrack)
             }
@@ -518,6 +518,7 @@ struct QueueView: View {
             }
         }
         .navigationTitle("Now Playing")
+        .accentTitle()
         .task { await load() }
     }
 

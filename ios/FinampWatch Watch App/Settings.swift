@@ -40,6 +40,7 @@ struct SettingsView: View {
                     }
                     .navigationTitle("Theme")
                     .containerBackground(Color.appBackground, for: .navigation)
+                    .accentTitle()
                 } label: {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Theme")
@@ -50,8 +51,16 @@ struct SettingsView: View {
                     }
                 }
                 .listRowBackground(TrackRowBackground(isPlaying: false))
+                Section {
+                    Toggle("Accent Colors (Experimental)", isOn: $theme.accentColors)
+                        .listRowBackground(TrackRowBackground(isPlaying: false))
+                } footer: {
+                    Text("Uses your accent color from Finamp, with matching backgrounds. Turn it off for the original look.")
+                        .foregroundStyle(Color.fgSecondary)
+                }
             }
             .navigationTitle("Settings")
+            .accentTitle()
             // Override watchOS's white form text for the light theme.
             .foregroundStyle(Color.fgPrimary)
             .containerBackground(Color.appBackground, for: .navigation)

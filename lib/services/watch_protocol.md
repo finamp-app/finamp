@@ -55,7 +55,7 @@ Sent live while the watch app is reachable; the application context always holds
 |---|---|
 | `nowPlaying` | the now-playing dict |
 | `theme` | `light` or `dark`, from Finamp's theme setting |
-| `accent` | the accent colour Finamp shows in that theme (ARGB), from its accent setting |
+| `accent` | Finamp's colour scheme as ARGB (its `getColorScheme`, AMOLED included), `{light, dark}` each with `primary`, `surface`, `onSurface`, `onSurfaceVariant`, `container` (primaryContainer), `onContainer` (onPrimaryContainer) |
 | `account` | `user-id@server-id`, or empty when logged out |
 | `transcoding` | Finamp's transcoding setting |
 | `offline` | Finamp's Offline Mode |

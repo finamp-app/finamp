@@ -79,9 +79,9 @@ private struct PhoneDownloadButton: ViewModifier {
                                 Task { await download() }
                             }
                         } label: {
-                            Image(systemName: icon)
-                                .foregroundStyle(downloaded ? Color.finampBlue : Color.fgPrimary)
+                            UpperIcon(systemName: icon, color: downloaded ? Color.finampBlue : Color.fgPrimary)
                         }
+                        .upperButtonStyle()
                         .accessibilityLabel(
                             downloaded ? String(localized: "Downloaded on iPhone")
                                 : locked ? String(localized: "Downloaded as part of another download")

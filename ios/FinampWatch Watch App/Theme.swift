@@ -1,8 +1,8 @@
 import SwiftUI
 
 extension Color {
-    // Follows phone accent, falling back to Jellyfin blue.
-    static var finampBlue: Color { ThemeStore.shared.accent ?? jellyfinBlue }
+    // Finamp's accent with accent colours on; the original fixed blue otherwise.
+    static var finampBlue: Color { ThemeStore.shared.scheme?.primary ?? jellyfinBlue }
     static let jellyfinBlue = Color(red: 0x00 / 255, green: 0xA4 / 255, blue: 0xDC / 255)
     static let finampPurple = Color(red: 0xAA / 255, green: 0x5C / 255, blue: 0xC3 / 255)
 }
@@ -48,20 +48,28 @@ final class ThemeStore {
         }
     }
 
-    // Retain the accent for launches before the phone replies.
-    private var accentARGB = UserDefaults.standard.object(forKey: "accentARGB") as? Int {
-        didSet { UserDefaults.standard.set(accentARGB, forKey: "accentARGB") }
+    // Experimental: Finamp's accent colours and tinted backgrounds instead of the original design.
+    var accentColors = UserDefaults.standard.bool(forKey: "accentColors") {
+        didSet { UserDefaults.standard.set(accentColors, forKey: "accentColors") }
     }
 
-    var accent: Color? {
-        accentARGB.map { argb in
-            Color(red: Double((argb >> 16) & 0xFF) / 255, green: Double((argb >> 8) & 0xFF) / 255, blue: Double(argb & 0xFF) / 255)
-        }
+    // Finamp's light and dark schemes as ARGB, kept for launches before the phone replies.
+    private var schemes = UserDefaults.standard.dictionary(forKey: "accentSchemes") as? [String: [String: Int]] ?? [:] {
+        didSet { UserDefaults.standard.set(schemes, forKey: "accentSchemes") }
+    }
+
+    // nil draws the original design.
+    var scheme: AccentScheme? {
+        guard accentColors, let colors = schemes[isLight ? "light" : "dark"] else { return nil }
+        return AccentScheme(colors)
     }
 
     func applyAccent(_ value: Any?) {
-        guard let argb = (value as? NSNumber)?.intValue, argb != accentARGB else { return }
-        accentARGB = argb
+        guard let value = value as? [String: Any] else { return }
+        let parsed = value.compactMapValues { colors in
+            (colors as? [String: Any])?.compactMapValues { ($0 as? NSNumber)?.intValue }
+        }
+        if parsed != schemes { schemes = parsed }
     }
 
     func apply(_ theme: Any?) {
@@ -98,10 +106,28 @@ final class AccountStore {
     }
 }
 
+// The colours of Finamp's scheme the watch draws with, used in the same Material pairs as Finamp's screens.
+struct AccentScheme {
+    let primary, surface, onSurface, onSurfaceVariant, container, onContainer: Color
+
+    init?(_ argb: [String: Int]) {
+        func color(_ name: String) -> Color? {
+            argb[name].map { Color(red: Double(($0 >> 16) & 0xFF) / 255, green: Double(($0 >> 8) & 0xFF) / 255, blue: Double($0 & 0xFF) / 255) }
+        }
+        guard let primary = color("primary"), let surface = color("surface"), let onSurface = color("onSurface"),
+              let onSurfaceVariant = color("onSurfaceVariant"), let container = color("container"),
+              let onContainer = color("onContainer") else { return nil }
+        (self.primary, self.surface, self.onSurface) = (primary, surface, onSurface)
+        (self.onSurfaceVariant, self.container, self.onContainer) = (onSurfaceVariant, container, onContainer)
+    }
+}
+
 extension Color {
-    static var appBackground: Color { ThemeStore.shared.isLight ? .white : .black }
-    static var fgPrimary: Color { ThemeStore.shared.isLight ? .black : .white }
-    static var fgSecondary: Color { ThemeStore.shared.isLight ? Color(white: 0.42) : Color(white: 0.62) }
+    static var appBackground: Color { ThemeStore.shared.scheme?.surface ?? (ThemeStore.shared.isLight ? .white : .black) }
+    static var fgPrimary: Color { ThemeStore.shared.scheme?.onSurface ?? (ThemeStore.shared.isLight ? .black : .white) }
+    static var fgSecondary: Color {
+        ThemeStore.shared.scheme?.onSurfaceVariant ?? (ThemeStore.shared.isLight ? Color(white: 0.42) : Color(white: 0.62))
+    }
     static var listFill: Color { ThemeStore.shared.isLight ? .black.opacity(0.045) : .white.opacity(0.09) }
 }
 
@@ -138,6 +164,19 @@ extension View {
 
 private struct ThemedBackground: ViewModifier {
     func body(content: Content) -> some View {
-        content.containerBackground(Color.appBackground, for: .navigation)
+        content
+            .containerBackground(Color.appBackground, for: .navigation)
+            .accentTitle()
+    }
+}
+
+extension View {
+    // watchOS draws titles in the asset's fixed accent; with accent colours on, use Finamp's.
+    @ViewBuilder func accentTitle() -> some View {
+        if let scheme = ThemeStore.shared.scheme {
+            toolbarForegroundStyle(scheme.primary, for: .navigationBar)
+        } else {
+            self
+        }
     }
 }

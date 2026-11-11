@@ -243,6 +243,7 @@ class WatchHandler {
       container
           .listen(finampSettingsProvider.useSystemAccentColor, (_, _) => _pushIfChanged('accent', _accent()))
           .close,
+      container.listen(finampSettingsProvider.amoledTheme, (_, _) => _pushIfChanged('accent', _accent())).close,
       // Address changes also fire user provider; only account change clears cache.
       container.listen(FinampUserHelper.finampCurrentUserProvider, (_, _) {
         final account = _account();
@@ -563,12 +564,12 @@ class WatchHandler {
   static final Map<String, Object> _lastPushedValues = {};
 
   static void _pushIfChanged(String key, Object value) {
-    if (_lastPushedValues[key] == value) return;
+    if (const DeepCollectionEquality().equals(_lastPushedValues[key], value)) return;
     _lastPushedValues[key] = value;
     unawaited(
       _watchChannel.invokeMethod(key, value).catchError((Object error) {
         // Forget it so the next push tries again
-        if (_lastPushedValues[key] == value) _lastPushedValues.remove(key);
+        if (identical(_lastPushedValues[key], value)) _lastPushedValues.remove(key);
         _logger.warning("Couldn't push the $key to the watch: $error");
       }),
     );
@@ -580,11 +581,24 @@ class WatchHandler {
     return user == null ? "" : "${user.id}@${user.serverId}";
   }
 
-  static int _accent() {
+  // Finamp's colour scheme for each theme, exactly as its app theme builds it (getColorScheme), as ARGB, so the watch
+  // can follow its own theme choice and use the same Material pairs Finamp's screens do.
+  static Map<String, Object> _accent() {
     final settings = FinampSettingsHelper.finampSettings;
     final seed = settings.useSystemAccentColor ? settings.systemAccentColor : settings.accentColor;
-    final brightness = _theme() == 'light' ? ui.Brightness.light : ui.Brightness.dark;
-    return getColorScheme(seed, brightness, settings.amoledTheme).primary.toARGB32();
+    Map<String, int> colors(ui.Brightness brightness) {
+      final scheme = getColorScheme(seed, brightness, settings.amoledTheme);
+      return {
+        'primary': scheme.primary.toARGB32(),
+        'surface': scheme.surface.toARGB32(),
+        'onSurface': scheme.onSurface.toARGB32(),
+        'onSurfaceVariant': scheme.onSurfaceVariant.toARGB32(),
+        'container': scheme.primaryContainer.toARGB32(),
+        'onContainer': scheme.onPrimaryContainer.toARGB32(),
+      };
+    }
+
+    return {'light': colors(ui.Brightness.light), 'dark': colors(ui.Brightness.dark)};
   }
 
   static String _theme() {

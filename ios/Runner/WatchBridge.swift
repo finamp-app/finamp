@@ -20,7 +20,7 @@ extension AppDelegate {
             switch call.method {
             case "nowPlaying" where call.arguments is [String: Any],
                  "theme" where call.arguments is String,
-                 "accent" where call.arguments is Int,
+                 "accent" where call.arguments is [String: Any],
                  "account" where call.arguments is String,
                  "transcoding" where call.arguments is Bool,
                  "offline" where call.arguments is Bool,

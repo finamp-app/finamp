@@ -32,6 +32,36 @@ struct LabeledIconButton: View {
     }
 }
 
+// The round buttons at the top of a page. With accent colours on they draw their own accent circle, and the icon is
+// coloured against that circle; otherwise watchOS's circle and the given icon colour.
+struct UpperIcon: View {
+    let systemName: String
+    var color: Color = .fgPrimary
+
+    var body: some View {
+        if let scheme = ThemeStore.shared.scheme {
+            Image(systemName: systemName)
+                .foregroundStyle(scheme.onContainer)
+                .frame(width: 32, height: 32)
+                .background(scheme.container, in: Circle())
+        } else {
+            Image(systemName: systemName)
+                .foregroundStyle(color)
+        }
+    }
+}
+
+extension View {
+    // Drops watchOS's own circle when UpperIcon draws the accent one.
+    @ViewBuilder func upperButtonStyle() -> some View {
+        if ThemeStore.shared.scheme != nil {
+            buttonStyle(.plain)
+        } else {
+            self
+        }
+    }
+}
+
 struct RetryView: View {
     let message: String
     let retry: () async -> Void
