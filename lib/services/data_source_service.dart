@@ -18,7 +18,13 @@ enum SourceChangeGenericType { network, transcoding }
 
 enum SourceChangeType { toLocalUrl, toRemoteUrl, toOffline, toOnline, toDirectPlay, toTranscoding }
 
-enum NetworkQueueReloadAction { none, automatic, manualPrompt, manualLossLimitExceeded, manualCurrentTrackNotDownloaded }
+enum NetworkQueueReloadAction {
+  none,
+  automatic,
+  manualPrompt,
+  manualLossLimitExceeded,
+  manualCurrentTrackNotDownloaded,
+}
 
 NetworkQueueReloadAction decideNetworkQueueReloadAction(SourceChangeType event, FinampQueueInfo queueInfo) {
   // Returning online does not alter the active queue: Finamp already prefers
