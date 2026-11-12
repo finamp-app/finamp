@@ -27,6 +27,19 @@ enum ServerPingType { local, remote, active }
 bool shouldNotifyPausedDownloads({
   required FinampConnectivityState? previousState,
   required FinampConnectivityState currentState,
+}) {
+  return isPausedDownloadNotificationApplicable(
+    previousState: previousState,
+    currentState: currentState,
+    activeDownloads: _getDownloads(),
+    requireWifiForDownloads: FinampSettingsHelper.finampSettings.requireWifiForDownloads,
+    isMobilePlatform: Platform.isAndroid || Platform.isIOS,
+  );
+}
+
+bool isPausedDownloadNotificationApplicable({
+  required FinampConnectivityState? previousState,
+  required FinampConnectivityState currentState,
   required int activeDownloads,
   required bool requireWifiForDownloads,
   required bool isMobilePlatform,
@@ -74,13 +87,7 @@ Future<void> startNetworkAutomation() async {
     final state = value.value;
     if (state == null) return;
 
-    if (shouldNotifyPausedDownloads(
-      previousState: previous?.value,
-      currentState: state,
-      activeDownloads: _getDownloads(),
-      requireWifiForDownloads: FinampSettingsHelper.finampSettings.requireWifiForDownloads,
-      isMobilePlatform: Platform.isAndroid || Platform.isIOS,
-    )) {
+    if (shouldNotifyPausedDownloads(previousState: previous?.value, currentState: state)) {
       GlobalSnackbar.message((context) => AppLocalizations.of(context)!.downloadPaused);
     }
 

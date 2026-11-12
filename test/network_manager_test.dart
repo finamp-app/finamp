@@ -2,10 +2,10 @@ import 'package:finamp/services/network_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('shouldNotifyPausedDownloads', () {
+  group('isPausedDownloadNotificationApplicable', () {
     test('warns when Wi-Fi-only downloads pause after a local-to-cellular hand-off', () {
       expect(
-        shouldNotifyPausedDownloads(
+        isPausedDownloadNotificationApplicable(
           previousState: FinampConnectivityState.localNetwork,
           currentState: FinampConnectivityState.cellular,
           activeDownloads: 1,
@@ -18,7 +18,7 @@ void main() {
 
     test('does not warn for Offline Mode or a non-cellular hand-off', () {
       expect(
-        shouldNotifyPausedDownloads(
+        isPausedDownloadNotificationApplicable(
           previousState: FinampConnectivityState.none,
           currentState: FinampConnectivityState.localNetwork,
           activeDownloads: 1,
@@ -28,7 +28,7 @@ void main() {
         isFalse,
       );
       expect(
-        shouldNotifyPausedDownloads(
+        isPausedDownloadNotificationApplicable(
           previousState: FinampConnectivityState.localNetwork,
           currentState: FinampConnectivityState.none,
           activeDownloads: 1,
@@ -38,7 +38,7 @@ void main() {
         isFalse,
       );
       expect(
-        shouldNotifyPausedDownloads(
+        isPausedDownloadNotificationApplicable(
           previousState: FinampConnectivityState.cellular,
           currentState: FinampConnectivityState.localNetwork,
           activeDownloads: 1,
@@ -51,7 +51,7 @@ void main() {
 
     test('does not warn without active downloads, Wi-Fi-only downloads, or a mobile platform', () {
       expect(
-        shouldNotifyPausedDownloads(
+        isPausedDownloadNotificationApplicable(
           previousState: FinampConnectivityState.localNetwork,
           currentState: FinampConnectivityState.cellular,
           activeDownloads: 0,
@@ -61,7 +61,7 @@ void main() {
         isFalse,
       );
       expect(
-        shouldNotifyPausedDownloads(
+        isPausedDownloadNotificationApplicable(
           previousState: FinampConnectivityState.localNetwork,
           currentState: FinampConnectivityState.cellular,
           activeDownloads: 1,
@@ -71,7 +71,7 @@ void main() {
         isFalse,
       );
       expect(
-        shouldNotifyPausedDownloads(
+        isPausedDownloadNotificationApplicable(
           previousState: FinampConnectivityState.localNetwork,
           currentState: FinampConnectivityState.cellular,
           activeDownloads: 1,
