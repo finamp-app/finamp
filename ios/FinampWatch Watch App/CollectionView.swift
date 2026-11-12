@@ -70,7 +70,7 @@ struct CollectionView: View {
                     if type == "favorites" {
                         FavoritesLogo(symbol: LibraryKind.tracks.placeholderSymbol)
                     } else {
-                        CoverView(item: collection, placeholderSymbol: coverSymbol)
+                        CoverView(item: collection)
                     }
                 }
                 .containerRelativeFrame(.horizontal) { width, _ in width * 0.42 }
@@ -84,7 +84,7 @@ struct CollectionView: View {
                         Marquee {
                             HStack(spacing: 8) {
                                 ForEach(headerArtists) { artist in
-                                    ArtistLabel(artist: artist, color: .finampBlue)
+                                    ArtistChip(artist: artist)
                                     .contentShape(Rectangle())
                                     .onTapGesture { open(.artistAlbums(artist)) }
                                     .accessibilityAddTraits(.isButton)
@@ -117,8 +117,7 @@ struct CollectionView: View {
                 if type != "favorites" {
                     LabeledIconButton(
                         title: "Like",
-                        systemImage: collectionFavorite ? "heart.fill" : "heart",
-                        tint: collectionFavorite ? .finampPurple : .finampBlue
+                        systemImage: collectionFavorite ? "heart.fill" : "heart"
                     ) { await FavoriteOverrides.shared.toggle(collection) }
                 }
             }
@@ -143,14 +142,6 @@ struct CollectionView: View {
         let count = trackCount == 1 ? String(localized: "1 track") : String(localized: "\(trackCount) tracks")
         let total = collection.duration > 0 ? collection.duration : tracks.reduce(0) { $0 + $1.duration }
         return total > 0 ? "\(count) · \(formatDuration(total))" : count
-    }
-
-    private var coverSymbol: String {
-        switch type {
-        case "favorites": return "heart.fill"
-        case "playlists": return LibraryKind.playlists.placeholderSymbol
-        default: return LibraryKind.albums.placeholderSymbol
-        }
     }
 
     private func load() async {

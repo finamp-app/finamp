@@ -29,6 +29,7 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 | `quickAction` | `index`, `action` | `true` (refused if Finamp's list changed) |
 | `output` | — | `{route, routeType, volume}` |
 | `setVolume` | `volume` 0…1 | `true` |
+| `seek` | `position` (seconds) | `true` |
 | `settings` | — | `{transcoding, offline}` |
 | `setSetting` | `name` (`transcoding` \| `offline`), `enabled` | `true`, or `{reload, reloadButton, archive}` when Finamp asks to reload the queue |
 | `reloadQueue` | `archive` | `true` |
@@ -39,8 +40,9 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 trackCount, favorite, downloaded, downloadLock?, kind, artists?}`.
 
 **Now playing:** `{hasTrack, id, title, artist, artworkKey, artworkUrl, blurHash, albumId, album, albumArtist,
-albumArtistId, artists, audio, duration, position, updatedAt, playing, advancing, loop, shuffled, radio, radioAvailable,
-favorite, upNext, theme}`; `upNext`
+albumArtistId, artists, features, duration, position, updatedAt, playing, advancing, loop, shuffled, radio, radioAvailable,
+favorite, upNext, theme}`; `features` holds the player's feature chips as Finamp's player shows them
+(the user's chip settings, in their order; `E` for explicit, empty with chips turned off); `upNext`
 holds the next two tracks' `{id, artworkKey, artworkUrl}` so the watch can load their covers ahead. The watch counts
 `position` on from `updatedAt` only while `advancing` (playing and not loading or buffering), so its time stops with
 the phone's when a track can't load; `playing` still sets the play/pause button. `loop` (`none` \| `one` \| `all`),
@@ -55,7 +57,7 @@ Sent live while the watch app is reachable; the application context always holds
 |---|---|
 | `nowPlaying` | the now-playing dict |
 | `theme` | `light` or `dark`, from Finamp's theme setting |
-| `accent` | Finamp's colour scheme as ARGB (its `getColorScheme`, AMOLED included), `{light, dark}` each with `primary`, `onPrimary`, `surface`, `onSurface`, `onSurfaceVariant`, `container` (primaryContainer), `onContainer` (onPrimaryContainer) |
+| `accent` | Finamp's colour scheme as ARGB (its `getColorScheme`, AMOLED included), `{light, dark}` each with `primary`, `onPrimary`, `surface`, `onSurface`, `onSurfaceVariant` |
 | `account` | `user-id@server-id`, or empty when logged out |
 | `transcoding` | Finamp's transcoding setting |
 | `offline` | Finamp's Offline Mode |

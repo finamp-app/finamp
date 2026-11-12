@@ -8,6 +8,7 @@ import 'package:audio_service/audio_service.dart' show AudioProcessingState;
 import 'package:audio_session/audio_session.dart';
 import 'package:chopper/chopper.dart' show Response;
 import 'package:collection/collection.dart';
+import 'package:file_sizes/file_sizes.dart';
 import 'package:finamp/color_schemes.g.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/models/finamp_models.dart';
@@ -125,6 +126,12 @@ class WatchHandler {
               (arguments['volume'] as num).toDouble().clamp(0.0, 1.0),
             );
             return true;
+          case 'seek':
+            final seconds = (arguments['position'] as num).toDouble();
+            await GetIt.instance<MusicPlayerBackgroundTask>().seek(
+              Duration(milliseconds: max(0, (seconds * 1000).round())),
+            );
+            return true;
           case 'watchState':
             arguments['available'] == true ? _startPushing() : _stopPushing();
             return true;
@@ -234,6 +241,11 @@ class WatchHandler {
       GetIt.instance<QueueService>().getPlaybackOrderStream().listen((_) => _scheduleNowPlayingPush()).cancel,
       container.listen(finampSettingsProvider.radioEnabled, (_, _) => _scheduleNowPlayingPush()).close,
       container.listen(currentRadioAvailabilityStatusProvider, (_, _) => _scheduleNowPlayingPush()).close,
+      // The feature chips
+      container.listen(finampSettingsProvider.featureChipsConfiguration, (_, _) => _scheduleNowPlayingPush()).close,
+      container.listen(finampSettingsProvider.playbackSpeed, (_, _) => _scheduleNowPlayingPush()).close,
+      container.listen(finampSettingsProvider.currentVolume, (_, _) => _scheduleNowPlayingPush()).close,
+      container.listen(finampSettingsProvider.volumeNormalizationActive, (_, _) => _scheduleNowPlayingPush()).close,
       container.listen(brightnessProvider, (_, _) {
         _pushIfChanged('theme', _theme());
         _pushIfChanged('accent', _accent());
@@ -364,7 +376,7 @@ class WatchHandler {
       'albumArtist': item.albumArtists?.firstOrNull?.name ?? item.albumArtist ?? "",
       'albumArtistId': item.albumArtists?.firstOrNull?.id.raw ?? "",
       'artists': _artists(item.artistItems),
-      'audio': _audioInfo(current),
+      'features': _features(current),
       'duration': (current.item.duration ?? item.runTimeTicksDuration() ?? Duration.zero).inMilliseconds / 1000,
       'position': playbackState.position.inMilliseconds / 1000,
       'updatedAt': now.millisecondsSinceEpoch / 1000,
@@ -594,8 +606,6 @@ class WatchHandler {
         'surface': scheme.surface.toARGB32(),
         'onSurface': scheme.onSurface.toARGB32(),
         'onSurfaceVariant': scheme.onSurfaceVariant.toARGB32(),
-        'container': scheme.primaryContainer.toARGB32(),
-        'onContainer': scheme.onPrimaryContainer.toARGB32(),
       };
     }
 
@@ -800,29 +810,76 @@ class WatchHandler {
         .toString();
   }
 
-  static String _audioInfo(FinampQueueItem current) {
-    final metadata = GetIt.instance<ProviderContainer>().read(currentTrackMetadataProvider).valueOrNull;
-    if (metadata == null) return "";
+  // The player's feature chips as FeatureState.features builds them, in the user's configured order.
+  static List<String> _features(FinampQueueItem current) {
     final settings = FinampSettingsHelper.finampSettings;
-    final transcoding = !metadata.isDownloaded && (current.item.extras?["shouldTranscode"] as bool? ?? false);
-    final MediaStream? audioStream =
-        metadata.mediaSourceInfo.mediaStreams.firstWhereOrNull((stream) => stream.type == "Audio") ??
-        metadata.mediaSourceInfo.mediaStreams.firstOrNull;
-    final codec = transcoding ? settings.transcodingStreamingFormat.codec : audioStream?.codec;
-    final bitrate = transcoding
-        ? (settings.transcodingStreamingFormat == FinampTranscodingStreamingFormat.flacFragmentedMp4
-              ? null
-              : settings.transcodeBitrate)
-        : audioStream?.bitRate ?? metadata.mediaSourceInfo.bitrate;
+    final configuration = settings.featureChipsConfiguration;
+    if (!configuration.enabled) return const [];
     final l10n = GlobalSnackbar.requireL10n;
-    final mode = metadata.isDownloaded
-        ? l10n.playbackModeLocal
-        : (transcoding ? l10n.playbackModeTranscoding : l10n.playbackModeDirectPlaying);
-    final format = [
-      if (codec != null) codec.toUpperCase(),
-      if (bitrate != null) l10n.kiloBitsPerSecondLabel(bitrate ~/ 1000),
-    ].join(" @ ");
-    return [mode, if (format.isNotEmpty) format].join(" · ");
+    final metadata = GetIt.instance<ProviderContainer>().read(currentTrackMetadataProvider).valueOrNull;
+    final item = current.baseItem;
+    final isDownloaded = metadata?.isDownloaded ?? false;
+    final transcoding = !isDownloaded && (current.item.extras?["shouldTranscode"] as bool? ?? false);
+    final format = settings.transcodingStreamingFormat;
+    final MediaStream? audioStream =
+        metadata?.mediaSourceInfo.mediaStreams.firstWhereOrNull((stream) => stream.type == "Audio") ??
+        metadata?.mediaSourceInfo.mediaStreams.firstOrNull;
+    final codec = transcoding ? format.codec : audioStream?.codec ?? l10n.unknown;
+    final bitrate = transcoding
+        ? (format == FinampTranscodingStreamingFormat.flacFragmentedMp4 ? null : settings.transcodeBitrate)
+        : audioStream?.bitRate ?? metadata?.mediaSourceInfo.bitrate;
+    final sampleRate = transcoding ? format.sampleRate : audioStream?.sampleRate;
+    final bitDepth = transcoding
+        ? (format.lossless ? metadata?.mediaSourceInfo.mediaStreams.firstOrNull?.bitDepth : null)
+        : audioStream?.bitDepth;
+    final size = transcoding ? null : metadata?.mediaSourceInfo.size;
+    final enabled = configuration.features;
+    final speed = GetIt.instance<QueueService>().playbackSpeed;
+
+    var codecAdded = false;
+    final features = <String>[
+      if (speed != 1.0) l10n.playbackSpeedFeatureText(speed),
+      if (settings.currentVolume != 1.0) l10n.currentVolumeFeatureText((settings.currentVolume * 100).floor()),
+    ];
+    for (final feature in enabled) {
+      if (feature == FinampFeatureChipType.explicit && item.isExplicit) features.add("E");
+      final playCount = item.userData?.playCount;
+      if (feature == FinampFeatureChipType.playCount && playCount != null) features.add(l10n.playCountValue(playCount));
+      if (feature == FinampFeatureChipType.additionalPeople) {
+        for (final person in metadata?.people ?? item.people ?? const <BaseItemPerson>[]) {
+          final role = (person.role?.isNotEmpty ?? false) ? person.role : person.type;
+          if (role?.isNotEmpty ?? false) features.add("$role: ${person.name}");
+        }
+      }
+      if (feature == FinampFeatureChipType.playbackMode) {
+        features.add(
+          isDownloaded
+              ? l10n.playbackModeLocal
+              : (transcoding ? l10n.playbackModeTranscoding : l10n.playbackModeDirectPlaying),
+        );
+      }
+      if (metadata == null) continue;
+      // One chip for both settings, added at whichever comes first
+      if ((feature == FinampFeatureChipType.codec || feature == FinampFeatureChipType.bitRate) && !codecAdded) {
+        codecAdded = true;
+        final showCodec = enabled.contains(FinampFeatureChipType.codec);
+        final showBitrate = enabled.contains(FinampFeatureChipType.bitRate) && bitrate != null;
+        features.add(
+          "${showCodec ? codec.toUpperCase() : ""}${showCodec && showBitrate ? " @ " : ""}"
+          "${showBitrate ? l10n.kiloBitsPerSecondLabel(bitrate ~/ 1000) : ""}",
+        );
+      }
+      if (feature == FinampFeatureChipType.bitDepth && bitDepth != null) features.add(l10n.numberAsBit(bitDepth));
+      if (feature == FinampFeatureChipType.sampleRate && sampleRate != null) {
+        features.add(l10n.numberAsKiloHertz(sampleRate / 1000.0));
+      }
+      if (feature == FinampFeatureChipType.size && size != null) features.add(FileSize.getSize(size));
+      if (feature == FinampFeatureChipType.normalizationGain && settings.volumeNormalizationActive) {
+        final gain = getGainForCurrentPlayback(current.item, item);
+        if (gain != null) features.add(l10n.numberAsDecibel(double.parse(gain.toStringAsFixed(1))));
+      }
+    }
+    return features;
   }
 
   static Future<Map<String, Object>> _output() async {

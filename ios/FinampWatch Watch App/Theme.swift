@@ -114,18 +114,17 @@ final class AccountStore {
 
 // The colours of Finamp's scheme the watch draws with, used in the same Material pairs as Finamp's screens.
 struct AccentScheme {
-    let primary, onPrimary, surface, onSurface, onSurfaceVariant, container, onContainer: Color
+    let primary, onPrimary, surface, onSurface, onSurfaceVariant: Color
 
     init?(_ argb: [String: Int]) {
         func color(_ name: String) -> Color? {
             argb[name].map { Color(red: Double(($0 >> 16) & 0xFF) / 255, green: Double(($0 >> 8) & 0xFF) / 255, blue: Double($0 & 0xFF) / 255) }
         }
         guard let primary = color("primary"), let surface = color("surface"), let onSurface = color("onSurface"),
-              let onSurfaceVariant = color("onSurfaceVariant"), let container = color("container"),
-              let onContainer = color("onContainer") else { return nil }
+              let onSurfaceVariant = color("onSurfaceVariant") else { return nil }
         (self.primary, self.surface, self.onSurface) = (primary, surface, onSurface)
         onPrimary = color("onPrimary") ?? .white
-        (self.onSurfaceVariant, self.container, self.onContainer) = (onSurfaceVariant, container, onContainer)
+        self.onSurfaceVariant = onSurfaceVariant
     }
 }
 
@@ -136,17 +135,6 @@ extension Color {
         ThemeStore.shared.scheme?.onSurfaceVariant ?? (ThemeStore.shared.isLight ? Color(white: 0.42) : Color(white: 0.62))
     }
     static var listFill: Color { ThemeStore.shared.isLight ? .black.opacity(0.045) : .white.opacity(0.09) }
-    // primaryContainer / onPrimaryContainer of Finamp's fixed schemes (lib/color_schemes.g.dart).
-    static var container: Color {
-        ThemeStore.shared.scheme?.container
-            ?? (ThemeStore.shared.isLight ? Color(red: 0xC4 / 255, green: 0xE8 / 255, blue: 0xFF / 255)
-                : Color(red: 0x00 / 255, green: 0x4C / 255, blue: 0x68 / 255))
-    }
-    static var onContainer: Color {
-        ThemeStore.shared.scheme?.onContainer
-            ?? (ThemeStore.shared.isLight ? Color(red: 0x00 / 255, green: 0x1E / 255, blue: 0x2C / 255)
-                : Color(red: 0xC3 / 255, green: 0xE7 / 255, blue: 0xFF / 255))
-    }
 }
 
 struct FinampLogoTile: View {

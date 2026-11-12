@@ -183,33 +183,41 @@ final class ArtworkStore {
     }
 }
 
+// Finamp's AlbumImage: the background colour while loading, Material's album icon when there is no cover.
 struct CoverView: View {
     let item: LibraryItem
-    let placeholderSymbol: String
     var circular = false
+    // Unrounded, for a container that clips it (the artist chip).
+    var square = false
     @State private var image: UIImage?
+    @State private var missing = false
     // Round sizes to share cached covers across similar slots.
     @State private var pixelSize = 0
     @Environment(\.displayScale) private var displayScale
 
     var body: some View {
         Rectangle()
-            .fill(.finampGradient)
+            .fill(Color.appBackground)
             .overlay {
                 if let image {
                     Image(uiImage: image).resizable().scaledToFill()
                 } else if let blur = BlurHash.image(item.blurHash) {
                     Image(uiImage: blur).resizable().scaledToFill()
-                } else {
-                    Image(systemName: placeholderSymbol)
-                        .font(.title2)
-                        .fixedIconSize()
-                        .foregroundStyle(.white)
+                } else if missing || item.artworkKey.isEmpty {
+                    // Icon at Finamp's 24 pt in a list tile's 56 pt cover.
+                    GeometryReader { proxy in
+                        Image("material-album")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: proxy.size.width * 0.43)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    .foregroundStyle(Color.fgPrimary)
                 }
             }
             .animation(.easeIn(duration: 0.7), value: image)
             .aspectRatio(1, contentMode: .fit)
-            .clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 8)))
+            .clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: square ? 0 : 8)))
             .onGeometryChange(for: Int.self) { proxy in
                 Int((proxy.size.width * displayScale / 20).rounded(.up)) * 20
             } action: { pixelSize = $0 }
@@ -217,6 +225,7 @@ struct CoverView: View {
                 if item.artworkKey.isEmpty { image = nil }
                 guard pixelSize > 0, !item.artworkKey.isEmpty else { return }
                 image = await ArtworkStore.shared.image(for: item, size: pixelSize)
+                missing = image == nil && !Task.isCancelled
             }
     }
 }

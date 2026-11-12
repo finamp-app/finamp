@@ -15,7 +15,8 @@ struct NowPlaying: Equatable {
     var albumArtist = ""
     var albumArtistID = ""
     var artists: [LibraryItem] = []
-    var audio = ""
+    // Finamp's player feature chips, as the user configured them ("E" is the explicit chip).
+    var features: [String] = []
     var duration: Double = 0
     var position: Double = 0
     var updatedAt = Date()
@@ -59,7 +60,7 @@ final class NowPlayingStore {
             albumArtist: state["albumArtist"] as? String ?? "",
             albumArtistID: state["albumArtistId"] as? String ?? "",
             artists: LibraryItem.artists(from: state["artists"]),
-            audio: state["audio"] as? String ?? "",
+            features: state["features"] as? [String] ?? [],
             duration: state["duration"] as? Double ?? 0,
             position: state["position"] as? Double ?? 0,
             updatedAt: Date(timeIntervalSince1970: state["updatedAt"] as? Double ?? Date().timeIntervalSince1970),
@@ -96,6 +97,8 @@ struct PlaybackPage: View {
     @State private var artworkAlbum = ""
     @State private var showSystemPlayer = false
     @State private var showQueue = false
+    // The bar's position (0…1) while it's being dragged.
+    @State private var scrub: Double?
     @State private var crownVolume = PhoneVolume.shared.value ?? 1
     @State private var showVolume = false
     @State private var hideVolume: Task<Void, Never>?
@@ -135,7 +138,6 @@ struct PlaybackPage: View {
         // Override watchOS's dark sheet background for the light theme.
         .sheet(isPresented: $showSystemPlayer) {
             OutputSheet()
-                .finampCloseButton()
                 .presentationBackground(Color.appBackground)
         }
         .sheet(isPresented: $showQueue) {
@@ -143,7 +145,6 @@ struct PlaybackPage: View {
                 showQueue = false
                 path = LibraryPath.opening(.artistAlbums(artist), in: path)
             })
-                .finampCloseButton()
                 .presentationBackground(Color.appBackground)
         }
     }
@@ -197,7 +198,7 @@ struct PlaybackPage: View {
                 Button {
                     showSystemPlayer = true
                 } label: {
-                    UpperIcon(systemName: "iphone")
+                    UpperIcon(systemName: "hifispeaker")
                 }
                 .upperButtonStyle()
                 .accessibilityLabel("Output and Volume")
@@ -287,65 +288,97 @@ struct PlaybackPage: View {
         }
     }
 
+    // One rule for every watch and text size: the gaps shrink from 9 to 3 pt when the screen is short, and when even
+    // that doesn't fit, the feature chips are dropped first.
     private var controls: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Spacer(minLength: 0)
-            HStack(alignment: .bottom, spacing: 6) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Marquee {
-                        Text(nowPlaying.title)
-                            .font(.system(size: titleSize))
-                            .lineLimit(1)
-                    }
-                    artistLine
-                }
-                Spacer(minLength: 0)
-                Button {
-                    // Capture track ID before sending; phone favourite state is authoritative.
-                    let id = nowPlaying.id
-                    let new = !nowPlaying.favorite
-                    store.nowPlaying.favorite = new
-                    Task {
-                        do {
-                            let result = try await PhoneConnection.shared.setFavorite(id, new)
-                            if store.nowPlaying.id == id { store.nowPlaying.favorite = result }
-                            FavoriteOverrides.shared.phoneReported(id, result)
-                        } catch {
-                            if store.nowPlaying.id == id { store.nowPlaying.favorite = !new }
-                            PhoneMessage.shared.text = error.localizedDescription
-                        }
-                    }
-                } label: {
-                    Image(systemName: nowPlaying.favorite ? "heart.fill" : "heart")
-                        .font(.body.weight(.semibold))
-                        .fixedIconSize()
-                        .foregroundStyle(.white)
-                        .frame(width: 34, height: 34)
-                        .background {
-                            if nowPlaying.favorite {
-                                Circle().fill(.finampGradient)
-                            } else {
-                                Circle().fill(.white.opacity(0.18))
-                            }
-                        }
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(nowPlaying.favorite ? String(localized: "Remove Favorite") : String(localized: "Add Favorite"))
-            }
+        ViewThatFits(in: .vertical) {
+            controlsStack(showChips: true)
+            controlsStack(showChips: false)
+        }
+        .padding(.horizontal, 6)
+        // Light text over the darkened cover in either theme
+        .foregroundStyle(.white)
+        .padding(.bottom, Self.bottomGap)
+        .ignoresSafeArea(edges: .bottom)
+    }
 
-            VStack(alignment: .leading, spacing: 3) {
+    // Show the new position at once; restore it and say why if the phone refuses.
+    private func seek(toFraction fraction: Double) {
+        let target = fraction * nowPlaying.duration
+        let before = store.nowPlaying
+        store.nowPlaying.position = target
+        store.nowPlaying.updatedAt = .now
+        scrub = nil
+        Task {
+            do {
+                try await PhoneConnection.shared.seek(to: target)
+            } catch {
+                if store.nowPlaying.id == before.id { store.nowPlaying = before }
+                PhoneMessage.shared.text = error.localizedDescription
+            }
+        }
+    }
+
+    private var flexibleGap: some View {
+        Spacer(minLength: 3).frame(maxHeight: 9)
+    }
+
+    // The heart's 34 pt plus the 6 pt gap it had in its row.
+    private static let heartSpace: CGFloat = 40
+
+    // The heart sits beside the artist line, bottom-aligned, as an overlay so it doesn't join the stack's layout.
+    private var heartButton: some View {
+        Button {
+            // Capture track ID before sending; phone favourite state is authoritative.
+            let id = nowPlaying.id
+            let new = !nowPlaying.favorite
+            store.nowPlaying.favorite = new
+            Task {
+                do {
+                    let result = try await PhoneConnection.shared.setFavorite(id, new)
+                    if store.nowPlaying.id == id { store.nowPlaying.favorite = result }
+                    FavoriteOverrides.shared.phoneReported(id, result)
+                } catch {
+                    if store.nowPlaying.id == id { store.nowPlaying.favorite = !new }
+                    PhoneMessage.shared.text = error.localizedDescription
+                }
+            }
+        } label: {
+            FavoriteHeart(filled: nowPlaying.favorite, size: 26)
+                .foregroundStyle(.white)
+                .frame(width: 34, height: 34)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(nowPlaying.favorite ? String(localized: "Remove Favorite") : String(localized: "Add Favorite"))
+    }
+
+    private func controlsStack(showChips: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer(minLength: 0)
+            // Title and artist are direct members of this stack, so their gap and the next one share space evenly.
+            Marquee {
+                Text(nowPlaying.title)
+                    .font(.system(size: titleSize))
+                    .lineLimit(1)
+            }
+            .padding(.trailing, Self.heartSpace)
+            flexibleGap
+            artistLine
+                .padding(.trailing, Self.heartSpace)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .bottomTrailing) { heartButton }
+
+            flexibleGap
+            // Finamp's player order: feature chips, then the bar, then the times under it.
+            VStack(spacing: 6) {
                 if showVolume {
                     Label("Finamp volume \(Int((crownVolume * 100).rounded()))%", systemImage: "speaker.wave.2.fill")
                         .font(.system(size: smallSize))
                         .foregroundStyle(.white.opacity(0.9))
                         .frame(maxWidth: .infinity)
-                } else if !nowPlaying.audio.isEmpty {
-                    Text(nowPlaying.audio)
-                        .font(.system(size: smallSize))
-                        .foregroundStyle(.white.opacity(0.6))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                        .frame(maxWidth: .infinity)
+                } else if showChips, !nowPlaying.features.isEmpty {
+                    featureChips
                 }
                 if !showVolume, let lowered = PhoneVolume.shared.lowered {
                     Label("Finamp volume \(lowered)%", systemImage: "speaker.wave.1.fill")
@@ -355,19 +388,28 @@ struct PlaybackPage: View {
                 }
                 // Ticks every second only while the page is on screen and the watch is raised
                 TimelineView(.periodic(from: .now, by: isActive ? 1 : 60)) { context in
-                    let position = nowPlaying.position(at: context.date)
-                    HStack(spacing: 6) {
-                        Text(formatDuration(position))
-                            .foregroundStyle(.white.opacity(0.75))
-                        ProgressLine(fraction: nowPlaying.duration > 0 ? position / nowPlaying.duration : 0)
-                        Text("-" + formatDuration(nowPlaying.duration - position))
-                            .foregroundStyle(.white.opacity(0.75))
+                    // While dragging, the times show where the release will seek to, as in Finamp.
+                    let position = scrub.map { $0 * nowPlaying.duration } ?? nowPlaying.position(at: context.date)
+                    let canSeek = nowPlaying.hasTrack && nowPlaying.duration > 0
+                    VStack(spacing: 3) {
+                        ProgressLine(
+                            fraction: nowPlaying.duration > 0 ? position / nowPlaying.duration : 0,
+                            dragging: scrub != nil,
+                            onScrub: canSeek ? { scrub = $0 } : nil,
+                            onSeek: canSeek ? { seek(toFraction: $0) } : nil
+                        )
+                        HStack {
+                            Text(formatDuration(position))
+                            Spacer(minLength: 0)
+                            Text("-" + formatDuration(nowPlaying.duration - position))
+                        }
+                        .font(.system(size: smallSize).monospacedDigit())
+                        .foregroundStyle(.white.opacity(0.75))
                     }
-                    .font(.system(size: smallSize).monospacedDigit())
                 }
             }
-            .padding(.bottom, -3)
 
+            flexibleGap
             // Flexible gaps let transport controls fit on 40 mm watches.
             HStack(spacing: 0) {
                 Spacer(minLength: 0)
@@ -404,11 +446,28 @@ struct PlaybackPage: View {
                 Spacer(minLength: 0)
             }
         }
-        .padding(.horizontal, 6)
-        // Light text over the darkened cover in either theme
-        .foregroundStyle(.white)
-        .padding(.bottom, Self.bottomGap)
-        .ignoresSafeArea(edges: .bottom)
+    }
+
+    // Finamp's feature chips have no background: light text, 4 pt padding each side plus 4 pt spacing.
+    // One line that scrolls when it doesn't fit, as Finamp's chip row scrolls sideways.
+    private var featureChips: some View {
+        Marquee(centered: true) {
+            HStack(spacing: 12) {
+                ForEach(Array(nowPlaying.features.enumerated()), id: \.offset) { _, feature in
+                    if feature == "E" {
+                        Image("tabler-explicit")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: smallSize + 3, height: smallSize + 3)
+                            .accessibilityLabel("Explicit")
+                    } else {
+                        Text(feature)
+                    }
+                }
+            }
+            .font(.system(size: smallSize, weight: .light))
+            .foregroundStyle(.white.opacity(0.75))
+        }
     }
 
     private static let playSize: CGFloat = 48
@@ -460,11 +519,7 @@ struct PlaybackPage: View {
                         Button {
                             path = LibraryPath.opening(.artistAlbums(artist), in: path)
                         } label: {
-                            ArtistLabel(artist: artist, color: .white.opacity(0.9))
-                            .padding(.leading, 2)
-                            .padding(.trailing, 6)
-                            .padding(.vertical, 2)
-                            .background(.white.opacity(0.16), in: Capsule())
+                            ArtistChip(artist: artist, textColor: .white.opacity(0.9), background: .white.opacity(0.16))
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("Artist \(artist.name)")
@@ -551,10 +606,11 @@ private struct QueueHeader: View {
                             artworkKey: nowPlaying.artworkKey,
                             artworkURL: nowPlaying.artworkURL,
                             blurHash: nowPlaying.blurHash
-                        ),
-                        placeholderSymbol: LibraryKind.tracks.placeholderSymbol
+                        )
                     )
-                    .containerRelativeFrame(.horizontal) { width, _ in width * 0.24 }
+                    // A square as tall as the title, artist and album next to it, so they read as one block and
+                    // grow together with Text Size; capped so a three-line title can't take over the row.
+                    .frame(width: coverSide, height: coverSide)
                     VStack(alignment: .leading, spacing: 3) {
                         Text(nowPlaying.title)
                             .font(.headline.weight(.bold))
@@ -567,7 +623,7 @@ private struct QueueHeader: View {
                             Marquee {
                                 HStack(spacing: 8) {
                                     ForEach(nowPlaying.artists) { artist in
-                                        ArtistLabel(artist: artist, color: .finampBlue)
+                                        ArtistChip(artist: artist)
                                             .contentShape(Rectangle())
                                             .onTapGesture { onOpenArtist(artist) }
                                             .accessibilityAddTraits(.isButton)
@@ -588,8 +644,25 @@ private struct QueueHeader: View {
                                 .lineLimit(2)
                         }
                     }
+                    // The cover follows a one-line version of this block (same fonts, so it grows with Text Size);
+                    // measuring the real block let a wrapping title grow the cover, which wrapped the title more.
+                    .background(alignment: .topLeading) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(verbatim: "Ag").font(.headline.weight(.bold))
+                            if !nowPlaying.artists.isEmpty {
+                                Color.clear.frame(width: 1, height: ArtistChip.height)
+                            } else if !nowPlaying.artist.isEmpty {
+                                Text(verbatim: "Ag").font(.footnote)
+                            }
+                            if !nowPlaying.album.isEmpty { Text(verbatim: "Ag").font(.caption2) }
+                        }
+                        .fixedSize()
+                        .hidden()
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { textHeight = $0 }
+                    }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { rowWidth = $0 }
             }
             HStack(alignment: .top, spacing: 0) {
                 Spacer(minLength: 0)
@@ -607,7 +680,7 @@ private struct QueueHeader: View {
                 LabeledIconButton(
                     title: nowPlaying.radio ? "Radio" : "No\nRadio",
                     systemImage: nowPlaying.radio ? "radio" : "radio.off",
-                    tint: nowPlaying.radioAvailable ? .finampBlue : Color.fgPrimary.opacity(0.85),
+                    tint: nowPlaying.radioAvailable ? .finampBlue : Color.fgPrimary.opacity(0.3),
                     titleLines: 2,
                     fills: false
                 ) {
@@ -615,9 +688,20 @@ private struct QueueHeader: View {
                 }
                 Spacer(minLength: 0)
             }
+            // Clear of the cover and the text above, like the album page's buttons.
+            .padding(.top, 12)
             SectionHeader(title: String(localized: "Up Next"))
                 .padding(.top, -6)
         }
+    }
+
+    @State private var textHeight: CGFloat = 0
+    @State private var rowWidth: CGFloat = 0
+
+    private var coverSide: CGFloat {
+        let cap = rowWidth * 0.38
+        guard textHeight > 0, rowWidth > 0 else { return max(rowWidth * 0.24, 1) }
+        return min(textHeight, cap)
     }
 
     private static let nextLoop = ["all": "one", "one": "none", "none": "all"]
@@ -651,14 +735,13 @@ private struct QueueHeader: View {
         }
     }
 
-    private var loopTint: Color {
-        if nowPlaying.radio { return Color.fgPrimary.opacity(0.3) }
-        return nowPlaying.loop == "none" ? Color.fgPrimary.opacity(0.85) : .finampBlue
-    }
+    // Accent like the album and artist pages' buttons; the label and icon show the state, dimmed only when it can't
+    // be used (loop while radio is on, radio unavailable).
+    private var loopTint: Color { nowPlaying.radio ? Color.fgPrimary.opacity(0.3) : .finampBlue }
 
     private var orderTitle: LocalizedStringKey { nowPlaying.shuffled ? "Shuffled" : "In\nOrder" }
     private var orderIcon: String { nowPlaying.shuffled ? "shuffle" : "arrow.right" }
-    private var orderTint: Color { nowPlaying.shuffled ? .finampBlue : Color.fgPrimary.opacity(0.85) }
+    private var orderTint: Color { .finampBlue }
 }
 
 // iOS requires output selection on the phone; wait for volume before binding the crown.
@@ -884,25 +967,63 @@ private struct PhoneVolumeCrown: ViewModifier {
 
 struct ProgressLine: View {
     let fraction: Double
+    // Dragging or tapping the bar scrubs, releasing seeks; nil keeps it display-only.
+    var dragging = false
+    var onScrub: ((Double) -> Void)? = nil
+    var onSeek: ((Double) -> Void)? = nil
+    // The release reports a location up to 20 pt from the last drag point, so seek where the dot was last shown.
+    @State private var lastScrub: Double?
+    private static let line: CGFloat = 3.6
+    private static let dot: CGFloat = 10.8
 
     var body: some View {
         GeometryReader { geometry in
             let x = geometry.size.width * min(max(fraction, 0), 1)
+            let at = { (location: CGPoint) in min(max(location.x / max(geometry.size.width, 1), 0), 1) }
             ZStack(alignment: .leading) {
-                Capsule().fill(.white.opacity(0.3)).frame(height: 3)
-                Capsule().fill(.white).frame(width: x, height: 3)
-                Circle().fill(.white).frame(width: 9, height: 9).offset(x: x - 4.5)
+                Capsule().fill(.white.opacity(0.3)).frame(height: Self.line)
+                Capsule().fill(.white).frame(width: x, height: Self.line)
+                // Grows while dragging by scaling only, so the bar never shifts
+                Circle().fill(.white).frame(width: Self.dot, height: Self.dot).scaleEffect(dragging ? 1.5 : 1)
+                    .offset(x: x - Self.dot / 2)
             }
-            .frame(maxHeight: .infinity)
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            // A taller touch strip than the bar, without making the layout taller.
+            .padding(.vertical, 8)
+            .contentShape(Rectangle())
+            .highPriorityGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged {
+                        lastScrub = at($0.location)
+                        onScrub?(at($0.location))
+                    }
+                    .onEnded {
+                        onSeek?(lastScrub ?? at($0.location))
+                        lastScrub = nil
+                    },
+                including: onSeek == nil ? .none : .all
+            )
+            .padding(.vertical, -8)
         }
         .frame(height: 10)
         .accessibilityElement()
         .accessibilityLabel("Progress")
         .accessibilityValue(String(localized: "\(Int((min(max(fraction, 0), 1) * 100).rounded())) percent"))
+        // VoiceOver seeks in 5% steps by swiping up or down
+        .accessibilityAdjustableAction { direction in
+            guard let onSeek else { return }
+            switch direction {
+            case .increment: onSeek(min(fraction + 0.05, 1))
+            case .decrement: onSeek(max(fraction - 0.05, 0))
+            @unknown default: break
+            }
+        }
     }
 }
 
 struct Marquee<Content: View>: View {
+    // Centre content that fits instead of leading-aligning it.
+    var centered = false
     @ViewBuilder let content: Content
 
     @State private var contentSize: CGSize = .zero
@@ -939,6 +1060,7 @@ struct Marquee<Content: View>: View {
                         }
                     } else {
                         content.fixedSize()
+                            .frame(width: centered ? max(containerWidth, contentSize.width) : nil)
                     }
                 }
             }

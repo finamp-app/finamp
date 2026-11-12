@@ -72,13 +72,7 @@ struct HomePage: View {
                             NavigationLink(value: item.kind == "artists"
                                 ? LibraryDestination.artistAlbums(item)
                                 : LibraryDestination.tracks(item, type: item.kind)) {
-                                HomeCard(
-                                    item: item,
-                                    placeholderSymbol: item.kind == "artists" ? LibraryKind.artists.placeholderSymbol
-                                        : item.kind == "playlists" ? LibraryKind.playlists.placeholderSymbol
-                                        : LibraryKind.albums.placeholderSymbol,
-                                    circular: item.kind == "artists"
-                                )
+                                HomeCard(item: item, circular: item.kind == "artists")
                             }
                         }
                         SectionHeader(title: String(localized: "Favorites"))
@@ -86,16 +80,15 @@ struct HomePage: View {
                             NavigationLink(value: card.destination) {
                                 HomeCard(
                                     item: LibraryItem(id: card.destination.screenKey, name: card.title, subtitle: "", artworkKey: ""),
-                                    placeholderSymbol: card.kind.placeholderSymbol,
                                     circular: card.kind == .artists,
-                                    favoriteBadge: true
+                                    favoritesSymbol: card.kind.placeholderSymbol
                                 )
                             }
                             .buttonStyle(.plain)
                         }
                         HomeSection(title: String(localized: "Newly Added Albums"), items: sections.newAlbums) { album in
                             NavigationLink(value: LibraryDestination.tracks(album, type: "albums")) {
-                                HomeCard(item: album, placeholderSymbol: LibraryKind.albums.placeholderSymbol)
+                                HomeCard(item: album)
                             }
                         }
                     } else if let error {
@@ -220,17 +213,17 @@ struct SectionHeader: View {
 
 struct HomeCard: View {
     let item: LibraryItem
-    let placeholderSymbol: String
     var circular = false
-    var favoriteBadge = false
+    // Set for a Favorites card: its logo tile instead of a cover.
+    var favoritesSymbol: String? = nil
 
     var body: some View {
         HStack(spacing: 8) {
             Group {
-                if favoriteBadge {
-                    FavoritesLogo(symbol: placeholderSymbol, circular: circular)
+                if let favoritesSymbol {
+                    FavoritesLogo(symbol: favoritesSymbol, circular: circular)
                 } else {
-                    CoverView(item: item, placeholderSymbol: placeholderSymbol, circular: circular)
+                    CoverView(item: item, circular: circular)
                 }
             }
             .containerRelativeFrame(.horizontal) { width, _ in width * 0.2 }
@@ -265,17 +258,17 @@ struct SearchResultsView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             HomeSection(title: String(localized: "Artists"), items: results.artists) { artist in
                                 NavigationLink(value: LibraryDestination.artistAlbums(artist)) {
-                                    HomeCard(item: artist, placeholderSymbol: LibraryKind.artists.placeholderSymbol, circular: true)
+                                    HomeCard(item: artist, circular: true)
                                 }
                             }
                             HomeSection(title: String(localized: "Albums"), items: results.albums) { album in
                                 NavigationLink(value: LibraryDestination.tracks(album, type: "albums")) {
-                                    HomeCard(item: album, placeholderSymbol: LibraryKind.albums.placeholderSymbol)
+                                    HomeCard(item: album)
                                 }
                             }
                             HomeSection(title: String(localized: "Playlists"), items: results.playlists) { playlist in
                                 NavigationLink(value: LibraryDestination.tracks(playlist, type: "playlists")) {
-                                    HomeCard(item: playlist, placeholderSymbol: LibraryKind.playlists.placeholderSymbol)
+                                    HomeCard(item: playlist)
                                 }
                             }
                             HomeSection(title: String(localized: "Tracks"), items: results.tracks) { track in

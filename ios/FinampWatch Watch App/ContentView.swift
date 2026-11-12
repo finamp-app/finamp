@@ -44,7 +44,7 @@ struct ContentView: View {
         .containerBackground(Color.appBackground, for: .tabView)
         .foregroundStyle(Color.fgPrimary)
         // System controls follow Finamp's accent with accent colours on; the asset's fixed blue otherwise
-        .tint(ThemeStore.shared.scheme?.primary)
+        .tint(ThemeStore.shared.switchTint)
         .alert(
             Text(verbatim: PhoneMessage.shared.text ?? ""),
             isPresented: Binding(get: { PhoneMessage.shared.text != nil }, set: { if !$0 { PhoneMessage.shared.text = nil } })

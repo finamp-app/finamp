@@ -32,56 +32,19 @@ struct LabeledIconButton: View {
     }
 }
 
-// The buttons at the top of a page and sheet draw Finamp's container tile, shaped like the logo tile, instead of
-// watchOS's glass circle: the accent scheme's with accent colours on, Finamp's fixed scheme otherwise.
+// watchOS draws the top buttons; only the icon is Finamp's.
 struct UpperIcon: View {
     let systemName: String
-    private let size: CGFloat = 34
 
     var body: some View {
-        Image(systemName: systemName)
-            .foregroundStyle(Color.onContainer)
-            .frame(width: size, height: size)
-            .background(Color.container, in: RoundedRectangle(cornerRadius: size * 0.26))
+        FinampIcon(systemName: systemName, size: 20)
     }
 }
 
 extension View {
-    // Drops watchOS's own circle; UpperIcon draws Finamp's.
+    // watchOS draws these icons white, so tint with the light scheme's primary, which Material pairs with white.
     func upperButtonStyle() -> some View {
-        buttonStyle(.plain)
-    }
-
-    // A sheet's close button as an UpperIcon instead of watchOS's glass one.
-    func finampCloseButton(systemName: String = "xmark") -> some View {
-        modifier(FinampDismissButton(systemName: systemName, label: "Close", placement: .cancellationAction))
-    }
-
-    // A pushed page's back button as an UpperIcon instead of watchOS's glass one.
-    func finampBackButton() -> some View {
-        navigationBarBackButtonHidden(true)
-            .modifier(FinampDismissButton(systemName: "chevron.left", label: "Back", placement: .topBarLeading))
-    }
-}
-
-private struct FinampDismissButton: ViewModifier {
-    let systemName: String
-    let label: LocalizedStringKey
-    let placement: ToolbarItemPlacement
-    @Environment(\.dismiss) private var dismiss
-
-    func body(content: Content) -> some View {
-        content.toolbar {
-            ToolbarItem(placement: placement) {
-                Button {
-                    dismiss()
-                } label: {
-                    UpperIcon(systemName: systemName)
-                }
-                .upperButtonStyle()
-                .accessibilityLabel(label)
-            }
-        }
+        tint(ThemeStore.shared.switchTint)
     }
 }
 
@@ -153,6 +116,19 @@ extension View {
     }
 }
 
+// Finamp's favourite heart (Material's favorite / favorite_border), not the SF Symbol.
+struct FavoriteHeart: View {
+    let filled: Bool
+    let size: CGFloat
+
+    var body: some View {
+        Image(filled ? "material-favorite" : "material-favorite-border")
+            .resizable()
+            .scaledToFit()
+            .frame(width: size, height: size)
+    }
+}
+
 // Tabler icons used where they differ from SF Symbols.
 struct FinampIcon: View {
     let systemName: String
@@ -169,6 +145,15 @@ struct FinampIcon: View {
         "arrow.right": "tabler-arrows-right",
         "radio": "tabler-radio",
         "radio.off": "tabler-radio-off",
+        "list.bullet": "tabler-playlist",
+        "hifispeaker": "tabler-device-speaker",
+        "magnifyingglass": "tabler-search",
+        "arrow.down.circle": "tabler-download",
+        "arrow.down.circle.fill": "tabler-device-sd-card",
+        "lock.circle": "tabler-lock",
+        // Finamp's Material heart, as on Playback and the track rows
+        "heart": "material-favorite-border",
+        "heart.fill": "material-favorite",
     ]
 
     var body: some View {

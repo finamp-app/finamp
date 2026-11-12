@@ -81,7 +81,6 @@ extension View {
                 }
             }
             .themedBackground()
-            .finampBackButton()
         }
     }
 }

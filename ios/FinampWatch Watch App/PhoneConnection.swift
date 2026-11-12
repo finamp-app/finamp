@@ -244,6 +244,10 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         _ = try await request("control", ["action": action])
     }
 
+    func seek(to position: Double) async throws {
+        _ = try await request("seek", ["position": position])
+    }
+
     func queue() async throws -> [LibraryItem] {
         Self.items(from: try await request("queue", [:])["result"])
     }

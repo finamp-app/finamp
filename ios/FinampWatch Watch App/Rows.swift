@@ -2,7 +2,6 @@ import SwiftUI
 
 struct CoverRow: View {
     let item: LibraryItem
-    let placeholderSymbol: String
     let coverFraction: CGFloat
     var circular = false
 
@@ -10,7 +9,7 @@ struct CoverRow: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            CoverView(item: item, placeholderSymbol: placeholderSymbol, circular: circular)
+            CoverView(item: item, circular: circular)
                 .containerRelativeFrame(.horizontal) { width, _ in width * coverFraction }
             VStack(alignment: .leading, spacing: 0) {
                 Text(item.name)
@@ -37,7 +36,6 @@ struct CollectionLink: View {
         NavigationLink(value: kind == .artists ? .artistAlbums(item) : LibraryDestination.tracks(item, type: kind.type)) {
             CoverRow(
                 item: item,
-                placeholderSymbol: kind.placeholderSymbol,
                 coverFraction: kind.coverFraction,
                 circular: kind == .artists
             )
@@ -46,19 +44,40 @@ struct CollectionLink: View {
     }
 }
 
-struct ArtistLabel: View {
+// Finamp's artist chip: a rounded rectangle with the artist's image, if it has one, square on the left. The defaults
+// are Finamp's own (theme text on 10% white); Playback passes the colours it draws over the cover.
+struct ArtistChip: View {
     let artist: LibraryItem
-    let color: Color
+    var textColor = Color.fgPrimary
+    var background = Color.white.opacity(0.1)
+    @ScaledMetric(relativeTo: .footnote) private var height: CGFloat = ArtistChip.height
+    static let height: CGFloat = 20
+    @Environment(\.displayScale) private var displayScale
+    // The phone sends a URL for every artist, so a missing image is only known once loading fails.
+    @State private var image: UIImage?
 
     var body: some View {
-        HStack(spacing: 4) {
-            CoverView(item: artist, placeholderSymbol: LibraryKind.artists.placeholderSymbol, circular: true)
-                .frame(width: 16, height: 16)
+        HStack(spacing: 0) {
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: height, height: height)
+                    .clipped()
+            }
             Text(artist.name)
                 .font(.footnote)
-                .foregroundStyle(color)
+                .foregroundStyle(textColor)
                 .lineLimit(1)
                 .fixedSize()
+                .padding(.horizontal, 5)
+        }
+        .frame(height: height)
+        .background(background)
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .task(id: artist.artworkKey) {
+            guard !artist.artworkKey.isEmpty else { return image = nil }
+            image = await ArtworkStore.shared.image(for: artist, size: Int((height * displayScale / 20).rounded(.up)) * 20)
         }
     }
 }
@@ -107,9 +126,9 @@ struct TrackRow: View {
 
             if let onFavorite {
                 Button(action: onFavorite) {
-                    Image(systemName: favorite ? "heart.fill" : "heart")
-                        .font(.system(size: TextSize.atLarge(.footnote) * (enlarged ? 2 : 1), weight: .semibold))
-                        .foregroundStyle(favorite ? Color.finampPurple : Color.fgSecondary)
+                    // The glyph fills about 85% of its box, so 1.2× matches the old symbol at this font size.
+                    FavoriteHeart(filled: favorite, size: TextSize.atLarge(.footnote) * (enlarged ? 2 : 1) * 1.2)
+                        .foregroundStyle(favorite ? Color.fgPrimary : Color.fgSecondary)
                         .frame(width: enlarged ? 36 : 22, height: enlarged ? nil : 22)
                 }
                 .buttonStyle(.plain)

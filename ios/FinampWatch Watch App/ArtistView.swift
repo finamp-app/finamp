@@ -54,7 +54,7 @@ struct ArtistView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center, spacing: 8) {
-                CoverView(item: artist, placeholderSymbol: LibraryKind.artists.placeholderSymbol, circular: true)
+                CoverView(item: artist, circular: true)
                     .containerRelativeFrame(.horizontal) { width, _ in width * 0.38 }
                 VStack(alignment: .leading, spacing: 3) {
                     Text(artist.name)
@@ -91,7 +91,6 @@ struct ArtistView: View {
                     LabeledIconButton(
                         title: "Like",
                         systemImage: FavoriteOverrides.shared.value(for: item) ? "heart.fill" : "heart",
-                        tint: FavoriteOverrides.shared.value(for: item) ? .finampPurple : .finampBlue,
                         fills: false
                     ) { await FavoriteOverrides.shared.toggle(item) }
                 }
