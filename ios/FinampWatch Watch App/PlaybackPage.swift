@@ -690,7 +690,7 @@ struct OutputSheet: View {
             } label: {
                 Label("Choose Output", systemImage: "airplayaudio")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(ThemeStore.shared.scheme?.onPrimary ?? .white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, isSmallWatch ? 5 : 8)
                     .background(Color.finampBlue, in: Capsule())
@@ -824,6 +824,9 @@ private struct PhoneVolumeCrown: ViewModifier {
     @State private var applyingPhoneVolume = false
     // Use crown deltas; binding volume directly makes the scroll bar move downward as volume rises.
     @State private var crown = 500.0
+    // Shown only while the crown turns: with .automatic, watchOS also flashed it when the screen was touched.
+    @State private var turning = false
+    @State private var hideBar: Task<Void, Never>?
     private var phoneVolume = PhoneVolume.shared
 
     init(volume: Binding<Double>, enabled: Bool, showsBar: Bool, onTurn: @escaping () -> Void) {
@@ -842,6 +845,12 @@ private struct PhoneVolumeCrown: ViewModifier {
                 let step = new - old
                 // A jump means the position wrapped at an end of its range
                 guard abs(step) < 1 else { return }
+                turning = true
+                hideBar?.cancel()
+                hideBar = Task {
+                    try? await Task.sleep(for: .seconds(1.5))
+                    if !Task.isCancelled { turning = false }
+                }
                 let next = min(1, max(0, volume + step))
                 if next != volume { volume = next }
             }
@@ -855,7 +864,7 @@ private struct PhoneVolumeCrown: ViewModifier {
                             .frame(width: 5, height: max(5, 40 * volume))
                     }
             }
-            .digitalCrownAccessory(showsBar ? .automatic : .hidden)
+            .digitalCrownAccessory(showsBar && turning ? .visible : .hidden)
             .onChange(of: volume) { _, new in
                 if applyingPhoneVolume {
                     applyingPhoneVolume = false

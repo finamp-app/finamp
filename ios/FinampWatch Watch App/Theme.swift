@@ -64,6 +64,12 @@ final class ThemeStore {
         return AccentScheme(colors)
     }
 
+    // watchOS draws a switch's knob white: tint switches with the light scheme's primary, which Material pairs with white.
+    var switchTint: Color? {
+        guard accentColors, let colors = schemes["light"] else { return nil }
+        return AccentScheme(colors)?.primary
+    }
+
     func applyAccent(_ value: Any?) {
         guard let value = value as? [String: Any] else { return }
         let parsed = value.compactMapValues { colors in
@@ -108,7 +114,7 @@ final class AccountStore {
 
 // The colours of Finamp's scheme the watch draws with, used in the same Material pairs as Finamp's screens.
 struct AccentScheme {
-    let primary, surface, onSurface, onSurfaceVariant, container, onContainer: Color
+    let primary, onPrimary, surface, onSurface, onSurfaceVariant, container, onContainer: Color
 
     init?(_ argb: [String: Int]) {
         func color(_ name: String) -> Color? {
@@ -118,6 +124,7 @@ struct AccentScheme {
               let onSurfaceVariant = color("onSurfaceVariant"), let container = color("container"),
               let onContainer = color("onContainer") else { return nil }
         (self.primary, self.surface, self.onSurface) = (primary, surface, onSurface)
+        onPrimary = color("onPrimary") ?? .white
         (self.onSurfaceVariant, self.container, self.onContainer) = (onSurfaceVariant, container, onContainer)
     }
 }
@@ -183,11 +190,8 @@ private struct ThemedBackground: ViewModifier {
 
 extension View {
     // watchOS draws titles in the asset's fixed accent; with accent colours on, use Finamp's.
-    @ViewBuilder func accentTitle() -> some View {
-        if let scheme = ThemeStore.shared.scheme {
-            toolbarForegroundStyle(scheme.primary, for: .navigationBar)
-        } else {
-            self
-        }
+    // Always applied (the asset's colour when off), so flipping the setting doesn't rebuild the page and reset its scroll.
+    func accentTitle() -> some View {
+        toolbarForegroundStyle(ThemeStore.shared.scheme?.primary ?? Color("AccentColor"), for: .navigationBar)
     }
 }

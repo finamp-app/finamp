@@ -67,7 +67,7 @@ struct SettingsView: View {
             .foregroundStyle(Color.fgPrimary)
             .containerBackground(Color.appBackground, for: .navigation)
         }
-        .tint(Color.finampBlue)
+        .tint(ThemeStore.shared.switchTint ?? Color.finampBlue)
         .alert(
             Text(verbatim: reload?.text ?? ""),
             isPresented: Binding(get: { reload != nil }, set: { if !$0 { reload = nil } }),

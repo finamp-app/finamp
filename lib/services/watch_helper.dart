@@ -590,6 +590,7 @@ class WatchHandler {
       final scheme = getColorScheme(seed, brightness, settings.amoledTheme);
       return {
         'primary': scheme.primary.toARGB32(),
+        'onPrimary': scheme.onPrimary.toARGB32(),
         'surface': scheme.surface.toARGB32(),
         'onSurface': scheme.onSurface.toARGB32(),
         'onSurfaceVariant': scheme.onSurfaceVariant.toARGB32(),
