@@ -35,6 +35,16 @@ class TrayService with WindowListener {
   /// Resolves [AppLocalizations] from the configured or system locale without requiring
   /// a [BuildContext] or a rendered frame (so the tray menu is localized immediately
   /// even when starting hidden with zero frames drawn).
+  ///
+  /// This replicates Flutter's standard framework initialization path found in:
+  /// - `WidgetsApp._localizationsResolver` in `packages/flutter/lib/src/widgets/app.dart`
+  /// - `LocalizationsResolver._resolveLocales` in `packages/flutter/lib/src/widgets/localizations.dart`
+  /// - [basicLocaleListResolution] in `packages/flutter/lib/src/widgets/app.dart`
+  /// - `lookupAppLocalizations` (invoked by `_AppLocalizationsDelegate.load`) in `lib/l10n/app_localizations.dart`
+  ///
+  /// Normally widgets obtain strings via `AppLocalizations.of(context)` which looks up the
+  /// `_LocalizationsScope` inherited widget (`packages/flutter/lib/src/widgets/localizations.dart`),
+  /// but when launching hidden to the system tray no widget tree is mounted yet.
   @visibleForTesting
   static AppLocalizations resolveLocalizations({Locale? preferredLocale, List<Locale>? systemLocales}) {
     Locale? configured = preferredLocale;
