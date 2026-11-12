@@ -10,19 +10,25 @@ import 'package:finamp/services/data_source_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 
-FinampQueueInfo queueInfo({required int trackCount, required int undownloadedTracks}) {
+FinampQueueInfo queueInfo({
+  required int trackCount,
+  required int undownloadedTracks,
+  bool currentTrackUndownloaded = false,
+}) {
   const source = QueueItemSource.rawId(
     type: QueueItemSourceType.unknown,
     name: QueueItemSourceName(type: QueueItemSourceNameType.preTranslated, pretranslatedName: 'Fixture'),
     id: 'fixture-source',
   );
+  assert(!currentTrackUndownloaded || (trackCount > 0 && undownloadedTracks > 0));
+  final queueUndownloadedTracks = undownloadedTracks - (currentTrackUndownloaded ? 1 : 0);
   final queue = List.generate(
-    trackCount,
+    trackCount - (currentTrackUndownloaded ? 1 : 0),
     (index) => FinampQueueItem(
       item: MediaItem(
         id: 'fixture-$index',
         title: 'Fixture $index',
-        extras: {'android.media.extra.DOWNLOAD_STATUS': index < undownloadedTracks ? 0 : 2},
+        extras: {'android.media.extra.DOWNLOAD_STATUS': index < queueUndownloadedTracks ? 0 : 2},
       ),
       source: source,
     ),
@@ -30,7 +36,16 @@ FinampQueueInfo queueInfo({required int trackCount, required int undownloadedTra
   return FinampQueueInfo(
     id: 'fixture-queue',
     previousTracks: [],
-    currentTrack: null,
+    currentTrack: currentTrackUndownloaded
+        ? FinampQueueItem(
+            item: const MediaItem(
+              id: 'fixture-current',
+              title: 'Current fixture',
+              extras: {'android.media.extra.DOWNLOAD_STATUS': 0},
+            ),
+            source: source,
+          )
+        : null,
     nextUp: [],
     queue: queue,
     source: source,
@@ -102,6 +117,29 @@ void main() {
         ..autoReloadQueueMaxDroppedTracksPercentage = 30;
       expect(
         decideNetworkQueueReloadAction(SourceChangeType.toOffline, queueInfo(trackCount: 10, undownloadedTracks: 3)),
+        NetworkQueueReloadAction.automatic,
+      );
+    });
+
+    test('shows a manual prompt when an offline reload would interrupt the current streamed track', () {
+      settings
+        ..autoReloadQueue = true
+        ..autoReloadQueueMaxDroppedTracksPercentage = 100;
+      expect(
+        decideNetworkQueueReloadAction(
+          SourceChangeType.toOffline,
+          queueInfo(trackCount: 10, undownloadedTracks: 1, currentTrackUndownloaded: true),
+        ),
+        NetworkQueueReloadAction.manualCurrentTrackNotDownloaded,
+      );
+    });
+
+    test('still reloads automatically when only a non-current track is missing within the limit', () {
+      settings
+        ..autoReloadQueue = true
+        ..autoReloadQueueMaxDroppedTracksPercentage = 30;
+      expect(
+        decideNetworkQueueReloadAction(SourceChangeType.toOffline, queueInfo(trackCount: 10, undownloadedTracks: 1)),
         NetworkQueueReloadAction.automatic,
       );
     });

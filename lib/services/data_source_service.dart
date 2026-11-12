@@ -18,7 +18,7 @@ enum SourceChangeGenericType { network, transcoding }
 
 enum SourceChangeType { toLocalUrl, toRemoteUrl, toOffline, toOnline, toDirectPlay, toTranscoding }
 
-enum NetworkQueueReloadAction { none, automatic, manualPrompt, manualLossLimitExceeded }
+enum NetworkQueueReloadAction { none, automatic, manualPrompt, manualLossLimitExceeded, manualCurrentTrackNotDownloaded }
 
 NetworkQueueReloadAction decideNetworkQueueReloadAction(SourceChangeType event, FinampQueueInfo queueInfo) {
   // Returning online does not alter the active queue: Finamp already prefers
@@ -27,6 +27,13 @@ NetworkQueueReloadAction decideNetworkQueueReloadAction(SourceChangeType event, 
 
   if (queueInfo.trackCount == 0 || queueInfo.undownloadedTracks == 0) {
     return NetworkQueueReloadAction.none;
+  }
+
+  // Reloading an offline queue removes the current streamed item as well as
+  // any upcoming streamed items. Never interrupt active playback without an
+  // explicit choice, even when the overall loss is within the user's limit.
+  if (event == SourceChangeType.toOffline && queueInfo.hasUndownloadedCurrentTrack) {
+    return NetworkQueueReloadAction.manualCurrentTrackNotDownloaded;
   }
 
   final settings = FinampSettingsHelper.finampSettings;
@@ -53,7 +60,8 @@ class DataSourceService {
     final queueInfo = GetIt.instance<QueueService>().getQueue();
     final action = decideNetworkQueueReloadAction(SourceChangeType.toOffline, queueInfo);
     return action == NetworkQueueReloadAction.manualPrompt ||
-        action == NetworkQueueReloadAction.manualLossLimitExceeded;
+        action == NetworkQueueReloadAction.manualLossLimitExceeded ||
+        action == NetworkQueueReloadAction.manualCurrentTrackNotDownloaded;
   }
 
   static Future<void> _reloadQueueOutsideProviderCallback(QueueService queueService) {
@@ -84,6 +92,8 @@ class DataSourceService {
 
     if (action == NetworkQueueReloadAction.manualLossLimitExceeded) {
       _dataSourceServiceLogger.info("Skipping automatic offline queue reload: too many tracks would be removed");
+    } else if (action == NetworkQueueReloadAction.manualCurrentTrackNotDownloaded) {
+      _dataSourceServiceLogger.info("Skipping automatic offline queue reload: current track would stop playing");
     }
 
     GlobalSnackbar.message(
@@ -103,7 +113,10 @@ class DataSourceService {
           queueInfo.undownloadedTracks,
           removedPercentage,
         );
-        return "$reloadPrompt. $droppedTracksExplanation";
+        final currentTrackExplanation = action == NetworkQueueReloadAction.manualCurrentTrackNotDownloaded
+            ? " ${localizations.autoReloadPromptCurrentTrackNotDownloaded}"
+            : "";
+        return "$reloadPrompt. $droppedTracksExplanation$currentTrackExplanation";
       },
       action: (context) => SnackBarAction(
         label: AppLocalizations.of(context)!.autoReloadPromptReloadButton,

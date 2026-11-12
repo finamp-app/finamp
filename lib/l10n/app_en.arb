@@ -2613,6 +2613,10 @@
             }
         }
     },
+    "autoReloadPromptCurrentTrackNotDownloaded": "The current track isn't downloaded and would stop playing.",
+    "@autoReloadPromptCurrentTrackNotDownloaded": {
+        "description": "Additional warning shown when reloading an offline queue would interrupt the current streamed track."
+    },
     "menuButtonLabel": "More actions",
     "@menuButtonLabel": {
         "description": "Generic label for menu buttons shown throughout the app. Used for the album, artist, playlist, etc. menus"
