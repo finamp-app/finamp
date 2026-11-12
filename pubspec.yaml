@@ -44,6 +44,9 @@ dependencies:
       url: https://github.com/Komodo5197/just_audio_media_kit.git
       ref: feat/queue-shuffle
 
+  media_kit: ^1.2.6 # Primary package
+  media_kit_video: ^2.0.1 # For video rendering
+  media_kit_libs_video: ^1.0.7 # Native video dependencies
   media_kit_libs_linux: ^1.2.1
 
   # Transcoding does not work on windows with current media-kit release.  This fork uses the most recent

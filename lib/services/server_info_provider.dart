@@ -10,7 +10,7 @@ import '../components/global_snackbar.dart';
 
 final serverInfoProviderLogger = Logger("ServerInfoProvider");
 
-enum ServerFeature { lyrics }
+enum ServerFeature { lyrics, animatedMusic }
 
 abstract class PluginInterface {
   String get name;
@@ -80,9 +80,12 @@ final AutoDisposeFutureProviderFamily<ServerInfo?, Uri> serverInfoProvider = Fut
       }
       serverInfoProviderLogger.finest("Fetched users for '$serverAddress': $users");
 
-      //TODO implement feature and plugin detection
+      final features = <ServerFeature>{};
+      if (isCurrentServer && (await jellyfinApiHelper.isAnimatedMusicPluginAvailable() ?? false)) {
+        features.add(ServerFeature.animatedMusic);
+      }
 
-      serverInfo = ServerInfo(publicServerInfo: publicInfo, users: users);
+      serverInfo = ServerInfo(publicServerInfo: publicInfo, users: users, supportedFeatures: features);
       serverInfoProviderLogger.fine("Server info for '$serverAddress': $serverInfo");
 
       return serverInfo;

@@ -578,6 +578,16 @@ abstract class JellyfinApi extends ChopperService {
     @Path() required BaseItemId itemId,
   });
 
+  /// Status for the Animated Music plugin. Missing plugin returns 404.
+  @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
+  @GET(path: "/AnimatedMusic")
+  Future<Response<dynamic>> getAnimatedMusicStatus();
+
+  /// Animated cover and vertical background info for a track.
+  @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory<dynamic, dynamic>)
+  @GET(path: "/AnimatedMusic/Tracks/{trackId}")
+  Future<dynamic> getTrackAnimatedInfo({@Path() required BaseItemId trackId});
+
   /// Reports that a session has ended.
   @FactoryConverter(request: JsonConverter.requestFactory)
   @POST(path: "/Sessions/Logout", optionalBody: true)

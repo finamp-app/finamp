@@ -469,6 +469,10 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         closeToTray: fields[161] == null ? false : fields[161] as bool,
         minimizeToTray: fields[162] == null ? false : fields[162] as bool,
         startMinimizedToTray: fields[163] == null ? false : fields[163] as bool,
+        showAnimatedCover: fields[165] == null ? true : fields[165] as bool,
+        showVerticalBackground: fields[166] == null
+            ? true
+            : fields[166] as bool,
       )
       ..sortBy = fields[7] as SortBy?
       ..sortOrder = fields[8] as SortOrder?
@@ -492,7 +496,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(153)
+      ..writeByte(155)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -798,7 +802,11 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(163)
       ..write(obj.startMinimizedToTray)
       ..writeByte(164)
-      ..write(obj.autoReloadQueueMaxDroppedTracksPercentage);
+      ..write(obj.autoReloadQueueMaxDroppedTracksPercentage)
+      ..writeByte(165)
+      ..write(obj.showAnimatedCover)
+      ..writeByte(166)
+      ..write(obj.showVerticalBackground);
   }
 
   @override
@@ -6171,6 +6179,8 @@ const _DownloadItemtypeEnumValueMap = {
   'image': 2,
   'anchor': 3,
   'finampCollection': 4,
+  'animatedCover': 5,
+  'verticalBackground': 6,
 };
 const _DownloadItemtypeValueEnumMap = {
   0: DownloadItemType.collection,
@@ -6178,6 +6188,8 @@ const _DownloadItemtypeValueEnumMap = {
   2: DownloadItemType.image,
   3: DownloadItemType.anchor,
   4: DownloadItemType.finampCollection,
+  5: DownloadItemType.animatedCover,
+  6: DownloadItemType.verticalBackground,
 };
 
 Id _downloadItemGetId(DownloadItem object) {
@@ -9505,6 +9517,8 @@ const _$DownloadItemTypeEnumMap = {
   DownloadItemType.image: 'image',
   DownloadItemType.anchor: 'anchor',
   DownloadItemType.finampCollection: 'finampCollection',
+  DownloadItemType.animatedCover: 'animatedCover',
+  DownloadItemType.verticalBackground: 'verticalBackground',
 };
 
 const _$BaseItemDtoTypeEnumMap = {

@@ -16,6 +16,7 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path_helper;
 import 'package:uuid/uuid.dart';
 
+import '../models/animated_music_models.dart';
 import '../models/finamp_models.dart';
 import '../models/jellyfin_models.dart';
 import '../screens/downloads_screen.dart';
@@ -30,6 +31,8 @@ part 'downloads_service_backend.g.dart';
 const finampBaseDownloadDirectory = "songs";
 
 const finampBaseImagesDirectory = "images";
+
+const finampBaseAnimatedDirectory = "animated";
 
 class IsarPersistentStorage implements PersistentStorage {
   final _isar = GetIt.instance<Isar>();
@@ -235,6 +238,14 @@ class IsarTaskQueue implements TaskQueue {
 
   IsarTaskQueue(this._downloadsService);
 
+  Uri _animatedAssetUrl(DownloadItem task) {
+    final kind = task.type == DownloadItemType.animatedCover
+        ? AnimatedAssetKind.cover
+        : AnimatedAssetKind.verticalBackground;
+    return _jellyfinApiData.getAnimatedAssetUrl(trackId: BaseItemId(task.id), kind: kind) ??
+        (throw StateError("Missing ${kind.name} URL for ${task.name}"));
+  }
+
   /// Set of tasks that are believed to be actively running
   final _activeDownloads = <int>{}; // by TaskId
 
@@ -261,6 +272,10 @@ class IsarTaskQueue implements TaskQueue {
             .typeEqualTo(DownloadItemType.track)
             .or()
             .typeEqualTo(DownloadItemType.image)
+            .or()
+            .typeEqualTo(DownloadItemType.animatedCover)
+            .or()
+            .typeEqualTo(DownloadItemType.verticalBackground)
             .findAllSync()) {
       if (item.file?.existsSync() ?? false) {
         _activeDownloads.remove(item.isarId);
@@ -341,14 +356,9 @@ class IsarTaskQueue implements TaskQueue {
                       .getTrackDownloadUrl(item: task.baseItem!, transcodingProfile: task.fileTranscodingProfile)
                       .toString(),
                 DownloadItemType.image =>
-                  _jellyfinApiData
-                      .getImageUrl(
-                        item: task.baseItem!,
-                        // Download original file
-                        quality: null,
-                        format: null,
-                      )
-                      .toString(),
+                  _jellyfinApiData.getImageUrl(item: task.baseItem!, quality: null, format: null).toString(),
+                DownloadItemType.animatedCover ||
+                DownloadItemType.verticalBackground => _animatedAssetUrl(task).toString(),
                 _ => throw StateError("Invalid enqueue ${task.name} which is a ${task.type}"),
               };
               _enqueueLog.fine("Submitting download ${task.name} to background_downloader.");
@@ -869,6 +879,8 @@ class DownloadsSyncService {
       case DownloadItemType.track:
         break;
       case DownloadItemType.image:
+      case DownloadItemType.animatedCover:
+      case DownloadItemType.verticalBackground:
       case DownloadItemType.anchor:
         viewId = null;
         asRequired = true;
@@ -921,7 +933,7 @@ class DownloadsSyncService {
     // metadata can be used, especially imageId and blurhash.
     BaseItemDto? newBaseItem;
     //If we aren't quicksyncing, fetch the latest BaseItemDto to copy into Isar.
-    if (parent.type.requiresItem) {
+    if (parent.type.requiresItem && !parent.type.isAnimatedAsset) {
       bool expectNewItem = false;
       if (!FinampSettingsHelper.finampSettings.preferQuickSyncs ||
           _downloadsService.forceFullSync ||
@@ -1035,8 +1047,11 @@ class DownloadsSyncService {
             _syncLogger.info("Failed to download metadata for ${item.name}: $e");
             rethrow;
           }
+          await _addAnimatedDownloadChildren(parent, item, requiredChildren);
         }
       case DownloadItemType.image:
+      case DownloadItemType.animatedCover:
+      case DownloadItemType.verticalBackground:
         break;
       case DownloadItemType.anchor:
         var children = _isar.downloadItems.filter().requiredBy((q) => q.isarIdEqualTo(parent.isarId)).findAllSync();
@@ -1558,6 +1573,9 @@ class DownloadsSyncService {
         return _downloadTrack(item);
       case DownloadItemType.image:
         return _downloadImage(item);
+      case DownloadItemType.animatedCover:
+      case DownloadItemType.verticalBackground:
+        return _downloadAnimatedAsset(item);
       case _:
         throw StateError("???");
     }
@@ -1710,5 +1728,134 @@ class DownloadsSyncService {
         _downloadsService.updateItemState(canonItem, DownloadItemState.enqueued, alwaysPut: true);
       }
     });
+  }
+
+  Future<void> _addAnimatedDownloadChildren(
+    DownloadStub parent,
+    BaseItemDto item,
+    Set<DownloadStub> requiredChildren,
+  ) async {
+    final settings = FinampSettingsHelper.finampSettings;
+    if (!settings.showAnimatedCover && !settings.showVerticalBackground) {
+      return;
+    }
+    if (settings.isOffline) {
+      _retainExistingAnimatedChildren(parent, requiredChildren, settings);
+      return;
+    }
+    try {
+      final plugin = await _jellyfinApiData.isAnimatedMusicPluginAvailable();
+      if (plugin == false) {
+        _retainExistingAnimatedChildren(parent, requiredChildren, settings);
+        return;
+      }
+      final info = await _jellyfinApiData.getTrackAnimatedInfo(itemId: item.id);
+      if (info == null) {
+        if (plugin == null) {
+          _retainExistingAnimatedChildren(parent, requiredChildren, settings);
+        }
+        return;
+      }
+      if (settings.showAnimatedCover && info.cover.available) {
+        requiredChildren.add(DownloadStub.fromItem(type: DownloadItemType.animatedCover, item: item));
+      }
+      if (settings.showVerticalBackground && info.verticalBackground.available) {
+        requiredChildren.add(DownloadStub.fromItem(type: DownloadItemType.verticalBackground, item: item));
+      }
+    } catch (e) {
+      _syncLogger.info("Animated music assets unavailable for ${item.name}: $e");
+      _retainExistingAnimatedChildren(parent, requiredChildren, settings);
+    }
+  }
+
+  void _retainExistingAnimatedChildren(
+    DownloadStub parent,
+    Set<DownloadStub> requiredChildren,
+    FinampSettings settings,
+  ) {
+    final existing = _isar.downloadItems.getSync(parent.isarId);
+    if (existing == null) {
+      return;
+    }
+    for (final child in existing.requires.filter().findAllSync()) {
+      if (child.type == DownloadItemType.animatedCover && settings.showAnimatedCover) {
+        requiredChildren.add(child);
+      } else if (child.type == DownloadItemType.verticalBackground && settings.showVerticalBackground) {
+        requiredChildren.add(child);
+      }
+    }
+  }
+
+  Future<void> _downloadAnimatedAsset(DownloadItem downloadItem) async {
+    assert(downloadItem.type.isAnimatedAsset && downloadItem.syncDownloadLocation != null);
+    var downloadLocation = downloadItem.syncDownloadLocation!;
+    final kind = downloadItem.type == DownloadItemType.animatedCover
+        ? AnimatedAssetKind.cover
+        : AnimatedAssetKind.verticalBackground;
+
+    final info = await _jellyfinApiData.getTrackAnimatedInfo(itemId: BaseItemId(downloadItem.id));
+    final asset = kind == AnimatedAssetKind.cover ? info?.cover : info?.verticalBackground;
+    if (asset == null || !asset.available) {
+      _failAnimatedDownload(downloadItem);
+      return;
+    }
+    final fileName = _animatedAssetFileName(downloadItem, kind, asset);
+
+    String subDirectory = finampBaseAnimatedDirectory;
+    if (downloadLocation.useHumanReadableNames) {
+      if (path_helper.split(downloadLocation.currentPath).lastOrNull?.toLowerCase() != "finamp") {
+        subDirectory = path_helper.join("Finamp", subDirectory);
+      }
+    }
+    if (downloadLocation.baseDirectory.baseDirectory == BaseDirectory.root) {
+      subDirectory = path_helper.join(downloadLocation.currentPath, subDirectory);
+    }
+
+    _isar.writeTxnSync(() {
+      DownloadItem? canonItem = _isar.downloadItems.getSync(downloadItem.isarId);
+      if (canonItem == null) {
+        _syncLogger.severe("Download metadata ${downloadItem.id} missing after download starts");
+        throw StateError("Could not save download task id");
+      }
+      if (canonItem.state != DownloadItemState.notDownloaded) {
+        _syncLogger.severe("Download state incorrect while enqueueing ${canonItem.name}");
+        return;
+      }
+      canonItem.path = path_helper.join(subDirectory, fileName);
+      canonItem.fileTranscodingProfile = canonItem.syncTranscodingProfile;
+      _downloadsService.updateItemState(canonItem, DownloadItemState.enqueued, alwaysPut: true);
+    });
+  }
+
+  void _failAnimatedDownload(DownloadItem downloadItem) {
+    _isar.writeTxnSync(() {
+      var canonItem = _isar.downloadItems.getSync(downloadItem.isarId);
+      if (canonItem != null) {
+        _downloadsService.updateItemState(canonItem, DownloadItemState.failed);
+      }
+    });
+  }
+
+  String _animatedAssetFileName(DownloadItem downloadItem, AnimatedAssetKind kind, AnimatedAssetDto asset) {
+    String stem = kind.name;
+    String extension = ".mp4";
+
+    final original = asset.fileName;
+    if (original != null && original.isNotEmpty) {
+      final baseName = path_helper.basename(original);
+      final parsedExt = path_helper.extension(baseName);
+      stem = path_helper.basenameWithoutExtension(baseName);
+      if (parsedExt.isNotEmpty) {
+        extension = parsedExt;
+      }
+    } else if (asset.mimeType != null && asset.mimeType!.contains("/")) {
+      extension = ".${asset.mimeType!.split("/").last.split(";").first}";
+    }
+
+    final safeStem = _filesystemSafe(stem) ?? kind.name;
+    final safeExt = extension.startsWith(".")
+        ? ".${_filesystemSafe(extension.substring(1)) ?? "mp4"}"
+        : ".${_filesystemSafe(extension) ?? "mp4"}";
+    return "${downloadItem.id}_$safeStem$safeExt";
   }
 }

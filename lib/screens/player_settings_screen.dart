@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/screens/customization_settings_screen.dart';
+import 'package:finamp/services/animated_music_service.dart';
+import 'package:finamp/services/downloads_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 
 import '../components/LayoutSettingsScreen/player_screen_minimum_cover_padding_editor.dart';
 import '../extensions/localizations.dart';
@@ -69,6 +74,8 @@ class PlayerSettingsScreen extends ConsumerWidget {
           SuppressPlayerPaddingSwitch(),
           PrioritizeCoverSwitch(),
           HidePlayerBottomActionsSwitch(),
+          ShowAnimatedCoverToggle(),
+          ShowVerticalBackgroundToggle(),
         ],
       ),
     );
@@ -165,6 +172,54 @@ class FeatureChipToggle extends ConsumerWidget {
           FinampSetters.setFeatureChipsConfiguration(config.copyWith(features: feat));
         },
       ),
+    );
+  }
+}
+
+class ShowAnimatedCoverToggle extends ConsumerWidget {
+  const ShowAnimatedCoverToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pluginMissing = ref.watch(animatedMusicPluginAvailableProvider).valueOrNull == false;
+    return SwitchListTile.adaptive(
+      title: Text(AppLocalizations.of(context)!.showAnimatedCoverTitle),
+      subtitle: Text(
+        pluginMissing
+            ? AppLocalizations.of(context)!.animatedMusicPluginRequired
+            : AppLocalizations.of(context)!.showAnimatedCoverSubtitle,
+      ),
+      value: ref.watch(finampSettingsProvider.showAnimatedCover),
+      onChanged: pluginMissing
+          ? null
+          : (value) {
+              FinampSetters.setShowAnimatedCover(value);
+              unawaited(GetIt.instance<DownloadsService>().resyncAll(forceSync: true));
+            },
+    );
+  }
+}
+
+class ShowVerticalBackgroundToggle extends ConsumerWidget {
+  const ShowVerticalBackgroundToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pluginMissing = ref.watch(animatedMusicPluginAvailableProvider).valueOrNull == false;
+    return SwitchListTile.adaptive(
+      title: Text(AppLocalizations.of(context)!.showVerticalBackgroundTitle),
+      subtitle: Text(
+        pluginMissing
+            ? AppLocalizations.of(context)!.animatedMusicPluginRequired
+            : AppLocalizations.of(context)!.showVerticalBackgroundSubtitle,
+      ),
+      value: ref.watch(finampSettingsProvider.showVerticalBackground),
+      onChanged: pluginMissing
+          ? null
+          : (value) {
+              FinampSetters.setShowVerticalBackground(value);
+              unawaited(GetIt.instance<DownloadsService>().resyncAll(forceSync: true));
+            },
     );
   }
 }

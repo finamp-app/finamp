@@ -14,8 +14,15 @@ import '../services/theme_provider.dart';
 class BlurredPlayerScreenBackground extends ConsumerWidget {
   /// should never be less than 1.0
   final double opacityFactor;
+  final double opacity;
+  final Duration opacityDuration;
 
-  const BlurredPlayerScreenBackground({super.key, this.opacityFactor = 1.0});
+  const BlurredPlayerScreenBackground({
+    super.key,
+    this.opacityFactor = 1.0,
+    this.opacity = 1.0,
+    this.opacityDuration = Duration.zero,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,38 +45,47 @@ class BlurredPlayerScreenBackground extends ConsumerWidget {
           )
         : const SizedBox.shrink();
 
+    Widget background = imageProvider == null
+        ? placeholderBuilder(null)
+        : OctoImage(
+            image: imageProvider,
+            fit: BoxFit.cover,
+            fadeInDuration: Duration.zero,
+            fadeOutDuration: Duration.zero,
+            color: overlayColor,
+            colorBlendMode: BlendMode.srcOver,
+            filterQuality: FilterQuality.none,
+            errorBuilder: (x, _, _) => placeholderBuilder(x),
+            placeholderBuilder: placeholderBuilder,
+            imageBuilder: (context, child) {
+              var image = ImageFiltered(
+                imageFilter: ui.ImageFilter.blur(sigmaX: 85, sigmaY: 85, tileMode: TileMode.mirror),
+                child: SizedBox.expand(child: child),
+              );
+              // There seems to be some sort of issue with how Linux handles ui.Image that breaks
+              // cachePaint.  This shouldn't be too important outside mobile, though.
+              if (Platform.isLinux) {
+                return image;
+              }
+              return CachePaint(imageKey: imageProvider, child: image);
+            },
+          );
+
     return Positioned.fill(
-      child: AnimatedSwitcher(
-        duration: getThemeTransitionDuration(context, null),
-        switchOutCurve: const Threshold(0.0),
-        child: imageProvider == null
-            ? placeholderBuilder(null)
-            : OctoImage(
-                // Don't transition between images with identical files/urls unless
-                // system theme has changed
-                key: ValueKey(imageProvider.hashCode + Theme.brightnessOf(context).hashCode),
-                image: imageProvider,
-                fit: BoxFit.cover,
-                fadeInDuration: Duration.zero,
-                fadeOutDuration: Duration.zero,
-                color: overlayColor,
-                colorBlendMode: BlendMode.srcOver,
-                filterQuality: FilterQuality.none,
-                errorBuilder: (x, _, _) => placeholderBuilder(x),
-                placeholderBuilder: placeholderBuilder,
-                imageBuilder: (context, child) {
-                  var image = ImageFiltered(
-                    imageFilter: ui.ImageFilter.blur(sigmaX: 85, sigmaY: 85, tileMode: TileMode.mirror),
-                    child: SizedBox.expand(child: child),
-                  );
-                  // There seems to be some sort of issue with how Linux handles ui.Image that breaks
-                  // cachePaint.  This shouldn't be too important outside mobile, though.
-                  if (Platform.isLinux) {
-                    return image;
-                  }
-                  return CachePaint(imageKey: imageProvider, child: image);
-                },
-              ),
+      child: AnimatedOpacity(
+        opacity: opacity,
+        duration: opacityDuration,
+        curve: Curves.easeInOutCubic,
+        child: AnimatedSwitcher(
+          duration: getThemeTransitionDuration(context, null),
+          switchOutCurve: const Threshold(0.0),
+          // Don't transition between images with identical files/urls unless
+          // system theme has changed
+          child: KeyedSubtree(
+            key: ValueKey(Object.hash(imageProvider, Theme.brightnessOf(context))),
+            child: background,
+          ),
+        ),
       ),
     );
   }

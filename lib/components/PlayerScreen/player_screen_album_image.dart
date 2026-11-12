@@ -13,9 +13,11 @@ import 'package:get_it/get_it.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
 import '../../menus/track_menu.dart';
+import '../../services/animated_music_service.dart';
 import '../../services/current_album_image_provider.dart';
 import '../../services/favorite_provider.dart';
 import '../album_image.dart';
+import 'animated_cover_overlay.dart';
 
 class PlayerScreenAlbumImage extends ConsumerWidget {
   const PlayerScreenAlbumImage({super.key, this.showHiddenPlayerActions = false});
@@ -34,14 +36,21 @@ class PlayerScreenAlbumImage extends ConsumerWidget {
           return const Center(child: CircularProgressIndicator());
         }
         final currentTrack = snapshot.data!.currentTrack;
+        final hideArtwork = ref.watch(verticalBackgroundReadyProvider);
+        final collapsed = ref.watch(verticalBackgroundControlsCollapsedProvider);
 
         return Semantics(
-          label: AppLocalizations.of(
-            context,
-          )!.playerAlbumArtworkTooltip(currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName),
+          label: hideArtwork
+              ? (collapsed
+                    ? AppLocalizations.of(context)!.showVerticalBackgroundControls
+                    : AppLocalizations.of(context)!.hideVerticalBackgroundControls)
+              : AppLocalizations.of(
+                  context,
+                )!.playerAlbumArtworkTooltip(currentTrack?.item.title ?? AppLocalizations.of(context)!.unknownName),
           excludeSemantics: true, // replace child semantics with custom semantics
           container: true,
           child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onSecondaryTapDown: (_) async {
               var queueItem = snapshot.data!.currentTrack;
               if (queueItem?.baseItem != null) {
@@ -57,9 +66,14 @@ class PlayerScreenAlbumImage extends ConsumerWidget {
               }
             },
             child: SimpleGestureDetector(
+              behavior: HitTestBehavior.opaque,
               //TODO replace with PageView, this is just a placeholder
               onTap: () {
-                unawaited(audioService.togglePlayback());
+                if (hideArtwork) {
+                  ref.read(verticalBackgroundControlsCollapsedProvider.notifier).toggle();
+                } else {
+                  unawaited(audioService.togglePlayback());
+                }
                 FeedbackHelper.feedback(FeedbackType.selection);
               },
               onDoubleTap: () {
@@ -86,23 +100,44 @@ class PlayerScreenAlbumImage extends ConsumerWidget {
                   //print(
                   //    "control height is ${MediaQuery.sizeOf(context).height - 53.0 - constraints.maxHeight - 24}");
                   final minPadding = ref.watch(finampSettingsProvider.playerScreenCoverMinimumPadding);
-                  final horizontalPadding = constraints.maxWidth * (minPadding / 100.0);
-                  final verticalPadding = constraints.maxHeight * (minPadding / 100.0);
-                  return Padding(
+                  final horizontalPadding = hideArtwork ? 0.0 : constraints.maxWidth * (minPadding / 100.0);
+                  final verticalPadding = hideArtwork ? 0.0 : constraints.maxHeight * (minPadding / 100.0);
+                  const coverRadius = BorderRadius.all(Radius.circular(8.0));
+                  final fadeDuration = animatedMusicFadeDurationOf(context);
+                  return AnimatedPadding(
+                    duration: fadeDuration,
+                    curve: animatedMusicFadeCurve,
                     padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
-                    child: AlbumImage(
-                      imageListenable: currentAlbumImageProvider,
-                      borderRadius: BorderRadius.circular(8.0),
-                      // Load player cover at max size to allow more seamless scaling
-                      autoScale: false,
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 24,
-                            offset: const Offset(0, 4),
-                            color: Colors.black.withValues(alpha: 0.3),
+                    child: AnimatedOpacity(
+                      duration: fadeDuration,
+                      curve: animatedMusicFadeCurve,
+                      opacity: hideArtwork ? 0 : 1,
+                      // Center loosens the constraints so AspectRatio takes effect.
+                      child: Center(
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              AlbumImage(
+                                imageListenable: currentAlbumImageProvider,
+                                borderRadius: coverRadius,
+                                // Load player cover at max size to allow more seamless scaling
+                                autoScale: false,
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      blurRadius: 24,
+                                      offset: const Offset(0, 4),
+                                      color: Colors.black.withValues(alpha: 0.3),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const AnimatedCoverOverlay(borderRadius: coverRadius),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   );

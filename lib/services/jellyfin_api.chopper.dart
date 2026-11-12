@@ -854,6 +854,29 @@ final class _$JellyfinApi extends JellyfinApi {
   }
 
   @override
+  Future<Response<dynamic>> getAnimatedMusicStatus() {
+    final Uri $url = Uri.parse('/AnimatedMusic');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+      responseConverter: JsonConverter.responseFactory,
+    );
+  }
+
+  @override
+  Future<dynamic> getTrackAnimatedInfo({required BaseItemId trackId}) async {
+    final Uri $url = Uri.parse('/AnimatedMusic/Tracks/${trackId}');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    final Response<dynamic> $response = await client.send<dynamic, dynamic>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+      responseConverter: JsonConverter.responseFactory,
+    );
+    return $response.bodyOrThrow;
+  }
+
+  @override
   Future<Response<dynamic>> logout() {
     final Uri $url = Uri.parse('/Sessions/Logout');
     final Request $request = Request('POST', $url, client.baseUrl);
