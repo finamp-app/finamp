@@ -836,6 +836,7 @@ class _FinampState extends State<Finamp> with WindowListener {
   static final Logger linkHandlingLogger = Logger("LinkHandling");
 
   StreamSubscription<Uri>? _uriLinkSubscription;
+  Rect? _lastWindowBounds;
   Timer? _windowBoundsDebounceTimer;
 
   @override
@@ -946,25 +947,19 @@ class _FinampState extends State<Finamp> with WindowListener {
   @override
   void onWindowEvent(String eventName) async {
     // On Linux, window_manager 0.5.x only emits "move" and "resize" (never "moved" or "resized"),
-    // so debounce those events to persist window geometry without spamming disk I/O on every frame.
+    // so capture the bounds immediately and debounce saving to avoid disk I/O on every frame.
     if (eventName == "move" || eventName == "resize") {
       if (Platform.isLinux) {
+        _lastWindowBounds = await windowManager.getBounds();
         _windowBoundsDebounceTimer?.cancel();
-        _windowBoundsDebounceTimer = Timer(const Duration(milliseconds: 500), () async {
-          if (!await windowManager.isMaximized() && !await windowManager.isMinimized()) {
-            FinampSetters.setScreenSize(ScreenSize.from(await windowManager.getBounds()));
+        _windowBoundsDebounceTimer = Timer(const Duration(milliseconds: 500), () {
+          if (_lastWindowBounds != null) {
+            FinampSetters.setScreenSize(ScreenSize.from(_lastWindowBounds!));
             windowManagerLogger.finer("Saved window size and position (Linux debounced)");
           }
         });
       }
       return;
-    }
-
-    if (eventName == "hide" && (_windowBoundsDebounceTimer?.isActive ?? false)) {
-      _windowBoundsDebounceTimer?.cancel();
-      if (!await windowManager.isMaximized() && !await windowManager.isMinimized()) {
-        FinampSetters.setScreenSize(ScreenSize.from(await windowManager.getBounds()));
-      }
     }
 
     windowManagerLogger.finer("[WindowManager] onWindowEvent: $eventName");
@@ -980,13 +975,6 @@ class _FinampState extends State<Finamp> with WindowListener {
   void onWindowClose() async {
     if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
       return;
-    }
-
-    if (_windowBoundsDebounceTimer?.isActive ?? false) {
-      _windowBoundsDebounceTimer?.cancel();
-      if (!await windowManager.isMaximized() && !await windowManager.isMinimized()) {
-        FinampSetters.setScreenSize(ScreenSize.from(await windowManager.getBounds()));
-      }
     }
 
     // Close was intercepted to hide the window to the tray (see TrayService), keep playing.

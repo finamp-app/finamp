@@ -169,9 +169,17 @@ Widget _buildSplitScreen(BuildContext context, BoxConstraints constraints, Widge
   );
 }
 
-/// Builds with [value], but when [waitForNextFrame] is true, delays updating by one frame
-/// to discard transient single-frame size changes (such as when GTK remaps a surface
-/// on Wayland before the compositor sends the actual configure event).
+/// Builds with [value], but when [waitForNextFrame] is true, delays updating by one frame.
+///
+/// While native Linux changes (`linux/finamp_application.cc`) ensure the window restores to its
+/// allocated size on remap, dynamic window manager adjustments (such as rapid tiling compositor
+/// reflows or intermediate configure events) can still briefly cross the split-screen threshold.
+///
+/// When entering split-screen, [SplitScreenNavigatorObserver.queuePop] pops the player route
+/// from the main navigator. Because a popped route does not revert on its own when the window
+/// returns to a smaller size, a single transient frame would leave the user on the home screen
+/// instead of the player. This single-frame delay ensures route popping and split-screen transitions
+/// only occur for sustained window sizes.
 @visibleForTesting
 class DelayedFlag extends StatefulWidget {
   const DelayedFlag({super.key, required this.value, this.waitForNextFrame = false, required this.builder});
