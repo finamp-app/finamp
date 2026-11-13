@@ -104,7 +104,11 @@ class TrackNameContent extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            PlayerButtonsMore(item: trackBaseItemDto, queueItem: currentTrack),
+            PlayerButtonsMore(
+              item: trackBaseItemDto,
+              queueItem: currentTrack,
+              showHiddenPlayerActions: !controller.shouldShow(PlayerHideable.bottomActions),
+            ),
             Flexible(
               child: ArtistChips(
                 baseItem: trackBaseItemDto,

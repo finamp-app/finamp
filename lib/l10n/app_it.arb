@@ -1685,7 +1685,7 @@
     "@releaseDateFormatSubtitle": {
         "description": "Title for the setting that controls the format release dates throughout the app."
     },
-    "autoOfflineNotification": "{state, select, enabled{enabled} disabled{disabled} other{set quantum position for}} automaticamente la Modalità Offline",
+    "autoOfflineNotification": "Modalità Offline {state, select, enabled{attivata} disabled{disattivata} other{aggiornata}} automaticamente",
     "@autoOfflineNotification": {
         "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
     },
@@ -2006,6 +2006,23 @@
     "autoReloadQueueSubtitle": "Ricarica automaticamente la coda quando cambia la sorgente (ad esempio, modalità offline abilitata o cambio di indirizzo del server). Se disabilitato, Finamp ti chiederà di farlo.",
     "@autoReloadQueueSubtitle": {
         "description": "Subtitle for the setting that controls if the queue is automatically reloaded when the source changes"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Limite di brani rimossi dal ricaricamento automatico",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "Quando passi alla modalità offline, ricarica automaticamente solo se verrebbe rimosso al massimo questa percentuale di brani. Puoi sempre ricaricare manualmente.",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "Massimo brani rimossi: {percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
     },
     "clearQueueOnStopEventTitle": "Cancella coda in caso di arresto esterno",
     "@clearQueueOnStopEventTitle": {
@@ -2689,6 +2706,18 @@
             }
         }
     },
+    "autoReloadPromptDroppedTracks": "Ricaricando verrebbe rimosso il {removedPercentage}% della coda ({amountUndownloadedTracks} brani).",
+    "@autoReloadPromptDroppedTracks": {
+        "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "removedPercentage": {
+                "type": "int"
+            }
+        }
+    },
     "preferAddingToFavoritesOverPlaylistsTitle": "Aggiungi ai preferiti toccando l’icona a forma di cuore",
     "@preferAddingToFavoritesOverPlaylistsTitle": {
         "description": "Title for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"
@@ -3008,5 +3037,17 @@
     "sectionType": "Tipo di sezione",
     "@sectionType": {
         "description": "Title for home screen section editor section type dropdown (tab view, collection, ect...)"
-    }
+    },
+    "closeToTrayTitle": "Chiudi nell'area di notifica",
+    "closeToTraySubtitle": "Lascia Finamp in esecuzione nell'area di notifica quando chiudi la finestra. Usa \"Esci\" dal menu dell'icona per uscire.",
+    "minimizeToTrayTitle": "Minimizza nell'area di notifica",
+    "minimizeToTraySubtitle": "Nascondi la finestra nell'area di notifica quando viene minimizzata.",
+    "minimizeToTrayWaylandNote": "Nascondi la finestra nell'area di notifica quando viene minimizzata. Non supportato su Wayland, che non segnala alle app quando vengono minimizzate: usa \"Chiudi nell'area di notifica\".",
+    "startMinimizedToTrayTitle": "Avvia nell'area di notifica",
+    "startMinimizedToTraySubtitle": "Avvia Finamp con la finestra nascosta nell'area di notifica. Puoi anche usare l'opzione --minimized da riga di comando.",
+    "trayShowWindow": "Mostra Finamp",
+    "trayHideWindow": "Riduci Finamp nell'area di notifica",
+    "trayQuit": "Esci da Finamp",
+    "trayNothingPlaying": "Nessuna riproduzione",
+    "trayTooltipPlaying": "{track} - Finamp"
 }

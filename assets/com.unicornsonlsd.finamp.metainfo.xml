@@ -58,7 +58,70 @@
   </screenshots>
   <launchable type="desktop-id">com.unicornsonlsd.finamp.desktop</launchable>
   <releases>
-    <release version="1.0.1-beta" date="2026-09-02">
+    <release version="1.0.3" date="2026-11-06">
+      <description>
+        <p>This is a hotfix for version 1.0.1.</p>
+        <p>
+          Here's what's new:
+        </p>
+        <ul>
+          <li>Fix startup error "Could not initialize IsarCore" when downloading from F-Droid.</li>
+        </ul>
+        <p>
+          <em>Thank you for using Finamp!</em>
+        </p>
+      </description>
+    </release>
+    <release version="1.0.2" date="2026-10-18">
+      <url
+        type="details"
+      >https://github.com/jmshrv/finamp/releases/1.0.2</url>
+      <description>
+        <p>This is a hotfix for version 1.0.1.</p>
+        <p>
+          Here's what's new:
+        </p>
+        <ul>
+          <li>Fix contrast issues on quick settings banner when a custom accent color is configured</li>
+          <li>Fix startup error when upgrading from inconsistent legacy downloads (mobile only)</li>
+        </ul>
+        <p>
+          <em>Thank you for using Finamp!</em>
+        </p>
+      </description>
+    </release>
+    <release version="1.0.1" date="2026-10-11">
+      <url
+        type="details"
+      >https://github.com/jmshrv/finamp/releases/1.0.1</url>
+      <description>
+        <p>Finamp's redesign is now finally stable and has been released to F-Droid!</p>
+        <p>
+          Here's what's new:
+        </p>
+        <ul>
+          <li>Customizable Home Tab</li>
+          <li>Many redesigned screens and menus</li>
+          <li>Lyrics support</li>
+          <li>Volume normalization</li>
+          <li>Adaptive theme</li>
+          <li>Auto-restore queue</li>
+          <li>New playback options</li>
+          <li>Vastly improved download system</li>
+          <li>Automatic offline mode</li>
+          <li>Android Auto and CarPlay (<em>only if installed via Play Store or enabled in Android Auto Developer Settings!</em>)</li>
+          <li>Support for custom certs and mTLS</li>
+          <li>Desktop and Tablet Support</li>
+          <li>Tons of bug fixes</li>
+          <li>Jellyfin 12.0 compatibility</li>
+          <li>and much, much more!</li>
+        </ul>
+        <p>
+          <em>Thank you for using Finamp!</em>
+        </p>
+      </description>
+    </release>
+    <release version="1.0.1~beta1" type="development" date="2026-09-02">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/1.0.1-beta</url>
@@ -85,7 +148,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.25-beta" date="2026-08-01">
+    <release version="0.9.25~beta1" type="development" date="2026-08-01">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.25-beta</url>
@@ -115,7 +178,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.24-beta" date="2026-06-15">
+    <release version="0.9.24~beta1" type="development" date="2026-06-15">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.24-beta</url>
@@ -145,7 +208,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.23-beta" date="2026-03-18">
+    <release version="0.9.23~beta1" type="development" date="2026-03-18">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.23-beta</url>
@@ -173,7 +236,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.22-beta" date="2025-12-22">
+    <release version="0.9.22~beta1" type="development" date="2025-12-22">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.22-beta</url>
@@ -201,7 +264,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.21-beta" date="2025-12-15">
+    <release version="0.9.21~beta1" type="development" date="2025-12-15">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.21-beta</url>
@@ -237,7 +300,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.20-beta" date="2025-10-18">
+    <release version="0.9.20~beta1" type="development" date="2025-10-18">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.20-beta</url>
@@ -265,7 +328,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.19-beta" date="2025-07-28">
+    <release version="0.9.19~beta1" type="development" date="2025-07-28">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.19-beta</url>
@@ -296,7 +359,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.18-beta" date="2025-06-14">
+    <release version="0.9.18~beta1" type="development" date="2025-06-14">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.18-beta</url>
@@ -327,7 +390,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.16-beta" date="2025-04-17">
+    <release version="0.9.16~beta1" type="development" date="2025-04-17">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.16-beta</url>
@@ -361,7 +424,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.15-beta" date="2025-03-29">
+    <release version="0.9.15~beta1" type="development" date="2025-03-29">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.15-beta</url>
@@ -392,7 +455,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.14-beta" date="2025-02-27">
+    <release version="0.9.14~beta1" type="development" date="2025-02-27">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.14-beta</url>
@@ -419,7 +482,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.13-beta" date="2025-01-08">
+    <release version="0.9.13~beta1" type="development" date="2025-01-08">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.13-beta</url>
@@ -448,7 +511,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.12-beta" date="2024-11-12">
+    <release version="0.9.12~beta1" type="development" date="2024-11-12">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.12-beta</url>
@@ -476,7 +539,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.11-beta" date="2024-09-17">
+    <release version="0.9.11~beta1" type="development" date="2024-09-17">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.11-beta</url>
@@ -494,7 +557,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.10-beta" date="2024-09-15">
+    <release version="0.9.10~beta1" type="development" date="2024-09-15">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.10-beta</url>
@@ -520,7 +583,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.9-beta" date="2024-07-21">
+    <release version="0.9.9~beta1" type="development" date="2024-07-21">
       <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.9-beta</url>
@@ -540,7 +603,7 @@
         </ul>
       </description>
     </release>
-    <release version="0.9.8-beta" date="2024-06-13">
+    <release version="0.9.8~beta1" type="development" date="2024-06-13">
     <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.8-beta</url>
@@ -566,7 +629,7 @@
         </p>
       </description>
     </release>
-    <release version="0.9.7-beta" date="2024-05-23">
+    <release version="0.9.7~beta1" type="development" date="2024-05-23">
     <url
         type="details"
       >https://github.com/jmshrv/finamp/releases/tag/0.9.7-beta</url>

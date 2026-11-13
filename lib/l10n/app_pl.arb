@@ -3232,7 +3232,7 @@
         }
     },
     "autoSwitchItemCurationTypeSubtitle": "Gdy ta opcja jest włączona, sekcje pozycji na ekranach wykonawców i gatunków automatycznie przełączają się na inny typ wyboru, jeśli brak dostępnych elementów (np. brak ulubionych dla danego wykonawcy).",
-    "sleepTimerRemainingTracks": "{time, plural, =1{Zaśnięcie po tym utworze} one{Zaśnięcie po {time} utworze} few{Zaśnięcie po {time} utworach} many{Zaśnięcie po {time} utworach} other{Zaśnięcie po {time} utworu}}",
+    "sleepTimerRemainingTracks": "{time, plural, =1{Zaśnięcie po tym utworze} few{Zaśnięcie po {time} utworach} many{Zaśnięcie po {time} utworach} other{Zaśnięcie po {time} utworu}}",
     "@sleepTimerRemainingTracks": {
         "description": "Button label for sleep timer. {time} is the amount of minutes left.",
         "placeholders": {

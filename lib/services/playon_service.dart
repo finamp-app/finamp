@@ -276,6 +276,21 @@ class PlayOnService {
     }
   }
 
+  /// Stops an existing socket before opening a replacement after a network
+  /// hand-off.  Waiting for an in-progress connection keeps an old attempt
+  /// from being revived when the new one clears [abortConnect].
+  Future<void> reconnectAfterNetworkChange() async {
+    closeListener();
+    for (var attempt = 0; socketState == SocketState.connecting && attempt < 4; attempt++) {
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+    }
+    if (socketState == SocketState.connecting) {
+      _playOnServiceLogger.warning("Timed out waiting to replace PlayOn connection after network change");
+      return;
+    }
+    await startListener();
+  }
+
   Future<void> _handleMessage(dynamic value) async {
     try {
       _playOnServiceLogger.finest("Received message: $value");

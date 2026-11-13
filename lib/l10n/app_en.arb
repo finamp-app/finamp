@@ -1301,6 +1301,14 @@
         "description": "Title for message that shows on the views screen when no music libraries could be found."
     },
     "noMusicLibrariesBody": "Finamp could not find any music libraries. Please ensure that your Jellyfin server contains at least one library with the content type set to \"Music\".",
+    "noMusicLibrariesLogsCTA": "If you think this is an error, please help us to fix it by sharing these logs with us:",
+    "@noMusicLibrariesLogsCTA": {
+        "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
+    },
+    "noMusicLibrariesLogout": "You can also try logging out and trying again.",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
     "refresh": "Refresh",
     "moreInfo": "More Info",
     "volumeNormalizationSettingsTitle": "Volume Normalization",
@@ -2419,6 +2427,23 @@
     "@autoReloadQueueSubtitle": {
         "description": "Subtitle for the setting that controls if the queue is automatically reloaded when the source changes"
     },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Automatic Queue Reload Track Loss Limit",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "When switching to offline mode, only reload automatically if no more than this percentage of tracks would be removed. You can always reload manually.",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "Maximum removed tracks: {percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
     "clearQueueOnStopEventTitle": "Clear Queue On External Stop",
     "@clearQueueOnStopEventTitle": {
         "description": "Title for the setting that controls if OS stop commands clear the queue."
@@ -2601,6 +2626,18 @@
         "description": "Additional prompt text shown when the queue needs to be reloaded after changing network settings and some undownloaded tracks are in the queue",
         "placeholders": {
             "amountUndownloadedTracks": {
+                "type": "int"
+            }
+        }
+    },
+    "autoReloadPromptDroppedTracks": "This would remove {removedPercentage}% of the queue ({amountUndownloadedTracks} tracks).",
+    "@autoReloadPromptDroppedTracks": {
+        "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "removedPercentage": {
                 "type": "int"
             }
         }
@@ -3828,5 +3865,34 @@
     "quickSettingsLayoutLink": "All layout & theme settings",
     "quickSettingsAllSettingsLink": "All Settings",
     "quickSettingsNetworkLink": "Configure the local address for your server",
-  "loginFlowLocalNetworkServersNoResults": "No servers detected yet - you may need to manually enter the server address."
+  "loginFlowLocalNetworkServersNoResults": "No servers detected yet - you may need to manually enter the server address.",
+  "closeToTrayTitle": "Close to system tray",
+  "@closeToTrayTitle": {"description": "Desktop only. Title of the setting that hides the window to the system tray instead of quitting when it is closed"},
+  "closeToTraySubtitle": "Keep Finamp running in the system tray when the window is closed. Use \"Quit\" from the tray menu to exit.",
+  "minimizeToTrayTitle": "Minimize to system tray",
+  "@minimizeToTrayTitle": {"description": "Desktop only. Title of the setting that hides the window to the system tray when it is minimized"},
+  "minimizeToTraySubtitle": "Hide the window to the system tray when it is minimized.",
+  "minimizeToTrayWaylandNote": "Hide the window to the system tray when it is minimized. Not supported on Wayland, which doesn't tell apps when they get minimized. Use \"Close to system tray\" instead.",
+  "@minimizeToTrayWaylandNote": {"description": "Subtitle of the minimize to tray setting when running on a Linux Wayland session, where minimizing cannot be detected"},
+  "startMinimizedToTrayTitle": "Start in system tray",
+  "@startMinimizedToTrayTitle": {"description": "Desktop only. Title of the setting that starts Finamp with the window hidden in the system tray"},
+  "startMinimizedToTraySubtitle": "Start Finamp with the window hidden in the system tray. You can also pass --minimized on the command line.",
+  "trayShowWindow": "Show Finamp",
+  "@trayShowWindow": {"description": "System tray menu entry that shows the main window"},
+  "trayHideWindow": "Collapse Finamp to tray",
+  "@trayHideWindow": {"description": "System tray menu entry that hides the main window to the tray"},
+  "trayQuit": "Quit Finamp",
+  "@trayQuit": {"description": "System tray menu entry that fully quits the app"},
+  "trayNothingPlaying": "Nothing playing",
+  "@trayNothingPlaying": {"description": "Disabled system tray menu entry shown in place of the current track when nothing is playing"},
+  "trayTooltipPlaying": "{track} - Finamp",
+  "@trayTooltipPlaying": {
+    "description": "System tray icon tooltip shown while a track is loaded",
+    "placeholders": {
+      "track": {
+        "type": "String",
+        "example": "Rick Astley - Never Gonna Give You Up"
+      }
+    }
+  }
 }
