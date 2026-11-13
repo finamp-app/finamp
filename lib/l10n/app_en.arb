@@ -3865,5 +3865,11 @@
         "example": "Rick Astley - Never Gonna Give You Up"
       }
     }
-  }
+  },
+    "trackArtistOrderTitle": "Song artist order",
+    "trackArtistOrderSubtitle": "Album artists first places credited album artists before other song artists sorted alphabetically. If no album artist matches, metadata order is kept.",
+    "trackArtistOrderAlbumArtistsFirst": "Album artists first",
+    "trackArtistOrderMetadata": "Metadata order",
+    "trackArtistOrderFirstArtistFirst": "First credited artist first",
+    "trackArtistOrderAlphabetical": "Alphabetical"
 }

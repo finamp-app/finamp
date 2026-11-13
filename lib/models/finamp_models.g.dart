@@ -469,6 +469,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         closeToTray: fields[161] == null ? false : fields[161] as bool,
         minimizeToTray: fields[162] == null ? false : fields[162] as bool,
         startMinimizedToTray: fields[163] == null ? false : fields[163] as bool,
+        trackArtistOrder: fields[165] == null
+            ? TrackArtistOrder.albumArtistsFirst
+            : fields[165] as TrackArtistOrder,
       )
       ..sortBy = fields[7] as SortBy?
       ..sortOrder = fields[8] as SortOrder?
@@ -492,7 +495,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(153)
+      ..writeByte(154)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -798,7 +801,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(163)
       ..write(obj.startMinimizedToTray)
       ..writeByte(164)
-      ..write(obj.autoReloadQueueMaxDroppedTracksPercentage);
+      ..write(obj.autoReloadQueueMaxDroppedTracksPercentage)
+      ..writeByte(165)
+      ..write(obj.trackArtistOrder);
   }
 
   @override
@@ -3814,6 +3819,51 @@ class ItemFilterTypeAdapter extends TypeAdapter<ItemFilterType> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ItemFilterTypeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class TrackArtistOrderAdapter extends TypeAdapter<TrackArtistOrder> {
+  @override
+  final typeId = 128;
+
+  @override
+  TrackArtistOrder read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return TrackArtistOrder.albumArtistsFirst;
+      case 1:
+        return TrackArtistOrder.metadata;
+      case 2:
+        return TrackArtistOrder.firstArtistFirst;
+      case 3:
+        return TrackArtistOrder.alphabetical;
+      default:
+        return TrackArtistOrder.albumArtistsFirst;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, TrackArtistOrder obj) {
+    switch (obj) {
+      case TrackArtistOrder.albumArtistsFirst:
+        writer.writeByte(0);
+      case TrackArtistOrder.metadata:
+        writer.writeByte(1);
+      case TrackArtistOrder.firstArtistFirst:
+        writer.writeByte(2);
+      case TrackArtistOrder.alphabetical:
+        writer.writeByte(3);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TrackArtistOrderAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

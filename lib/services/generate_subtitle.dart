@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../models/jellyfin_models.dart';
 import 'process_artist.dart';
+import 'track_artist_order.dart';
 
 /// Creates the subtitle text used on ItemCollectionListTile and ItemCollectionCard
 String? generateSubtitle({
@@ -13,6 +14,7 @@ String? generateSubtitle({
   required BaseItemDto item,
   ContentType? parentType,
   ArtistType? artistType,
+  TrackArtistOrder trackArtistOrder = DefaultSettings.trackArtistOrder,
 }) {
   // If the parentType is MusicArtist, this is being called by an ItemCollectionListTile in an AlbumView of an artist.
   if (parentType?.isArtist ?? false) {
@@ -29,7 +31,7 @@ String? generateSubtitle({
     case BaseItemDtoType.playlist:
       return AppLocalizations.of(context)!.trackCount(item.childCount!);
     case BaseItemDtoType.track:
-      return item.artistItems?.map((e) => processArtist(e.name, context)).join(", ");
+      return processArtist(trackArtistNames(item, trackArtistOrder), context);
     // case BaseItemDtoType.genre:
     // Currently, for each album Jellyfin only increases the childCount of ONE album-artist
     // If there are multiple, we get incorrect childCounts on those (and if they only have albums

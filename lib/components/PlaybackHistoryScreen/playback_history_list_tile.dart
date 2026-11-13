@@ -9,6 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/jellyfin_models.dart' as jellyfin_models;
 import '../../services/process_artist.dart';
+import '../../services/finamp_settings_helper.dart';
+import '../../services/track_artist_order.dart';
 import '../../services/theme_provider.dart';
 import '../album_image.dart';
 
@@ -70,7 +72,10 @@ class _PlaybackHistoryListTileState extends ConsumerState<PlaybackHistoryListTil
               Padding(
                 padding: const EdgeInsets.only(top: 6.0),
                 child: Text(
-                  processArtist(widget.item.item.item.artist, context),
+                  processArtist(
+                    trackArtistNames(baseItem, ref.watch(finampSettingsProvider.trackArtistOrder)),
+                    context,
+                  ),
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyMedium!.color!,
                     fontSize: 13,
