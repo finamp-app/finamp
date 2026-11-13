@@ -572,6 +572,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
+  finamp_android_startup:
+    dependency: "direct main"
+    description:
+      path: "packages/finamp_android_startup"
+      relative: true
+    source: path
+    version: "0.0.1"
   fixnum:
     dependency: transitive
     description:
