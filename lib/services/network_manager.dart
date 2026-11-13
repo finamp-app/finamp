@@ -24,36 +24,6 @@ enum FinampConnectivityState { localNetwork, cellular, none }
 
 enum ServerPingType { local, remote, active }
 
-bool shouldNotifyPausedDownloads({
-  required FinampConnectivityState? previousState,
-  required FinampConnectivityState currentState,
-}) {
-  return isPausedDownloadNotificationApplicable(
-    previousState: previousState,
-    currentState: currentState,
-    activeDownloads: _getDownloads(),
-    requireWifiForDownloads: FinampSettingsHelper.finampSettings.requireWifiForDownloads,
-    isMobilePlatform: Platform.isAndroid || Platform.isIOS,
-  );
-}
-
-bool isPausedDownloadNotificationApplicable({
-  required FinampConnectivityState? previousState,
-  required FinampConnectivityState currentState,
-  required int activeDownloads,
-  required bool requireWifiForDownloads,
-  required bool isMobilePlatform,
-}) {
-  // Offline Mode and a download-policy pause are distinct: the former already
-  // has its own status message. This notification is useful only when the
-  // downloads setting stops an otherwise usable cellular hand-off.
-  return previousState == FinampConnectivityState.localNetwork &&
-      currentState == FinampConnectivityState.cellular &&
-      activeDownloads > 0 &&
-      requireWifiForDownloads &&
-      isMobilePlatform;
-}
-
 late List<ConnectivityResult> _latestConnectivity;
 Timer? _playOnReconnectRetry;
 
@@ -87,7 +57,11 @@ Future<void> startNetworkAutomation() async {
     final state = value.value;
     if (state == null) return;
 
-    if (shouldNotifyPausedDownloads(previousState: previous?.value, currentState: state)) {
+    if (previous?.value == FinampConnectivityState.localNetwork &&
+        state == FinampConnectivityState.cellular &&
+        _getDownloads() > 0 &&
+        FinampSettingsHelper.finampSettings.requireWifiForDownloads &&
+        (Platform.isAndroid || Platform.isIOS)) {
       GlobalSnackbar.message((context) => AppLocalizations.of(context)!.downloadPaused);
     }
 
