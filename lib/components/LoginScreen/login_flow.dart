@@ -234,6 +234,7 @@ class ServerState {
     if (baseUrl.isNotEmpty) {
       bool unspecifiedProtocol = false;
       bool unspecifiedPort = false;
+      bool unspecifiedPath = false;
 
       String baseUrlToTest = baseUrl;
 
@@ -244,6 +245,12 @@ class ServerState {
         // use https by default
         baseUrlToTest = "https://$baseUrlToTest";
         unspecifiedProtocol = true;
+      }
+
+      // use regex to check if a path is specified
+      final pathRegex = RegExp(r"[^\/]\/\w+\/?");
+      if (!pathRegex.hasMatch(baseUrlToTest)) {
+        unspecifiedPath = true;
       }
 
       // use regex to check if a port is specified
@@ -283,6 +290,21 @@ class ServerState {
           publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
         } catch (error) {
           serverStateLogger.severe("Couldn't reach server at $baseUrlToTest (HTTP): $error");
+        }
+      }
+      if (this.baseUrlToTest != baseUrl) {
+        throw Exception("Server URL changed while testing");
+      }
+
+      if (publicServerInfo == null && unspecifiedPath) {
+        // try /jellyfin (used by Navidrome and Lyra, and a sensible default choice)
+        Uri url = Uri.parse(baseUrlToTest).replace(path: "/jellyfin");
+        baseUrlToTest = url.toString(); // update the local url
+        jellyfinApiHelper.baseUrlTemp = url;
+        try {
+          publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
+        } catch (error) {
+          serverStateLogger.severe("Couldn't reach server at $baseUrlToTest (on /jellyfin): $error");
         }
       }
       if (this.baseUrlToTest != baseUrl) {
