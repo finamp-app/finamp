@@ -1,0 +1,231 @@
+import CryptoKit
+import SwiftUI
+
+// Try Jellyfin directly, then batch requests through the phone.
+final class ArtworkStore {
+    static let shared = ArtworkStore()
+
+    private static let batchLimit = 10
+    private static let memoryCountLimit = 120
+    private static let diskLimitBytes = 40 * 1024 * 1024
+    private static let diskTrimTargetBytes = 30 * 1024 * 1024
+
+    private struct Request {
+        let key: String
+        let id: String
+        let size: Int
+        let generation: Int
+    }
+
+    private let memory: NSCache<NSString, UIImage> = {
+        let cache = NSCache<NSString, UIImage>()
+        cache.countLimit = memoryCountLimit
+        return cache
+    }()
+    private var inFlight: [String: Task<UIImage?, Never>] = [:]
+    // Compare account generations before caching replies.
+    private var generation = 0
+    // One phone request per key: image(for:size:) joins callers of the same key.
+    private var waiting: [String: CheckedContinuation<UIImage?, Never>] = [:]
+    private var writesSinceTrim = 0
+    private var queue: [Request] = []
+    private var isSending = false
+    private let directory: URL = {
+        let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appending(path: "artwork")
+        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        return url
+    }()
+
+    private init() {
+        trimDiskCache()
+    }
+
+    func removeAll() {
+        // Keep in-flight loads: a new request for the same key must join them, not replace their waiter
+        generation += 1
+        memory.removeAllObjects()
+        try? FileManager.default.removeItem(at: directory)
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    }
+
+    private func trimDiskCache() {
+        let keys: [URLResourceKey] = [.fileSizeKey, .contentModificationDateKey]
+        guard let files = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: keys)
+        else { return }
+        let entries = files.compactMap { url -> (url: URL, size: Int, date: Date)? in
+            guard let values = try? url.resourceValues(forKeys: Set(keys)) else { return nil }
+            return (url, values.fileSize ?? 0, values.contentModificationDate ?? .distantPast)
+        }
+        var total = entries.reduce(0) { $0 + $1.size }
+        guard total > Self.diskLimitBytes else { return }
+        for entry in entries.sorted(by: { $0.date < $1.date }) where total > Self.diskTrimTargetBytes {
+            try? FileManager.default.removeItem(at: entry.url)
+            total -= entry.size
+        }
+    }
+
+    func image(for item: LibraryItem, size: Int) async -> UIImage? {
+        // Include the image tag and size so replacements and resolutions stay separate.
+        let key = "\(item.artworkKey)-\(size)"
+        if let image = memory.object(forKey: key as NSString) { return image }
+
+        if let data = try? Data(contentsOf: file(for: key)), let image = UIImage(data: data) {
+            memory.setObject(image, forKey: key as NSString)
+            return image
+        }
+
+        if let task = inFlight[key] { return await task.value }
+        let task = Task { await load(item, size: size, key: key) }
+        inFlight[key] = task
+        let image = await task.value
+        inFlight[key] = nil
+        return image
+    }
+
+    // Pause direct requests after failure to avoid repeated timeouts.
+    private var directPausedUntil: Date?
+    private static let directPause: TimeInterval = 5 * 60
+
+    private func load(_ item: LibraryItem, size: Int, key: String) async -> UIImage? {
+        let started = generation
+        if directPausedUntil.map({ Date() >= $0 }) ?? true {
+            switch await download(item.artworkURL, size: size) {
+            case .image(let data):
+                if let image = UIImage(data: data) {
+                    if started == generation { store(image, data: data, key: key) }
+                    return image
+                }
+            case .unreachable:
+                directPausedUntil = Date().addingTimeInterval(Self.directPause)
+            case .none:
+                break
+            }
+        }
+        return await viaPhone(item, size: size, key: key)
+    }
+
+    private enum Download {
+        case image(Data)
+        case none
+        case unreachable
+    }
+
+    private func download(_ address: String, size: Int) async -> Download {
+        guard !address.isEmpty, var components = URLComponents(string: address) else { return .none }
+        components.queryItems = (components.queryItems ?? []) + [
+            URLQueryItem(name: "MaxWidth", value: String(size)),
+            URLQueryItem(name: "MaxHeight", value: String(size)),
+        ]
+        guard let url = components.url else { return .none }
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 8
+        guard let (data, response) = try? await URLSession.shared.data(for: request) else { return .unreachable }
+        return (response as? HTTPURLResponse)?.statusCode == 200 ? .image(data) : .none
+    }
+
+    private func viaPhone(_ item: LibraryItem, size: Int, key: String) async -> UIImage? {
+        await withCheckedContinuation { continuation in
+            waiting[key] = continuation
+            queue.append(Request(key: key, id: item.id, size: size, generation: generation))
+            sendNextBatch()
+        }
+    }
+
+    private func file(for key: String) -> URL {
+        directory.appending(path: SHA256.hash(data: Data(key.utf8)).map { String(format: "%02x", $0) }.joined() + ".jpg")
+    }
+
+    private func sendNextBatch() {
+        guard !isSending, !queue.isEmpty else { return }
+        isSending = true
+        Task {
+            // Let rows that appear together join one batch.
+            try? await Task.sleep(for: .milliseconds(30))
+            let batch = Array(queue.prefix(Self.batchLimit))
+            queue.removeFirst(batch.count)
+
+            do {
+                let reply = try await PhoneConnection.shared.artworks(batch.map { ($0.id, $0.size) })
+                var deferred: [Request] = []
+                for request in batch {
+                    let replyKey = "\(request.id)-\(request.size)"
+                    if let data = reply.covers[replyKey], let image = UIImage(data: data) {
+                        if request.generation == generation { store(image, data: data, key: request.key) }
+                        resolve(request.key, with: image)
+                    } else if reply.missing.contains(replyKey) {
+                        resolve(request.key, with: nil)
+                    } else {
+                        deferred.append(request)  // didn't fit this reply's byte budget
+                    }
+                }
+                queue.insert(contentsOf: deferred, at: 0)
+            } catch {
+                for request in batch { resolve(request.key, with: nil) }
+            }
+
+            isSending = false
+            sendNextBatch()
+        }
+    }
+
+    private func resolve(_ key: String, with image: UIImage?) {
+        waiting.removeValue(forKey: key)?.resume(returning: image)
+    }
+
+    private func store(_ image: UIImage, data: Data, key: String) {
+        try? data.write(to: file(for: key))
+        memory.setObject(image, forKey: key as NSString)
+        writesSinceTrim += 1
+        if writesSinceTrim >= 50 {
+            writesSinceTrim = 0
+            trimDiskCache()
+        }
+    }
+}
+
+// Finamp's AlbumImage: the background colour while loading, Material's album icon when there is no cover.
+struct CoverView: View {
+    let item: LibraryItem
+    var circular = false
+    // Unrounded, for a container that clips it (the artist chip).
+    var square = false
+    @State private var image: UIImage?
+    @State private var missing = false
+    // Round sizes to share cached covers across similar slots.
+    @State private var pixelSize = 0
+    @Environment(\.displayScale) private var displayScale
+
+    var body: some View {
+        Rectangle()
+            .fill(Color.appBackground)
+            .overlay {
+                if let image {
+                    Image(uiImage: image).resizable().scaledToFill()
+                } else if let blur = BlurHash.image(item.blurHash) {
+                    Image(uiImage: blur).resizable().scaledToFill()
+                } else if missing || item.artworkKey.isEmpty {
+                    // Icon at Finamp's 24 pt in a list tile's 56 pt cover.
+                    GeometryReader { proxy in
+                        Image("material-album")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: proxy.size.width * 0.43)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    .foregroundStyle(Color.fgPrimary)
+                }
+            }
+            .animation(.easeIn(duration: 0.7), value: image)
+            .aspectRatio(1, contentMode: .fit)
+            .clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: square ? 0 : 8)))
+            .onGeometryChange(for: Int.self) { proxy in
+                Int((proxy.size.width * displayScale / 20).rounded(.up)) * 20
+            } action: { pixelSize = $0 }
+            .task(id: "\(item.artworkKey)-\(pixelSize)") {
+                if item.artworkKey.isEmpty { image = nil }
+                guard pixelSize > 0, !item.artworkKey.isEmpty else { return }
+                image = await ArtworkStore.shared.image(for: item, size: pixelSize)
+                missing = image == nil && !Task.isCancelled
+            }
+    }
+}

@@ -116,6 +116,7 @@ import 'services/audio_service_helper.dart';
 import 'services/jellyfin_api_helper.dart';
 import 'services/music_player_background_task.dart';
 import 'setup_logging.dart';
+import 'services/watch_helper.dart';
 
 final _mainLog = Logger("Main()");
 late DateTime startTime;
@@ -862,6 +863,9 @@ class _FinampState extends State<Finamp> with WindowListener {
       GetIt.instance<CarPlayHelper>().setupCarplay();
       IosSiriHandler.setup();
     }
+
+    // Apple Watch companion app (iOS only; a no-op elsewhere)
+    WatchHandler.setup();
   }
 
   void _handleAppLink(Uri uri, NavigatorState state) async {
