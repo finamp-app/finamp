@@ -278,6 +278,12 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
   required int startIndex,
   required int limit,
 }) async {
+  // An in-flight request can be cancelled while Android hands mobile data to
+  // Wi-Fi. Tie the result to the selected endpoint so Riverpod discards that
+  // stale error and refetches the visible page after the local/public route is
+  // chosen.
+  ref.watch(FinampUserHelper.finampCurrentUserProvider.select((user) => user?.baseURL));
+
   // If the fully downloaded filter is active, just use the offline items.
   if (ref.watch(finampSettingsProvider.isOffline) ||
       request.sortConfig.filters.where((x) => x.type == ItemFilterType.isFullyDownloaded).isNotEmpty) {
@@ -292,6 +298,10 @@ Future<List<BaseItemDto>?> loadHomeSectionItems(
 /// decide whether a view needs the letter picker.
 @riverpod
 Future<int> musicScreenItemCount(Ref ref, MusicScreenPlayable request) async {
+  // Keep the count in step with the visible page when the active endpoint
+  // changes during a network hand-off.
+  ref.watch(FinampUserHelper.finampCurrentUserProvider.select((user) => user?.baseURL));
+
   // Fully-downloaded-filtered requests serve offline items, so count those
   if (ref.watch(finampSettingsProvider.isOffline) ||
       request.sortConfig.filters.where((x) => x.type == ItemFilterType.isFullyDownloaded).isNotEmpty) {
@@ -802,6 +812,10 @@ Future<List<BaseItemDto>?> getJellyfinCollection(
   BaseItemDto collection,
   SortAndFilterConfiguration sortConfig,
 ) async {
+  // Collections are not paged through [loadHomeSectionItems], so give them
+  // the same endpoint dependency explicitly.
+  ref.watch(FinampUserHelper.finampCurrentUserProvider.select((user) => user?.baseURL));
+
   if (ref.watch(finampSettingsProvider.isOffline)) {
     // TODO I don't think the downloads system can actually handle collections?
     final stubs = await GetIt.instance<DownloadsService>().getAllCollections(

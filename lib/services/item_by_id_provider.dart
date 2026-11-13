@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -12,6 +13,11 @@ part 'item_by_id_provider.g.dart';
 
 @riverpod
 Future<BaseItemDto?> itemById(Ref ref, BaseItemId baseItemId) async {
+  // Item metadata is retained for 15 minutes. Make it depend on the chosen
+  // endpoint so a request interrupted while Android changes transport cannot
+  // retain its error after the replacement route is ready.
+  ref.watch(FinampUserHelper.finampCurrentUserProvider.select((user) => user?.baseURL));
+
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final downloadsService = GetIt.instance<DownloadsService>();
 

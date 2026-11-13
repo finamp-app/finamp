@@ -12,7 +12,7 @@ part of 'music_screen_provider.dart';
 // **************************************************************************
 
 String _$loadHomeSectionItemsHash() =>
-    r'79de212cae057856d0c2c10ef7dea9dc84ede6d4';
+    r'6818a2013e916d1089337272cd37a98e2a91164a';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -202,7 +202,7 @@ class _LoadHomeSectionItemsProviderElement
 }
 
 String _$musicScreenItemCountHash() =>
-    r'c49c43e47599e8b6f4f7bc6280fa844767f0eee8';
+    r'4eba40776b0ce0138d5117fd23f71420a3fc069a';
 
 /// Total item count for [request], ignoring pagination. CarPlay uses this to
 /// decide whether a view needs the letter picker.
@@ -344,7 +344,7 @@ class _MusicScreenItemCountProviderElement
 }
 
 String _$getJellyfinCollectionHash() =>
-    r'1c7ade2240687f4de0fb3a93b51f27a97fb80e8a';
+    r'29780fb757609fa75031fad6f141603b34fed2bf';
 
 /// See also [getJellyfinCollection].
 @ProviderFor(getJellyfinCollection)
