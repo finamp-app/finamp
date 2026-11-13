@@ -3703,5 +3703,65 @@
     "@releaseDateFormatNumerical": {
         "description": "Date format option for the release date of an album, showing the date in a short numerical format. Changes based on locale such as DD/MM/YYYY for en_gb and MM/DD/YYYY for en_us."
     },
-    "loginFlowLocalNetworkServersNoResults": "Aucun serveur détecté - vous devrez peut-être entrer l'adresse du serveur manuellement."
+    "loginFlowLocalNetworkServersNoResults": "Aucun serveur détecté - vous devrez peut-être entrer l'adresse du serveur manuellement.",
+    "noMusicLibrariesLogout": "Vous pouvez également essayer de vous déconnecter et d'essayer à nouveau.",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
+    "downloadDialogDownloadLocationLabel": "Emplacement des téléchargements",
+    "@downloadDialogDownloadLocationLabel": {
+        "description": "Label for the dropdown in the download dialog that selects where the download is stored. Only shown when multiple download locations are available."
+    },
+    "downloadDialogPath": "Chemin : {path}",
+    "@downloadDialogPath": {
+        "description": "Shows the file system path of the selected download location in the download dialog.",
+        "placeholders": {
+            "path": {
+                "type": "String",
+                "example": "/storage/emulated/0/Android/data/com.unicornsonlsd.finamp/files"
+            }
+        }
+    },
+    "downloadDialogTranscodeFilesTitle": "Transcoder les fichiers ?",
+    "@downloadDialogTranscodeFilesTitle": {
+        "description": "Title of the checkbox in the download dialog that toggles whether the downloaded tracks are transcoded."
+    },
+    "downloadDialogFileSizeLabel": "Taille du fichier :",
+    "@downloadDialogFileSizeLabel": {
+        "description": "Label for the original vs. transcoded file size line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogFormatLabel": "Format :",
+    "@downloadDialogFormatLabel": {
+        "description": "Label for the original vs. transcoded audio format line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogBitrateLabel": "Débit binaire :",
+    "@downloadDialogBitrateLabel": {
+        "description": "Label for the original vs. transcoded bitrate line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogTranscodedIntoSemanticLabel": "Transcodé en",
+    "@downloadDialogTranscodedIntoSemanticLabel": {
+        "description": "Screen reader label for the arrow icon in the download dialog's transcode summary. It sits between the original value and the transcoded value, e.g. 'FLAC, transcoded into, OPUS'."
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Limite de perte de piste lors du recharge automatique",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "trayShowWindow": "Afficher Finamp",
+    "@trayShowWindow": {
+        "description": "System tray menu entry that shows the main window"
+    },
+    "trayQuit": "Quitter Finamp",
+    "@trayQuit": {
+        "description": "System tray menu entry that fully quits the app"
+    },
+    "trayTooltipPlaying": "{track} - Finamp",
+    "@trayTooltipPlaying": {
+        "description": "System tray icon tooltip shown while a track is loaded",
+        "placeholders": {
+            "track": {
+                "type": "String",
+                "example": "Rick Astley - Never Gonna Give You Up"
+            }
+        }
+    }
 }

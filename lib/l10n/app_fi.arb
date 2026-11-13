@@ -3729,5 +3729,87 @@
     "downloadDialogTranscodedIntoSemanticLabel": "Transkoodattu muotoon",
     "@downloadDialogTranscodedIntoSemanticLabel": {
         "description": "Screen reader label for the arrow icon in the download dialog's transcode summary. It sits between the original value and the transcoded value, e.g. 'FLAC, transcoded into, OPUS'."
+    },
+    "noMusicLibrariesLogsCTA": "Jos tämä on mielestäsi virhe, ole hyvä ja auta meitä korjaamaan se jakamalla tämä lokitiedot kanssamme:",
+    "@noMusicLibrariesLogsCTA": {
+        "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
+    },
+    "noMusicLibrariesLogout": "Voit myös kokeilla kirjautua ulos ja uudelleen takaisin sisään.",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Automaattisen jonon uudelleenlatauksen kadotettujen raitojen enimmäismäärä",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "Kun siirrytään offline-tilaan, lataa automaattisesti vain, jos poistettavien raitojen osuus ei ylitä tätä prosenttimäärää. Voit aina ladata uudelleen käsin.",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "Poistettavien raitojen enimmäismäärä: {percentage} %",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "autoReloadPromptDroppedTracks": "Tämä poistaisi {removedPercentage} % jonosta ({amountUndownloadedTracks} raitaa).",
+    "@autoReloadPromptDroppedTracks": {
+        "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "removedPercentage": {
+                "type": "int"
+            }
+        }
+    },
+    "closeToTrayTitle": "Sulje ilmoitusalueelle",
+    "@closeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray instead of quitting when it is closed"
+    },
+    "closeToTraySubtitle": "Pidä Finamp käynnissä ilmoitusalueella, kun ikkuna suljetaan. Voit sulkea sovelluksen ilmoitusalueen valikosta kohdasta \"Lopeta\".",
+    "minimizeToTrayTitle": "Pienennä ilmoitusalueelle",
+    "@minimizeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray when it is minimized"
+    },
+    "minimizeToTraySubtitle": "Piilota ikkuna taustalle pienennettäessä.",
+    "minimizeToTrayWaylandNote": "Piilota ikkuna taustalle pienennettäessä. Ei tuettu Waylandissa, joka ei kerro sovelluksille niiden pienentämisestä. Käytä sen sijaan asetusta ”Sulje taustalle”.",
+    "@minimizeToTrayWaylandNote": {
+        "description": "Subtitle of the minimize to tray setting when running on a Linux Wayland session, where minimizing cannot be detected"
+    },
+    "startMinimizedToTrayTitle": "Käynnistä taustalla",
+    "@startMinimizedToTrayTitle": {
+        "description": "Desktop only. Title of the setting that starts Finamp with the window hidden in the system tray"
+    },
+    "startMinimizedToTraySubtitle": "Käynnistä Finamp piilotettuna taustalle. Voit käyttää myös komentorivivalitsinta --minimized.",
+    "trayShowWindow": "Näytä Finamp",
+    "@trayShowWindow": {
+        "description": "System tray menu entry that shows the main window"
+    },
+    "trayHideWindow": "Pienennä Finamp taustalle",
+    "@trayHideWindow": {
+        "description": "System tray menu entry that hides the main window to the tray"
+    },
+    "trayQuit": "Lopeta Finamp",
+    "@trayQuit": {
+        "description": "System tray menu entry that fully quits the app"
+    },
+    "trayNothingPlaying": "Mitään ei toisteta",
+    "@trayNothingPlaying": {
+        "description": "Disabled system tray menu entry shown in place of the current track when nothing is playing"
+    },
+    "trayTooltipPlaying": "{track} - Finamp",
+    "@trayTooltipPlaying": {
+        "description": "System tray icon tooltip shown while a track is loaded",
+        "placeholders": {
+            "track": {
+                "type": "String",
+                "example": "Rick Astley - Never Gonna Give You Up"
+            }
+        }
     }
 }

@@ -3723,5 +3723,87 @@
     "downloadDialogTranscodedIntoSemanticLabel": "转码为",
     "@downloadDialogTranscodedIntoSemanticLabel": {
         "description": "Screen reader label for the arrow icon in the download dialog's transcode summary. It sits between the original value and the transcoded value, e.g. 'FLAC, transcoded into, OPUS'."
+    },
+    "noMusicLibrariesLogsCTA": "如果您认为这是一个错误，请与我们分享这些日志，以帮助我们进行修复：",
+    "@noMusicLibrariesLogsCTA": {
+        "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
+    },
+    "noMusicLibrariesLogout": "您也可以尝试退出登录，然后再试一次。",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
+    "closeToTrayTitle": "关闭至系统托盘",
+    "@closeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray instead of quitting when it is closed"
+    },
+    "closeToTraySubtitle": "关闭窗口后，让 Finamp 继续在系统托盘中运行。如需退出，请在托盘菜单中选择“退出”。",
+    "minimizeToTrayTitle": "最小化至系统托盘",
+    "@minimizeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray when it is minimized"
+    },
+    "minimizeToTraySubtitle": "窗口最小化时，将其隐藏到系统托盘。",
+    "minimizeToTrayWaylandNote": "窗口最小化时将其隐藏至系统托盘。此功能在 Wayland 下不受支持，因为 Wayland 不会向应用程序通知其最小化状态。请改用“关闭至系统托盘”功能。",
+    "@minimizeToTrayWaylandNote": {
+        "description": "Subtitle of the minimize to tray setting when running on a Linux Wayland session, where minimizing cannot be detected"
+    },
+    "startMinimizedToTrayTitle": "在系统托盘启动",
+    "@startMinimizedToTrayTitle": {
+        "description": "Desktop only. Title of the setting that starts Finamp with the window hidden in the system tray"
+    },
+    "startMinimizedToTraySubtitle": "启动 Finamp 时，窗口将隐藏在系统托盘中。您也可以在命令行中添加 --minimized 参数。",
+    "trayShowWindow": "显示 Finamp",
+    "@trayShowWindow": {
+        "description": "System tray menu entry that shows the main window"
+    },
+    "trayHideWindow": "将 Finamp 收至系统托盘",
+    "@trayHideWindow": {
+        "description": "System tray menu entry that hides the main window to the tray"
+    },
+    "trayQuit": "退出 Finamp",
+    "@trayQuit": {
+        "description": "System tray menu entry that fully quits the app"
+    },
+    "trayNothingPlaying": "没有正在播放的内容",
+    "@trayNothingPlaying": {
+        "description": "Disabled system tray menu entry shown in place of the current track when nothing is playing"
+    },
+    "trayTooltipPlaying": "{track} - Finamp",
+    "@trayTooltipPlaying": {
+        "description": "System tray icon tooltip shown while a track is loaded",
+        "placeholders": {
+            "track": {
+                "type": "String",
+                "example": "Rick Astley - Never Gonna Give You Up"
+            }
+        }
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "自动队列重载时的曲目丢失限制",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "切换至离线模式时，仅在待移除曲目占比不超过此比例的情况下，才自动重新加载。您随时可以手动进行重新加载。",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "最多移除的曲目：{percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "autoReloadPromptDroppedTracks": "这将从队列中移除 {removedPercentage}% 的内容（{amountUndownloadedTracks} 首曲目）。",
+    "@autoReloadPromptDroppedTracks": {
+        "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "removedPercentage": {
+                "type": "int"
+            }
+        }
     }
 }
