@@ -178,6 +178,14 @@ Future<void> main(List<String> args, {bool integrationTesting = false, bool logi
   } catch (error, trace) {
     Logger("ErrorApp").severe(error, null, trace);
     if (!integrationTesting) {
+      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+        try {
+          WidgetsFlutterBinding.ensureInitialized();
+          await windowManager.ensureInitialized();
+          await windowManager.show();
+          await windowManager.focus();
+        } catch (_) {}
+      }
       runApp(FinampErrorApp(error: error, trace: trace));
       return;
     } else {
@@ -378,6 +386,7 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
   // set up window manager on desktop, mainly to restrict minimum size
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     final screenSize = FinampSettingsHelper.finampSettings.screenSize;
+    final startHidden = TrayService.shouldStartHidden(commandLineArgs);
     WidgetsFlutterBinding.ensureInitialized();
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = WindowOptions(
@@ -401,11 +410,8 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
         if (commandLineArgs.contains("--fullscreen")) {
           await windowManager.setFullScreen(true);
         }
-        if (TrayService.shouldStartHidden(commandLineArgs)) {
-          // Start in the system tray. Both native runners show the window on their own (Linux right away,
-          // Windows on the first frame), so wait for that to have happened and then hide it.
-          await WidgetsBinding.instance.waitUntilFirstFrameRasterized;
-          await windowManager.hide();
+        if (startHidden) {
+          // The window was left hidden at launch by native runners, so keep it hidden in tray.
           return;
         }
         await windowManager.show();
