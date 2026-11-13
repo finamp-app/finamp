@@ -2718,6 +2718,10 @@
             }
         }
     },
+    "autoReloadPromptCurrentTrackNotDownloaded": "Il brano corrente non è scaricato e la riproduzione verrebbe interrotta.",
+    "@autoReloadPromptCurrentTrackNotDownloaded": {
+        "description": "Avviso aggiuntivo mostrato quando la ricarica della coda offline interromperebbe il brano corrente in streaming."
+    },
     "preferAddingToFavoritesOverPlaylistsTitle": "Aggiungi ai preferiti toccando l’icona a forma di cuore",
     "@preferAddingToFavoritesOverPlaylistsTitle": {
         "description": "Title for the setting that swaps the default behavior of short- vs. long-press on the heart/favorite icon"

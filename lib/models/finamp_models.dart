@@ -2556,6 +2556,10 @@ class FinampQueueInfo {
   int get undownloadedTracks {
     return fullQueue.where((e) => e.item.extras?["android.media.extra.DOWNLOAD_STATUS"] != 2).length;
   }
+
+  bool get hasUndownloadedCurrentTrack {
+    return currentTrack != null && currentTrack!.item.extras?["android.media.extra.DOWNLOAD_STATUS"] != 2;
+  }
 }
 
 @HiveType(typeId: 60)
