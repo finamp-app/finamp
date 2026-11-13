@@ -111,7 +111,7 @@ class _ArtistChipContent extends StatelessWidget {
       properties: SemanticsProperties(label: "$name (${AppLocalizations.of(context)!.artist})", button: true),
       container: true,
       child: SizedBox(
-        height: _height,
+        height: _height - 14 + MediaQuery.textScalerOf(context).scale(14),
         child: Material(
           color: backgroundColor,
           borderRadius: _borderRadius,

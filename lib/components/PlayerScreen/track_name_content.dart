@@ -43,10 +43,7 @@ class TrackNameContent extends ConsumerWidget {
             child: Consumer(
               builder: (context, ref, _) {
                 final text = currentTrack.item.title;
-                // TODO properly scale in player screen controller?
-                final isTwoLineMode =
-                    controller.shouldShow(PlayerHideable.twoLineTitle) &&
-                    !(MediaQuery.textScalerOf(context).scale(18) > 18 * 1.11);
+                final isTwoLineMode = controller.shouldShow(PlayerHideable.twoLineTitle);
 
                 final textStyle = TextStyle(
                   fontSize: 18,
@@ -55,13 +52,44 @@ class TrackNameContent extends ConsumerWidget {
                 );
 
                 final textSpan = TextSpan(text: text, style: textStyle);
-                final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, maxLines: 2)
-                  ..layout(maxWidth: 280);
+                // Showing two lines is probably better than one scrolling line, even if it clips
+                final textPainter = TextPainter(
+                  text: textSpan,
+                  textDirection: TextDirection.ltr,
+                  maxLines: isTwoLineMode ? 2 : 1,
+                  textScaler: MediaQuery.textScalerOf(context),
+                )..layout(maxWidth: constraints.maxWidth - padding);
 
                 final wouldOverflow = textPainter.didExceedMaxLines;
                 textPainter.dispose();
 
-                if (!isTwoLineMode) {
+                // Setting controls preference between marquee and two line clipped title.  If we only have one
+                // line, always marquee.  TODO add another setting to disable this?
+                if (wouldOverflow && (ref.watch(finampSettingsProvider.oneLineMarqueeTextButton) || !isTwoLineMode)) {
+                  return SizedBox(
+                    width: 280,
+                    height: 12 + MediaQuery.textScalerOf(context).scale(18),
+                    child: ScrollingTextHelper(
+                      id: ValueKey(currentTrack.item.id),
+                      text: text,
+                      style: textStyle,
+                      alignment: TextAlign.center,
+                    ),
+                  );
+                } else if (isTwoLineMode) {
+                  return SizedBox(
+                    height: 4.0 + 2.4 * MediaQuery.textScalerOf(context).scale(18),
+                    child: Center(
+                      child: Text(
+                        text,
+                        style: textStyle,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  );
+                } else {
                   return Text(
                     text,
                     style: textStyle,
@@ -69,32 +97,6 @@ class TrackNameContent extends ConsumerWidget {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                   );
-                } else {
-                  if (wouldOverflow && ref.watch(finampSettingsProvider.oneLineMarqueeTextButton)) {
-                    return SizedBox(
-                      width: 280,
-                      height: 30,
-                      child: ScrollingTextHelper(
-                        id: ValueKey(currentTrack.item.id),
-                        text: text,
-                        style: textStyle,
-                        alignment: TextAlign.center,
-                      ),
-                    );
-                  } else {
-                    return SizedBox(
-                      height: 46.0,
-                      child: Center(
-                        child: Text(
-                          text,
-                          style: textStyle,
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    );
-                  }
                 }
               },
             ),
