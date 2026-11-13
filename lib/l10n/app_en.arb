@@ -3865,5 +3865,28 @@
         "example": "Rick Astley - Never Gonna Give You Up"
       }
     }
-  }
+  },
+    "customHeaders": "Custom HTTP Headers",
+    "httpHeaderNotAuth": "Name used internally.",
+    "@httpHeaderNotAuth": {
+        "description": "Error message when the user configures a custom authorization header that overlaps with one finamp already uses."
+    },
+    "httpHeaderConflict": "Duplicate header name.",
+    "@httpHeaderConflict": {
+        "description": "Error message when the user configures two custom authorization headers with duplicate names."
+    },
+    "customHeaderNameLabel": "Header Name",
+    "@customHeaderNameLabel": {
+        "description": "Label for custom HTTP header name entry field."
+    },
+    "customHeaderValueLabel": "Header Value",
+    "@customHeaderValueLabel": {
+        "description": "Label for custom HTTP header value entry field."
+    },
+    "followRedirectsTitle": "Enable Redirects",
+    "@followRedirectsTitle": {
+        "description": "Title of setting that allows Finamp to follow redirects."
+    },
+    "followRedirectsSubtitle": "Allows Finamp to follow HTTP redirects, including ones to different domains than the one configured.  Potentially incompatible with custom HTTP headers.",
+    "advancedLoginOptionsWarning": "Advanced authentication options for unusual server setups.  These are provided on a best-effort basis and may not function correctly on all platforms."
 }

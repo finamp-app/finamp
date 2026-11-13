@@ -586,14 +586,20 @@ abstract class JellyfinApi extends ChopperService {
   @GET(path: "/System/Endpoint", optionalBody: true)
   Future<Response<dynamic>> pingServer();
 
-  static JellyfinApi create({required bool inForeground, required bool verboseLogging}) {
-    return _$JellyfinApi(createClient(inForeground: inForeground, verboseLogging: verboseLogging));
+  static JellyfinApi create({required bool inForeground, required bool verboseLogging, required bool followRedirects}) {
+    return _$JellyfinApi(
+      createClient(inForeground: inForeground, verboseLogging: verboseLogging, followRedirects: followRedirects),
+    );
   }
 
   /// Creates the transport used by an existing generated service. Keeping the
   /// service instance lets callers replace stale pooled sockets after a
   /// network hand-off without changing the API surface they are using.
-  static ChopperClient createClient({required bool inForeground, required bool verboseLogging}) {
+  static ChopperClient createClient({
+    required bool inForeground,
+    required bool verboseLogging,
+    required bool followRedirects,
+  }) {
     // Body logging can be very excessive, so we do not perform it by default.  If in debug mode or configured for verbose
     // logging, body log foreground requests but keep disabled for verbose getItems calls in background.  If using verbose
     // logs in debug mode, body log every request.
@@ -620,7 +626,24 @@ abstract class JellyfinApi extends ChopperService {
         JellyfinInterceptor(inForeground),
         HttpAggregateLoggingInterceptor(level: chopperHttpLogLevel),
       ],
+      authenticator: followRedirects ? FullRedirector() : null,
     );
+  }
+}
+
+class FullRedirector extends Authenticator {
+  @override
+  FutureOr<Request?> authenticate(Request request, Response<dynamic> response, [Request? originalRequest]) {
+    if (const [301, 302, 307, 308].contains(response.statusCode)) {
+      final target = response.headers["location"];
+      if (target == null) return null;
+      chopperLogger.fine("Following ${response.statusCode} redirect to $target");
+      final out = request.copyWith(uri: Uri.parse(target));
+      out.followRedirects = false;
+      return out;
+    } else {
+      return null;
+    }
   }
 }
 
@@ -637,12 +660,18 @@ class JellyfinInterceptor implements Interceptor {
   Request updateRequest(Request request) {
     final finampUserHelper = GetIt.instance<FinampUserHelper>();
     Uri? baseUrlTemp;
+    Map<String, String>? overrideHeaders;
     if (inForeground) {
       final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
       baseUrlTemp = jellyfinApiHelper.baseUrlTemp;
+      final customHeadersTemp = jellyfinApiHelper.customHeadersTemp;
+      if (customHeadersTemp != null) {
+        overrideHeaders = Map.of(customHeadersTemp);
+        overrideHeaders.addAll(finampUserHelper.authorizationHeaders);
+      }
     }
 
-    String authHeader = finampUserHelper.authorizationHeader;
+    final authHeaders = overrideHeaders ?? finampUserHelper.authorizationHeaders;
 
     // If baseUrlTemp is null, use the baseUrl of the current user.
     // If baseUrlTemp is set, we're setting up a new user and should use it instead.
@@ -655,7 +684,9 @@ class JellyfinInterceptor implements Interceptor {
     // Do NOT force a Content-Type here; let Chopper/converters set JSON, and leave
     // multipart or raw uploads (e.g., image POST) untouched so the server
     // receives the correct boundary or image media type.
-    return request.copyWith(uri: baseUri, headers: {...request.headers, "Authorization": authHeader});
+    final out = request.copyWith(uri: baseUri, headers: {...request.headers, ...authHeaders});
+    out.followRedirects = false;
+    return out;
   }
 }
 
@@ -676,10 +707,9 @@ class JellyfinSpecificInterceptor implements Interceptor {
     Uri baseUri = Uri.parse(url);
     baseUri = baseUri.replace(pathSegments: baseUri.pathSegments.followedBy(request.uri.pathSegments));
 
-    return request.copyWith(
-      uri: baseUri,
-      headers: {...request.headers, "Authorization": finampUserHelper.authorizationHeader},
-    );
+    final out = request.copyWith(uri: baseUri, headers: {...request.headers, ...finampUserHelper.authorizationHeaders});
+    out.followRedirects = false;
+    return out;
   }
 }
 

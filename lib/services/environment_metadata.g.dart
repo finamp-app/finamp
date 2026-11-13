@@ -59,6 +59,11 @@ ServerInfo _$ServerInfoFromJson(Map<String, dynamic> json) => ServerInfo(
   serverPort: (json['serverPort'] as num).toInt(),
   serverProtocol: json['serverProtocol'] as String,
   serverVersion: json['serverVersion'] as String,
+  customHeaders: (json['customHeaders'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  mTLS: json['mTLS'] as bool,
+  allowRedirects: json['allowRedirects'] as bool,
 );
 
 Map<String, dynamic> _$ServerInfoToJson(ServerInfo instance) =>
@@ -67,6 +72,9 @@ Map<String, dynamic> _$ServerInfoToJson(ServerInfo instance) =>
       'serverPort': instance.serverPort,
       'serverProtocol': instance.serverProtocol,
       'serverVersion': instance.serverVersion,
+      'customHeaders': instance.customHeaders,
+      'mTLS': instance.mTLS,
+      'allowRedirects': instance.allowRedirects,
     };
 
 EnvironmentMetadata _$EnvironmentMetadataFromJson(Map<String, dynamic> json) =>
