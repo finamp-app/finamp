@@ -15,6 +15,18 @@ struct _FinampApplication {
 G_DEFINE_TYPE(FinampApplication, finamp_application, GTK_TYPE_APPLICATION);
 
 // Implements GApplication::activate.
+// Track the allocated window geometry and update GTK's default size whenever the
+// window is resized while not maximized. On Wayland, gtk_window_get_size() defaults
+// to the initial default size unless updated, so tracking size-allocate ensures the
+// window is restored to its exact user-resized dimensions when remapping (e.g. unhiding
+// from the system tray) instead of reverting to the startup size.
+static void on_window_size_allocate(GtkWidget* widget, GtkAllocation* allocation, gpointer data) {
+  GtkWindow* window = GTK_WINDOW(widget);
+  if (!gtk_window_is_maximized(window) && allocation->width > 0 && allocation->height > 0) {
+    gtk_window_set_default_size(window, allocation->width, allocation->height);
+  }
+}
+
 static void finamp_application_activate(GApplication* application) {
   FinampApplication* self = FINAMP_APPLICATION(application);
 
@@ -58,12 +70,23 @@ static void finamp_application_activate(GApplication* application) {
   }
 
   gtk_window_set_default_size(window, 1280, 720);
+  g_signal_connect(window, "size-allocate", G_CALLBACK(on_window_size_allocate), nullptr);
   gtk_widget_show(GTK_WIDGET(window));
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
 
   FlView* view = fl_view_new(project);
+  // Enforce the minimum window size natively instead of through window_manager.
+  // window_manager calls gdk_window_set_geometry_hints() on the GdkWindow directly,
+  // which GtkWindow overwrites with its own hints whenever it recomputes them
+  // (e.g. on unmap/remap when hiding to the tray, or after maximizing).
+  // GtkWindow always derives its minimum size hint from its children's size request,
+  // so this survives hide/show, accounts for the header bar, and on Wayland GDK also
+  // clamps incoming xdg_toplevel configure sizes to it, so the Flutter view doesn't get
+  // smaller than this even on compositors that ignore set_min_size.
+  // Keep in sync with kMinimumWindowSize in lib/components/minimum_layout_size.dart.
+  gtk_widget_set_size_request(GTK_WIDGET(view), 400, 250);
   gtk_widget_show(GTK_WIDGET(view));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
 

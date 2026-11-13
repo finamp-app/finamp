@@ -386,7 +386,10 @@ Future<void> _setupOSIntegration(List<String> commandLineArgs) async {
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
-      minimumSize: Size(400, 250),
+      // On Linux, window_manager sets the geometry hints directly on the GdkWindow, where GTK resets them
+      // (e.g. when the window is hidden to the tray). The minimum size is set natively on the FlView in
+      // linux/finamp_application.cc instead.
+      minimumSize: Platform.isLinux ? null : const Size(400, 250),
       // This matches the size of the iPhone 5, which is probably the smallest screen size worth testing against
       //minimumSize: Size(336, 607),
     );
@@ -833,6 +836,8 @@ class _FinampState extends State<Finamp> with WindowListener {
   static final Logger linkHandlingLogger = Logger("LinkHandling");
 
   StreamSubscription<Uri>? _uriLinkSubscription;
+  Rect? _lastWindowBounds;
+  Timer? _windowBoundsDebounceTimer;
 
   @override
   void initState() {
@@ -907,6 +912,7 @@ class _FinampState extends State<Finamp> with WindowListener {
   @override
   Future<void> dispose() async {
     super.dispose();
+    _windowBoundsDebounceTimer?.cancel();
     await DiscordRpc.stop().timeout(Duration(milliseconds: 500));
     await _uriLinkSubscription?.cancel();
 
@@ -940,7 +946,24 @@ class _FinampState extends State<Finamp> with WindowListener {
 
   @override
   void onWindowEvent(String eventName) async {
-    if (eventName == "move" || eventName == "resize") return;
+    // On Linux, window_manager 0.5.x only emits "move" and "resize" (never "moved" or "resized"),
+    // so capture the bounds immediately and debounce saving to avoid disk I/O on every frame.
+    // Note: On Wayland, the xdg_shell protocol does not expose global window coordinates to client
+    // applications for security and isolation reasons. As a result, position is permanently reported
+    // as (0, 0) and no "move" events are fired by the compositor; only window size is tracked here.
+    if (eventName == "move" || eventName == "resize") {
+      if (Platform.isLinux) {
+        _lastWindowBounds = await windowManager.getBounds();
+        _windowBoundsDebounceTimer?.cancel();
+        _windowBoundsDebounceTimer = Timer(const Duration(milliseconds: 500), () {
+          if (_lastWindowBounds != null) {
+            FinampSetters.setScreenSize(ScreenSize.from(_lastWindowBounds!));
+            windowManagerLogger.finer("Saved window size and position (Linux debounced)");
+          }
+        });
+      }
+      return;
+    }
 
     windowManagerLogger.finer("[WindowManager] onWindowEvent: $eventName");
 
