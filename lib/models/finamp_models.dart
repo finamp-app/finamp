@@ -231,6 +231,8 @@ class DefaultSettings {
   static const allowDeleteFromServer = false;
   static const oneLineMarqueeTextButton = false;
   static const showAlbumReleaseDateOnPlayerScreen = false;
+  static const showAnimatedCover = true;
+  static const showVerticalBackground = true;
   static const releaseDateFormat = ReleaseDateFormat.year;
   static const double currentVolume = 1.0;
   static const autoOffline = AutoOfflineOption.disconnected;
@@ -474,6 +476,8 @@ class FinampSettings {
     this.closeToTray = DefaultSettings.closeToTray,
     this.minimizeToTray = DefaultSettings.minimizeToTray,
     this.startMinimizedToTray = DefaultSettings.startMinimizedToTray,
+    this.showAnimatedCover = DefaultSettings.showAnimatedCover,
+    this.showVerticalBackground = DefaultSettings.showVerticalBackground,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -993,6 +997,12 @@ class FinampSettings {
   @HiveField(164, defaultValue: DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage)
   int autoReloadQueueMaxDroppedTracksPercentage;
 
+  @HiveField(165, defaultValue: DefaultSettings.showAnimatedCover)
+  bool showAnimatedCover;
+
+  @HiveField(166, defaultValue: DefaultSettings.showVerticalBackground)
+  bool showVerticalBackground;
+
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
       name: DownloadLocation.internalStorageName,
@@ -1482,6 +1492,9 @@ class DownloadStub {
             BaseItemDtoType.fromItem(baseItem!) == baseItemType;
       case DownloadItemType.image:
         return baseItem != null;
+      case DownloadItemType.animatedCover:
+      case DownloadItemType.verticalBackground:
+        return baseItem != null;
       case DownloadItemType.finampCollection:
         return baseItem == null && baseItemType == BaseItemDtoType.noItem && finampCollection != null;
       case DownloadItemType.anchor:
@@ -1498,7 +1511,12 @@ class DownloadStub {
       isarId: getHash(id, type),
       jsonItem: jsonEncode(item.toJson()),
       type: type,
-      name: (type == DownloadItemType.image) ? "Image for ${item.name}" : item.name ?? id,
+      name: switch (type) {
+        DownloadItemType.image => "Image for ${item.name}",
+        DownloadItemType.animatedCover => "Animated cover for ${item.name}",
+        DownloadItemType.verticalBackground => "Vertical background for ${item.name}",
+        _ => item.name ?? id,
+      },
       baseItemType: BaseItemDtoType.fromItem(item),
     );
   }
@@ -1778,7 +1796,7 @@ class DownloadItem extends DownloadStub {
       id: id,
       isarId: isarId,
       jsonItem: json ?? jsonItem,
-      name: imageName ?? item?.name ?? name,
+      name: imageName ?? (type.isAnimatedAsset ? name : (item?.name ?? name)),
       orderedChildren: newOrderedChildren ?? orderedChildren,
       parentIndexNumber: item?.parentIndexNumber ?? parentIndexNumber,
       path: path,
@@ -1801,7 +1819,9 @@ enum DownloadItemType {
   track("song", true, true),
   image("image", true, true),
   anchor("anchor", false, false),
-  finampCollection("finampCollection", false, false);
+  finampCollection("finampCollection", false, false),
+  animatedCover("animatedCover", true, true),
+  verticalBackground("verticalBackground", true, true);
 
   const DownloadItemType(this.isarType, this.requiresItem, this.hasFiles);
 
@@ -1813,6 +1833,8 @@ enum DownloadItemType {
 
   final bool requiresItem;
   final bool hasFiles;
+
+  bool get isAnimatedAsset => this == animatedCover || this == verticalBackground;
 }
 
 /// The state of a DownloadItem's files and download task.

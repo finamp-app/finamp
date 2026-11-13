@@ -6,6 +6,7 @@ import 'package:finamp/components/AddToPlaylistScreen/add_to_playlist_button.dar
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
 import 'package:finamp/components/Buttons/finamp_extended_floating_action_button.dart';
 import 'package:finamp/components/Buttons/simple_button.dart';
+import 'package:finamp/components/PlayerScreen/player_overlay_context.dart';
 import 'package:finamp/components/PlayerScreen/queue_source_helper.dart';
 import 'package:finamp/components/album_image.dart';
 import 'package:finamp/components/audio_fade_progress_visualizer_container.dart';
@@ -343,7 +344,7 @@ Future<dynamic> showQueueBottomSheet(BuildContext context, WidgetRef ref) {
   );
 
   return showModalBottomSheet(
-    context: context,
+    context: PlayerOverlayContext.resolve(context),
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24.0))),
     isScrollControlled: true,
     enableDrag: true,

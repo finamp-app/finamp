@@ -170,7 +170,14 @@ class DownloadsService {
           .where()
           .optional(
             state != DownloadItemState.syncFailed,
-            (q) => q.typeEqualTo(DownloadItemType.track).or().typeEqualTo(DownloadItemType.image),
+            (q) => q
+                .typeEqualTo(DownloadItemType.track)
+                .or()
+                .typeEqualTo(DownloadItemType.image)
+                .or()
+                .typeEqualTo(DownloadItemType.animatedCover)
+                .or()
+                .typeEqualTo(DownloadItemType.verticalBackground),
           )
           .filter()
           .stateEqualTo(state)
@@ -699,6 +706,10 @@ class DownloadsService {
         .typeEqualTo(DownloadItemType.track)
         .or()
         .typeEqualTo(DownloadItemType.image)
+        .or()
+        .typeEqualTo(DownloadItemType.animatedCover)
+        .or()
+        .typeEqualTo(DownloadItemType.verticalBackground)
         .findAllSync();
     for (var item in itemsWithFiles) {
       switch (item.state) {
@@ -753,6 +764,10 @@ class DownloadsService {
           .typeEqualTo(DownloadItemType.track)
           .or()
           .typeEqualTo(DownloadItemType.image)
+          .or()
+          .typeEqualTo(DownloadItemType.animatedCover)
+          .or()
+          .typeEqualTo(DownloadItemType.verticalBackground)
           .findAllSync();
       for (var item in itemsWithFiles) {
         syncItemDownloadSettings(item, syncImages: true);
@@ -825,18 +840,20 @@ class DownloadsService {
             .where((event) => event is File)
             .map((event) => path_helper.canonicalize(event.path));
     var filePaths = await imageFilePaths.toSet();
-    // This cleans finampBaseDownloadDirectory in internalSupport
-    // and internalDocuments
-    for (var trackBasePath
+    // This cleans finampBaseDownloadDirectory and finampBaseAnimatedDirectory
+    // in internalSupport and internalDocuments
+    for (var basePath
         in FinampSettingsHelper.finampSettings.downloadLocationsMap.values
             .where((element) => !element.baseDirectory.needsPath)
             .map((e) => e.currentPath)) {
-      var trackFilePaths = Directory(path_helper.join(trackBasePath, finampBaseDownloadDirectory))
-          .list()
-          .handleError((Object e) => _downloadsLogger.info("Error while cleaning track directories: $e"))
-          .where((event) => event is File)
-          .map((event) => path_helper.canonicalize(event.path));
-      filePaths.addAll(await trackFilePaths.toSet());
+      for (var subDirectory in [finampBaseDownloadDirectory, finampBaseAnimatedDirectory]) {
+        var dirFilePaths = Directory(path_helper.join(basePath, subDirectory))
+            .list()
+            .handleError((Object e) => _downloadsLogger.info("Error while cleaning $subDirectory directories: $e"))
+            .where((event) => event is File)
+            .map((event) => path_helper.canonicalize(event.path));
+        filePaths.addAll(await dirFilePaths.toSet());
+      }
     }
     for (var item
         in _isar.downloadItems
@@ -844,6 +861,10 @@ class DownloadsService {
             .typeEqualTo(DownloadItemType.track)
             .or()
             .typeEqualTo(DownloadItemType.image)
+            .or()
+            .typeEqualTo(DownloadItemType.animatedCover)
+            .or()
+            .typeEqualTo(DownloadItemType.verticalBackground)
             .filter()
             .stateEqualTo(DownloadItemState.complete)
             .findAllSync()) {
@@ -1016,7 +1037,8 @@ class DownloadsService {
     if (doNullUpdate ??
         (!transcodeProfiles.nonNulls.contains(item.syncTranscodingProfile) ||
             (bestProfile!.quality > (item.syncTranscodingProfile!.quality + 2000) &&
-                item.type != DownloadItemType.image))) {
+                item.type != DownloadItemType.image &&
+                !item.type.isAnimatedAsset))) {
       _downloadsLogger.finest("Updating download settings for ${item.name}");
       item.syncTranscodingProfile = bestProfile;
       if ((item.state == DownloadItemState.enqueued ||
@@ -1052,12 +1074,19 @@ class DownloadsService {
           .typeEqualTo(DownloadItemType.track)
           .or()
           .typeEqualTo(DownloadItemType.image)
+          .or()
+          .typeEqualTo(DownloadItemType.animatedCover)
+          .or()
+          .typeEqualTo(DownloadItemType.verticalBackground)
           .filter()
           .not()
           .stateEqualTo(DownloadItemState.notDownloaded)
           .requiredByIsNotEmpty()
           .findAllSync();
       for (var item in items) {
+        if (item.type.isAnimatedAsset) {
+          continue;
+        }
         if (item.fileTranscodingProfile != item.syncTranscodingProfile) {
           if (item.state == DownloadItemState.complete) {
             updateItemState(item, DownloadItemState.needsRedownloadComplete);
@@ -1322,9 +1351,16 @@ class DownloadsService {
   /// Used to show item children on the downloads screen.
   List<DownloadStub> getVisibleChildren(DownloadStub stub) {
     return _isar.downloadItems
-        .where()
-        .typeNotEqualTo(DownloadItemType.image)
         .filter()
+        .not()
+        .group(
+          (q) => q
+              .typeEqualTo(DownloadItemType.image)
+              .or()
+              .typeEqualTo(DownloadItemType.animatedCover)
+              .or()
+              .typeEqualTo(DownloadItemType.verticalBackground),
+        )
         .requiredBy((q) => q.isarIdEqualTo(stub.isarId))
         .sortByBaseIndexNumber()
         .findAllSync();
@@ -1613,6 +1649,11 @@ class DownloadsService {
     return _getDownloadByID(imageId, DownloadItemType.image);
   }
 
+  DownloadItem? getAnimatedDownload({required BaseItemDto item, required DownloadItemType type}) {
+    assert(type.isAnimatedAsset);
+    return _getDownloadByID(item.id.raw, type);
+  }
+
   /// Get DownloadedLyrics by the corresponding track's BaseItemDto.
   Future<DownloadedLyrics?> getLyricsDownload({required BaseItemDto baseItem}) async {
     var item = _isar.downloadedLyrics.getSync(DownloadStub.getHash(baseItem.id.raw, DownloadItemType.track));
@@ -1669,7 +1710,14 @@ class DownloadsService {
         .filter()
         .optional(
           state != DownloadItemState.syncFailed,
-          (q) => q.typeEqualTo(DownloadItemType.track).or().typeEqualTo(DownloadItemType.image),
+          (q) => q
+              .typeEqualTo(DownloadItemType.track)
+              .or()
+              .typeEqualTo(DownloadItemType.image)
+              .or()
+              .typeEqualTo(DownloadItemType.animatedCover)
+              .or()
+              .typeEqualTo(DownloadItemType.verticalBackground),
         )
         // Watching queries is expensive and seems to have a memory link.  Avoid using if possible.
         .watch(fireImmediately: true);
@@ -1755,6 +1803,13 @@ class DownloadsService {
           }) ??
           0;
     }
+    if (item.type.isAnimatedAsset && item.state == DownloadItemState.complete) {
+      return await file(item)?.stat().then((value) => value.size).catchError((e) {
+            Logger("downloadsServiceBackground").fine("No file for ${item.name} when calculating size.");
+            return 0;
+          }) ??
+          0;
+    }
     return 0;
   }
 
@@ -1779,7 +1834,18 @@ class DownloadsService {
       // are required.  Use info links to calculate child count for this case
       childCount = item.info.filter().typeEqualTo(DownloadItemType.track).countSync();
     } else {
-      childCount = item.requires.filter().not().typeEqualTo(DownloadItemType.image).countSync();
+      childCount = item.requires
+          .filter()
+          .not()
+          .group(
+            (q) => q
+                .typeEqualTo(DownloadItemType.image)
+                .or()
+                .typeEqualTo(DownloadItemType.animatedCover)
+                .or()
+                .typeEqualTo(DownloadItemType.verticalBackground),
+          )
+          .countSync();
     }
     var outdated =
         (children != null && childCount != children) ||

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:finamp/components/PlayerScreen/player_overlay_context.dart';
 import 'package:finamp/components/padded_custom_scrollview.dart';
 import 'package:finamp/menus/components/menu_item_info_header.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
@@ -41,7 +42,7 @@ Future<T?> showThemedBottomSheet<T>({
     showDragHandle: showDragHandle,
   );
   return await showModalBottomSheet<T>(
-    context: context,
+    context: PlayerOverlayContext.resolve(context),
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.0))),
     isScrollControlled: true,
     clipBehavior: Clip.hardEdge,

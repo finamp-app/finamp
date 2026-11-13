@@ -3865,5 +3865,33 @@
         "example": "Rick Astley - Never Gonna Give You Up"
       }
     }
+  },
+  "showAnimatedCoverTitle": "Animated album covers",
+  "@showAnimatedCoverTitle": {
+    "description": "Title for the setting that plays motion album artwork on the player screen"
+  },
+  "showAnimatedCoverSubtitle": "Play motion artwork over the album cover when available.",
+  "@showAnimatedCoverSubtitle": {
+    "description": "Subtitle for the animated album cover setting"
+  },
+  "showVerticalBackgroundTitle": "Vertical video backgrounds",
+  "@showVerticalBackgroundTitle": {
+    "description": "Title for the setting that plays vertical background videos on the player screen"
+  },
+  "showVerticalBackgroundSubtitle": "Play a full-screen looping video behind the player and hide album art when available.",
+  "@showVerticalBackgroundSubtitle": {
+    "description": "Subtitle for the vertical background video setting"
+  },
+  "animatedMusicPluginRequired": "Requires the Animated Music plugin on your Jellyfin server.",
+  "@animatedMusicPluginRequired": {
+    "description": "Shown when animated cover or vertical background settings are unavailable because the plugin is not installed"
+  },
+  "hideVerticalBackgroundControls": "Hide player controls",
+  "@hideVerticalBackgroundControls": {
+    "description": "Semantic label for tapping a vertical background video to collapse extra player controls"
+  },
+  "showVerticalBackgroundControls": "Show player controls",
+  "@showVerticalBackgroundControls": {
+    "description": "Semantic label for tapping a vertical background video to expand player controls"
   }
 }

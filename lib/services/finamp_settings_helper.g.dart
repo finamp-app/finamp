@@ -1352,6 +1352,22 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setShowAnimatedCover(bool newShowAnimatedCover) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.showAnimatedCover = newShowAnimatedCover;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setShowVerticalBackground(bool newShowVerticalBackground) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.showVerticalBackground = newShowVerticalBackground;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1809,6 +1825,10 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.autoReloadQueueMaxDroppedTracksPercentage,
       );
+  ProviderListenable<bool> get showAnimatedCover => finampSettingsProvider
+      .select((value) => value.requireValue.showAnimatedCover);
+  ProviderListenable<bool> get showVerticalBackground => finampSettingsProvider
+      .select((value) => value.requireValue.showVerticalBackground);
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

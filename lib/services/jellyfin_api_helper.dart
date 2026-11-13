@@ -19,6 +19,7 @@ import 'package:isar/isar.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../models/animated_music_models.dart';
 import '../models/finamp_models.dart' as finamp_models;
 import '../models/finamp_models.dart' hide ContentType;
 import '../models/jellyfin_models.dart';
@@ -1107,6 +1108,111 @@ class JellyfinApiHelper {
     final response = await jellyfinApi.getLyrics(itemId: itemId);
 
     return LyricDto.fromJson(response as Map<String, dynamic>);
+  }
+
+  String? _animatedMusicPluginServer;
+  bool? _animatedMusicPluginAvailable;
+
+  /// True if the Animated Music plugin is installed, false if the server confirmed
+  /// it is missing, null if the probe did not complete.
+  Future<bool?> isAnimatedMusicPluginAvailable() async {
+    final server = _finampUserHelper.currentUser?.baseURL;
+    if (server == null) {
+      return null;
+    }
+    if (server == _animatedMusicPluginServer && _animatedMusicPluginAvailable != null) {
+      return _animatedMusicPluginAvailable;
+    }
+
+    try {
+      final response = await jellyfinApi.getAnimatedMusicStatus();
+      if (response.statusCode == 404) {
+        _animatedMusicPluginServer = server;
+        _animatedMusicPluginAvailable = false;
+        return false;
+      }
+      final body = response.body;
+      final available =
+          response.isSuccessful && body is Map && PluginStatusDto.fromJson(Map<String, dynamic>.from(body)).isAvailable;
+      if (available) {
+        _animatedMusicPluginServer = server;
+        _animatedMusicPluginAvailable = true;
+        return true;
+      }
+      _jellyfinApiHelperLogger.warning("Unexpected Animated Music plugin status ${response.statusCode}");
+      return null;
+    } on ChopperHttpException catch (e) {
+      if (e.response.statusCode == 404) {
+        _animatedMusicPluginServer = server;
+        _animatedMusicPluginAvailable = false;
+        return false;
+      }
+      _jellyfinApiHelperLogger.warning("Failed to probe Animated Music plugin: $e");
+      return null;
+    } catch (e) {
+      _jellyfinApiHelperLogger.warning("Failed to probe Animated Music plugin: $e");
+      return null;
+    }
+  }
+
+  /// Animated cover / vertical background info for a track. Null if missing or plugin is absent.
+  Future<TrackAnimatedInfoDto?> getTrackAnimatedInfo({required BaseItemId itemId}) async {
+    assert(_verifyCallable());
+    try {
+      final response = await jellyfinApi.getTrackAnimatedInfo(trackId: itemId);
+      if (response is! Map) {
+        return null;
+      }
+      return TrackAnimatedInfoDto.fromJson(Map<String, dynamic>.from(response));
+    } on ChopperHttpException catch (e) {
+      if (e.response.statusCode == 404) {
+        return null;
+      }
+      rethrow;
+    } catch (e) {
+      if (e is Response && e.statusCode == 404) {
+        return null;
+      }
+      rethrow;
+    }
+  }
+
+  Uri? getAnimatedAssetUrl({required BaseItemId trackId, required AnimatedAssetKind kind}) {
+    final user = _finampUserHelper.currentUser;
+    if (user == null) {
+      return null;
+    }
+    final segment = switch (kind) {
+      AnimatedAssetKind.cover => "Cover",
+      AnimatedAssetKind.verticalBackground => "VerticalBackground",
+    };
+    final base = Uri.parse(user.baseURL);
+    return base.replace(pathSegments: base.pathSegments.followedBy(["AnimatedMusic", "Tracks", trackId.raw, segment]));
+  }
+
+  Uri? resolveAnimatedAssetUrl(String? relativeOrAbsolute) {
+    if (relativeOrAbsolute == null || relativeOrAbsolute.isEmpty) {
+      return null;
+    }
+    final parsed = Uri.parse(relativeOrAbsolute);
+    if (parsed.hasScheme) {
+      return parsed;
+    }
+    final user = _finampUserHelper.currentUser;
+    if (user == null) {
+      return null;
+    }
+    final base = Uri.parse(user.baseURL);
+    if (parsed.hasAbsolutePath) {
+      return base.replace(
+        pathSegments: [
+          ...base.pathSegments.where((segment) => segment.isNotEmpty),
+          ...parsed.pathSegments.where((segment) => segment.isNotEmpty),
+        ],
+        query: parsed.hasQuery ? parsed.query : null,
+      );
+    }
+    return base.resolve(relativeOrAbsolute);
   }
 
   /// Removes the current user from the DB and revokes the token on Jellyfin
