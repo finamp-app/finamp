@@ -948,6 +948,9 @@ class _FinampState extends State<Finamp> with WindowListener {
   void onWindowEvent(String eventName) async {
     // On Linux, window_manager 0.5.x only emits "move" and "resize" (never "moved" or "resized"),
     // so capture the bounds immediately and debounce saving to avoid disk I/O on every frame.
+    // Note: On Wayland, the xdg_shell protocol does not expose global window coordinates to client
+    // applications for security and isolation reasons. As a result, position is permanently reported
+    // as (0, 0) and no "move" events are fired by the compositor; only window size is tracked here.
     if (eventName == "move" || eventName == "resize") {
       if (Platform.isLinux) {
         _lastWindowBounds = await windowManager.getBounds();
