@@ -839,6 +839,7 @@ class _FinampState extends State<Finamp> with WindowListener {
   static final Logger linkHandlingLogger = Logger("LinkHandling");
 
   StreamSubscription<Uri>? _uriLinkSubscription;
+  Timer? _saveWindowDebounceTimer;
 
   @override
   void initState() {
@@ -913,6 +914,7 @@ class _FinampState extends State<Finamp> with WindowListener {
   @override
   Future<void> dispose() async {
     super.dispose();
+    _saveWindowDebounceTimer?.cancel();
     await DiscordRpc.stop().timeout(Duration(milliseconds: 500));
     await _uriLinkSubscription?.cancel();
 
@@ -946,14 +948,25 @@ class _FinampState extends State<Finamp> with WindowListener {
 
   @override
   void onWindowEvent(String eventName) async {
-    if (eventName == "move" || eventName == "resize") return;
-
     windowManagerLogger.finer("[WindowManager] onWindowEvent: $eventName");
 
     if (eventName == "moved" || eventName == "resized") {
+      _saveWindowDebounceTimer?.cancel();
       FinampSetters.setScreenSize(ScreenSize.from(await windowManager.getBounds()));
 
       windowManagerLogger.finer("Saved window size and position");
+    } else if (eventName == "move" || eventName == "resize") {
+      // On platforms like Linux (GTK), window_manager only emits "move" and "resize"
+      // (never "moved" or "resized"). Debounce saving to avoid excessive disk writes while dragging.
+      _saveWindowDebounceTimer?.cancel();
+      _saveWindowDebounceTimer = Timer(const Duration(milliseconds: 500), () async {
+        try {
+          FinampSetters.setScreenSize(ScreenSize.from(await windowManager.getBounds()));
+          windowManagerLogger.finer("Saved window size and position (debounced)");
+        } catch (e) {
+          windowManagerLogger.warning("Failed to save window size and position: $e");
+        }
+      });
     }
   }
 
@@ -961,6 +974,14 @@ class _FinampState extends State<Finamp> with WindowListener {
   void onWindowClose() async {
     if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
       return;
+    }
+
+    _saveWindowDebounceTimer?.cancel();
+    try {
+      FinampSetters.setScreenSize(ScreenSize.from(await windowManager.getBounds()));
+      windowManagerLogger.finer("Saved window size and position on close");
+    } catch (e) {
+      windowManagerLogger.warning("Failed to save window size and position on close: $e");
     }
 
     // Close was intercepted to hide the window to the tray (see TrayService), keep playing.
