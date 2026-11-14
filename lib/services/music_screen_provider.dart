@@ -314,7 +314,9 @@ Future<QueryResult_BaseItemDto> _fetchMusicScreenPageOnline(
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
   final BaseItemId? libraryId;
-  if (request.library == allLibraryPlaceholder) {
+  if (request.tab == ContentType.playlists) {
+    libraryId = null;
+  } else if (request.library == allLibraryPlaceholder) {
     libraryId = null;
   } else if (request.library == currentLibraryPlaceholder) {
     final nullableLibraryId = ref.watch<BaseItemId?>(
@@ -416,7 +418,9 @@ Future<List<BaseItemDto>?> _buildHomeSectionItemsOffline({
   final artistFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.artistFilter);
 
   BaseItemId? libraryId;
-  if (request.library == allLibraryPlaceholder) {
+  if (request.tab == ContentType.playlists) {
+    libraryId = null;
+  } else if (request.library == allLibraryPlaceholder) {
     libraryId = null;
   } else if (request.library == currentLibraryPlaceholder) {
     libraryId = ref.watch<BaseItemId?>(
@@ -457,7 +461,7 @@ Future<List<BaseItemDto>?> _buildHomeSectionItemsOffline({
         // TODO use the filter config for this instead of global(several places)?
         // Might need to refactor sortconfig into some preexising providers to eliminate direct global setting usage
         fullyDownloaded: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
-        viewFilter: libraryId,
+        viewFilter: request.tab == ContentType.playlists ? null : libraryId,
         childViewFilter: [ContentType.albums, ContentType.playlists].contains(request.tab) ? null : libraryId,
         nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
         onlyFavorites: request.sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
