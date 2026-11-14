@@ -49,7 +49,10 @@ void main() async {
         (e, stack) {
           // Linux throws DBusServiceUnknownException due to dbus service org.freedesktop.UPower
           // missing in CI.  Ignore.
-          if (e is DBusServiceUnknownException) return;
+          if (e is DBusServiceUnknownException) {
+            debugPrint("Ignoring dbus exception $e");
+            return;
+          }
 
           if (mainErrors != null) {
             mainErrors!.add(FlutterErrorDetails(exception: e, stack: stack));
@@ -80,7 +83,7 @@ void main() async {
       }
 
       expect(mainErrors!.length, equals(0));
-      expect(mainCompleted, equals(true));
+      expect(mainCompleted, equals(true), reason: "main function failed to complete in 30 seconds");
 
       mainErrors = null;
 
@@ -181,7 +184,7 @@ void main() async {
 }
 
 extension WaitForElement on WidgetTester {
-  Future<void> waitFor(Finder finder, {int seconds = 20, bool realtime = true}) async {
+  Future<void> waitFor(Finder finder, {int seconds = 20}) async {
     int i = 0;
     while (true) {
       await pump(Duration(seconds: 1));
@@ -192,9 +195,6 @@ extension WaitForElement on WidgetTester {
         throw "$finder never found expected widget after $seconds seconds.";
       }
       i++;
-      if (realtime) {
-        await Future<void>.delayed(Duration(seconds: 1));
-      }
     }
   }
 }

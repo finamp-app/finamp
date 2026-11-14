@@ -8,6 +8,7 @@ import 'package:finamp/components/InteractionSettingsScreen/previous_tracks_pers
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/screens/layout_settings_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/tray_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -34,21 +35,27 @@ class _InteractionSettingsScreenState extends State<InteractionSettingsScreen> {
       ),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 200.0),
-        children: const [
-          ItemSwipeLeftToRightActionDropdownListTile(),
-          ItemSwipeRightToLeftActionDropdownListTile(),
-          StartInstantMixForIndividualTracksSwitch(),
-          ApplyFilterOnGenreChipTapSwitch(),
-          AutoSwitchItemCurationTypeToggle(),
-          FastScrollSelector(),
-          AutoExpandPlayerScreenSelector(),
-          ShowDeleteFromServerOptionToggle(),
-          KeepScreenOnDropdownListTile(),
-          KeepScreenOnWhilePluggedInSelector(),
-          PreferAddingToFavoritesOverPlaylistsToggle(),
-          PreferNextUpPrependingToggle(),
-          RememberLastUsedPlaybackActionRowPageToggle(),
-          PreviousTracksPersistenceModeSelector(),
+        children: [
+          const ItemSwipeLeftToRightActionDropdownListTile(),
+          const ItemSwipeRightToLeftActionDropdownListTile(),
+          const StartInstantMixForIndividualTracksSwitch(),
+          const ApplyFilterOnGenreChipTapSwitch(),
+          const AutoSwitchItemCurationTypeToggle(),
+          const FastScrollSelector(),
+          const AutoExpandPlayerScreenSelector(),
+          const ShowDeleteFromServerOptionToggle(),
+          const KeepScreenOnDropdownListTile(),
+          const KeepScreenOnWhilePluggedInSelector(),
+          const PreferAddingToFavoritesOverPlaylistsToggle(),
+          const PreferNextUpPrependingToggle(),
+          const RememberLastUsedPlaybackActionRowPageToggle(),
+          const PreviousTracksPersistenceModeSelector(),
+          if (TrayService.isSupported) ...const [
+            Divider(),
+            CloseToTrayToggle(),
+            MinimizeToTrayToggle(),
+            StartMinimizedToTrayToggle(),
+          ],
         ],
       ),
     );
@@ -135,6 +142,52 @@ class RememberLastUsedPlaybackActionRowPageToggle extends ConsumerWidget {
       subtitle: Text(AppLocalizations.of(context)!.rememberLastUsedPlaybackActionRowPageSubtitle),
       value: ref.watch(finampSettingsProvider.rememberLastUsedPlaybackActionRowPage),
       onChanged: (value) => FinampSetters.setRememberLastUsedPlaybackActionRowPage(value),
+    );
+  }
+}
+
+class CloseToTrayToggle extends ConsumerWidget {
+  const CloseToTrayToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    return SwitchListTile.adaptive(
+      title: Text(l10n.closeToTrayTitle),
+      subtitle: Text(l10n.closeToTraySubtitle),
+      value: ref.watch(finampSettingsProvider.closeToTray),
+      onChanged: FinampSetters.setCloseToTray,
+    );
+  }
+}
+
+class MinimizeToTrayToggle extends ConsumerWidget {
+  const MinimizeToTrayToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final isWayland = TrayService.isWayland;
+    return SwitchListTile.adaptive(
+      title: Text(l10n.minimizeToTrayTitle),
+      subtitle: Text(isWayland ? l10n.minimizeToTrayWaylandNote : l10n.minimizeToTraySubtitle),
+      value: ref.watch(finampSettingsProvider.minimizeToTray),
+      onChanged: isWayland ? null : FinampSetters.setMinimizeToTray,
+    );
+  }
+}
+
+class StartMinimizedToTrayToggle extends ConsumerWidget {
+  const StartMinimizedToTrayToggle({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    return SwitchListTile.adaptive(
+      title: Text(l10n.startMinimizedToTrayTitle),
+      subtitle: Text(l10n.startMinimizedToTraySubtitle),
+      value: ref.watch(finampSettingsProvider.startMinimizedToTray),
+      onChanged: FinampSetters.setStartMinimizedToTray,
     );
   }
 }

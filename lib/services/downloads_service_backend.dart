@@ -359,7 +359,7 @@ class IsarTaskQueue implements TaskQueue {
                 baseDirectory: task.fileDownloadLocation!.baseDirectory.baseDirectory,
                 retries: 3,
                 directory: path_helper.dirname(task.path!),
-                headers: {"Authorization": _finampUserHelper.authorizationHeader},
+                headers: _finampUserHelper.authorizationHeaders,
                 filename: path_helper.basename(task.path!),
               );
               return Future.sync(() async {

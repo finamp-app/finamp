@@ -1,4 +1,4 @@
-Finamp is a <br>free</br> Jellyfin music player for Android, iOS and Desktop. It allows you to stream and download the music you own. It has a modern but <br>thought-through</br> design, a ton of features, is customizable, and respects your <br>privacy</br>!
+Finamp is a <b>free</b> Jellyfin music player for Android, iOS and Desktop. It allows you to stream and download the music you own. It has a modern but <b>thought-through</b> design, a ton of features, is customizable, and respects your <b>privacy</b>!
 
 You <b>need</b> access to a Jellyfin server (https://jellyfin.org) or you <b>won't be able to use Finamp at all</b>!
 
@@ -30,7 +30,7 @@ Finamp comes with a bunch of features, including these:
   - (i.e. "Material You" & equivalents for other platforms)
 - Easily switch to a previous queue from hours or days ago
 - A radio feature that always keeps the music playing with something related
-  - And you get to choose between 5 different modes to cater to *your* listening habits
+  - And you get to choose between 5 different modes to cater to <i>your</i> listening habits
 - AudioMuse integration (https://github.com/NeptuneHub/AudioMuse-AI) for an enhanced radio mode powered by sonic analysis
   - You'll have to set up AudioMuse and install the AudioMuse Jellyfin plugin to use this in Finamp
 - Solid customization options, including tabs that can be hidden and reordered
@@ -39,10 +39,10 @@ Finamp comes with a bunch of features, including these:
   - But should also work on older versions down to 10.8.x!
 - and a lot more!
 
-Have a feature request or want to report a bug? Head over to our GitHub and open an issue there:  
+Have a feature request or want to report a bug? Head over to our GitHub and open an issue there:
 https://github.com/finamp-app/finamp/issues
 
-Finamp is a third-party client for Jellyfin, we have no official ties to the Jellyfin project, but want to see the Jellyfin community thrive.  
+Finamp is a third-party client for Jellyfin, we have no official ties to the Jellyfin project, but want to see the Jellyfin community thrive.
 Install Finamp today to enjoy your music, on your terms.
 
 Thank you for using Finamp!

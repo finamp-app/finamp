@@ -7,6 +7,20 @@ class AppDelegate: FlutterAppDelegate {
     override func applicationShouldTerminateAfterLastWindowClosed(
         _ sender: NSApplication
     ) -> Bool {
+        // Only terminate if the window was actually closed, not hidden to the system tray (orderOut).
+        return !sender.windows.contains { $0 is MainFlutterWindow }
+    }
+
+    override func applicationShouldHandleReopen(
+        _ sender: NSApplication,
+        hasVisibleWindows flag: Bool
+    ) -> Bool {
+        if !flag {
+            for window in sender.windows where window is MainFlutterWindow {
+                window.makeKeyAndOrderFront(self)
+                NSApp.activate(ignoringOtherApps: true)
+            }
+        }
         return true
     }
 

@@ -34,6 +34,7 @@ class JellyfinApiHelper {
     : jellyfinApi = jellyfin_api.JellyfinApi.create(
         inForeground: true,
         verboseLogging: FinampSettingsHelper.finampSettings.verboseLogging,
+        followRedirects: FinampSettingsHelper.finampSettings.followRedirects,
       ) {
     _startBackgroundWorker();
   }
@@ -51,6 +52,7 @@ class JellyfinApiHelper {
   List<BaseItemDto> selectedMixGenres = [];
 
   Uri? baseUrlTemp;
+  Map<String, String>? customHeadersTemp;
 
   final String defaultFields = jellyfin_api.defaultFields;
 
@@ -79,10 +81,17 @@ class JellyfinApiHelper {
       FinampSettingsHelper.finampSettings.deviceId,
       loggingPort.sendPort,
       FinampSettingsHelper.finampSettings.verboseLogging,
+      FinampSettingsHelper.finampSettings.followRedirects,
     ));
     Future.sync(() async {
       _workerIsolatePort = await startupPort.first as SendPort?;
     });
+  }
+
+  void setUpSettingsListener() {
+    final container = GetIt.instance<ProviderContainer>();
+    container.listen(finampSettingsProvider.verboseLogging, (_, _) => resetNetworkConnections());
+    container.listen(finampSettingsProvider.followRedirects, (_, _) => resetNetworkConnections());
   }
 
   SendPort? _workerIsolatePort;
@@ -90,7 +99,7 @@ class JellyfinApiHelper {
   /// This should only be run in a worker isolate
   /// Sets up singletons and listens for work.
   static Future<void> _processRequestsBackground(
-    (SendPort, RootIsolateToken, ClientCertificate?, String, SendPort, bool) input,
+    (SendPort, RootIsolateToken, ClientCertificate?, String, SendPort, bool, bool) input,
   ) async {
     BackgroundIsolateBinaryMessenger.ensureInitialized(input.$2);
     ReceivePort requestPort = ReceivePort();
@@ -132,7 +141,11 @@ class JellyfinApiHelper {
     GetIt.instance.registerSingleton(isar);
     GetIt.instance.registerSingleton(FinampUserHelper(deviceId: input.$4));
     await GetIt.instance<FinampUserHelper>().setAuthHeader();
-    final backgroundApi = jellyfin_api.JellyfinApi.create(inForeground: false, verboseLogging: input.$6);
+    final backgroundApi = jellyfin_api.JellyfinApi.create(
+      inForeground: false,
+      verboseLogging: input.$6,
+      followRedirects: input.$7,
+    );
     // Do not use `await for` here. A network reset is itself sent through this
     // port and must replace the HTTP transport while an older request on the
     // disconnected route is still unwinding.
@@ -145,9 +158,18 @@ class JellyfinApiHelper {
     });
   }
 
-  static void _replaceClient(jellyfin_api.JellyfinApi api, {required bool inForeground, required bool verboseLogging}) {
+  static void _replaceClient(
+    jellyfin_api.JellyfinApi api, {
+    required bool inForeground,
+    required bool verboseLogging,
+    required bool followRedirects,
+  }) {
     final oldClient = api.client;
-    api.client = jellyfin_api.JellyfinApi.createClient(inForeground: inForeground, verboseLogging: verboseLogging);
+    api.client = jellyfin_api.JellyfinApi.createClient(
+      inForeground: inForeground,
+      verboseLogging: verboseLogging,
+      followRedirects: followRedirects,
+    );
     // Chopper deliberately does not close a custom IOClient. Closing it here
     // terminates stale keep-alive sockets and any request on the old route.
     oldClient.dispose();
@@ -158,15 +180,17 @@ class JellyfinApiHelper {
   /// helper is executed in the worker isolate through [runInIsolate], so no
   /// custom control protocol is needed there.
   Future<void> resetNetworkConnections() async {
-    _jellyfinApiHelperLogger.info("Network changed; replacing HTTP transports");
+    _jellyfinApiHelperLogger.info("Replacing HTTP transports");
     final verboseLogging = FinampSettingsHelper.finampSettings.verboseLogging;
-    _replaceClient(jellyfinApi, inForeground: true, verboseLogging: verboseLogging);
+    final followRedirects = FinampSettingsHelper.finampSettings.followRedirects;
+
+    _replaceClient(jellyfinApi, inForeground: true, verboseLogging: verboseLogging, followRedirects: followRedirects);
     if (_workerIsolatePort == null) return;
 
     try {
       await runInIsolate<void>((api) async {
         GetIt.instance<FinampUserHelper>().refreshCurrentUser();
-        _replaceClient(api, inForeground: false, verboseLogging: verboseLogging);
+        _replaceClient(api, inForeground: false, verboseLogging: verboseLogging, followRedirects: followRedirects);
       }, allowForegroundFallback: false);
     } catch (error, stack) {
       _jellyfinApiHelperLogger.warning("Could not replace the background HTTP transport", error, stack);
@@ -702,11 +726,13 @@ class JellyfinApiHelper {
       accessToken: newUserAuthenticationResult.accessToken!,
       serverId: newUserAuthenticationResult.serverId!,
       views: {},
+      customHeaders: customHeadersTemp ?? {},
     );
 
     await _finampUserHelper.saveUser(newUser);
-    baseUrlTemp =
-        null; // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    baseUrlTemp = null;
+    customHeadersTemp = null;
   }
 
   /// Authenticates a user and saves the login details
@@ -731,11 +757,13 @@ class JellyfinApiHelper {
       accessToken: newUserAuthenticationResult.accessToken!,
       serverId: newUserAuthenticationResult.serverId!,
       views: {},
+      customHeaders: customHeadersTemp ?? {},
     );
 
     await _finampUserHelper.saveUser(newUser);
-    baseUrlTemp =
-        null; // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    // Clear the temporary base URL after authentication, since this has priority over the regular URL
+    baseUrlTemp = null;
+    customHeadersTemp = null;
   }
 
   /// Gets the current user.

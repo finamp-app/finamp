@@ -8,13 +8,12 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/screens/settings_screen.dart';
 import 'package:finamp/services/favorite_provider.dart';
-import 'package:finamp/services/jellyfin_api.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/io.dart';
 
 import '../../services/finamp_settings_helper.dart';
 import '../../services/jellyfin_api_helper.dart';
@@ -27,7 +26,7 @@ final _finampUserHelper = GetIt.instance<FinampUserHelper>();
 final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 final _queueService = GetIt.instance<QueueService>();
 final _audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
-late WebSocketChannel _channel;
+late IOWebSocketChannel _channel;
 StreamSubscription<void>? _keepaliveSubscription;
 StreamSubscription<int>? _isControlledSubscription;
 
@@ -213,17 +212,9 @@ class PlayOnService {
 
   Future<void> _connectWebsocket() async {
     assert(socketState == SocketState.connecting);
-    final deviceInfo = await getDeviceInfo(deviceId: FinampSettingsHelper.finampSettings.deviceId);
-    // the [api_key] query parameter is deprecated, and has apparently been replaced with the [ApiKey] parameter (at least that's what the Jellyfin TypeScript SDK uses, which has the same Websocket restrictions)
-    // it also seems to work on earlier Jellyfin versions (tested with 10.10.7)
-    // For reference:
-    // https://github.com/jellyfin/jellyfin-sdk-typescript/blob/368a89c5f09a2b6a102f388f68a50e146b80d583/src/constants.ts#L10-L11
-    // https://github.com/jellyfin/jellyfin-sdk-typescript/blob/368a89c5f09a2b6a102f388f68a50e146b80d583/src/api.ts#L159-L164
-    final url =
-        "${_finampUserHelper.currentUser!.baseURL}/socket?ApiKey=${_finampUserHelper.currentUser!.accessToken}&deviceId=${deviceInfo.id}";
-    final parsedUrl = Uri.parse(url);
+    final parsedUrl = Uri.parse("${_finampUserHelper.currentUser!.baseURL}/socket");
     final wsUrl = parsedUrl.replace(scheme: parsedUrl.scheme == "https" ? "wss" : "ws");
-    _channel = WebSocketChannel.connect(wsUrl);
+    _channel = IOWebSocketChannel.connect(wsUrl, headers: _finampUserHelper.authorizationHeaders);
 
     await _channel.ready;
     _playOnServiceLogger.info("WebSocket connection to server established");

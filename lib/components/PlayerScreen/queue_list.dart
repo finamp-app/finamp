@@ -286,9 +286,6 @@ Future<dynamic> showQueueBottomSheet(BuildContext context, WidgetRef ref) {
         final halfOpened = ref.watch(halfOpenFoldableProvider);
         return DraggableScrollableSheet(
           snap: false,
-          snapAnimationDuration: MediaQuery.disableAnimationsOf(context)
-              ? Duration.zero
-              : const Duration(milliseconds: 200),
           // Cover the whole sub screen when in half opened mode
           initialChildSize: halfOpened ? 1.0 : 0.92,
           minChildSize: halfOpened ? 1.0 : 0.25,

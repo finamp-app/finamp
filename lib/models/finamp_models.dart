@@ -49,6 +49,7 @@ class FinampUser {
     required this.serverId,
     this.currentViewId,
     this.views = const {},
+    this.customHeaders = const {},
   });
 
   @HiveField(0)
@@ -72,6 +73,7 @@ class FinampUser {
   @Name("currentViewId")
   String? get isarCurrentViewId => currentViewId?.raw;
   set isarCurrentViewId(String? id) => currentViewId = id == null ? null : BaseItemId(id);
+
   @ignore
   @HiveField(5)
   Map<BaseItemId, BaseItemDto> views;
@@ -84,6 +86,15 @@ class FinampUser {
 
   @HiveField(9, defaultValue: DefaultSettings.preferLocalNetwork)
   bool preferLocalNetwork;
+
+  @ignore
+  Map<String, String> customHeaders;
+  List<String> get isarCustomHeaders =>
+      customHeaders.entries.fold(<String>[], (l, entry) => [...l, entry.key, entry.value]);
+  set isarCustomHeaders(List<String> raw) {
+    assert(raw.length % 2 == 0);
+    customHeaders = raw.slices(2).fold({}, (map, entry) => {...map, entry.first: entry.last});
+  }
 
   // We only need 1 user, the current user
   final Id isarId = 0;
@@ -242,6 +253,7 @@ class DefaultSettings {
   static const preferLocalNetwork = false;
   static const localNetworkAddress = "http://0.0.0.0:8096";
   static const autoReloadQueue = false;
+  static const autoReloadQueueMaxDroppedTracksPercentage = 30;
   static const genreCuratedItemSelectionTypeTracks = CuratedItemSelectionType.mostPlayed;
   static const genreCuratedItemSelectionTypeAlbums = CuratedItemSelectionType.latestReleases;
   static const genreCuratedItemSelectionTypeArtists = CuratedItemSelectionType.favorites;
@@ -318,6 +330,10 @@ class DefaultSettings {
   static const useAndroidGainEffect = true;
   static const ClientCertificate? clientCertificate = null;
   static const showQuickActionsBanner = true;
+  static const closeToTray = false;
+  static const minimizeToTray = false;
+  static const startMinimizedToTray = false;
+  static const followRedirects = false;
   // iOS/macos player can start to struggle at 2000 tracks.  Android can run out of memory with 10,000-20,000 tracks.
   // Linux/Windows use mpv shim which handles all queueing in dart, so they shouldn't have any limitations.
   static final playerQueueLimit = Platform.isIOS || Platform.isMacOS
@@ -422,6 +438,7 @@ class FinampSettings {
     this.audioFadeOutDuration = DefaultSettings.audioFadeOutDuration,
     this.audioFadeInDuration = DefaultSettings.audioFadeInDuration,
     this.autoReloadQueue = DefaultSettings.autoReloadQueue,
+    this.autoReloadQueueMaxDroppedTracksPercentage = DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage,
     this.screenSize,
     this.genreCuratedItemSelectionTypeTracks = DefaultSettings.genreCuratedItemSelectionTypeTracks,
     this.genreCuratedItemSelectionTypeAlbums = DefaultSettings.genreCuratedItemSelectionTypeAlbums,
@@ -471,6 +488,10 @@ class FinampSettings {
     this.clientCertificate = DefaultSettings.clientCertificate,
     this.showQuickActionsBanner = DefaultSettings.showQuickActionsBanner,
     this.perTabContentViewType = DefaultSettings.perTabContentViewType,
+    this.closeToTray = DefaultSettings.closeToTray,
+    this.minimizeToTray = DefaultSettings.minimizeToTray,
+    this.startMinimizedToTray = DefaultSettings.startMinimizedToTray,
+    this.followRedirects = DefaultSettings.followRedirects,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -975,7 +996,25 @@ class FinampSettings {
   @SettingsHelperMap("tabContentType")
   Map<ContentType, ContentViewType> perTabContentViewType;
 
-  @HiveField(161)
+  /// Desktop only: hide the window to the system tray instead of quitting when it is closed.
+  @HiveField(161, defaultValue: DefaultSettings.closeToTray)
+  bool closeToTray;
+
+  /// Desktop only: hide the window to the system tray when it is minimized.
+  @HiveField(162, defaultValue: DefaultSettings.minimizeToTray)
+  bool minimizeToTray;
+
+  /// Desktop only: start with the window hidden in the system tray.
+  @HiveField(163, defaultValue: DefaultSettings.startMinimizedToTray)
+  bool startMinimizedToTray;
+
+  @HiveField(164, defaultValue: DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage)
+  int autoReloadQueueMaxDroppedTracksPercentage;
+
+  @HiveField(165, defaultValue: DefaultSettings.followRedirects)
+  bool followRedirects;
+
+  @HiveField(166)
   /// The maximum size we want a queue to reach.  We will not hard-enforce this, but individual items will be trimmed
   /// when adding to queue and we will cancel auto-restore for queues over this size.
   int? playerQueueLimit;
@@ -995,6 +1034,7 @@ class FinampSettings {
       gridImageSize: DefaultSettings.gridImageSize,
       homeScreenImageSize: DefaultSettings.homeScreenImageSize,
       deviceId: const Uuid().v4(),
+      resyncOnStartup: kDebugMode ? false : DefaultSettings.resyncOnStartup,
     );
   }
 

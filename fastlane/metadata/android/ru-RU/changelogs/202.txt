@@ -1,0 +1,12 @@
+This is a hotfix for version 1.0.1.
+
+Here's what's new:
+
+<ul>
+<li>Fix startup error when upgrading from inconsistent legacy downloads</li>
+<li>Fix contrast issues on quick settings banner when a custom accent color is configured</li>
+</ul>
+
+Full release notes: <a href="https://github.com/finamp-app/finamp/releases/1.0.2">https://github.com/finamp-app/finamp/releases/1.0.2</a>
+
+Спасибо, что пользуетесь Finamp!

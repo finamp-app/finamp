@@ -1317,9 +1317,44 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setPlayerQueueLimit(int? newPlayerQueueLimit) {
+  static void setCloseToTray(bool newCloseToTray) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.playerQueueLimit = newPlayerQueueLimit;
+    finampSettingsTemp.closeToTray = newCloseToTray;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setMinimizeToTray(bool newMinimizeToTray) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.minimizeToTray = newMinimizeToTray;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setStartMinimizedToTray(bool newStartMinimizedToTray) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.startMinimizedToTray = newStartMinimizedToTray;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setAutoReloadQueueMaxDroppedTracksPercentage(
+    int newAutoReloadQueueMaxDroppedTracksPercentage,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.autoReloadQueueMaxDroppedTracksPercentage =
+        newAutoReloadQueueMaxDroppedTracksPercentage;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setFollowRedirects(bool newFollowRedirects) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.followRedirects = newFollowRedirects;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -1771,8 +1806,20 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ) => finampSettingsProvider.select(
     (value) => value.requireValue.perTabContentViewType[tabContentType],
   );
-  ProviderListenable<int?> get playerQueueLimit => finampSettingsProvider
-      .select((value) => value.requireValue.playerQueueLimit);
+  ProviderListenable<bool> get closeToTray =>
+      finampSettingsProvider.select((value) => value.requireValue.closeToTray);
+  ProviderListenable<bool> get minimizeToTray => finampSettingsProvider.select(
+    (value) => value.requireValue.minimizeToTray,
+  );
+  ProviderListenable<bool> get startMinimizedToTray => finampSettingsProvider
+      .select((value) => value.requireValue.startMinimizedToTray);
+  ProviderListenable<int> get autoReloadQueueMaxDroppedTracksPercentage =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.autoReloadQueueMaxDroppedTracksPercentage,
+      );
+  ProviderListenable<bool> get followRedirects => finampSettingsProvider.select(
+    (value) => value.requireValue.followRedirects,
+  );
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

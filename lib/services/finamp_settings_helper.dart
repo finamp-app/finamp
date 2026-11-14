@@ -193,6 +193,9 @@ class FinampSettingsHelper {
     FinampSetters.setBufferDisableSizeConstraints(DefaultSettings.bufferDisableSizeConstraints);
     FinampSetters.setAutoloadLastQueueOnStartup(DefaultSettings.autoLoadLastQueueOnStartup);
     FinampSetters.setAutoReloadQueue(DefaultSettings.autoReloadQueue);
+    FinampSetters.setAutoReloadQueueMaxDroppedTracksPercentage(
+      DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage,
+    );
     FinampSetters.setClearQueueOnStopEvent(DefaultSettings.clearQueueOnStopEvent);
     FinampSetters.setAutoplayRestoredQueue(DefaultSettings.autoplayRestoredQueue);
     FinampSetters.setDuckOnAudioInterruption(DefaultSettings.duckOnAudioInterruption);
@@ -240,6 +243,9 @@ class FinampSettingsHelper {
     FinampSetters.setPreferNextUpPrepending(DefaultSettings.preferNextUpPrepending);
     FinampSetters.setRememberLastUsedPlaybackActionRowPage(DefaultSettings.rememberLastUsedPlaybackActionRowPage);
     FinampSetters.setPreviousTracksPersistenceMode(DefaultSettings.previousTracksPersistenceMode);
+    FinampSetters.setCloseToTray(DefaultSettings.closeToTray);
+    FinampSetters.setMinimizeToTray(DefaultSettings.minimizeToTray);
+    FinampSetters.setStartMinimizedToTray(DefaultSettings.startMinimizedToTray);
 
     Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", finampSettingsTemp);
   }
