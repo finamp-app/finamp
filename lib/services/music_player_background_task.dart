@@ -1375,6 +1375,8 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
       } else {
         final headers = GetIt.instance<FinampUserHelper>().authorizationHeaders;
         // header support seems to be a bit dicey on iOS, so we'll avoid it and use ApiKey instead whenever possible
+        // In addition, authorization headers in native code are incompatible with cross-domain redirects, so avoid if
+        // possible to allow the redirect setting maximum functionality
         if (headers.length > 1) {
           final trackUri = await _trackUri(queueItem.item, addToken: false);
           return AudioSource.uri(trackUri, tag: queueItem, headers: headers);

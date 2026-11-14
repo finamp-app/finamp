@@ -265,7 +265,10 @@ class ServerState {
 
       PublicSystemInfoResult? publicServerInfo;
       try {
-        publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
+        // Give the server url extra time on the primary check if we don't need to waste time on the variants.
+        publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo(
+          timeout: Duration(seconds: 6 + (unspecifiedPort ? 4 : 0) + (unspecifiedProtocol ? 4 : 0)),
+        );
       } catch (error) {
         if (await ClientCertificateInstaller.isCertificateRequiredError(error, Uri.parse(baseUrlToTest))) {
           clientCertificateRequired = true;
@@ -285,7 +288,7 @@ class ServerState {
         baseUrlToTest = url.toString(); // update the local url
         jellyfinApiHelper.baseUrlTemp = url;
         try {
-          publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
+          publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo(timeout: const Duration(seconds: 4));
         } catch (error) {
           serverStateLogger.severe("Couldn't reach server at $baseUrlToTest (HTTP): $error");
         }
@@ -300,7 +303,7 @@ class ServerState {
         baseUrlToTest = url.toString(); // update the local url
         jellyfinApiHelper.baseUrlTemp = url;
         try {
-          publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
+          publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo(timeout: const Duration(seconds: 4));
         } catch (error) {
           serverStateLogger.severe("Couldn't reach server at $baseUrlToTest (default port): $error");
         }

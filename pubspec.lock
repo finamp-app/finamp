@@ -328,10 +328,10 @@ packages:
     dependency: transitive
     description:
       name: cnativeapi
-      sha256: c43703998995e132b0656d2b8a95ed2bedc6b22ccee2c827bcdc075e0330e319
+      sha256: "510107ee007a7b4a01aa1eaec3ed097007d65760be6b272f093c4ca34a0d12ff"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.10"
+    version: "0.6.1"
   code_assets:
     dependency: transitive
     description:
@@ -1102,6 +1102,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
+  listen:
+    dependency: transitive
+    description:
+      name: listen
+      sha256: "47501a08016a43fcad79252439d723f50f14f88fa7bfd8a177e0a417e5c9e1f2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   locale_names:
     dependency: "direct main"
     description:
@@ -1227,18 +1235,18 @@ packages:
     dependency: transitive
     description:
       name: nativeapi
-      sha256: "118045bb549cb6fabad472a3a22a537e7310bbf20097350f5027808b4a5853ce"
+      sha256: c0c566cf6788a6b6a32ce2666f02364b7fb50133f07a744bc1e793b5b8bb2c78
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.10"
+    version: "0.6.1"
   nativeapi_flutter:
     dependency: transitive
     description:
       name: nativeapi_flutter
-      sha256: "357a405c69212f5157da1bd3be183a53c2b841d0de0eb51f4a3947913712aec4"
+      sha256: "3bb647f299932a4a19aa066051aabc6872f6876fa50c38a0ef132da414e9db26"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.10"
+    version: "0.6.1"
   nested:
     dependency: transitive
     description:
@@ -1875,10 +1883,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "2a122cbe059f8b610d3a5415f42e255b6c17b1f21eee1d960f31080237fb4f11"
+      sha256: "0a10344e901e5b2e63819567951cb6a06673ed6b84f40462188ff5a0c41f371f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.12"
+    version: "0.7.14"
   threshold:
     dependency: transitive
     description:
@@ -1907,10 +1915,10 @@ packages:
     dependency: "direct main"
     description:
       name: tray_manager
-      sha256: "30c67f4f27a9b2ad56606b369b75256fd9ef25851b66788597d4df3fbbfa536a"
+      sha256: "7618880ee07c93dc46b1c21288018d9b76f9b2b3b340e9f298ffc17d494fbcc8"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.3"
+    version: "0.9.0"
   typed_data:
     dependency: transitive
     description:
@@ -2200,5 +2208,5 @@ packages:
     source: hosted
     version: "2.1.0"
 sdks:
-  dart: ">=3.13.0 <4.0.0"
-  flutter: ">=3.47.0"
+  dart: ">=3.14.0 <4.0.0"
+  flutter: ">=3.50.0"
