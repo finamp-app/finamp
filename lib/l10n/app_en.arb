@@ -354,6 +354,7 @@
         "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
     },
     "playButtonLabel": "Play",
+    "playSomeButtonLabel": "Play some",
     "shuffleButtonLabel": "Shuffle",
     "playbackActionPageMoveWithinQueue": "Move Within Queue",
     "@playbackActionPageMoveWithinQueue": {
@@ -700,6 +701,7 @@
     "@addToQueue": {
         "description": "Popup menu item title for adding an item to the end of the play queue."
     },
+    "addSomeToQueue": "Add some to Queue",
     "instantMix": "Instant Mix",
     "goToAlbum": "Go to Album",
     "goToArtist": "Go to Artist",
@@ -792,10 +794,12 @@
     "@playNext": {
         "description": "Used for adding a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
+    "playSomeNext": "Play some next",
     "addToNextUp": "Add to Next Up",
     "@addToNextUp": {
         "description": "Used for adding a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
+    "addSomeToNextUp": "Add some to Next Up",
     "shuffleNext": "Shuffle next",
     "@shuffleNext": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
@@ -3907,7 +3911,7 @@
     "queueSizeLimitTitle": "Queue track limit",
     "queueSizeLimitSubtitle": "Applies a soft cap to the queue by limiting the size of individual items added.  Excessively large queues may still be created through the addition of multiple items to one queue.  Attempting to play a queue too large for a device may result in app crashes.",
     "oversizedQueueContinue": "Attempt to load anyway",
-    "oversizedQueueTruncate": "Truncate queue to {maxSize} tracks",
+    "oversizedQueueTruncate": "Truncate queue to at most {maxSize} tracks",
     "@oversizedQueueTruncate": {
         "description": "Button to truncate oversized queues while restoring",
         "placeholders": {
