@@ -49,6 +49,7 @@ class FinampUser {
     required this.serverId,
     this.currentViewId,
     this.views = const {},
+    this.customHeaders = const {},
   });
 
   @HiveField(0)
@@ -72,6 +73,7 @@ class FinampUser {
   @Name("currentViewId")
   String? get isarCurrentViewId => currentViewId?.raw;
   set isarCurrentViewId(String? id) => currentViewId = id == null ? null : BaseItemId(id);
+
   @ignore
   @HiveField(5)
   Map<BaseItemId, BaseItemDto> views;
@@ -84,6 +86,15 @@ class FinampUser {
 
   @HiveField(9, defaultValue: DefaultSettings.preferLocalNetwork)
   bool preferLocalNetwork;
+
+  @ignore
+  Map<String, String> customHeaders;
+  List<String> get isarCustomHeaders =>
+      customHeaders.entries.fold(<String>[], (l, entry) => [...l, entry.key, entry.value]);
+  set isarCustomHeaders(List<String> raw) {
+    assert(raw.length % 2 == 0);
+    customHeaders = raw.slices(2).fold({}, (map, entry) => {...map, entry.first: entry.last});
+  }
 
   // We only need 1 user, the current user
   final Id isarId = 0;
@@ -322,6 +333,7 @@ class DefaultSettings {
   static const closeToTray = false;
   static const minimizeToTray = false;
   static const startMinimizedToTray = false;
+  static const followRedirects = false;
 }
 
 @HiveType(typeId: 28)
@@ -474,6 +486,7 @@ class FinampSettings {
     this.closeToTray = DefaultSettings.closeToTray,
     this.minimizeToTray = DefaultSettings.minimizeToTray,
     this.startMinimizedToTray = DefaultSettings.startMinimizedToTray,
+    this.followRedirects = DefaultSettings.followRedirects,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -993,6 +1006,9 @@ class FinampSettings {
   @HiveField(164, defaultValue: DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage)
   int autoReloadQueueMaxDroppedTracksPercentage;
 
+  @HiveField(165, defaultValue: DefaultSettings.followRedirects)
+  bool followRedirects;
+
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
       name: DownloadLocation.internalStorageName,
@@ -1008,6 +1024,7 @@ class FinampSettings {
       gridImageSize: DefaultSettings.gridImageSize,
       homeScreenImageSize: DefaultSettings.homeScreenImageSize,
       deviceId: const Uuid().v4(),
+      resyncOnStartup: kDebugMode ? false : DefaultSettings.resyncOnStartup,
     );
   }
 
