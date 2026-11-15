@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.1+201
+version: 1.0.3+203
 
 environment:
   sdk: ^3.9.0
@@ -26,7 +26,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  background_downloader: ^9.2.3
+  # background_downloader 9.6.0 is incompatible with old analyzer version and causes build_runner failures
+  background_downloader: 9.5.9
   json_annotation: ^4.8.1
   chopper: ^8.0.0
   get_it: ^8.2.0
@@ -61,7 +62,17 @@ dependencies:
   # specific version 2.11.1, so we must force it.
   flutter_rust_bridge: 2.11.1
 
-  audio_service: ^0.18.18
+  # Forked audio_service to add:
+  # - iOS MPRemoteCommandCenter registration at configure time
+  # - An iosKeepNowPlayingOnStop config flag
+  # - The iOS playing-state fix from 0.18.20, not yet on pub.dev
+  # These keep Finamp as the system's resume candidate for CarPlay and
+  # Bluetooth reconnects.
+  audio_service:
+    git:
+      url: https://github.com/finamp-app/audio_service.git
+      ref: 77d8a1253cb34ab398e3e7bc364629f46089a897
+      path: audio_service
   audio_service_mpris: ^0.2.0
   audio_service_platform_interface: ^0.1.3
   audio_session: ^0.2.2
@@ -203,19 +214,8 @@ dependency_overrides:
       url: https://github.com/Komodo5197/isar-community.git
       ref: a602cd8999048faba043f7e1ce7ba92f4d812762
       path: packages/isar
-  # Forked audio_service to add:
-  # - iOS MPRemoteCommandCenter registration at configure time
-  # - An iosKeepNowPlayingOnStop config flag
-  # - The iOS playing-state fix from 0.18.20, not yet on pub.dev
-  # These keep Finamp as the system's resume candidate for CarPlay and
-  # Bluetooth reconnects. The flag is part of
-  # audio_service_platform_interface too, so both packages must be
-  # overridden together or the build fails.
-  audio_service:
-    git:
-      url: https://github.com/finamp-app/audio_service.git
-      ref: 77d8a1253cb34ab398e3e7bc364629f46089a897
-      path: audio_service
+  # force audio_service_mpris to accept our audio_service_platform_interface fork with
+  # iosKeepNowPlayingOnStop flag.  This flag is optional and does not affect Linux
   audio_service_platform_interface:
     git:
       url: https://github.com/finamp-app/audio_service.git
@@ -292,7 +292,7 @@ msix_config:
   display_name: Finamp
   publisher_display_name: Finamp
   identity_name: com.unicornsonlsd.finamp
-  msix_version: 1.0.1.0
+  msix_version: 1.0.3.0
   logo_path: ./images/finamp_cropped.png
   trim_logo: false # don't force logo to be square, it will be stretched
   # backgroundMediaPlayback prevents apps from getting muted or killed when being in the background (won't build if included at the moment)

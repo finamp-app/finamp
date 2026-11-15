@@ -20,7 +20,6 @@ import 'package:finamp/services/widget_bindings_observer_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 
@@ -28,9 +27,9 @@ import '../models/jellyfin_models.dart' as jellyfin_models;
 import '../screens/player_screen.dart';
 import '../services/current_album_image_provider.dart';
 import '../services/finamp_settings_helper.dart';
-import '../services/media_state_stream.dart';
 import '../services/music_player_background_task.dart';
 import '../services/process_artist.dart';
+import 'PlayerScreen/player_buttons.dart';
 import 'PlayerScreen/player_split_screen_scaffold.dart';
 import 'album_image.dart';
 
@@ -182,10 +181,6 @@ class NowPlayingBar extends ConsumerWidget {
     );
     Color primaryTextColor = AtContrast.getContrastiveTintedTextColor(onBackground: averageBackgroundColor);
 
-    final showPauseButton = ref.watch(
-      mediaStateProvider.select((x) => x.playbackState.playing && x.fadeDirection != FadeDirection.fadeOut),
-    );
-
     return Padding(
       padding: const EdgeInsets.only(left: 12.0, bottom: 12.0, right: 12.0),
       child: Semantics.fromProperties(
@@ -279,11 +274,7 @@ class NowPlayingBar extends ConsumerWidget {
                                     unawaited(audioHandler.togglePlayback());
                                   },
                                   color: Colors.white,
-                                  icon: Icon(
-                                    showPauseButton ? TablerIcons.player_pause : TablerIcons.player_play,
-                                    shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)],
-                                    size: 32,
-                                  ),
+                                  icon: PlayerButtons.buildPlayPauseIcon(ref, shadow: true),
                                 ),
                               ),
                           ],
@@ -485,10 +476,7 @@ class NowPlayingBar extends ConsumerWidget {
                                                 },
                                                 color: primaryTextColor,
                                                 visualDensity: VisualDensity.compact,
-                                                icon: Icon(
-                                                  showPauseButton ? TablerIcons.player_pause : TablerIcons.player_play,
-                                                  size: 28,
-                                                ),
+                                                icon: PlayerButtons.buildPlayPauseIcon(ref, shadow: true),
                                               ),
                                             ],
                                           ),

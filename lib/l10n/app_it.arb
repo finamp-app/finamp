@@ -1685,7 +1685,7 @@
     "@releaseDateFormatSubtitle": {
         "description": "Title for the setting that controls the format release dates throughout the app."
     },
-    "autoOfflineNotification": "{state, select, enabled{enabled} disabled{disabled} other{set quantum position for}} automaticamente la Modalità Offline",
+    "autoOfflineNotification": "Modalità Offline {state, select, enabled{attivata} disabled{disattivata} other{aggiornata}} automaticamente",
     "@autoOfflineNotification": {
         "description": "The text for 'other' should never be seen anyway, so feel free to put in a little harmless easter egg :)"
     },
@@ -2006,6 +2006,23 @@
     "autoReloadQueueSubtitle": "Ricarica automaticamente la coda quando cambia la sorgente (ad esempio, modalità offline abilitata o cambio di indirizzo del server). Se disabilitato, Finamp ti chiederà di farlo.",
     "@autoReloadQueueSubtitle": {
         "description": "Subtitle for the setting that controls if the queue is automatically reloaded when the source changes"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Limite di brani rimossi dal ricaricamento automatico",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "Quando passi alla modalità offline, ricarica automaticamente solo se verrebbe rimosso al massimo questa percentuale di brani. Puoi sempre ricaricare manualmente.",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "Massimo brani rimossi: {percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
     },
     "clearQueueOnStopEventTitle": "Cancella coda in caso di arresto esterno",
     "@clearQueueOnStopEventTitle": {
@@ -2685,6 +2702,18 @@
         "description": "Additional prompt text shown when the queue needs to be reloaded after changing network settings and some undownloaded tracks are in the queue",
         "placeholders": {
             "amountUndownloadedTracks": {
+                "type": "int"
+            }
+        }
+    },
+    "autoReloadPromptDroppedTracks": "Ricaricando verrebbe rimosso il {removedPercentage}% della coda ({amountUndownloadedTracks} brani).",
+    "@autoReloadPromptDroppedTracks": {
+        "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "removedPercentage": {
                 "type": "int"
             }
         }

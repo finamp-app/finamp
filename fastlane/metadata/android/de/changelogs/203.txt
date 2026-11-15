@@ -1,0 +1,9 @@
+This is a hotfix for version 1.0.1.
+
+Here's what's new:
+
+<ul>
+<li>Fix startup error "Could not initialize IsarCore" when downloading from F-Droid.</li>
+</ul>
+
+Danke, dass du Finamp nutzt!

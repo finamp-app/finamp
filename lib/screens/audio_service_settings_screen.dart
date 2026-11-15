@@ -48,6 +48,11 @@ class _AudioServiceSettingsScreenState extends State<AudioServiceSettingsScreen>
           const LoadQueueOnStartupSelector(),
           const AutoplayRestoredQueueToggle(),
           const AutoReloadQueueToggle(),
+          Consumer(
+            builder: (context, ref, child) => ref.watch(finampSettingsProvider.autoReloadQueue)
+                ? const AutoReloadQueueMaxDroppedTracksPercentageSelector()
+                : const SizedBox.shrink(),
+          ),
           const ClearQueueOnStopToggle(),
         ],
       ),
@@ -215,6 +220,37 @@ class AutoReloadQueueToggle extends ConsumerWidget {
       subtitle: Text(AppLocalizations.of(context)!.autoReloadQueueSubtitle),
       value: ref.watch(finampSettingsProvider.autoReloadQueue),
       onChanged: FinampSetters.setAutoReloadQueue,
+    );
+  }
+}
+
+class AutoReloadQueueMaxDroppedTracksPercentageSelector extends ConsumerWidget {
+  const AutoReloadQueueMaxDroppedTracksPercentageSelector({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final maximum = ref.watch(finampSettingsProvider.autoReloadQueueMaxDroppedTracksPercentage).clamp(0, 100).toInt();
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      children: [
+        ListTile(
+          title: Text(l10n.autoReloadQueueMaxDroppedTracksPercentageTitle),
+          subtitle: Text(l10n.autoReloadQueueMaxDroppedTracksPercentageSubtitle),
+        ),
+        Slider(
+          min: 0,
+          max: 100,
+          divisions: 100,
+          value: maximum.toDouble(),
+          label: l10n.autoReloadQueueMaxDroppedTracksPercentageLabel(maximum),
+          onChanged: (value) => FinampSetters.setAutoReloadQueueMaxDroppedTracksPercentage(value.round()),
+        ),
+        Text(
+          l10n.autoReloadQueueMaxDroppedTracksPercentageLabel(maximum),
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        SizedBox(height: 12),
+      ],
     );
   }
 }

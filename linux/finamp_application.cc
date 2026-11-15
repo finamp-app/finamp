@@ -58,7 +58,6 @@ static void finamp_application_activate(GApplication* application) {
   }
 
   gtk_window_set_default_size(window, 1280, 720);
-  gtk_widget_show(GTK_WIDGET(window));
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
@@ -66,6 +65,12 @@ static void finamp_application_activate(GApplication* application) {
   FlView* view = fl_view_new(project);
   gtk_widget_show(GTK_WIDGET(view));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
+
+  // Realize window and view without showing or mapping them to the screen.
+  // Adding view to container before realizing ensures GTK propagates the 1280x720
+  // default size to the view's allocation instead of leaving it unallocated at 1x1.
+  gtk_widget_realize(GTK_WIDGET(window));
+  gtk_widget_realize(GTK_WIDGET(view));
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
 

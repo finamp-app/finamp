@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:file/file.dart' as cache;
 import 'package:file/local.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/theme_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -141,11 +142,13 @@ albumImageProvider = Provider.autoDispose.family<AlbumImageInfo, AlbumImageReque
       return AlbumImageInfo.empty(request);
     }
 
+    final headers = GetIt.instance<FinampUserHelper>().authorizationHeaders;
+
     if (request.fullQuality) {
       // If we want full quality player images, retrieve them via the image cache instead of linking directly.
       // In most cases, the initial null value will only be seen by the precache logic.
       Future.sync(() async {
-        FileInfo imageFile = await _imageCache.downloadFile(imageUrl.toString(), key: key);
+        FileInfo imageFile = await _imageCache.downloadFile(imageUrl.toString(), key: key, authHeaders: headers);
         if (blurhashKey) {
           // The default validTill length is 7 days.  Images fetched by blurhash cannot change, as that would change the
           // blurhash, so update vaildTill to one year.
@@ -166,7 +169,7 @@ albumImageProvider = Provider.autoDispose.family<AlbumImageInfo, AlbumImageReque
     } else {
       // Allow drawing albums up to 4X intrinsic size by setting scale
       return AlbumImageInfo(
-        CachedImage(NetworkImage(imageUrl.toString(), scale: 0.25), key),
+        CachedImage(NetworkImage(imageUrl.toString(), scale: 0.25, headers: headers), key),
         request,
         imageUrl,
         fullQuality: request.fullQuality,
