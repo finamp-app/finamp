@@ -359,7 +359,6 @@ Future<void> _setupProviders({bool integrationTesting = false}) async {
     observers: [FinampProviderObserver()],
     overrides: integrationTesting
         ? [
-            albumImageProvider.overrideWith((_, request) => AlbumImageInfo.empty(request)),
             currentAlbumImageProvider.overrideWithValue(
               AlbumImageInfo.empty(AlbumImageRequest(item: BaseItemDto(id: BaseItemId("test")))),
             ),
