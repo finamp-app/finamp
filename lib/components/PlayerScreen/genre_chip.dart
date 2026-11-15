@@ -82,8 +82,19 @@ class GenreChips extends ConsumerWidget {
       (filter) => filter.type == ItemFilterType.genreFilter,
     );
     // Playlist genre metadata is aggregated from its tracks, so the same
-    // genre can legitimately be returned more than once.
-    final uniqueGenres = {for (final genre in genres) genre.id: genre}.values;
+    // genre can legitimately be returned more than once. Compare serialized
+    // IDs and also collapse matching names returned with playlist-specific IDs.
+    final seenGenreIds = <String>{};
+    final seenGenreNames = <String>{};
+    final uniqueGenres = <NameLongIdPair>[];
+    for (final genre in genres) {
+      if (!seenGenreIds.add(genre.id.raw)) continue;
+
+      final normalizedName = genre.name?.trim().toLowerCase();
+      if (normalizedName != null && normalizedName.isNotEmpty && !seenGenreNames.add(normalizedName)) continue;
+
+      uniqueGenres.add(genre);
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -102,7 +113,7 @@ class GenreChips extends ConsumerWidget {
               ),
             ...uniqueGenres.where((g) => g.id != activeGenreFilter?.extraBaseItem.id).map((genre) {
               return GenreChip(
-                key: ValueKey(genre.id),
+                key: ValueKey(genre.id.raw),
                 backgroundColor: backgroundColor,
                 color: color,
                 parentType: parentType,
