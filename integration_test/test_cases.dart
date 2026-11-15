@@ -127,8 +127,8 @@ void main() async {
         (x) => x is JellyfinServerSelectionWidget && (x.baseUrl?.contains("demo.jellyfin.org") ?? false),
       );
       await tester.waitFor(serverButton);
-      // Wait for button to animate in?
-      await tester.pump(Duration(seconds: 1));
+      await tester.ensureVisible(serverButton);
+      await tester.pumpAndSettle();
       await tester.tap(serverButton);
       await tester.pump(Duration(seconds: 1));
 
