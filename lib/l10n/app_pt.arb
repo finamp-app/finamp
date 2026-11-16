@@ -3818,5 +3818,28 @@
                 "type": "int"
             }
         }
-    }
+    },
+    "customHeaders": "Cabeçalhos HTTP Personalizados",
+    "httpHeaderNotAuth": "Nome usado internamente.",
+    "@httpHeaderNotAuth": {
+        "description": "Error message when the user configures a custom authorization header that overlaps with one finamp already uses."
+    },
+    "httpHeaderConflict": "Nome de cabeçalho duplicado.",
+    "@httpHeaderConflict": {
+        "description": "Error message when the user configures two custom authorization headers with duplicate names."
+    },
+    "customHeaderNameLabel": "Nome de Cabeçalho",
+    "@customHeaderNameLabel": {
+        "description": "Label for custom HTTP header name entry field."
+    },
+    "customHeaderValueLabel": "Valor de Cabeçalho",
+    "@customHeaderValueLabel": {
+        "description": "Label for custom HTTP header value entry field."
+    },
+    "followRedirectsTitle": "Ativar Redirecionamentos",
+    "@followRedirectsTitle": {
+        "description": "Title of setting that allows Finamp to follow redirects."
+    },
+    "followRedirectsSubtitle": "Permite ao Finamp seguir redirecionamentos HTTP, incluindo para domínios diferentes do configurado.  Isto é potencialmente incompatível com cabeçalhos HTTP personalizados.",
+    "advancedLoginOptionsWarning": "Opções de autenticação avançadas para configurações de servidor não usuais.  Estas são fornecidas numa base de melhor-esforço e podem não funcionar corretamente em todas as plataformas."
 }
