@@ -1,12 +1,11 @@
 import 'dart:io' show Platform;
 
-import 'package:flutter/services.dart';
+import 'package:finamp_android_startup/finamp_android_startup.dart';
 import 'package:logging/logging.dart';
 
 /// Prevents startup autoplay from waking someone when Android restarts the
 /// app while the device is still locked.
 class AndroidStartupAutoplayGuard {
-  static const _channel = MethodChannel('com.unicornsonlsd.finamp/android_startup');
   static final _logger = Logger('AndroidStartupAutoplayGuard');
 
   /// Returns whether an automatic queue restore may begin playback for the
@@ -25,7 +24,7 @@ class AndroidStartupAutoplayGuard {
     if (!Platform.isAndroid) return true;
 
     try {
-      final isKeyguardLocked = await _channel.invokeMethod<bool>('getIsKeyguardLocked');
+      final isKeyguardLocked = await FinampAndroidStartup.isKeyguardLocked();
       if (isKeyguardLocked == null) {
         _logger.warning('Could not determine Android keyguard state; suppressing startup autoplay');
         return false;
