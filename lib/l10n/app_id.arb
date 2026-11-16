@@ -3882,5 +3882,12 @@
     "customHeaderValueLabel": "Nilai Header",
     "@customHeaderValueLabel": {
         "description": "Label for custom HTTP header value entry field."
-    }
+    },
+    "followRedirectsTitle": "Nyalakan Redirect",
+    "@followRedirectsTitle": {
+        "description": "Title of setting that allows Finamp to follow redirects."
+    },
+    "advancedLoginOptionsWarning": "Pilihan otentikasi lanjutan untuk pengaturan server yang tidak umum. Pengaturan berikut diberikan sebisa mungkin dan mungkin tidak berfungsi semestinya di semua platform.",
+    "customHeaders": "Header HTTP Kustom",
+    "followRedirectsSubtitle": "Biarkan Finamp untuk mengikuti redirect HTTP, termasuk yang mengarah ke domain selain yang diatur.  Mungkin tidak cocok dengan header HTTP kustom."
 }
