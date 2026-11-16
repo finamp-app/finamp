@@ -95,6 +95,7 @@ flutter {
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.mediarouter:mediarouter:1.8.1'
+    implementation 'androidx.media:media:1.7.0'
     implementation "androidx.core:core-splashscreen:1.2.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
 }
