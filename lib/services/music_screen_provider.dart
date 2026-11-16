@@ -314,7 +314,9 @@ Future<QueryResult_BaseItemDto> _fetchMusicScreenPageOnline(
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
   final BaseItemId? libraryId;
-  if (request.library == allLibraryPlaceholder) {
+  if (request.tab == ContentType.playlists) {
+    libraryId = null;
+  } else if (request.library == allLibraryPlaceholder) {
     libraryId = null;
   } else if (request.library == currentLibraryPlaceholder) {
     final nullableLibraryId = ref.watch<BaseItemId?>(
@@ -416,7 +418,9 @@ Future<List<BaseItemDto>?> _buildHomeSectionItemsOffline({
   final artistFilter = request.sortConfig.filters.firstWhereOrNull((x) => x.type == ItemFilterType.artistFilter);
 
   BaseItemId? libraryId;
-  if (request.library == allLibraryPlaceholder) {
+  if (request.tab == ContentType.playlists) {
+    libraryId = null;
+  } else if (request.library == allLibraryPlaceholder) {
     libraryId = null;
   } else if (request.library == currentLibraryPlaceholder) {
     libraryId = ref.watch<BaseItemId?>(
