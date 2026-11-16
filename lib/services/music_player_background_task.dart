@@ -26,7 +26,9 @@ import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'android_auto_helper.dart';
+import 'audio_service_helper.dart';
 import 'finamp_settings_helper.dart';
+import 'quick_tile_toggle.dart';
 import 'metadata_provider.dart';
 
 enum FadeDirection { fadeIn, fadeOut, none }
@@ -1147,6 +1149,18 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
           await _volume.setInternalVolume(volume);
         }
         return;
+      case CustomPlaybackActions.quickTileToggle:
+        final queueService = GetIt.instance<QueueService>();
+        return QuickTileToggle(
+          isPlaying: () => _player.playing && fadeState.value.fadeDirection != FadeDirection.fadeOut,
+          hasCurrentTrack: () => queueService.getCurrentTrack() != null,
+          ensureQueueLoaded: queueService.ensureQueueLoaded,
+          play: play,
+          pause: pause,
+          shuffleAll: () => GetIt.instance<AudioServiceHelper>().shuffleAll(
+            onlyShowFavorites: FinampSettingsHelper.finampSettings.onlyShowFavorites,
+          ),
+        )();
     }
   }
 
