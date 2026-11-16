@@ -60,6 +60,7 @@ import 'package:finamp/services/theme_provider.dart';
 import 'package:finamp/services/tray_service.dart';
 import 'package:finamp/services/ui_overlay_setter_observer.dart';
 import 'package:finamp/services/widget_bindings_observer_provider.dart';
+import 'package:finamp/services/window_size_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -839,7 +840,11 @@ class _FinampState extends State<Finamp> with WindowListener {
   static final Logger linkHandlingLogger = Logger("LinkHandling");
 
   StreamSubscription<Uri>? _uriLinkSubscription;
-  Timer? _saveWindowDebounceTimer;
+
+  late final WindowSizeSaver _windowSizeSaver = WindowSizeSaver(
+    getBounds: windowManager.getBounds,
+    saveScreenSize: FinampSetters.setScreenSize,
+  );
 
   @override
   void initState() {
@@ -914,7 +919,7 @@ class _FinampState extends State<Finamp> with WindowListener {
   @override
   Future<void> dispose() async {
     super.dispose();
-    _saveWindowDebounceTimer?.cancel();
+    _windowSizeSaver.dispose();
     await DiscordRpc.stop().timeout(Duration(milliseconds: 500));
     await _uriLinkSubscription?.cancel();
 
@@ -947,27 +952,9 @@ class _FinampState extends State<Finamp> with WindowListener {
   }
 
   @override
-  void onWindowEvent(String eventName) async {
+  void onWindowEvent(String eventName) {
     windowManagerLogger.finer("[WindowManager] onWindowEvent: $eventName");
-
-    if (eventName == "moved" || eventName == "resized") {
-      _saveWindowDebounceTimer?.cancel();
-      FinampSetters.setScreenSize(ScreenSize.from(await windowManager.getBounds()));
-
-      windowManagerLogger.finer("Saved window size and position");
-    } else if (eventName == "move" || eventName == "resize") {
-      // On platforms like Linux (GTK), window_manager only emits "move" and "resize"
-      // (never "moved" or "resized"). Debounce saving to avoid excessive disk writes while dragging.
-      _saveWindowDebounceTimer?.cancel();
-      _saveWindowDebounceTimer = Timer(const Duration(milliseconds: 500), () async {
-        try {
-          FinampSetters.setScreenSize(ScreenSize.from(await windowManager.getBounds()));
-          windowManagerLogger.finer("Saved window size and position (debounced)");
-        } catch (e) {
-          windowManagerLogger.warning("Failed to save window size and position: $e");
-        }
-      });
-    }
+    _windowSizeSaver.onWindowEvent(eventName);
   }
 
   @override
@@ -976,18 +963,14 @@ class _FinampState extends State<Finamp> with WindowListener {
       return;
     }
 
-    _saveWindowDebounceTimer?.cancel();
-    try {
-      FinampSetters.setScreenSize(ScreenSize.from(await windowManager.getBounds()));
-      windowManagerLogger.finer("Saved window size and position on close");
-    } catch (e) {
-      windowManagerLogger.warning("Failed to save window size and position on close: $e");
-    }
-
     // Close was intercepted to hide the window to the tray (see TrayService), keep playing.
+    // Checking this first also keeps us from querying bounds of a window that GTK is about to destroy.
     if (await windowManager.isPreventClose()) {
+      await _windowSizeSaver.onWindowClose(isPreventClose: true);
       return;
     }
+
+    await _windowSizeSaver.onWindowClose(isPreventClose: false);
 
     // Destroy player on platforms using mediaKit.
     if (Platform.isWindows || Platform.isLinux) {
