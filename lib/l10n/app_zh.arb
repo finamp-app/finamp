@@ -3805,5 +3805,28 @@
                 "type": "int"
             }
         }
-    }
+    },
+    "customHeaders": "自定义 HTTP 标头",
+    "httpHeaderNotAuth": "内部使用的名称。",
+    "@httpHeaderNotAuth": {
+        "description": "Error message when the user configures a custom authorization header that overlaps with one finamp already uses."
+    },
+    "httpHeaderConflict": "重复的标头名称。",
+    "@httpHeaderConflict": {
+        "description": "Error message when the user configures two custom authorization headers with duplicate names."
+    },
+    "customHeaderNameLabel": "标头名称",
+    "@customHeaderNameLabel": {
+        "description": "Label for custom HTTP header name entry field."
+    },
+    "customHeaderValueLabel": "标头值",
+    "@customHeaderValueLabel": {
+        "description": "Label for custom HTTP header value entry field."
+    },
+    "followRedirectsTitle": "启用重定向",
+    "@followRedirectsTitle": {
+        "description": "Title of setting that allows Finamp to follow redirects."
+    },
+    "followRedirectsSubtitle": "允许 Finamp 跟随 HTTP 重定向，包括重定向至与所配置域名不同的其他域名。  这可能会与自定义 HTTP 标头产生冲突。",
+    "advancedLoginOptionsWarning": "针对特殊服务器配置提供的高级身份验证选项。  此类选项仅在“尽力而为”的基础上提供，未必能在所有平台上正常运行。"
 }
