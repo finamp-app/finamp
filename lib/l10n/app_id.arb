@@ -3866,5 +3866,21 @@
     "autoReloadQueueMaxDroppedTracksPercentageTitle": "Batasan Penghapusan Otomatis saat Muat Ulang Antrian Trek",
     "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
         "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "httpHeaderNotAuth": "Nama digunakan secara internal.",
+    "@httpHeaderNotAuth": {
+        "description": "Error message when the user configures a custom authorization header that overlaps with one finamp already uses."
+    },
+    "httpHeaderConflict": "Nama header duplikat.",
+    "@httpHeaderConflict": {
+        "description": "Error message when the user configures two custom authorization headers with duplicate names."
+    },
+    "customHeaderNameLabel": "Nama Header",
+    "@customHeaderNameLabel": {
+        "description": "Label for custom HTTP header name entry field."
+    },
+    "customHeaderValueLabel": "Nilai Header",
+    "@customHeaderValueLabel": {
+        "description": "Label for custom HTTP header value entry field."
     }
 }
