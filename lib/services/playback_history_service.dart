@@ -97,18 +97,8 @@ class PlaybackHistoryService {
           return;
         }
 
-        FinampQueueItem currentItem;
-        if (currentIndex is! int ||
-            currentIndex < 0 ||
-            currentIndex >= _audioService.sequenceState.effectiveSequence.length) {
-          if (isDesktop) {
-            WindowManager.instance.setTitle("Finamp");
-          }
-          return;
-        }
-        if (_audioService.sequenceState.effectiveSequence[currentIndex].tag case FinampQueueItem item) {
-          currentItem = item;
-        } else {
+        final currentItem = _trackAt(currentIndex);
+        if (currentItem == null) {
           if (isDesktop) {
             WindowManager.instance.setTitle("Finamp");
           }
@@ -176,10 +166,7 @@ class PlaybackHistoryService {
           if (isSeekEvent) {
             // rate limit updates (only send update after no changes for 3 seconds) and if the track is still the same
             Future.delayed(const Duration(seconds: 3, milliseconds: 500), () {
-              var newCurrentTrack =
-                  _audioService.queueIndex != null && _audioService.sequenceState.effectiveSequence.isNotEmpty
-                  ? _audioService.sequenceState.effectiveSequence[_audioService.queueIndex!].tag as FinampQueueItem
-                  : null;
+              final newCurrentTrack = _playerTrack;
               if (_lastPositionUpdate.add(const Duration(seconds: 3)).isBefore(DateTime.now()) &&
                   currentItem.item.id == newCurrentTrack?.item.id) {
                 _playbackHistoryServiceLogger.fine("Handling seek event for ${currentItem.item.title}");
@@ -606,6 +593,12 @@ class PlaybackHistoryService {
       // This function relies on _history having items
       return null;
     }
+    final playerTrack = _playerTrack;
+    if (_currentTrack != null && playerTrack != null && playerTrack.id != _currentTrack!.item.id) {
+      // the player holds a track that isn't current yet (e.g. a new queue loaded while paused),
+      // so its position and paused state would be reported for the wrong track
+      return null;
+    }
 
     try {
       return jellyfin_models.PlaybackProgressInfo(
@@ -630,6 +623,21 @@ class PlaybackHistoryService {
       _playbackHistoryServiceLogger.warning(e);
       rethrow;
     }
+  }
+
+  /// The track the player is on, which can differ from [_currentTrack] while paused.
+  FinampQueueItem? get _playerTrack => _trackAt(_audioService.queueIndex);
+
+  /// The track at [index] of the player's effective sequence, if there is one.
+  FinampQueueItem? _trackAt(int? index) {
+    final sequence = _audioService.sequenceState.effectiveSequence;
+    if (index == null || index < 0 || index >= sequence.length) {
+      return null;
+    }
+    return switch (sequence[index].tag) {
+      FinampQueueItem item => item,
+      _ => null,
+    };
   }
 
   List<jellyfin_models.QueueItem>? getQueueToReport({bool? includeNowPlayingQueue}) {
