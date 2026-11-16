@@ -354,6 +354,7 @@
         "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
     },
     "playButtonLabel": "Play",
+    "playSomeButtonLabel": "Play some",
     "shuffleButtonLabel": "Shuffle",
     "playbackActionPageMoveWithinQueue": "Move Within Queue",
     "@playbackActionPageMoveWithinQueue": {
@@ -700,6 +701,7 @@
     "@addToQueue": {
         "description": "Popup menu item title for adding an item to the end of the play queue."
     },
+    "addSomeToQueue": "Add some to Queue",
     "instantMix": "Instant Mix",
     "goToAlbum": "Go to Album",
     "goToArtist": "Go to Artist",
@@ -792,10 +794,12 @@
     "@playNext": {
         "description": "Used for adding a track to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
+    "playSomeNext": "Play some next",
     "addToNextUp": "Add to Next Up",
     "@addToNextUp": {
         "description": "Used for adding a track to the \"Next Up\" queue at the end, to play after all prior tracks from Next Up have played"
     },
+    "addSomeToNextUp": "Add some to Next Up",
     "shuffleNext": "Shuffle next",
     "@shuffleNext": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
@@ -3888,5 +3892,33 @@
         "description": "Title of setting that allows Finamp to follow redirects."
     },
     "followRedirectsSubtitle": "Allows Finamp to follow HTTP redirects, including ones to different domains than the one configured.  Potentially incompatible with custom HTTP headers.",
-    "advancedLoginOptionsWarning": "Advanced authentication options for unusual server setups.  These are provided on a best-effort basis and may not function correctly on all platforms."
+    "advancedLoginOptionsWarning": "Advanced authentication options for unusual server setups.  These are provided on a best-effort basis and may not function correctly on all platforms.",
+  "loginFlowLocalNetworkServersNoResults": "No servers detected yet - you may need to manually enter the server address.",
+    "quickSettingsNetworkLink": "Configure the local address for your server",
+    "queueAutorestoreOversized": "Restore aborted - Saved queue is excessively large.",
+    "oversizedQueueItemTruncated": "Oversized item truncated from {itemSize} to {maxSize} tracks.",
+    "@oversizedQueueItemTruncated": {
+        "description": "Message displayed if an item is truncated while being added to queue",
+        "placeholders": {
+            "itemSize": {
+                "type": "int"
+            },
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueSizeLimitTitle": "Queue track limit",
+    "queueSizeLimitSubtitle": "Applies a soft cap to the queue by limiting the size of individual items added.  Excessively large queues may still be created through the addition of multiple items to one queue.  Attempting to play a queue too large for a device may result in app crashes.",
+    "oversizedQueueContinue": "Attempt to load anyway",
+    "oversizedQueueTruncate": "Truncate queue to at most {maxSize} tracks",
+    "@oversizedQueueTruncate": {
+        "description": "Button to truncate oversized queues while restoring",
+        "placeholders": {
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueRestoreCancel": "Cancel Restore"
 }
