@@ -461,7 +461,7 @@ Future<List<BaseItemDto>?> _buildHomeSectionItemsOffline({
         // TODO use the filter config for this instead of global(several places)?
         // Might need to refactor sortconfig into some preexising providers to eliminate direct global setting usage
         fullyDownloaded: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded),
-        viewFilter: request.tab == ContentType.playlists ? null : libraryId,
+        viewFilter: libraryId,
         childViewFilter: [ContentType.albums, ContentType.playlists].contains(request.tab) ? null : libraryId,
         nullableViewFilters: ref.watch(finampSettingsProvider.showDownloadsWithUnknownLibrary),
         onlyFavorites: request.sortConfig.filters.any((filter) => filter.type == ItemFilterType.isFavorite),
