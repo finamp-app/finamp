@@ -13,6 +13,7 @@ import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/services/album_image_provider.dart';
+import 'package:finamp/services/android_startup_autoplay_guard.dart';
 import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -403,6 +404,10 @@ class QueueService {
     if (_savedQueueState != SavedQueueState.preInit) return;
     try {
       _savedQueueState = SavedQueueState.init;
+      // Capture the lock state before the asynchronous restore starts. A user
+      // who starts restoring while unlocked may lock the screen while items
+      // load and should still get the playback they requested.
+      final mayAutoplayInitialQueue = await AndroidStartupAutoplayGuard.mayAutoplayInitialQueue();
       archiveSavedQueue(inInit: true);
       var info = _queuesBox.get("latest");
       if (info != null) {
@@ -416,7 +421,7 @@ class QueueService {
         }
 
         if (FinampSettingsHelper.finampSettings.autoloadLastQueueOnStartup && !await _hasInitialPlayLink()) {
-          await loadSavedQueue(info);
+          await loadSavedQueue(info, isInitialLoad: true, mayAutoplayInitialQueue: mayAutoplayInitialQueue);
         } else {
           _savedQueueState = SavedQueueState.pendingSave;
         }
@@ -481,6 +486,8 @@ class QueueService {
     FinampStorableQueueInfo info, {
     Map<jellyfin_models.BaseItemId, jellyfin_models.BaseItemDto>? existingItems,
     bool isReload = false,
+    bool isInitialLoad = false,
+    bool? mayAutoplayInitialQueue,
   }) async {
     final playbackHistoryService = GetIt.instance<PlaybackHistoryService>();
     if (_savedQueueState == SavedQueueState.loading) {
@@ -613,6 +620,19 @@ class QueueService {
       }
 
       if (loadedTracks > 0) {
+        final autoplayRestoredQueue = FinampSettingsHelper.finampSettings.autoplayRestoredQueue;
+        final shouldAutoplay =
+            !isReload &&
+            autoplayRestoredQueue &&
+            droppedTracks == 0 &&
+            (!isInitialLoad || (mayAutoplayInitialQueue ?? false));
+        if (isInitialLoad) {
+          _queueServiceLogger.info(
+            'Initial queue autoplay ${shouldAutoplay ? 'enabled' : 'paused'} '
+            '(setting: $autoplayRestoredQueue, dropped tracks: $droppedTracks, '
+            'Android startup guard: $mayAutoplayInitialQueue)',
+          );
+        }
         await _replaceWholeQueue(
           isRestoredQueue: true,
           itemList: items,
@@ -624,9 +644,7 @@ class QueueService {
               ? Duration(milliseconds: info.currentTrackSeek!)
               : null,
           order: order == null ? FinampPlaybackOrder.linear : FinampPlaybackOrder.shuffled,
-          beginPlaying: isReload
-              ? (_audioHandler.playbackState.valueOrNull?.playing ?? false)
-              : (FinampSettingsHelper.finampSettings.autoplayRestoredQueue && droppedTracks == 0),
+          beginPlaying: isReload ? (_audioHandler.playbackState.valueOrNull?.playing ?? false) : shouldAutoplay,
           source: info.source.withItem(idMap[jellyfin_models.BaseItemId(info.source.id)]),
         );
       }
