@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:finamp/services/android_startup_autoplay_guard.dart';
 import 'package:finamp_android_startup/finamp_android_startup.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +16,12 @@ void main() {
     test('allows autoplay after the keyguard is unlocked', () {
       expect(AndroidStartupAutoplayGuard.mayAutoplayWhileKeyguardLocked(false), isTrue);
     });
+  });
+
+  test('non-Android startup preserves autoplay behavior', () async {
+    if (!Platform.isAndroid) {
+      expect(await AndroidStartupAutoplayGuard.mayAutoplayInitialQueue(), isTrue);
+    }
   });
 
   group('FinampAndroidStartup', () {
@@ -35,6 +43,15 @@ void main() {
     test('propagates plugin errors for the guard to handle', () async {
       messenger.setMockMethodCallHandler(channel, (_) async => throw PlatformException(code: 'unavailable'));
       await expectLater(FinampAndroidStartup.isKeyguardLocked(), throwsA(isA<PlatformException>()));
+    });
+
+    test('passes through a null response', () async {
+      messenger.setMockMethodCallHandler(channel, (_) async => null);
+      expect(await FinampAndroidStartup.isKeyguardLocked(), isNull);
+    });
+
+    test('reports a missing plugin', () async {
+      await expectLater(FinampAndroidStartup.isKeyguardLocked(), throwsA(isA<MissingPluginException>()));
     });
   });
 }
