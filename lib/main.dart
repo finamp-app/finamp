@@ -20,6 +20,7 @@ import 'package:finamp/screens/advanced_login_options_screen.dart';
 import 'package:finamp/screens/album_settings_screen.dart';
 import 'package:finamp/screens/artist_settings_screen.dart';
 import 'package:finamp/screens/content_view_type_settings_screen.dart';
+import 'package:finamp/screens/hidden_items_settings_screen.dart';
 import 'package:finamp/screens/downloads_settings_screen.dart';
 import 'package:finamp/screens/genre_settings_screen.dart';
 import 'package:finamp/screens/home_screen_settings_screen.dart';
@@ -1041,6 +1042,7 @@ class FinampApp extends ConsumerWidget {
         InteractionSettingsScreen.routeName: (context) => const InteractionSettingsScreen(),
         TabsSettingsScreen.routeName: (context) => const TabsSettingsScreen(),
         ContentViewTypeSettingsScreen.routeName: (context) => const ContentViewTypeSettingsScreen(),
+        HiddenItemsSettingsScreen.routeName: (context) => const HiddenItemsSettingsScreen(),
         LayoutSettingsScreen.routeName: (context) => const LayoutSettingsScreen(),
         CustomizationSettingsScreen.routeName: (context) => const CustomizationSettingsScreen(),
         PlayerSettingsScreen.routeName: (context) => const PlayerSettingsScreen(),

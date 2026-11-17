@@ -3994,5 +3994,54 @@
     "allTracksHidden": "All of these tracks are hidden",
     "@allTracksHidden": {
         "description": "Shown instead of starting playback when every track that would be played is hidden"
+    },
+    "hiddenItemsSettingsTitle": "Hidden Items",
+    "@hiddenItemsSettingsTitle": {
+        "description": "Title of the settings screen for hidden tracks and albums, and of the entry that opens it"
+    },
+    "hiddenItemsSettingsSubtitle": "Choose how hidden tracks and albums appear, and unhide them",
+    "@hiddenItemsSettingsSubtitle": {
+        "description": "Subtitle of the settings entry that opens the hidden items settings"
+    },
+    "hiddenItemsDisplayTitle": "Hidden items in lists",
+    "@hiddenItemsDisplayTitle": {
+        "description": "Setting that controls whether hidden tracks and albums are left out of lists or shown greyed out"
+    },
+    "hiddenItemsDisplayRemove": "Leave out",
+    "@hiddenItemsDisplayRemove": {
+        "description": "Option: hidden tracks and albums are not shown in lists"
+    },
+    "hiddenItemsDisplayGreyOut": "Show greyed out",
+    "@hiddenItemsDisplayGreyOut": {
+        "description": "Option: hidden tracks and albums are shown dimmed in lists, and can still be played by tapping them"
+    },
+    "hideScopeSettingTitle": "When I hide something",
+    "@hideScopeSettingTitle": {
+        "description": "Admin-only setting that controls whether Hide applies to this device or to everyone on the server"
+    },
+    "hideScopeAsk": "Ask me",
+    "@hideScopeAsk": {
+        "description": "Option: ask whether to hide for this device or everyone, the next time something is hidden"
+    },
+    "hiddenItemsListTitle": "{count, plural, =0{Nothing hidden} =1{1 hidden item} other{{count} hidden items}}",
+    "@hiddenItemsListTitle": {
+        "description": "Heading above the list of hidden tracks and albums",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "hiddenOnThisDevice": "Hidden on this device",
+    "@hiddenOnThisDevice": {
+        "description": "Below a hidden item in the hidden items list: it was hidden only on this device"
+    },
+    "hiddenForEveryone": "Hidden for everyone on this server",
+    "@hiddenForEveryone": {
+        "description": "Below a hidden item in the hidden items list: it has the server's hidden tag"
+    },
+    "hiddenItemUnavailable": "Item not available",
+    "@hiddenItemUnavailable": {
+        "description": "Shown in the hidden items list when a hidden item can't be loaded, e.g. it was deleted from the server or isn't downloaded while offline"
     }
 }

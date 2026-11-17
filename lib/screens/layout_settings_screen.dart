@@ -26,6 +26,7 @@ import '../components/finamp_app_bar_back_button.dart';
 import '../extensions/localizations.dart';
 import '../services/finamp_settings_helper.dart';
 import 'content_view_type_settings_screen.dart';
+import 'hidden_items_settings_screen.dart';
 import 'tabs_settings_screen.dart';
 
 class LayoutSettingsScreen extends ConsumerStatefulWidget {
@@ -83,6 +84,12 @@ class _LayoutSettingsScreenState extends ConsumerState<LayoutSettingsScreen> {
             leading: const Icon(Icons.tab),
             title: Text(AppLocalizations.of(context)!.tabs),
             onTap: () => Navigator.of(context).pushNamed(TabsSettingsScreen.routeName),
+          ),
+          ListTile(
+            leading: const Icon(TablerIcons.eye_off),
+            title: Text(AppLocalizations.of(context)!.hiddenItemsSettingsTitle),
+            subtitle: Text(AppLocalizations.of(context)!.hiddenItemsSettingsSubtitle),
+            onTap: () => Navigator.of(context).pushNamed(HiddenItemsSettingsScreen.routeName),
           ),
           const Divider(),
           const ThemeSelector(),
