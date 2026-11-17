@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.3+203
+version: 1.1.0+204
 
 environment:
   sdk: ^3.9.0
@@ -294,7 +294,14 @@ msix_config:
   display_name: Finamp
   publisher_display_name: Finamp
   identity_name: com.unicornsonlsd.finamp
-  msix_version: 1.0.3.0
+  # Releases uploaded to the Microsoft Store have to end in .0
+  # since the revision field is reserved for store-internal use
+  # so we cannot distribute beta versions via the store
+  # We must also use the previous stable version as the base
+  # and then append the beta version
+  # because packages can only be updated to higher versions
+  # and we want to reserve the .0 revision as the stable version
+  msix_version: 1.0.3.1
   logo_path: ./images/finamp_cropped.png
   trim_logo: false # don't force logo to be square, it will be stretched
   # backgroundMediaPlayback prevents apps from getting muted or killed when being in the background (won't build if included at the moment)

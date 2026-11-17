@@ -58,6 +58,50 @@
   </screenshots>
   <launchable type="desktop-id">com.unicornsonlsd.finamp.desktop</launchable>
   <releases>
+    <release version="1.1.0~beta1" type="development" date="2026-11-18">
+      <url
+        type="details"
+      >https://github.com/jmshrv/finamp/releases/tag/1.1.0-beta.1</url>
+      <description>
+        <p>
+          New Features
+        </p>
+        <ul>
+          <li>Improved Carplay home screen and player</li>
+          <li>Finamp can now live in your system tray on desktop</li>
+          <li>You can now define custom HTTP headers during the login flow</li>
+          <li>The AirPlay button is now shown on macOS too</li>
+          <li>Finamp can now auto-discover Jellyfin-enabled Navidrome servers, and help you connect to them</li>
+          <li>The download dialog now shows more info</li>
+          <li>Finamp now shows a resume icon after a queue has played all the way through with looping disabled</li>
+          <li>Artist pages now load quicker</li>
+          <li>When the bottom actions on the player screen are hidden, Finamp now shows them as menu entries</li>
+          <li>Finamp now avoids restoring super-long queues to avoid crashes</li>
+          <li>When switching to offline mode, Finamp now only auto-reloads the queue if at least 30% of the queued tracks are downloaded (and you have auto-reload enabled)</li>
+          <li>Dates in Finamp now better adapt to your locale, and there are more date formats available</li>
+          <li>During login, Finamp now shows a hint suggesting manually connecting after no server has been discovered for 8s</li>
+          <li>When disabling offline mode, Finamp now shows that new content is being loaded from the server</li>
+          <li>Reduced the amount of notifications around paused downloads</li>
+        </ul>
+        <p>
+          Bug Fixes
+        </p>
+        <ul>
+          <li>Automatic network switching (e.g. local/public) now works again, and so do the related automatic offline modes (e.g. "Disconnected")</li>
+          <li>Starting playback from a duplicated track no longer starts playback from the first occurrence of that track</li>
+          <li>There's now an escape hatch if Finamp doesn't detect any music libraries during login</li>
+          <li>Fixed tracks resetting to the beginning after restoring a queue</li>
+          <li>Fixed not being able to save home screen sections due to missing titles</li>
+          <li>Fixed the "performing artists" tab showing album artist tracks in offline mode</li>
+          <li>Downloaded playlists now show up in offline mode again</li>
+          <li>[Android] We've updated our internal player to fix some playback issues with stranger files</li>
+          <li>And as always, updated translations to keep up with all the new feature, by a ton of awesome contributors!</li>
+        </ul>
+        <p>
+          <em>Thank you for using Finamp!</em>
+        </p>
+      </description>
+    </release>
     <release version="1.0.3" date="2026-11-06">
       <description>
         <p>This is a hotfix for version 1.0.1.</p>
