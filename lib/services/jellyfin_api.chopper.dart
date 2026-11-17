@@ -244,6 +244,7 @@ final class _$JellyfinApi extends JellyfinApi {
     String? filters,
     bool? isFavorite,
     String? excludeItemIds,
+    String? tags,
     int? startIndex,
     int? limit,
     bool? collapseMultiDiscAlbums,
@@ -269,6 +270,7 @@ final class _$JellyfinApi extends JellyfinApi {
       'Filters': filters,
       'isFavorite': isFavorite,
       'excludeItemIds': excludeItemIds,
+      'Tags': tags,
       'StartIndex': startIndex,
       'Limit': limit,
       'CollapseBoxSetItems': collapseMultiDiscAlbums,
@@ -464,7 +466,7 @@ final class _$JellyfinApi extends JellyfinApi {
   @override
   Future<dynamic> updateItem({
     required BaseItemId itemId,
-    required BaseItemDto newItem,
+    required Map<String, dynamic> newItem,
   }) async {
     final Uri $url = Uri.parse('/Items/${itemId}');
     final $body = newItem;

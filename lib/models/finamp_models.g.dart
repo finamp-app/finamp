@@ -470,6 +470,13 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         minimizeToTray: fields[162] == null ? false : fields[162] as bool,
         startMinimizedToTray: fields[163] == null ? false : fields[163] as bool,
         followRedirects: fields[165] == null ? false : fields[165] as bool,
+        hiddenItemsDisplay: fields[167] == null
+            ? HiddenItemsDisplay.remove
+            : fields[167] as HiddenItemsDisplay,
+        hideScope: fields[168] == null
+            ? HideScope.ask
+            : fields[168] as HideScope,
+        hideLocalNoticeShown: fields[169] == null ? false : fields[169] as bool,
       )
       ..sortBy = fields[7] as SortBy?
       ..sortOrder = fields[8] as SortOrder?
@@ -494,7 +501,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(155)
+      ..writeByte(158)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -804,7 +811,13 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(165)
       ..write(obj.followRedirects)
       ..writeByte(166)
-      ..write(obj.playerQueueLimit);
+      ..write(obj.playerQueueLimit)
+      ..writeByte(167)
+      ..write(obj.hiddenItemsDisplay)
+      ..writeByte(168)
+      ..write(obj.hideScope)
+      ..writeByte(169)
+      ..write(obj.hideLocalNoticeShown);
   }
 
   @override
@@ -1994,6 +2007,43 @@ class ContentTypeAdapter extends TypeAdapter<ContentType> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ContentTypeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class HiddenItemsDisplayAdapter extends TypeAdapter<HiddenItemsDisplay> {
+  @override
+  final typeId = 129;
+
+  @override
+  HiddenItemsDisplay read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return HiddenItemsDisplay.remove;
+      case 1:
+        return HiddenItemsDisplay.greyOut;
+      default:
+        return HiddenItemsDisplay.remove;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, HiddenItemsDisplay obj) {
+    switch (obj) {
+      case HiddenItemsDisplay.remove:
+        writer.writeByte(0);
+      case HiddenItemsDisplay.greyOut:
+        writer.writeByte(1);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HiddenItemsDisplayAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

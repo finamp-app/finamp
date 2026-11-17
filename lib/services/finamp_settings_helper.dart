@@ -269,6 +269,12 @@ class FinampSettingsHelper {
     FinampSetters.setLocale(DefaultSettings.locale);
   }
 
+  static void resetHiddenItemsSettings() {
+    FinampSetters.setHiddenItemsDisplay(DefaultSettings.hiddenItemsDisplay);
+    FinampSetters.setHideScope(DefaultSettings.hideScope);
+    FinampSetters.setHideLocalNoticeShown(DefaultSettings.hideLocalNoticeShown);
+  }
+
   static void resetAllSettings() {
     resetTranscodingSettings();
     resetDownloadSettings();
@@ -285,6 +291,7 @@ class FinampSettingsHelper {
     resetGenreSettings();
     resetTabsSettings();
     resetNetworkSettings();
+    resetHiddenItemsSettings();
     resetLocale();
   }
 
