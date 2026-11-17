@@ -33,7 +33,7 @@ class HideItemMenuEntry extends ConsumerWidget implements HideableMenuEntry {
         child: MenuEntry(
           icon: TablerIcons.eye_off,
           title: l10n.hideItem,
-          onTap: () => _hide(context, ref, isAdmin: canEditServer, isOffline: isOffline),
+          onTap: () => _hide(context, ref, isOffline: isOffline),
         ),
       );
     }
@@ -64,7 +64,10 @@ class HideItemMenuEntry extends ConsumerWidget implements HideableMenuEntry {
     );
   }
 
-  Future<void> _hide(BuildContext context, WidgetRef ref, {required bool isAdmin, required bool isOffline}) async {
+  Future<void> _hide(BuildContext context, WidgetRef ref, {required bool isOffline}) async {
+    // Wait for the real answer: deciding on a still-loading admin status shows admins the non-admin notice.
+    final isAdmin = !isOffline && await ref.read(isServerAdminProvider.future);
+    if (!context.mounted) return;
     final settings = FinampSettingsHelper.finampSettings;
     var action = resolveHideAction(
       isAdmin: isAdmin,
