@@ -42,7 +42,8 @@ class HideItemMenuEntry extends ConsumerWidget implements HideableMenuEntry {
       isAdmin: canEditServer,
       isOffline: isOffline,
       inLocal: ref.watch(localHiddenIdsProvider).contains(baseItem.id),
-      hasTag: (ref.watch(serverHiddenIdsProvider).value?.contains(baseItem.id) ?? false) || hasHiddenTag(baseItem),
+      hasTag:
+          (ref.watch(serverHiddenIdsProvider).valueOrNull?.contains(baseItem.id) ?? false) || hasHiddenTag(baseItem),
     );
     return Visibility(
       visible: _isHideable(baseItem),

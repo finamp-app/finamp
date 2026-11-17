@@ -37,6 +37,7 @@ BaseItemDto item(String id, {String type = 'Audio', String? albumId, List<String
 
 class FixtureApi extends Fake implements JellyfinApiHelper {
   List<BaseItemDto> tagged = [];
+  bool fail = false;
   final requests = <({String? tags, String? includeItemTypes})>[];
   final serverChanges = <(BaseItemId, bool)>[];
 
@@ -65,6 +66,7 @@ class FixtureApi extends Fake implements JellyfinApiHelper {
     int? limit,
   }) async {
     requests.add((tags: tags, includeItemTypes: includeItemTypes));
+    if (fail) throw Exception('server unavailable');
     return tagged;
   }
 
@@ -236,6 +238,14 @@ void main() {
       await container.read(localHiddenIdsProvider.notifier).hide(const BaseItemId('t1'));
 
       expect(container.read(hiddenIdsProvider), {const BaseItemId('t1'), const BaseItemId('al1')});
+    });
+
+    test('still return local hides when the server ids fail to load', () async {
+      api.fail = true;
+      await container.read(localHiddenIdsProvider.notifier).hide(const BaseItemId('t1'));
+      await container.read(serverHiddenIdsProvider.future);
+
+      expect(container.read(hiddenIdsProvider), {const BaseItemId('t1')});
     });
 
     test('hide a track whose album is hidden on the server', () async {

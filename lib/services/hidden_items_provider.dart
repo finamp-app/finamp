@@ -3,12 +3,15 @@ import 'package:finamp/models/jellyfin_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:logging/logging.dart';
 
 import 'downloads_service.dart';
 import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
 import 'hidden_items.dart';
 import 'jellyfin_api_helper.dart';
+
+final _logger = Logger("HiddenItems");
 
 /// Kept out of FinampSettings so "Reset settings" doesn't unhide everything.
 const hiddenItemsBoxName = "HiddenItems";
@@ -24,6 +27,7 @@ class LocalHiddenIds extends Notifier<Set<BaseItemId>> {
   @override
   Set<BaseItemId> build() {
     _userId = ref.watch(FinampUserHelper.finampCurrentUserProvider)?.id;
+    if (!Hive.isBoxOpen(hiddenItemsBoxName)) return {};
     final stored = _userId == null ? null : _box.get(_userId);
     return {...?stored?.cast<String>().map(BaseItemId.new)};
   }
@@ -52,21 +56,27 @@ class ServerHiddenIds extends AsyncNotifier<Set<BaseItemId>> {
         (settings) => settings.value?.isOffline ?? FinampSettingsHelper.finampSettings.isOffline,
       ),
     );
-    if (isOffline) {
-      // Downloads keep the tags from their last sync.
-      final downloads = GetIt.instance<DownloadsService>();
-      final stubs = [...await downloads.getAllTracks(), ...await downloads.getAllCollections()];
-      return {
-        for (final item in stubs.map((stub) => stub.baseItem).nonNulls)
-          if (hasHiddenTag(item)) item.id,
-      };
+    // Every list reads these ids, so a failed lookup must not break them; local hides still apply.
+    try {
+      if (isOffline) {
+        // Downloads keep the tags from their last sync.
+        final downloads = GetIt.instance<DownloadsService>();
+        final stubs = [...await downloads.getAllTracks(), ...await downloads.getAllCollections()];
+        return {
+          for (final item in stubs.map((stub) => stub.baseItem).nonNulls)
+            if (hasHiddenTag(item)) item.id,
+        };
+      }
+      final items = await GetIt.instance<JellyfinApiHelper>().getItems(
+        tags: hiddenTag,
+        includeItemTypes: [BaseItemDtoType.track.jellyfinName, BaseItemDtoType.album.jellyfinName].join(","),
+        fields: "",
+      );
+      return {...?items?.map((item) => item.id)};
+    } catch (e) {
+      _logger.warning("Couldn't load server-hidden items: $e");
+      return {};
     }
-    final items = await GetIt.instance<JellyfinApiHelper>().getItems(
-      tags: hiddenTag,
-      includeItemTypes: [BaseItemDtoType.track.jellyfinName, BaseItemDtoType.album.jellyfinName].join(","),
-      fields: "",
-    );
-    return {...?items?.map((item) => item.id)};
   }
 
   Future<void> setHidden(BaseItemId id, bool hidden) async {
@@ -78,7 +88,7 @@ class ServerHiddenIds extends AsyncNotifier<Set<BaseItemId>> {
 
 /// Everything hidden for the current user: local hides plus server-tagged items.
 final hiddenIdsProvider = Provider<Set<BaseItemId>>((ref) {
-  return {...ref.watch(localHiddenIdsProvider), ...?ref.watch(serverHiddenIdsProvider).value};
+  return {...ref.watch(localHiddenIdsProvider), ...?ref.watch(serverHiddenIdsProvider).valueOrNull};
 });
 
 final isHiddenProvider = Provider.family<bool, BaseItemDto>((ref, item) {
