@@ -629,9 +629,12 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setOneLineMarqueeTextButton(bool newOneLineMarqueeTextButton) {
+  static void setPreferMarqueeOverOverflowingTwoLine(
+    bool newPreferMarqueeOverOverflowingTwoLine,
+  ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.oneLineMarqueeTextButton = newOneLineMarqueeTextButton;
+    finampSettingsTemp.preferMarqueeOverOverflowingTwoLine =
+        newPreferMarqueeOverOverflowingTwoLine;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -1573,9 +1576,9 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       );
   ProviderListenable<bool> get allowDeleteFromServer => finampSettingsProvider
       .select((value) => value.requireValue.allowDeleteFromServer);
-  ProviderListenable<bool> get oneLineMarqueeTextButton =>
+  ProviderListenable<bool> get preferMarqueeOverOverflowingTwoLine =>
       finampSettingsProvider.select(
-        (value) => value.requireValue.oneLineMarqueeTextButton,
+        (value) => value.requireValue.preferMarqueeOverOverflowingTwoLine,
       );
   ProviderListenable<bool> get showAlbumReleaseDateOnPlayerScreen =>
       finampSettingsProvider.select(

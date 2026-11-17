@@ -11,7 +11,10 @@ class OneLineMarqueeHelper extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!ref.watch(finampSettingsProvider.oneLineMarqueeTextButton)) {
+    // TODO should this be on its own setting along with the player screen?
+    // But I feel having a marquee by default on the player screen is less of an issue then on the now playing bar,
+    // so that would push us towards not unifying them.  Maybe this is fine as-is?
+    if (!ref.watch(finampSettingsProvider.preferMarqueeOverOverflowingTwoLine)) {
       return Text(text, style: style, overflow: TextOverflow.ellipsis, maxLines: 1);
     }
 
@@ -24,12 +27,12 @@ class OneLineMarqueeHelper extends ConsumerWidget {
         )..layout(maxWidth: constraints.maxWidth);
 
         final isOverflowing = textPainter.didExceedMaxLines;
+        final height = textPainter.height;
         textPainter.dispose();
 
         if (isOverflowing) {
           return SizedBox(
-            // The player screen marque uses this height, so why not here?
-            height: 20.0,
+            height: height,
             child: Marquee(
               key: key,
               text: text,

@@ -66,8 +66,8 @@ class OneLineMarqueeTextSwitch extends ConsumerWidget {
     return SwitchListTile.adaptive(
       title: Text(AppLocalizations.of(context)!.oneLineMarqueeTextButton),
       subtitle: Text(AppLocalizations.of(context)!.oneLineMarqueeTextButtonSubtitle),
-      value: ref.watch(finampSettingsProvider.oneLineMarqueeTextButton),
-      onChanged: FinampSetters.setOneLineMarqueeTextButton,
+      value: ref.watch(finampSettingsProvider.preferMarqueeOverOverflowingTwoLine),
+      onChanged: FinampSetters.setPreferMarqueeOverOverflowingTwoLine,
     );
   }
 }

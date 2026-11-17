@@ -13,6 +13,7 @@ import 'package:finamp/components/PlayerScreen/queue_list.dart';
 import 'package:finamp/components/PlayerScreen/track_name_content.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/extensions/text_scaler.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/output_menu.dart';
 import 'package:finamp/menus/playlist_actions_menu.dart';
@@ -149,8 +150,7 @@ class _PlayerScreenContent extends ConsumerWidget {
       toolbarHeight = 36.0;
       maxToolbarLines = 1;
     }
-    toolbarHeight =
-        toolbarHeight - 14 - 16 * maxToolbarLines + textScaler.scale(14) + maxToolbarLines * textScaler.scale(16);
+    toolbarHeight = toolbarHeight + textScaler.heightAdjustment(14) + maxToolbarLines * textScaler.heightAdjustment(16);
 
     final metadata = ref.watch(currentTrackMetadataProvider).unwrapPrevious();
 
@@ -469,10 +469,12 @@ enum PlayerHideable {
   bigPlayButton(14, 14, 1, []),
   bottomActions(0, 27, 2, [14]),
   progressSlider(0, 20, 4, [11]),
-  twoLineTitle(0, 46, 3, [18]),
+  // The font size here is technically inaccurate, as I have multiplied the textHeight factor before scaling,
+  // hopefully this isn't noticeable.
+  twoLineTitle(0, 46, 3, [21.6]),
   features(0, 20, 3, [11]),
   loopShuffleButtons(96, 0, 0, []),
-  unhideableElements(144, 165, 0, [18, 14, 14]),
+  unhideableElements(144, 165, 0, [21.6, 14, 14]),
   controlsPaddingSmall(0, 8, 2, []),
   controlsPaddingBig(0, 12, 1, []);
 
@@ -488,7 +490,9 @@ enum PlayerHideable {
   // Needs to be multiplied by finampSettings.prioritizeCoverFactor.
   final double maxShrink;
 
-  // Font size of internal text, to allow size to be updated by textScaler.
+  // Font sizes of any internal text, to allow size to be updated by the textScaler.  TextScalers can theoretically be
+  // nonlinear, so we take a list of the font sizes of every individual line in the hideable so the scaling height offsets
+  // can be calculated separately.
   final List<double> textHeight;
 
   const PlayerHideable(this.width, this.height, this.maxShrink, this.textHeight);
@@ -658,8 +662,7 @@ class PlayerHideableController {
 
       if (_textScale != null) {
         for (final text in element.textHeight) {
-          height -= text;
-          height += _textScale!.scale(text);
+          height += _textScale!.heightAdjustment(text);
         }
       }
       width += element.width;

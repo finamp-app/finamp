@@ -229,7 +229,7 @@ class DefaultSettings {
   static const maxConcurrentDownloads = 5;
   static const downloadSizeWarningCutoff = 150;
   static const allowDeleteFromServer = false;
-  static const oneLineMarqueeTextButton = false;
+  static const preferMarqueeOverOverflowingTwoLine = false;
   static const showAlbumReleaseDateOnPlayerScreen = false;
   static const releaseDateFormat = ReleaseDateFormat.year;
   static const double currentVolume = 1.0;
@@ -412,7 +412,7 @@ class FinampSettings {
     this.transcodingStreamingFormat = DefaultSettings.transcodingStreamingFormat,
     this.downloadSizeWarningCutoff = DefaultSettings.downloadSizeWarningCutoff,
     this.allowDeleteFromServer = DefaultSettings.allowDeleteFromServer,
-    this.oneLineMarqueeTextButton = DefaultSettings.oneLineMarqueeTextButton,
+    this.preferMarqueeOverOverflowingTwoLine = DefaultSettings.preferMarqueeOverOverflowingTwoLine,
     this.showAlbumReleaseDateOnPlayerScreen = DefaultSettings.showAlbumReleaseDateOnPlayerScreen,
     this.releaseDateFormat = DefaultSettings.releaseDateFormat,
     this.defaultArtistType = DefaultSettings.defaultArtistType,
@@ -731,8 +731,8 @@ class FinampSettings {
   @HiveField(81, defaultValue: DefaultSettings.allowDeleteFromServer)
   bool allowDeleteFromServer;
 
-  @HiveField(82, defaultValue: DefaultSettings.oneLineMarqueeTextButton)
-  bool oneLineMarqueeTextButton;
+  @HiveField(82, defaultValue: DefaultSettings.preferMarqueeOverOverflowingTwoLine)
+  bool preferMarqueeOverOverflowingTwoLine;
 
   @HiveField(83, defaultValue: DefaultSettings.showAlbumReleaseDateOnPlayerScreen)
   bool showAlbumReleaseDateOnPlayerScreen;

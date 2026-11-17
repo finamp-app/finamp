@@ -281,7 +281,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
             ? 150
             : (fields[80] as num).toInt(),
         allowDeleteFromServer: fields[81] == null ? false : fields[81] as bool,
-        oneLineMarqueeTextButton: fields[82] == null
+        preferMarqueeOverOverflowingTwoLine: fields[82] == null
             ? false
             : fields[82] as bool,
         showAlbumReleaseDateOnPlayerScreen: fields[83] == null
@@ -644,7 +644,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(81)
       ..write(obj.allowDeleteFromServer)
       ..writeByte(82)
-      ..write(obj.oneLineMarqueeTextButton)
+      ..write(obj.preferMarqueeOverOverflowingTwoLine)
       ..writeByte(83)
       ..write(obj.showAlbumReleaseDateOnPlayerScreen)
       ..writeByte(84)

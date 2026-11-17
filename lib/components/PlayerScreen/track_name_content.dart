@@ -2,6 +2,7 @@ import 'package:finamp/components/AddToPlaylistScreen/add_to_playlist_button.dar
 import 'package:finamp/components/PlayerScreen/album_chip.dart';
 import 'package:finamp/components/PlayerScreen/artist_chip.dart';
 import 'package:finamp/components/PlayerScreen/player_buttons_more.dart';
+import 'package:finamp/extensions/text_scaler.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/jellyfin_models.dart' as jellyfin_models;
 import 'package:finamp/screens/player_screen.dart';
@@ -52,7 +53,6 @@ class TrackNameContent extends ConsumerWidget {
                 );
 
                 final textSpan = TextSpan(text: text, style: textStyle);
-                // Showing two lines is probably better than one scrolling line, even if it clips
                 final textPainter = TextPainter(
                   text: textSpan,
                   textDirection: TextDirection.ltr,
@@ -65,10 +65,11 @@ class TrackNameContent extends ConsumerWidget {
 
                 // Setting controls preference between marquee and two line clipped title.  If we only have one
                 // line, always marquee.  TODO add another setting to disable this?
-                if (wouldOverflow && (ref.watch(finampSettingsProvider.oneLineMarqueeTextButton) || !isTwoLineMode)) {
+                if (wouldOverflow &&
+                    (ref.watch(finampSettingsProvider.preferMarqueeOverOverflowingTwoLine) || !isTwoLineMode)) {
                   return SizedBox(
                     width: 280,
-                    height: 12 + MediaQuery.textScalerOf(context).scale(18),
+                    height: 30 + MediaQuery.textScalerOf(context).heightAdjustment(18, heightFactor: 1.2),
                     child: ScrollingTextHelper(
                       id: ValueKey(currentTrack.item.id),
                       text: text,
@@ -78,7 +79,7 @@ class TrackNameContent extends ConsumerWidget {
                   );
                 } else if (isTwoLineMode) {
                   return SizedBox(
-                    height: 4.0 + 2.4 * MediaQuery.textScalerOf(context).scale(18),
+                    height: 46 + 2 * MediaQuery.textScalerOf(context).heightAdjustment(18, heightFactor: 1.2),
                     child: Center(
                       child: Text(
                         text,
