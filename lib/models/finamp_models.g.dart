@@ -1998,6 +1998,47 @@ class ContentTypeAdapter extends TypeAdapter<ContentType> {
           typeId == other.typeId;
 }
 
+class HideScopeAdapter extends TypeAdapter<HideScope> {
+  @override
+  final typeId = 128;
+
+  @override
+  HideScope read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return HideScope.ask;
+      case 1:
+        return HideScope.thisDevice;
+      case 2:
+        return HideScope.everyone;
+      default:
+        return HideScope.ask;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, HideScope obj) {
+    switch (obj) {
+      case HideScope.ask:
+        writer.writeByte(0);
+      case HideScope.thisDevice:
+        writer.writeByte(1);
+      case HideScope.everyone:
+        writer.writeByte(2);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HideScopeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class ContentViewTypeAdapter extends TypeAdapter<ContentViewType> {
   @override
   final typeId = 39;

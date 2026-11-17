@@ -1328,6 +1328,17 @@ enum ContentType {
   };
 }
 
+/// Where an admin's "Hide" stores the hidden flag; non-admins always hide on this device.
+@HiveType(typeId: 128)
+enum HideScope {
+  @HiveField(0)
+  ask,
+  @HiveField(1)
+  thisDevice,
+  @HiveField(2)
+  everyone,
+}
+
 @HiveType(typeId: 39)
 enum ContentViewType {
   @HiveField(0)

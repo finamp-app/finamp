@@ -51,6 +51,7 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(FinampTranscodingStreamingFormatAdapter());
     registerAdapter(FinampUserAdapter());
     registerAdapter(GenreItemSectionsAdapter());
+    registerAdapter(HideScopeAdapter());
     registerAdapter(HomeScreenSectionConfigurationAdapter());
     registerAdapter(HomeScreenSectionPresetTypeAdapter());
     registerAdapter(HttpHeaderInfoAdapter());
@@ -164,6 +165,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(FinampTranscodingStreamingFormatAdapter());
     registerAdapter(FinampUserAdapter());
     registerAdapter(GenreItemSectionsAdapter());
+    registerAdapter(HideScopeAdapter());
     registerAdapter(HomeScreenSectionConfigurationAdapter());
     registerAdapter(HomeScreenSectionPresetTypeAdapter());
     registerAdapter(HttpHeaderInfoAdapter());
