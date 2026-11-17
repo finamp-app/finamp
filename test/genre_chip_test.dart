@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('deduplicates repeated serialized genre ids', (tester) async {
     final duplicateGenres = [
-      NameLongIdPair(name: 'Pop/Rock', id: BaseItemId('pop-rock')),
+      NameLongIdPair(name: 'Pop Rock', id: BaseItemId('pop-rock')),
       NameLongIdPair(name: 'Pop/Rock', id: BaseItemId('pop-rock')),
     ];
 
@@ -26,10 +26,10 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('deduplicates matching genre names with distinct ids', (tester) async {
+  testWidgets('preserves matching genre names with distinct ids', (tester) async {
     final duplicateGenres = [
       NameLongIdPair(name: 'Pop/Rock', id: BaseItemId('playlist-pop-rock')),
-      NameLongIdPair(name: ' pop/rock ', id: BaseItemId('library-pop-rock')),
+      NameLongIdPair(name: 'Pop/Rock', id: BaseItemId('library-pop-rock')),
     ];
 
     await tester.pumpWidget(
@@ -42,7 +42,9 @@ void main() {
       ),
     );
 
-    expect(find.byType(GenreChip), findsOneWidget);
+    expect(find.byType(GenreChip), findsNWidgets(2));
+    expect(find.byKey(const ValueKey('playlist-pop-rock')), findsOneWidget);
+    expect(find.byKey(const ValueKey('library-pop-rock')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

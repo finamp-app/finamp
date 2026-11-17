@@ -81,18 +81,13 @@ class GenreChips extends ConsumerWidget {
     final activeGenreFilter = sortConfig?.filters.firstWhereOrNull(
       (filter) => filter.type == ItemFilterType.genreFilter,
     );
-    // Playlist genre metadata is aggregated from its tracks, so the same
-    // genre can legitimately be returned more than once. Compare serialized
-    // IDs and also collapse matching names returned with playlist-specific IDs.
+    // A playlist can contain multiple genre entries with the same ID, even
+    // when their names differ. Keep the first entry for each ID; distinct IDs
+    // must remain accessible even when their names match.
     final seenGenreIds = <String>{};
-    final seenGenreNames = <String>{};
     final uniqueGenres = <NameLongIdPair>[];
     for (final genre in genres) {
       if (!seenGenreIds.add(genre.id.raw)) continue;
-
-      final normalizedName = genre.name?.trim().toLowerCase();
-      if (normalizedName != null && normalizedName.isNotEmpty && !seenGenreNames.add(normalizedName)) continue;
-
       uniqueGenres.add(genre);
     }
 
