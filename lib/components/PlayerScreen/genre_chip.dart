@@ -81,6 +81,15 @@ class GenreChips extends ConsumerWidget {
     final activeGenreFilter = sortConfig?.filters.firstWhereOrNull(
       (filter) => filter.type == ItemFilterType.genreFilter,
     );
+    // A playlist can contain multiple genre entries with the same ID, even
+    // when their names differ. Keep the first entry for each ID; distinct IDs
+    // must remain accessible even when their names match.
+    final seenGenreIds = <String>{};
+    final uniqueGenres = <NameLongIdPair>[];
+    for (final genre in genres) {
+      if (!seenGenreIds.add(genre.id.raw)) continue;
+      uniqueGenres.add(genre);
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -97,9 +106,9 @@ class GenreChips extends ConsumerWidget {
                 onRemove: () => sortConfigController!.updateGenreFilter(null),
                 showPlainName: true,
               ),
-            ...genres.where((g) => g.id != activeGenreFilter?.extraBaseItem.id).map((genre) {
+            ...uniqueGenres.where((g) => g.id != activeGenreFilter?.extraBaseItem.id).map((genre) {
               return GenreChip(
-                key: ValueKey(genre.id),
+                key: ValueKey(genre.id.raw),
                 backgroundColor: backgroundColor,
                 color: color,
                 parentType: parentType,
