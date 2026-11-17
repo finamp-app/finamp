@@ -68,10 +68,12 @@ dependencies:
   # - The iOS playing-state fix from 0.18.20, not yet on pub.dev
   # These keep Finamp as the system's resume candidate for CarPlay and
   # Bluetooth reconnects.
+  # Also added https://github.com/ryanheise/audio_service/pull/1177
+  # - Attempts to fix media controls becooming unressponsive on Android 17
   audio_service:
     git:
       url: https://github.com/finamp-app/audio_service.git
-      ref: 77d8a1253cb34ab398e3e7bc364629f46089a897
+      ref: cb680333867d7885602af41cbfe53ba12bf00f07
       path: audio_service
   audio_service_mpris: ^0.2.0
   audio_service_platform_interface: ^0.1.3

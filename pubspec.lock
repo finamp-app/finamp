@@ -93,8 +93,8 @@ packages:
     dependency: "direct main"
     description:
       path: audio_service
-      ref: "77d8a1253cb34ab398e3e7bc364629f46089a897"
-      resolved-ref: "77d8a1253cb34ab398e3e7bc364629f46089a897"
+      ref: cb680333867d7885602af41cbfe53ba12bf00f07
+      resolved-ref: cb680333867d7885602af41cbfe53ba12bf00f07
       url: "https://github.com/finamp-app/audio_service.git"
     source: git
     version: "0.18.19"
