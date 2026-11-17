@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:finamp/extensions/text_scaler.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:flutter/material.dart';
@@ -111,7 +112,7 @@ class _ArtistChipContent extends StatelessWidget {
       properties: SemanticsProperties(label: "$name (${AppLocalizations.of(context)!.artist})", button: true),
       container: true,
       child: SizedBox(
-        height: _height,
+        height: _height + MediaQuery.textScalerOf(context).heightAdjustment(14),
         child: Material(
           color: backgroundColor,
           borderRadius: _borderRadius,

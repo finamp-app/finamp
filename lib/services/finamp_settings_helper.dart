@@ -62,7 +62,7 @@ class FinampSettingsHelper {
     finampSettingsTemp.playbackSpeedVisibility = DefaultSettings.playbackSpeedVisibility;
     finampSettingsTemp.showStopButtonOnMediaNotification = DefaultSettings.showStopButtonOnMediaNotification;
     finampSettingsTemp.showSeekControlsOnMediaNotification = DefaultSettings.showSeekControlsOnMediaNotification;
-    finampSettingsTemp.oneLineMarqueeTextButton = DefaultSettings.oneLineMarqueeTextButton;
+    finampSettingsTemp.preferMarqueeOverOverflowingTwoLine = DefaultSettings.preferMarqueeOverOverflowingTwoLine;
     finampSettingsTemp.tileAdditionalInfoType = DefaultSettings.tileAdditionalInfoType;
     finampSettingsTemp.releaseDateFormat = DefaultSettings.releaseDateFormat;
 
