@@ -15,15 +15,30 @@ struct _FinampApplication {
 G_DEFINE_TYPE(FinampApplication, finamp_application, GTK_TYPE_APPLICATION);
 
 // Implements GApplication::activate.
-// Track the allocated window geometry and update GTK's default size whenever the
-// window is resized while not maximized. On Wayland, gtk_window_get_size() defaults
-// to the initial default size unless updated, so tracking size-allocate ensures the
-// window is restored to its exact user-resized dimensions when remapping (e.g. unhiding
-// from the system tray) instead of reverting to the startup size.
+// Track the allocated window geometry and update GTK's default size and resize target
+// whenever the window is resized while not maximized. On Wayland, calling
+// gtk_window_resize() (as window_manager does on startup) caches resize_width and
+// resize_height inside GTK's geometry info, which takes precedence over default_size
+// during configure requests. When the window is hidden to the tray, the Wayland surface
+// is destroyed; upon unhiding, connecting to the "show" signal and calling gtk_window_resize()
+// with the last allocated size ensures GTK reconfigures the window to its exact
+// user-resized dimensions instead of reverting to the startup size.
+static gint last_allocated_width = 0;
+static gint last_allocated_height = 0;
+
 static void on_window_size_allocate(GtkWidget* widget, GtkAllocation* allocation, gpointer data) {
   GtkWindow* window = GTK_WINDOW(widget);
   if (!gtk_window_is_maximized(window) && allocation->width > 0 && allocation->height > 0) {
+    last_allocated_width = allocation->width;
+    last_allocated_height = allocation->height;
     gtk_window_set_default_size(window, allocation->width, allocation->height);
+  }
+}
+
+static void on_window_show(GtkWidget* widget, gpointer data) {
+  GtkWindow* window = GTK_WINDOW(widget);
+  if (!gtk_window_is_maximized(window) && last_allocated_width > 0 && last_allocated_height > 0) {
+    gtk_window_resize(window, last_allocated_width, last_allocated_height);
   }
 }
 
@@ -71,7 +86,7 @@ static void finamp_application_activate(GApplication* application) {
 
   gtk_window_set_default_size(window, 1280, 720);
   g_signal_connect(window, "size-allocate", G_CALLBACK(on_window_size_allocate), nullptr);
-  gtk_widget_show(GTK_WIDGET(window));
+  g_signal_connect(window, "show", G_CALLBACK(on_window_show), nullptr);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
@@ -89,6 +104,12 @@ static void finamp_application_activate(GApplication* application) {
   gtk_widget_set_size_request(GTK_WIDGET(view), 400, 250);
   gtk_widget_show(GTK_WIDGET(view));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
+
+  // Realize window and view without showing or mapping them to the screen.
+  // Adding view to container before realizing ensures GTK propagates the 1280x720
+  // default size to the view's allocation instead of leaving it unallocated at 1x1.
+  gtk_widget_realize(GTK_WIDGET(window));
+  gtk_widget_realize(GTK_WIDGET(view));
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
 

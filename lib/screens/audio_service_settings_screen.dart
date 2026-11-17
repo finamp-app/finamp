@@ -6,6 +6,7 @@ import 'package:finamp/components/AudioServiceSettingsScreen/stop_foreground_sel
 import 'package:finamp/components/AudioServiceSettingsScreen/track_shuffle_item_count_editor.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,13 @@ class _AudioServiceSettingsScreenState extends State<AudioServiceSettingsScreen>
           const LoadQueueOnStartupSelector(),
           const AutoplayRestoredQueueToggle(),
           const AutoReloadQueueToggle(),
+          Consumer(
+            builder: (context, ref, child) => ref.watch(finampSettingsProvider.autoReloadQueue)
+                ? const AutoReloadQueueMaxDroppedTracksPercentageSelector()
+                : const SizedBox.shrink(),
+          ),
           const ClearQueueOnStopToggle(),
+          const MaxQueueSizeListTile(),
         ],
       ),
     );
@@ -219,6 +226,37 @@ class AutoReloadQueueToggle extends ConsumerWidget {
   }
 }
 
+class AutoReloadQueueMaxDroppedTracksPercentageSelector extends ConsumerWidget {
+  const AutoReloadQueueMaxDroppedTracksPercentageSelector({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final maximum = ref.watch(finampSettingsProvider.autoReloadQueueMaxDroppedTracksPercentage).clamp(0, 100).toInt();
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      children: [
+        ListTile(
+          title: Text(l10n.autoReloadQueueMaxDroppedTracksPercentageTitle),
+          subtitle: Text(l10n.autoReloadQueueMaxDroppedTracksPercentageSubtitle),
+        ),
+        Slider(
+          min: 0,
+          max: 100,
+          divisions: 100,
+          value: maximum.toDouble(),
+          label: l10n.autoReloadQueueMaxDroppedTracksPercentageLabel(maximum),
+          onChanged: (value) => FinampSetters.setAutoReloadQueueMaxDroppedTracksPercentage(value.round()),
+        ),
+        Text(
+          l10n.autoReloadQueueMaxDroppedTracksPercentageLabel(maximum),
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        SizedBox(height: 12),
+      ],
+    );
+  }
+}
+
 class AutoplayRestoredQueueToggle extends ConsumerWidget {
   const AutoplayRestoredQueueToggle({super.key});
 
@@ -276,6 +314,51 @@ class ForceAudioOffloadingOnAndroidToggle extends ConsumerWidget {
       onChanged: (newValue) async {
         FinampSetters.setForceAudioOffloadingOnAndroid(newValue);
       },
+    );
+  }
+}
+
+class MaxQueueSizeListTile extends ConsumerStatefulWidget {
+  const MaxQueueSizeListTile({super.key});
+
+  @override
+  ConsumerState<MaxQueueSizeListTile> createState() => _MaxQueueSizeListTileState();
+}
+
+class _MaxQueueSizeListTileState extends ConsumerState<MaxQueueSizeListTile> {
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    ref.listenManual(finampSettingsProvider.playerQueueLimit, (_, value) {
+      var newText = (value ?? DefaultSettings.playerQueueLimit).toString();
+      if (_controller.text != newText) {
+        _controller.text = newText;
+      }
+    }, fireImmediately: true);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context)!.queueSizeLimitTitle),
+      subtitle: Text(AppLocalizations.of(context)!.queueSizeLimitSubtitle),
+      trailing: SizedBox(
+        width: 50 * MediaQuery.textScaleFactorOf(context),
+        child: TextField(
+          controller: _controller,
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            var valueInt = int.tryParse(value);
+
+            if (valueInt != null && valueInt > 0) {
+              FinampSetters.setPlayerQueueLimit(valueInt);
+            }
+          },
+        ),
+      ),
     );
   }
 }

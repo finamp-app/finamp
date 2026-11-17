@@ -79,7 +79,7 @@ Widget _buildSplitScreen(BuildContext context, BoxConstraints constraints, Widge
             builder: (context, snapshot) {
               if (snapshot.hasData &&
                   (snapshot.data!.saveState == SavedQueueState.loading ||
-                      snapshot.data!.saveState == SavedQueueState.failed ||
+                      snapshot.data!.saveState.isFailed ||
                       snapshot.data!.currentTrack != null)) {
                 splitScreenAvailable.value = true;
                 if (allowSplitScreen && !minimizeValue) {

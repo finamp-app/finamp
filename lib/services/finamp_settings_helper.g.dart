@@ -1341,6 +1341,33 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setAutoReloadQueueMaxDroppedTracksPercentage(
+    int newAutoReloadQueueMaxDroppedTracksPercentage,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.autoReloadQueueMaxDroppedTracksPercentage =
+        newAutoReloadQueueMaxDroppedTracksPercentage;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setFollowRedirects(bool newFollowRedirects) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.followRedirects = newFollowRedirects;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setPlayerQueueLimit(int? newPlayerQueueLimit) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.playerQueueLimit = newPlayerQueueLimit;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1794,6 +1821,15 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   );
   ProviderListenable<bool> get startMinimizedToTray => finampSettingsProvider
       .select((value) => value.requireValue.startMinimizedToTray);
+  ProviderListenable<int> get autoReloadQueueMaxDroppedTracksPercentage =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.autoReloadQueueMaxDroppedTracksPercentage,
+      );
+  ProviderListenable<bool> get followRedirects => finampSettingsProvider.select(
+    (value) => value.requireValue.followRedirects,
+  );
+  ProviderListenable<int?> get playerQueueLimit => finampSettingsProvider
+      .select((value) => value.requireValue.playerQueueLimit);
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

@@ -49,6 +49,7 @@ class FinampUser {
     required this.serverId,
     this.currentViewId,
     this.views = const {},
+    this.customHeaders = const {},
   });
 
   @HiveField(0)
@@ -72,6 +73,7 @@ class FinampUser {
   @Name("currentViewId")
   String? get isarCurrentViewId => currentViewId?.raw;
   set isarCurrentViewId(String? id) => currentViewId = id == null ? null : BaseItemId(id);
+
   @ignore
   @HiveField(5)
   Map<BaseItemId, BaseItemDto> views;
@@ -84,6 +86,15 @@ class FinampUser {
 
   @HiveField(9, defaultValue: DefaultSettings.preferLocalNetwork)
   bool preferLocalNetwork;
+
+  @ignore
+  Map<String, String> customHeaders;
+  List<String> get isarCustomHeaders =>
+      customHeaders.entries.fold(<String>[], (l, entry) => [...l, entry.key, entry.value]);
+  set isarCustomHeaders(List<String> raw) {
+    assert(raw.length % 2 == 0);
+    customHeaders = raw.slices(2).fold({}, (map, entry) => {...map, entry.first: entry.last});
+  }
 
   // We only need 1 user, the current user
   final Id isarId = 0;
@@ -242,6 +253,7 @@ class DefaultSettings {
   static const preferLocalNetwork = false;
   static const localNetworkAddress = "http://0.0.0.0:8096";
   static const autoReloadQueue = false;
+  static const autoReloadQueueMaxDroppedTracksPercentage = 30;
   static const genreCuratedItemSelectionTypeTracks = CuratedItemSelectionType.mostPlayed;
   static const genreCuratedItemSelectionTypeAlbums = CuratedItemSelectionType.latestReleases;
   static const genreCuratedItemSelectionTypeArtists = CuratedItemSelectionType.favorites;
@@ -321,6 +333,12 @@ class DefaultSettings {
   static const closeToTray = false;
   static const minimizeToTray = false;
   static const startMinimizedToTray = false;
+  static const followRedirects = false;
+  // iOS/macos player can start to struggle at 2000 tracks.  Android can run out of memory with 10,000-20,000 tracks.
+  // Linux/Windows use mpv shim which handles all queueing in dart, so they shouldn't have any limitations.
+  static final playerQueueLimit = Platform.isIOS || Platform.isMacOS
+      ? 1500
+      : (Platform.isLinux || Platform.isWindows ? 30000 : 5000);
 }
 
 @HiveType(typeId: 28)
@@ -420,6 +438,7 @@ class FinampSettings {
     this.audioFadeOutDuration = DefaultSettings.audioFadeOutDuration,
     this.audioFadeInDuration = DefaultSettings.audioFadeInDuration,
     this.autoReloadQueue = DefaultSettings.autoReloadQueue,
+    this.autoReloadQueueMaxDroppedTracksPercentage = DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage,
     this.screenSize,
     this.genreCuratedItemSelectionTypeTracks = DefaultSettings.genreCuratedItemSelectionTypeTracks,
     this.genreCuratedItemSelectionTypeAlbums = DefaultSettings.genreCuratedItemSelectionTypeAlbums,
@@ -472,6 +491,7 @@ class FinampSettings {
     this.closeToTray = DefaultSettings.closeToTray,
     this.minimizeToTray = DefaultSettings.minimizeToTray,
     this.startMinimizedToTray = DefaultSettings.startMinimizedToTray,
+    this.followRedirects = DefaultSettings.followRedirects,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -988,6 +1008,17 @@ class FinampSettings {
   @HiveField(163, defaultValue: DefaultSettings.startMinimizedToTray)
   bool startMinimizedToTray;
 
+  @HiveField(164, defaultValue: DefaultSettings.autoReloadQueueMaxDroppedTracksPercentage)
+  int autoReloadQueueMaxDroppedTracksPercentage;
+
+  @HiveField(165, defaultValue: DefaultSettings.followRedirects)
+  bool followRedirects;
+
+  @HiveField(166)
+  /// The maximum size we want a queue to reach.  We will not hard-enforce this, but individual items will be trimmed
+  /// when adding to queue and we will cancel auto-restore for queues over this size.
+  int? playerQueueLimit;
+
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
       name: DownloadLocation.internalStorageName,
@@ -1003,6 +1034,7 @@ class FinampSettings {
       gridImageSize: DefaultSettings.gridImageSize,
       homeScreenImageSize: DefaultSettings.homeScreenImageSize,
       deviceId: const Uuid().v4(),
+      resyncOnStartup: kDebugMode ? false : DefaultSettings.resyncOnStartup,
     );
   }
 
@@ -2598,6 +2630,14 @@ enum SavedQueueState {
   failed,
   @HiveField(5)
   pendingSave,
+  @HiveField(6)
+  failedOversized,
+  @HiveField(7)
+  canceled;
+
+  bool get isFailed => this == failed || this == failedOversized;
+  bool get isPending => this == pendingSave || this == canceled;
+  bool get isRestoring => this == loading || this == failed || this == failedOversized;
 }
 
 @HiveType(typeId: 63)
@@ -3936,10 +3976,7 @@ class FinampStorableQueueInfo extends FinampStorableQueueInfoLegacy {
     assert(sourceIndexes.length == info.trackCount);
     assert(sourceList.isNotEmpty);
 
-    // BitBuffer throws exception attempting to write 0 bit entries, so create empty buffer manually.
-    final buffer = sourceList.length == 1
-        ? BitBuffer()
-        : BitBuffer.fromBits(sourceIndexes, bitsPerIndex: (sourceList.length - 1).bitLength);
+    final packedSources = _packIntList(sourceIndexes, sourceList.length - 1);
 
     // Validate shuffle order matches queue tracks
     assert(shuffleOrder.length == info.trackCount);
@@ -3960,9 +3997,7 @@ class FinampStorableQueueInfo extends FinampStorableQueueInfoLegacy {
 
     assert(validateNextUp(), shuffleOrder.toString());
 
-    final packedOrder = info.trackCount <= 1
-        ? BitBuffer()
-        : BitBuffer.fromBits(shuffleOrder, bitsPerIndex: (info.trackCount - 1).bitLength);
+    final packedOrder = _packIntList(shuffleOrder, info.trackCount - 1);
     return FinampStorableQueueInfo(
       packedPreviousTracks: packIds(info.previousTracks.map<BaseItemId>((track) => track.baseItemId).toList()),
       packedCurrentTrack: info.currentTrack == null ? Uint8List(0) : packIds([info.currentTrack!.baseItemId]),
@@ -3972,8 +4007,8 @@ class FinampStorableQueueInfo extends FinampStorableQueueInfoLegacy {
       creation: DateTime.now().millisecondsSinceEpoch,
       sourceList: sourceList,
       sourceIndex: queueSource,
-      trackSourceIndexes: buffer.toUInt8List(),
-      packedShuffleOrder: order == FinampPlaybackOrder.shuffled ? packedOrder.toUInt8List() : null,
+      trackSourceIndexes: packedSources,
+      packedShuffleOrder: order == FinampPlaybackOrder.shuffled ? packedOrder : null,
     );
   }
 
@@ -4063,6 +4098,13 @@ class FinampStorableQueueInfo extends FinampStorableQueueInfoLegacy {
       buffer[i] = int.parse(hex, radix: 16);
     }
     return buffer;
+  }
+
+  static Uint8List _packIntList(List<int> source, int max) {
+    // BitBuffer throws exception attempting to write 0 bit entries, so create empty buffer manually.
+    final buffer = max <= 0 ? BitBuffer() : BitBuffer.fromBits(source, bitsPerIndex: max.bitLength);
+
+    return buffer.toUInt8List();
   }
 
   @override

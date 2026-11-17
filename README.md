@@ -158,7 +158,7 @@ gdbus call \
     --method 'com.unicornsonlsd.Finamp.updateAccentColor'
 ```
 
-1. Overwrite the accent color ([Settings > Layout & Theme > "Use System Accent"](https://intradeus.github.io/http-protocol-redirector?r=finamp://internal/settings/layout) needs to be *disabled*)  
+2. Overwrite the accent color ([Settings > Layout & Theme > "Use System Accent"](https://intradeus.github.io/http-protocol-redirector?r=finamp://internal/settings/layout) needs to be *disabled*)  
   Only works when Finamp is running.
 
 ```sh

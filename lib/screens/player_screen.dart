@@ -55,7 +55,8 @@ class PlayerScreen extends StatelessWidget {
         listener?.cancel();
         return;
       }
-      if (currentQueue == null || currentQueue.currentTrack == null && context.mounted) {
+      if ((currentQueue == null || (currentQueue.currentTrack == null && !currentQueue.saveState.isRestoring)) &&
+          context.mounted) {
         Navigator.of(context).popUntil((route) {
           return ![
             PlayerScreen.routeName,
@@ -73,10 +74,8 @@ class PlayerScreen extends StatelessWidget {
         stream: queueService.getQueueStream(),
         initialData: queueService.getQueue(),
         builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.saveState == SavedQueueState.loading) {
-            return buildLoadingScreen(context, null);
-          } else if (snapshot.hasData && snapshot.data!.saveState == SavedQueueState.failed) {
-            return buildLoadingScreen(context, queueService.retryQueueLoad);
+          if (snapshot.hasData && snapshot.data!.saveState.isRestoring) {
+            return buildLoadingScreen(context, snapshot.data!.saveState);
           } else if (snapshot.hasData && snapshot.data!.currentTrack != null) {
             return _PlayerScreenContent(playerScreen: this);
           } else {
@@ -87,12 +86,29 @@ class PlayerScreen extends StatelessWidget {
     );
   }
 
-  Widget buildLoadingScreen(BuildContext context, void Function()? retryCallback) {
+  Widget buildLoadingScreen(BuildContext context, SavedQueueState state) {
+    assert(state.isRestoring);
     double imageSize = min(MediaQuery.widthOf(context), MediaQuery.heightOf(context)) / 2;
 
+    final queueService = GetIt.instance<QueueService>();
+
     return SimpleGestureDetector(
-      onTap: retryCallback,
+      onTap: state == SavedQueueState.failed ? queueService.retryQueueLoad : null,
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          leading: usingPlayerSplitScreen
+              ? null
+              : FinampAppBarBackButton(
+                  dismissDirection: AxisDirection.down,
+                  onPressed: () {
+                    assert(GlobalSnackbar.navigatorState == Navigator.of(context));
+                    GlobalSnackbar.navigatorState?.maybePop();
+                  },
+                ),
+          actions: [],
+          titleSpacing: 0.0,
+        ),
         backgroundColor: Color.alphaBlend(
           Theme.brightnessOf(context) == Brightness.dark
               ? IconTheme.of(context).color!.withValues(alpha: 0.35)
@@ -109,16 +125,43 @@ class PlayerScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Spacer(),
-                (retryCallback != null)
+                state.isFailed
                     ? Icon(Icons.refresh, size: imageSize)
                     : SizedBox(width: imageSize, height: imageSize, child: const CircularProgressIndicator.adaptive()),
                 const Spacer(),
                 BalancedText(
-                  (retryCallback != null)
-                      ? AppLocalizations.of(context)!.queueRetryMessage
-                      : AppLocalizations.of(context)!.queueLoadingMessage,
+                  switch (state) {
+                    SavedQueueState.loading => context.l10n.queueLoadingMessage,
+                    SavedQueueState.failed => context.l10n.queueRetryMessage,
+                    SavedQueueState.failedOversized => context.l10n.queueAutorestoreOversized,
+                    _ => "ERROR",
+                  },
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 20, height: 26 / 20),
+                ),
+                SizedBox(height: 15.0),
+                if (state == SavedQueueState.failedOversized) ...[
+                  SimpleButton(
+                    text: context.l10n.oversizedQueueTruncate(
+                      FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit,
+                    ),
+                    icon: TablerIcons.cut,
+                    onPressed: () =>
+                        queueService.retryQueueLoad(oversizeHandling: OversizedSavedQueueHandling.truncate),
+                  ),
+                  SizedBox(height: 5),
+                  SimpleButton(
+                    text: context.l10n.oversizedQueueContinue,
+                    icon: TablerIcons.arrow_right,
+                    onPressed: () =>
+                        queueService.retryQueueLoad(oversizeHandling: OversizedSavedQueueHandling.loadFully),
+                  ),
+                  SizedBox(height: 5),
+                ],
+                SimpleButton(
+                  text: context.l10n.queueRestoreCancel,
+                  icon: TablerIcons.cancel,
+                  onPressed: queueService.cancelQueueLoad,
                 ),
                 const Spacer(flex: 2),
               ],
@@ -196,7 +239,7 @@ class _PlayerScreenContent extends ConsumerWidget {
                     minimizeSplitScreen.value = true;
                   } else {
                     assert(GlobalSnackbar.navigatorState == Navigator.of(context));
-                    GlobalSnackbar.navigatorState?.pop();
+                    GlobalSnackbar.navigatorState?.maybePop();
                   }
                 },
               ),
