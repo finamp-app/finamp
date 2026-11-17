@@ -3760,5 +3760,9 @@
     "noMusicLibrariesLogout": "로그아웃 했다가 다시 로그인을 시도해보는 것도 좋습니다.",
     "@noMusicLibrariesLogout": {
         "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "자동 대기열 새로고침시 노래 삭제 제한",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
     }
 }
