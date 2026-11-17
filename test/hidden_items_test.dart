@@ -37,6 +37,18 @@ void main() {
     });
   });
 
+  group('hasHiddenTag', () {
+    test('is true only for the hidden tag, ignoring case', () {
+      expect(hasHiddenTag(track('a', tags: ['live', 'HIDDEN'])), isTrue);
+      expect(hasHiddenTag(track('a', tags: ['live'])), isFalse);
+      expect(hasHiddenTag(track('a')), isFalse);
+    });
+
+    test('ignores local and album hides', () {
+      expect(hasHiddenTag(track('a', albumId: 'x')), isFalse);
+    });
+  });
+
   group('withoutHidden', () {
     bool hidden(String item) => item.startsWith('h');
 

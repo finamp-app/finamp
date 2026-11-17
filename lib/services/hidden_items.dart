@@ -15,9 +15,11 @@ typedef UnhideAction = ({bool clearLocal, bool clearTag, UnhideBlocked? blocked}
 
 bool _isHiddenTag(String tag) => tag.toLowerCase() == hiddenTag;
 
+bool hasHiddenTag(BaseItemDto item) => item.tags?.any(_isHiddenTag) ?? false;
+
 /// [hiddenIds] holds locally hidden items and items tagged on the server.
 bool isItemHidden(BaseItemDto item, Set<BaseItemId> hiddenIds) {
-  if (hiddenIds.contains(item.id) || (item.tags?.any(_isHiddenTag) ?? false)) {
+  if (hiddenIds.contains(item.id) || hasHiddenTag(item)) {
     return true;
   }
   final albumId = item.albumId;

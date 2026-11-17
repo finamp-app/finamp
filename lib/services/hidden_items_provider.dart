@@ -58,7 +58,7 @@ class ServerHiddenIds extends AsyncNotifier<Set<BaseItemId>> {
       final stubs = [...await downloads.getAllTracks(), ...await downloads.getAllCollections()];
       return {
         for (final item in stubs.map((stub) => stub.baseItem).nonNulls)
-          if (isItemHidden(item, const {})) item.id,
+          if (hasHiddenTag(item)) item.id,
       };
     }
     final items = await GetIt.instance<JellyfinApiHelper>().getItems(

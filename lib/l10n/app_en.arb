@@ -3920,5 +3920,75 @@
             }
         }
     },
-    "queueRestoreCancel": "Cancel Restore"
+    "queueRestoreCancel": "Cancel Restore",
+    "hideItem": "Hide",
+    "@hideItem": {
+        "description": "Menu entry that hides a track or album, so it is skipped when playing and left out of lists and shuffles"
+    },
+    "unhideItem": "Unhide",
+    "@unhideItem": {
+        "description": "Menu entry that makes a hidden track or album show and play normally again"
+    },
+    "itemHiddenMessage": "{itemName} is hidden",
+    "@itemHiddenMessage": {
+        "description": "Snackbar shown after hiding a track or album",
+        "placeholders": {
+            "itemName": {
+                "type": "String"
+            }
+        }
+    },
+    "itemUnhiddenMessage": "{itemName} is no longer hidden",
+    "@itemUnhiddenMessage": {
+        "description": "Snackbar shown after unhiding a track or album",
+        "placeholders": {
+            "itemName": {
+                "type": "String"
+            }
+        }
+    },
+    "undo": "Undo",
+    "@undo": {
+        "description": "Snackbar button that reverts the action that was just taken"
+    },
+    "hideScopeDialogTitle": "Hide for whom?",
+    "@hideScopeDialogTitle": {
+        "description": "Title of the dialog shown to server administrators the first time they hide an item"
+    },
+    "hideScopeThisDevice": "Only on this device",
+    "@hideScopeThisDevice": {
+        "description": "Option in the hide dialog: hide the item for the current user on this device only"
+    },
+    "hideScopeThisDeviceSubtitle": "Other devices and users still see it.",
+    "@hideScopeThisDeviceSubtitle": {
+        "description": "Explanation below the 'Only on this device' option"
+    },
+    "hideScopeEveryone": "Everyone on this server",
+    "@hideScopeEveryone": {
+        "description": "Option in the hide dialog: hide the item for every user, by adding a 'hidden' tag on the Jellyfin server"
+    },
+    "hideScopeEveryoneSubtitle": "Adds a \"hidden\" tag on the server, so every Finamp user and device hides it.",
+    "@hideScopeEveryoneSubtitle": {
+        "description": "Explanation below the 'Everyone on this server' option. Keep the word \"hidden\" untranslated, it is the tag name"
+    },
+    "hideScopeRememberedNote": "Finamp will remember your choice. You can change it in settings.",
+    "@hideScopeRememberedNote": {
+        "description": "Note at the bottom of the hide dialog"
+    },
+    "hideLocalNotice": "Hiding only affects this device. Your other devices and Jellyfin apps will still show this item.",
+    "@hideLocalNotice": {
+        "description": "Shown once to non-admin users the first time they hide a track or album"
+    },
+    "unhideBlockedServerAdminOnly": "Hidden by your server admin",
+    "@unhideBlockedServerAdminOnly": {
+        "description": "Explains why the Unhide menu entry is disabled: an administrator hid the item for everyone on the server"
+    },
+    "unhideBlockedOffline": "Connect to your server to unhide this item",
+    "@unhideBlockedOffline": {
+        "description": "Explains why the Unhide menu entry is disabled: the item is hidden on the server and the app is offline"
+    },
+    "unhideBlockedHiddenViaAlbum": "Its album is hidden. Unhide the album instead.",
+    "@unhideBlockedHiddenViaAlbum": {
+        "description": "Explains why the Unhide menu entry is disabled for a track: the whole album is hidden"
+    }
 }
