@@ -796,7 +796,7 @@ class QueueService {
         _queueServiceLogger.info(
           "Started playing '${base.source.name.getLocalized(GlobalSnackbar.requireL10n)}' (${base.source.type}) in order $order from index ${base.startingIndex}",
         );
-        _queueServiceLogger.info("Items for queue: [${base.items.map((e) => e.name).join(", ")}]");
+        _queueServiceLogger.info("Items for queue: [${items.map((e) => e.name).join(", ")}]");
       // TODO also do pre-cache work in other queue add methods?
       case PreCachedPlayableSlice slice:
         final (cachedTracks, startingOffset) = prepareQueueItems(
