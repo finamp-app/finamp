@@ -26,6 +26,12 @@ bool isItemHidden(BaseItemDto item, Set<BaseItemId> hiddenIds) {
   return albumId != null && hiddenIds.contains(albumId);
 }
 
+/// Items to list, each with its index in [items] so taps and removals still refer to the full list.
+List<(int, T)> visibleEntries<T>(List<T> items, bool Function(T) isHidden, HiddenItemsDisplay display) => [
+  for (final (index, item) in items.indexed)
+    if (display == HiddenItemsDisplay.greyOut || !isHidden(item)) (index, item),
+];
+
 /// Removes hidden items and returns the new index of the start item.
 /// [keepStart] keeps a hidden start item that the user picked on purpose.
 (List<T>, int) withoutHidden<T>(

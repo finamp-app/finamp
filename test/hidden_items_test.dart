@@ -82,6 +82,22 @@ void main() {
     });
   });
 
+  group('visibleEntries', () {
+    bool hidden(String item) => item.startsWith('h');
+
+    test('drops hidden items but keeps the original index of the rest', () {
+      expect(visibleEntries(['a', 'h1', 'b', 'h2', 'c'], hidden, HiddenItemsDisplay.remove), [
+        (0, 'a'),
+        (2, 'b'),
+        (4, 'c'),
+      ]);
+    });
+
+    test('keeps every item when hidden items are greyed out', () {
+      expect(visibleEntries(['a', 'h1'], hidden, HiddenItemsDisplay.greyOut), [(0, 'a'), (1, 'h1')]);
+    });
+  });
+
   group('withHiddenTag', () {
     test('adds the tag and keeps every other field', () {
       final json = {

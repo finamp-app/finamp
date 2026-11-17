@@ -3,6 +3,8 @@ import 'package:finamp/components/MusicScreen/item_wrapper.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/hidden_items.dart';
+import 'package:finamp/services/hidden_items_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,10 +27,16 @@ class CollectionsSliverList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filterArtistScreens = ref.watch(finampSettingsProvider.genreFilterArtistScreens);
+    final hiddenIds = ref.watch(hiddenIdsProvider);
+    final visible = visibleEntries(
+      childrenForList,
+      (item) => isItemHidden(item, hiddenIds),
+      ref.watch(finampSettingsProvider.hiddenItemsDisplay),
+    );
     return SliverFixedExtentList(
       itemExtent: TrackListItemTile.defaultTileHeight + TrackListItemTile.defaultTitleGap,
       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-        final BaseItemDto item = childrenForList[index];
+        final BaseItemDto item = visible[index].$2;
         final itemType = BaseItemDtoType.fromItem(item);
         return ItemWrapper(
           key: ValueKey(item.id),
@@ -37,7 +45,7 @@ class CollectionsSliverList extends ConsumerWidget {
           albumShowsYearAndDurationInstead: albumShowsYearAndDurationInstead,
           adaptiveAdditionalInfoSortBy: adaptiveAdditionalInfoSortBy,
         );
-      }, childCount: childrenForList.length),
+      }, childCount: visible.length),
     );
   }
 }

@@ -19,6 +19,8 @@ import 'package:finamp/models/music_models.dart';
 import 'package:finamp/screens/home_screen_settings_screen.dart';
 import 'package:finamp/screens/music_screen.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/hidden_items.dart';
+import 'package:finamp/services/hidden_items_provider.dart';
 import 'package:finamp/services/music_screen_provider.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/quick_actions_service.dart';
@@ -330,7 +332,11 @@ class HomeScreenSectionContent extends ConsumerWidget {
     }
 
     final pageState = ref.watch(pagedContentProvider(displayable));
-    final items = pageState.items;
+    final hiddenIds = ref.watch(hiddenIdsProvider);
+    final removeHidden = ref.watch(finampSettingsProvider.hiddenItemsDisplay) == HiddenItemsDisplay.remove;
+    final items = pageState.items
+        ?.where((item) => !removeHidden || item is! FinampPlayableDto || !isItemHidden(item.item, hiddenIds))
+        .toList();
     if (items == null) {
       if (pageState.isLoading) {
         return _buildHorizontalSkeletonLoader(ref);

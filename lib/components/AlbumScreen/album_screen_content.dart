@@ -19,6 +19,8 @@ import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/album_screen_provider.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/hidden_items.dart';
+import 'package:finamp/services/hidden_items_provider.dart';
 import 'package:finamp/services/permission_providers.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:flutter/material.dart';
@@ -269,7 +271,13 @@ class _TracksSliverListState extends ConsumerState<TracksSliverList> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.childrenForList.isEmpty) {
+    final hiddenIds = ref.watch(hiddenIdsProvider);
+    final visible = visibleEntries(
+      widget.childrenForList,
+      (item) => isItemHidden(item, hiddenIds),
+      ref.watch(finampSettingsProvider.hiddenItemsDisplay),
+    );
+    if (visible.isEmpty) {
       return SliverFillRemaining(
         child: Center(
           child: Padding(
@@ -286,7 +294,8 @@ class _TracksSliverListState extends ConsumerState<TracksSliverList> {
     return SliverFixedExtentList(
       itemExtent: TrackListItemTile.defaultTileHeight + TrackListItemTile.defaultTitleGap,
       // return SliverList(
-      delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+      delegate: SliverChildBuilderDelegate((BuildContext context, int visibleIndex) {
+        final index = visible[visibleIndex].$1;
         // When user selects track from disc other than first, index number is
         // incorrect and track with the same index on first disc is played instead.
         // Adding this offset ensures playback starts for nth track on correct disc.
@@ -336,7 +345,7 @@ class _TracksSliverListState extends ConsumerState<TracksSliverList> {
             tracks: widget.childrenForQueue,
           ),
         );
-      }, childCount: widget.childrenForList.length),
+      }, childCount: visible.length),
     );
   }
 }
