@@ -3990,5 +3990,9 @@
     "unhideBlockedHiddenViaAlbum": "Its album is hidden. Unhide the album instead.",
     "@unhideBlockedHiddenViaAlbum": {
         "description": "Explains why the Unhide menu entry is disabled for a track: the whole album is hidden"
+    },
+    "allTracksHidden": "All of these tracks are hidden",
+    "@allTracksHidden": {
+        "description": "Shown instead of starting playback when every track that would be played is hidden"
     }
 }

@@ -8,6 +8,9 @@ import 'package:logging/logging.dart';
 
 import 'audio_service_helper.dart';
 import 'finamp_settings_helper.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'hidden_items.dart';
+import 'hidden_items_provider.dart';
 import 'finamp_user_helper.dart';
 import 'jellyfin_api_helper.dart';
 import 'music_screen_provider.dart';
@@ -492,6 +495,7 @@ class AndroidAutoHelper {
           return await queueService.startPlayback(
             items: items,
             startingIndex: indexOfSelected,
+            keepStartTrack: true,
             source: QueueItemSource(
               name: const QueueItemSourceName(type: QueueItemSourceNameType.mix),
               type: QueueItemSourceType.allTracks,
@@ -520,7 +524,9 @@ class AndroidAutoHelper {
 
   Future<List<MediaItem>> getMediaItems(MediaItemId itemId) async {
     final queueService = GetIt.instance<QueueService>();
-    final items = await getBaseItems(itemId);
+    // Car screens can't grey items out, so hidden items are always left out.
+    final hiddenIds = GetIt.instance<ProviderContainer>().read(hiddenIdsProvider);
+    final items = (await getBaseItems(itemId)).where((item) => !isItemHidden(item, hiddenIds)).toList();
     final List<MediaItem> mediaItems = [];
 
     if (itemId.contentType == ContentType.tracks && itemId.parentType == MediaItemParentType.rootCollection) {
@@ -582,6 +588,7 @@ class AndroidAutoHelper {
         return await queueService.startPlayback(
           items: items,
           startingIndex: indexOfSelected,
+          keepStartTrack: true,
           source: QueueItemSource(
             name: const QueueItemSourceName(type: QueueItemSourceNameType.mix),
             type: QueueItemSourceType.allTracks,

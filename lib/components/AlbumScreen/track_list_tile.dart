@@ -245,7 +245,7 @@ class TrackListTile extends ConsumerWidget {
       invalidateRadioCache();
 
       // start linear playback of album from the given index
-      await queueService.startSlicePlayback(slice);
+      await queueService.startSlicePlayback(slice, keepStartTrack: true);
 
       if (lazyAddMoreTracksToQueue) {
         unawaited(

@@ -15,6 +15,9 @@ import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
 import 'jellyfin_api_helper.dart';
 import 'queue_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'hidden_items.dart';
+import 'hidden_items_provider.dart';
 
 /// Just some functions to make talking to AudioService a bit neater.
 class AudioServiceHelper {
@@ -23,6 +26,8 @@ class AudioServiceHelper {
   final _isarDownloader = GetIt.instance<DownloadsService>();
   final _finampUserHelper = GetIt.instance<FinampUserHelper>();
   final audioServiceHelperLogger = Logger("AudioServiceHelper");
+
+  Set<BaseItemId> get _hiddenIds => GetIt.instance<ProviderContainer>().read(hiddenIdsProvider);
 
   /// Shuffles every track in the user's current view.
   Future<void> shuffleAll({required bool onlyShowFavorites, BaseItemDto? genreFilter, int? itemCount}) async {
@@ -63,6 +68,8 @@ class AudioServiceHelper {
     BaseItemDto? genreFilter,
     int? itemCount,
   }) async {
+    final hiddenIds = _hiddenIds;
+    final count = itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount;
     if (FinampSettingsHelper.finampSettings.isOffline) {
       // If offline, get a shuffled list of tracks from _downloadsHelper.
       // This is a bit inefficient since we have to get all of the tracks and
@@ -73,24 +80,26 @@ class AudioServiceHelper {
         genreFilter: genreFilter?.id,
         onlyFavorites: onlyShowFavorites,
         nullableViewFilters: FinampSettingsHelper.finampSettings.showDownloadsWithUnknownLibrary,
-      )).map((e) => e.baseItem!).toList();
+      )).map((e) => e.baseItem!).where((item) => !isItemHidden(item, hiddenIds)).toList();
       items.shuffle();
-      final count = itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount;
       if (items.length > count) {
         return (items.sublist(0, count), items.length);
       }
       return (items, items.length);
     } else {
       // If online, get all audio items from the user's view
+      final (:exclude, :fetchLimit) = excludeIdsFor(hiddenIds, limit: count);
       final record = await _jellyfinApiHelper.getItemsWithTotalRecordCount(
         parentItem: library,
         includeItemTypes: "Audio",
         filters: onlyShowFavorites ? "IsFavorite" : null,
-        limit: itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount,
+        excludeItemIds: exclude,
+        limit: fetchLimit,
         sortBy: "Random",
         genreFilter: genreFilter?.id,
       );
-      return (record.items ?? [], record.totalRecordCount);
+      final items = (record.items ?? []).where((item) => !isItemHidden(item, hiddenIds)).take(count).toList();
+      return (items, record.totalRecordCount);
     }
   }
 
@@ -228,12 +237,16 @@ class AudioServiceHelper {
       GlobalSnackbar.message((context) => context.l10n.notAvailableInOfflineMode);
       return;
     }
-    final randomTracks = await _jellyfinApiHelper.getItems(
+    final hiddenIds = _hiddenIds;
+    final (:exclude, :fetchLimit) = excludeIdsFor(hiddenIds, limit: 1);
+    // A single track counts as a deliberate pick in the queue, so a hidden one must be skipped here.
+    final randomTracks = (await _jellyfinApiHelper.getItems(
       parentItem: _finampUserHelper.currentUser?.currentView,
       includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
-      limit: 1,
+      excludeItemIds: exclude,
+      limit: fetchLimit,
       sortBy: SortBy.random.jellyfinName(ContentType.tracks),
-    );
+    ))?.where((item) => !isItemHidden(item, hiddenIds)).take(1).toList();
     if (randomTracks != null && randomTracks.isNotEmpty) {
       await GetIt.instance<QueueService>().startPlayback(
         items: randomTracks,
@@ -293,6 +306,8 @@ class AudioServiceHelper {
     audioServiceHelperLogger.info("Attempting to play random $contentType (favorite: $favoritesOnly)");
 
     // get random item (of the selected type)
+    final hiddenIds = _hiddenIds;
+    final (:exclude, :fetchLimit) = excludeIdsFor(hiddenIds, limit: 1);
     final randomItem = (await _jellyfinApiHelper.getItems(
       parentItem: contentType == ContentType.playlists ? null : _finampUserHelper.currentUser!.currentView,
       filters: favoritesOnly ? "IsFavorite" : null,
@@ -307,8 +322,9 @@ class AudioServiceHelper {
         _ => null,
       },
       sortBy: SortBy.random.jellyfinName(null),
-      limit: 1,
-    ))?.firstOrNull;
+      excludeItemIds: exclude,
+      limit: fetchLimit,
+    ))?.where((item) => !isItemHidden(item, hiddenIds)).firstOrNull;
 
     if (randomItem == null) {
       final additionalContentType = limitContentTypes.whereNot((x) => x == contentType).toSet();

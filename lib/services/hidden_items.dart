@@ -51,6 +51,24 @@ List<(int, T)> visibleEntries<T>(List<T> items, bool Function(T) isHidden, Hidde
   return (kept, newStart ?? 0);
 }
 
+/// Removes hidden tracks from a new queue. A single track is always a deliberate pick, so it's kept;
+/// [keepStart] keeps a tapped hidden track. A null [startIndex] (shuffled order) filters every track.
+(List<BaseItemDto>, int?) prepareQueueItems(
+  List<BaseItemDto> items,
+  int? startIndex,
+  Set<BaseItemId> hiddenIds, {
+  bool keepStart = false,
+}) {
+  if (items.length <= 1) return (items, startIndex);
+  final (kept, newStart) = withoutHidden(
+    items,
+    (item) => isItemHidden(item, hiddenIds),
+    startIndex: startIndex ?? 0,
+    keepStart: keepStart && startIndex != null,
+  );
+  return (kept, startIndex == null ? null : newStart);
+}
+
 /// Changes only `Tags`: Jellyfin's update endpoint overwrites every field, so the rest must round-trip untouched.
 Map<String, dynamic> withHiddenTag(Map<String, dynamic> itemJson, bool hidden) {
   final tags = [...(itemJson["Tags"] as List? ?? const []).cast<String>()];

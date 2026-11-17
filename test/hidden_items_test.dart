@@ -98,6 +98,50 @@ void main() {
     });
   });
 
+  group('prepareQueueItems', () {
+    final hidden = ids(['h', 'album-h']);
+    List<String> names(List<BaseItemDto> items) => items.map((item) => item.id.raw).toList();
+
+    test('removes hidden tracks and tracks of hidden albums, remapping the start', () {
+      final (items, start) = prepareQueueItems(
+        [track('a'), track('h'), track('b', albumId: 'album-h'), track('c')],
+        3,
+        hidden,
+      );
+      expect(names(items), ['a', 'c']);
+      expect(start, 1);
+    });
+
+    test('keeps a hidden track that was tapped', () {
+      final (items, start) = prepareQueueItems([track('a'), track('h'), track('c')], 1, hidden, keepStart: true);
+      expect(names(items), ['a', 'h', 'c']);
+      expect(start, 1);
+    });
+
+    test('skips a hidden first track when starting from the top', () {
+      final (items, start) = prepareQueueItems([track('h'), track('a')], 0, hidden);
+      expect(names(items), ['a']);
+      expect(start, 0);
+    });
+
+    test('filters every track when there is no start, as when shuffling', () {
+      final (items, start) = prepareQueueItems([track('h'), track('a'), track('b')], null, hidden, keepStart: true);
+      expect(names(items), ['a', 'b']);
+      expect(start, isNull);
+    });
+
+    test('keeps a single track, since it was picked on purpose', () {
+      final (items, start) = prepareQueueItems([track('h')], 0, hidden);
+      expect(names(items), ['h']);
+      expect(start, 0);
+    });
+
+    test('returns nothing when every track is hidden', () {
+      final (items, _) = prepareQueueItems([track('h'), track('b', albumId: 'album-h')], 0, hidden);
+      expect(items, isEmpty);
+    });
+  });
+
   group('withHiddenTag', () {
     test('adds the tag and keeps every other field', () {
       final json = {
