@@ -110,11 +110,9 @@ class HideItemMenuEntry extends ConsumerWidget implements HideableMenuEntry {
       }
     }
 
-    try {
-      await apply(hidden);
-    } catch (_) {
-      return;
-    }
+    final applied = apply(hidden);
+    // Server hides apply instantly in the app, so confirm now rather than after the server answers;
+    // apply() reports a failure itself.
     final name = baseItem.name ?? "";
     GlobalSnackbar.message(
       (context) => hidden
@@ -123,6 +121,7 @@ class HideItemMenuEntry extends ConsumerWidget implements HideableMenuEntry {
       action: (context) =>
           SnackBarAction(label: AppLocalizations.of(context)!.undo, onPressed: () => apply(!hidden).ignore()),
     );
+    await applied.catchError((_) {});
   }
 
   @override

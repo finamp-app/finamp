@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -40,6 +41,8 @@ class FixtureApi extends Fake implements JellyfinApiHelper {
   bool fail = false;
   final requests = <({String? tags, String? includeItemTypes})>[];
   final serverChanges = <(BaseItemId, bool)>[];
+  // When set, server changes wait for it, so tests can look at the app state mid-request.
+  Completer<void>? pendingServerChange;
 
   @override
   Future<List<BaseItemDto>?> getItems({
@@ -71,7 +74,10 @@ class FixtureApi extends Fake implements JellyfinApiHelper {
   }
 
   @override
-  Future<void> setServerHidden(BaseItemId itemId, bool hidden) async => serverChanges.add((itemId, hidden));
+  Future<void> setServerHidden(BaseItemId itemId, bool hidden) async {
+    serverChanges.add((itemId, hidden));
+    await pendingServerChange?.future;
+  }
 }
 
 class FixtureUserHelper extends Fake implements FinampUserHelper {
@@ -216,6 +222,35 @@ void main() {
 
       expect(await container.read(serverHiddenIdsProvider.future), {const BaseItemId('t1'), const BaseItemId('al1')});
       expect(api.requests, isEmpty);
+    });
+
+    test('setHidden shows the change before the server answers', () async {
+      api.tagged = [
+        item('t1', tags: [hiddenTag]),
+      ];
+      await container.read(serverHiddenIdsProvider.future);
+      api.pendingServerChange = Completer();
+
+      final unhide = container.read(serverHiddenIdsProvider.notifier).setHidden(const BaseItemId('t1'), false);
+      await Future<void>.delayed(Duration.zero);
+      expect(container.read(serverHiddenIdsProvider).value, isEmpty);
+
+      api.pendingServerChange!.complete();
+      await unhide;
+      expect(container.read(serverHiddenIdsProvider).value, isEmpty);
+    });
+
+    test('setHidden puts the change back when the server fails', () async {
+      await container.read(serverHiddenIdsProvider.future);
+      api.pendingServerChange = Completer();
+
+      final hide = container.read(serverHiddenIdsProvider.notifier).setHidden(const BaseItemId('t1'), true);
+      await Future<void>.delayed(Duration.zero);
+      expect(container.read(serverHiddenIdsProvider).value, {const BaseItemId('t1')});
+
+      api.pendingServerChange!.completeError(Exception('server unavailable'));
+      await expectLater(hide, throwsException);
+      expect(container.read(serverHiddenIdsProvider).value, isEmpty);
     });
 
     test('setHidden updates the server and the cached ids', () async {

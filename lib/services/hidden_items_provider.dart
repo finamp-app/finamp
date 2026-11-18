@@ -80,8 +80,19 @@ class ServerHiddenIds extends AsyncNotifier<Set<BaseItemId>> {
   }
 
   Future<void> setHidden(BaseItemId id, bool hidden) async {
-    await GetIt.instance<JellyfinApiHelper>().setServerHidden(id, hidden);
-    final ids = await future;
+    final wasHidden = (await future).contains(id);
+    // Show the change right away: the server round trip can take several seconds.
+    _setMembership(id, hidden);
+    try {
+      await GetIt.instance<JellyfinApiHelper>().setServerHidden(id, hidden);
+    } catch (_) {
+      _setMembership(id, wasHidden);
+      rethrow;
+    }
+  }
+
+  void _setMembership(BaseItemId id, bool hidden) {
+    final ids = state.valueOrNull ?? const {};
     state = AsyncData(hidden ? {...ids, id} : ids.difference({id}));
   }
 }
