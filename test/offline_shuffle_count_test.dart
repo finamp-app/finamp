@@ -9,8 +9,10 @@ import 'package:finamp/models/theme_mode_adapter.dart';
 import 'package:finamp/services/audio_service_helper.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/hidden_items_provider.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/queue_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce_flutter/adapters.dart';
@@ -74,7 +76,10 @@ void main() {
       ),
     );
     downloads = FixtureDownloads();
+    final container = ProviderContainer(overrides: [hiddenIdsProvider.overrideWithValue({})]);
+    addTearDown(container.dispose);
     GetIt.instance
+      ..registerSingleton<ProviderContainer>(container)
       ..registerSingleton<DownloadsService>(downloads)
       ..registerSingleton<JellyfinApiHelper>(FixtureApi())
       ..registerSingleton<FinampUserHelper>(FixtureUserHelper())

@@ -80,7 +80,9 @@ class ServerHiddenIds extends AsyncNotifier<Set<BaseItemId>> {
             ) ??
             [];
       }
-      _albumOfTrack = {for (final item in items) item.id: ?item.albumId};
+      _albumOfTrack = Map.fromEntries(
+        items.where((item) => item.albumId != null).map((item) => MapEntry(item.id, item.albumId!)),
+      );
       return {for (final item in items) item.id};
     } catch (e) {
       _logger.warning("Couldn't load server-hidden items: $e");
