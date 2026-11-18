@@ -1719,5 +1719,23 @@
     "discUnknown": "Onbekende Disc",
     "@discUnknown": {
         "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
+    },
+    "radioForItem": "{radioSource} - Radio",
+    "@radioForItem": {
+        "description": "Suffix added to a queue source when playing a radio track. Example: \"Never Gonna Give You Up - Radio\"",
+        "placeholders": {
+            "radioSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "descending": "Aflopend",
+    "@descending": {
+        "description": "Label for descending order."
+    },
+    "genreItemSectionFilterChipOrderSubtitle": "Bepaalt de volgorde van beschikbare filters voor hoofdstukken.",
+    "@genreItemSectionFilterChipOrderSubtitle": {
+        "description": "Description of the setting that controls the order of item sections filter chips."
     }
 }
