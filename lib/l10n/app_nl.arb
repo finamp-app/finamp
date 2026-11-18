@@ -1750,5 +1750,9 @@
     "showNullLibraryItemsSubtitle": "Sommige media kan woren gedownload met een onbekende bibliotheek. Schakel uit om deze items te verbergen buiten de originele verzameling.",
     "@showNullLibraryItemsSubtitle": {
         "description": "Description of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
+    },
+    "downloadsWorkersSetting": "Aantal download workers",
+    "@downloadsWorkersSetting": {
+        "description": "Title of setting controlling download worker count."
     }
 }
