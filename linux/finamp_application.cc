@@ -15,14 +15,13 @@ struct _FinampApplication {
 G_DEFINE_TYPE(FinampApplication, finamp_application, GTK_TYPE_APPLICATION);
 
 // Implements GApplication::activate.
-// Track the allocated window geometry and update GTK's default size and resize target
-// whenever the window is resized while not maximized. On Wayland, calling
-// gtk_window_resize() (as window_manager does on startup) caches resize_width and
-// resize_height inside GTK's geometry info, which takes precedence over default_size
-// during configure requests. When the window is hidden to the tray, the Wayland surface
-// is destroyed; upon unhiding, connecting to the "show" signal and calling gtk_window_resize()
-// with the last allocated size ensures GTK reconfigures the window to its exact
-// user-resized dimensions instead of reverting to the startup size.
+// Track the allocated window geometry whenever the window is resized while not maximized.
+// On Wayland, calling gtk_window_resize() (as window_manager does on startup) caches
+// resize_width and resize_height inside GTK's geometry info, which takes precedence over
+// default_size during configure requests. When the window is hidden to the tray, the Wayland
+// surface is destroyed; upon unhiding, connecting to the "show" signal and calling
+// gtk_window_resize() with the last allocated size ensures GTK reconfigures the window to its
+// exact user-resized dimensions instead of reverting to the startup size.
 static gint last_allocated_width = 0;
 static gint last_allocated_height = 0;
 
@@ -31,7 +30,6 @@ static void on_window_size_allocate(GtkWidget* widget, GtkAllocation* allocation
   if (!gtk_window_is_maximized(window) && allocation->width > 0 && allocation->height > 0) {
     last_allocated_width = allocation->width;
     last_allocated_height = allocation->height;
-    gtk_window_set_default_size(window, allocation->width, allocation->height);
   }
 }
 

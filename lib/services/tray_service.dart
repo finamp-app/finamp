@@ -55,10 +55,7 @@ class TrayService with WindowListener {
         configured = null;
       }
     }
-    final candidates = <Locale>[
-      if (configured != null) configured,
-      ...(systemLocales ?? WidgetsBinding.instance.platformDispatcher.locales),
-    ];
+    final candidates = <Locale>[?configured, ...(systemLocales ?? WidgetsBinding.instance.platformDispatcher.locales)];
     // Put English first in supportedLocales so basicLocaleListResolution falls back to
     // English instead of the first alphabetical locale (same as MaterialApp in main.dart).
     final resolved = basicLocaleListResolution(
@@ -281,12 +278,6 @@ class TrayService with WindowListener {
     await windowManager.show();
     if (await windowManager.isMinimized()) {
       await windowManager.restore();
-    }
-    if (Platform.isLinux && !await windowManager.isMaximized()) {
-      final screenSize = FinampSettingsHelper.finampSettings.screenSize;
-      if (screenSize != null) {
-        await windowManager.setSize(screenSize.size);
-      }
     }
     await windowManager.focus();
     _setWindowVisible(true);
