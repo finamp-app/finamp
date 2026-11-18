@@ -294,6 +294,7 @@ abstract class JellyfinApi extends ChopperService {
   Future<dynamic> updateItem({
     /// The item id.
     @Path() required BaseItemId itemId,
+
     /// The full item as returned by the server; Jellyfin overwrites every field from it.
     @Body() required Map<String, dynamic> newItem,
   });
