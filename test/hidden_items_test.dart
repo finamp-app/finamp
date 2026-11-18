@@ -28,8 +28,9 @@ void main() {
       expect(isItemHidden(track('a'), ids(['a'])), isTrue);
     });
 
-    test('is true for an item with the hidden tag, ignoring case', () {
-      expect(isItemHidden(track('a', tags: ['Hidden']), {}), isTrue);
+    test('ignores a stale hidden tag once the item is no longer in the hidden ids', () {
+      // Cached items keep the tag they were loaded with until lists reload, even after an unhide.
+      expect(isItemHidden(track('a', tags: ['hidden']), {}), isFalse);
     });
 
     test('is true for a track whose album is hidden', () {

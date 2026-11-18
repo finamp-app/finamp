@@ -17,9 +17,10 @@ bool _isHiddenTag(String tag) => tag.toLowerCase() == hiddenTag;
 
 bool hasHiddenTag(BaseItemDto item) => item.tags?.any(_isHiddenTag) ?? false;
 
-/// [hiddenIds] holds locally hidden items and items tagged on the server.
+/// [hiddenIds] holds locally hidden items and items tagged on the server. The item's own tags aren't checked:
+/// cached items keep the tags they were loaded with, so they'd stay hidden after an unhide until lists reload.
 bool isItemHidden(BaseItemDto item, Set<BaseItemId> hiddenIds) {
-  if (hiddenIds.contains(item.id) || hasHiddenTag(item)) {
+  if (hiddenIds.contains(item.id)) {
     return true;
   }
   final albumId = item.albumId;
