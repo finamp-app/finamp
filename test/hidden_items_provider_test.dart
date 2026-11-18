@@ -76,6 +76,10 @@ class FixtureApi extends Fake implements JellyfinApiHelper {
   @override
   Future<void> setServerHidden(BaseItemId itemId, bool hidden) async {
     serverChanges.add((itemId, hidden));
+    tagged = [
+      ...tagged.where((tagged) => tagged.id != itemId),
+      if (hidden) item(itemId.raw, tags: [hiddenTag]),
+    ];
     await pendingServerChange?.future;
   }
 }
@@ -251,6 +255,41 @@ void main() {
       api.pendingServerChange!.completeError(Exception('server unavailable'));
       await expectLater(hide, throwsException);
       expect(container.read(serverHiddenIdsProvider).value, isEmpty);
+    });
+
+    test('unhiding an album also unhides the tracks that came with its tag', () async {
+      // Jellyfin reports a hidden album's tag on its tracks too, so they're loaded along with it.
+      api.tagged = [
+        item('al1', type: 'MusicAlbum', tags: [hiddenTag]),
+        item('t1', albumId: 'al1', tags: [hiddenTag]),
+        item('t2', albumId: 'al1', tags: [hiddenTag]),
+      ];
+      await container.read(serverHiddenIdsProvider.future);
+      api.pendingServerChange = Completer();
+
+      final unhide = container.read(serverHiddenIdsProvider.notifier).setHidden(const BaseItemId('al1'), false);
+      await Future<void>.delayed(Duration.zero);
+      expect(container.read(serverHiddenIdsProvider).value, isEmpty);
+
+      api.tagged = [];
+      api.pendingServerChange!.complete();
+      await unhide;
+      expect(container.read(serverHiddenIdsProvider).value, isEmpty);
+    });
+
+    test('keeps a track hidden on its own after its album is unhidden', () async {
+      api.tagged = [
+        item('al1', type: 'MusicAlbum', tags: [hiddenTag]),
+        item('t1', albumId: 'al1', tags: [hiddenTag]),
+      ];
+      await container.read(serverHiddenIdsProvider.future);
+
+      api.tagged = [
+        item('t1', albumId: 'al1', tags: [hiddenTag]),
+      ];
+      await container.read(serverHiddenIdsProvider.notifier).setHidden(const BaseItemId('al1'), false);
+
+      expect(container.read(serverHiddenIdsProvider).value, {const BaseItemId('t1')});
     });
 
     test('setHidden updates the server and the cached ids', () async {

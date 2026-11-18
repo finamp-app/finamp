@@ -48,6 +48,9 @@ class LocalHiddenIds extends Notifier<Set<BaseItemId>> {
 final serverHiddenIdsProvider = AsyncNotifierProvider<ServerHiddenIds, Set<BaseItemId>>(ServerHiddenIds.new);
 
 class ServerHiddenIds extends AsyncNotifier<Set<BaseItemId>> {
+  /// Album of each loaded track. Jellyfin reports a hidden album's tag on its tracks too, so they're loaded with it.
+  Map<BaseItemId, BaseItemId> _albumOfTrack = {};
+
   @override
   Future<Set<BaseItemId>> build() async {
     ref.watch(FinampUserHelper.finampCurrentUserProvider);
@@ -57,43 +60,51 @@ class ServerHiddenIds extends AsyncNotifier<Set<BaseItemId>> {
       ),
     );
     // Every list reads these ids, so a failed lookup must not break them; local hides still apply.
+    return await _load(isOffline: isOffline) ?? {};
+  }
+
+  Future<Set<BaseItemId>?> _load({required bool isOffline}) async {
     try {
+      final List<BaseItemDto> items;
       if (isOffline) {
         // Downloads keep the tags from their last sync.
         final downloads = GetIt.instance<DownloadsService>();
         final stubs = [...await downloads.getAllTracks(), ...await downloads.getAllCollections()];
-        return {
-          for (final item in stubs.map((stub) => stub.baseItem).nonNulls)
-            if (hasHiddenTag(item)) item.id,
-        };
+        items = stubs.map((stub) => stub.baseItem).nonNulls.where(hasHiddenTag).toList();
+      } else {
+        items =
+            await GetIt.instance<JellyfinApiHelper>().getItems(
+              tags: hiddenTag,
+              includeItemTypes: [BaseItemDtoType.track.jellyfinName, BaseItemDtoType.album.jellyfinName].join(","),
+              fields: "",
+            ) ??
+            [];
       }
-      final items = await GetIt.instance<JellyfinApiHelper>().getItems(
-        tags: hiddenTag,
-        includeItemTypes: [BaseItemDtoType.track.jellyfinName, BaseItemDtoType.album.jellyfinName].join(","),
-        fields: "",
-      );
-      return {...?items?.map((item) => item.id)};
+      _albumOfTrack = {for (final item in items) item.id: ?item.albumId};
+      return {for (final item in items) item.id};
     } catch (e) {
       _logger.warning("Couldn't load server-hidden items: $e");
-      return {};
+      return null;
     }
   }
 
   Future<void> setHidden(BaseItemId id, bool hidden) async {
-    final wasHidden = (await future).contains(id);
+    final before = await future;
     // Show the change right away: the server round trip can take several seconds.
-    _setMembership(id, hidden);
+    final optimistic = hidden
+        ? {...before, id}
+        : before.where((item) => item != id && _albumOfTrack[item] != id).toSet();
+    state = AsyncData(optimistic);
     try {
       await GetIt.instance<JellyfinApiHelper>().setServerHidden(id, hidden);
     } catch (_) {
-      _setMembership(id, wasHidden);
+      final current = state.valueOrNull ?? const {};
+      state = AsyncData(current.difference(optimistic.difference(before)).union(before.difference(optimistic)));
       rethrow;
     }
-  }
-
-  void _setMembership(BaseItemId id, bool hidden) {
-    final ids = state.valueOrNull ?? const {};
-    state = AsyncData(hidden ? {...ids, id} : ids.difference({id}));
+    // Tracks can also be tagged on their own, so take the server's word once it has answered.
+    final reloaded = await _load(isOffline: FinampSettingsHelper.finampSettings.isOffline);
+    if (reloaded != null) state = AsyncData(reloaded);
   }
 }
 
