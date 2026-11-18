@@ -76,7 +76,7 @@ class AudioServiceHelper {
       )).map((e) => e.baseItem!).toList();
       items.shuffle();
       final count = itemCount ?? FinampSettingsHelper.finampSettings.trackShuffleItemCount;
-      if (items.length - 1 > count) {
+      if (items.length > count) {
         return (items.sublist(0, count), items.length);
       }
       return (items, items.length);
