@@ -1754,5 +1754,9 @@
     "downloadsWorkersSetting": "Aantal download workers",
     "@downloadsWorkersSetting": {
         "description": "Title of setting controlling download worker count."
+    },
+    "downloadsWorkersSettingSubtitle": "Aantal workers voor het synchroniseren van metadata en het verwijderen van downloads. Het verhogen van het aantal workers kan downloaden, synchroniseren en verwijderen versnellen, vooral als server latency hoog is, maar kan ook leiden tot vertraging van de app.",
+    "@downloadsWorkersSettingSubtitle": {
+        "description": "Description of setting controlling download worker count."
     }
 }
