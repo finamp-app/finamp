@@ -3987,9 +3987,9 @@
     "@unhideBlockedOffline": {
         "description": "Explains why the Unhide menu entry is disabled: the item is hidden on the server and the app is offline"
     },
-    "unhideBlockedHiddenViaAlbum": "Its album is hidden. Unhide the album instead.",
+    "unhideBlockedHiddenViaAlbum": "Album is hidden. Unhide album instead.",
     "@unhideBlockedHiddenViaAlbum": {
-        "description": "Explains why the Unhide menu entry is disabled for a track: the whole album is hidden"
+        "description": "Explains why the Unhide menu entry is disabled for a track: its whole album is hidden, so the album has to be unhidden first"
     },
     "allTracksHidden": "All of these tracks are hidden",
     "@allTracksHidden": {
