@@ -1767,5 +1767,17 @@
                 "type": "String"
             }
         }
+    },
+    "syncOnStartupSwitch": "Downloads Automatisch Synchroniseren bij Opstarten",
+    "@syncOnStartupSwitch": {
+        "description": "Title of setting for automatically triggering a throttled resync on app startup."
+    },
+    "preferQuickSyncSwitch": "Voorkeur Voor Snel Synchroniseren",
+    "@preferQuickSyncSwitch": {
+        "description": "Title of setting that skips completed albums while syncing."
+    },
+    "preferQuickSyncSwitchSubtitle": "Bij synchroniseren worden sommige, vaak statische items (zoals nummers en albums) niet geupdatete. Het repareren van downloads zorgt altijd voor een volledige synchronisatie.",
+    "@preferQuickSyncSwitchSubtitle": {
+        "description": "Description of setting that skips completed albums while syncing."
     }
 }
