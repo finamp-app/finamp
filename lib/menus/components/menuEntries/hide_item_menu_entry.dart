@@ -43,6 +43,7 @@ class HideItemMenuEntry extends ConsumerWidget implements HideableMenuEntry {
       isOffline: isOffline,
       inLocal: ref.watch(localHiddenIdsProvider).contains(baseItem.id),
       hasTag: ref.watch(serverHiddenIdsProvider).valueOrNull?.contains(baseItem.id) ?? false,
+      albumHidden: baseItem.albumId != null && ref.watch(hiddenIdsProvider).contains(baseItem.albumId),
     );
     return Visibility(
       visible: _isHideable(baseItem),

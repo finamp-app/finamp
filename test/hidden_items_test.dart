@@ -229,8 +229,27 @@ void main() {
   });
 
   group('resolveUnhideAction', () {
-    UnhideAction resolve({bool isAdmin = false, bool isOffline = false, bool inLocal = false, bool hasTag = false}) =>
-        resolveUnhideAction(isAdmin: isAdmin, isOffline: isOffline, inLocal: inLocal, hasTag: hasTag);
+    UnhideAction resolve({
+      bool isAdmin = false,
+      bool isOffline = false,
+      bool inLocal = false,
+      bool hasTag = false,
+      bool albumHidden = false,
+    }) => resolveUnhideAction(
+      isAdmin: isAdmin,
+      isOffline: isOffline,
+      inLocal: inLocal,
+      hasTag: hasTag,
+      albumHidden: albumHidden,
+    );
+
+    test('is blocked for a track whose album is hidden, even if the track is hidden itself', () {
+      expect(resolve(isAdmin: true, inLocal: true, hasTag: true, albumHidden: true), (
+        clearLocal: false,
+        clearTag: false,
+        blocked: UnhideBlocked.hiddenViaAlbum,
+      ));
+    });
 
     test('clears a local hide for anyone', () {
       expect(resolve(inLocal: true), (clearLocal: true, clearTag: false, blocked: null));

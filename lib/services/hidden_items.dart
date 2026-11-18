@@ -106,7 +106,12 @@ UnhideAction resolveUnhideAction({
   required bool isOffline,
   required bool inLocal,
   required bool hasTag,
+  required bool albumHidden,
 }) {
+  // A hidden album hides all its tracks, and Jellyfin can't exempt one track from the album's tag.
+  if (albumHidden) {
+    return (clearLocal: false, clearTag: false, blocked: UnhideBlocked.hiddenViaAlbum);
+  }
   // Clearing only the local hide would leave a tagged item hidden, so don't offer it.
   if (hasTag && !isAdmin) {
     return (clearLocal: false, clearTag: false, blocked: UnhideBlocked.serverAdminOnly);

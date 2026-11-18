@@ -88,6 +88,9 @@ class ServerHiddenIds extends AsyncNotifier<Set<BaseItemId>> {
     }
   }
 
+  /// The album a server-hidden track was loaded with, if it carried the album's tag.
+  BaseItemId? albumOf(BaseItemId track) => _albumOfTrack[track];
+
   Future<void> setHidden(BaseItemId id, bool hidden) async {
     final before = await future;
     // Show the change right away: the server round trip can take several seconds.

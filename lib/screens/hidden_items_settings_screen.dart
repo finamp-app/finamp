@@ -23,7 +23,13 @@ class HiddenItemsSettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final localIds = ref.watch(localHiddenIdsProvider);
     final serverIds = ref.watch(serverHiddenIdsProvider).valueOrNull ?? const {};
-    final hiddenIds = [...localIds, ...serverIds.difference(localIds)];
+    final allHidden = ref.watch(hiddenIdsProvider);
+    final serverHidden = ref.read(serverHiddenIdsProvider.notifier);
+    // A hidden album's row covers its tracks, which Jellyfin reports as tagged along with it.
+    final hiddenIds = [
+      ...localIds,
+      ...serverIds.difference(localIds),
+    ].where((id) => !allHidden.contains(serverHidden.albumOf(id))).toList();
     final isAdmin = ref.watch(isServerAdminProvider).valueOrNull ?? false;
 
     return Scaffold(
@@ -117,6 +123,7 @@ class _HiddenItemTile extends ConsumerWidget {
       isOffline: ref.watch(finampSettingsProvider.isOffline),
       inLocal: inLocal,
       hasTag: hasTag,
+      albumHidden: item?.albumId != null && ref.watch(hiddenIdsProvider).contains(item!.albumId),
     );
     return ListTile(
       leading: Icon(

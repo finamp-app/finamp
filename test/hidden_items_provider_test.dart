@@ -277,6 +277,18 @@ void main() {
       expect(container.read(serverHiddenIdsProvider).value, isEmpty);
     });
 
+    test('remember which album a hidden track came with', () async {
+      api.tagged = [
+        item('al1', type: 'MusicAlbum', tags: [hiddenTag]),
+        item('t1', albumId: 'al1', tags: [hiddenTag]),
+      ];
+      await container.read(serverHiddenIdsProvider.future);
+
+      final notifier = container.read(serverHiddenIdsProvider.notifier);
+      expect(notifier.albumOf(const BaseItemId('t1')), const BaseItemId('al1'));
+      expect(notifier.albumOf(const BaseItemId('al1')), isNull);
+    });
+
     test('keeps a track hidden on its own after its album is unhidden', () async {
       api.tagged = [
         item('al1', type: 'MusicAlbum', tags: [hiddenTag]),
