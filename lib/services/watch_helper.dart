@@ -499,11 +499,9 @@ class WatchHandler {
     final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
     switch (action) {
       case 'playPause':
-        if (audioHandler.playbackState.value.playing) {
-          await audioHandler.pause();
-        } else {
-          await audioHandler.play();
-        }
+        // As Finamp's own play buttons: play() completes only when playback stops again, so waiting for it left the
+        // watch without an answer for every "play" (19 Nov, on the devices).
+        unawaited(audioHandler.togglePlayback());
       case 'next':
         await audioHandler.skipToNext();
       case 'previous':

@@ -89,7 +89,7 @@ final class NowPlayingStore {
                 FavoriteOverrides.shared.phoneReported(id, result)
             } catch {
                 if nowPlaying.id == id { nowPlaying.favorite = !new }
-                PhoneMessage.shared.text = error.localizedDescription
+                PhoneMessage.show(error)
             }
         }
     }
@@ -392,7 +392,7 @@ struct PlaybackPage: View {
                 try await PhoneConnection.shared.seek(to: target)
             } catch {
                 if store.nowPlaying.id == before.id { store.nowPlaying = before }
-                PhoneMessage.shared.text = error.localizedDescription
+                PhoneMessage.show(error)
             }
         }
     }
@@ -502,7 +502,7 @@ struct PlaybackPage: View {
                             try await PhoneConnection.shared.control("playPause")
                         } catch {
                             if store.nowPlaying.id == before.id { store.nowPlaying = before }
-                            PhoneMessage.shared.text = error.localizedDescription
+                            PhoneMessage.show(error)
                         }
                     }
                 } label: {
@@ -614,7 +614,7 @@ struct PlaybackPage: View {
                 do {
                     try await PhoneConnection.shared.control(action)
                 } catch {
-                    PhoneMessage.shared.text = error.localizedDescription
+                    PhoneMessage.show(error)
                 }
             }
         } label: {
@@ -694,7 +694,7 @@ struct QueueView: View {
                                 do {
                                     try await PhoneConnection.shared.skipTo(id: track.id)
                                 } catch {
-                                    PhoneMessage.shared.text = error.localizedDescription
+                                    PhoneMessage.show(error)
                                 }
                                 dismiss()
                             }
@@ -853,7 +853,7 @@ private struct QueueHeader: View {
             try await PhoneConnection.shared.control(action)
         } catch {
             store.nowPlaying[keyPath: field] = before
-            PhoneMessage.shared.text = error.localizedDescription
+            PhoneMessage.show(error)
         }
     }
 

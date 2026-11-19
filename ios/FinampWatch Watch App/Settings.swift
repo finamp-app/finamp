@@ -56,7 +56,7 @@ struct SettingsView: View {
                     do {
                         try await PhoneConnection.shared.reloadQueue(archive: question.archive)
                     } catch {
-                        PhoneMessage.shared.text = error.localizedDescription
+                        PhoneMessage.show(error)
                     }
                 }
             }
@@ -89,7 +89,7 @@ struct SettingsView: View {
             reload = try await PhoneConnection.shared.setSetting(name, enabled)
         } catch {
             phone[keyPath: value] = previous
-            PhoneMessage.shared.text = error.localizedDescription
+            PhoneMessage.show(error)
         }
     }
 }

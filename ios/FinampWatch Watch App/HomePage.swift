@@ -24,7 +24,7 @@ struct HomePage: View {
                 try await PhoneConnection.shared.runQuickAction(action.index, action: action.action)
                 onPlay()
             } catch {
-                PhoneMessage.shared.text = error.localizedDescription
+                PhoneMessage.show(error)
             }
         }
     }
@@ -65,7 +65,7 @@ struct HomePage: View {
                                     try await PhoneConnection.shared.shuffleAll()
                                     onPlay()
                                 } catch {
-                                    PhoneMessage.shared.text = error.localizedDescription
+                                    PhoneMessage.show(error)
                                 }
                             }
                         } label: {

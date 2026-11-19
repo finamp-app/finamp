@@ -261,25 +261,44 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     // one. If nothing gets through, the crown shows the phone's last known volume again.
     private func sendVolumes() async {
         let volumes = PhoneVolume.shared
-        let token = PhoneActivity.shared.begin()
+        // The status shows for one send still unanswered after a second, and from the first failure until it's settled;
+        // not for a crown that keeps turning while every send is answered (19 Nov, on the devices).
+        var retrying: Int?
         var outcome = PhoneActivity.Outcome.neutral
         var refusal: String?
-        defer { PhoneActivity.shared.end(token, outcome) }
+        defer { if let retrying { PhoneActivity.shared.end(retrying, outcome) } }
         do {
             while let volume = volumes.wanted {
                 let deadline = wantedAt + VolumeSend.giveUpAfter
                 guard ContinuousClock.now < deadline else {
                     WatchLog.warning("setVolume: gave up, \(VolumeSend.giveUpAfter) after the newest turn")
+                    if retrying == nil { retrying = PhoneActivity.shared.begin() }
                     volumes.wanted = nil
                     if outcome == .answered, let refusal { PhoneMessage.shared.text = refusal }
                     return
                 }
                 guard WCSession.default.isReachable else {
                     outcome = .connectionFailed
+                    if retrying == nil { retrying = PhoneActivity.shared.begin() }
                     try await waitForPhone(until: min(.now + VolumeSend.retryAfterError, deadline))
                     continue
                 }
-                switch try await sendVolume(volume, before: deadline) {
+                let attempt = PhoneActivity.shared.begin()
+                let result: VolumeTry
+                do {
+                    result = try await sendVolume(volume, before: deadline)
+                } catch {
+                    PhoneActivity.shared.end(attempt, .neutral)
+                    throw error
+                }
+                if case .accepted = result {
+                    PhoneActivity.shared.end(attempt, .answered)
+                } else {
+                    // A failed try ends quietly; the failure shows only if the whole change gives up.
+                    PhoneActivity.shared.end(attempt, .neutral)
+                    if retrying == nil { retrying = PhoneActivity.shared.begin() }
+                }
+                switch result {
                 case .accepted:
                     outcome = .answered
                     volumes.observed(volume, accepted: true)
@@ -288,7 +307,15 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
                     outcome = .connectionFailed
                     // A newer turn is waiting: send that rather than check this one.
                     guard volumes.wanted == volume else { continue }
-                    let read = try await readVolume(before: deadline)
+                    let check = PhoneActivity.shared.begin()
+                    let read: (volume: Double?, answered: Bool)
+                    do {
+                        read = try await readVolume(before: deadline)
+                    } catch {
+                        PhoneActivity.shared.end(check, .neutral)
+                        throw error
+                    }
+                    PhoneActivity.shared.end(check, read.answered ? .answered : .neutral)
                     if read.answered { outcome = .answered }
                     if let actual = read.volume, abs(actual - volume) < 0.005, volumes.wanted == volume {
                         volumes.wanted = nil
@@ -550,17 +577,24 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         case "setVolume": (.awake(.zero), false)
         // Playback opens the album page with what it has if this doesn't answer soon.
         case "item": (.awake(.seconds(5)), true)
+        // 30 s before giving up (yalit, 19 Nov: only "when really like 30 seconds have passed").
         case "list", "home", "search", "artistInfo", "downloadState", "queue", "output", "settings":
-            (.awake(.seconds(20)), true)
+            (.awake(.seconds(30)), true)
         // Commands are sent once, never repeated: a repeated toggle undoes itself, a repeated skip skips twice.
         default: (.clock(.seconds(3)), true)
         }
     }
 
+    // Transport controls answer at once (0.1-0.9 s on the devices, 2-3 s when the watch wakes Finamp); one that gets no
+    // answer was lost, and waiting 30 s kept the status blue for nothing (19 Nov, on the devices). Starting playback,
+    // downloads and settings can take longer on the phone and keep the 30 s.
+    private static let quickAnswer: Set<String> = ["control", "seek"]
+
     private func request(
-        _ method: String, _ args: [String: Any], replyTimeout: Duration = .seconds(30), quiet: Bool = false,
+        _ method: String, _ args: [String: Any], replyTimeout: Duration? = nil, quiet: Bool = false,
         patience override: Patience? = nil
     ) async throws -> [String: Any] {
+        let replyTimeout = replyTimeout ?? (Self.quickAnswer.contains(method) ? .seconds(5) : .seconds(30))
         let session = WCSession.default
         let (byKind, shown) = Self.patience(method)
         let patience = override ?? byKind
@@ -599,6 +633,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         }
         if let notAfter, ContinuousClock.now >= notAfter {
             WatchLog.warning("\(method): not sent, \(waited.ms) ms after it was asked for")
+            outcome = .connectionFailed
             throw PhoneError.expired
         }
 
@@ -624,6 +659,9 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         }
     }
 
+    // Shown only as the warning under the clock, never as a message (`PhoneMessage.show`).
+    static func isConnectionFailure(_ error: Error) -> Bool { outcome(of: error) == .connectionFailed }
+
     // What a failed request says about the connection (`PhoneActivity`).
     private static func outcome(of error: Error) -> PhoneActivity.Outcome {
         switch error {
@@ -632,9 +670,9 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         // The phone answered: an error of its own, or a reply the watch didn't expect.
         case PhoneError.phone, PhoneError.serverUnreachable, PhoneError.unexpectedReply:
             return .answered
-        // Not sent because it was too late: nothing about the connection.
+        // Not sent: the phone wasn't in reach in time.
         case PhoneError.expired:
-            return .neutral
+            return .connectionFailed
         case let error as WCError:
             switch error.code {
             case .notReachable, .messageReplyTimedOut, .messageReplyFailed, .deliveryFailed, .transferTimedOut,
@@ -738,8 +776,9 @@ enum VolumeSend {
     // A send waits this long for its answer before the phone is asked for its volume: normal requests take 0.1-0.6 s
     // on the devices, a phone waking Finamp in the background answered in up to 3 s (simulator, 19 Nov).
     static let noAnswerAfter: Duration = .seconds(3)
-    // Nothing confirmed this long after the newest crown turn: give up and show the phone's last known volume.
-    static let giveUpAfter: Duration = .seconds(20)
+    // Nothing confirmed this long after the newest crown turn: give up and show the phone's last known volume
+    // (yalit, 19 Nov: give up only after about 30 s; 20 s gave up while playing with the volume).
+    static let giveUpAfter: Duration = .seconds(30)
     // Just after the phone accepted a change, a different volume it pushes is taken as an older one still on its way.
     static let olderPushWindow: TimeInterval = 1.5
 }

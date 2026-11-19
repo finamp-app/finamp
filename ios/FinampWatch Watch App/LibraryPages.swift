@@ -231,7 +231,7 @@ struct LibraryPage: View {
             try await PhoneConnection.shared.playTracks(index: index, startId: track.id)
             onPlay()
         } catch {
-            PhoneMessage.shared.text = error.localizedDescription
+            PhoneMessage.show(error)
         }
     }
 }

@@ -237,9 +237,9 @@ extension View {
 enum ActivityStatus {
     // Small, like the clock's own status icons; on the top layer of every page and sheet.
     static let iconSize: CGFloat = 10
-    // From the top of the page's content up to the icon's bottom, so it sits on the top buttons' bottom line
-    // (measured on Playback, 40 mm: the content starts 1 pt above the buttons' bottom edge).
-    static let liftAboveContent: CGFloat = -1
+    // From the top of the page's content up to the icon's bottom: 3 pt above the top buttons' bottom line (the content
+    // starts 1 pt above that line on Playback, 40 mm), which yalit saw as in line with the clock (19 Nov, Ultra 3).
+    static let liftAboveContent: CGFloat = 2
     // Normal requests take 0.1-0.6 s on the devices; the status shows only for one still waiting after this.
     static let showAfter: Duration = .seconds(1)
     // On sheets: the middle of the clock's row, from the screen's top. watchOS gives apps no position for its clock,

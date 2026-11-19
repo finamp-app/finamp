@@ -29,7 +29,7 @@ final class FavoriteOverrides {
             values[item.id] = try await PhoneConnection.shared.setFavorite(item.id, new)
         } catch {
             values[item.id] = !new
-            PhoneMessage.shared.text = error.localizedDescription
+            PhoneMessage.show(error)
         }
     }
 }
@@ -38,6 +38,13 @@ final class FavoriteOverrides {
 final class PhoneMessage {
     static let shared = PhoneMessage()
     var text: String?
+
+    // A failed action's message. A connection failure shows only the warning under the clock, no message (yalit,
+    // 19 Nov: "instead of that message just change to the warning sign"); errors the phone answered still show.
+    static func show(_ error: Error) {
+        guard !(error is CancellationError), !PhoneConnection.isConnectionFailure(error) else { return }
+        shared.text = error.localizedDescription
+    }
 }
 
 // The small status under the clock (`phoneActivityIndicator`): waiting while a request you made has gone
