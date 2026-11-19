@@ -189,7 +189,7 @@ extension WaitForElement on WidgetTester {
     while (true) {
       await pump(Duration(seconds: 1));
       if (any(finder)) {
-        await ensureVisible(finder);
+        await ensureVisible(finder.first);
         return;
       }
       if (i >= seconds) {
