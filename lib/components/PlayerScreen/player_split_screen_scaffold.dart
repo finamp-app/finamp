@@ -24,6 +24,9 @@ final ValueNotifier<bool> usingSplitScreen = ValueNotifier(false);
 
 bool get usingPlayerSplitScreen => _inSplitScreen;
 
+@visibleForTesting
+void setUsingPlayerSplitScreenForTesting(bool value) => _inSplitScreen = value;
+
 double _weight = 0.0;
 
 SplitViewController _controller = SplitViewController();
@@ -64,7 +67,7 @@ Widget buildPlayerSplitScreenScaffold(BuildContext context, Widget? widget) {
                     splitScreenAvailable.value = true;
                     if (allowSplitScreen && !minimizeValue) {
                       _inSplitScreen = true;
-                      SplitScreenNavigatorObserver.queuePop();
+                      SplitScreenNavigatorObserver.queueSplitScreenPop();
                       var size = MediaQuery.sizeOf(context);
                       var padding = MediaQuery.paddingOf(context);
                       // When resizing window, update weights to keep player width consistent
@@ -183,6 +186,30 @@ class SplitScreenNavigatorObserver extends NavigatorObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       GlobalSnackbar.navigatorState?.popUntil(SplitScreenNavigatorObserver.shouldNotPop);
     });
+  }
+
+  static bool _splitScreenPopQueued = false;
+
+  /// Queues popping the player route from the main navigator after a one-frame delay,
+  /// checking that the app is still in split-screen mode before actually popping.
+  ///
+  /// Dynamic window manager adjustments (such as Wayland surface remapping or rapid tiling
+  /// compositor reflows) can momentarily report sizes exceeding 800x500 before settling at
+  /// a smaller geometry. Because popping a route is irreversible, delaying the pop by one frame
+  /// ensures transient spikes do not discard the player route.
+  static void queueSplitScreenPop() {
+    if (_splitScreenPopQueued) return;
+    _splitScreenPopQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _splitScreenPopQueued = false;
+        if (usingPlayerSplitScreen) {
+          GlobalSnackbar.navigatorState?.popUntil(SplitScreenNavigatorObserver.shouldNotPop);
+        }
+      });
+      WidgetsBinding.instance.scheduleFrame();
+    });
+    WidgetsBinding.instance.scheduleFrame();
   }
 
   static bool shouldNotPop(Route<dynamic> route) {
