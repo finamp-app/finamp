@@ -6,6 +6,7 @@ import 'package:balanced_text/balanced_text.dart';
 import 'package:finamp/components/AlbumScreen/download_button.dart';
 import 'package:finamp/components/Buttons/cta_small.dart';
 import 'package:finamp/components/HomeScreen/home_screen_quick_action_button.dart';
+import 'package:finamp/components/HomeScreen/quick_action_layout.dart';
 import 'package:finamp/components/HomeScreen/quick_action_editor.dart';
 import 'package:finamp/components/MusicScreen/item_card.dart';
 import 'package:finamp/components/MusicScreen/item_wrapper.dart';
@@ -90,7 +91,7 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
               final usableWidth = constraints.crossAxisExtent - viewPadding.left - viewPadding.right;
               // center action buttons
               // Mandatory padding should be enough to clear scrollbar
-              final horizontalPadding = max(0, (usableWidth - maxWidth) / 2) + 14.0;
+              final horizontalPadding = quickActionsHorizontalPadding(usableWidth: usableWidth, maxWidth: maxWidth);
               final configuredQuickActions = ref.watch(finampSettingsProvider.homeScreenConfiguration).actions;
               return SliverPadding(
                 padding: EdgeInsets.only(
@@ -108,36 +109,19 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent>
                     children: configuredQuickActions.indexed.map((indexedAction) {
                       final (index, action) = indexedAction;
                       //!!! custom adaptive grid
-                      // calculate button width based on available space and number of actions per row
-                      final double quickActionsWidth = min(
-                        usableWidth - horizontalPadding - horizontalPadding,
-                        maxWidth,
+                      final button = quickActionButtonLayout(
+                        usableWidth: usableWidth,
+                        maxWidth: maxWidth,
+                        actionCount: configuredQuickActions.length,
+                        index: index,
                       );
-                      double verticalButtonWidth = (quickActionsWidth / 3) - 2 * (5.0);
-                      double horizontalButtonWidth = (quickActionsWidth / 2) - 1 * (8.0);
-                      double singleButtonWidth = quickActionsWidth;
-                      double buttonWidth;
-                      // always fill each row completely
-                      if (configuredQuickActions.length == 1) {
-                        buttonWidth = singleButtonWidth;
-                      } else if (configuredQuickActions.length % 3 == 0) {
-                        buttonWidth = verticalButtonWidth;
-                      } else if (configuredQuickActions.length == 4) {
-                        buttonWidth = horizontalButtonWidth;
-                      } else if ((configuredQuickActions.length % 3 == 1 &&
-                              configuredQuickActions.length - index <= 4) ||
-                          (configuredQuickActions.length % 3 == 2 && configuredQuickActions.length - index < 3)) {
-                        buttonWidth = horizontalButtonWidth;
-                      } else {
-                        buttonWidth = verticalButtonWidth;
-                      }
                       //TODO possibly use CustomMultiChildLayout instead of Wrap to allow actions to stretch in height to fill each row, in case of multi-line actions
                       return HomeScreenQuickActionButton(
-                        width: buttonWidth,
+                        width: button.width,
                         text: action.getTitle(context.l10n),
                         label: action.action.getDescription(context),
                         icon: action.action.getIcon(),
-                        vertical: buttonWidth == verticalButtonWidth,
+                        vertical: button.vertical,
                         onPressed: () async => QuickActionsService.handleAction(action, context),
                         onSecondaryPressed: () => editQuickAction(context, index),
                       );
