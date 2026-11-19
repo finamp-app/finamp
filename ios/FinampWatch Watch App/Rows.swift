@@ -77,7 +77,10 @@ struct ArtistChip: View {
         .clipShape(RoundedRectangle(cornerRadius: 4))
         .task(id: artist.artworkKey) {
             guard !artist.artworkKey.isEmpty else { return image = nil }
-            image = await ArtworkStore.shared.image(for: artist, size: Int((height * displayScale / 20).rounded(.up)) * 20)
+            let loaded = await ArtworkStore.shared.image(for: artist, size: Int((height * displayScale / 20).rounded(.up)) * 20)
+            // A slower load for an earlier artist must not replace the current one's photo
+            guard !Task.isCancelled else { return }
+            image = loaded
         }
     }
 }

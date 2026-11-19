@@ -224,8 +224,11 @@ struct CoverView: View {
             .task(id: "\(item.artworkKey)-\(pixelSize)") {
                 if item.artworkKey.isEmpty { image = nil }
                 guard pixelSize > 0, !item.artworkKey.isEmpty else { return }
-                image = await ArtworkStore.shared.image(for: item, size: pixelSize)
-                missing = image == nil && !Task.isCancelled
+                let loaded = await ArtworkStore.shared.image(for: item, size: pixelSize)
+                // A cancelled load can finish after the one that replaced it, and must not undo its result.
+                guard !Task.isCancelled else { return }
+                image = loaded
+                missing = loaded == nil
             }
     }
 }
