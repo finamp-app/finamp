@@ -187,19 +187,21 @@ final class ArtworkStore {
 struct CoverView: View {
     let item: LibraryItem
     var circular = false
-    // Unrounded, for a container that clips it (the artist chip).
-    var square = false
     @State private var image: UIImage?
     @State private var missing = false
     // Round sizes to share cached covers across similar slots.
     @State private var pixelSize = 0
     @Environment(\.displayScale) private var displayScale
+    // A placeholder row (redacted): the cover is a plain grey tile.
+    @Environment(\.redactionReasons) private var redaction
 
     var body: some View {
         Rectangle()
-            .fill(Color.appBackground)
+            .fill(redaction.isEmpty ? Color.appBackground : Color.skeletonFill)
             .overlay {
-                if let image {
+                if !redaction.isEmpty {
+                    EmptyView()
+                } else if let image {
                     Image(uiImage: image).resizable().scaledToFill()
                 } else if let blur = BlurHash.image(item.blurHash) {
                     Image(uiImage: blur).resizable().scaledToFill()
@@ -217,7 +219,7 @@ struct CoverView: View {
             }
             .animation(.easeIn(duration: 0.7), value: image)
             .aspectRatio(1, contentMode: .fit)
-            .clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: square ? 0 : 8)))
+            .clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 8)))
             .onGeometryChange(for: Int.self) { proxy in
                 Int((proxy.size.width * displayScale / 20).rounded(.up)) * 20
             } action: { pixelSize = $0 }

@@ -13,40 +13,10 @@ extension ShapeStyle where Self == LinearGradient {
     }
 }
 
-enum ThemeChoice: String, CaseIterable, Identifiable {
-    case phone, dark, light
-
-    var id: Self { self }
-
-    var title: LocalizedStringKey {
-        switch self {
-        case .phone: "Same as iPhone"
-        case .dark: "Dark"
-        case .light: "Light"
-        }
-    }
-}
-
-// Cache the resolved phone theme for launch, before the phone replies.
+// The watch is always dark, like watchOS itself; only the accent follows Finamp.
 @Observable
 final class ThemeStore {
     static let shared = ThemeStore()
-
-    var choice = ThemeChoice(rawValue: UserDefaults.standard.string(forKey: "themeChoice") ?? "") ?? .phone {
-        didSet { UserDefaults.standard.set(choice.rawValue, forKey: "themeChoice") }
-    }
-
-    private var phoneIsLight = UserDefaults.standard.bool(forKey: "themeIsLight") {
-        didSet { UserDefaults.standard.set(phoneIsLight, forKey: "themeIsLight") }
-    }
-
-    var isLight: Bool {
-        switch choice {
-        case .phone: phoneIsLight
-        case .dark: false
-        case .light: true
-        }
-    }
 
     // Experimental: Finamp's accent colours and tinted backgrounds instead of the original design.
     var accentColors = UserDefaults.standard.bool(forKey: "accentColors") {
@@ -60,7 +30,7 @@ final class ThemeStore {
 
     // nil draws the original design.
     var scheme: AccentScheme? {
-        guard accentColors, let colors = schemes[isLight ? "light" : "dark"] else { return nil }
+        guard accentColors, let colors = schemes["dark"] else { return nil }
         return AccentScheme(colors)
     }
 
@@ -76,12 +46,6 @@ final class ThemeStore {
             (colors as? [String: Any])?.compactMapValues { ($0 as? NSNumber)?.intValue }
         }
         if parsed != schemes { schemes = parsed }
-    }
-
-    func apply(_ theme: Any?) {
-        guard let theme = theme as? String, theme == "light" || theme == "dark" else { return }
-        let light = theme == "light"
-        if light != phoneIsLight { phoneIsLight = light }
     }
 }
 
@@ -117,9 +81,7 @@ struct AccentScheme {
     let primary, onPrimary, surface, onSurface, onSurfaceVariant: Color
 
     init?(_ argb: [String: Int]) {
-        func color(_ name: String) -> Color? {
-            argb[name].map { Color(red: Double(($0 >> 16) & 0xFF) / 255, green: Double(($0 >> 8) & 0xFF) / 255, blue: Double($0 & 0xFF) / 255) }
-        }
+        func color(_ name: String) -> Color? { argb[name].map(Color.init(argb:)) }
         guard let primary = color("primary"), let surface = color("surface"), let onSurface = color("onSurface"),
               let onSurfaceVariant = color("onSurfaceVariant") else { return nil }
         (self.primary, self.surface, self.onSurface) = (primary, surface, onSurface)
@@ -129,35 +91,34 @@ struct AccentScheme {
 }
 
 extension Color {
-    static var appBackground: Color { ThemeStore.shared.scheme?.surface ?? (ThemeStore.shared.isLight ? .white : .black) }
-    static var fgPrimary: Color { ThemeStore.shared.scheme?.onSurface ?? (ThemeStore.shared.isLight ? .black : .white) }
-    static var fgSecondary: Color {
-        ThemeStore.shared.scheme?.onSurfaceVariant ?? (ThemeStore.shared.isLight ? Color(white: 0.42) : Color(white: 0.62))
+    // Flutter's ARGB; the watch draws these opaque.
+    init(argb: Int) {
+        self.init(red: Double((argb >> 16) & 0xFF) / 255, green: Double((argb >> 8) & 0xFF) / 255, blue: Double(argb & 0xFF) / 255)
     }
-    static var listFill: Color { ThemeStore.shared.isLight ? .black.opacity(0.045) : .white.opacity(0.09) }
+
+    static var appBackground: Color { ThemeStore.shared.scheme?.surface ?? .black }
+    static var fgPrimary: Color { ThemeStore.shared.scheme?.onSurface ?? .white }
+    static var fgSecondary: Color { ThemeStore.shared.scheme?.onSurfaceVariant ?? Color(white: 0.62) }
+    static var listFill: Color { .white.opacity(0.09) }
 }
 
 struct FinampLogoTile: View {
     var size: CGFloat = 34
 
     var body: some View {
-        let light = ThemeStore.shared.isLight
         Image("FinampLogo")
             .resizable()
             .scaledToFit()
             .padding(size * 0.084)
             .frame(width: size, height: size)
             .background(
-                light ? Color.white : Color(red: 0x0F / 255, green: 0x21 / 255, blue: 0x29 / 255),
+                Color(red: 0x0F / 255, green: 0x21 / 255, blue: 0x29 / 255),
                 in: RoundedRectangle(cornerRadius: size * 0.26)
             )
             .overlay {
-                if !light {
-                    RoundedRectangle(cornerRadius: size * 0.26)
-                        .stroke(Color(red: 0x26 / 255, green: 0x35 / 255, blue: 0x3D / 255), lineWidth: 1)
-                }
+                RoundedRectangle(cornerRadius: size * 0.26)
+                    .stroke(Color(red: 0x26 / 255, green: 0x35 / 255, blue: 0x3D / 255), lineWidth: 1)
             }
-            .shadow(color: light ? .black.opacity(0.18) : .clear, radius: 3, y: 1)
     }
 }
 

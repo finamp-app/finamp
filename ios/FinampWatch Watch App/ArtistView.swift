@@ -11,8 +11,6 @@ struct ArtistView: View {
     @State private var isLoadingMore = false
     private static let pageSize = 50
     @State private var info: ArtistInfo?
-    @State private var leftColumnWidth: CGFloat = 0
-    @State private var rightColumnWidth: CGFloat = 0
 
     // Playback artist chips do not carry favourite state.
     private var item: LibraryItem {
@@ -22,12 +20,13 @@ struct ArtistView: View {
     }
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 6) {
+        // A List like the track pages, for watchOS's shrinking rows at the screen edges.
+        List {
+            Group {
                 header
                 switch state {
                 case .loading:
-                    SkeletonCoverRows(count: 3, coverFraction: LibraryKind.albums.coverFraction)
+                    SkeletonCoverRows(count: 3, coverShare: LibraryKind.albums.coverShare)
                 case .failed(let message):
                     RetryView(message: message) { await load() }
                 case .loaded(let albums) where albums.isEmpty:
@@ -37,6 +36,7 @@ struct ArtistView: View {
                 case .loaded(let albums):
                     ForEach(albums) { album in
                         CollectionLink(item: album, kind: .albums)
+                            .coverListRow()
                             .onAppear {
                                 if albums.suffix(pagePrefetchRows).contains(where: { $0.id == album.id }) {
                                     Task { await loadMore() }
@@ -45,59 +45,46 @@ struct ArtistView: View {
                     }
                 }
             }
+            .clearListRow()
         }
         .navigationTitle("")
-        .phoneDownloadButton(for: artist, downloaded: info?.downloaded ?? false, lock: info?.downloadLock)
+        .coverList()
         .task { if case .loading = state { await load() } }
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .center, spacing: 8) {
-                CoverView(item: artist, circular: true)
-                    .containerRelativeFrame(.horizontal) { width, _ in width * 0.38 }
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(artist.name)
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(Color.fgPrimary)
-                        .lineLimit(3)
-                    if let info {
-                        count(
-                            info.tracks == 1 ? String(localized: "1 track") : String(localized: "\(info.tracks) tracks"),
-                            symbol: "music.note"
-                        )
-                    }
-                    if let albums = albumCount {
-                        count(
-                            albums == 1 ? String(localized: "1 album") : String(localized: "\(albums) albums"),
-                            symbol: "opticaldisc"
-                        )
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(alignment: .leading, spacing: PageHeader.spacing) {
+            PageTitleRow(
+                title: artist.name,
+                favorite: FavoriteOverrides.shared.value(for: item),
+                onFavorite: { Task { await FavoriteOverrides.shared.toggle(item) } }
+            ) {
+                PhoneDownloadButton(
+                    item: artist, initiallyDownloaded: info?.downloaded ?? false, lock: info?.downloadLock, itemType: "artist"
+                )
             }
-            // Align icons so a two-line label does not push its neighbour down.
-            Grid(horizontalSpacing: 14, verticalSpacing: 6) {
-                GridRow(alignment: .top) {
-                    LabeledIconButton(title: "Play", systemImage: "play", fills: false) { await play() }
-                    LabeledIconButton(title: "Shuffle", systemImage: "shuffle", fills: false) { await play(shuffle: true) }
-                        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { rightColumnWidth = $0 }
+            HStack(alignment: .center, spacing: PageHeader.coverToStats) {
+                // A rounded square here, round in lists. The image and the text share the row in halves.
+                CoverView(item: artist)
+                    .frame(maxWidth: .infinity)
+                VStack(alignment: .leading, spacing: PageHeader.statSpacing) {
+                    // Finamp's artist stats: tracks, then albums.
+                    if let info { StatLine(symbol: "music.note", text: FinampFormat.tracks(info.tracks)) }
+                    if let albums = albumCount { StatLine(symbol: "opticaldisc", text: FinampFormat.albums(albums)) }
                 }
-                GridRow(alignment: .top) {
-                    LabeledIconButton(title: "Shuffle\nAlbums", systemImage: "shuffle", titleLines: 2, fills: false) {
-                        await play(albumShuffle: true)
-                    }
-                    .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { leftColumnWidth = $0 }
-                    LabeledIconButton(
-                        title: "Like",
-                        systemImage: FavoriteOverrides.shared.value(for: item) ? "heart.fill" : "heart",
-                        fills: false
-                    ) { await FavoriteOverrides.shared.toggle(item) }
+                .frame(maxWidth: .infinity)
+            }
+            // Three equal columns, aligned at the top so the two-line label doesn't push the others down.
+            HStack(alignment: .top, spacing: 0) {
+                LabeledIconButton(title: "Play", systemImage: "play") { await play() }
+                LabeledIconButton(title: "Shuffle", systemImage: "shuffle") { await play(shuffle: true) }
+                LabeledIconButton(title: "Shuffle\nAlbums", systemImage: "shuffle", titleLines: 2) {
+                    await play(albumShuffle: true)
                 }
             }
-            // Centre the midpoint between icons despite unequal column widths.
-            .offset(x: (rightColumnWidth - leftColumnWidth) / 4)
-            .frame(maxWidth: .infinity)
+            // The buttons reach out to the card edge, each in an equal share.
+            .sameLabelSize()
+            .widenToCardEdge()
             SectionHeader(title: String(localized: "Albums"))
         }
     }
@@ -107,12 +94,6 @@ struct ArtistView: View {
         if let info { return info.albums }
         if case .loaded(let albums) = state, !hasMore { return albums.count }
         return nil
-    }
-
-    private func count(_ text: String, symbol: String) -> some View {
-        Label(text, systemImage: symbol)
-            .font(.caption2)
-            .foregroundStyle(Color.fgSecondary)
     }
 
     private func load() async {

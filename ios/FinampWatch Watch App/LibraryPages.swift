@@ -15,11 +15,11 @@ enum LibraryKind: String {
         }
     }
 
-    var coverFraction: CGFloat {
+    var coverShare: CGFloat {
         switch self {
-        case .playlists, .tracks: return 0.4
-        case .albums, .downloads: return 0.3
-        case .artists: return 0.28
+        case .tracks: return CoverRows.trackCoverShare
+        case .albums, .playlists, .downloads: return CoverRows.albumCoverShare
+        case .artists: return CoverRows.artistCoverShare
         }
     }
 
@@ -73,21 +73,20 @@ struct LibraryPage: View {
                     List {
                         ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                             trackRow(item, index: index)
-                                .listRowBackground(
-                                    TrackRowBackground(isPlaying: NowPlayingStore.shared.nowPlaying.id == item.id)
-                                )
+                                .cardRow(isPlaying: NowPlayingStore.shared.nowPlaying.id == item.id)
                                 .onAppear {
                                     if index >= items.count - pagePrefetchRows { Task { await loadMore() } }
                                 }
                         }
                         if isLoadingMore {
-                            SkeletonTrackRows(count: 1)
-                                .listRowBackground(Color.clear)
+                            SkeletonTrackRows(count: 1, hearts: true, enlarged: true)
                         }
                     }
+                    .cardList()
                 } else if let items {
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 6) {
+                    // A List like the track pages, for watchOS's shrinking rows at the screen edges.
+                    List {
+                        Group {
                             ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                                 row(item, index: index)
                                     .onAppear {
@@ -95,20 +94,30 @@ struct LibraryPage: View {
                                     }
                             }
                             if isLoadingMore {
-                                SkeletonCoverRows(count: 1, coverFraction: kind.coverFraction, circular: kind == .artists)
+                                SkeletonCoverRows(count: 1, coverShare: kind.coverShare, circular: kind == .artists)
                             }
                         }
+                        .coverListRow()
                     }
+                    .coverList()
                 } else if let error {
                     RetryView(message: error) { await reload() }
-                } else {
-                    ScrollView {
-                        if kind == .tracks {
-                            SkeletonTrackRows()
-                        } else {
-                            SkeletonCoverRows(coverFraction: kind.coverFraction, circular: kind == .artists)
-                        }
+                } else if kind == .tracks {
+                    // Placeholders in the same list, with the same rows, as the loaded page (Skeleton.swift)
+                    List {
+                        SkeletonTrackRows(hearts: true, enlarged: true)
                     }
+                    .cardList()
+                } else {
+                    List {
+                        Group {
+                            SkeletonCoverRows(
+                                coverShare: kind.coverShare, circular: kind == .artists, sectionHeader: kind == .downloads
+                            )
+                        }
+                        .coverListRow()
+                    }
+                    .coverList()
                 }
             }
             .navigationTitle(kind.title)
@@ -120,7 +129,15 @@ struct LibraryPage: View {
             if active { Task { await reload() } }
         }
         .onReceive(NotificationCenter.default.publisher(for: .phoneBecameReachable)) { _ in
-            if isActive && items == nil { Task { await reload() } }
+            if isActive && items == nil { Task { await reload(quiet: true) } }
+        }
+        // Start over when Offline Mode changes, as Finamp's library tabs do: the other mode lists other items.
+        .onChange(of: PhoneSettings.shared.offline) {
+            items = nil
+            error = nil
+            hasMore = true
+            generation += 1
+            if isActive { Task { await reload(quiet: true) } }
         }
     }
 
@@ -131,7 +148,7 @@ struct LibraryPage: View {
             CollectionLink(item: item, kind: kind)
         case .downloads:
             let itemKind = Self.downloadKind(item.kind)
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: CoverRows.headingToRow) {
                 if index == 0 || items?[index - 1].kind != item.kind {
                     SectionHeader(title: itemKind.title)
                 }
@@ -161,12 +178,24 @@ struct LibraryPage: View {
     }
 
     // Keep later pages only if the first page has not shifted; errors replace empty content.
-    private func reload() async {
+    // `quiet`: the phone caused it (back in reach, Offline Mode changed there), not a tap.
+    private func reload(quiet: Bool = false) async {
         guard !isReloading else { return }
         isReloading = true
         defer { isReloading = false }
         do {
-            let firstPage = try await PhoneConnection.shared.list(kind.type, offset: 0, limit: Self.pageSize)
+            // Fetch again if Offline Mode changed while this page was on its way.
+            var firstPage: [LibraryItem]
+            var started: Int
+            var again = false
+            repeat {
+                started = generation
+                // A fetch again because Offline Mode changed meanwhile is the phone's doing.
+                firstPage = try await PhoneConnection.shared.list(
+                    kind.type, offset: 0, limit: Self.pageSize, quiet: quiet || again
+                )
+                again = true
+            } while generation != started
             if let current = items, !firstPage.isEmpty, current.count > firstPage.count,
                current.prefix(firstPage.count).map(\.id) == firstPage.map(\.id) {
                 items = firstPage + current.dropFirst(firstPage.count)

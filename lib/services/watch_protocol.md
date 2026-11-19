@@ -15,13 +15,15 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 | Request | Args | Result |
 |---|---|---|
 | `list` | `type`, `parentId?`, `offset`, `limit` | rows, paged; a page can end early (≤ 40 KB), only an empty page means the end. `type`: `artists`, `albums`, `playlists`, `tracks`, `favorites`, `favoriteAlbums`, `favoriteArtists`, `downloads`; with `parentId`: a collection's tracks or an artist's albums |
-| `home` | — | `{recent, newAlbums, actions, theme}` |
+| `home` | — | `{recent, newAlbums, actions}` |
 | `search` | `query` | `{artists, albums, playlists, tracks}`, 5 each |
-| `play` | `type`, `parentId?`, `startId?`, `shuffle`; `artist` + `albumShuffle`; `tracks` + `index`, `startId`; `search` + `query` | `true` |
+| `play` | `type`, `parentId?`, `startId?`, `shuffle`; `artist` + `albumShuffle`; `tracks` and `favorites` + `index`, `startId`; `search` + `query` | `true` |
 | `artistInfo` | `id` | `{tracks, albums, favorite, downloaded, downloadLock?}` |
+| `item` | `id` | one row, as in `list` (e.g. the playing track's album, before Playback opens it) |
 | `downloadState` | `id` | `{downloaded, downloadLock?}` |
+| `deleteDownload` | `id` | `{status: deleted \| notDownloaded, message?}`; the watch asks first, as Finamp's delete button does |
 | `download` | `id`, `transcode?`, `locationId?`, `confirmed?` | `{status: downloading \| alreadyDownloaded}` or `{ask: transcode \| location \| confirm, …}` |
-| `favorite` | `id`, `favorite` | the resulting state (bool), or an error while offline |
+| `favorite` | `id`, `favorite` | Finamp's state right away (bool; the server's answer follows in `favoriteStates`), or an error while offline |
 | `control` | `action`: `playPause`, `next`, `previous`, `toggleLoop`, `togglePlaybackOrder`, `toggleRadio`, or `skipTo` + `id` | `true` |
 | `nowPlaying` | — | the now-playing dict (below) |
 | `queue` | — | up to 30 upcoming rows |
@@ -37,17 +39,21 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 | `artworks` | `items: [{id, size}]` | `{artworks: {"<id>-<size>": JPEG}, missing}` (`WatchBridge` encodes the JPEGs) |
 
 **Row:** `{id, name, subtitle, artistId, artworkKey, artworkUrl, blurHash, artistArtworkUrl, duration, year,
-trackCount, favorite, downloaded, downloadLock?, kind, artists?}`.
+releaseDate, trackCount, favorite, downloaded, downloadLock?, kind, artists?}`.
 
 **Now playing:** `{hasTrack, id, title, artist, artworkKey, artworkUrl, blurHash, albumId, album, albumArtist,
-albumArtistId, artists, features, duration, position, updatedAt, playing, advancing, loop, shuffled, radio, radioAvailable,
-favorite, upNext, theme}`; `features` holds the player's feature chips as Finamp's player shows them
+albumArtistId, artists, features, duration, position, updatedAt, speed, playing, advancing, loop, shuffled, radio, radioAvailable,
+favorite, upNext, coverColor, shortFeatures}`; `features` holds the player's feature chips as Finamp's player shows them
 (the user's chip settings, in their order; `E` for explicit, empty with chips turned off); `upNext`
 holds the next two tracks' `{id, artworkKey, artworkUrl}` so the watch can load their covers ahead. The watch counts
 `position` on from `updatedAt` only while `advancing` (playing and not loading or buffering), so its time stops with
 the phone's when a track can't load; `playing` still sets the play/pause button. `loop` (`none` \| `one` \| `all`),
 `shuffled`, `radio` and `radioAvailable` (radio is on and can run for this queue) drive the queue's buttons; the
-`toggle…` actions cycle them as Finamp's queue does, and `toggleLoop` does nothing while radio is on.
+`toggle…` actions cycle them as Finamp's queue does, and `toggleLoop` does nothing while radio is on. `coverColor` is
+the colour Finamp's player and queue take from the track's cover (their theme's primary, ARGB, lifted to read on the
+watch's dark background); the queue's buttons use it while active. `shortFeatures` is the watch's short chips as a list in the
+order the user set Finamp's chips, each only while its chip is on: `{type: explicit}`, `{type: plays, text}` (Finamp's
+play count text), `{type: mode, mode: local \| transcoding \| direct}`, `{type: format, codec?, kbps?}`.
 
 ## Pushes (phone → watch)
 
@@ -56,13 +62,14 @@ Sent live while the watch app is reachable; the application context always holds
 | Push | Value |
 |---|---|
 | `nowPlaying` | the now-playing dict |
-| `theme` | `light` or `dark`, from Finamp's theme setting |
 | `accent` | Finamp's colour scheme as ARGB (its `getColorScheme`, AMOLED included), `{light, dark}` each with `primary`, `onPrimary`, `surface`, `onSurface`, `onSurfaceVariant` |
 | `account` | `user-id@server-id`, or empty when logged out |
 | `transcoding` | Finamp's transcoding setting |
 | `offline` | Finamp's Offline Mode |
 | `volume` | Finamp's own volume, 0…1 |
 | `airPlay` | whether playback goes to AirPlay |
+| `outputRoute` | `{route, routeType}`, as in `output`, on every audio route change (the Output sheet follows it) |
+| `favoriteStates` | `{id: favorite}` for the last 20 items the watch favourited or unfavourited, as Finamp holds them: a change the server refuses flips back, as on the phone; empty after an account change |
 
 ## Flutter ↔ iOS (same channel)
 

@@ -49,6 +49,9 @@
     "Back" : {
 
     },
+    "Bitrate" : {
+
+    },
     "Can't reach your Jellyfin server" : {
 
     },
@@ -70,7 +73,7 @@
     "Connect to Jellyfin" : {
 
     },
-    "Dark" : {
+    "Direct Playing" : {
 
     },
     "Download" : {
@@ -103,6 +106,9 @@
     "Enable Transcoding" : {
 
     },
+    "Explicit" : {
+
+    },
     "Favorite Albums" : {
 
     },
@@ -124,10 +130,10 @@
     "In\nOrder" : {
 
     },
-    "Light" : {
+    "Like" : {
 
     },
-    "Like" : {
+    "Local" : {
 
     },
     "Log in to your server in Finamp on your iPhone." : {
@@ -241,13 +247,16 @@
     "Retry" : {
 
     },
-    "Same as iPhone" : {
-
-    },
     "Search" : {
 
     },
     "Settings" : {
+
+    },
+    "Short Track Info" : {
+
+    },
+    "Shows only how the track plays on Playback: streamed, downloaded or transcoded, with its format and bitrate. Off shows every chip you chose in Finamp." : {
 
     },
     "Shuffle" : {
@@ -260,9 +269,6 @@
 
     },
     "Shuffled" : {
-
-    },
-    "Theme" : {
 
     },
     "This is Finamp's setting on your iPhone: changing it here changes it there. Playback follows Finamp's transcoding settings (bitrate and format)." : {
@@ -278,6 +284,9 @@
 
     },
     "Transcoded" : {
+
+    },
+    "Transcoding" : {
 
     },
     "Turn on Offline Mode in Settings to play your downloads" : {

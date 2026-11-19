@@ -16,32 +16,48 @@ struct HomePage: View {
         (.favorites, String(localized: "Favorite Tracks"), .tracks),
     ]
 
+    private static let columns = [GridItem(.flexible(), spacing: HomeTiles.gap), GridItem(.flexible(), spacing: HomeTiles.gap)]
+
+    private func quickAction(_ action: QuickAction) -> some View {
+        QuickActionButton(action: action) {
+            do {
+                try await PhoneConnection.shared.runQuickAction(action.index, action: action.action)
+                onPlay()
+            } catch {
+                PhoneMessage.shared.text = error.localizedDescription
+            }
+        }
+    }
+
     var body: some View {
+        homeStack
+            // Home's own screen has buttons on both sides (clock centred); a page opened from it has the clock right.
+            .clockPlace(path.isEmpty ? .underCentredClock : .underClockOnRight)
+    }
+
+    private var homeStack: some View {
         LibraryNavigationStack(path: $path) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 8) {
+            // A List like the other pages, for watchOS's shrinking rows at the screen edges.
+            List {
+                Group {
                     if let actions = sections?.actions ?? QuickAction.cached, !actions.isEmpty {
-                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 6), GridItem(.flexible(), spacing: 6)], spacing: 6) {
-                            ForEach(actions) { action in
-                                QuickActionButton(action: action) {
-                                    do {
-                                        try await PhoneConnection.shared.runQuickAction(action.index, action: action.action)
-                                        onPlay()
-                                    } catch {
-                                        self.error = error.localizedDescription
-                                    }
-                                }
-                            }
+                        // One row, so the tiles keep their gaps; it shrinks at the screen edges as one block.
+                        LazyVGrid(columns: Self.columns, spacing: HomeTiles.gap) {
+                            ForEach(actions) { action in quickAction(action) }
                         }
+                        .widenToCardEdge()
+                        .padding(.top, HomeTiles.topPadding)
+                        .clearListRow()
                     } else if sections == nil {
                         // Wait for cached or fetched actions to avoid briefly showing a different button.
-                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 6), GridItem(.flexible(), spacing: 6)], spacing: 6) {
+                        LazyVGrid(columns: Self.columns, spacing: HomeTiles.gap) {
                             ForEach(0..<4, id: \.self) { _ in
-                                RoundedRectangle(cornerRadius: 12)
+                                RoundedRectangle(cornerRadius: HomeTiles.cornerRadius)
                                     .fill(Color.finampBlue.opacity(0.08))
-                                    .frame(minHeight: 54)
+                                    .frame(minHeight: HomeTiles.minHeight)
                             }
                         }
+                        .clearListRow()
                     } else {
                         Button {
                             Task {
@@ -49,7 +65,7 @@ struct HomePage: View {
                                     try await PhoneConnection.shared.shuffleAll()
                                     onPlay()
                                 } catch {
-                                    self.error = error.localizedDescription
+                                    PhoneMessage.shared.text = error.localizedDescription
                                 }
                             }
                         } label: {
@@ -65,6 +81,7 @@ struct HomePage: View {
                                 .background(.finampGradient, in: Capsule())
                         }
                         .buttonStyle(.plain)
+                        .clearListRow()
                     }
 
                     if let sections {
@@ -76,6 +93,8 @@ struct HomePage: View {
                             }
                         }
                         SectionHeader(title: String(localized: "Favorites"))
+                            .keepsWatchOSRowHeight()
+                            .clearListRowReportingEdge()
                         ForEach(Self.favoriteCards, id: \.title) { card in
                             NavigationLink(value: card.destination) {
                                 HomeCard(
@@ -85,6 +104,7 @@ struct HomePage: View {
                                 )
                             }
                             .buttonStyle(.plain)
+                            .clearListRow()
                         }
                         HomeSection(title: String(localized: "Newly Added Albums"), items: sections.newAlbums) { album in
                             NavigationLink(value: LibraryDestination.tracks(album, type: "albums")) {
@@ -92,12 +112,14 @@ struct HomePage: View {
                             }
                         }
                     } else if let error {
-                        RetryView(message: error) { await reload() }
+                        RetryView(message: error, inList: true) { await reload() }
+                            .clearListRow()
                     } else {
                         SkeletonHomeCards()
                     }
                 }
             }
+            .cardList()
             .libraryDestinations(onPlay: onPlay)
             .themedBackground()
             // Buttons on both sides make watchOS centre the clock.
@@ -126,6 +148,8 @@ struct HomePage: View {
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
+                .phoneMessageAlert()
+                .phoneActivityIndicator()
                 .presentationBackground(Color.appBackground)
         }
         .onChange(of: isActive, initial: true) { _, active in
@@ -133,19 +157,18 @@ struct HomePage: View {
         }
 
         .onReceive(NotificationCenter.default.publisher(for: .phoneBecameReachable)) { _ in
-            if isActive && sections == nil { Task { await reload() } }
+            if isActive && sections == nil { Task { await reload(quiet: true) } }
         }
     }
 
-    // Retain current sections during reload.
-    private func reload() async {
+    // Retain current sections during reload. `quiet`: the phone came back in reach, not a tap.
+    private func reload(quiet: Bool = false) async {
         guard !isReloading else { return }
         isReloading = true
         defer { isReloading = false }
         do {
-            let home = try await PhoneConnection.shared.home()
+            let home = try await PhoneConnection.shared.home(quiet: quiet)
             sections = home
-            ThemeStore.shared.apply(home.theme)
             QuickAction.cached = home.actions
             error = nil
         } catch {
@@ -158,25 +181,31 @@ struct QuickActionButton: View {
     let action: QuickAction
     let run: () async -> Void
 
+    // "Surprise Me" on two lines like the other tiles' titles; the words come from Finamp in the phone's language.
+    private var displayTitle: String {
+        action.action == "surpriseMe" ? action.title.replacingOccurrences(of: " ", with: "\n") : action.title
+    }
+
     var body: some View {
         Button {
             Task { await run() }
         } label: {
-            VStack(spacing: 3) {
-                FinampIcon(systemName: action.systemImage, size: 19)
+            VStack(spacing: HomeTiles.iconToLabel) {
+                FinampIcon(systemName: action.systemImage, size: HomeTiles.iconSize)
                     .font(.body.weight(.semibold))
                     .fixedIconSize()
                     .foregroundStyle(Color.finampBlue)
-                Text(action.title)
+                Text(displayTitle)
                     .font(.caption2)
                     .foregroundStyle(Color.fgPrimary)
-                    .lineLimit(2)
+                    // Two lines kept for a one-line title, so every tile's icon sits at the same height.
+                    .lineLimit(2, reservesSpace: true)
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.8)
             }
-            .frame(maxWidth: .infinity, minHeight: 54)
-            .padding(.horizontal, 4)
-            .background(Color.finampBlue.opacity(0.18), in: RoundedRectangle(cornerRadius: 12))
+            .padding(HomeTiles.padding)
+            .frame(maxWidth: .infinity, minHeight: HomeTiles.minHeight)
+            .background(Color.finampBlue.opacity(0.18), in: RoundedRectangle(cornerRadius: HomeTiles.cornerRadius))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(action.title)
@@ -191,26 +220,31 @@ struct HomeSection<Card: View>: View {
     var body: some View {
         if !items.isEmpty {
             SectionHeader(title: title)
+                .keepsWatchOSRowHeight()
+                .clearListRowReportingEdge()
             ForEach(items) { item in
-                card(item).buttonStyle(.plain)
+                card(item).buttonStyle(.plain).clearListRow()
             }
         }
     }
 }
 
+// Left, in line with the covers and rows below it (Finamp's section headings are left-aligned).
 struct SectionHeader: View {
     let title: String
+    var alignment: Alignment = .leading
 
     var body: some View {
         Text(title.uppercased())
             .font(.caption2)
             .fontWeight(.semibold)
             .foregroundStyle(Color.fgSecondary)
-            .frame(maxWidth: .infinity)
-            .padding(.top, 6)
+            .frame(maxWidth: .infinity, alignment: alignment)
+            .padding(.top, PageHeader.sectionHeaderTop)
     }
 }
 
+// A Home or search card: a cover (or the Favorites logo) and the name, on the card background (`Cards`).
 struct HomeCard: View {
     let item: LibraryItem
     var circular = false
@@ -218,7 +252,7 @@ struct HomeCard: View {
     var favoritesSymbol: String? = nil
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: Cards.homeCoverToTitle) {
             Group {
                 if let favoritesSymbol {
                     FavoritesLogo(symbol: favoritesSymbol, circular: circular)
@@ -226,15 +260,13 @@ struct HomeCard: View {
                     CoverView(item: item, circular: circular)
                 }
             }
-            .containerRelativeFrame(.horizontal) { width, _ in width * 0.2 }
+            .containerRelativeFrame(.horizontal) { width, _ in width * Cards.homeCoverShare }
             Text(item.name)
-                .font(.headline)
+                .font(.headline.weight(Cards.homeTitleWeight))
                 .lineLimit(2)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(8)
-        .background(Color.listFill, in: RoundedRectangle(cornerRadius: 12))
-        .contentShape(RoundedRectangle(cornerRadius: 12))
+        .homeCardBackground()
     }
 }
 
@@ -254,8 +286,9 @@ struct SearchResultsView: View {
                         .foregroundStyle(Color.fgSecondary)
                         .multilineTextAlignment(.center)
                 } else {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 8) {
+                    // A List like the other pages, for watchOS's shrinking rows and its own row backgrounds.
+                    List {
+                        Group {
                             HomeSection(title: String(localized: "Artists"), items: results.artists) { artist in
                                 NavigationLink(value: LibraryDestination.artistAlbums(artist)) {
                                     HomeCard(item: artist, circular: true)
@@ -278,17 +311,17 @@ struct SearchResultsView: View {
                                     favorite: FavoriteOverrides.shared.value(for: track),
                                     onTap: { Task { await play(track) } }
                                 )
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 8)
-                                .background(TrackRowBackground(isPlaying: false))
+                                .cardRow()
                             }
                         }
                     }
+                    .cardList()
                 }
             } else if let error {
                 RetryView(message: error) { await load() }
             } else {
-                ScrollView { SkeletonTrackRows(count: 5) }
+                List { SkeletonTrackRows(count: 5, hearts: true) }
+                    .cardList()
             }
         }
         .navigationTitle(query)

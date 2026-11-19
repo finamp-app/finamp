@@ -1,31 +1,62 @@
 import SwiftUI
 
+// A page button: an icon over its label, in an equal share of a button strip (`PageButtons`).
 struct LabeledIconButton: View {
     let title: LocalizedStringKey
     let systemImage: String
-    var tint: Color = .finampBlue
+    // Finamp draws these actions in the text colour; only the queue colours them, by state.
+    var tint: Color = .fgPrimary
     var titleLines = 1
-    var fills = true
     let action: () async -> Void
+
+    // Inside a `sameLabelSize()` strip: the size every label in it shares.
+    @Environment(\.stripLabelScale) private var stripScale
+    @Environment(\.fontResolutionContext) private var fontContext
+    @State private var naturalWidth: CGFloat = 0
+    @State private var width: CGFloat = 0
+
+    // How far this label must shrink to keep `PageButtons.labelGap` to its neighbours (1 = full size).
+    private var neededScale: CGFloat {
+        guard stripScale != nil, naturalWidth > 0, width > 0 else { return 1 }
+        return min(1, (width - PageButtons.labelGap) / naturalWidth)
+    }
+
+    private var labelFont: Font {
+        guard let stripScale, stripScale < 1 else { return .caption2 }
+        return .system(size: TextSize.current(.caption2, in: fontContext) * stripScale)
+    }
 
     var body: some View {
         Button {
             Task { await action() }
         } label: {
-            VStack(spacing: 2) {
-                FinampIcon(systemName: systemImage, size: 22)
+            VStack(spacing: PageButtons.iconToLabel) {
+                FinampIcon(systemName: systemImage, size: PageButtons.iconSize)
                     .font(.title3)
                     .fixedIconSize()
                     .foregroundStyle(tint)
                 Text(title)
-                    .font(.caption2)
+                    .font(labelFont)
                     .foregroundStyle(Color.fgPrimary)
                     .multilineTextAlignment(.center)
                     .lineLimit(titleLines)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(PageButtons.minimumLabelScale)
+                    .padding(.horizontal, PageButtons.labelGap / 2)
             }
-            .frame(maxWidth: fills ? .infinity : nil)
-            .padding(.vertical, 4)
+            .frame(maxWidth: .infinity)
+            .background {
+                // The label's full-size width, from a hidden copy the shared size never changes (StripLabelScaleKey)
+                if stripScale != nil {
+                    Text(title)
+                        .font(.caption2)
+                        .fixedSize()
+                        .hidden()
+                        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { naturalWidth = $0 }
+                }
+            }
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
+            .preference(key: StripLabelScaleKey.self, value: neededScale)
+            .padding(.vertical, PageButtons.verticalPadding)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -50,9 +81,27 @@ extension View {
 
 struct RetryView: View {
     let message: String
+    // In a List: the list scrolls and gives the margins.
+    var inList = false
     let retry: () async -> Void
 
     var body: some View {
+        if inList {
+            content
+        } else {
+            // On a short screen the page doesn't fit under the title: it scrolls rather than cutting its text, and is
+            // centred when it fits. The text sits on watchOS's margin, in line with the top buttons.
+            GeometryReader { proxy in
+                ScrollView {
+                    content
+                        .scenePadding(.horizontal)
+                        .frame(maxWidth: .infinity, minHeight: proxy.size.height)
+                }
+            }
+        }
+    }
+
+    private var content: some View {
         VStack(spacing: 8) {
             Image(systemName: isServer ? "wifi.slash" : "iphone.slash")
                 .font(.title2)
@@ -81,38 +130,100 @@ struct RetryView: View {
     }
 }
 
-// watchOS 26 resolves Text Size live; older versions use system sizes at view creation.
-enum TextSize {
-    static func current(_ style: Font.TextStyle, in context: Font.Context) -> CGFloat {
-        if #available(watchOS 26.0, *) {
-            return Font.system(style).resolve(in: context).pointSize
-        }
-        return UIFont.preferredFont(forTextStyle: uiStyle(style)).pointSize
-    }
+// A page's title row, under the top buttons and above the cover: the name in up to two lines, then its heart and
+// any trailing button (the download), centred on the title however many lines it takes. Used by the artist, album,
+// playlist and queue pages.
+struct PageTitleRow<Trailing: View>: View {
+    let title: String
+    // nil hides the heart.
+    var favorite: Bool?
+    var onFavorite: () -> Void = {}
+    @ViewBuilder var trailing: Trailing
+    // Follows the title's text.
+    @ScaledMetric(relativeTo: .headline) private var heartSize = PageHeader.heartSize
 
-    // Large is the baseline for relative layout sizes.
-    static func atLarge(_ style: Font.TextStyle) -> CGFloat {
-        if #available(watchOS 26.0, *) {
-            var environment = EnvironmentValues()
-            environment.dynamicTypeSize = .large
-            return Font.system(style).resolve(in: environment.fontResolutionContext).pointSize
-        }
-        return UIFont.preferredFont(forTextStyle: uiStyle(style)).pointSize
-    }
-
-    private static func uiStyle(_ style: Font.TextStyle) -> UIFont.TextStyle {
-        switch style {
-        case .title3: .title3
-        case .caption2: .caption2
-        default: .footnote
+    var body: some View {
+        // A small gap after the title so it keeps as many letters as it can; the buttons keep theirs.
+        HStack(alignment: .center, spacing: PageHeader.titleToButtons) {
+            Text(title)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(Color.fgPrimary)
+                .lineLimit(2)
+                .truncationMode(.tail)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: PageHeader.buttonSpacing) {
+                if let favorite {
+                    Button(action: onFavorite) {
+                        FavoriteHeart(filled: favorite, size: heartSize)
+                            .foregroundStyle(Color.fgPrimary)
+                            .iconTapArea(heartSize)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(favorite ? String(localized: "Remove Favorite") : String(localized: "Add Favorite"))
+                }
+                trailing
+            }
         }
     }
 }
 
-extension View {
-    // Keep icons at Large size so only text scales.
-    func fixedIconSize() -> some View {
-        dynamicTypeSize(.large)
+extension PageTitleRow where Trailing == EmptyView {
+    init(title: String, favorite: Bool? = nil, onFavorite: @escaping () -> Void = {}) {
+        self.init(title: title, favorite: favorite, onFavorite: onFavorite) { EmptyView() }
+    }
+}
+
+// One line of a page's stats, as Finamp's IconAndText: the icon at half opacity stays put, and only the text, on one
+// line, scrolls when it doesn't fit.
+struct StatLine: View {
+    let symbol: String
+    let text: String
+    // Follows the stat's text.
+    @ScaledMetric(relativeTo: .caption2) private var iconSize = PageHeader.statIconSize
+
+    var body: some View {
+        HStack(spacing: PageHeader.statIconToText) {
+            FinampIcon(systemName: symbol, size: iconSize)
+                .foregroundStyle(Color.fgPrimary.opacity(0.5))
+            Marquee {
+                Text(text)
+                    .font(.caption2)
+                    .foregroundStyle(Color.fgPrimary)
+            }
+        }
+    }
+}
+
+// A cover and its text sharing the row in halves, as on the album and artist pages. Used where the page's name is the
+// navigation title instead of a title row.
+struct HalvesCoverRow<Cover: View, Info: View>: View {
+    @ViewBuilder let cover: Cover
+    @ViewBuilder let info: Info
+
+    var body: some View {
+        HStack(alignment: .center, spacing: PageHeader.coverToStats) {
+            cover.frame(maxWidth: .infinity)
+            // Holds its half even when there is no text yet.
+            ZStack(alignment: .leading) {
+                Color.clear.frame(height: 1)
+                info
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+// Finamp's wording and number formats for the stats (trackCount, albumCount, printDuration).
+enum FinampFormat {
+    static func tracks(_ n: Int) -> String { n == 1 ? String(localized: "1 Track") : String(localized: "\(n) Tracks") }
+    static func albums(_ n: Int) -> String { n == 1 ? String(localized: "1 Album") : String(localized: "\(n) Albums") }
+
+    // Two-digit fields with leading zeros: 05:20, 01:02:03.
+    static func duration(_ seconds: Double) -> String {
+        let total = max(Int(seconds.rounded()), 0)
+        let h = total / 3600, m = total % 3600 / 60, s = total % 60
+        return h > 0 ? String(format: "%02d:%02d:%02d", h, m, s) : String(format: "%02d:%02d", m, s)
     }
 }
 
@@ -151,6 +262,11 @@ struct FinampIcon: View {
         "arrow.down.circle": "tabler-download",
         "arrow.down.circle.fill": "tabler-device-sd-card",
         "lock.circle": "tabler-lock",
+        "trash": "tabler-trash",
+        // The artist page's counts, as on Finamp's artist screen
+        "music.note": "material-music-note",
+        "opticaldisc": "tabler-disc",
+        "calendar": "material-event",
         // Finamp's Material heart, as on Playback and the track rows
         "heart": "material-favorite-border",
         "heart.fill": "material-favorite",

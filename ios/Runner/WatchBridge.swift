@@ -19,13 +19,14 @@ extension AppDelegate {
             // Relay only state updates; queries such as watchState must be answered here.
             switch call.method {
             case "nowPlaying" where call.arguments is [String: Any],
-                 "theme" where call.arguments is String,
                  "accent" where call.arguments is [String: Any],
                  "account" where call.arguments is String,
                  "transcoding" where call.arguments is Bool,
                  "offline" where call.arguments is Bool,
                  "volume" where call.arguments is Double,
-                 "airPlay" where call.arguments is Bool:
+                 "airPlay" where call.arguments is Bool,
+                 "favoriteStates" where call.arguments is [String: Any],
+                 "outputRoute" where call.arguments is [String: Any]:
                 watchBridge.push(key: call.method, value: call.arguments!)
                 result(nil)
             case "watchState":
@@ -64,10 +65,38 @@ private final class WatchBridge: NSObject, WCSessionDelegate {
     }
 
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        if let error = error {
-            NSLog("[FINAMP] Watch session activation failed: \(error)")
+        if let error = error as NSError? {
+            log("warning", "session activation failed: \(error.domain) \(error.code)")
+        } else {
+            log("info", "session activated (paired \(session.isPaired), app installed \(session.isWatchAppInstalled))")
         }
         watchStateDidChange()
+    }
+
+    func sessionReachabilityDidChange(_ session: WCSession) {
+        log("info", "watch reachable \(session.isReachable)")
+        // Whenever the watch app comes back in reach (opened, raised, back in range), hand it the latest of every update:
+        // a freshly installed watch app starts with an empty context, and updates sent while it was out of reach are
+        // lost, while the phone repeats a value only when it changes.
+        guard session.isReachable else { return }
+        DispatchQueue.main.async { [self] in
+            guard !context.isEmpty else { return }
+            session.sendMessage(context, replyHandler: nil, errorHandler: nil)
+        }
+    }
+
+    // Finamp keeps these lines in its own logs (Settings → Logs), next to the watch's.
+    private func log(_ level: String, _ message: String) {
+        forwardLog([["t": Date().timeIntervalSince1970, "l": level, "m": message, "s": "iPhone"]])
+    }
+
+    private func forwardLog(_ lines: [[String: Any]]) {
+        DispatchQueue.main.async { watchChannel?.invokeMethod("watchLog", arguments: ["lines": lines]) }
+    }
+
+    // The watch's own log lines, queued by WatchConnectivity until the phone can take them.
+    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
+        if let lines = userInfo["watchLog"] as? [[String: Any]] { forwardLog(lines) }
     }
 
     func sessionWatchStateDidChange(_ session: WCSession) {
@@ -89,6 +118,7 @@ private final class WatchBridge: NSObject, WCSessionDelegate {
             let installed = isWatchAppAvailable
             // iOS can report false for an installed app; only unpairing or a false transition means removed.
             let removed = !paired || (wasInstalled && !installed)
+            log("fine", "watch state: paired \(paired), app installed \(installed)")
             wasInstalled = installed
             if paired, !context.isEmpty { try? session.updateApplicationContext(context) }
             if installed || removed {
@@ -119,6 +149,7 @@ private final class WatchBridge: NSObject, WCSessionDelegate {
 
         DispatchQueue.main.async {
             guard let channel = watchChannel else {
+                self.log("warning", "\(method): Finamp is still starting")
                 replyHandler(["error": "Finamp is still starting"])
                 return
             }

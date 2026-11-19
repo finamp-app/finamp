@@ -18,11 +18,14 @@ import 'package:finamp/models/music_models.dart';
 import 'package:finamp/models/music_slices.dart';
 import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/data_source_service.dart' show SourceChangeGenericType;
+import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
+import 'package:finamp/extensions/color_extensions.dart';
 import 'package:finamp/services/music_providers.dart';
-import 'package:flutter/material.dart' show ThemeMode;
+import 'package:finamp/services/theme_provider.dart';
+import 'package:flutter/material.dart' show ColorScheme;
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,9 +44,10 @@ import 'output_route_provider.dart';
 import 'queue_service.dart';
 import 'quick_actions_service.dart';
 import 'radio_service_helper.dart' show currentRadioAvailabilityStatusProvider, toggleRadio;
-import 'widget_bindings_observer_provider.dart';
 
 final _logger = Logger('WatchHandler');
+// The watch's own log lines and the iOS bridge's, kept in Finamp's logs (Settings → Logs) for bug reports.
+final _watchLogger = Logger('FinampWatch');
 
 // Decode fallback only; the iOS relay requires an explicit size.
 const _defaultWatchArtworkSize = 160;
@@ -55,7 +59,6 @@ const _recentlyPlayedLimit = 6;
 const _searchSectionSize = 5;
 const _favoritesLimit = 200;
 
-const _favoriteTracksQueueLimit = 1000;
 const _queueLimit = 30;
 
 const _upNextCoverCount = 2;
@@ -65,9 +68,6 @@ const _replyBudget = 40 * 1024;
 
 // Max concurrent item fetches.
 const _parallelFetches = 8;
-
-// Cap offline scan without server-side filters.
-const _offlineLimit = 1000;
 
 class WatchHandler {
   static const _watchChannel = MethodChannel('com.unicornsonlsd.finamp-ios/watch');
@@ -94,12 +94,29 @@ class WatchHandler {
     if (_sentItems.length > _sentItemsLimit) _sentItems.remove(_sentItems.keys.first);
   }
 
+  // Each line keeps the time it happened (the watch can send its lines much later).
+  static void _logFromWatch(List<Object?> lines) {
+    for (final line in lines.whereType<Map<Object?, Object?>>()) {
+      final time = DateTime.fromMillisecondsSinceEpoch(((line['t'] as num? ?? 0) * 1000).round());
+      final level = switch (line['l']) {
+        'warning' => Level.WARNING,
+        'info' => Level.INFO,
+        _ => Level.FINE,
+      };
+      _watchLogger.log(level, "${line['s'] ?? 'Watch'} ${time.toIso8601String()} ${line['m']}");
+    }
+  }
+
   static void setup() {
     if (!Platform.isIOS) return;
 
     _watchChannel.setMethodCallHandler((call) async {
       final arguments = Map<String, dynamic>.from(call.arguments as Map? ?? {});
       _logger.fine("Watch request: ${call.method} $arguments");
+      if (call.method == 'watchLog') {
+        _logFromWatch(arguments['lines'] as List<Object?>? ?? const []);
+        return null;
+      }
       if (call.method != 'watchState') _startPushing();
       try {
         switch (call.method) {
@@ -164,8 +181,12 @@ class WatchHandler {
             return await _setFavorite(arguments['id'] as String, arguments['favorite'] as bool);
           case 'download':
             return await _download(arguments);
+          case 'deleteDownload':
+            return await _deleteDownload(arguments['id'] as String);
           case 'artistInfo':
             return await _artistInfo(arguments['id'] as String);
+          case 'item':
+            return _rows([await _itemById(arguments['id'] as String)]).single;
           case 'downloadState':
             return _downloadState(await _itemById(arguments['id'] as String));
           case 'control':
@@ -246,10 +267,6 @@ class WatchHandler {
       container.listen(finampSettingsProvider.playbackSpeed, (_, _) => _scheduleNowPlayingPush()).close,
       container.listen(finampSettingsProvider.currentVolume, (_, _) => _scheduleNowPlayingPush()).close,
       container.listen(finampSettingsProvider.volumeNormalizationActive, (_, _) => _scheduleNowPlayingPush()).close,
-      container.listen(brightnessProvider, (_, _) {
-        _pushIfChanged('theme', _theme());
-        _pushIfChanged('accent', _accent());
-      }).close,
       container.listen(finampSettingsProvider.accentColor, (_, _) => _pushIfChanged('accent', _accent())).close,
       container.listen(finampSettingsProvider.systemAccentColor, (_, _) => _pushIfChanged('accent', _accent())).close,
       container
@@ -263,6 +280,11 @@ class WatchHandler {
           _sentItems.clear();
           _playlistFirstTracks.clear();
           _childrenCache = null;
+          for (final subscription in _followedFavorites.values) {
+            subscription.close();
+          }
+          _followedFavorites.clear();
+          _pushFavoriteStates();
         }
         _pushIfChanged('account', account);
       }).close,
@@ -282,13 +304,17 @@ class WatchHandler {
             fireImmediately: true,
           )
           .close,
+      // The Output sheet follows the route while it's open (headphones connected or removed, AirPlay chosen).
+      AVAudioSession().routeChangeStream
+          .listen((_) async => _pushIfChanged('outputRoute', await _outputRoute()))
+          .cancel,
     ]);
-    _pushIfChanged('theme', _theme());
     _pushIfChanged('accent', _accent());
     _pushIfChanged('account', _account());
     _pushIfChanged('transcoding', FinampSettingsHelper.finampSettings.shouldTranscode);
     _pushIfChanged('volume', FinampSettingsHelper.finampSettings.currentVolume);
     _pushIfChanged('offline', FinampSettingsHelper.finampSettings.isOffline);
+    unawaited(_outputRoute().then((route) => _pushIfChanged('outputRoute', route)));
   }
 
   static void _stopPushing() {
@@ -302,6 +328,9 @@ class WatchHandler {
     _favoriteSubscription?.close();
     _favoriteSubscription = null;
     _favoriteSubscriptionItem = null;
+    _coverColorSubscription?.close();
+    _coverColorSubscription = null;
+    _coverColorSubscriptionItem = null;
     _lastPushed = null;
     _lastPushedValues.clear();
   }
@@ -310,6 +339,8 @@ class WatchHandler {
   static Map<String, Object>? _lastPushed;
   static ProviderSubscription<bool>? _favoriteSubscription;
   static BaseItemId? _favoriteSubscriptionItem;
+  static ProviderSubscription<ColorScheme>? _coverColorSubscription;
+  static BaseItemId? _coverColorSubscriptionItem;
 
   // Coalesce player events into one push 150 ms after the first.
   static void _scheduleNowPlayingPush() {
@@ -330,9 +361,12 @@ class WatchHandler {
             state[key] == last[key] ||
             const DeepCollectionEquality().equals(state[key], last[key]),
       );
+      // At the player's speed, as the watch advances it.
       final expected =
           (last['position'] as double) +
-          ((last['advancing'] as bool) ? (state['updatedAt'] as double) - (last['updatedAt'] as double) : 0);
+          ((last['advancing'] as bool)
+              ? ((state['updatedAt'] as double) - (last['updatedAt'] as double)) * (last['speed'] as double? ?? 1)
+              : 0);
       if (unchanged && ((state['position'] as double) - expected).abs() < 2) return;
     }
     _lastPushed = state;
@@ -356,7 +390,6 @@ class WatchHandler {
         'advancing': false,
         'position': 0.0,
         'updatedAt': now.millisecondsSinceEpoch / 1000,
-        'theme': _theme(),
       };
     }
 
@@ -377,9 +410,12 @@ class WatchHandler {
       'albumArtistId': item.albumArtists?.firstOrNull?.id.raw ?? "",
       'artists': _artists(item.artistItems),
       'features': _features(current),
+      'shortFeatures': _shortFeatures(current),
       'duration': (current.item.duration ?? item.runTimeTicksDuration() ?? Duration.zero).inMilliseconds / 1000,
       'position': playbackState.position.inMilliseconds / 1000,
       'updatedAt': now.millisecondsSinceEpoch / 1000,
+      // The player's speed (Finamp's playback speed setting), so the watch advances the position at the same rate.
+      'speed': playbackState.speed,
       'playing': playbackState.playing,
       // Keep the watch clock still while loading or buffering.
       'advancing': playbackState.playing && playbackState.processingState == AudioProcessingState.ready,
@@ -390,7 +426,7 @@ class WatchHandler {
       'radioAvailable': GetIt.instance<ProviderContainer>().read(currentRadioAvailabilityStatusProvider).isAvailable,
       'favorite': GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item)),
       'upNext': _upNextCovers(),
-      'theme': _theme(),
+      'coverColor': _coverColor(item),
     };
   }
 
@@ -406,11 +442,11 @@ class WatchHandler {
   static List<Map<String, Object>> _upNextCovers() {
     final queueService = GetIt.instance<QueueService>();
     final queue = queueService.getQueue();
-    return [
-      ...queue.nextUp,
-      ...queue.queue,
-      if (queueService.loopMode == FinampLoopMode.all) ...queue.previousTracks,
-    ].map((track) => track.baseItem).nonNulls.take(_upNextCoverCount).map((item) {
+    return CombinedIterableView([
+      queue.nextUp,
+      queue.queue,
+      if (queueService.loopMode == FinampLoopMode.all) queue.previousTracks,
+    ]).map((track) => track.baseItem).nonNulls.take(_upNextCoverCount).map((item) {
       // Retain IDs for phone artwork fallback when direct requests fail.
       _rememberSent(item);
       return {'id': item.id.raw, 'artworkKey': _artworkKey(item), 'artworkUrl': _artworkUrl(item)};
@@ -419,7 +455,7 @@ class WatchHandler {
 
   static List<Map<String, Object>> _upcoming() {
     final queue = GetIt.instance<QueueService>().getQueue();
-    return [...queue.nextUp, ...queue.queue]
+    return CombinedIterableView([queue.nextUp, queue.queue])
         .take(_queueLimit)
         .map(
           (track) => {
@@ -442,6 +478,21 @@ class WatchHandler {
       isFavoriteProvider(item),
       (_, _) => _scheduleNowPlayingPush(),
     );
+  }
+
+  // The colour Finamp's player and queue take from this track's cover (their theme's primary), as ARGB. It starts
+  // grey and changes once the cover is analysed, which pushes again. The watch is always dark, so a colour made for
+  // Finamp's light theme is lifted until it reads on black.
+  static int _coverColor(BaseItemDto item) {
+    if (_coverColorSubscriptionItem != item.id) {
+      _coverColorSubscription?.close();
+      _coverColorSubscriptionItem = item.id;
+      _coverColorSubscription = GetIt.instance<ProviderContainer>().listen(
+        finampThemeProvider(ThemeInfo(item, useLargeImage: true)),
+        (_, _) => _scheduleNowPlayingPush(),
+      );
+    }
+    return _coverColorSubscription!.read().primary.atContrast(5.5, const Color(0xFF000000), true).toARGB32();
   }
 
   static Future<void> _control(String action) async {
@@ -524,14 +575,29 @@ class WatchHandler {
     ),
   );
 
-  static Future<List<BaseItemDto>> _tabPage(ContentType tab, int offset, int limit) async {
+  static Future<List<BaseItemDto>> _tabPage(
+    ContentType tab,
+    int offset,
+    int limit, {
+    String? search,
+    bool favorites = false,
+  }) async {
     return await _readOnce<List<BaseItemDto>?>(
-          loadHomeSectionItemsProvider(request: _tabPlayable(tab), startIndex: offset, limit: limit).future,
+          loadHomeSectionItemsProvider(
+            request: _tabPlayable(tab, search: search, favorites: favorites),
+            startIndex: offset,
+            limit: limit,
+          ).future,
         ) ??
         [];
   }
 
-  static MusicScreenPlayable _tabPlayable(ContentType tab) {
+  static MusicScreenPlayable _tabPlayable(ContentType tab, {String? search, bool favorites = false}) {
+    var sortConfig = _tabSortControllers
+        .putIfAbsent(tab, () => SortAndFilterController.trackSettings(tab))
+        .resolveConfig();
+    if (search != null) sortConfig = sortConfig.copyWithSearch(search);
+    if (favorites) sortConfig = ResolvedSortConfig.skipResolving(sortConfig.copyWith(favoriteFilter: true));
     return MusicScreenPlayable(
       tab: tab,
       library: currentLibraryPlaceholder,
@@ -540,9 +606,7 @@ class WatchHandler {
         name: const QueueItemSourceName(type: QueueItemSourceNameType.musicScreenTracks),
         id: "allTracks",
       ),
-      sortConfig: _tabSortControllers
-          .putIfAbsent(tab, () => SortAndFilterController.trackSettings(tab))
-          .resolveConfig(),
+      sortConfig: sortConfig,
     );
   }
 
@@ -570,7 +634,7 @@ class WatchHandler {
       _recentlyPlayed(),
       _query(ContentType.albums, limit: _homeSectionSize, sortBy: "DateCreated", sortOrder: "Descending").then(_rows),
     ]);
-    return {'recent': sections[0], 'newAlbums': sections[1], 'actions': _quickActions(), 'theme': _theme()};
+    return {'recent': sections[0], 'newAlbums': sections[1], 'actions': _quickActions()};
   }
 
   static final Map<String, Object> _lastPushedValues = {};
@@ -594,7 +658,8 @@ class WatchHandler {
   }
 
   // Finamp's colour scheme for each theme, exactly as its app theme builds it (getColorScheme), as ARGB, so the watch
-  // can follow its own theme choice and use the same Material pairs Finamp's screens do.
+  // can use the same Material pairs Finamp's screens do. The watch draws with the dark one and tints switches with
+  // the light one's primary.
   static Map<String, Object> _accent() {
     final settings = FinampSettingsHelper.finampSettings;
     final seed = settings.useSystemAccentColor ? settings.systemAccentColor : settings.accentColor;
@@ -610,15 +675,6 @@ class WatchHandler {
     }
 
     return {'light': colors(ui.Brightness.light), 'dark': colors(ui.Brightness.dark)};
-  }
-
-  static String _theme() {
-    final brightness = switch (FinampSettingsHelper.finampSettings.themeMode) {
-      ThemeMode.light => ui.Brightness.light,
-      ThemeMode.dark => ui.Brightness.dark,
-      ThemeMode.system => ui.PlatformDispatcher.instance.platformBrightness,
-    };
-    return brightness == ui.Brightness.light ? 'light' : 'dark';
   }
 
   static const _watchQuickActions = {
@@ -725,6 +781,7 @@ class WatchHandler {
             'artistArtworkUrl': _imageUrlFor(_mainArtist(item)?.id),
             'duration': (item.runTimeTicksDuration() ?? Duration.zero).inMilliseconds / 1000,
             'year': item.productionYear ?? 0,
+            'releaseDate': ReleaseDateHelper.autoFormat(item) ?? "",
             'trackCount': item.childCount ?? 0,
             'favorite': item.userData?.isFavorite ?? false,
             ..._downloadState(item),
@@ -746,16 +803,9 @@ class WatchHandler {
   }) async {
     final settings = FinampSettingsHelper.finampSettings;
     if (settings.isOffline) {
-      // Filter downloaded items locally when offline.
-      var items = await _tabPage(contentType, 0, _offlineLimit);
-      if (searchTerm != null) {
-        final needle = searchTerm.toLowerCase();
-        items = items.where((item) => (item.name ?? "").toLowerCase().contains(needle)).toList();
-      }
-      if (isFavorite ?? false) {
-        items = items.where((item) => item.userData?.isFavorite ?? false).toList();
-      }
-      return items.skip(offset).take(limit).toList();
+      // Finamp's own offline list with its search and favourite filters: every download, and favourites from its
+      // offline favourites index (an item's own flag is unreliable offline).
+      return await _tabPage(contentType, offset, limit, search: searchTerm, favorites: isFavorite ?? false);
     }
 
     final tabSortBy = settings.getTabSortBy(contentType);
@@ -882,13 +932,62 @@ class WatchHandler {
     return features;
   }
 
+  // The watch's short chips, in the order the user set Finamp's chips (feature_chips.dart walks
+  // `configuration.features` the same way): explicit, play count, how it plays (`local`, `transcoding` or `direct`),
+  // and codec with bitrate as one chip where the first of the two is.
+  static List<Map<String, Object>> _shortFeatures(FinampQueueItem current) {
+    final settings = FinampSettingsHelper.finampSettings;
+    final configuration = settings.featureChipsConfiguration;
+    if (!configuration.enabled) return const [];
+    final enabled = configuration.features;
+    final metadata = GetIt.instance<ProviderContainer>().read(currentTrackMetadataProvider).valueOrNull;
+    final isDownloaded = metadata?.isDownloaded ?? false;
+    final transcoding = !isDownloaded && (current.item.extras?["shouldTranscode"] as bool? ?? false);
+    final format = settings.transcodingStreamingFormat;
+    final MediaStream? audioStream =
+        metadata?.mediaSourceInfo.mediaStreams.firstWhereOrNull((stream) => stream.type == "Audio") ??
+        metadata?.mediaSourceInfo.mediaStreams.firstOrNull;
+    final codec = transcoding ? format.codec : audioStream?.codec;
+    final bitrate = transcoding
+        ? (format == FinampTranscodingStreamingFormat.flacFragmentedMp4 ? null : settings.transcodeBitrate)
+        : audioStream?.bitRate ?? metadata?.mediaSourceInfo.bitrate;
+    final playCount = current.baseItem.userData?.playCount;
+    final chips = <Map<String, Object>>[];
+    for (final feature in enabled) {
+      switch (feature) {
+        case FinampFeatureChipType.explicit when current.baseItem.isExplicit:
+          chips.add({'type': 'explicit'});
+        case FinampFeatureChipType.playCount when playCount != null:
+          chips.add({'type': 'plays', 'text': GlobalSnackbar.requireL10n.playCountValue(playCount)});
+        case FinampFeatureChipType.playbackMode:
+          chips.add({'type': 'mode', 'mode': isDownloaded ? 'local' : (transcoding ? 'transcoding' : 'direct')});
+        case FinampFeatureChipType.codec || FinampFeatureChipType.bitRate
+            when metadata != null && !chips.any((chip) => chip['type'] == 'format'):
+          final showCodec = enabled.contains(FinampFeatureChipType.codec) && codec != null;
+          final showBitrate = enabled.contains(FinampFeatureChipType.bitRate) && bitrate != null;
+          if (showCodec || showBitrate) {
+            chips.add({
+              'type': 'format',
+              if (showCodec) 'codec': codec.toUpperCase(),
+              if (showBitrate) 'kbps': bitrate ~/ 1000,
+            });
+          }
+        default:
+          break;
+      }
+    }
+    return chips;
+  }
+
   static Future<Map<String, Object>> _output() async {
-    final route = await AVAudioSession().currentRoute;
-    final outputs = route.outputs;
+    return {...await _outputRoute(), 'volume': FinampSettingsHelper.finampSettings.currentVolume};
+  }
+
+  static Future<Map<String, Object>> _outputRoute() async {
+    final outputs = (await AVAudioSession().currentRoute).outputs;
     return {
       'route': outputs.map((port) => port.portName).join(" + "),
       'routeType': outputs.firstOrNull?.portType.name ?? "",
-      'volume': FinampSettingsHelper.finampSettings.currentVolume,
     };
   }
 
@@ -954,8 +1053,31 @@ class WatchHandler {
     if (FinampSettingsHelper.finampSettings.isOffline) {
       throw PlatformException(code: "offline", message: GlobalSnackbar.requireL10n.notAvailableInOfflineMode);
     }
-    return GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item).notifier).updateFavorite(favorite);
+    final result = GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item).notifier).updateFavorite(favorite);
+    _followFavorite(item);
+    return result;
   }
+
+  // Finamp sets a heart before the server answers and puts it back if the server refuses; following Finamp's state for
+  // the items the watch changed carries that (and later changes on the phone) to the watch's hearts.
+  static final Map<BaseItemId, ProviderSubscription<bool>> _followedFavorites = {};
+  static const _followedFavoritesLimit = 20;
+
+  static void _followFavorite(BaseItemDto item) {
+    _followedFavorites.remove(item.id)?.close();
+    if (_followedFavorites.length >= _followedFavoritesLimit) {
+      _followedFavorites.remove(_followedFavorites.keys.first)?.close();
+    }
+    _followedFavorites[item.id] = GetIt.instance<ProviderContainer>().listen(
+      isFavoriteProvider(item),
+      (_, _) => _pushFavoriteStates(),
+    );
+    _pushFavoriteStates();
+  }
+
+  static void _pushFavoriteStates() => _pushIfChanged('favoriteStates', {
+    for (final entry in _followedFavorites.entries) entry.key.raw: entry.value.read(),
+  });
 
   static Future<Map<String, Object>> _download(Map<String, dynamic> arguments) async {
     final item = await _itemById(arguments['id'] as String);
@@ -1030,6 +1152,22 @@ class WatchHandler {
     return {'status': 'downloading'};
   }
 
+  // Finamp's delete button for a download (askBeforeDeleteDownloadFromDevice): the watch asks first, then this
+  // deletes it from the phone and answers with Finamp's own message.
+  static Future<Map<String, Object>> _deleteDownload(String id) async {
+    final item = await _itemById(id);
+    final stub = _downloadStub(item);
+    if (stub == null) {
+      throw PlatformException(code: "unknown", message: "Unknown item");
+    }
+    if (!_isDownloaded(item)) return {'status': 'notDownloaded'};
+    await GetIt.instance<DownloadsService>().deleteDownload(stub: stub);
+    return {
+      'status': 'deleted',
+      'message': GlobalSnackbar.requireL10n.itemDeletedSnackbar("device", stub.baseItemType.name),
+    };
+  }
+
   // Image ID and tag for cache validation.
   static String _artworkKey(BaseItemDto item) {
     final imageId = item.imageId;
@@ -1048,7 +1186,10 @@ class WatchHandler {
     switch (arguments['type']) {
       case 'favorites':
         await _playTrackList(
-          await _favorites(ContentType.tracks, limit: _favoriteTracksQueueLimit),
+          await _trackWindow(
+            arguments,
+            (offset, limit) => _favorites(ContentType.tracks, offset: offset, limit: limit),
+          ),
           arguments,
           QueueItemSource.rawId(
             type: QueueItemSourceType.favorites,
@@ -1124,7 +1265,13 @@ class WatchHandler {
       final linear = await _readOnce(getPlayableSliceProvider(item: artist, startingOffset: 0).future);
       slice = (arguments['shuffle'] as bool? ?? false) ? linear.shuffle() : linear;
     }
-    await GetIt.instance<QueueService>().startSlicePlayback(slice);
+    // Finamp's queue skips an empty slice without an error (offline, an artist with nothing downloaded), so the watch
+    // would hear "ok" while nothing plays. A pre-cached slice always holds its first tracks.
+    final playable = slice is PreCachedPlayableSlice ? slice : await slice.resolve();
+    if (playable is BasePlayableSlice && playable.items.isEmpty) {
+      throw PlatformException(code: "empty", message: "Nothing to play");
+    }
+    await GetIt.instance<QueueService>().startSlicePlayback(playable);
   }
 
   static Future<Map<String, Object>> _artistInfo(String id) async {
@@ -1188,21 +1335,26 @@ class WatchHandler {
   }
 
   // Load the queue the same way as the watch's list, so the tapped track is where the watch showed it
-  static Future<void> _playTracksPage(Map<String, dynamic> arguments) async {
+  // The tapped track (`index`, `startId`) with a few before it, so Previous works, and Finamp's track shuffle count
+  // after it, like Finamp's own Tracks screen, instead of the whole list.
+  static Future<List<BaseItemDto>> _trackWindow(
+    Map<String, dynamic> arguments,
+    Future<List<BaseItemDto>> Function(int offset, int limit) page,
+  ) async {
     final index = arguments['index'] as int? ?? 0;
-    final start = max(0, index - 20); // a few earlier tracks, so Previous works
-    var tracks = await _tabPage(
-      ContentType.tracks,
-      start,
-      index - start + FinampSettingsHelper.finampSettings.trackShuffleItemCount,
-    );
+    final start = max(0, index - 20);
+    var tracks = await page(start, index - start + FinampSettingsHelper.finampSettings.trackShuffleItemCount);
     final startId = arguments['startId'] as String?;
-    // A changing sort (e.g. random) can move it out of this window: still start with the tapped track
+    // A changing list (e.g. a random sort) can move it out of this window: still start with the tapped track
     if (startId != null && !tracks.any((track) => track.id.raw == startId)) {
       tracks = [await _itemById(startId), ...tracks];
     }
+    return tracks;
+  }
+
+  static Future<void> _playTracksPage(Map<String, dynamic> arguments) async {
     await _playTrackList(
-      tracks,
+      await _trackWindow(arguments, (offset, limit) => _tabPage(ContentType.tracks, offset, limit)),
       arguments,
       QueueItemSource.rawId(
         type: QueueItemSourceType.allTracks,

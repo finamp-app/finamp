@@ -18,13 +18,19 @@ struct CollectionView: View {
         Group {
             switch state {
             case .loading:
-                SkeletonTrackList()
+                // The real header (its name, cover and totals are known) over placeholder tracks, in the same list
+                List {
+                    header([])
+                        .clearListRow()
+                    SkeletonTrackRows(count: 4, hearts: true, enlarged: true)
+                }
+                .cardList()
             case .failed(let message):
                 RetryView(message: message) { await load() }
             case .loaded(let tracks):
                 List {
                     header(tracks)
-                        .listRowBackground(Color.clear)
+                        .clearListRow()
                     if tracks.isEmpty {
                         Text(type == "favorites" ? String(localized: "No favorite tracks yet") : String(localized: "No tracks"))
                             .font(.footnote)
@@ -37,10 +43,10 @@ struct CollectionView: View {
                             track: track,
                             onFavorite: { Task { await FavoriteOverrides.shared.toggle(track) } },
                             favorite: FavoriteOverrides.shared.value(for: track),
-                            onTap: { Task { await play(startId: track.id) } },
+                            onTap: { Task { await play(startId: track.id, index: tracks.firstIndex { $0.id == track.id }) } },
                             enlarged: true
                         )
-                        .listRowBackground(TrackRowBackground(isPlaying: NowPlayingStore.shared.nowPlaying.id == track.id))
+                        .cardRow(isPlaying: NowPlayingStore.shared.nowPlaying.id == track.id)
                         .onAppear {
                             if tracks.suffix(pagePrefetchRows).contains(where: { $0.id == track.id }) {
                                 Task { await loadMore() }
@@ -48,24 +54,58 @@ struct CollectionView: View {
                         }
                     }
                 }
+                .cardList()
             }
         }
-        .navigationTitle("")
-        // watchOS allows one corner button; keep the heart beside Play and Shuffle.
-        .phoneDownloadButton(
-            for: collection,
-            downloaded: downloadState?.downloaded ?? collection.downloaded,
-            lock: downloadState.map { $0.lock } ?? collection.downloadLock,
-            shown: type != "favorites"
-        )
+        // Favorite Tracks has its name at the top right, as the queue's "Now Playing"; other pages use the title row.
+        .navigationTitle(type == "favorites" ? collection.name : "")
+        .accentTitle()
         .task { if case .loading = state { await load() } }
     }
 
     private var collectionFavorite: Bool { FavoriteOverrides.shared.value(for: collection) }
 
+    // While the tracks load, a count the phone hasn't sent yet shows as a placeholder, not "0 Tracks".
+    private var countUnknown: Bool {
+        if case .loading = state { return collection.trackCount == 0 }
+        return false
+    }
+
+    @ViewBuilder
     private func header(_ tracks: [LibraryItem]) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top, spacing: 8) {
+        if type == "favorites" {
+            VStack(alignment: .leading, spacing: PageHeader.favoritesLogoToHeading) {
+                HalvesCoverRow {
+                    FavoritesLogo(symbol: LibraryKind.tracks.placeholderSymbol)
+                } info: {
+                    StatLine(symbol: "music.note", text: trackSummary(tracks))
+                        .redacted(reason: countUnknown ? .placeholder : [])
+                }
+                // Separates the logo from the tracks, as the queue's "Up Next" does.
+                SectionHeader(title: LibraryKind.tracks.title)
+            }
+        } else {
+            collectionHeader(tracks)
+        }
+    }
+
+    private func collectionHeader(_ tracks: [LibraryItem]) -> some View {
+        VStack(alignment: .leading, spacing: PageHeader.spacing) {
+            PageTitleRow(
+                title: collection.name,
+                favorite: type == "favorites" ? nil : collectionFavorite,
+                onFavorite: { Task { await FavoriteOverrides.shared.toggle(collection) } }
+            ) {
+                if type != "favorites" {
+                    PhoneDownloadButton(
+                        item: collection,
+                        initiallyDownloaded: downloadState?.downloaded ?? collection.downloaded,
+                        lock: downloadState.map { $0.lock } ?? collection.downloadLock,
+                        itemType: type == "playlists" ? "playlist" : "album"
+                    )
+                }
+            }
+            HStack(alignment: .center, spacing: PageHeader.coverToStats) {
                 Group {
                     if type == "favorites" {
                         FavoritesLogo(symbol: LibraryKind.tracks.placeholderSymbol)
@@ -73,16 +113,15 @@ struct CollectionView: View {
                         CoverView(item: collection)
                     }
                 }
-                .containerRelativeFrame(.horizontal) { width, _ in width * 0.42 }
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(collection.name)
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(Color.fgPrimary)
-                        .lineLimit(3)
-                    if !headerArtists.isEmpty {
+                // The cover and the text share the row in halves.
+                .frame(maxWidth: .infinity)
+                // Finamp's stats, one line each (long ones scroll): album artists, tracks (total time), release
+                // date; a playlist has only its tracks.
+                VStack(alignment: .leading, spacing: PageHeader.statSpacing) {
+                    if type != "playlists", !headerArtists.isEmpty {
                         // A NavigationLink here would make the entire header row tappable.
                         Marquee {
-                            HStack(spacing: 8) {
+                            HStack(spacing: PageHeader.artistChipSpacing) {
                                 ForEach(headerArtists) { artist in
                                     ArtistChip(artist: artist)
                                     .contentShape(Rectangle())
@@ -92,35 +131,29 @@ struct CollectionView: View {
                                 }
                             }
                         }
-                    } else if !collection.subtitle.isEmpty {
-                        Text(collection.subtitle)
-                            .font(.footnote)
-                            .foregroundStyle(Color.finampBlue)
-                            .lineLimit(1)
+                    } else if type != "playlists", !collection.subtitle.isEmpty {
+                        Marquee {
+                            Text(collection.subtitle)
+                                .font(.footnote)
+                                .foregroundStyle(Color.finampBlue)
+                        }
                     }
-                    if collection.trackCount > 0 || !hasMore {
-                        Text(trackSummary(tracks))
-                            .font(.caption2)
-                            .foregroundStyle(Color.fgSecondary)
-                    }
-                    if collection.year > 0 {
-                        Text(String(collection.year))
-                            .font(.caption2)
-                            .foregroundStyle(Color.fgSecondary)
+                    StatLine(symbol: "music.note", text: trackSummary(tracks))
+                        .redacted(reason: countUnknown ? .placeholder : [])
+                    if type == "albums" {
+                        StatLine(symbol: "calendar", text: releaseDate)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity)
             }
-            HStack {
+            // Equal columns; the heart is in the title row.
+            HStack(spacing: 0) {
                 LabeledIconButton(title: "Play", systemImage: "play") { await play(shuffle: false) }
                 LabeledIconButton(title: "Shuffle", systemImage: "shuffle") { await play(shuffle: true) }
-                if type != "favorites" {
-                    LabeledIconButton(
-                        title: "Like",
-                        systemImage: collectionFavorite ? "heart.fill" : "heart"
-                    ) { await FavoriteOverrides.shared.toggle(collection) }
-                }
             }
+            // The buttons reach out to the card edge, each in an equal share.
+            .sameLabelSize()
+            .widenToCardEdge()
         }
     }
 
@@ -137,11 +170,17 @@ struct CollectionView: View {
         )]
     }
 
+    // As Finamp: "13 Tracks (51:20)".
     private func trackSummary(_ tracks: [LibraryItem]) -> String {
-        let trackCount = max(collection.trackCount, tracks.count)
-        let count = trackCount == 1 ? String(localized: "1 track") : String(localized: "\(trackCount) tracks")
+        let count = FinampFormat.tracks(max(collection.trackCount, tracks.count))
         let total = collection.duration > 0 ? collection.duration : tracks.reduce(0) { $0 + $1.duration }
-        return total > 0 ? "\(count) · \(formatDuration(total))" : count
+        return "\(count) (\(FinampFormat.duration(total)))"
+    }
+
+    // In Finamp's chosen release date format, sent by the phone; the year from older phones.
+    private var releaseDate: String {
+        if !collection.releaseDate.isEmpty { return collection.releaseDate }
+        return collection.year > 0 ? String(collection.year) : String(localized: "No Release Date")
     }
 
     private func load() async {
@@ -172,9 +211,11 @@ struct CollectionView: View {
         hasMore = !page.isEmpty
     }
 
-    private func play(startId: String? = nil, shuffle: Bool = false) async {
+    // Favourites play a window around the tapped track (its index), so any favourite plays however long the list is.
+    private func play(startId: String? = nil, index: Int? = nil, shuffle: Bool = false) async {
         do {
-            try await PhoneConnection.shared.play(type, parentId: collection.id, startId: startId, shuffle: shuffle)
+            let extra: [String: Any] = type == "favorites" ? index.map { ["index": $0] } ?? [:] : [:]
+            try await PhoneConnection.shared.play(type, parentId: collection.id, startId: startId, shuffle: shuffle, extra: extra)
             onPlay()
         } catch {
             state = .failed(error.localizedDescription)

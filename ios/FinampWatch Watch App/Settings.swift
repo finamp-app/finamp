@@ -4,6 +4,7 @@ struct SettingsView: View {
     @Bindable private var theme = ThemeStore.shared
     private var phone = PhoneSettings.shared
     @State private var reload: ReloadQuestion?
+    @AppStorage("shortChips") private var shortChips = false
 
     var body: some View {
         NavigationStack {
@@ -20,52 +21,31 @@ struct SettingsView: View {
                     Text("This is Finamp's setting on your iPhone: changing it here changes it there. Playback follows Finamp's transcoding settings (bitrate and format).")
                         .foregroundStyle(Color.fgSecondary)
                 }
-                // watchOS Picker labels stay white, making them invisible in the light theme.
-                NavigationLink {
-                    List(ThemeChoice.allCases) { choice in
-                        Button {
-                            theme.choice = choice
-                        } label: {
-                            HStack {
-                                Text(choice.title)
-                                    .foregroundStyle(Color.fgPrimary)
-                                Spacer()
-                                if theme.choice == choice {
-                                    Image(systemName: "checkmark")
-                                        .foregroundStyle(Color.finampBlue)
-                                }
-                            }
-                        }
-                        .listRowBackground(TrackRowBackground(isPlaying: false))
-                    }
-                    .navigationTitle("Theme")
-                    .containerBackground(Color.appBackground, for: .navigation)
-                    .accentTitle()
-                } label: {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Theme")
-                            .foregroundStyle(Color.fgPrimary)
-                        Text(theme.choice.title)
-                            .font(.footnote)
-                            .foregroundStyle(Color.fgSecondary)
-                    }
+                Section {
+                    Toggle("Short Track Info", isOn: $shortChips)
+                        .cardRow()
+                } footer: {
+                    Text("Shows only how the track plays on Playback: streamed, downloaded or transcoded, with its format and bitrate. Off shows every chip you chose in Finamp.")
+                        .foregroundStyle(Color.fgSecondary)
                 }
-                .listRowBackground(TrackRowBackground(isPlaying: false))
                 Section {
                     Toggle("Accent Colors (Experimental)", isOn: $theme.accentColors)
-                        .listRowBackground(TrackRowBackground(isPlaying: false))
+                        .cardRow()
                 } footer: {
                     Text("Uses your accent color from Finamp, with matching backgrounds. Turn it off for the original look.")
                         .foregroundStyle(Color.fgSecondary)
                 }
             }
+            // The toggles in Finamp blue (the accent with Accent Colors on).
+            .tint(ThemeStore.shared.switchTint ?? Color.finampBlue)
             .navigationTitle("Settings")
             .accentTitle()
-            // Override watchOS's white form text for the light theme.
+            // Finamp's text colour instead of watchOS's white.
             .foregroundStyle(Color.fgPrimary)
             .containerBackground(Color.appBackground, for: .navigation)
         }
-        .tint(ThemeStore.shared.switchTint ?? Color.finampBlue)
+        // watchOS's close button as every top button: glass with Accent Colors off, the accent with it on.
+        .tint(ThemeStore.shared.switchTint)
         .alert(
             Text(verbatim: reload?.text ?? ""),
             isPresented: Binding(get: { reload != nil }, set: { if !$0 { reload = nil } }),
@@ -98,7 +78,7 @@ struct SettingsView: View {
             set: { new in Task { await set(value, name: name, to: new) } }
         ))
         .disabled(phone[keyPath: value] == nil)
-        .listRowBackground(TrackRowBackground(isPlaying: false))
+        .cardRow()
     }
 
     // Revert if phone cannot be reached.
@@ -109,6 +89,7 @@ struct SettingsView: View {
             reload = try await PhoneConnection.shared.setSetting(name, enabled)
         } catch {
             phone[keyPath: value] = previous
+            PhoneMessage.shared.text = error.localizedDescription
         }
     }
 }

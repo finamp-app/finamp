@@ -3,7 +3,6 @@ import SwiftUI
 struct FavoritesListView: View {
     let title: String
     let type: String
-    let onPlay: () -> Void
     @State private var state: ListState = .loading
     @State private var hasMore = false
     // Count received rows, including duplicates, for the next offset.
@@ -15,12 +14,13 @@ struct FavoritesListView: View {
     private var kind: LibraryKind { isArtists ? .artists : .albums }
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 6) {
+        // A List like the track pages, for watchOS's shrinking rows at the screen edges.
+        List {
+            Group {
                 header
                 switch state {
                 case .loading:
-                    SkeletonCoverRows(count: 3, coverFraction: kind.coverFraction, circular: isArtists)
+                    SkeletonCoverRows(count: 3, coverShare: kind.coverShare, circular: isArtists)
                 case .failed(let message):
                     RetryView(message: message) { await load() }
                 case .loaded(let items) where items.isEmpty:
@@ -31,6 +31,7 @@ struct FavoritesListView: View {
                 case .loaded(let items):
                     ForEach(items) { item in
                         CollectionLink(item: item, kind: kind)
+                            .coverListRow()
                             .onAppear {
                                 if items.suffix(pagePrefetchRows).contains(where: { $0.id == item.id }) {
                                     Task { await loadMore() }
@@ -39,35 +40,30 @@ struct FavoritesListView: View {
                     }
                 }
             }
+            .clearListRow()
         }
-        .navigationTitle("")
+        .coverList()
+        .navigationTitle(title)
+        .accentTitle()
         .task { if case .loading = state { await load() } }
     }
 
+    // The page's name is the title at the top right, as the queue's "Now Playing"; no Play/Shuffle. The logo
+    // and the count share the row in halves, as on the album and artist pages.
     private var header: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top, spacing: 8) {
+        VStack(alignment: .leading, spacing: PageHeader.favoritesLogoToHeading) {
+            HalvesCoverRow {
                 FavoritesLogo(symbol: kind.placeholderSymbol, circular: isArtists)
-                    .containerRelativeFrame(.horizontal) { width, _ in width * 0.42 }
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(title)
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(Color.fgPrimary)
-                        .lineLimit(3)
-                    if case .loaded(let items) = state, !hasMore {
-                        Text(countText(items.count))
-                            .font(.caption2)
-                            .foregroundStyle(Color.fgSecondary)
-                    }
+            } info: {
+                if case .loaded(let items) = state, !hasMore {
+                    Text(countText(items.count))
+                        .font(.caption2)
+                        .foregroundStyle(Color.fgSecondary)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            HStack {
-                LabeledIconButton(title: "Play", systemImage: "play") { await play(shuffle: false) }
-                LabeledIconButton(title: "Shuffle", systemImage: "shuffle") { await play(shuffle: true) }
-            }
+            // Separates the logo from the list, as the Downloads headings do.
+            SectionHeader(title: kind.title)
         }
-        .padding(.bottom, 4)
     }
 
     private func countText(_ count: Int) -> String {
@@ -99,14 +95,5 @@ struct FavoritesListView: View {
         state = .loaded(current + page.filter { !known.contains($0.id) })
         phoneOffset += page.count
         hasMore = !page.isEmpty
-    }
-
-    private func play(shuffle: Bool) async {
-        do {
-            try await PhoneConnection.shared.play(type, shuffle: shuffle)
-            onPlay()
-        } catch {
-            state = .failed(error.localizedDescription)
-        }
     }
 }

@@ -16,8 +16,8 @@ extension View {
     func skeletonPulse() -> some View { modifier(Pulse()) }
 }
 
-private extension Color {
-    static var skeletonFill: Color { ThemeStore.shared.isLight ? .black.opacity(0.09) : .white.opacity(0.14) }
+extension Color {
+    static var skeletonFill: Color { .white.opacity(0.14) }
 }
 
 struct SkeletonBar: View {
@@ -32,108 +32,83 @@ struct SkeletonBar: View {
     }
 }
 
+// Placeholders are the real rows and cards, with stand-in text greyed out by SwiftUI's placeholder redaction, placed in
+// the same lists with the same row modifiers as the content they stand in for. So their sizes, padding and gaps come
+// from the same settings (Layout.swift) and can't drift from the real ones.
+// Each is a set of List rows: use it inside a List.
+
+extension LibraryItem {
+    // Stand-in text; only its length shapes the grey bars.
+    static func placeholder(_ index: Int) -> LibraryItem {
+        LibraryItem(
+            id: "placeholder-\(index)",
+            name: index.isMultiple(of: 2) ? "Placeholder title" : "Placeholder",
+            subtitle: "Placeholder artist",
+            artworkKey: "",
+            duration: 200
+        )
+    }
+}
+
+private extension View {
+    func placeholderRow() -> some View {
+        redacted(reason: .placeholder)
+            .allowsHitTesting(false)
+            .skeletonPulse()
+    }
+}
+
+// Cover rows (Albums, Artists, Playlists, Downloads, the artist page, favourite albums and artists). `sectionHeader`
+// puts a heading in the first row, as Downloads does.
 struct SkeletonCoverRows: View {
     var count = 5
-    var coverFraction: CGFloat = 0.24
+    var coverShare: CGFloat
     var circular = false
+    var sectionHeader = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            ForEach(0..<count, id: \.self) { _ in
-                HStack(spacing: 10) {
-                    Group {
-                        if circular {
-                            Circle().fill(Color.skeletonFill)
-                        } else {
-                            RoundedRectangle(cornerRadius: 8).fill(Color.skeletonFill)
-                        }
-                    }
-                    .aspectRatio(1, contentMode: .fit)
-                    .containerRelativeFrame(.horizontal) { width, _ in width * coverFraction }
-                    VStack(alignment: .leading, spacing: 6) {
-                        SkeletonBar(widthFraction: 0.45, height: 12)
-                        SkeletonBar(widthFraction: 0.28, height: 9)
-                    }
-                    Spacer(minLength: 0)
+        ForEach(0..<count, id: \.self) { index in
+            VStack(alignment: .leading, spacing: CoverRows.headingToRow) {
+                if sectionHeader && index == 0 {
+                    SectionHeader(title: "Placeholder")
                 }
+                CoverRow(item: .placeholder(index), coverShare: coverShare, circular: circular)
             }
+            .placeholderRow()
+            .coverListRow()
         }
-        .skeletonPulse()
     }
 }
 
+// Track cards (album, playlist and favourite tracks, the Tracks tab, the queue, search); `hearts` and `enlarged` as
+// the real rows of that list have them.
 struct SkeletonTrackRows: View {
     var count = 6
+    var hearts = false
+    var enlarged = false
 
     var body: some View {
-        VStack(spacing: 6) {
-            ForEach(0..<count, id: \.self) { index in
-                VStack(alignment: .leading, spacing: 5) {
-                    SkeletonBar(widthFraction: index.isMultiple(of: 2) ? 0.55 : 0.4, height: 10)
-                    HStack {
-                        SkeletonBar(widthFraction: 0.3, height: 7)
-                        Spacer(minLength: 0)
-                        SkeletonBar(widthFraction: 0.1, height: 7)
-                    }
-                }
-                .padding(.vertical, 7)
-                .padding(.horizontal, 8)
-                .background(Color.listFill, in: RoundedRectangle(cornerRadius: 10))
-            }
-        }
-        .skeletonPulse()
-    }
-}
-
-struct SkeletonTrackList: View {
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(alignment: .top, spacing: 8) {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.skeletonFill)
-                        .aspectRatio(1, contentMode: .fit)
-                        .containerRelativeFrame(.horizontal) { width, _ in width * 0.42 }
-                    VStack(alignment: .leading, spacing: 6) {
-                        SkeletonBar(widthFraction: 0.4, height: 13)
-                        SkeletonBar(widthFraction: 0.3, height: 13)
-                        SkeletonBar(widthFraction: 0.25, height: 9)
-                        SkeletonBar(widthFraction: 0.2, height: 8)
-                    }
-                }
-                HStack {
-                    ForEach(0..<3, id: \.self) { _ in
-                        Circle().fill(Color.skeletonFill).frame(width: 22, height: 22).frame(maxWidth: .infinity)
-                    }
-                }
-                .skeletonPulse()
-                SkeletonTrackRows(count: 4)
-            }
-            .skeletonPulse()
+        ForEach(0..<count, id: \.self) { index in
+            TrackRow(track: .placeholder(index), onFavorite: hearts ? {} : nil, enlarged: enlarged)
+                .placeholderRow()
+                .cardRow()
         }
     }
 }
 
+// Home's first section while it loads: a heading and its cards.
 struct SkeletonHomeCards: View {
     var count = 3
 
     var body: some View {
-        VStack(spacing: 8) {
-            SkeletonBar(widthFraction: 0.4, height: 8)
-                .padding(.top, 6)
-            ForEach(0..<count, id: \.self) { _ in
-                HStack(spacing: 8) {
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.skeletonFill)
-                        .aspectRatio(1, contentMode: .fit)
-                        .containerRelativeFrame(.horizontal) { width, _ in width * 0.2 }
-                    SkeletonBar(widthFraction: 0.45, height: 11)
-                    Spacer(minLength: 0)
-                }
-                .padding(8)
-                .background(Color.listFill, in: RoundedRectangle(cornerRadius: 12))
-            }
+        SectionHeader(title: "Placeholder")
+            .placeholderRow()
+            .keepsWatchOSRowHeight()
+            .clearListRow()
+        ForEach(0..<count, id: \.self) { index in
+            HomeCard(item: .placeholder(index))
+                .placeholderRow()
+                .clearListRow()
         }
-        .skeletonPulse()
     }
 }

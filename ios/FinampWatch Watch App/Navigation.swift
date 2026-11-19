@@ -73,9 +73,9 @@ extension View {
                 case .artistAlbums(let artist):
                     ArtistView(artist: artist, onPlay: onPlay)
                 case .favoriteAlbums:
-                    FavoritesListView(title: String(localized: "Favorite Albums"), type: "favoriteAlbums", onPlay: onPlay)
+                    FavoritesListView(title: String(localized: "Favorite Albums"), type: "favoriteAlbums")
                 case .favoriteArtists:
-                    FavoritesListView(title: String(localized: "Favorite Artists"), type: "favoriteArtists", onPlay: onPlay)
+                    FavoritesListView(title: String(localized: "Favorite Artists"), type: "favoriteArtists")
                 case .search(let query):
                     SearchResultsView(query: query, onPlay: onPlay)
                 }
