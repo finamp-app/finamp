@@ -3841,5 +3841,35 @@
         "description": "Title of setting that allows Finamp to follow redirects."
     },
     "followRedirectsSubtitle": "Permite ao Finamp seguir redirecionamentos HTTP, incluindo para domínios diferentes do configurado.  Isto é potencialmente incompatível com cabeçalhos HTTP personalizados.",
-    "advancedLoginOptionsWarning": "Opções de autenticação avançadas para configurações de servidor não usuais.  Estas são fornecidas numa base de melhor-esforço e podem não funcionar corretamente em todas as plataformas."
+    "advancedLoginOptionsWarning": "Opções de autenticação avançadas para configurações de servidor não usuais.  Estas são fornecidas numa base de melhor-esforço e podem não funcionar corretamente em todas as plataformas.",
+    "playSomeButtonLabel": "Reproduzir algumas",
+    "addSomeToQueue": "Adicionar algumas à Fila",
+    "playSomeNext": "Reproduzir algumas próxima",
+    "addSomeToNextUp": "Adicionar algumas a Próximas",
+    "queueAutorestoreOversized": "Restauro abortado - A fila salva é excessivamente grande.",
+    "oversizedQueueItemTruncated": "Item de tamanho exagerado truncado das faixas {itemSize} a {maxSize}.",
+    "@oversizedQueueItemTruncated": {
+        "description": "Message displayed if an item is truncated while being added to queue",
+        "placeholders": {
+            "itemSize": {
+                "type": "int"
+            },
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueSizeLimitTitle": "Limite de fila de faixas",
+    "oversizedQueueContinue": "Tenta carregar mesmo assim",
+    "oversizedQueueTruncate": "Fila truncada pelo máximo de {maxSize} faixas",
+    "@oversizedQueueTruncate": {
+        "description": "Button to truncate oversized queues while restoring",
+        "placeholders": {
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueRestoreCancel": "Cancelar Restauro",
+    "queueSizeLimitSubtitle": "Aplica uma tampa flexível à fila ao limitar o tamanho dos items individuais adicionados.  As filas excessivamente grandes podem ainda ser criadas através da adição de vários items a uma fila.  A tentativa de reproduzir uma fila demasiado grande pode resultar em colisões na aplicação."
 }
