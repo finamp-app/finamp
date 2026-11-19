@@ -127,8 +127,6 @@ void main() async {
         (x) => x is JellyfinServerSelectionWidget && (x.baseUrl?.contains("demo.jellyfin.org") ?? false),
       );
       await tester.waitFor(serverButton);
-      // This widget seems to get obscured by the keyboard or something on android 25.
-      await tester.ensureVisible(serverButton);
       await tester.tap(serverButton);
       await tester.pump(Duration(seconds: 1));
 
@@ -191,6 +189,7 @@ extension WaitForElement on WidgetTester {
     while (true) {
       await pump(Duration(seconds: 1));
       if (any(finder)) {
+        await ensureVisible(finder);
         return;
       }
       if (i >= seconds) {
