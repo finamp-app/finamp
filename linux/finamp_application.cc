@@ -15,31 +15,6 @@ struct _FinampApplication {
 G_DEFINE_TYPE(FinampApplication, finamp_application, GTK_TYPE_APPLICATION);
 
 // Implements GApplication::activate.
-// Track the allocated window geometry whenever the window is resized while not maximized.
-// On Wayland, calling gtk_window_resize() (as window_manager does on startup) caches
-// resize_width and resize_height inside GTK's geometry info, which takes precedence over
-// default_size during configure requests. When the window is hidden to the tray, the Wayland
-// surface is destroyed; upon unhiding, connecting to the "show" signal and calling
-// gtk_window_resize() with the last allocated size ensures GTK reconfigures the window to its
-// exact user-resized dimensions instead of reverting to the startup size.
-static gint last_allocated_width = 0;
-static gint last_allocated_height = 0;
-
-static void on_window_size_allocate(GtkWidget* widget, GtkAllocation* allocation, gpointer data) {
-  GtkWindow* window = GTK_WINDOW(widget);
-  if (!gtk_window_is_maximized(window) && allocation->width > 0 && allocation->height > 0) {
-    last_allocated_width = allocation->width;
-    last_allocated_height = allocation->height;
-  }
-}
-
-static void on_window_show(GtkWidget* widget, gpointer data) {
-  GtkWindow* window = GTK_WINDOW(widget);
-  if (!gtk_window_is_maximized(window) && last_allocated_width > 0 && last_allocated_height > 0) {
-    gtk_window_resize(window, last_allocated_width, last_allocated_height);
-  }
-}
-
 static void finamp_application_activate(GApplication* application) {
   FinampApplication* self = FINAMP_APPLICATION(application);
 
@@ -83,8 +58,6 @@ static void finamp_application_activate(GApplication* application) {
   }
 
   gtk_window_set_default_size(window, 1280, 720);
-  g_signal_connect(window, "size-allocate", G_CALLBACK(on_window_size_allocate), nullptr);
-  g_signal_connect(window, "show", G_CALLBACK(on_window_show), nullptr);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
@@ -98,7 +71,6 @@ static void finamp_application_activate(GApplication* application) {
   // so this survives hide/show, accounts for the header bar, and on Wayland GDK also
   // clamps incoming xdg_toplevel configure sizes to it, so the Flutter view doesn't get
   // smaller than this even on compositors that ignore set_min_size.
-  // Keep in sync with kMinimumWindowSize in lib/components/minimum_layout_size.dart.
   gtk_widget_set_size_request(GTK_WIDGET(view), 400, 250);
   gtk_widget_show(GTK_WIDGET(view));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));

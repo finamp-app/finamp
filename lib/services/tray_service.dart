@@ -55,7 +55,10 @@ class TrayService with WindowListener {
         configured = null;
       }
     }
-    final candidates = <Locale>[?configured, ...(systemLocales ?? WidgetsBinding.instance.platformDispatcher.locales)];
+    final candidates = <Locale>[
+      if (configured != null) configured,
+      ...(systemLocales ?? WidgetsBinding.instance.platformDispatcher.locales),
+    ];
     // Put English first in supportedLocales so basicLocaleListResolution falls back to
     // English instead of the first alphabetical locale (same as MaterialApp in main.dart).
     final resolved = basicLocaleListResolution(
