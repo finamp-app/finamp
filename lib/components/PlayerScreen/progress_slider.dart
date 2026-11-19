@@ -97,13 +97,9 @@ class _ProgressSliderState extends State<ProgressSlider> {
                                 playbackState: snapshot.data!.playbackState,
                                 position: snapshot.data!.position,
                                 mediaItem: snapshot.data!.mediaItem,
-                                onDrag: (value) {
-                                  // A seek can finish after the player screen has closed.
-                                  if (!mounted) return;
-                                  setState(() {
-                                    _dragValue = value;
-                                  });
-                                },
+                                onDrag: (value) => setState(() {
+                                  _dragValue = value;
+                                }),
                               ),
                             ],
                           ),
