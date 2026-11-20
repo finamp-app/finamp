@@ -2202,6 +2202,7 @@ class BaseItemDto with RunTimeTickDuration {
   bool mostlyEqual(BaseItemDto other) {
     var equal = const DeepCollectionEquality().equals;
     return other.name == name &&
+        other.overview == overview &&
         equal(other.genres, genres) &&
         equal(other.artists, artists) &&
         other.albumArtist == albumArtist &&
