@@ -3767,5 +3767,19 @@
     },
     "addSomeToQueue": "대기열에 추가합니다",
     "playSomeNext": "다음 곡 재생",
-    "addSomeToNextUp": "'Next Up'에 추가하기"
+    "addSomeToNextUp": "'Next Up'에 추가하기",
+    "playSomeButtonLabel": "재생",
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "오프라인 모드로 전환할 때, 삭제되는 노래들이 이 비율을 넘지 않을 때만 자동으로 새로 불러옵니다. 수동 새로 불러오기는 언제든 할 수 있습니다.",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "최대 삭제 곡수: {percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    }
 }
