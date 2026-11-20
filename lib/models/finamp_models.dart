@@ -1060,7 +1060,14 @@ class FinampSettings {
   }
 }
 
-enum CustomPlaybackActions { shuffle, toggleFavorite, radio, dbusVolume }
+enum CustomPlaybackActions {
+  shuffle,
+  toggleFavorite,
+  radio,
+  dbusVolume,
+  // Sent by the Android Quick Settings tile; not shown in notification controls.
+  quickTileToggle,
+}
 
 /// Custom storage locations for storing music/images.
 @HiveType(typeId: 31)
