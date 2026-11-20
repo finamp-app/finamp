@@ -1719,5 +1719,211 @@
     "discUnknown": "Onbekende Disc",
     "@discUnknown": {
         "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
+    },
+    "radioForItem": "{radioSource} - Radio",
+    "@radioForItem": {
+        "description": "Suffix added to a queue source when playing a radio track. Example: \"Never Gonna Give You Up - Radio\"",
+        "placeholders": {
+            "radioSource": {
+                "type": "String",
+                "example": "Never Gonna Give You Up"
+            }
+        }
+    },
+    "descending": "Aflopend",
+    "@descending": {
+        "description": "Label for descending order."
+    },
+    "genreItemSectionFilterChipOrderSubtitle": "Bepaalt de volgorde van beschikbare filters voor secties.",
+    "@genreItemSectionFilterChipOrderSubtitle": {
+        "description": "Description of the setting that controls the order of item sections filter chips."
+    },
+    "artistItemSectionFilterChipOrderSubtitle": "Bepaalt de volgorde van beschikbare filters voor sectie Nummers.",
+    "@artistItemSectionFilterChipOrderSubtitle": {
+        "description": "Description of the setting that controls the order of the tracks sections filter chips."
+    },
+    "downloadSettings": "Downloads",
+    "showNullLibraryItemsTitle": "Toon media met een onbekende bibliotheek.",
+    "@showNullLibraryItemsTitle": {
+        "description": "Title of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
+    },
+    "showNullLibraryItemsSubtitle": "Sommige media kan worden gedownload met een onbekende bibliotheek. Schakel uit om deze items te verbergen buiten de originele verzameling.",
+    "@showNullLibraryItemsSubtitle": {
+        "description": "Description of setting that shows tracks/albums from an unknown library in all libraries when on, or in no libraries when off."
+    },
+    "downloadsWorkersSetting": "Aantal download werkers",
+    "@downloadsWorkersSetting": {
+        "description": "Title of setting controlling download worker count."
+    },
+    "downloadsWorkersSettingSubtitle": "Aantal werkers voor het synchroniseren van metadata en het verwijderen van downloads. Het verhogen van het aantal werkers kan downloaden, synchroniseren en verwijderen versnellen, vooral als server latentie hoog is, maar kan ook leiden tot vertraging van de app.",
+    "@downloadsWorkersSettingSubtitle": {
+        "description": "Description of setting controlling download worker count."
+    },
+    "downloadsWorkersSettingLabel": "{count} Download Werkers",
+    "@downloadsWorkersSettingLabel": {
+        "description": "Label of values on download worker count slider",
+        "placeholders": {
+            "count": {
+                "type": "String"
+            }
+        }
+    },
+    "syncOnStartupSwitch": "Downloads Automatisch Synchroniseren bij Opstarten",
+    "@syncOnStartupSwitch": {
+        "description": "Title of setting for automatically triggering a throttled resync on app startup."
+    },
+    "preferQuickSyncSwitch": "Voorkeur Voor Snel Synchroniseren",
+    "@preferQuickSyncSwitch": {
+        "description": "Title of setting that skips completed albums while syncing."
+    },
+    "preferQuickSyncSwitchSubtitle": "Bij synchroniseren worden sommige, vaak statische items (zoals nummers en albums) niet geüpdatet. Het repareren van downloads zorgt altijd voor een volledige synchronisatie.",
+    "@preferQuickSyncSwitchSubtitle": {
+        "description": "Description of setting that skips completed albums while syncing."
+    },
+    "verboseLoggingSubtitle": "Bewaar gedetailleerde logs voor foutmeldingen. Laat dit uit voor betere afspeel prestaties.",
+    "@verboseLoggingSubtitle": {
+        "description": "Subtitle explaining the verbose logging toggle"
+    },
+    "perTabGridMode": "Kies per tab",
+    "showFastScrollerSubtitle": "Alfabetische lijst aan de rechterkant van muziek tabs dat toestaat naar letters te springen laten zien of verbergen.",
+    "shuffleSomeNext": "Schud de volgende paar in de wachtrij",
+    "@shuffleSomeNext": {
+        "description": "Used for shuffling some tracks to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
+    },
+    "shuffleSomeToQueue": "Schud een paar en voeg toe aan de wachtrij",
+    "@shuffleSomeToQueue": {
+        "description": "Used for shuffling some tracks to the end of the regular queue, to play after all prior tracks from the queue have played"
+    },
+    "ascending": "Aflopend",
+    "@ascending": {
+        "description": "Label for ascending order."
+    },
+    "genreItemSectionFilterChipOrderTitle": "Filter volgorde item Secties",
+    "@genreItemSectionFilterChipOrderTitle": {
+        "description": "Label for the setting that controls the order of item sections filter chips."
+    },
+    "curatedItemsNotListenedYet": "Je hebt nog niet geluisterd naar nummers {itemType, select, artistGenreFilter{ van deze artiest in dit genre} artist{ van deze artiest} genre{ in dit genre} other{}}.",
+    "@curatedItemsNotListenedYet": {
+        "description": "Tooltip for Most Played and Recently Played on Curated Items in Online Mode when not yet listened to any tracks.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "curatedItemsNoFavorites": "Je hebt nog geen favoriete{itemType, select, artistGenreFilter{ voor deze artiest in dit genre} artist{ voor deze artiest} genre{ voor dit genre} other{}}.",
+    "@curatedItemsNoFavorites": {
+        "description": "Tooltip for Favorites on Curated Items in Online Mode when no favorites yet.",
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "optional": true,
+                "example": "artistGenreFilter, artist or genre"
+            }
+        }
+    },
+    "shuffleSomeAlbumsToNextUp": "Schud een paar albums en voeg bovenaan toe aan de wachtrij",
+    "@shuffleSomeAlbumsToNextUp": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of Next Up"
+    },
+    "shuffleSomeAlbumsToQueue": "Schud een paar albums en voeg toe aan de wachtrij",
+    "@shuffleSomeAlbumsToQueue": {
+        "description": "Label for action that shuffles all albums of a genre and adds them at the end of the regular queue"
+    },
+    "noMusicLibrariesLogsCTA": "Als je denkt dat dit een fout is, help dan door de logbestanden te delen:",
+    "@noMusicLibrariesLogsCTA": {
+        "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
+    },
+    "noMusicLibrariesLogout": "Je kan proberen uit- en in- te loggen.",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
+    "startInstantMixForIndividualTracksSwitchSubtitle": "Wanneer dit aanstaat kan je op een nummer klikken in de nummers sectie en een mix starten van het geselecteerde nummer in plaats van de nummers in volgorde afspelen.",
+    "downloadItem": "Download",
+    "@downloadItem": {
+        "description": "Option to download item in long-press menu."
+    },
+    "repairComplete": "Downloads repareren klaar.",
+    "@repairComplete": {
+        "description": "Message displayed after download repair completes."
+    },
+    "syncComplete": "Alle downloads zijn gesynchroniseerd.",
+    "@syncComplete": {
+        "description": "Message displayed after download sync completes."
+    },
+    "syncDownloads": "Synchroniseer en download missende bestanden.",
+    "@syncDownloads": {
+        "description": "Tooltip for downloads sync button."
+    },
+    "repairDownloads": "Repareer fouten met gedownloade bestanden en metadata.",
+    "@repairDownloads": {
+        "description": "Tooltip for downloads repair button."
+    },
+    "requireWifiForDownloads": "Alleen downloaden wanneer verbonden met WiFi.",
+    "@requireWifiForDownloads": {
+        "description": "Description of setting for only performing downloads while on wifi"
+    },
+    "queueRestoreError": "Waarschuwing: {count,plural, =1{{count} nummer} other{{count} nummers}} konden niet naar de wachtrij teruggezet worden.",
+    "@queueRestoreError": {
+        "description": "Message that shows when some, but not all, tracks in the Now-Playing queue from the previous session cannot be restored due to server issues or being offline.",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadLibraryPrompt": "Weet je zeker dat je alles in bibliotheek ''{libraryName}'' wil downloaden?",
+    "@downloadLibraryPrompt": {
+        "description": "Confirmation prompt before downloading entire library, which may be large.",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "runRepairWarning": "De server kon niet bereikt worden om de downloads migratie te voltooien. Start a.u.b. 'Repareer Downloads' van het Downloads hoofdstuk wanneer je weer online bent.",
+    "@runRepairWarning": {
+        "description": "Message shown when an error occurs during the downloads repair step of the Isar downloads migration, which requires a server connection."
+    },
+    "itemTypeSubtitle": "{itemType, select, album{Album} playlist{Playlist} artist{Artiest} genre{Genre} track{Track} library{Bibliotheek} unknown{Item} other{{itemType}}} {itemName}",
+    "@itemTypeSubtitle": {
+        "placeholders": {
+            "itemType": {
+                "type": "String",
+                "example": "album"
+            },
+            "itemName": {
+                "type": "String"
+            }
+        },
+        "description": "Subtitle for the type of a downloaded item, shown when syncing fails and in DownloadButton tooltip."
+    },
+    "downloadButtonDisabledGenreFilterTooltip": "Verwijder alsjeblieft het genre filter om de download acties in staat te stellen.",
+    "@downloadButtonDisabledGenreFilterTooltip": {
+        "description": "Tooltip shown when a download button is disabled because of an active genre filter."
+    },
+    "genreFilterNotAvailableForAlbums": "Genre Filters zijn niet beschikbaar voor Albums.",
+    "@genreFilterNotAvailableForAlbums": {
+        "description": "Message shown when the user tries to apply a genre filter to an album."
+    },
+    "genreNotFound": "Het genre kon niet gevonden worden.{additionalInfo, select, offline{ Het is misschien niet gedownload of behoort tot een andere bibliotheek.} other{ Het behoort misschien tot een anderebibiliotheek.}}",
+    "@genreNotFound": {
+        "placeholders": {
+            "additionalInfo": {
+                "type": "String"
+            }
+        },
+        "description": "Message shown when a genre filter or open-genre action fails because the genre item could not be found."
+    },
+    "incidentalDownloadTooltip": "Dit item moet gedownload worden door {parentName}.",
+    "@incidentalDownloadTooltip": {
+        "placeholders": {
+            "parentName": {
+                "type": "String"
+            }
+        },
+        "description": "Tooltip for downloadbutton on incidental downloads, which show a lock icon. It says one of the requiring downloads."
     }
 }

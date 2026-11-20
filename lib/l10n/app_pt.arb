@@ -2842,7 +2842,7 @@
     "@losslessNoBitrate": {
         "description": "Settings text informing the user that transcoding bitrate does not apply to lossless transcodes."
     },
-    "home": "Ecrã Inicial",
+    "home": "Área Inicial",
     "@home": {
         "description": "Label for the home/main screen"
     },
@@ -3736,5 +3736,140 @@
     "downloadDialogTranscodedIntoSemanticLabel": "Transcodificado em",
     "@downloadDialogTranscodedIntoSemanticLabel": {
         "description": "Screen reader label for the arrow icon in the download dialog's transcode summary. It sits between the original value and the transcoded value, e.g. 'FLAC, transcoded into, OPUS'."
-    }
+    },
+    "noMusicLibrariesLogsCTA": "Se você acha que isto é um erro, por favor ajude-nos a corrigi-lo ao partilhar estes relatórios connosco:",
+    "@noMusicLibrariesLogsCTA": {
+        "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
+    },
+    "noMusicLibrariesLogout": "Pode também terminar a sessão e tentar de novo.",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
+    "closeToTrayTitle": "Fechar para a bandeja do sistema",
+    "@closeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray instead of quitting when it is closed"
+    },
+    "closeToTraySubtitle": "Mantém o Finamp a correr a bandeja do sistema quando a janela é fechada. Use \"Terminar\" no menu da bandeja para sair.",
+    "minimizeToTrayTitle": "Minimizar para a bandeja do sistema",
+    "@minimizeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray when it is minimized"
+    },
+    "minimizeToTraySubtitle": "Esconde a janela na bandeja do sistema quando está minimizada.",
+    "trayQuit": "Terminar o Finamp",
+    "@trayQuit": {
+        "description": "System tray menu entry that fully quits the app"
+    },
+    "minimizeToTrayWaylandNote": "Esconde a janela na bandeja do sistema quando está minimizada. Não suportado do Wayland, o qual não diz às aplicações quando são minimizadas. Use \"Fechar para bandeja do sistema\" em vez disto.",
+    "@minimizeToTrayWaylandNote": {
+        "description": "Subtitle of the minimize to tray setting when running on a Linux Wayland session, where minimizing cannot be detected"
+    },
+    "startMinimizedToTrayTitle": "Iniciar na bandeja do sistema",
+    "@startMinimizedToTrayTitle": {
+        "description": "Desktop only. Title of the setting that starts Finamp with the window hidden in the system tray"
+    },
+    "startMinimizedToTraySubtitle": "Arranca o Finamp com a janela escondida na bandeja do sistema. Também pode passar --minimized na linha de comandos.",
+    "trayShowWindow": "Mostrar o Finamp",
+    "@trayShowWindow": {
+        "description": "System tray menu entry that shows the main window"
+    },
+    "trayHideWindow": "Colapsar o Finamp para a bandeja",
+    "@trayHideWindow": {
+        "description": "System tray menu entry that hides the main window to the tray"
+    },
+    "trayNothingPlaying": "Nada a tocar",
+    "@trayNothingPlaying": {
+        "description": "Disabled system tray menu entry shown in place of the current track when nothing is playing"
+    },
+    "trayTooltipPlaying": "{track} - Finamp",
+    "@trayTooltipPlaying": {
+        "description": "System tray icon tooltip shown while a track is loaded",
+        "placeholders": {
+            "track": {
+                "type": "String",
+                "example": "Rick Astley - Never Gonna Give You Up"
+            }
+        }
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Limite de Perda de Pistas ao Recarregar Automaticamente a Fila",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "Quando se muda para modo offline, apenas recarrega automaticamente se não mais do que esta percentagem de faixas devem ser removidas. Pode sempre recarregar manualmente.",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "Máximo de faixas removidas: {percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "autoReloadPromptDroppedTracks": "Isto irá remover {removedPercentage}% de ({amountUndownloadedTracks} faixas em fila).",
+    "@autoReloadPromptDroppedTracks": {
+        "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "removedPercentage": {
+                "type": "int"
+            }
+        }
+    },
+    "customHeaders": "Cabeçalhos HTTP Personalizados",
+    "httpHeaderNotAuth": "Nome usado internamente.",
+    "@httpHeaderNotAuth": {
+        "description": "Error message when the user configures a custom authorization header that overlaps with one finamp already uses."
+    },
+    "httpHeaderConflict": "Nome de cabeçalho duplicado.",
+    "@httpHeaderConflict": {
+        "description": "Error message when the user configures two custom authorization headers with duplicate names."
+    },
+    "customHeaderNameLabel": "Nome de Cabeçalho",
+    "@customHeaderNameLabel": {
+        "description": "Label for custom HTTP header name entry field."
+    },
+    "customHeaderValueLabel": "Valor de Cabeçalho",
+    "@customHeaderValueLabel": {
+        "description": "Label for custom HTTP header value entry field."
+    },
+    "followRedirectsTitle": "Ativar Redirecionamentos",
+    "@followRedirectsTitle": {
+        "description": "Title of setting that allows Finamp to follow redirects."
+    },
+    "followRedirectsSubtitle": "Permite ao Finamp seguir redirecionamentos HTTP, incluindo para domínios diferentes do configurado.  Isto é potencialmente incompatível com cabeçalhos HTTP personalizados.",
+    "advancedLoginOptionsWarning": "Opções de autenticação avançadas para configurações de servidor não usuais.  Estas são fornecidas numa base de melhor-esforço e podem não funcionar corretamente em todas as plataformas.",
+    "playSomeButtonLabel": "Reproduzir algumas",
+    "addSomeToQueue": "Adicionar algumas à Fila",
+    "playSomeNext": "Reproduzir algumas próxima",
+    "addSomeToNextUp": "Adicionar algumas a Próximas",
+    "queueAutorestoreOversized": "Restauro abortado - A fila salva é excessivamente grande.",
+    "oversizedQueueItemTruncated": "Item de tamanho exagerado truncado das faixas {itemSize} a {maxSize}.",
+    "@oversizedQueueItemTruncated": {
+        "description": "Message displayed if an item is truncated while being added to queue",
+        "placeholders": {
+            "itemSize": {
+                "type": "int"
+            },
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueSizeLimitTitle": "Limite de fila de faixas",
+    "oversizedQueueContinue": "Tenta carregar mesmo assim",
+    "oversizedQueueTruncate": "Fila truncada pelo máximo de {maxSize} faixas",
+    "@oversizedQueueTruncate": {
+        "description": "Button to truncate oversized queues while restoring",
+        "placeholders": {
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueRestoreCancel": "Cancelar Restauro",
+    "queueSizeLimitSubtitle": "Aplica uma tampa flexível à fila ao limitar o tamanho dos items individuais adicionados.  As filas excessivamente grandes podem ainda ser criadas através da adição de vários items a uma fila.  A tentativa de reproduzir uma fila demasiado grande pode resultar em colisões na aplicação."
 }

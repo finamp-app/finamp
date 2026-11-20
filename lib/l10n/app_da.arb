@@ -1866,7 +1866,7 @@
     "@homeScreenSectionPresetForgottenFavoriteTracksTitle": {
         "description": "Title for the forgotten favorite tracks preset section, which can be added to the home screen"
     },
-    "retryPageLoad": "Fejlede at indlæse genstande fra serveren.  Klik for at prøve igen.",
+    "retryPageLoad": "Kunne ikke indlæse genstande fra serveren.  Klik for at prøve igen.",
     "noFilterActive": "Ingen Filter Aktiv",
     "@noFilterActive": {
         "description": "Message in sort & filter row when no filters are active"
@@ -1914,5 +1914,308 @@
     "customizeHomeScreen": "Personliggør Hjemmeskærm",
     "@customizeHomeScreen": {
         "description": "Label for home screen customize button"
+    },
+    "trayNothingPlaying": "Intet spiller",
+    "@trayNothingPlaying": {
+        "description": "Disabled system tray menu entry shown in place of the current track when nothing is playing"
+    },
+    "quickSettingsLayoutLink": "Alle layout & tema indstillinger",
+    "quickSettingsAllSettingsLink": "Alle Indstillinger",
+    "quickSettingsNetworkLink": "konfigurer den lokale adresse for din server",
+    "loginFlowLocalNetworkServersNoResults": "Ingen server registreret endnu - du bliver måske nød til at indtaste server adressen manuelt.",
+    "closeToTrayTitle": "Luk til systembakken",
+    "@closeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray instead of quitting when it is closed"
+    },
+    "minimizeToTrayTitle": "Minimer til systembakken",
+    "@minimizeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray when it is minimized"
+    },
+    "minimizeToTraySubtitle": "Gem vinduet til systembakken når den er minimeret.",
+    "themeSettingTitle": "App farve tema (mørk/lys)",
+    "@themeSettingTitle": {
+        "description": "Title for the setting that allows you to override the system theme and force dark or light mode"
+    },
+    "clientCertificateImportSuccess": "Certifikat importeret med succes",
+    "@clientCertificateImportSuccess": {
+        "description": "Message shown after successfully importing a client certificate."
+    },
+    "clientCertificateImportError": "Kunne ikke importere certifikat",
+    "@clientCertificateImportError": {
+        "description": "Error message shown when importing a client certificate fails."
+    },
+    "clientCertificateRequired": "Klient certifikat påkrævet",
+    "@clientCertificateRequired": {
+        "description": "Message shown on the server selection screen when the server requires a client certificate to be provided."
+    },
+    "cancelChanges": "Annuller ændringer",
+    "@cancelChanges": {
+        "description": "Button on sort and filter menu that clears any pending changes."
+    },
+    "applyChangesOnClose": "Ændringer vil blive anvendt når menuen lukkes",
+    "@applyChangesOnClose": {
+        "description": "Notification on sort and filter menu that currently pending changes will be automatically applied on close."
+    },
+    "removeFromQueue": "Fjern Fra Kø",
+    "unknownVersion": "Ukendt Version",
+    "@unknownVersion": {
+        "description": "Reported server version if request fails"
+    },
+    "isFavoriteFilter": "Favoritter",
+    "@isFavoriteFilter": {
+        "description": "Name of favorite filter"
+    },
+    "isUnplayedFilter": "Uspillet",
+    "@isUnplayedFilter": {
+        "description": "Name of unplayed items filter"
+    },
+    "isFullyDownloadedFilter": "Fuldt overført",
+    "@isFullyDownloadedFilter": {
+        "description": "Name of fully downloaded items filter"
+    },
+    "genreFilter": "Genre: {name}",
+    "@genreFilter": {
+        "description": "Name of genreFilter",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "artistFilter": "Kunstner: {name}",
+    "@artistFilter": {
+        "description": "Name of artistFilter",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "startsWithFilter": "Starter med: {letter}",
+    "@startsWithFilter": {
+        "description": "Name of starts with letter filter",
+        "placeholders": {
+            "letter": {
+                "type": "String"
+            }
+        }
+    },
+    "searchTermFilter": "Søg:{searchTerm}",
+    "@searchTermFilter": {
+        "description": "Name of search term filter",
+        "placeholders": {
+            "searchTerm": {
+                "type": "String"
+            }
+        }
+    },
+    "allTypes": "Alle Typer",
+    "noPreviousQueueFoundToPlay": "Ingen tidligere kø fundet til at afspille.",
+    "@noPreviousQueueFoundToPlay": {
+        "description": "Message if play previous queue quick action fails"
+    },
+    "randomPlaylistAction": "Tilfældig Afspilningsliste",
+    "@randomPlaylistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomArtistAction": "Tilfældig Kunstner",
+    "@randomArtistAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "randomGenreAction": "Tilfældig Genre",
+    "@randomGenreAction": {
+        "description": "Name of a home screen quick action"
+    },
+    "editAction": "Rediger Handling",
+    "@editAction": {
+        "description": "Button to edit a quick action"
+    },
+    "keepScreenOnSubtitle": "Hvornår skærmen skal holdes tændt",
+    "keepScreenOnAlwaysOn": "Altid Tændt",
+    "discUnknown": "Disk Ukendt",
+    "@discUnknown": {
+        "description": "Shown when the disc number is unknown or not set for a group of tracks on the album screen"
+    },
+    "downloadDialogDownloadLocationLabel": "Overførsel Lokation",
+    "@downloadDialogDownloadLocationLabel": {
+        "description": "Label for the dropdown in the download dialog that selects where the download is stored. Only shown when multiple download locations are available."
+    },
+    "downloadDialogPath": "Sti:{path}",
+    "@downloadDialogPath": {
+        "description": "Shows the file system path of the selected download location in the download dialog.",
+        "placeholders": {
+            "path": {
+                "type": "String",
+                "example": "/storage/emulated/0/Android/data/com.unicornsonlsd.finamp/files"
+            }
+        }
+    },
+    "downloadDialogTranscodeFilesTitle": "Omkod Filer?",
+    "@downloadDialogTranscodeFilesTitle": {
+        "description": "Title of the checkbox in the download dialog that toggles whether the downloaded tracks are transcoded."
+    },
+    "downloadDialogFileSizeLabel": "Fil Størrelse:",
+    "@downloadDialogFileSizeLabel": {
+        "description": "Label for the original vs. transcoded file size line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "downloadDialogFormatLabel": "Format:",
+    "@downloadDialogFormatLabel": {
+        "description": "Label for the original vs. transcoded audio format line in the download dialog's transcode summary. Should ideally have a colon at the end."
+    },
+    "doTranscode": "Overfør som {codec} @ {bitrate}{size, select, null{} other{ - ~{size}}}",
+    "@doTranscode": {
+        "placeholders": {
+            "bitrate": {
+                "type": "String",
+                "example": "123kbps"
+            },
+            "codec": {
+                "type": "String",
+                "example": "OPUS"
+            },
+            "size": {
+                "type": "String",
+                "example": "167 MB"
+            }
+        },
+        "description": "Dropdown option to download transcoded version of tracks"
+    },
+    "dontTranscode": "Hent original{description, select, null{} other{ - {description}}}",
+    "@dontTranscode": {
+        "placeholders": {
+            "description": {
+                "type": "String",
+                "example": "456 MB FLAC"
+            }
+        },
+        "description": "Dropdown option to download original version of tracks"
+    },
+    "fontSizeOptionSmall": "Lille",
+    "@fontSizeOptionSmall": {
+        "description": "Font size option for things like the lyrics view. Small means a smaller font size."
+    },
+    "fontSizeOptionMedium": "Mellem",
+    "@fontSizeOptionMedium": {
+        "description": "Font size option for things like the lyrics view. Medium means a medium font size."
+    },
+    "fontSizeOptionLarge": "Stor",
+    "@fontSizeOptionLarge": {
+        "description": "Font size option for things like the lyrics view. Large means a larger font size."
+    },
+    "keepScreenOn": "Hold Skærm Tændt",
+    "@keepScreenOn": {
+        "description": "Option to keep the screen on while using the app"
+    },
+    "keepScreenOnWhilePlaying": "Når Musik Spiller",
+    "quickSettingsScreen": "Hurtige Indstillinger",
+    "quickSettingsTabsLink": "Omroker og skjul faner",
+    "removeSection": "Fjern Sektion",
+    "@removeSection": {
+        "description": "Button to remove a home screen section"
+    },
+    "sectionsMenu": "Sektion",
+    "@sectionsMenu": {
+        "description": "Title for home screen sections edit menu"
+    },
+    "sectionMenuSubtitle": "Vælg og omroker sektioner vis på hjemmeskærmen.",
+    "@sectionMenuSubtitle": {
+        "description": "Subtitle for home screen sections edit menu"
+    },
+    "editSection": "Rediger sektion",
+    "@editSection": {
+        "description": "Label for edit home section menu entry"
+    },
+    "recentQueues": "Nylige Køer",
+    "@recentQueues": {
+        "description": "Name of a home screen section preset"
+    },
+    "addNewSection": "Tilføj Ny Sektion",
+    "@addNewSection": {
+        "description": "Button to add a new home screen section"
+    },
+    "preferLocalNetworkPublicAddressSettingDescription": "Den primære adresse brugt til at forbinde til din Jellyfin server",
+    "preferLocalNetworkEnableSwitchDescription": "Om der skal bruges en anden adresse når du er på det lokale netværk af din jellyfin server",
+    "preferLocalNetworkTargetAddressLocalSettingTitle": "Lokal Netværk adresse",
+    "sortFilter": "Sorter & Filtrer",
+    "@sortFilter": {
+        "description": "title for Sort & Filter menu"
+    },
+    "outputMenuOpenConnectionSettingsButtonTitle": "Forbind til en enhed",
+    "@outputMenuOpenConnectionSettingsButtonTitle": {
+        "description": "Button title for connecting to a device from the output menu"
+    },
+    "preferLocalNetworkActiveAddressInfoText": "Aktive Adresse",
+    "@preferLocalNetworkActiveAddressInfoText": {
+        "description": "Shows the active address inside the network settings screen so the user can see if this feature works"
+    },
+    "missingSchemaError": "URL skal starte med http(s)://",
+    "@missingSchemaError": {
+        "description": "Snackbar message when the user changes their home/public address but it doesn't start with http"
+    },
+    "removeFilter": "Fjern Dette Filter",
+    "@removeFilter": {
+        "description": "Tooltip for removable filter chips in Sort & Filter row"
+    },
+    "removeFilters": "Fjern Filtre",
+    "@removeFilters": {
+        "description": "Title for remove filters only variant of sort and filter menu"
+    },
+    "connected": "Forbundet",
+    "@connected": {
+        "description": "Fallback for 'Connected to <server name>' message while server info is loaded"
+    },
+    "timerMinutes": "{minutes} min",
+    "@timerMinutes": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer duration slider"
+    },
+    "timerTracks": "{tracks} spor",
+    "@timerTracks": {
+        "placeholders": {
+            "tracks": {
+                "type": "int"
+            }
+        },
+        "description": "Label for sleep timer track count slider"
+    },
+    "noSearchResults": "Intet søge resultat.",
+    "@noSearchResults": {
+        "description": "Message in home screen section editor search widget when no results are returned"
+    },
+    "homeScreenImageSizeTitle": "Hjemmeskærm Tile Størrelse",
+    "@homeScreenImageSizeTitle": {
+        "description": "Title of home screen tile image size setting"
+    },
+    "inPlaylist": "I Afspilningsliste",
+    "@inPlaylist": {
+        "description": "Name of 'In Playlist' content type"
+    },
+    "queues": "Køer",
+    "@queues": {
+        "description": "Name of home screen section type which shows the latest played queues"
+    },
+    "favoritePlaylists": "Favorit Afspilningslister",
+    "@favoritePlaylists": {
+        "description": "Name of a home screen section preset"
+    },
+    "favoriteGenres": "Favorit Genre",
+    "@favoriteGenres": {
+        "description": "Name of a home screen section preset"
+    },
+    "frequentlyPlayedTracks": "Ofte Spillede Spor",
+    "@frequentlyPlayedTracks": {
+        "description": "Name of a home screen section preset"
+    },
+    "surpriseMeActionDescription": "Starter 'Kontinuerlig' radio fra et tilfældigt spor",
+    "@surpriseMeActionDescription": {
+        "description": "Description of a home screen quick action"
+    },
+    "previousQueueAction": "Forrige Kø",
+    "@previousQueueAction": {
+        "description": "Name of a home screen quick action"
     }
 }
