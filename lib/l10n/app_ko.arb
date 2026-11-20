@@ -3764,5 +3764,8 @@
     "autoReloadQueueMaxDroppedTracksPercentageTitle": "자동 대기열 새로고침시 노래 삭제 제한",
     "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
         "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
-    }
+    },
+    "addSomeToQueue": "대기열에 추가합니다",
+    "playSomeNext": "다음 곡 재생",
+    "addSomeToNextUp": "'Next Up'에 추가하기"
 }
