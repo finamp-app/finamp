@@ -3828,5 +3828,35 @@
         "description": "Title of setting that allows Finamp to follow redirects."
     },
     "followRedirectsSubtitle": "允许 Finamp 跟随 HTTP 重定向，包括重定向至与所配置域名不同的其他域名。  这可能会与自定义 HTTP 标头产生冲突。",
-    "advancedLoginOptionsWarning": "针对特殊服务器配置提供的高级身份验证选项。  此类选项仅在“尽力而为”的基础上提供，未必能在所有平台上正常运行。"
+    "advancedLoginOptionsWarning": "针对特殊服务器配置提供的高级身份验证选项。  此类选项仅在“尽力而为”的基础上提供，未必能在所有平台上正常运行。",
+    "playSomeButtonLabel": "播放一些",
+    "addSomeToQueue": "添加到队列",
+    "playSomeNext": "接下来播放一些内容",
+    "addSomeToNextUp": "添加到“接下来播放”",
+    "queueAutorestoreOversized": "恢复已中止——已保存的队列过大。",
+    "oversizedQueueItemTruncated": "超大项已从 {itemSize} 个曲目截减至 {maxSize} 个曲目。",
+    "@oversizedQueueItemTruncated": {
+        "description": "Message displayed if an item is truncated while being added to queue",
+        "placeholders": {
+            "itemSize": {
+                "type": "int"
+            },
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueSizeLimitTitle": "队列曲目上限",
+    "queueSizeLimitSubtitle": "通过限制所添加各项内容的大小，为队列设置一个“软上限”。  不过，如果向同一个队列中添加多项内容，仍可能导致队列变得过大。  若尝试播放对于设备而言过大的队列，可能会导致应用程序崩溃。",
+    "oversizedQueueContinue": "仍尝试加载",
+    "oversizedQueueTruncate": "将队列截断至最多 {maxSize} 首曲目",
+    "@oversizedQueueTruncate": {
+        "description": "Button to truncate oversized queues while restoring",
+        "placeholders": {
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueRestoreCancel": "取消 恢复"
 }
