@@ -33,11 +33,17 @@ class PlaybackHistoryService {
   FinampHistoryItem? _currentTrack; // the currently playing track
 
   ({PlaybackState state, FinampQueueItem? item})? _previousPlayback;
+  // the last state that described [_currentTrack], kept because a new queue loaded while paused replaces the player's
+  // state before the current track changes
+  // along with the state before it, see [_lastStateOf]
+  ({PlaybackState state, PlaybackState? earlier, String itemId})? _currentTrackState;
   DateTime _lastPositionUpdate = DateTime.now();
 
   FinampQueueItem?
   _lastReportedTrackStarted; // used to check if playback has already reported as "started" at some point for the current track
   FinampQueueItem? _lastReportedTrackStopped; // used to prevent reporting a track as stopped multiple times
+  // the time of the last state the stop of [_lastReportedTrackStopped] describes, so later states are new listens
+  DateTime? _lastReportedTrackStoppedAt;
 
   final _historyStream = BehaviorSubject<List<FinampHistoryItem>>.seeded(List.empty(growable: true));
 
@@ -97,22 +103,20 @@ class PlaybackHistoryService {
           return;
         }
 
-        FinampQueueItem currentItem;
-        if (currentIndex is! int ||
-            currentIndex < 0 ||
-            currentIndex >= _audioService.sequenceState.effectiveSequence.length) {
+        final currentItem = _trackAt(currentIndex);
+        if (currentItem == null) {
           if (isDesktop) {
             WindowManager.instance.setTitle("Finamp");
           }
           return;
         }
-        if (_audioService.sequenceState.effectiveSequence[currentIndex].tag case FinampQueueItem item) {
-          currentItem = item;
-        } else {
-          if (isDesktop) {
-            WindowManager.instance.setTitle("Finamp");
-          }
-          return;
+        final prevItemState = _lastStateOf(prevItem, currentState.updateTime);
+        if (currentItem.id == prevItem?.id) {
+          _currentTrackState = (
+            state: currentState,
+            earlier: _currentTrackState?.itemId == currentItem.id ? _currentTrackState?.state : null,
+            itemId: currentItem.id,
+          );
         }
         if (currentItem.id != prevItem?.id) {
           updateCurrentTrack(
@@ -120,12 +124,29 @@ class PlaybackHistoryService {
             // add to playback history if playback was stopped before
             forceNewTrack: currentState.playing != prevState?.playing,
           );
-          if (currentState.queueIndex != prevState?.queueIndex || currentState.position != prevState?.position) {
+          if (!currentState.playing) {
+            // the previous track ends now and the new one is reported once it plays
+            // the previous state may already describe the new queue, at the same index and position as this one
+            onTrackChanged(currentItem, currentState, prevItem, prevItemState);
+          } else if (currentState.queueIndex != prevState?.queueIndex || currentState.position != prevState?.position) {
             _playbackHistoryServiceLogger.fine(
               "Handling track change event from ${prevItem?.item.title} to ${currentItem.item.title}",
             );
             //TODO handle reporting track changes based on history changes, as that is more reliable
-            onTrackChanged(currentItem, currentState, prevItem, prevState);
+            onTrackChanged(
+              currentItem,
+              currentState,
+              prevItem,
+              // a paused previous state is the new track's, as the track changed while paused, which ended the previous one
+              // a playing one may be the new queue's, as clearing the old queue resets the position, so the previous
+              // track's own last state is preferred, if it had an event of its own after becoming current
+              (prevState?.playing ?? false) ? prevItemState ?? prevState : null,
+            );
+          } else if (prevState?.playing != true) {
+            // the track became current while paused (e.g. iOS pauses before replacing the queue), so it wasn't reported
+            // the previous state is this track's, so it says nothing about how the previous track ended
+            _playbackHistoryServiceLogger.fine("Handling playback start of ${currentItem.item.title}");
+            onTrackChanged(currentItem, currentState, null, null);
           }
         }
         // handle events that don't change the current track (e.g. loop, pause, seek, etc.)
@@ -176,10 +197,7 @@ class PlaybackHistoryService {
           if (isSeekEvent) {
             // rate limit updates (only send update after no changes for 3 seconds) and if the track is still the same
             Future.delayed(const Duration(seconds: 3, milliseconds: 500), () {
-              var newCurrentTrack =
-                  _audioService.queueIndex != null && _audioService.sequenceState.effectiveSequence.isNotEmpty
-                  ? _audioService.sequenceState.effectiveSequence[_audioService.queueIndex!].tag as FinampQueueItem
-                  : null;
+              final newCurrentTrack = _playerTrack;
               if (_lastPositionUpdate.add(const Duration(seconds: 3)).isBefore(DateTime.now()) &&
                   currentItem.item.id == newCurrentTrack?.item.id) {
                 _playbackHistoryServiceLogger.fine("Handling seek event for ${currentItem.item.title}");
@@ -374,10 +392,14 @@ class PlaybackHistoryService {
         previousItem != null &&
         previousState != null &&
         // don't submit stop events for idle tracks (at position 0 and not playing)
-        (previousState.playing || previousState.updatePosition != Duration.zero);
+        (previousState.playing || previousState.updatePosition != Duration.zero) &&
+        // a track is reported stopped once, though its state may be seen again until the next track plays
+        // a state from after its last stop (e.g. a loop-one repeat, or the track resumed) is a new listen, so it's reported
+        !_stopReportedSince(previousItem, previousState);
 
     if (FinampSettingsHelper.finampSettings.isOffline) {
       if (shouldReportPreviousTrack) {
+        _markTrackStopped(previousItem, at: previousState.updateTime);
         await _offlineListenLogHelper.logOfflineListen(previousItem.item);
       }
       return;
@@ -388,17 +410,6 @@ class PlaybackHistoryService {
       previousTrackPlaybackData = generatePlaybackProgressInfoFromState(previousItem, previousState);
     }
 
-    // prevent reporting the same track twice if playback hasn't started yet
-    if (!currentState.playing) {
-      return;
-    }
-
-    final newTrackplaybackData = generatePlaybackProgressInfoFromState(
-      currentItem,
-      currentState,
-      atTrackStart: previousItem != null,
-    );
-
     //!!! always submit a "start" **AFTER** a "stop" to that Jellyfin knows there's still something playing
     if (previousTrackPlaybackData != null) {
       _playbackHistoryServiceLogger.info(
@@ -408,7 +419,7 @@ class PlaybackHistoryService {
       try {
         _resetPeriodicUpdates(); // delay next periodic update to avoid race conditions with old data
         //!!! allow reporting the same track here so that skipping after looping a single track is reported correctly
-        _lastReportedTrackStopped = previousItem;
+        _markTrackStopped(previousItem, at: previousState!.updateTime);
         await _jellyfinApiHelper.stopPlaybackProgress(previousTrackPlaybackData);
         //TODO also mark the track as played in the user data: https://api.jellyfin.org/openapi/api.html#tag/Playstate/operation/MarkPlayedItem
       } catch (e) {
@@ -418,6 +429,17 @@ class PlaybackHistoryService {
         }
       }
     }
+
+    // the new track is reported once it plays, so that it isn't reported twice
+    if (!currentState.playing) {
+      return;
+    }
+
+    final newTrackplaybackData = generatePlaybackProgressInfoFromState(
+      currentItem,
+      currentState,
+      atTrackStart: previousItem != null,
+    );
     if (newTrackplaybackData != null) {
       _playbackHistoryServiceLogger.info(
         "Starting playback progress for ${currentItem.item.title} at ${(newTrackplaybackData.positionTicks ?? 0) ~/ 10000} ms",
@@ -457,7 +479,7 @@ class PlaybackHistoryService {
         try {
           _resetPeriodicUpdates(); // delay next periodic update to avoid race conditions with old data
           if (_lastReportedTrackStopped?.id != currentItem.id) {
-            _lastReportedTrackStopped = currentItem;
+            _markTrackStopped(currentItem);
             await _jellyfinApiHelper.stopPlaybackProgress(playbackData);
           }
         } catch (e) {
@@ -491,13 +513,19 @@ class PlaybackHistoryService {
   }
 
   Future<void> reportPlaybackStopped() async {
-    final playbackInfo = generateGenericPlaybackProgressInfo();
+    final track = _currentTrack?.item;
+    final trackState = _lastStateOf(track, DateTime.now());
+    // once the player no longer holds the track (e.g. its queue was cleared), the player's position isn't the track's
+    final reportTrackState = track != null && trackState != null && _playerTrack?.id != track.id;
+    final playbackInfo = reportTrackState
+        ? generatePlaybackProgressInfoFromState(track, trackState)
+        : generateGenericPlaybackProgressInfo();
     if (playbackInfo != null) {
       final playbackStopTime = DateTime.now();
       try {
         _resetPeriodicUpdates(); // delay next periodic update to avoid race conditions with old data
         if (_lastReportedTrackStopped?.id != _currentTrack?.item.id) {
-          _lastReportedTrackStopped = _currentTrack?.item;
+          _markTrackStopped(_currentTrack?.item, at: reportTrackState ? trackState.updateTime : null);
           if (FinampSettingsHelper.finampSettings.isOffline) {
             await _offlineListenLogHelper.logOfflineListen(_currentTrack!.item.item);
           } else {
@@ -520,12 +548,13 @@ class PlaybackHistoryService {
     if (playbackInfo != null) {
       try {
         _resetPeriodicUpdates(); // delay next periodic update to avoid race conditions with old data
-        if (_lastReportedTrackStarted?.id != _currentTrack?.item.id) {
-          // _playbackStartNotYetReported = false;
+        if (_lastReportedTrackStarted?.id == _currentTrack?.item.id) {
+          await _jellyfinApiHelper.updatePlaybackProgress(playbackInfo);
+        } else if (!playbackInfo.isPaused) {
+          // a track that hasn't been reported started (or was reported stopped) is reported started once it plays,
+          // as the server counts a play for every start
           _lastReportedTrackStarted = _currentTrack?.item;
           await _jellyfinApiHelper.reportPlaybackStart(playbackInfo);
-        } else {
-          await _jellyfinApiHelper.updatePlaybackProgress(playbackInfo);
         }
       } catch (e) {
         _playbackHistoryServiceLogger.warning(e);
@@ -606,6 +635,12 @@ class PlaybackHistoryService {
       // This function relies on _history having items
       return null;
     }
+    final playerTrack = _playerTrack;
+    if (_currentTrack != null && playerTrack != null && playerTrack.id != _currentTrack!.item.id) {
+      // the player holds a track that isn't current yet (e.g. a new queue loaded while paused),
+      // so its position and paused state would be reported for the wrong track
+      return null;
+    }
 
     try {
       return jellyfin_models.PlaybackProgressInfo(
@@ -630,6 +665,61 @@ class PlaybackHistoryService {
       _playbackHistoryServiceLogger.warning(e);
       rethrow;
     }
+  }
+
+  /// The track the player is on, which can differ from [_currentTrack] while paused.
+  FinampQueueItem? get _playerTrack => _trackAt(_audioService.queueIndex);
+
+  /// The last state that described [item] as the current track, as of leaving it at [leftAt].
+  /// Leaving a track (e.g. on Android) first moves the player to its start, so a state at the start shortly before
+  /// [leftAt] gives way to the one before it, which tells how far the track got.
+  PlaybackState? _lastStateOf(FinampQueueItem? item, DateTime leftAt) {
+    final trackState = _currentTrackState;
+    if (item == null || trackState == null || trackState.itemId != item.id) {
+      return null;
+    }
+    final state = trackState.state;
+    // the player's position is reported a moment after it moves, so it may be just past the start
+    final movedToStart =
+        state.updatePosition < const Duration(seconds: 1) &&
+        leftAt.difference(state.updateTime) < const Duration(seconds: 2);
+    return movedToStart ? trackState.earlier ?? state : state;
+  }
+
+  /// The track at [index] of the player's effective sequence, if there is one.
+  FinampQueueItem? _trackAt(int? index) {
+    final sequence = _audioService.sequenceState.effectiveSequence;
+    if (index == null || index < 0 || index >= sequence.length) {
+      return null;
+    }
+    return switch (sequence[index].tag) {
+      FinampQueueItem item => item,
+      _ => null,
+    };
+  }
+
+  /// Records that [item] was reported stopped (or logged offline), as of its state at [at] (by default, now).
+  /// The server ends its session for the track, so it has to be reported started again before any further progress.
+  void _markTrackStopped(FinampQueueItem? item, {DateTime? at}) {
+    _lastReportedTrackStopped = item;
+    _lastReportedTrackStoppedAt = at ?? DateTime.now();
+    if (item != null && _lastReportedTrackStarted?.id == item.id) {
+      _lastReportedTrackStarted = null;
+    }
+  }
+
+  /// Whether [item] was reported stopped as of [state] or a later state.
+  /// Online, that's until it's reported started again, as the player may emit states for it after it stopped
+  /// (e.g. when the queue completes), but only a start opens a new session for it on the server.
+  bool _stopReportedSince(FinampQueueItem item, PlaybackState state) {
+    if (_lastReportedTrackStopped?.id != item.id) {
+      return false;
+    }
+    if (!FinampSettingsHelper.finampSettings.isOffline && _lastReportedTrackStarted?.id != item.id) {
+      return true;
+    }
+    final stoppedAt = _lastReportedTrackStoppedAt;
+    return stoppedAt != null && !state.updateTime.isAfter(stoppedAt);
   }
 
   List<jellyfin_models.QueueItem>? getQueueToReport({bool? includeNowPlayingQueue}) {
