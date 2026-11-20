@@ -16,6 +16,7 @@ import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/feedback_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/hidden_items_provider.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_screen_provider.dart';
 import 'package:finamp/services/media_state_stream.dart';
@@ -244,7 +245,7 @@ class TrackListTile extends ConsumerWidget {
       invalidateRadioCache();
 
       // start linear playback of album from the given index
-      await queueService.startSlicePlayback(slice);
+      await queueService.startSlicePlayback(slice, keepStartTrack: true);
 
       if (lazyAddMoreTracksToQueue) {
         unawaited(
@@ -294,6 +295,7 @@ class TrackListTile extends ConsumerWidget {
         TrackListItemFeatures.duration,
         TrackListItemFeatures.addToPlaylistOrFavorite,
         playable && allowDismiss ? TrackListItemFeatures.swipeableInTrackList : null,
+        TrackListItemFeatures.dimIfHidden,
       ].nonNulls.toList(),
     );
   }
@@ -567,7 +569,9 @@ class TrackListItem extends ConsumerWidget {
       ),
     );
 
-    var listItem = playable ? listCard : Opacity(opacity: 0.5, child: listCard);
+    final dimmed =
+        !playable || (features.contains(TrackListItemFeatures.dimIfHidden) && ref.watch(isHiddenProvider(baseItem)));
+    var listItem = dimmed ? Opacity(opacity: 0.5, child: listCard) : listCard;
 
     var unthemedItem = Builder(
       builder: (context) {
@@ -669,6 +673,8 @@ enum TrackListItemFeatures {
   removeFromListButton,
   restoreButton,
   swipeableInQueue,
+  // Library and album lists dim hidden tracks; the queue doesn't, since everything there will play.
+  dimIfHidden,
 }
 
 class TrackListItemTile extends ConsumerWidget {

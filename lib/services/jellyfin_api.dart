@@ -165,6 +165,9 @@ abstract class JellyfinApi extends ChopperService {
     /// This allows multiple, comma delimited.
     @Query("excludeItemIds") String? excludeItemIds,
 
+    /// Optional. Only return items with one of these tags. This allows multiple, pipe delimited.
+    @Query("Tags") String? tags,
+
     /// Optional. The record index to start at. All items with a lower index
     /// will be dropped from the results.
     @Query("StartIndex") int? startIndex,
@@ -291,7 +294,9 @@ abstract class JellyfinApi extends ChopperService {
   Future<dynamic> updateItem({
     /// The item id.
     @Path() required BaseItemId itemId,
-    @Body() required BaseItemDto newItem,
+
+    /// The full item as returned by the server; Jellyfin overwrites every field from it.
+    @Body() required Map<String, dynamic> newItem,
   });
 
   @FactoryConverter(request: JsonConverter.requestFactory)

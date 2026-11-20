@@ -24,6 +24,8 @@ import 'package:rxdart/rxdart.dart';
 
 import '../models/music_slices.dart';
 import 'audio_service_helper.dart';
+import 'hidden_items.dart';
+import 'hidden_items_provider.dart';
 
 final _radioLogger = Logger("Radio");
 final _radioRandom = Random();
@@ -817,6 +819,9 @@ Future<List<BaseItemDto>> generateRadioTracks(
   } catch (e) {
     _radioLogger.warning(e);
   }
+  // Radio can queue a single track, which the queue would otherwise treat as a deliberate pick.
+  final hiddenIds = providers.read(hiddenIdsProvider);
+  tracksOut = tracksOut.where((track) => !isItemHidden(track, hiddenIds)).toList();
   _radioLogger.info(
     "Selected ${tracksOut.length} tracks for '${selectedRadioMode.name}' mode: ${tracksOut.map((e) => "'${e.artists?.firstOrNull} - ${e.name}'").join(", ")}",
   );

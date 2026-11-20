@@ -27,6 +27,7 @@ import 'downloads_service.dart';
 import 'downloads_service_backend.dart';
 import 'finamp_settings_helper.dart';
 import 'finamp_user_helper.dart';
+import 'hidden_items.dart';
 import 'jellyfin_api.dart' as jellyfin_api;
 
 class JellyfinApiHelper {
@@ -235,6 +236,8 @@ class JellyfinApiHelper {
     String? searchTerm,
     List<BaseItemId>? itemIds,
     List<BaseItemId>? albumIds,
+    List<BaseItemId>? excludeItemIds,
+    String? tags,
     String? filters,
     String? fields,
     bool? recursive,
@@ -280,6 +283,8 @@ class JellyfinApiHelper {
       searchTerm: searchTerm,
       itemIds: itemIds,
       albumIds: albumIds,
+      excludeItemIds: excludeItemIds,
+      tags: tags,
       filters: filters,
       fields: fields,
       recursive: recursive,
@@ -304,6 +309,8 @@ class JellyfinApiHelper {
     String? searchTerm,
     List<BaseItemId>? itemIds,
     List<BaseItemId>? albumIds,
+    List<BaseItemId>? excludeItemIds,
+    String? tags,
     String? filters,
     String? fields,
     bool? recursive,
@@ -324,6 +331,8 @@ class JellyfinApiHelper {
       searchTerm: searchTerm,
       itemIds: itemIds,
       albumIds: albumIds,
+      excludeItemIds: excludeItemIds,
+      tags: tags,
       filters: filters,
       fields: fields,
       recursive: recursive,
@@ -347,6 +356,8 @@ class JellyfinApiHelper {
     String? searchTerm,
     List<BaseItemId>? itemIds,
     List<BaseItemId>? albumIds,
+    List<BaseItemId>? excludeItemIds,
+    String? tags,
     String? filters,
     String? fields,
     bool? recursive,
@@ -452,6 +463,8 @@ class JellyfinApiHelper {
             searchTerm: searchTerm,
             filters: filters,
             albumIds: albumIds?.join(","),
+            excludeItemIds: excludeItemIds?.join(","),
+            tags: tags,
             genreIds: genreFilter?.raw,
             startIndex: startIndex,
             limit: limit,
@@ -472,6 +485,8 @@ class JellyfinApiHelper {
             searchTerm: searchTerm,
             filters: filters,
             albumIds: albumIds?.join(","),
+            excludeItemIds: excludeItemIds?.join(","),
+            tags: tags,
             genreIds: genreFilter?.raw,
             startIndex: startIndex,
             limit: limit,
@@ -498,6 +513,8 @@ class JellyfinApiHelper {
           parentId: libraryFilter,
           userId: currentUserId,
           albumIds: albumIds?.join(","),
+          excludeItemIds: excludeItemIds?.join(","),
+          tags: tags,
           genreIds: parentItem?.id.raw,
           includeItemTypes: includeItemTypes,
           recursive: recursive,
@@ -523,6 +540,8 @@ class JellyfinApiHelper {
           searchTerm: searchTerm,
           filters: filters,
           albumIds: albumIds?.join(","),
+          excludeItemIds: excludeItemIds?.join(","),
+          tags: tags,
           genreIds: genreFilter?.raw,
           startIndex: startIndex,
           limit: limit,
@@ -983,20 +1002,27 @@ class JellyfinApiHelper {
   }
 
   /// Updates an item. (Not for Playlists: use updatePlaylist for that)
-  /// You should give a BaseItemDto with only
-  /// changed values.
+  /// Jellyfin overwrites every field from [newItem], so pass the full raw item from the server with your changes;
+  /// a BaseItemDto would drop fields Finamp doesn't model.
   Future<void> updateItem({
     /// The item id.
     required BaseItemId itemId,
 
     /// the new Item.
-    required BaseItemDto newItem,
+    required Map<String, dynamic> newItem,
   }) async {
     assert(_verifyCallable());
     final response = await jellyfinApi.updateItem(itemId: itemId, newItem: newItem);
     if (response.toString().isNotEmpty) {
       throw response as Object;
     }
+  }
+
+  /// Adds or removes the server-wide hidden tag. Requires an administrator.
+  Future<void> setServerHidden(BaseItemId itemId, bool hidden) async {
+    assert(_verifyCallable());
+    final item = await jellyfinApi.getItemById(userId: _finampUserHelper.currentUser!.id, itemId: itemId);
+    await updateItem(itemId: itemId, newItem: withHiddenTag(item as Map<String, dynamic>, hidden));
   }
 
   /// Updates playlist.

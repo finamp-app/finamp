@@ -1,6 +1,7 @@
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -91,11 +92,13 @@ final AutoDisposeProvider<bool> canEditMetadataProvider = AutoDisposeProvider((r
   if (offline) {
     return false;
   }
-  bool? serverReturn = ref.watch(_canEditMetadataAsyncProvider).value;
+  bool? serverReturn = ref.watch(isServerAdminProvider).value;
   return serverReturn ?? false;
 });
 
-final AutoDisposeFutureProvider<bool> _canEditMetadataAsyncProvider = AutoDisposeFutureProvider((ref) {
+/// Kept for the session (refetched when the user changes) because /Users/Me can take seconds to answer.
+final FutureProvider<bool> isServerAdminProvider = FutureProvider((ref) {
+  ref.watch(FinampUserHelper.finampCurrentUserProvider);
   return GetIt.instance<JellyfinApiHelper>()
       .getUser()
       .then((response) {
