@@ -98,6 +98,9 @@ jobs:
 
     - run: flutter build apk --debug --no-pub
 
+    - name: Check Isar native libraries in APK
+      run: python3 tools/check_isar_apk.py build/app/outputs/flutter-apk/app-debug.apk armeabi-v7a arm64-v8a x86_64
+
     - uses: actions/upload-artifact@v6
       with:
         name: finamp-android-debug.apk
