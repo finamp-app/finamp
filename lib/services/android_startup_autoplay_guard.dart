@@ -7,10 +7,23 @@ import 'package:logging/logging.dart';
 /// app while the device is still locked.
 class AndroidStartupAutoplayGuard {
   static final _logger = Logger('AndroidStartupAutoplayGuard');
+  static const _gracePeriod = Duration(minutes: 2);
 
-  /// Returns whether an automatic queue restore may begin playback for the
-  /// Android lock state captured when startup restoration begins.
-  static bool mayAutoplayWhileKeyguardLocked(bool isKeyguardLocked) => !isKeyguardLocked;
+  /// Returns the reason an Android startup restore must not begin playback.
+  ///
+  /// A real user-unlock event lets a restore proceed before the two-minute
+  /// boot/update grace periods expire. The event is deliberately only a
+  /// permission to autoplay, never a command that starts playback itself.
+  static String? autoplaySuppressionReason(FinampAndroidStartupState state) {
+    if (state.isKeyguardLocked) return 'Android keyguard is locked';
+    if (state.uptime < _gracePeriod && !state.userPresentSinceBoot) {
+      return 'device booted less than two minutes ago without a user-present event';
+    }
+    if (state.packageUpdateAge < _gracePeriod && !state.userPresentSinceUpdate) {
+      return 'Finamp was updated less than two minutes ago without a user-present event';
+    }
+    return null;
+  }
 
   /// Captures whether the automatic queue restore that happens during app
   /// startup may begin playing.
@@ -24,21 +37,23 @@ class AndroidStartupAutoplayGuard {
     if (!Platform.isAndroid) return true;
 
     try {
-      final isKeyguardLocked = await FinampAndroidStartup.isKeyguardLocked();
-      if (isKeyguardLocked == null) {
-        _logger.warning('Could not determine Android keyguard state; suppressing startup autoplay');
+      final state = await FinampAndroidStartup.getStartupState();
+      if (state == null) {
+        _logger.warning('Could not determine Android startup state; suppressing startup autoplay');
         return false;
       }
 
-      final mayAutoplay = mayAutoplayWhileKeyguardLocked(isKeyguardLocked);
+      final reason = autoplaySuppressionReason(state);
       _logger.info(
-        mayAutoplay
-            ? 'Allowing startup autoplay: Android keyguard is unlocked'
-            : 'Suppressing startup autoplay: Android keyguard is locked',
+        'Android startup autoplay state: keyguardLocked=${state.isKeyguardLocked}, '
+        'uptime=${state.uptime.inSeconds}s, packageUpdateAge=${state.packageUpdateAge.inSeconds}s, '
+        'userPresentSinceBoot=${state.userPresentSinceBoot}, '
+        'userPresentSinceUpdate=${state.userPresentSinceUpdate}; '
+        '${reason == null ? 'allowing startup autoplay' : 'suppressing startup autoplay: $reason'}',
       );
-      return mayAutoplay;
+      return reason == null;
     } catch (e) {
-      _logger.warning('Could not determine Android keyguard state; suppressing startup autoplay: $e');
+      _logger.warning('Could not determine Android startup state; suppressing startup autoplay: $e');
       return false;
     }
   }
