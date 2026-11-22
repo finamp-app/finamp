@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/certificate_helper.dart';
 import 'package:flutter/services.dart';
+import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' show ClientException;
 import 'package:logging/logging.dart';
@@ -11,7 +13,7 @@ import 'finamp_settings_helper.dart';
 import 'jellyfin_api_helper.dart';
 
 class ClientCertificateInstaller {
-  static final isSupported = Platform.isAndroid;
+  static final isSupported = Platform.isAndroid || Platform.isLinux;
 
   static final _logger = Logger('ClientCertificateInstaller');
   static const _channel = MethodChannel('com.unicornsonlsd.finamp/client_certificate');
@@ -111,6 +113,17 @@ class ClientCertificateInstaller {
         await _channel.invokeMethod('installClientCertificate', {'bytes': cert.data, 'password': cert.password});
       } catch (e) {
         _logger.warning('Failed to install client certificate in Android SSL context: $e');
+      }
+    }
+
+    // On Linux, the client certificate has to be passed to mpv via JustAudioMediaKit.
+    if (Platform.isLinux) {
+      try {
+        final (certPath, keyPath) = await ClientCertificateHelper().extractClientCertificate(cert);
+        JustAudioMediaKit.tlsCertFile = certPath;
+        JustAudioMediaKit.tlsKeyFile = keyPath;
+      } catch (e) {
+        _logger.warning('Failed to extract client certificate for MediaKit mpv: $e');
       }
     }
 
