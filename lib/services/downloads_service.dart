@@ -506,20 +506,18 @@ class DownloadsService {
     _isar.writeTxnSync(() {
       final redownloadIds = <int>[];
       final visited = <int>{};
-      var pending = [stub.isarId];
+      final pending = [?_isar.downloadItems.getSync(stub.isarId)];
       while (pending.isNotEmpty) {
-        final items = _isar.downloadItems.getAllSync(pending).nonNulls.where((x) => visited.add(x.isarId)).toList();
-        pending = [];
-        for (var item in items) {
-          if (item.type.hasFiles && item.state != DownloadItemState.notDownloaded) {
-            updateItemState(
-              item,
-              item.state.isComplete ? DownloadItemState.needsRedownloadComplete : DownloadItemState.needsRedownload,
-            );
-            redownloadIds.add(item.isarId);
-          }
-          pending.addAll(item.requires.filter().findAllSync().map((e) => e.isarId));
+        final item = pending.removeLast();
+        if (!visited.add(item.isarId)) continue;
+        if (item.type.hasFiles && item.state != DownloadItemState.notDownloaded) {
+          updateItemState(
+            item,
+            item.state.isComplete ? DownloadItemState.needsRedownloadComplete : DownloadItemState.needsRedownload,
+          );
+          redownloadIds.add(item.isarId);
         }
+        pending.addAll(item.requires.filter().findAllSync());
       }
       syncBuffer.addAll(redownloadIds, [], viewId);
     });
