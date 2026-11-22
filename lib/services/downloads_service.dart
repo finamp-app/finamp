@@ -506,7 +506,7 @@ class DownloadsService {
     _isar.writeTxnSync(() {
       final redownloadIds = <int>[];
       final visited = <int>{};
-      final pending = [?_isar.downloadItems.getSync(stub.isarId)];
+      final pending = [_isar.downloadItems.getSync(stub.isarId)].nonNulls.toList();
       while (pending.isNotEmpty) {
         final item = pending.removeLast();
         if (!visited.add(item.isarId)) continue;
