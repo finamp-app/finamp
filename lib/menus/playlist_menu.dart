@@ -8,6 +8,7 @@ import 'package:finamp/menus/components/menuEntries/edit_item_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/instant_mix_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/mix_builder_menu_entry.dart';
+import 'package:finamp/menus/components/menuEntries/redownload_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/restore_queue_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/start_radio_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/toggle_favorite_menu_entry.dart';
@@ -38,6 +39,7 @@ Future<void> showModalPlaylistMenu({
       MixBuilderMenuEntry(baseItem: item),
       StartRadioMenuEntry(baseItem: item),
       AdaptiveDownloadLockDeleteMenuEntry(baseItem: item),
+      RedownloadMenuEntry(baseItem: item),
       ToggleFavoriteMenuEntry(baseItem: item),
       EditItemMenuEntry(baseItem: item),
       DeleteFromServerMenuEntry(baseItem: item),
