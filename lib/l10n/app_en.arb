@@ -4043,5 +4043,9 @@
     "hiddenItemUnavailable": "Item not available",
     "@hiddenItemUnavailable": {
         "description": "Shown in the hidden items list when a hidden item can't be loaded, e.g. it was deleted from the server or isn't downloaded while offline"
+    },
+    "hiddenIndicatorLabel": "Hidden",
+    "@hiddenIndicatorLabel": {
+        "description": "Screen reader label for the crossed-out eye icon shown on hidden tracks and albums"
     }
 }

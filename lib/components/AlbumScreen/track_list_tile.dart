@@ -40,6 +40,7 @@ import '../../services/theme_provider.dart';
 import '../album_image.dart';
 import '../print_duration.dart';
 import 'downloaded_indicator.dart';
+import 'hidden_indicator.dart';
 
 enum TrackListTileMenuItems {
   addToQueue,
@@ -765,9 +766,15 @@ class TrackListItemTile extends ConsumerWidget {
       item: DownloadStub.fromItem(item: baseItem, type: DownloadItemType.track),
       size: Theme.of(context).textTheme.bodyMedium!.fontSize! + 1,
     );
+    final hiddenIndicator = HiddenIndicator(
+      item: baseItem,
+      size: Theme.of(context).textTheme.bodyMedium!.fontSize! + 1,
+    );
+    // Only where hidden tracks are dimmed; the queue plays everything in it, so it doesn't mark them.
+    final showHiddenIndicator = features.contains(TrackListItemFeatures.dimIfHidden) && hiddenIndicator.isVisible(ref);
     final isRadioTrack = queueItem?.source.type == QueueItemSourceType.radio;
     final addSpaceAfterSpecialIcons =
-        (downloadedIndicator.isVisible(ref) || (baseItem.hasLyrics ?? false) || isRadioTrack) &&
+        (downloadedIndicator.isVisible(ref) || showHiddenIndicator || (baseItem.hasLyrics ?? false) || isRadioTrack) &&
         (showDateAdded || showDateLastPlayed);
 
     final showPlaybackProgress = !highlightCurrentTrack && playbackProgress != null && playbackProgress! < 0.99;
@@ -893,7 +900,20 @@ class TrackListItemTile extends ConsumerWidget {
                     alignment: PlaceholderAlignment.baseline,
                     baseline: TextBaseline.alphabetic,
                   ),
-                  if (downloadedIndicator.isVisible(ref) && (baseItem.hasLyrics == null || baseItem.hasLyrics == false))
+                  if (showHiddenIndicator)
+                    WidgetSpan(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 2.0),
+                        child: Transform.translate(
+                          offset: isOnDesktop ? Offset(-1.5, 1.7) : Offset(-1.5, 0.4),
+                          child: hiddenIndicator,
+                        ),
+                      ),
+                      alignment: PlaceholderAlignment.baseline,
+                      baseline: TextBaseline.alphabetic,
+                    ),
+                  if ((downloadedIndicator.isVisible(ref) || showHiddenIndicator) &&
+                      (baseItem.hasLyrics == null || baseItem.hasLyrics == false))
                     const WidgetSpan(child: SizedBox(width: 4.5)),
                   if (baseItem.hasLyrics ?? false)
                     WidgetSpan(
