@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:finamp/components/confirmation_prompt_dialog.dart';
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/components/themed_bottom_sheet.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/choice_menu.dart';
 import 'package:finamp/menus/components/menuEntries/menu_entry.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
@@ -10,6 +14,7 @@ import 'package:finamp/services/hidden_items_provider.dart';
 import 'package:finamp/services/permission_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class HideItemMenuEntry extends ConsumerWidget implements HideableMenuEntry {
@@ -77,7 +82,7 @@ class HideItemMenuEntry extends ConsumerWidget implements HideableMenuEntry {
       localNoticeShown: settings.hideLocalNoticeShown,
     );
     if (action == HideAction.askScope) {
-      final scope = await showDialog<HideScope>(context: context, builder: (_) => const _HideScopeDialog());
+      final scope = await showHideScopeMenu(context, item: baseItem);
       if (scope == null) return;
       FinampSetters.setHideScope(scope);
       action = scope == HideScope.everyone ? HideAction.hideOnServer : HideAction.hideLocal;
@@ -129,31 +134,69 @@ class HideItemMenuEntry extends ConsumerWidget implements HideableMenuEntry {
   bool get isVisible => _isHideable(baseItem);
 }
 
-class _HideScopeDialog extends StatelessWidget {
-  const _HideScopeDialog();
+/// Asks an admin whether to hide [item] on this device or for everyone. Returns null if dismissed.
+Future<HideScope?> showHideScopeMenu(BuildContext context, {BaseItemDto? item}) {
+  return showThemedBottomSheet<HideScope>(
+    context: context,
+    item: item,
+    routeName: "/hide-scope-menu",
+    minDraggableHeight: 0.25,
+    buildSlivers: (context) {
+      final l10n = AppLocalizations.of(context)!;
+      final options = HideScopeOptions(onSelect: (scope) => Navigator.of(context).pop(scope));
+      final menu = [
+        SliverStickyHeader(
+          header: Padding(
+            padding: const EdgeInsets.only(top: 10.0, bottom: 8.0, left: 16.0, right: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 2.0,
+              children: [
+                Text(l10n.hideScopeDialogTitle, style: Theme.of(context).textTheme.titleMedium),
+                Text(l10n.hideScopeRememberedNote, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+          sliver: MenuMask(
+            height: MenuMaskHeight(36.0),
+            child: SliverToBoxAdapter(child: options),
+          ),
+        ),
+      ];
+      // header + options, sized like the radio mode menu
+      final stackHeight = 60.0 + HideScopeOptions.count * ((Platform.isAndroid || Platform.isIOS) ? 72.0 : 64.0);
+      return (stackHeight, menu);
+    },
+  );
+}
+
+/// The two hide scopes, laid out like other choice menus.
+class HideScopeOptions extends StatelessWidget {
+  const HideScopeOptions({super.key, required this.onSelect});
+
+  static const count = 2;
+
+  final void Function(HideScope) onSelect;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    Widget option(HideScope scope, IconData icon, String title, String subtitle) => ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      subtitle: Text(subtitle),
-      onTap: () => Navigator.of(context).pop(scope),
-    );
-    return SimpleDialog(
-      title: Text(l10n.hideScopeDialogTitle),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        option(
-          HideScope.thisDevice,
-          TablerIcons.device_mobile,
-          l10n.hideScopeThisDevice,
-          l10n.hideScopeThisDeviceSubtitle,
+        ChoiceMenuOption(
+          title: l10n.hideScopeThisDevice,
+          description: l10n.hideScopeThisDeviceSubtitle,
+          icon: TablerIcons.device_mobile,
+          isSelected: false,
+          onSelect: () => onSelect(HideScope.thisDevice),
         ),
-        option(HideScope.everyone, TablerIcons.server, l10n.hideScopeEveryone, l10n.hideScopeEveryoneSubtitle),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
-          child: Text(l10n.hideScopeRememberedNote, style: Theme.of(context).textTheme.bodySmall),
+        ChoiceMenuOption(
+          title: l10n.hideScopeEveryone,
+          description: l10n.hideScopeEveryoneSubtitle,
+          icon: TablerIcons.server,
+          isSelected: false,
+          onSelect: () => onSelect(HideScope.everyone),
         ),
       ],
     );

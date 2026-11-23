@@ -3953,11 +3953,11 @@
     },
     "hideScopeDialogTitle": "Hide for whom?",
     "@hideScopeDialogTitle": {
-        "description": "Title of the dialog shown to server administrators the first time they hide an item"
+        "description": "Title of the menu shown to server administrators the first time they hide an item"
     },
     "hideScopeThisDevice": "Only on this device",
     "@hideScopeThisDevice": {
-        "description": "Option in the hide dialog: hide the item for the current user on this device only"
+        "description": "Option in the hide scope menu: hide the item for the current user on this device only"
     },
     "hideScopeThisDeviceSubtitle": "Other devices and users still see it.",
     "@hideScopeThisDeviceSubtitle": {
@@ -3965,7 +3965,7 @@
     },
     "hideScopeEveryone": "Everyone on this server",
     "@hideScopeEveryone": {
-        "description": "Option in the hide dialog: hide the item for every user, by adding a 'hidden' tag on the Jellyfin server"
+        "description": "Option in the hide scope menu: hide the item for every user, by adding a 'hidden' tag on the Jellyfin server"
     },
     "hideScopeEveryoneSubtitle": "Adds a \"hidden\" tag on the server, so every Finamp user and device hides it.",
     "@hideScopeEveryoneSubtitle": {
@@ -3973,7 +3973,7 @@
     },
     "hideScopeRememberedNote": "Finamp will remember your choice. You can change it in settings.",
     "@hideScopeRememberedNote": {
-        "description": "Note at the bottom of the hide dialog"
+        "description": "Note below the title of the hide scope menu"
     },
     "hideLocalNotice": "Hiding only affects this device. Your other devices and Jellyfin apps will still show this item.",
     "@hideLocalNotice": {
