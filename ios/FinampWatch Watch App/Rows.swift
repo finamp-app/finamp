@@ -1,10 +1,12 @@
 import SwiftUI
 
-// A cover and its title and subtitle (`CoverRows`), as tall as the cover (`CoverRowLayout`).
+// A cover and its title and subtitle (`CoverRows`), as tall as the cover (`CoverRowLayout`). `subtitle` replaces the
+// item's own (a playlist's track count).
 struct CoverRow: View {
     let item: LibraryItem
     let coverShare: CGFloat
     var circular = false
+    var subtitle: String? = nil
 
     @Environment(\.fontResolutionContext) private var fontContext
 
@@ -16,8 +18,8 @@ struct CoverRow: View {
                 Text(item.name)
                     .font(.system(size: TextSize.current(.title3, in: fontContext) * CoverRows.titleScale))
                     .lineLimit(2)
-                if !item.subtitle.isEmpty {
-                    Text(item.subtitle)
+                if let line = subtitle ?? (item.subtitle.isEmpty ? nil : item.subtitle) {
+                    Text(line)
                         .font(.footnote)
                         .foregroundStyle(Color.fgSecondary)
                         .lineLimit(1)
@@ -40,7 +42,9 @@ struct CollectionLink: View {
             CoverRow(
                 item: item,
                 coverShare: kind.coverShare,
-                circular: kind == .artists
+                circular: kind == .artists,
+                // A playlist's track count under its name, as in its page and the playlist menu.
+                subtitle: kind == .playlists ? FinampFormat.tracks(item.trackCount) : nil
             )
         }
         .buttonStyle(.plain)
@@ -195,13 +199,11 @@ struct TrackRow: View {
         .buttonStyle(.plain)
         .overlay(alignment: .trailing) {
             if let onFavorite {
-                Button(action: onFavorite) {
-                    Color.clear
-                        .frame(width: IconButtons.tapSize)
-                        .frame(maxHeight: .infinity)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
+                Color.clear
+                    .frame(width: IconButtons.tapSize)
+                    .frame(maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .trackHeart(track, like: onFavorite)
                 // Centred on the glyph: the tap area reaches past it on both sides.
                 .padding(.trailing, card.trailing - (IconButtons.tapSize - heartSize) / 2)
                 .accessibilityLabel(heartLabel)
@@ -218,16 +220,12 @@ struct TrackRow: View {
             .buttonStyle(.plain)
 
             if let onFavorite {
-                Button(action: onFavorite) {
-                    heartGlyph
-                        .frame(width: IconButtons.tapSize, height: IconButtons.tapSize)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
                 // The layout gives the heart only its glyph's size, so the row keeps its height and the labels their
                 // room; the tap area reaches past the glyph on every side.
-                .padding(-(IconButtons.tapSize - heartSize) / 2)
-                .accessibilityLabel(heartLabel)
+                heartGlyph
+                    .iconTapArea(heartSize)
+                    .trackHeart(track, like: onFavorite)
+                    .accessibilityLabel(heartLabel)
             }
         }
         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
@@ -238,11 +236,12 @@ struct TrackRow: View {
 
 // Finamp's playing indicator (its mini_music_visualizer): three bottom-aligned bars, 4 × 15 with radius 2 in Finamp
 // (scaled to the row's text here), each bouncing between 2 and full height with the bounce-out curve, back and forth,
-// over 0.9, 0.8 and 0.7 s. Still while the watch is dimmed.
+// over 0.9, 0.8 and 0.7 s. Still while the watch is dimmed, and with Reduce Motion on, as the scrolling text.
 struct PlayingBars: View {
     let color: Color
     let height: CGFloat
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private static let durations: [Double] = [0.9, 0.8, 0.7]
 
     // The three bars and the two gaps between them
@@ -250,7 +249,7 @@ struct PlayingBars: View {
 
     var body: some View {
         let barWidth = height * 4 / 15
-        TimelineView(.animation(paused: scenePhase != .active)) { context in
+        TimelineView(.animation(paused: scenePhase != .active || reduceMotion)) { context in
             let time = context.date.timeIntervalSinceReferenceDate
             HStack(alignment: .bottom, spacing: barWidth / 2) {
                 ForEach(0..<3, id: \.self) { index in

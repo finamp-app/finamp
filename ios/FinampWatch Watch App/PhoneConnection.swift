@@ -17,12 +17,9 @@ struct LibraryItem: Identifiable, Hashable {
     var releaseDate = ""
     // Album or playlist total; zero means unknown.
     var trackCount = 0
-    // Token-free URL; empty when only the phone can supply the cover.
-    var artworkURL = ""
     var blurHash = ""
     // Album artist for albums, first artist for tracks.
     var artistID = ""
-    var artistArtworkURL = ""
     var favorite = false
     // Includes queued downloads.
     var downloaded = false
@@ -34,13 +31,11 @@ struct LibraryItem: Identifiable, Hashable {
     static func artists(from value: Any?) -> [LibraryItem] {
         ((value as? [[String: Any]]) ?? []).map { artist in
             let id = artist["id"] as? String ?? ""
-            let url = artist["artworkUrl"] as? String ?? ""
             return LibraryItem(
                 id: id,
                 name: artist["name"] as? String ?? "",
                 subtitle: "",
-                artworkKey: id.isEmpty ? "" : "artist-\(id)",
-                artworkURL: url
+                artworkKey: id.isEmpty ? "" : "artist-\(id)"
             )
         }
     }
@@ -88,11 +83,13 @@ struct QuickAction: Identifiable, Hashable {
 
 struct SearchResults {
     let artists: [LibraryItem]
+    // Artists credited only on tracks, not as album artists (Finamp's Performing Artists tab).
+    let performingArtists: [LibraryItem]
     let albums: [LibraryItem]
     let playlists: [LibraryItem]
     let tracks: [LibraryItem]
 
-    var isEmpty: Bool { artists.isEmpty && albums.isEmpty && playlists.isEmpty && tracks.isEmpty }
+    var isEmpty: Bool { artists.isEmpty && performingArtists.isEmpty && albums.isEmpty && playlists.isEmpty && tracks.isEmpty }
 }
 
 enum DownloadReply {
@@ -107,6 +104,8 @@ struct ArtistInfo {
     let favorite: Bool
     let downloaded: Bool
     let downloadLock: String?
+    // The order of the artist page's album sections ("albums", "appearsOn"), from Finamp's artist screen setting.
+    let sections: [String]
 }
 
 struct ReloadQuestion {
@@ -172,6 +171,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         }
         if let enabled = values["transcoding"] as? Bool { PhoneSettings.shared.transcoding = enabled }
         if let offline = values["offline"] as? Bool { PhoneSettings.shared.offline = offline }
+        if let prefer = values["preferFavorites"] as? Bool { PhoneSettings.shared.preferFavorites = prefer }
         if let volume = values["volume"] as? Double { PhoneVolume.shared.pushed(volume) }
         if let airPlay = values["airPlay"] as? Bool { PhoneVolume.shared.airPlay = airPlay }
         if let route = values["outputRoute"] as? [String: Any] {
@@ -211,6 +211,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         guard let sections = try await request("search", ["query": query])["result"] as? [String: Any] else { throw PhoneError.unexpectedReply }
         return SearchResults(
             artists: Self.items(from: sections["artists"]),
+            performingArtists: Self.items(from: sections["performingArtists"]),
             albums: Self.items(from: sections["albums"]),
             playlists: Self.items(from: sections["playlists"]),
             tracks: Self.items(from: sections["tracks"])
@@ -253,25 +254,25 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         case failed
     }
 
-    // Sends the crown's newest value until the phone confirms it, for up to `VolumeSend.giveUpAfter` from the newest
-    // turn (an exact value: the phone applying it twice changes nothing; the phone applies requests in the order they
+    // Sends the crown's newest value until the phone confirms it, for up to `ConnectionPolicy.Volume.giveUpAfter` from
+    // the newest turn (an exact value: the phone applying it twice changes nothing; the phone applies requests in the order they
     // arrive, so the last to reach it wins). Confirmed only by the phone's `true` to that send, or by reading the
     // phone's volume when it may have arrived (a slow answer isn't a lost message: a phone waking Finamp answered in up
-    // to 3 s, 19 Nov), never by a pushed volume, which may be old. A newer turn is sent instead of checking an older
+    // to 3 s), never by a pushed volume, which may be old. A newer turn is sent instead of checking an older
     // one. If nothing gets through, the crown shows the phone's last known volume again.
     private func sendVolumes() async {
         let volumes = PhoneVolume.shared
         // The status shows for one send still unanswered after a second, and from the first failure until it's settled;
-        // not for a crown that keeps turning while every send is answered (19 Nov, on the devices).
+        // not for a crown that keeps turning while every send is answered.
         var retrying: Int?
         var outcome = PhoneActivity.Outcome.neutral
         var refusal: String?
         defer { if let retrying { PhoneActivity.shared.end(retrying, outcome) } }
         do {
             while let volume = volumes.wanted {
-                let deadline = wantedAt + VolumeSend.giveUpAfter
+                let deadline = wantedAt + ConnectionPolicy.Volume.giveUpAfter
                 guard ContinuousClock.now < deadline else {
-                    WatchLog.warning("setVolume: gave up, \(VolumeSend.giveUpAfter) after the newest turn")
+                    WatchLog.warning("setVolume: gave up, \(ConnectionPolicy.Volume.giveUpAfter) after the newest turn")
                     if retrying == nil { retrying = PhoneActivity.shared.begin() }
                     volumes.wanted = nil
                     if outcome == .answered, let refusal { PhoneMessage.shared.text = refusal }
@@ -280,7 +281,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
                 guard WCSession.default.isReachable else {
                     outcome = .connectionFailed
                     if retrying == nil { retrying = PhoneActivity.shared.begin() }
-                    try await waitForPhone(until: min(.now + VolumeSend.retryAfterError, deadline))
+                    try await waitForPhone(until: min(.now + ConnectionPolicy.Volume.retryAfterError, deadline))
                     continue
                 }
                 let attempt = PhoneActivity.shared.begin()
@@ -323,10 +324,10 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
                 case .refused(let message):
                     outcome = .answered
                     refusal = message
-                    try await waitForPhone(until: min(.now + VolumeSend.retryAfterError, deadline))
+                    try await waitForPhone(until: min(.now + ConnectionPolicy.Volume.retryAfterError, deadline))
                 case .failed:
                     outcome = .connectionFailed
-                    try await waitForPhone(until: min(.now + VolumeSend.retryAfterError, deadline))
+                    try await waitForPhone(until: min(.now + ConnectionPolicy.Volume.retryAfterError, deadline))
                 }
             }
         } catch {
@@ -340,7 +341,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     private func sendVolume(_ volume: Double, before deadline: ContinuousClock.Instant) async throws -> VolumeTry {
         let left = deadline - .now
         do {
-            let reply = try await request("setVolume", ["volume": volume], replyTimeout: min(VolumeSend.noAnswerAfter, left),
+            let reply = try await request("setVolume", ["volume": volume], replyTimeout: min(ConnectionPolicy.Volume.noAnswerAfter, left),
                                           quiet: true, patience: .clock(left))
             return reply["result"] as? Bool == true ? .accepted : .uncertain
         } catch is CancellationError {
@@ -358,7 +359,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         let left = deadline - .now
         guard left > .zero else { return (nil, false) }
         do {
-            let reply = try await request("output", [:], replyTimeout: min(VolumeSend.noAnswerAfter, left),
+            let reply = try await request("output", [:], replyTimeout: min(ConnectionPolicy.Volume.noAnswerAfter, left),
                                           quiet: true, patience: .clock(left))
             guard let volume = (reply["result"] as? [String: Any])?["volume"] as? Double else { return (nil, true) }
             PhoneVolume.shared.observed(volume)
@@ -385,7 +386,39 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         while ContinuousClock.now < until {
             if !wasReachable && WCSession.default.isReachable { return }
             try await Task.sleep(until: min(ContinuousClock.now + .milliseconds(100), until), clock: .continuous)
+            if !WCSession.default.isReachable { await noteWaitingForPhone() }
         }
+    }
+
+    // A connection stuck on "not reachable" (`ConnectionPolicy.Recovery`): how long requests have waited for the phone,
+    // in the app's running time, since it was last reachable, and whether the connection was already restarted.
+    @MainActor private var stuckFor = Duration.zero
+    @MainActor private var stuckLastNoted: ContinuousClock.Instant?
+    @MainActor private var restartedWhileStuck = false
+
+    // Called by every loop that waits for the phone to come in reach.
+    @MainActor private func noteWaitingForPhone() {
+        let now = ContinuousClock.now
+        // As in `request`: a long gap is the app suspended (wrist down), not time spent waiting on screen.
+        if let last = stuckLastNoted { stuckFor += min(now - last, .milliseconds(500)) }
+        stuckLastNoted = now
+        guard !restartedWhileStuck, stuckFor >= ConnectionPolicy.Recovery.restartAfter, WCSession.isSupported() else {
+            return
+        }
+        restartedWhileStuck = true
+        let session = WCSession.default
+        WatchLog.warning("connection: not reachable for \(stuckFor.ms) ms of waiting; restarting it (\(Self.describe(session)))")
+        session.delegate = self
+        session.activate()
+    }
+
+    @MainActor private func phoneReachedAgain() {
+        if restartedWhileStuck {
+            WatchLog.info("connection: reachable again \(stuckFor.ms) ms after it got stuck")
+        }
+        stuckFor = .zero
+        stuckLastNoted = nil
+        restartedWhileStuck = false
     }
 
     // The phone checks the action name against its current index after reordering.
@@ -483,8 +516,29 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
             albums: reply["albums"] as? Int ?? 0,
             favorite: reply["favorite"] as? Bool ?? false,
             downloaded: reply["downloaded"] as? Bool ?? false,
-            downloadLock: reply["downloadLock"] as? String
+            downloadLock: reply["downloadLock"] as? String,
+            sections: reply["sections"] as? [String] ?? ["albums", "appearsOn"]
         )
+    }
+
+    // Finamp's playlist menu for a track: its heart, every playlist, and which of them is known to hold it.
+    // `color`: the track's cover colour (ARGB), which Finamp themes the menu with.
+    func playlistMenu(_ id: String) async throws
+        -> (favorite: Bool, playlists: [LibraryItem], included: Set<String>, color: Int?) {
+        guard let reply = try await request("playlistMenu", ["id": id])["result"] as? [String: Any] else {
+            throw PhoneError.unexpectedReply
+        }
+        let rows = reply["playlists"] as? [[String: Any]] ?? []
+        let included = Set(rows.filter { $0["included"] as? Bool == true }.compactMap { $0["id"] as? String })
+        let color = (reply["color"] as? NSNumber)?.intValue
+        return (reply["favorite"] as? Bool ?? false, Self.items(from: rows), included, color)
+    }
+
+    // Adds the track to a playlist or takes it out; answers whether the playlist now holds it.
+    func playlistToggle(_ id: String, playlistId: String, add: Bool) async throws -> Bool {
+        guard let result = try await request("playlistToggle", ["id": id, "playlistId": playlistId, "add": add])["result"]
+            as? Bool else { throw PhoneError.unexpectedReply }
+        return result
     }
 
     // Deletes a download from the phone; answers Finamp's message, nil if it wasn't downloaded.
@@ -496,6 +550,12 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     func downloadState(_ id: String) async throws -> (downloaded: Bool, lock: String?) {
         guard let reply = try await request("downloadState", ["id": id])["result"] as? [String: Any] else { throw PhoneError.unexpectedReply }
         return (reply["downloaded"] as? Bool ?? false, reply["downloadLock"] as? String)
+    }
+
+    // Favourite Tracks loads in pages; this is the whole list's length.
+    func favoritesCount() async throws -> Int {
+        guard let count = try await request("favoritesCount", [:])["result"] as? Int else { throw PhoneError.unexpectedReply }
+        return count
     }
 
     func skipTo(id: String) async throws {
@@ -538,10 +598,8 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
                 year: row["year"] as? Int ?? 0,
                 releaseDate: row["releaseDate"] as? String ?? "",
                 trackCount: row["trackCount"] as? Int ?? 0,
-                artworkURL: row["artworkUrl"] as? String ?? "",
                 blurHash: row["blurHash"] as? String ?? "",
                 artistID: row["artistId"] as? String ?? "",
-                artistArtworkURL: row["artistArtworkUrl"] as? String ?? "",
                 favorite: row["favorite"] as? Bool ?? false,
                 downloaded: row["downloaded"] as? Bool ?? false,
                 downloadLock: row["downloadLock"] as? String,
@@ -560,43 +618,14 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         return (reply["artworks"] as? [String: Data] ?? [:], Set(reply["missing"] as? [String] ?? []))
     }
 
-    // How long a request waits for the phone to be in reach before it's sent.
-    private enum Patience {
-        // Time the app runs: a page or cover asked for just before the wrist went down still loads when it's raised.
-        case awake(Duration)
-        // Real time, up to the moment it's sent: a command must not reach the phone long after it was given.
-        case clock(Duration)
-    }
-
-    // Requests you made show their status under the clock (`PhoneActivity`); covers and the now-playing refresh, which
-    // repeat on their own, don't.
-    private static func patience(_ method: String) -> (wait: Patience, shown: Bool) {
-        switch method {
-        case "artworks", "nowPlaying": (.awake(.seconds(5)), false)
-        // `sendVolumes` waits and shows the status itself.
-        case "setVolume": (.awake(.zero), false)
-        // Playback opens the album page with what it has if this doesn't answer soon.
-        case "item": (.awake(.seconds(5)), true)
-        // 30 s before giving up (yalit, 19 Nov: only "when really like 30 seconds have passed").
-        case "list", "home", "search", "artistInfo", "downloadState", "queue", "output", "settings":
-            (.awake(.seconds(30)), true)
-        // Commands are sent once, never repeated: a repeated toggle undoes itself, a repeated skip skips twice.
-        default: (.clock(.seconds(3)), true)
-        }
-    }
-
-    // Transport controls answer at once (0.1-0.9 s on the devices, 2-3 s when the watch wakes Finamp); one that gets no
-    // answer was lost, and waiting 30 s kept the status blue for nothing (19 Nov, on the devices). Starting playback,
-    // downloads and settings can take longer on the phone and keep the 30 s.
-    private static let quickAnswer: Set<String> = ["control", "seek"]
-
+    // Every wait and timeout here comes from `ConnectionPolicy`.
     private func request(
         _ method: String, _ args: [String: Any], replyTimeout: Duration? = nil, quiet: Bool = false,
-        patience override: Patience? = nil
+        patience override: ConnectionPolicy.Patience? = nil
     ) async throws -> [String: Any] {
-        let replyTimeout = replyTimeout ?? (Self.quickAnswer.contains(method) ? .seconds(5) : .seconds(30))
+        let replyTimeout = replyTimeout ?? ConnectionPolicy.Reply.timeout(for: method)
         let session = WCSession.default
-        let (byKind, shown) = Self.patience(method)
+        let (byKind, shown) = ConnectionPolicy.patience(method)
         let patience = override ?? byKind
         let token = shown && !quiet ? PhoneActivity.shared.begin() : nil
         var outcome = PhoneActivity.Outcome.neutral
@@ -624,6 +653,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
             let now = ContinuousClock.now
             awake += min(now - last, .milliseconds(500))
             last = now
+            await noteWaitingForPhone()
         }
         let waited = ContinuousClock.now - start
         guard session.activationState == .activated, session.isReachable else {
@@ -763,24 +793,10 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         WatchLog.info("reachable \(session.isReachable)")
         guard session.isReachable else { return }
         DispatchQueue.main.async {
+            self.phoneReachedAgain()
             NotificationCenter.default.post(name: .phoneBecameReachable, object: nil)
         }
     }
-}
-
-// How a volume change is sent when it doesn't get through (`sendVolumes`).
-enum VolumeSend {
-    // After a send that failed (phone out of reach, a WatchConnectivity error, a refusal) the next one goes this long
-    // after it began, or as soon as the phone is back in reach.
-    static let retryAfterError: Duration = .seconds(1)
-    // A send waits this long for its answer before the phone is asked for its volume: normal requests take 0.1-0.6 s
-    // on the devices, a phone waking Finamp in the background answered in up to 3 s (simulator, 19 Nov).
-    static let noAnswerAfter: Duration = .seconds(3)
-    // Nothing confirmed this long after the newest crown turn: give up and show the phone's last known volume
-    // (yalit, 19 Nov: give up only after about 30 s; 20 s gave up while playing with the volume).
-    static let giveUpAfter: Duration = .seconds(30)
-    // Just after the phone accepted a change, a different volume it pushes is taken as an older one still on its way.
-    static let olderPushWindow: TimeInterval = 1.5
 }
 
 extension Notification.Name {
@@ -815,6 +831,7 @@ nonisolated private final class ReplyGate: @unchecked Sendable {
     }
 }
 
-private extension Duration {
+// Milliseconds, for the watch log's timings.
+extension Duration {
     var ms: Int64 { components.seconds * 1000 + components.attoseconds / 1_000_000_000_000_000 }
 }

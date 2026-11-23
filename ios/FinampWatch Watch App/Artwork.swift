@@ -1,7 +1,8 @@
 import CryptoKit
 import SwiftUI
+import WatchKit
 
-// Try Jellyfin directly, then batch requests through the phone.
+// Covers, asked for from the phone in batches and kept in memory and on disk.
 final class ArtworkStore {
     static let shared = ArtworkStore()
 
@@ -64,6 +65,13 @@ final class ArtworkStore {
         }
     }
 
+    // The size of a cover that fills the screen (Playback, the playlist menu), rounded up to 20 pixels so they share it.
+    static let screenPixels: Int = {
+        let device = WKInterfaceDevice.current()
+        let pixels = max(device.screenBounds.width, device.screenBounds.height) * device.screenScale
+        return Int((pixels / 20).rounded(.up)) * 20
+    }()
+
     func image(for item: LibraryItem, size: Int) async -> UIImage? {
         // Include the image tag and size so replacements and resolutions stay separate.
         let key = "\(item.artworkKey)-\(size)"
@@ -82,45 +90,9 @@ final class ArtworkStore {
         return image
     }
 
-    // Pause direct requests after failure to avoid repeated timeouts.
-    private var directPausedUntil: Date?
-    private static let directPause: TimeInterval = 5 * 60
-
+    // Covers come only through the phone: the watch never uses its own internet connection.
     private func load(_ item: LibraryItem, size: Int, key: String) async -> UIImage? {
-        let started = generation
-        if directPausedUntil.map({ Date() >= $0 }) ?? true {
-            switch await download(item.artworkURL, size: size) {
-            case .image(let data):
-                if let image = UIImage(data: data) {
-                    if started == generation { store(image, data: data, key: key) }
-                    return image
-                }
-            case .unreachable:
-                directPausedUntil = Date().addingTimeInterval(Self.directPause)
-            case .none:
-                break
-            }
-        }
-        return await viaPhone(item, size: size, key: key)
-    }
-
-    private enum Download {
-        case image(Data)
-        case none
-        case unreachable
-    }
-
-    private func download(_ address: String, size: Int) async -> Download {
-        guard !address.isEmpty, var components = URLComponents(string: address) else { return .none }
-        components.queryItems = (components.queryItems ?? []) + [
-            URLQueryItem(name: "MaxWidth", value: String(size)),
-            URLQueryItem(name: "MaxHeight", value: String(size)),
-        ]
-        guard let url = components.url else { return .none }
-        var request = URLRequest(url: url)
-        request.timeoutInterval = 8
-        guard let (data, response) = try? await URLSession.shared.data(for: request) else { return .unreachable }
-        return (response as? HTTPURLResponse)?.statusCode == 200 ? .image(data) : .none
+        await viaPhone(item, size: size, key: key)
     }
 
     private func viaPhone(_ item: LibraryItem, size: Int, key: String) async -> UIImage? {
@@ -145,7 +117,13 @@ final class ArtworkStore {
             queue.removeFirst(batch.count)
 
             do {
+                let start = ContinuousClock.now
                 let reply = try await PhoneConnection.shared.artworks(batch.map { ($0.id, $0.size) })
+                // The phone also answers when it couldn't get a cover; the request still counts as a success, so say it here.
+                let empty = batch.filter { reply.missing.contains("\($0.id)-\($0.size)") }.count
+                if empty > 0 {
+                    WatchLog.warning("artworks: \(empty) of \(batch.count) came back without a cover after \((ContinuousClock.now - start).ms) ms")
+                }
                 var deferred: [Request] = []
                 for request in batch {
                     let replyKey = "\(request.id)-\(request.size)"

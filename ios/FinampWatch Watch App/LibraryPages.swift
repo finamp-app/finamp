@@ -22,16 +22,6 @@ enum LibraryKind: String {
         case .artists: return CoverRows.artistCoverShare
         }
     }
-
-    var placeholderSymbol: String {
-        switch self {
-        case .artists: return "music.mic"
-        case .albums: return "square.stack.fill"
-        case .playlists: return "music.note.list"
-        case .tracks: return "music.note"
-        case .downloads: return "arrow.down.circle.fill"
-        }
-    }
 }
 
 // Prefetch next page before reaching the end.
@@ -41,6 +31,64 @@ enum ListState {
     case loading
     case loaded([LibraryItem])
     case failed(String)
+}
+
+// The paging the album/playlist, artist and favourites pages share: the first page, then the next as the list nears
+// its end (`nearsEnd`). The offset counts every row the phone sent, and a row it sends twice is kept once (a playlist
+// can hold a track twice).
+@MainActor @Observable
+final class Pager {
+    static let pageSize = 50
+    private(set) var state: ListState = .loading
+    private(set) var hasMore = false
+    private(set) var isLoadingMore = false
+    @ObservationIgnored private var phoneOffset = 0
+    @ObservationIgnored private let fetch: (_ offset: Int, _ limit: Int) async throws -> [LibraryItem]
+
+    init(fetch: @escaping (_ offset: Int, _ limit: Int) async throws -> [LibraryItem]) {
+        self.fetch = fetch
+    }
+
+    func load() async {
+        state = .loading
+        do {
+            let first = try await fetch(0, Self.pageSize)
+            hasMore = !first.isEmpty
+            phoneOffset = first.count
+            state = .loaded(first)
+        } catch {
+            state = .failed(error.localizedDescription)
+        }
+    }
+
+    // The list again from its start, the shown one kept until it arrives (a playlist the playlist menu changed).
+    func reload() async {
+        guard let first = try? await fetch(0, Self.pageSize) else { return }
+        hasMore = !first.isEmpty
+        phoneOffset = first.count
+        state = .loaded(first)
+    }
+
+    func loadMore() async {
+        guard hasMore, !isLoadingMore, case .loaded(let current) = state else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        guard let page = try? await fetch(phoneOffset, Self.pageSize) else { return }
+        let known = Set(current.map(\.id))
+        state = .loaded(current + page.filter { !known.contains($0.id) })
+        phoneOffset += page.count
+        hasMore = !page.isEmpty
+    }
+
+    // A failure shown in place of the list (a play that failed).
+    func fail(_ message: String) {
+        state = .failed(message)
+    }
+
+    // The last rows ask for the next page.
+    func nearsEnd(_ id: String, in items: [LibraryItem]) -> Bool {
+        items.suffix(pagePrefetchRows).contains { $0.id == id }
+    }
 }
 
 struct LibraryPage: View {
@@ -87,11 +135,15 @@ struct LibraryPage: View {
                     // A List like the track pages, for watchOS's shrinking rows at the screen edges.
                     List {
                         Group {
-                            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                                row(item, index: index)
-                                    .onAppear {
-                                        if index >= items.count - pagePrefetchRows { Task { await loadMore() } }
+                            if kind == .downloads {
+                                // Each kind under its heading, in the phone's order.
+                                ForEach(Self.kindRuns(items), id: \.first) { run in
+                                    HeadedSection(title: Self.downloadKind(items[run.first!].kind).title) {
+                                        coverRows(items, run)
                                     }
+                                }
+                            } else {
+                                coverRows(items, items.indices)
                             }
                             if isLoadingMore {
                                 SkeletonCoverRows(count: 1, coverShare: kind.coverShare, circular: kind == .artists)
@@ -141,22 +193,25 @@ struct LibraryPage: View {
         }
     }
 
-    @ViewBuilder
-    private func row(_ item: LibraryItem, index: Int) -> some View {
-        switch kind {
-        case .albums, .playlists, .artists:
-            CollectionLink(item: item, kind: kind)
-        case .downloads:
-            let itemKind = Self.downloadKind(item.kind)
-            VStack(alignment: .leading, spacing: CoverRows.headingToRow) {
-                if index == 0 || items?[index - 1].kind != item.kind {
-                    SectionHeader(title: itemKind.title)
+    private func coverRows(_ items: [LibraryItem], _ indices: Range<Int>) -> some View {
+        ForEach(Array(zip(indices, items[indices])), id: \.1.id) { index, item in
+            CollectionLink(item: item, kind: kind == .downloads ? Self.downloadKind(item.kind) : kind)
+                .onAppear {
+                    if index >= items.count - pagePrefetchRows { Task { await loadMore() } }
                 }
-                CollectionLink(item: item, kind: itemKind)
-            }
-        case .tracks:
-            trackRow(item, index: index)
         }
+    }
+
+    // The ranges of `items` that hold one kind each.
+    private static func kindRuns(_ items: [LibraryItem]) -> [Range<Int>] {
+        var runs: [Range<Int>] = []
+        var start = 0
+        for index in items.indices.dropFirst() where items[index].kind != items[index - 1].kind {
+            runs.append(start..<index)
+            start = index
+        }
+        if !items.isEmpty { runs.append(start..<items.count) }
+        return runs
     }
 
     private static func downloadKind(_ kind: String) -> LibraryKind {

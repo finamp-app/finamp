@@ -14,9 +14,9 @@ import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/components/MusicScreen/sort_and_filter_row.dart';
+import 'package:finamp/components/PlayerScreen/queue_source_helper.dart';
 import 'package:finamp/models/music_models.dart';
 import 'package:finamp/models/music_slices.dart';
-import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/data_source_service.dart' show SourceChangeGenericType;
 import 'package:finamp/services/datetime_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
@@ -25,15 +25,20 @@ import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/extensions/color_extensions.dart';
 import 'package:finamp/services/music_providers.dart';
 import 'package:finamp/services/theme_provider.dart';
+import 'package:finamp/services/widget_bindings_observer_provider.dart';
 import 'package:flutter/material.dart' show ColorScheme;
-import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' show ClientException;
+import 'package:http/http.dart' as http;
+import 'package:flutter_cache_manager/flutter_cache_manager.dart' show DefaultCacheManager;
 import 'package:logging/logging.dart';
 
 import 'android_auto_helper.dart';
+import 'album_screen_provider.dart';
+import 'artist_content_provider.dart';
 import 'current_track_metadata_provider.dart';
 import 'downloads_service.dart';
 import 'favorite_provider.dart';
@@ -66,9 +71,6 @@ const _upNextCoverCount = 2;
 // Split pages early to stay under WatchConnectivity's ~64 KB reply limit.
 const _replyBudget = 40 * 1024;
 
-// Max concurrent item fetches.
-const _parallelFetches = 8;
-
 class WatchHandler {
   static const _watchChannel = MethodChannel('com.unicornsonlsd.finamp-ios/watch');
 
@@ -81,7 +83,7 @@ class WatchHandler {
   // Refuse malformed IDs before sending a Jellyfin request.
   static final _jellyfinId = RegExp(r'^[0-9a-fA-F]{32}$');
 
-  // Full children retained while the watch pages through this parent.
+  // The full list retained while the watch pages through it, by "<type>:<parentId>".
   static (String, List<BaseItemDto>)? _childrenCache;
 
   // Cache recently sent items to resolve later artwork requests.
@@ -179,6 +181,14 @@ class WatchHandler {
             return true;
           case 'favorite':
             return await _setFavorite(arguments['id'] as String, arguments['favorite'] as bool);
+          case 'playlistMenu':
+            return await _playlistMenu(arguments['id'] as String);
+          case 'playlistToggle':
+            return await _playlistToggle(
+              arguments['id'] as String,
+              arguments['playlistId'] as String,
+              arguments['add'] as bool,
+            );
           case 'download':
             return await _download(arguments);
           case 'deleteDownload':
@@ -189,6 +199,8 @@ class WatchHandler {
             return _rows([await _itemById(arguments['id'] as String)]).single;
           case 'downloadState':
             return _downloadState(await _itemById(arguments['id'] as String));
+          case 'favoritesCount':
+            return await _favoritesCount();
           case 'control':
             if (arguments['action'] == 'skipTo') {
               await _skipTo(arguments['id'] as String);
@@ -273,6 +285,12 @@ class WatchHandler {
           .listen(finampSettingsProvider.useSystemAccentColor, (_, _) => _pushIfChanged('accent', _accent()))
           .close,
       container.listen(finampSettingsProvider.amoledTheme, (_, _) => _pushIfChanged('accent', _accent())).close,
+      container
+          .listen(
+            finampSettingsProvider.preferAddingToFavoritesOverPlaylists,
+            (_, prefer) => _pushIfChanged('preferFavorites', prefer),
+          )
+          .close,
       // Address changes also fire user provider; only account change clears cache.
       container.listen(FinampUserHelper.finampCurrentUserProvider, (_, _) {
         final account = _account();
@@ -314,6 +332,7 @@ class WatchHandler {
     _pushIfChanged('transcoding', FinampSettingsHelper.finampSettings.shouldTranscode);
     _pushIfChanged('volume', FinampSettingsHelper.finampSettings.currentVolume);
     _pushIfChanged('offline', FinampSettingsHelper.finampSettings.isOffline);
+    _pushIfChanged('preferFavorites', FinampSettingsHelper.finampSettings.preferAddingToFavoritesOverPlaylists);
     unawaited(_outputRoute().then((route) => _pushIfChanged('outputRoute', route)));
   }
 
@@ -342,7 +361,8 @@ class WatchHandler {
   static ProviderSubscription<ColorScheme>? _coverColorSubscription;
   static BaseItemId? _coverColorSubscriptionItem;
 
-  // Coalesce player events into one push 150 ms after the first.
+  // Coalesce player events into one push 150 ms after the first. The watch's own timings, which this must stay well
+  // under, are all in `ios/FinampWatch Watch App/ConnectionPolicy.swift`.
   static void _scheduleNowPlayingPush() {
     if (_nowPlayingPushTimer?.isActive ?? false) return;
     _nowPlayingPushTimer = Timer(const Duration(milliseconds: 150), _pushNowPlaying);
@@ -402,7 +422,6 @@ class WatchHandler {
       'title': current.item.title,
       'artist': current.item.artist ?? item.artists?.join(", ") ?? "",
       'artworkKey': _artworkKey(item),
-      'artworkUrl': _artworkUrl(item),
       'blurHash': item.blurHash ?? "",
       'albumId': item.albumId?.raw ?? "",
       'album': item.album ?? "",
@@ -449,7 +468,7 @@ class WatchHandler {
     ]).map((track) => track.baseItem).nonNulls.take(_upNextCoverCount).map((item) {
       // Retain IDs for phone artwork fallback when direct requests fail.
       _rememberSent(item);
-      return {'id': item.id.raw, 'artworkKey': _artworkKey(item), 'artworkUrl': _artworkUrl(item)};
+      return {'id': item.id.raw, 'artworkKey': _artworkKey(item)};
     }).toList();
   }
 
@@ -492,15 +511,34 @@ class WatchHandler {
         (_, _) => _scheduleNowPlayingPush(),
       );
     }
-    return _coverColorSubscription!.read().primary.atContrast(5.5, const Color(0xFF000000), true).toARGB32();
+    return _onBlack(_coverColorSubscription!.read().primary);
   }
+
+  static int _onBlack(Color color) => color.atContrast(5.5, const Color(0xFF000000), true).toARGB32();
+
+  // The colour Finamp themes a track's menus with (`showThemedBottomSheet`): its cover's theme, waiting up to
+  // [_menuColorWait] for a cover not analysed yet (grey until then).
+  static Future<int> _menuColor(BaseItemDto item) async {
+    final container = GetIt.instance<ProviderContainer>();
+    final gray = getGrayTheme(container.read(brightnessProvider));
+    final analysed = Completer<ColorScheme>();
+    final subscription = container.listen(finampThemeProvider(ThemeInfo(item)), (_, scheme) {
+      if (scheme != gray && !analysed.isCompleted) analysed.complete(scheme);
+    });
+    var scheme = subscription.read();
+    if (scheme == gray) scheme = await analysed.future.timeout(_menuColorWait, onTimeout: () => gray);
+    subscription.close();
+    return _onBlack(scheme.primary);
+  }
+
+  static const _menuColorWait = Duration(seconds: 1);
 
   static Future<void> _control(String action) async {
     final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
     switch (action) {
       case 'playPause':
         // As Finamp's own play buttons: play() completes only when playback stops again, so waiting for it left the
-        // watch without an answer for every "play" (19 Nov, on the devices).
+        // watch without an answer for every "play".
         unawaited(audioHandler.togglePlayback());
       case 'next':
         await audioHandler.skipToNext();
@@ -546,7 +584,8 @@ class WatchHandler {
       items = await _tabPage(_contentType(type), offset, limit);
     } else {
       final parent = await _itemById(parentId);
-      if (offset == 0 || _childrenCache?.$1 != parentId) _childrenCache = (parentId, await _children(parent));
+      final key = "$type:$parentId";
+      if (offset == 0 || _childrenCache?.$1 != key) _childrenCache = (key, await _parentList(type, parent));
       items = _childrenCache!.$2.skip(offset).take(limit).toList();
     }
     return _withinReplyBudget(_rows(items));
@@ -580,12 +619,15 @@ class WatchHandler {
     String? search,
     bool favorites = false,
   }) async {
+    // Every library list first looks up the library itself (`_fetchMusicScreenPageOnline`).
+    final library = GetIt.instance<FinampUserHelper>().currentUser?.currentView?.id;
     return await _readOnce<List<BaseItemDto>?>(
           loadHomeSectionItemsProvider(
             request: _tabPlayable(tab, search: search, favorites: favorites),
             startIndex: offset,
             limit: limit,
-          ).future,
+          ),
+          dependsOn: [if (library != null) itemByIdProvider(library)],
         ) ??
         [];
   }
@@ -608,6 +650,25 @@ class WatchHandler {
     );
   }
 
+  // A parent's list: for an artist, Finamp's artist screen sections (`albums`: where they're the album artist;
+  // `appearsOn`: albums they perform on, without those), else a collection's tracks.
+  static Future<List<BaseItemDto>> _parentList(String type, BaseItemDto parent) async {
+    if (BaseItemDtoType.fromItem(parent) != BaseItemDtoType.artist) return _children(parent);
+    return type == 'appearsOn' ? _appearsOnAlbums(parent) : _artistAlbums(parent);
+  }
+
+  // As Finamp's artist screen (`artist_screen_content.dart`), in the current library.
+  static Future<List<BaseItemDto>> _artistAlbums(BaseItemDto artist) =>
+      _readOnce(getArtistAlbumsProvider(artist: artist, libraryFilter: currentLibraryPlaceholder));
+
+  static Future<List<BaseItemDto>> _appearsOnAlbums(BaseItemDto artist) async {
+    final own = {for (final album in await _artistAlbums(artist)) album.id};
+    final performing = await _readOnce(
+      getPerformingArtistAlbumsProvider(artist: artist, libraryFilter: currentLibraryPlaceholder),
+    );
+    return performing.where((album) => !own.contains(album.id)).toList();
+  }
+
   static Future<List<BaseItemDto>> _children(BaseItemDto parent) async {
     final FinampDisplayableOrPlayable playable = BaseItemDtoType.fromItem(parent) == BaseItemDtoType.artist
         ? Artist(
@@ -623,7 +684,7 @@ class WatchHandler {
     if (playable is! FinampUnpagedDisplayable) {
       throw PlatformException(code: "unsupported", message: "Not a collection");
     }
-    final children = await _readOnce(getChildrenProvider(item: playable).future);
+    final children = await _readOnce(getChildrenProvider(item: playable));
     return children.whereType<FinampPlayableDto>().map((child) => child.item).toList();
   }
 
@@ -746,16 +807,56 @@ class WatchHandler {
     return rows;
   }
 
+  // Each kind under its own heading, as Finamp's tabs: album artists, then artists credited only on tracks (Finamp's
+  // Performing Artists tab, without the album artists already listed).
   static Future<Map<String, Object>> _search(String query) async {
-    Future<List<Map<String, Object>>> find(ContentType contentType) async =>
-        _rows(await _query(contentType, limit: _searchSectionSize, searchTerm: query, sortBy: "SortName"));
-    final sections = await Future.wait([
-      find(_contentType('artists')),
-      find(ContentType.albums),
-      find(ContentType.playlists),
-      find(ContentType.tracks),
+    final results = await Future.wait([
+      _searchFind(ContentType.albums, query),
+      _searchFind(ContentType.playlists, query),
     ]);
-    return {'artists': sections[0], 'albums': sections[1], 'playlists': sections[2], 'tracks': sections[3]};
+    final artists = await _searchArtists(query);
+    final tracks = await _searchTracks(query, [...artists.album, ...artists.performing]);
+    return {
+      'artists': _rows(artists.album),
+      'performingArtists': _rows(artists.performing),
+      'albums': _rows(results[0]),
+      'playlists': _rows(results[1]),
+      'tracks': _rows(tracks),
+    };
+  }
+
+  static Future<List<BaseItemDto>> _searchFind(
+    ContentType contentType,
+    String query, {
+    int limit = _searchSectionSize,
+  }) => _query(contentType, limit: limit, searchTerm: query, sortBy: "SortName");
+
+  // The album artists the search finds, and the artists credited only on tracks (Finamp's Performing Artists tab,
+  // without the album artists already found).
+  static Future<({List<BaseItemDto> album, List<BaseItemDto> performing})> _searchArtists(String query) async {
+    final found = await Future.wait([
+      _searchFind(ContentType.albumArtists, query),
+      _searchFind(ContentType.performingArtists, query, limit: _searchSectionSize * 2),
+    ]);
+    final albumArtists = found[0].map((artist) => artist.id).toSet();
+    final performing = found[1].where((artist) => !albumArtists.contains(artist.id)).take(_searchSectionSize).toList();
+    return (album: found[0], performing: performing);
+  }
+
+  // Tracks whose name matches, then the found artists' tracks as Finamp plays an artist (their albums' tracks and the
+  // tracks they're credited on), once each. The watch plays the same list (`play` with `search`).
+  static Future<List<BaseItemDto>> _searchTracks(String query, List<BaseItemDto> artists) async {
+    final named = await _searchFind(ContentType.tracks, query);
+    final byArtist = await Future.wait(
+      artists.map(
+        (artist) => _readOnce(getArtistTracksProvider(artist: artist, libraryFilter: currentLibraryPlaceholder)),
+      ),
+    );
+    final seen = <BaseItemId>{};
+    return [
+      ...named,
+      ...byArtist.expand((tracks) => tracks),
+    ].where((track) => seen.add(track.id)).take(_searchSectionSize).toList();
   }
 
   static Future<List<BaseItemDto>> _favorites(ContentType contentType, {int offset = 0, int limit = _favoritesLimit}) =>
@@ -774,9 +875,7 @@ class WatchHandler {
             'subtitle': _subtitle(item),
             'artistId': _mainArtist(item)?.id.raw ?? "",
             'artworkKey': _artworkKey(item),
-            'artworkUrl': _artworkUrl(item),
             'blurHash': item.blurHash ?? "",
-            'artistArtworkUrl': _imageUrlFor(_mainArtist(item)?.id),
             'duration': (item.runTimeTicksDuration() ?? Duration.zero).inMilliseconds / 1000,
             'year': item.productionYear ?? 0,
             'releaseDate': ReleaseDateHelper.autoFormat(item) ?? "",
@@ -818,7 +917,12 @@ class WatchHandler {
                   ? "${tabSortBy.jellyfinName(contentType)},ParentIndexNumber,IndexNumber"
                   : tabSortBy.jellyfinName(contentType)),
           sortOrder: sortOrder ?? settings.getSortOrder(contentType).toString(),
-          artistType: contentType.isArtist ? settings.defaultArtistType : null,
+          // As Finamp's music screen: each artist tab asks for its own artist type.
+          artistType: switch (contentType) {
+            ContentType.albumArtists => ArtistType.albumArtist,
+            ContentType.performingArtists => ArtistType.artist,
+            _ => contentType.isArtist ? settings.defaultArtistType : null,
+          },
           isFavorite: isFavorite,
           searchTerm: searchTerm,
           startIndex: offset,
@@ -831,32 +935,12 @@ class WatchHandler {
       ? (_mainArtist(item)?.name ?? item.albumArtist ?? item.artists?.join(", ") ?? "")
       : (item.artists?.join(", ") ?? item.albumArtist ?? "");
 
-  static List<Map<String, String>> _artists(List<NameIdPair>? artists) => (artists ?? const [])
-      .map((artist) => {'id': artist.id.raw, 'name': artist.name ?? "", 'artworkUrl': _imageUrlFor(artist.id)})
-      .toList();
+  static List<Map<String, String>> _artists(List<NameIdPair>? artists) =>
+      (artists ?? const []).map((artist) => {'id': artist.id.raw, 'name': artist.name ?? ""}).toList();
 
   static NameIdPair? _mainArtist(BaseItemDto item) => BaseItemDtoType.fromItem(item) == BaseItemDtoType.album
       ? item.albumArtists?.firstOrNull
       : item.artistItems?.firstOrNull;
-
-  // Token-free Jellyfin cover URL; watch adds MaxWidth/MaxHeight.
-  static String _artworkUrl(BaseItemDto item) {
-    if (FinampSettingsHelper.finampSettings.isOffline) return "";
-    return GetIt.instance<JellyfinApiHelper>().getImageUrl(item: item)?.replace(userInfo: '').toString() ?? "";
-  }
-
-  static String _imageUrlFor(BaseItemId? id) {
-    final user = GetIt.instance<FinampUserHelper>().currentUser;
-    if (id == null || user == null || FinampSettingsHelper.finampSettings.isOffline) return "";
-    final base = Uri.parse(user.baseURL);
-    return base
-        .replace(
-          userInfo: '',
-          pathSegments: [...base.pathSegments, "Items", id.raw, "Images", "Primary"],
-          queryParameters: {"format": "jpg", "quality": "90"},
-        )
-        .toString();
-  }
 
   // The player's feature chips as FeatureState.features builds them, in the user's configured order.
   static List<String> _features(FinampQueueItem current) {
@@ -1056,6 +1140,55 @@ class WatchHandler {
     return result;
   }
 
+  // Finamp's playlist menu for one track (`playlist_actions_menu.dart`): its heart, and every playlist sorted by name.
+  // As there, only the playlist the track is playing from is known to hold it (it comes first); the others aren't
+  // looked up, and adding to one is what shows it holds the track.
+  static Future<Map<String, Object>> _playlistMenu(String id) async {
+    final item = await _itemById(id);
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      throw PlatformException(code: "offline", message: GlobalSnackbar.requireL10n.notAvailableInOfflineMode);
+    }
+    final playlists =
+        await GetIt.instance<JellyfinApiHelper>().getItems(includeItemTypes: "Playlist", sortBy: "SortName") ?? [];
+    final current = GetIt.instance<QueueService>().getCurrentTrack();
+    final source = current?.baseItem.id == item.id && queueItemInPlaylist(current) ? current!.source.id : null;
+    final rows = [
+      for (final row in _rows(playlists)) {...row, 'included': row['id'] == source},
+    ];
+    return {
+      'favorite': GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item)),
+      'color': await _menuColor(item),
+      'playlists': [...rows.where((row) => row['included'] == true), ...rows.where((row) => row['included'] != true)],
+    };
+  }
+
+  // Adds the track to a playlist or takes it out, with Finamp's own functions (`queue_source_helper.dart`): they also
+  // re-sync the playlist's download and confirm on the phone. Answers whether the playlist now holds the track.
+  static Future<bool> _playlistToggle(String id, String playlistId, bool add) async {
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      throw PlatformException(code: "offline", message: GlobalSnackbar.requireL10n.notAvailableInOfflineMode);
+    }
+    final item = await _itemById(id);
+    final playlist = await _itemById(playlistId);
+    String? entry;
+    if (!add) {
+      final entries = await GetIt.instance<JellyfinApiHelper>().getItems(parentItem: playlist, fields: "");
+      entry = entries?.firstWhereOrNull((track) => track.id == item.id)?.playlistItemId;
+      if (entry == null) return false;
+    }
+    final context = GlobalSnackbar.rawMaterialAppNavigatorKey.currentContext;
+    if (context == null || !context.mounted) {
+      throw PlatformException(code: "unavailable", message: "Open Finamp on your iPhone for this action");
+    }
+    final holds = add
+        ? await addItemsToPlaylist(context, [item], playlist)
+        : !await removeFromPlaylist(context, item, playlist, entry!, confirm: false);
+    // The playlist's tracks are read again, as Finamp's playlist editor does after a change.
+    GetIt.instance<ProviderContainer>().invalidate(getAlbumOrPlaylistTracksProvider(playlist));
+    if (_childrenCache?.$1 == "playlists:$playlistId") _childrenCache = null;
+    return holds;
+  }
+
   // Finamp sets a heart before the server answers and puts it back if the server refuses; following Finamp's state for
   // the items the watch changed carries that (and later changes on the phone) to the watch's hearts.
   static final Map<BaseItemId, ProviderSubscription<bool>> _followedFavorites = {};
@@ -1196,37 +1329,12 @@ class WatchHandler {
           ),
         );
         return;
-      case 'favoriteAlbums':
-        final albums = await _favorites(ContentType.albums);
-        // Skip unavailable albums so remaining favourites can play.
-        final albumTracks = await _fetchAll(
-          albums,
-          (album) => _children(album).catchError((Object _) => <BaseItemDto>[]),
-        );
-        await _playTrackList(
-          albumTracks.expand((tracks) => tracks).toList(),
-          arguments,
-          _favoritesSource("favoriteAlbums", GlobalSnackbar.requireL10n.favoriteAlbums),
-        );
-        return;
-      case 'favoriteArtists':
-        final artists = await _favorites(_contentType('artists'));
-        final artistTracks = await _fetchAll(
-          artists,
-          (artist) => _readOnce(
-            getChildTracksProvider(item: Artist<Track>.fromItem(artist)).future,
-          ).catchError((Object _) => <Track>[]),
-        );
-        await _playTrackList(
-          artistTracks.expand((tracks) => tracks.map((track) => track.item)).toList(),
-          arguments,
-          _favoritesSource("favoriteArtists", GlobalSnackbar.requireL10n.favoriteArtists),
-        );
-        return;
       case 'search':
         final query = arguments['query'] as String;
         await _playTrackList(
-          await _query(ContentType.tracks, limit: _searchSectionSize, searchTerm: query, sortBy: "SortName"),
+          await _searchArtists(
+            query,
+          ).then((artists) => _searchTracks(query, [...artists.album, ...artists.performing])),
           arguments,
           QueueItemSource.rawId(
             type: QueueItemSourceType.filteredList,
@@ -1249,7 +1357,9 @@ class WatchHandler {
     final parent = await _itemById(parentId);
     // Reuse cached list if available to save server round trip.
     final cached = _childrenCache;
-    final tracks = cached != null && cached.$1 == parentId ? cached.$2 : await _children(parent);
+    final tracks = cached != null && cached.$1 == "${arguments['type']}:$parentId"
+        ? cached.$2
+        : await _children(parent);
     await _playTrackList(tracks, arguments, QueueItemSource.fromBaseItem(parent));
   }
 
@@ -1258,9 +1368,9 @@ class WatchHandler {
     final artist = Artist<Track>.fromItem(await _itemById(arguments['parentId'] as String));
     final PlayableSlice slice;
     if (arguments['albumShuffle'] == true) {
-      slice = await _readOnce(getAlbumShuffledPlayerSliceProvider(item: artist).future);
+      slice = await _readOnce(getAlbumShuffledPlayerSliceProvider(item: artist));
     } else {
-      final linear = await _readOnce(getPlayableSliceProvider(item: artist, startingOffset: 0).future);
+      final linear = await _readOnce(getPlayableSliceProvider(item: artist, startingOffset: 0));
       slice = (arguments['shuffle'] as bool? ?? false) ? linear.shuffle() : linear;
     }
     // Finamp's queue skips an empty slice without an error (offline, an artist with nothing downloaded), so the watch
@@ -1275,13 +1385,17 @@ class WatchHandler {
   static Future<Map<String, Object>> _artistInfo(String id) async {
     final item = await _itemById(id);
     final artist = Artist<Track>.fromItem(item);
-    final tracks = await _readOnce(getChildTracksProvider(item: artist).future);
-    // Reuse cached artist album list if available.
-    final cached = _childrenCache;
-    final albums = cached != null && cached.$1 == id ? cached.$2 : await _children(item);
+    final tracks = await _readOnce(getChildTracksProvider(item: artist));
+    final albums = await _artistAlbums(item);
     return {
       'tracks': tracks.length,
+      // As Finamp's artist header: the albums where they're the album artist.
       'albums': albums.length,
+      // The order of the artist page's album sections, from Finamp's artist screen setting.
+      'sections': [
+        for (final section in FinampSettingsHelper.finampSettings.artistItemSectionsOrder)
+          if (section != ArtistItemSections.tracks) section.name,
+      ],
       'favorite': GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item)),
       ..._downloadState(item),
     };
@@ -1301,30 +1415,31 @@ class WatchHandler {
       _rememberSent(known);
       return known;
     }
-    final item = await _readOnce(itemByIdProvider(BaseItemId(id)).future);
+    final item = await _readOnce(itemByIdProvider(BaseItemId(id)));
     if (item == null) throw PlatformException(code: "unknown", message: "Unknown item");
     _rememberSent(item);
     return item;
   }
 
-  // Fetch items in input order with concurrency capped at [_parallelFetches].
-  static Future<List<R>> _fetchAll<T, R>(List<T> items, Future<R> Function(T) fetch) async {
-    final results = List<R?>.filled(items.length, null);
-    var next = 0;
-    Future<void> worker() async {
-      while (next < items.length) {
-        final i = next++;
-        results[i] = await fetch(items[i]);
+  // Keep auto-disposed providers alive until their value arrives.
+  // Reads one of Finamp's providers once. While one of Finamp's own screens listens to the same provider, it keeps its
+  // last result, a failed load included, and a read would get that error at once without a new request (seen:
+  // Artists stayed "Can't reach your Jellyfin server" after a single timeout, while the phone's Artists tab held the
+  // error). A provider held in a failed state is started again first, as Finamp's own pull-to-refresh does.
+  // `dependsOn`: providers the read depends on that can hold a failure the same way (the library lookup behind every
+  // library list, which Finamp's own Retry doesn't clear either).
+  static Future<T> _readOnce<T>(
+    AutoDisposeFutureProvider<T> provider, {
+    List<AutoDisposeFutureProvider<Object?>> dependsOn = const [],
+  }) async {
+    final container = GetIt.instance<ProviderContainer>();
+    for (final held in [...dependsOn, provider]) {
+      if (container.exists(held) && container.read(held).hasError) {
+        _logger.info("Watch request: a failed load held by Finamp is started again");
+        container.invalidate(held);
       }
     }
-
-    await Future.wait(List.generate(min(_parallelFetches, items.length), (_) => worker()));
-    return results.cast<R>();
-  }
-
-  // Keep auto-disposed providers alive until their value arrives.
-  static Future<T> _readOnce<T>(ProviderListenable<Future<T>> provider) async {
-    final subscription = GetIt.instance<ProviderContainer>().listen(provider, (_, _) {});
+    final subscription = container.listen(provider.future, (_, _) {});
     try {
       return await subscription.read();
     } finally {
@@ -1362,12 +1477,6 @@ class WatchHandler {
     );
   }
 
-  static QueueItemSource _favoritesSource(String id, String name) => QueueItemSource.rawId(
-    type: QueueItemSourceType.favorites,
-    name: QueueItemSourceName(type: QueueItemSourceNameType.preTranslated, pretranslatedName: name),
-    id: id,
-  );
-
   static Future<void> _playTrackList(
     List<BaseItemDto> tracks,
     Map<String, dynamic> arguments,
@@ -1388,24 +1497,82 @@ class WatchHandler {
     );
   }
 
-  // Batch results stay in request order so iOS can pair them with IDs and sizes.
+  // Batch results stay in request order so iOS can pair them with IDs and sizes. The answer goes once every cover is
+  // settled, or after `_watchCoverAnswerAfter` with the ones settled by then: the others are marked `later`, which the
+  // watch asks for again, joining the fetch still running here (`_coversInFlight`). So a ready cover never waits for a
+  // slow one.
   static Future<List<Map<String, Object>>> _artworks(Map<String, dynamic> arguments) async {
     final requests = (arguments['items'] as List).take(20).map((request) => Map<String, dynamic>.from(request as Map));
-    return await Future.wait(
-      requests.map((request) async {
-        final id = request['id'] as String;
-        final cover = await _artwork(id, (request['size'] as int? ?? _defaultWatchArtworkSize).clamp(16, 1200));
-        return {
-          'id': id,
-          // Encoded files omit dimensions; RGBA pixels include width and height.
-          if (cover != null) ...{
-            'data': cover.data,
-            if (cover.width > 0) ...{'width': cover.width, 'height': cover.height},
-          },
-        };
+    final ids = [for (final request in requests) request['id'] as String];
+    final sizes = [
+      for (final request in requests) (request['size'] as int? ?? _defaultWatchArtworkSize).clamp(16, 1200),
+    ];
+    final settled = List<Map<String, Object>?>.filled(ids.length, null);
+    final all = Future.wait([
+      for (var i = 0; i < ids.length; i++)
+        _coverJoined(ids[i], sizes[i]).then((cover) => settled[i] = {'id': ids[i], 'data': ?cover}),
+    ]);
+    await Future.any([all, Future<void>.delayed(_watchCoverAnswerAfter)]);
+    return [
+      for (var i = 0; i < ids.length; i++) settled[i] ?? {'id': ids[i], 'later': true},
+    ];
+  }
+
+  // Covers being fetched, by "<id>-<size>", so the watch asking again joins the fetch; kept briefly after it ends so
+  // that a cover finished between two answers is ready for the next one.
+  static final Map<String, Future<Uint8List?>> _coversInFlight = {};
+
+  static Future<Uint8List?> _coverJoined(String id, int size) {
+    final key = "$id-$size";
+    final running = _coversInFlight[key];
+    if (running != null) return running;
+    final cover = _coverWithinLimit(id, size);
+    _coversInFlight[key] = cover;
+    cover.whenComplete(
+      () => Future<void>.delayed(const Duration(seconds: 30), () {
+        if (_coversInFlight[key] == cover) _coversInFlight.remove(key);
       }),
     );
+    return cover;
   }
+
+  static Future<Uint8List?> _coverWithinLimit(String id, int size) async {
+    try {
+      return await _artwork(id, size).timeout(_watchCoverLimit);
+    } on TimeoutException {
+      _logger.warning(
+        "Watch artwork for $id: nothing after ${_watchCoverLimit.inSeconds} s "
+        "(app ${WidgetsBinding.instance.lifecycleState?.name ?? "unknown"})",
+      );
+    } catch (e) {
+      _logger.warning("Watch artwork for $id: failed", e);
+    }
+    return null;
+  }
+
+  // How many favourite tracks there are, counted as Finamp's Random Favorite counts them (`audio_service_helper.dart`):
+  // Jellyfin's total online (one item asked for), the downloaded favourites offline.
+  static Future<int> _favoritesCount() async {
+    final type = ContentType.tracks.itemType!;
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      return GetIt.instance<DownloadsService>().getFavoritesCount(baseItemType: type) ?? 0;
+    }
+    final view = GetIt.instance<FinampUserHelper>().currentUser?.currentView;
+    final result = await GetIt.instance<JellyfinApiHelper>().getItemsWithTotalRecordCount(
+      parentItem: view,
+      libraryFilter: view?.id,
+      includeItemTypes: type.jellyfinName,
+      filters: "IsFavorite",
+      limit: 1,
+    );
+    return result.totalRecordCount;
+  }
+
+  // Each cover gets at most `_watchCoverLimit`; an answer waits at most `_watchCoverAnswerAfter` for the covers in it.
+  // Both well under the watch's wait for the answer (30 s, `ConnectionPolicy.Reply.normal` in
+  // `ios/FinampWatch Watch App/ConnectionPolicy.swift`).
+  static const _watchCoverLimit = Duration(seconds: 10);
+  static const _watchCoverAnswerAfter = Duration(seconds: 2);
 
   // Cache playlist covers to avoid repeated lookups for first track.
   static final Map<BaseItemId, BaseItemDto?> _playlistFirstTracks = {};
@@ -1420,66 +1587,55 @@ class WatchHandler {
     return _playlistFirstTracks[playlist.id] = tracks?.firstOrNull;
   }
 
-  // Load saved file bytes or fetch RGBA pixels; null when unavailable.
-  static Future<({Uint8List data, int width, int height})?> _artwork(String id, int size) async {
+  // A cover's file as it is (JPEG/PNG bytes; `WatchBridge.swift` scales it to the watch's size); null when unavailable.
+  // Never decoded here: Flutter's image decoding stalls with Finamp in the background, and stalled even in the
+  // foreground while the server hung, so the watch got nothing for 25 s.
+  static Future<Uint8List?> _artwork(String id, int size) async {
     BaseItemDto? item;
     try {
       item = await _itemById(id);
-    } catch (_) {
+    } catch (e) {
+      _logger.warning("Watch artwork for $id: item lookup failed", e);
       return null;
     }
     if (item.imageId == null && BaseItemDtoType.fromItem(item) == BaseItemDtoType.playlist) {
       try {
         item = await _firstTrack(item);
-      } catch (_) {
+      } catch (e) {
+        _logger.warning("Watch artwork for $id: playlist's first track lookup failed", e);
         return null;
       }
     }
     if (item == null || item.imageId == null) return null;
 
-    // Send saved file as-is; Flutter decoding stalls while in background.
+    // 1. The downloaded cover.
     final file = GetIt.instance<DownloadsService>().getImageDownload(item: item)?.file;
     if (file != null && await file.exists()) {
-      return (data: await file.readAsBytes(), width: 0, height: 0);
+      _logger.fine("Watch artwork for $id: the downloaded file");
+      return await file.readAsBytes();
     }
 
-    // Request the watch size; iOS scales down but does not enlarge smaller sources.
-    final imageProvider = GetIt.instance<ProviderContainer>()
-        .read(albumImageProvider(AlbumImageRequest(item: item, maxWidth: size, maxHeight: size)))
-        .image;
-    if (imageProvider == null) return null;
+    // 2. The copy Finamp's player saved, full size, under the key `album_image_provider.dart` gives it (BlurHash, or
+    // image ID, plus the size, which is "null" for full size). Needs no server, so it also works with no connection.
+    final saved = await DefaultCacheManager().getFileFromCache("${item.blurHash ?? item.imageId}nullnull");
+    if (saved != null && await saved.file.exists()) {
+      _logger.fine("Watch artwork for $id: the player's saved copy");
+      return await saved.file.readAsBytes();
+    }
 
-    final completer = Completer<ImageInfo?>();
-    final stream = imageProvider.resolve(ImageConfiguration.empty);
-    late ImageStreamListener listener;
-    listener = ImageStreamListener(
-      (imageInfo, synchronousCall) {
-        stream.removeListener(listener);
-        completer.complete(imageInfo);
-      },
-      onError: (error, stackTrace) {
-        stream.removeListener(listener);
-        _logger.warning("Failed to load watch artwork for $id", error);
-        completer.complete(null);
-      },
-    );
-    stream.addListener(listener);
-
-    // Image decoding stalls in background; answer before the watch's 30 s timeout.
-    final imageInfo = await completer.future.timeout(
-      const Duration(seconds: 25),
-      onTimeout: () {
-        stream.removeListener(listener);
-        return null;
-      },
-    );
-    if (imageInfo == null) return null;
-    final image = imageInfo.image;
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-    final cover = byteData == null
-        ? null
-        : (data: byteData.buffer.asUint8List(), width: image.width, height: image.height);
-    imageInfo.dispose();
-    return cover;
+    // 3. The watch's size from the server, unless Finamp is offline.
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      _logger.fine("Watch artwork for $id: none saved for Offline Mode");
+      return null;
+    }
+    final url = GetIt.instance<JellyfinApiHelper>().getImageUrl(item: item, maxWidth: size, maxHeight: size);
+    if (url == null) return null;
+    final response = await http.get(url);
+    if (response.statusCode != 200) {
+      _logger.warning("Watch artwork for $id: server answered ${response.statusCode}");
+      return null;
+    }
+    _logger.fine("Watch artwork for $id: from the server");
+    return response.bodyBytes;
   }
 }

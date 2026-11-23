@@ -67,6 +67,7 @@ struct ContentView: View {
         .foregroundStyle(Color.fgPrimary)
         // System controls follow Finamp's accent with accent colours on; the asset's fixed blue otherwise
         .tint(ThemeStore.shared.switchTint)
+        .playlistMenuHost()
         .phoneMessageAlert()
     }
 }
@@ -85,27 +86,16 @@ extension View {
 }
 
 extension View {
-    // The status of requests you made (`PhoneActivity`), above everything on the page. On pages, under the clock with
-    // its bottom where the page's content starts (on Playback, the line of its top buttons' bottom). Sheets attach it
-    // too, as they do the alert: there the sheet's title is under the clock and watchOS's own "iPhone disconnected"
-    // icon sits left of it, so it goes in the middle of the clock's row, between the close button and the clock.
-    @ViewBuilder
+    // The status of requests you made (`PhoneActivity`), above everything on the page, always centred across the screen;
+    // only its height depends on the clock (`ActivityPlace.iconCentre`). One view for every place, so a page change
+    // moves it smoothly instead of swapping it. Sheets attach it too, as they do the alert.
     func phoneActivityIndicator(_ place: ActivityPlace = .sheet) -> some View {
-        switch place {
-        case .sheet:
-            overlay(alignment: .top) {
-                PhoneActivityIndicator()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: ActivityStatus.clockRowCentre(topInset: WatchMetrics.shared.topInset) * 2)
-                    .ignoresSafeArea(edges: .top)
-            }
-        case .underCentredClock, .underClockOnRight:
-            overlay(alignment: place == .underCentredClock ? .top : .topTrailing) {
-                PhoneActivityIndicator()
-                    // The clock's right edge is on m1, watchOS's side margin.
-                    .padding(.trailing, place == .underCentredClock ? 0 : WatchMetrics.shared.margin)
-                    .alignmentGuide(.top) { $0[.bottom] + ActivityStatus.liftAboveContent }
-            }
+        overlay(alignment: .top) {
+            PhoneActivityIndicator()
+                .frame(maxWidth: .infinity)
+                .frame(height: place.iconCentre(topInset: WatchMetrics.shared.topInset) * 2)
+                .ignoresSafeArea(edges: .top)
+                .animation(.easeInOut(duration: 0.3), value: place)
         }
     }
 }
@@ -124,6 +114,19 @@ extension View {
 
 enum ActivityPlace {
     case underCentredClock, underClockOnRight, sheet
+
+    // The icon's centre, from the screen's top.
+    // - Clock centred (Playback, Home: buttons on both sides): under the clock, its bottom where the page's content
+    //   starts (on Playback, the line of its top buttons' bottom).
+    // - Clock on the right (library and pushed pages, login) and sheets: in the middle of the clock's row. Under the
+    //   clock is where watchOS puts a scrolled page's small title, and on sheets the sheet's title; beside the clock,
+    //   on sheets, watchOS shows its own "iPhone disconnected" icon.
+    func iconCentre(topInset: CGFloat) -> CGFloat {
+        switch self {
+        case .underCentredClock: topInset - ActivityStatus.liftAboveContent - ActivityStatus.iconSize / 2
+        case .underClockOnRight, .sheet: ActivityStatus.clockRowCentre(topInset: topInset)
+        }
+    }
 }
 
 struct PhoneActivityIndicator: View {

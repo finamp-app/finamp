@@ -35,7 +35,6 @@ struct NowPlaying: Equatable {
     var title = ""
     var artist = ""
     var artworkKey = ""
-    var artworkURL = ""
     var blurHash = ""
     var albumID = ""
     var album = ""
@@ -63,6 +62,9 @@ struct NowPlaying: Equatable {
     // The short chips, in the order the user set Finamp's chips.
     var shortChips: [ShortChip] = []
 
+    // The playing track as a library item, for its cover and its heart.
+    var trackItem: LibraryItem { LibraryItem(id: id, name: title, subtitle: "", artworkKey: artworkKey, blurHash: blurHash) }
+
     func position(at date: Date) -> Double {
         let elapsed = advancing ? date.timeIntervalSince(updatedAt) * speed : 0
         return min(max(position + elapsed, 0), duration)
@@ -76,6 +78,9 @@ final class NowPlayingStore {
     var nowPlaying = NowPlaying()
     // When now playing last arrived, pushed or requested.
     @ObservationIgnored private(set) var receivedAt = Date.distantPast
+    // The phone's time on the newest state taken. Pushes, the stored context and the complication's updates can arrive
+    // out of order, and an older state would move playback back; the watch's own instant updates don't count here.
+    @ObservationIgnored private var phoneTime: Double = 0
 
     // Optimistic; the phone's answer is authoritative.
     func toggleFavorite() {
@@ -95,6 +100,13 @@ final class NowPlayingStore {
     }
 
     func update(from state: [String: Any]) {
+        if let time = state["updatedAt"] as? Double {
+            if time < phoneTime {
+                WatchLog.fine("older now playing dropped (\(String(format: "%.1f", phoneTime - time)) s)")
+                return
+            }
+            phoneTime = time
+        }
         receivedAt = .now
         let previous = nowPlaying
         let short = state["shortFeatures"] as? [[String: Any]] ?? []
@@ -104,7 +116,6 @@ final class NowPlayingStore {
             title: state["title"] as? String ?? "",
             artist: state["artist"] as? String ?? "",
             artworkKey: state["artworkKey"] as? String ?? "",
-            artworkURL: state["artworkUrl"] as? String ?? "",
             blurHash: state["blurHash"] as? String ?? "",
             albumID: state["albumId"] as? String ?? "",
             album: state["album"] as? String ?? "",
@@ -128,8 +139,7 @@ final class NowPlayingStore {
                     id: row["id"] as? String ?? "",
                     name: "",
                     subtitle: "",
-                    artworkKey: row["artworkKey"] as? String ?? "",
-                    artworkURL: row["artworkUrl"] as? String ?? ""
+                    artworkKey: row["artworkKey"] as? String ?? ""
                 )
             },
             coverColor: (state["coverColor"] as? NSNumber).map { Color(argb: $0.intValue) },
@@ -154,36 +164,31 @@ struct PlaybackPage: View {
     @State private var artworkFor = ""
     // Retain album artwork while track-specific cover loads.
     @State private var artworkAlbum = ""
+    // A cover that didn't load is asked for again (`ConnectionPolicy.Cover`); bumping this restarts the cover's load,
+    // and the store answers from its cache when the cover arrived meanwhile.
+    @State private var artworkAttempt = 0
+    @State private var artworkTriedAt = Date.distantPast
+    // The cover key whose last load ended without a cover.
+    @State private var artworkMissingFor = ""
     @State private var showSystemPlayer = false
     @State private var showQueue = false
     // The bar's position (0…1) while it's being dragged.
     @State private var scrub: Double?
+    // The cover shade's middle (`PlaybackLayout.coverShadeStops`): the bottom of the title's line on the screen. The
+    // shade takes no part in the layout, so this can't loop.
+    @State private var shadeMiddle: CGFloat = 0.5
     @State private var showVolume = false
     @State private var hideVolume: Task<Void, Never>?
 
     @Environment(\.fontResolutionContext) private var fontContext
     private var titleSize: CGFloat { TextSize.current(.title3, in: fontContext) * PlaybackLayout.titleScale }
-    private var smallSize: CGFloat {
-        PlaybackLayout.smallTextAtLarge * TextSize.current(.caption2, in: fontContext) / TextSize.atLarge(.caption2)
-    }
+    @ScaledMetric(relativeTo: .caption2) private var smallSize = SmallText.atLarge
 
     private var nowPlaying: NowPlaying { store.nowPlaying }
 
-    private var currentCover: LibraryItem {
-        LibraryItem(
-            id: nowPlaying.id,
-            name: nowPlaying.title,
-            subtitle: "",
-            artworkKey: nowPlaying.artworkKey,
-            artworkURL: nowPlaying.artworkURL
-        )
-    }
+    private var currentCover: LibraryItem { nowPlaying.trackItem }
 
-    private var artworkPixels: Int {
-        let device = WKInterfaceDevice.current()
-        let pixels = max(device.screenBounds.width, device.screenBounds.height) * device.screenScale
-        return Int((pixels / 20).rounded(.up)) * 20
-    }
+    private var artworkPixels: Int { ArtworkStore.screenPixels }
 
     @State private var path: [LibraryDestination] = []
 
@@ -208,6 +213,7 @@ struct PlaybackPage: View {
                 showQueue = false
                 path = LibraryPath.opening(.artistAlbums(artist), in: path)
             })
+                .playlistMenuHost()
                 .phoneMessageAlert()
                 .phoneActivityIndicator()
                 .presentationBackground(Color.appBackground)
@@ -223,7 +229,6 @@ struct PlaybackPage: View {
             name: nowPlaying.album,
             subtitle: nowPlaying.albumArtist,
             artworkKey: nowPlaying.artworkKey,
-            artworkURL: nowPlaying.artworkURL,
             artistID: nowPlaying.albumArtistID
         )
         Task {
@@ -247,10 +252,7 @@ struct PlaybackPage: View {
                     }
             } else {
                 VStack(spacing: 8) {
-                    Image(systemName: "music.note")
-                        .font(.largeTitle)
-                        .fixedIconSize()
-                        .foregroundStyle(.finampGradient)
+                    StatusIcon(asset: "tabler-music", style: .largeTitle)
                     Text("Nothing playing")
                         .font(.headline)
                     Text("Pick something on the other pages")
@@ -284,16 +286,18 @@ struct PlaybackPage: View {
                 .disabled(!nowPlaying.hasTrack)
             }
         }
-        .task(id: nowPlaying.artworkKey) {
+        .task(id: "\(nowPlaying.artworkKey)#\(artworkAttempt)") {
             guard !nowPlaying.artworkKey.isEmpty else {
                 artwork = nil
                 return
             }
+            artworkTriedAt = .now
             let key = nowPlaying.artworkKey
             let album = nowPlaying.albumID
             let loaded = await ArtworkStore.shared.image(for: currentCover, size: artworkPixels)
             // A slower load for an earlier track must not replace the current one's cover
             guard !Task.isCancelled, key == nowPlaying.artworkKey else { return }
+            artworkMissingFor = loaded == nil ? key : ""
             withAnimation(.easeIn(duration: 0.7)) {
                 artwork = loaded
                 artworkFor = key
@@ -311,20 +315,35 @@ struct PlaybackPage: View {
             }
         }
         .onChange(of: isActive, initial: true) { _, active in
-            // Resting (decision 49): no ticking or polling while dimmed, wrist down or on another page.
+            // Resting: no ticking or polling while dimmed, wrist down or on another page.
             WatchLog.info(active ? "playback awake" : "playback resting")
-            if active { Task { try? await PhoneConnection.shared.refreshNowPlaying() } }
+            if active {
+                Task { try? await PhoneConnection.shared.refreshNowPlaying() }
+                retryCoverIfMissing(after: ConnectionPolicy.Cover.retryOnWake)
+            }
         }
         // Pushes are the normal path; if none arrive, ask, so the page can't go stale while it's on screen
         .task(id: isActive) {
             guard isActive else { return }
+            let every = ConnectionPolicy.Playback.refreshEvery
             while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(10))
-                if Date.now.timeIntervalSince(store.receivedAt) >= 10 {
+                try? await Task.sleep(for: .seconds(every))
+                if Date.now.timeIntervalSince(store.receivedAt) >= every {
                     try? await PhoneConnection.shared.refreshNowPlaying()
                 }
+                retryCoverIfMissing(after: ConnectionPolicy.Cover.retryEvery)
             }
         }
+    }
+
+    // Ask again for this track's cover when its last load ended without one (the phone couldn't get it, the phone was
+    // out of reach); `seconds` since the last try keeps it from repeating faster than that.
+    private func retryCoverIfMissing(after seconds: TimeInterval) {
+        guard isActive, !nowPlaying.artworkKey.isEmpty, artworkMissingFor == nowPlaying.artworkKey,
+              Date.now.timeIntervalSince(artworkTriedAt) >= seconds
+        else { return }
+        WatchLog.fine("cover: asking again")
+        artworkAttempt += 1
     }
 
     // The cover on screen: this track's, else its album's, else its BlurHash, else the previous cover.
@@ -348,7 +367,7 @@ struct PlaybackPage: View {
                 .ignoresSafeArea()
                 .overlay {
                     LinearGradient(
-                        colors: [.black.opacity(0.15), .black.opacity(0.55), .black.opacity(0.85)],
+                        stops: PlaybackLayout.coverShadeStops(middle: shadeMiddle),
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -399,31 +418,25 @@ struct PlaybackPage: View {
 
     // When the chips had to go, the screen is tight: every gap stays at its smallest, the gap above the Play button
     // too, and the room the chips leave goes above the title, so no gap grows back while the others are squeezed.
+    // `share`: this gap against the others (`PlaybackLayout.timesToControlsShare`).
     @ViewBuilder
-    private func gap(tight: Bool) -> some View {
+    private func gap(tight: Bool, share: CGFloat = 1) -> some View {
         if tight {
-            Spacer(minLength: PlaybackLayout.gapMin).frame(height: PlaybackLayout.gapMin)
+            Spacer(minLength: PlaybackLayout.gapMin * share).frame(height: PlaybackLayout.gapMin * share)
         } else {
-            Spacer(minLength: PlaybackLayout.gapMin).frame(maxHeight: PlaybackLayout.gapMax)
+            Spacer(minLength: PlaybackLayout.gapMin * share).frame(maxHeight: PlaybackLayout.gapMax * share)
         }
     }
 
-    // The heart follows the artist's text; its tap area doesn't (`IconButtons`).
-    @ScaledMetric(relativeTo: .footnote) private var heartSize = PlaybackLayout.heartSize
-    private var heartTap: CGFloat { max(IconButtons.tapSize, heartSize) }
+    // `PlaybackLayout.heartToChip`
+    @ScaledMetric(relativeTo: .footnote) private var heartSize = ArtistChip.height * PlaybackLayout.heartToChip
 
-    // The heart sits beside the artist line, bottom-aligned, as an overlay so it doesn't join the stack's layout.
     private var heartButton: some View {
-        Button {
-            store.toggleFavorite()
-        } label: {
-            FavoriteHeart(filled: nowPlaying.favorite, size: heartSize)
-                .foregroundStyle(controlTint)
-                .frame(width: heartTap, height: heartTap)
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(nowPlaying.favorite ? String(localized: "Remove Favorite") : String(localized: "Add Favorite"))
+        FavoriteHeart(filled: nowPlaying.favorite, size: heartSize)
+            .foregroundStyle(controlTint)
+            .iconTapArea(heartSize)
+            .trackHeart(currentCover) { store.toggleFavorite() }
+            .accessibilityLabel(nowPlaying.favorite ? String(localized: "Remove Favorite") : String(localized: "Add Favorite"))
     }
 
     private func controlsStack(showChips: Bool) -> some View {
@@ -432,15 +445,19 @@ struct PlaybackPage: View {
             // Title and artist are direct members of this stack, so their gap and the next one share space evenly.
             Marquee {
                 Text(nowPlaying.title)
-                    .font(.system(size: titleSize))
+                    .font(.system(size: titleSize, weight: PlaybackLayout.titleWeight))
                     .lineLimit(1)
             }
-            .padding(.trailing, heartTap + PlaybackLayout.heartGap)
+            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: {
+                shadeMiddle = $0 / Margins.screenSize.height
+            }
             gap(tight: !showChips)
-            artistLine
-                .padding(.trailing, heartTap + PlaybackLayout.heartGap)
-                .frame(maxWidth: .infinity)
-                .overlay(alignment: .bottomTrailing) { heartButton }
+            // The artist row (`PlaybackLayout.artistToHeart`).
+            HStack(spacing: PlaybackLayout.artistToHeart) {
+                artistLine
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                heartButton
+            }
 
             gap(tight: !showChips)
             // Finamp's player order: feature chips, then the bar, then the times under it.
@@ -450,7 +467,7 @@ struct PlaybackPage: View {
                         .font(.system(size: smallSize))
                         .foregroundStyle(.white.opacity(0.9))
                         .frame(maxWidth: .infinity)
-                } else if showChips, shortChips ? !nowPlaying.shortChips.isEmpty : !nowPlaying.features.isEmpty {
+                } else if showChips, showTrackInfo, shortChips ? !nowPlaying.shortChips.isEmpty : !nowPlaying.features.isEmpty {
                     if shortChips { shortFeatureChips } else { featureChips }
                 }
                 if !showVolume, let lowered = PhoneVolume.shared.lowered {
@@ -483,7 +500,7 @@ struct PlaybackPage: View {
                 }
             }
 
-            gap(tight: !showChips)
+            gap(tight: !showChips, share: PlaybackLayout.timesToControlsShare)
             // Flexible gaps let transport controls fit on 40 mm watches.
             HStack(spacing: 0) {
                 Spacer(minLength: 0)
@@ -548,9 +565,10 @@ struct PlaybackPage: View {
         }
     }
 
-    // Settings → Short Track Info: the explicit icon, the play count, how the track plays (Finamp's icon) and
-    // codec@bitrate as in "OPUS@128", in the order the user set Finamp's chips.
-    @AppStorage("shortChips") private var shortChips = false
+    // Settings → Advanced Track Info (`TrackInfo`): the chips, or with Short Track Info only the explicit icon, the play
+    // count, how the track plays (Finamp's icon) and codec@bitrate as in "OPUS@128", in the order of Finamp's chips.
+    @AppStorage(TrackInfo.showKey) private var showTrackInfo = TrackInfo.showDefault
+    @AppStorage(TrackInfo.shortKey) private var shortChips = TrackInfo.shortDefault
 
     // One rule for every watch and text size, as the controls' gaps: the gaps between chips shrink (`chipGap` to
     // `chipGapMin`) when the line is short of room, and when even that doesn't fit, the line scrolls like the full chips.
@@ -671,35 +689,36 @@ struct QueueView: View {
 
     var body: some View {
         List {
-            // One row with its "Up Next" heading, so the first upcoming track shows below it on screen.
             QueueHeader(onOrderChange: { await load(quiet: false) }, onOpenArtist: onOpenArtist)
                 .clearListRow()
-            switch state {
-            case .loading:
-                SkeletonTrackRows(count: 5)
-            case .failed(let message):
-                RetryView(message: message) { await load(quiet: false) }
-                    .listRowBackground(Color.clear)
-            case .loaded(let tracks):
-                if tracks.isEmpty {
-                    Text("Nothing up next")
-                        .font(.footnote)
-                        .foregroundStyle(Color.fgSecondary)
-                        .frame(maxWidth: .infinity)
+            HeadedSection(title: String(localized: "Up Next")) {
+                switch state {
+                case .loading:
+                    SkeletonTrackRows(count: 5)
+                case .failed(let message):
+                    RetryView(message: message) { await load(quiet: false) }
                         .listRowBackground(Color.clear)
-                } else {
-                    ForEach(Array(tracks.enumerated()), id: \.offset) { _, track in
-                        TrackRow(track: track, onTap: {
-                            Task {
-                                do {
-                                    try await PhoneConnection.shared.skipTo(id: track.id)
-                                } catch {
-                                    PhoneMessage.show(error)
+                case .loaded(let tracks):
+                    if tracks.isEmpty {
+                        Text("Nothing up next")
+                            .font(.footnote)
+                            .foregroundStyle(Color.fgSecondary)
+                            .frame(maxWidth: .infinity)
+                            .listRowBackground(Color.clear)
+                    } else {
+                        ForEach(Array(tracks.enumerated()), id: \.offset) { _, track in
+                            TrackRow(track: track, onTap: {
+                                Task {
+                                    do {
+                                        try await PhoneConnection.shared.skipTo(id: track.id)
+                                    } catch {
+                                        PhoneMessage.show(error)
+                                    }
+                                    dismiss()
                                 }
-                                dismiss()
-                            }
-                        })
-                        .cardRow()
+                            })
+                            .cardRow()
+                        }
                     }
                 }
             }
@@ -739,7 +758,7 @@ private struct QueueHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: QueueLayout.spacing) {
             if nowPlaying.hasTrack {
-                PageTitleRow(title: nowPlaying.title, favorite: nowPlaying.favorite) { store.toggleFavorite() }
+                PageTitleRow(title: nowPlaying.title, favorite: nowPlaying.favorite, heartTrack: nowPlaying.trackItem) { store.toggleFavorite() }
                     .padding(.bottom, QueueLayout.titleBottom)
                 HStack(alignment: .center, spacing: PageHeader.coverToStats) {
                     CoverView(
@@ -748,7 +767,6 @@ private struct QueueHeader: View {
                             name: nowPlaying.title,
                             subtitle: "",
                             artworkKey: nowPlaying.artworkKey,
-                            artworkURL: nowPlaying.artworkURL,
                             blurHash: nowPlaying.blurHash
                         )
                     )
@@ -804,8 +822,7 @@ private struct QueueHeader: View {
                 }
                 .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { rowWidth = $0 }
             }
-            // Three equal columns, aligned at the top so a two-line label doesn't push the others down
-            HStack(alignment: .top, spacing: 0) {
+            ButtonStrip {
                 LabeledIconButton(title: orderTitle, systemImage: orderIcon, tint: orderTint, titleLines: 2) {
                     await change(\.shuffled, to: !nowPlaying.shuffled, action: "togglePlaybackOrder")
                     await onOrderChange()
@@ -824,13 +841,8 @@ private struct QueueHeader: View {
                     await change(\.radio, to: !nowPlaying.radio, action: "toggleRadio")
                 }
             }
-            // The buttons reach out to the card edge, each in an equal share.
-            .widenToCardEdge()
             // Clear of the cover and the text above, like the album page's buttons.
             .padding(.top, PageButtons.queueStripTop)
-            // Its own spacing instead of the heading's, so "Up Next" sits as close to the buttons as the stack's spacing.
-            SectionHeader(title: String(localized: "Up Next"))
-                .padding(.top, -PageHeader.sectionHeaderTop)
         }
     }
 
@@ -896,6 +908,8 @@ struct OutputSheet: View {
     @State private var error: String?
     @State private var pickerMessage: LocalizedStringKey?
     @State private var showPickerMessage = false
+    // The button's icon follows its label's text.
+    @ScaledMetric(relativeTo: .footnote) private var castSize = TextSize.atLarge(.footnote) * OutputLayout.castToText
 
     var body: some View {
         Group {
@@ -917,7 +931,11 @@ struct OutputSheet: View {
             Button {
                 Task { await openPicker() }
             } label: {
-                Label("Choose Output", systemImage: "airplayaudio")
+                Label {
+                    Text("Choose Output")
+                } icon: {
+                    FinampIcon(systemName: "airplayaudio", size: castSize)
+                }
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(ThemeStore.shared.scheme?.onPrimary ?? .white)
                     .frame(maxWidth: .infinity)
@@ -983,7 +1001,7 @@ final class PhoneVolume {
     // A push or context from the phone. Just after the phone accepted a change, a different pushed value is an older
     // one still on its way, so it's skipped.
     func pushed(_ volume: Double) {
-        let older = Date.now.timeIntervalSince(acceptedAt) < VolumeSend.olderPushWindow && abs(volume - (value ?? -1)) > 0.005
+        let older = Date.now.timeIntervalSince(acceptedAt) < ConnectionPolicy.Volume.olderPushWindow && abs(volume - (value ?? -1)) > 0.005
         guard !older else { return }
         value = volume
     }
@@ -1014,10 +1032,7 @@ private struct OutputControls: View {
 
     var body: some View {
         VStack(spacing: isSmallWatch ? 4 : 8) {
-            Image(systemName: routeSymbol)
-                .font(.title2)
-                .fixedIconSize()
-                .foregroundStyle(.finampGradient)
+            StatusIcon(asset: routeIcon, style: .title2)
             Text("Playing on")
                 .font(.caption2)
                 .foregroundStyle(Color.fgSecondary)
@@ -1048,12 +1063,14 @@ private struct OutputControls: View {
         .phoneVolumeCrown(showsBar: false)
     }
 
-    private var routeSymbol: String {
+    // The route types are the names of `audio_session`'s `AVAudioSessionPort` the phone sends.
+    private var routeIcon: String {
         switch routeType {
-        case "airPlay": return "airplayaudio"
-        case "bluetoothA2dp", "bluetoothLE", "bluetoothHfp", "headphones": return "headphones"
-        case "carAudio": return "car.fill"
-        default: return "iphone"
+        case "airPlay": return "tabler-cast"
+        case "bluetoothA2dp", "bluetoothLe", "bluetoothHfp": return "tabler-bluetooth"
+        case "headphones": return "tabler-headphones"
+        case "carAudio": return "tabler-car"
+        default: return "tabler-device-mobile"
         }
     }
 }
@@ -1130,17 +1147,23 @@ struct ProgressLine: View {
     @State private var lastScrub: Double?
     private static let line = PlaybackLayout.progressLine
     private static let dot = PlaybackLayout.progressDot
+    @Environment(\.displayScale) private var displayScale
 
     var body: some View {
         GeometryReader { geometry in
-            let x = geometry.size.width * min(max(fraction, 0), 1)
+            // Whole screen pixels: a dot drawn between pixels is smoothed differently at each position and seemed to
+            // pulse (17x20 to 20x22 px from one second to the next, Ultra 3 simulator).
+            let pixel = { (points: CGFloat) in (points * displayScale).rounded() / displayScale }
+            let line = pixel(Self.line)
+            let dot = pixel(Self.dot)
+            let x = pixel(geometry.size.width * min(max(fraction, 0), 1))
             let at = { (location: CGPoint) in min(max(location.x / max(geometry.size.width, 1), 0), 1) }
             ZStack(alignment: .leading) {
-                Capsule().fill(tint.opacity(0.3)).frame(height: Self.line)
-                Capsule().fill(tint).frame(width: x, height: Self.line)
+                Capsule().fill(tint.opacity(0.3)).frame(height: line)
+                Capsule().fill(tint).frame(width: x, height: line)
                 // Grows while dragging by scaling only, so the bar never shifts
-                Circle().fill(tint).frame(width: Self.dot, height: Self.dot).scaleEffect(dragging ? 1.5 : 1)
-                    .offset(x: x - Self.dot / 2)
+                Circle().fill(tint).frame(width: dot, height: dot).scaleEffect(dragging ? 1.5 : 1)
+                    .offset(x: x - dot / 2)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
             // A taller touch strip than the bar, without making the layout taller (PlaybackLayout.progressTouch…).
@@ -1185,8 +1208,10 @@ struct Marquee<Content: View>: View {
 
     @State private var contentSize: CGSize = .zero
     @State private var containerWidth: CGFloat = 0
-    // Pause scrolling while dimmed.
+    // Still while dimmed, and with Reduce Motion on (Settings → Accessibility): then text that doesn't fit stays at its
+    // start, cut at the edge.
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let gap: CGFloat = 24
     private let speed: CGFloat = 22
@@ -1208,7 +1233,7 @@ struct Marquee<Content: View>: View {
                         .fixedSize()
                         .hidden()
                         .onGeometryChange(for: CGSize.self) { $0.size } action: { contentSize = $0 }
-                    if contentSize.width > containerWidth + 1, scenePhase == .active {
+                    if contentSize.width > containerWidth + 1, scenePhase == .active, !reduceMotion {
                         TimelineView(.animation) { context in
                             let cycle = Double((contentSize.width + gap) / speed) + pause
                             let time = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: cycle)

@@ -4,13 +4,21 @@ struct ArtistView: View {
     let artist: LibraryItem
     let onPlay: () -> Void
 
-    @State private var state: ListState = .loading
-    @State private var hasMore = false
-    // Count received rows, including duplicates, for the next offset.
-    @State private var phoneOffset = 0
-    @State private var isLoadingMore = false
-    private static let pageSize = 50
+    // Finamp's artist screen sections: their albums, and the albums they appear on.
+    @State private var pager: Pager
+    @State private var appearsOn: Pager
     @State private var info: ArtistInfo?
+
+    init(artist: LibraryItem, onPlay: @escaping () -> Void) {
+        self.artist = artist
+        self.onPlay = onPlay
+        _pager = State(initialValue: Pager { offset, limit in
+            try await PhoneConnection.shared.list("artists", parentId: artist.id, offset: offset, limit: limit)
+        })
+        _appearsOn = State(initialValue: Pager { offset, limit in
+            try await PhoneConnection.shared.list("appearsOn", parentId: artist.id, offset: offset, limit: limit)
+        })
+    }
 
     // Playback artist chips do not carry favourite state.
     private var item: LibraryItem {
@@ -24,24 +32,25 @@ struct ArtistView: View {
         List {
             Group {
                 header
-                switch state {
+                switch pager.state {
                 case .loading:
-                    SkeletonCoverRows(count: 3, coverShare: LibraryKind.albums.coverShare)
+                    SkeletonCoverRows(count: 3, coverShare: LibraryKind.albums.coverShare, sectionHeader: true)
                 case .failed(let message):
                     RetryView(message: message) { await load() }
-                case .loaded(let albums) where albums.isEmpty:
-                    Text("No albums")
-                        .font(.footnote)
-                        .foregroundStyle(Color.fgSecondary)
                 case .loaded(let albums):
-                    ForEach(albums) { album in
-                        CollectionLink(item: album, kind: .albums)
-                            .coverListRow()
-                            .onAppear {
-                                if albums.suffix(pagePrefetchRows).contains(where: { $0.id == album.id }) {
-                                    Task { await loadMore() }
-                                }
+                    if albums.isEmpty, case .loaded(let other) = appearsOn.state, other.isEmpty {
+                        Text("No albums")
+                            .font(.footnote)
+                            .foregroundStyle(Color.fgSecondary)
+                    } else {
+                        // In the order of Finamp's artist screen setting; a section with nothing in it isn't shown.
+                        ForEach(info?.sections ?? ["albums", "appearsOn"], id: \.self) { section in
+                            if section == "appearsOn" {
+                                albumSection(String(localized: "Appears On"), appearsOn)
+                            } else {
+                                albumSection(String(localized: "Albums"), pager)
                             }
+                        }
                     }
                 }
             }
@@ -49,7 +58,23 @@ struct ArtistView: View {
         }
         .navigationTitle("")
         .coverList()
-        .task { if case .loading = state { await load() } }
+        .task { if case .loading = pager.state { await load() } }
+    }
+
+    // A section of albums under its heading.
+    @ViewBuilder
+    private func albumSection(_ title: String, _ section: Pager) -> some View {
+        if case .loaded(let albums) = section.state, !albums.isEmpty {
+            HeadedSection(title: title) {
+                ForEach(albums) { album in
+                    CollectionLink(item: album, kind: .albums)
+                        .coverListRow()
+                        .onAppear {
+                            if section.nearsEnd(album.id, in: albums) { Task { await section.loadMore() } }
+                        }
+                }
+            }
+        }
     }
 
     private var header: some View {
@@ -63,63 +88,38 @@ struct ArtistView: View {
                     item: artist, initiallyDownloaded: info?.downloaded ?? false, lock: info?.downloadLock, itemType: "artist"
                 )
             }
-            HStack(alignment: .center, spacing: PageHeader.coverToStats) {
-                // A rounded square here, round in lists. The image and the text share the row in halves.
+            PageCoverRow {
+                // A rounded square here, round in lists.
                 CoverView(item: artist)
-                    .frame(maxWidth: .infinity)
+            } info: {
                 VStack(alignment: .leading, spacing: PageHeader.statSpacing) {
                     // Finamp's artist stats: tracks, then albums.
                     if let info { StatLine(symbol: "music.note", text: FinampFormat.tracks(info.tracks)) }
                     if let albums = albumCount { StatLine(symbol: "opticaldisc", text: FinampFormat.albums(albums)) }
                 }
-                .frame(maxWidth: .infinity)
             }
-            // Three equal columns, aligned at the top so the two-line label doesn't push the others down.
-            HStack(alignment: .top, spacing: 0) {
+            ButtonStrip {
                 LabeledIconButton(title: "Play", systemImage: "play") { await play() }
                 LabeledIconButton(title: "Shuffle", systemImage: "shuffle") { await play(shuffle: true) }
                 LabeledIconButton(title: "Shuffle\nAlbums", systemImage: "shuffle", titleLines: 2) {
                     await play(albumShuffle: true)
                 }
             }
-            // The buttons reach out to the card edge, each in an equal share.
-            .sameLabelSize()
-            .widenToCardEdge()
-            SectionHeader(title: String(localized: "Albums"))
         }
     }
 
     // Use the phone total, or the loaded count after the last page.
     private var albumCount: Int? {
         if let info { return info.albums }
-        if case .loaded(let albums) = state, !hasMore { return albums.count }
+        if case .loaded(let albums) = pager.state, !pager.hasMore { return albums.count }
         return nil
     }
 
     private func load() async {
-        state = .loading
-        do {
-            let first = try await PhoneConnection.shared.list("artists", parentId: artist.id, limit: Self.pageSize)
-            hasMore = !first.isEmpty
-            phoneOffset = first.count
-            state = .loaded(first)
-        } catch {
-            state = .failed(error.localizedDescription)
-        }
+        async let albums: Void = pager.load()
+        async let others: Void = appearsOn.load()
+        _ = await (albums, others)
         info = try? await PhoneConnection.shared.artistInfo(artist.id)
-    }
-
-    private func loadMore() async {
-        guard hasMore, !isLoadingMore, case .loaded(let current) = state else { return }
-        isLoadingMore = true
-        defer { isLoadingMore = false }
-        guard let page = try? await PhoneConnection.shared.list(
-            "artists", parentId: artist.id, offset: phoneOffset, limit: Self.pageSize
-        ) else { return }
-        let known = Set(current.map(\.id))
-        state = .loaded(current + page.filter { !known.contains($0.id) })
-        phoneOffset += page.count
-        hasMore = !page.isEmpty
     }
 
     private func play(shuffle: Bool = false, albumShuffle: Bool = false) async {
@@ -132,7 +132,7 @@ struct ArtistView: View {
             )
             onPlay()
         } catch {
-            state = .failed(error.localizedDescription)
+            pager.fail(error.localizedDescription)
         }
     }
 }

@@ -4,7 +4,8 @@ struct SettingsView: View {
     @Bindable private var theme = ThemeStore.shared
     private var phone = PhoneSettings.shared
     @State private var reload: ReloadQuestion?
-    @AppStorage("shortChips") private var shortChips = false
+    @AppStorage(TrackInfo.showKey) private var showTrackInfo = TrackInfo.showDefault
+    @AppStorage(TrackInfo.shortKey) private var shortTrackInfo = TrackInfo.shortDefault
 
     var body: some View {
         NavigationStack {
@@ -22,11 +23,22 @@ struct SettingsView: View {
                         .foregroundStyle(Color.fgSecondary)
                 }
                 Section {
-                    Toggle("Short Track Info", isOn: $shortChips)
+                    Toggle("Advanced Track Info", isOn: $showTrackInfo.animation())
                         .cardRow()
+                    if showTrackInfo {
+                        Toggle("Short Track Info", isOn: $shortTrackInfo)
+                            .subOption()
+                            .cardRow()
+                    }
                 } footer: {
-                    Text("Shows only how the track plays on Playback: streamed, downloaded or transcoded, with its format and bitrate. Off shows every chip you chose in Finamp.")
-                        .foregroundStyle(Color.fgSecondary)
+                    Group {
+                        if showTrackInfo {
+                            Text("The chips you chose in Finamp, under the artist on Playback. Short shows only how the track plays: streamed, downloaded or transcoded, with its format and bitrate.")
+                        } else {
+                            Text("The chips you chose in Finamp, under the artist on Playback.")
+                        }
+                    }
+                    .foregroundStyle(Color.fgSecondary)
                 }
                 Section {
                     Toggle("Accent Colors (Experimental)", isOn: $theme.accentColors)
@@ -94,10 +106,21 @@ struct SettingsView: View {
     }
 }
 
+// The watch's own Playback settings (Settings → Advanced Track Info), read by Settings and Playback.
+enum TrackInfo {
+    static let showKey = "showChips"
+    static let showDefault = true
+    static let shortKey = "shortChips"
+    static let shortDefault = false
+}
+
 // nil until fetched or pushed by the phone.
 @Observable
 final class PhoneSettings {
     static let shared = PhoneSettings()
     var transcoding: Bool?
     var offline: Bool?
+    // Finamp's "prefer adding to favourites over playlists": a track's heart likes on a tap and opens the playlist menu
+    // on a long press; off (Finamp's default), the other way round.
+    var preferFavorites = false
 }

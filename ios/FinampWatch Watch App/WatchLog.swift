@@ -25,6 +25,8 @@ final class WatchLog: @unchecked Sendable {
     private var lines: [String] = []
     private var unsent: [[String: Any]] = []
     private var timer: DispatchSourceTimer?
+    // New lines since the last write: the minute timer touches the file and the phone only when there are some.
+    private var pending = false
     private let file = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         .appendingPathComponent("watch-log.txt")
 
@@ -54,6 +56,7 @@ final class WatchLog: @unchecked Sendable {
             if lines.count > Self.fileLines { lines.removeFirst(lines.count - Self.fileLines) }
             unsent.append(["t": time.timeIntervalSince1970, "l": level.rawValue, "m": message])
             if unsent.count > Self.unsentLimit { unsent.removeFirst(unsent.count - Self.unsentLimit) }
+            pending = true
             if unsent.count >= Self.batchSize { send() }
         }
     }
@@ -65,6 +68,8 @@ final class WatchLog: @unchecked Sendable {
 
     // On `queue`. WatchConnectivity queues user info and delivers it whenever the phone can take it, even after a drop.
     private func send() {
+        guard pending else { return }
+        pending = false
         try? lines.joined(separator: "\n").write(to: file, atomically: true, encoding: .utf8)
         let session = WCSession.default
         guard !unsent.isEmpty, session.activationState == .activated else { return }

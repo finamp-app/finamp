@@ -39,8 +39,8 @@ final class PhoneMessage {
     static let shared = PhoneMessage()
     var text: String?
 
-    // A failed action's message. A connection failure shows only the warning under the clock, no message (yalit,
-    // 19 Nov: "instead of that message just change to the warning sign"); errors the phone answered still show.
+    // A failed action's message. A connection failure shows only the warning under the clock, never a message; errors
+    // the phone answered still show.
     static func show(_ error: Error) {
         guard !(error is CancellationError), !PhoneConnection.isConnectionFailure(error) else { return }
         shared.text = error.localizedDescription
@@ -48,8 +48,9 @@ final class PhoneMessage {
 }
 
 // The small status under the clock (`phoneActivityIndicator`): waiting while a request you made has gone
-// `ActivityStatus.showAfter` without an answer; failed when one couldn't reach the phone (not when the phone answered
-// with an error of its own). A failure shows for `ActivityStatus.failedFor`, or until the phone answers anything.
+// `ConnectionPolicy.Status.showAfter` without an answer; failed when one couldn't reach the phone (not when the phone
+// answered with an error of its own). A failure shows for `ConnectionPolicy.Status.failedFor`, or until the phone
+// answers anything.
 @Observable
 final class PhoneActivity {
     static let shared = PhoneActivity()
@@ -73,7 +74,7 @@ final class PhoneActivity {
         let token = next
         running.insert(token)
         Task {
-            try? await Task.sleep(for: ActivityStatus.showAfter)
+            try? await Task.sleep(for: ConnectionPolicy.Status.showAfter)
             guard running.contains(token) else { return }
             slow.insert(token)
             update()
@@ -94,7 +95,7 @@ final class PhoneActivity {
         case .answered:
             failedUntil = nil
         case .connectionFailed:
-            let until = ContinuousClock.now + ActivityStatus.failedFor
+            let until = ContinuousClock.now + ConnectionPolicy.Status.failedFor
             failedUntil = until
             Task {
                 try? await Task.sleep(until: until, clock: .continuous)

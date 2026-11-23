@@ -4,6 +4,12 @@
     "" : {
       "shouldTranslate" : false
     },
+    "%lld Albums" : {
+
+    },
+    "%lld Tracks" : {
+
+    },
     "%lld albums" : {
 
     },
@@ -13,7 +19,10 @@
     "%lld percent" : {
 
     },
-    "%lld tracks" : {
+    "1 Album" : {
+
+    },
+    "1 Track" : {
 
     },
     "1 album" : {
@@ -22,13 +31,19 @@
     "1 artist" : {
 
     },
-    "1 track" : {
-
-    },
     "Accent Colors (Experimental)" : {
 
     },
     "Add Favorite" : {
+
+    },
+    "Add items to a playlist" : {
+
+    },
+    "Add to playlist" : {
+
+    },
+    "Advanced Track Info" : {
 
     },
     "AirPlay sets the volume on the receiving device" : {
@@ -40,16 +55,13 @@
     "Already downloaded on your iPhone" : {
 
     },
+    "Appears On" : {
+
+    },
     "Artist %@" : {
 
     },
     "Artists" : {
-
-    },
-    "Back" : {
-
-    },
-    "Bitrate" : {
 
     },
     "Can't reach your Jellyfin server" : {
@@ -67,10 +79,13 @@
     "Choose the output on your iPhone" : {
 
     },
-    "Close" : {
+    "Connect to Jellyfin" : {
 
     },
-    "Connect to Jellyfin" : {
+    "Couldn't reach your iPhone" : {
+
+    },
+    "Delete from Device" : {
 
     },
     "Direct Playing" : {
@@ -89,9 +104,6 @@
 
     },
     "Downloaded as part of another download" : {
-
-    },
-    "Downloaded on iPhone" : {
 
     },
     "Downloaded on your iPhone" : {
@@ -130,9 +142,6 @@
     "In\nOrder" : {
 
     },
-    "Like" : {
-
-    },
     "Local" : {
 
     },
@@ -154,7 +163,7 @@
     "No\nLoop" : {
 
     },
-    "No\nRadio" : {
+    "No Release Date" : {
 
     },
     "No albums" : {
@@ -176,6 +185,9 @@
 
     },
     "Not available while radio is on" : {
+
+    },
+    "Not sent: your iPhone wasn't in reach in time" : {
 
     },
     "Nothing downloaded on your iPhone" : {
@@ -214,10 +226,16 @@
     "Pause" : {
 
     },
+    "Performing Artists" : {
+
+    },
     "Pick something on the other pages" : {
 
     },
     "Play" : {
+
+    },
+    "Playing" : {
 
     },
     "Playing on" : {
@@ -235,7 +253,10 @@
     "Queue" : {
 
     },
-    "Radio" : {
+    "Radio\nOff" : {
+
+    },
+    "Radio\nOn" : {
 
     },
     "Recently Played" : {
@@ -256,9 +277,6 @@
     "Short Track Info" : {
 
     },
-    "Shows only how the track plays on Playback: streamed, downloaded or transcoded, with its format and bitrate. Off shows every chip you chose in Finamp." : {
-
-    },
     "Shuffle" : {
 
     },
@@ -269,6 +287,12 @@
 
     },
     "Shuffled" : {
+
+    },
+    "The chips you chose in Finamp, under the artist on Playback." : {
+
+    },
+    "The chips you chose in Finamp, under the artist on Playback. Short shows only how the track plays: streamed, downloaded or transcoded, with its format and bitrate." : {
 
     },
     "This is Finamp's setting on your iPhone: changing it here changes it there. Playback follows Finamp's transcoding settings (bitrate and format)." : {
@@ -299,6 +323,21 @@
 
     },
     "Uses your accent color from Finamp, with matching backgrounds. Turn it off for the original look." : {
+
+    },
+    "Waiting for your iPhone" : {
+
+    },
+    "You are about to delete this album from this device." : {
+
+    },
+    "You are about to delete this artist from this device." : {
+
+    },
+    "You are about to delete this item from this device." : {
+
+    },
+    "You are about to delete this playlist from this device." : {
 
     },
     "Your iPhone didn't answer" : {

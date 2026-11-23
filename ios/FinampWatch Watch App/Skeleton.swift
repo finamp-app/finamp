@@ -50,7 +50,8 @@ extension LibraryItem {
     }
 }
 
-private extension View {
+extension View {
+    // A placeholder: the real view, redacted and pulsing, not tappable.
     func placeholderRow() -> some View {
         redacted(reason: .placeholder)
             .allowsHitTesting(false)
@@ -59,7 +60,7 @@ private extension View {
 }
 
 // Cover rows (Albums, Artists, Playlists, Downloads, the artist page, favourite albums and artists). `sectionHeader`
-// puts a heading in the first row, as Downloads does.
+// puts them under a heading, as Downloads does.
 struct SkeletonCoverRows: View {
     var count = 5
     var coverShare: CGFloat
@@ -67,15 +68,18 @@ struct SkeletonCoverRows: View {
     var sectionHeader = false
 
     var body: some View {
+        if sectionHeader {
+            HeadedSection(title: "Placeholder", placeholder: true) { rows }
+        } else {
+            rows
+        }
+    }
+
+    private var rows: some View {
         ForEach(0..<count, id: \.self) { index in
-            VStack(alignment: .leading, spacing: CoverRows.headingToRow) {
-                if sectionHeader && index == 0 {
-                    SectionHeader(title: "Placeholder")
-                }
-                CoverRow(item: .placeholder(index), coverShare: coverShare, circular: circular)
-            }
-            .placeholderRow()
-            .coverListRow()
+            CoverRow(item: .placeholder(index), coverShare: coverShare, circular: circular)
+                .placeholderRow()
+                .coverListRow()
         }
     }
 }
@@ -101,14 +105,12 @@ struct SkeletonHomeCards: View {
     var count = 3
 
     var body: some View {
-        SectionHeader(title: "Placeholder")
-            .placeholderRow()
-            .keepsWatchOSRowHeight()
-            .clearListRow()
-        ForEach(0..<count, id: \.self) { index in
-            HomeCard(item: .placeholder(index))
-                .placeholderRow()
-                .clearListRow()
+        HeadedSection(title: "Placeholder", placeholder: true) {
+            ForEach(0..<count, id: \.self) { index in
+                HomeCard(item: .placeholder(index))
+                    .placeholderRow()
+                    .clearListRow()
+            }
         }
     }
 }

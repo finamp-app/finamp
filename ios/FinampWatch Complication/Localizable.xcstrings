@@ -1,0 +1,12 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Finamp" : {
+      "shouldTranslate" : false
+    },
+    "Opens Finamp." : {
+
+    }
+  },
+  "version" : "1.0"
+}

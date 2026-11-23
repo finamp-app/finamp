@@ -23,6 +23,7 @@ extension AppDelegate {
                  "account" where call.arguments is String,
                  "transcoding" where call.arguments is Bool,
                  "offline" where call.arguments is Bool,
+                 "preferFavorites" where call.arguments is Bool,
                  "volume" where call.arguments is Double,
                  "airPlay" where call.arguments is Bool,
                  "favoriteStates" where call.arguments is [String: Any],
@@ -229,19 +230,6 @@ private final class OutputPicker: NSObject, AVRoutePickerViewDelegate {
 // Budget below WatchConnectivity's ~64 KB reply limit.
 private let artworksReplyBudget = 48 * 1024
 
-// Flutter rawRgba uses premultiplied alpha.
-private func imageFromRGBA(_ pixels: Data, width: Int, height: Int) -> UIImage? {
-    guard width > 0, height > 0, pixels.count >= width * height * 4,
-          let provider = CGDataProvider(data: pixels as CFData),
-          let cgImage = CGImage(
-              width: width, height: height, bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: width * 4,
-              space: CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB(),
-              bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
-              provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent
-          ) else { return nil }
-    return UIImage(cgImage: cgImage)
-}
-
 // Return JPEGs and missing keys as <id>-<size>; omit budget-deferred keys for retry.
 private func artworksReply(_ result: Any?, request: Any?) -> [String: Any] {
     let requested = ((request as? [String: Any])?["items"] as? [[String: Any]]) ?? []
@@ -253,15 +241,15 @@ private func artworksReply(_ result: Any?, request: Any?) -> [String: Any] {
     for (item, entry) in zip(requested, results) {
         guard let id = item["id"] as? String, let size = item["size"] as? Int else { continue }
         let key = "\(id)-\(size)"
-        // Reject out-of-range sizes; Dart clamps its decode size instead.
+        // Reject out-of-range sizes; Dart clamps the size it asks the server for.
         guard (16...1200).contains(size) else {
             missing.append(key)
             continue
         }
-        // Downloaded covers arrive encoded; others as raw pixels.
-        let width = entry["width"] as? Int ?? 0
-        let data = (entry["data"] as? FlutterStandardTypedData)?.data
-        let image = data.flatMap { width > 0 ? imageFromRGBA($0, width: width, height: entry["height"] as? Int ?? 0) : UIImage(data: $0) }
+        // Not ready yet: left out of both, so the watch asks again.
+        if entry["later"] as? Bool == true { continue }
+        // Covers arrive as their files (JPEG/PNG), any size; scaled here, outside Flutter.
+        let image = ((entry["data"] as? FlutterStandardTypedData)?.data).flatMap { UIImage(data: $0) }
         guard let image, let jpeg = resizedJPEG(image, maxSide: CGFloat(size)) else {
             missing.append(key)
             continue

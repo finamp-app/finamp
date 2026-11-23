@@ -92,19 +92,18 @@ struct HomePage: View {
                                 HomeCard(item: item, circular: item.kind == "artists")
                             }
                         }
-                        SectionHeader(title: String(localized: "Favorites"))
-                            .keepsWatchOSRowHeight()
-                            .clearListRowReportingEdge()
-                        ForEach(Self.favoriteCards, id: \.title) { card in
-                            NavigationLink(value: card.destination) {
-                                HomeCard(
-                                    item: LibraryItem(id: card.destination.screenKey, name: card.title, subtitle: "", artworkKey: ""),
-                                    circular: card.kind == .artists,
-                                    favoritesSymbol: card.kind.placeholderSymbol
-                                )
+                        HeadedSection(title: String(localized: "Favorites")) {
+                            ForEach(Self.favoriteCards, id: \.title) { card in
+                                NavigationLink(value: card.destination) {
+                                    HomeCard(
+                                        item: LibraryItem(id: card.destination.screenKey, name: card.title, subtitle: "", artworkKey: ""),
+                                        circular: card.kind == .artists,
+                                        favorites: true
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                                .clearListRowReportingEdge()
                             }
-                            .buttonStyle(.plain)
-                            .clearListRow()
                         }
                         HomeSection(title: String(localized: "Newly Added Albums"), items: sections.newAlbums) { album in
                             NavigationLink(value: LibraryDestination.tracks(album, type: "albums")) {
@@ -181,9 +180,16 @@ struct QuickActionButton: View {
     let action: QuickAction
     let run: () async -> Void
 
-    // "Surprise Me" on two lines like the other tiles' titles; the words come from Finamp in the phone's language.
+    // Every title on two lines, split at the space nearest its middle ("Shuffle\nTracks"); the words come from Finamp in
+    // the phone's language.
     private var displayTitle: String {
-        action.action == "surpriseMe" ? action.title.replacingOccurrences(of: " ", with: "\n") : action.title
+        let title = action.title
+        let middle = title.count / 2
+        let spaces = title.indices.filter { title[$0] == " " }
+        guard let split = spaces.min(by: {
+            abs(title.distance(from: title.startIndex, to: $0) - middle) < abs(title.distance(from: title.startIndex, to: $1) - middle)
+        }) else { return title }
+        return title.replacingCharacters(in: split...split, with: "\n")
     }
 
     var body: some View {
@@ -219,52 +225,57 @@ struct HomeSection<Card: View>: View {
 
     var body: some View {
         if !items.isEmpty {
-            SectionHeader(title: title)
-                .keepsWatchOSRowHeight()
-                .clearListRowReportingEdge()
-            ForEach(items) { item in
-                card(item).buttonStyle(.plain).clearListRow()
+            HeadedSection(title: title) {
+                ForEach(items) { item in
+                    card(item).buttonStyle(.plain).clearListRowReportingEdge()
+                }
             }
         }
     }
 }
 
-// Left, in line with the covers and rows below it (Finamp's section headings are left-aligned).
-struct SectionHeader: View {
-    let title: String
-    var alignment: Alignment = .leading
-
-    var body: some View {
-        Text(title.uppercased())
-            .font(.caption2)
-            .fontWeight(.semibold)
-            .foregroundStyle(Color.fgSecondary)
-            .frame(maxWidth: .infinity, alignment: alignment)
-            .padding(.top, PageHeader.sectionHeaderTop)
-    }
-}
-
-// A Home or search card: a cover (or the Favorites logo) and the name, on the card background (`Cards`).
+// A Home, search or playlist-menu card: a cover (or the Favorites logo) and the name, on the card background (`Cards`);
+// in the playlist menu also a line under the name (the track count, as Finamp's) and a state icon at the end.
 struct HomeCard: View {
     let item: LibraryItem
     var circular = false
-    // Set for a Favorites card: its logo tile instead of a cover.
-    var favoritesSymbol: String? = nil
+    // A Favorites card: the Favorites cover instead of the item's, in `favoritesTint` (the accent if nil).
+    var favorites = false
+    var favoritesTint: Color? = nil
+    var detail: String? = nil
+    // An icon at the end of the card, following the name's text (`PageHeader.heartSize` at Large).
+    var stateIcon: String? = nil
+    @ScaledMetric(relativeTo: .headline) private var stateIconSize = PageHeader.heartSize
 
     var body: some View {
         HStack(spacing: Cards.homeCoverToTitle) {
             Group {
-                if let favoritesSymbol {
-                    FavoritesLogo(symbol: favoritesSymbol, circular: circular)
+                if favorites {
+                    FavoritesLogo(circular: circular, tint: favoritesTint ?? .finampBlue)
                 } else {
                     CoverView(item: item, circular: circular)
                 }
             }
             .containerRelativeFrame(.horizontal) { width, _ in width * Cards.homeCoverShare }
-            Text(item.name)
-                .font(.headline.weight(Cards.homeTitleWeight))
-                .lineLimit(2)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(item.name)
+                    .font(.headline.weight(Cards.homeTitleWeight))
+                    .lineLimit(2)
+                if let detail {
+                    // As the cover rows' subtitle.
+                    Text(detail)
+                        .font(.footnote)
+                        .foregroundStyle(Color.fgSecondary)
+                        .lineLimit(1)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            if let stateIcon {
+                Image(stateIcon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: stateIconSize, height: stateIconSize)
+            }
         }
         .homeCardBackground()
     }
@@ -290,6 +301,11 @@ struct SearchResultsView: View {
                     List {
                         Group {
                             HomeSection(title: String(localized: "Artists"), items: results.artists) { artist in
+                                NavigationLink(value: LibraryDestination.artistAlbums(artist)) {
+                                    HomeCard(item: artist, circular: true)
+                                }
+                            }
+                            HomeSection(title: String(localized: "Performing Artists"), items: results.performingArtists) { artist in
                                 NavigationLink(value: LibraryDestination.artistAlbums(artist)) {
                                     HomeCard(item: artist, circular: true)
                                 }
@@ -324,7 +340,8 @@ struct SearchResultsView: View {
                     .cardList()
             }
         }
-        .navigationTitle(query)
+        // The query in quotes, as in "No results for “…”".
+        .navigationTitle(Text(verbatim: "“\(query)”"))
         .task { if results == nil { await load() } }
     }
 
@@ -348,35 +365,28 @@ struct SearchResultsView: View {
     }
 }
 
+// The Favorites cover, as Finamp's (its playlist menu's Favorites tile): Tabler's heart in white on `tint`, the accent
+// by default and the track's cover colour in the playlist menu, as Finamp themes it (`FavoritesCover`); round for
+// Favorite Artists.
 struct FavoritesLogo: View {
-    let symbol: String
     var circular = false
+    var tint: Color = .finampBlue
 
     var body: some View {
         Rectangle()
-            .fill(.finampGradient)
+            .fill(tint.opacity(FavoritesCover.fillOpacity))
             .aspectRatio(1, contentMode: .fit)
             .overlay {
                 GeometryReader { geometry in
-                    Image(systemName: symbol)
-                        .font(.system(size: geometry.size.width * 0.4))
+                    Image("tabler-heart")
+                        .resizable()
+                        .scaledToFit()
                         .foregroundStyle(.white)
+                        .frame(width: geometry.size.width * FavoritesCover.iconShare)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 8)))
-            .overlay(alignment: .bottomTrailing) {
-                GeometryReader { geometry in
-                    let side = geometry.size.width * 0.34
-                    Image(systemName: "heart.fill")
-                        .font(.system(size: side * 0.55, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: side, height: side)
-                        .background(Color.finampPurple, in: Circle())
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                        .offset(x: side * 0.15, y: side * 0.15)
-                }
-            }
+            .clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: FavoritesCover.cornerRadius)))
             .accessibilityHidden(true)
     }
 }

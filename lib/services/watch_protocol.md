@@ -1,8 +1,8 @@
 # Apple Watch ↔ phone protocol
 
-The watch app (`ios/FinampWatch Watch App/`, SwiftUI) holds no Jellyfin token and runs none of Finamp's code. Everything
-it shows or does goes through the requests and pushes below. On the phone, `WatchBridge.swift` relays them over the
-`com.unicornsonlsd.finamp-ios/watch` method channel to `WatchHandler` (`watch_helper.dart`), which answers with
+The watch app (`ios/FinampWatch Watch App/`, SwiftUI) holds no Jellyfin token, never connects to the internet itself
+and runs none of Finamp's code. Everything it shows or does, covers included, goes through the requests and pushes
+below. On the phone, `WatchBridge.swift` relays them over the `com.unicornsonlsd.finamp-ios/watch` method channel to `WatchHandler` (`watch_helper.dart`), which answers with
 Finamp's own providers and services.
 
 **Changing a request or push:** update the watch (`PhoneConnection.swift`), the phone (`watch_helper.dart`) and this
@@ -14,15 +14,18 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 
 | Request | Args | Result |
 |---|---|---|
-| `list` | `type`, `parentId?`, `offset`, `limit` | rows, paged; a page can end early (≤ 40 KB), only an empty page means the end. `type`: `artists`, `albums`, `playlists`, `tracks`, `favorites`, `favoriteAlbums`, `favoriteArtists`, `downloads`; with `parentId`: a collection's tracks or an artist's albums |
+| `list` | `type`, `parentId?`, `offset`, `limit` | rows, paged; a page can end early (≤ 40 KB), only an empty page means the end. `type`: `artists`, `albums`, `playlists`, `tracks`, `favorites`, `favoriteAlbums`, `favoriteArtists`, `downloads`; with `parentId`: a collection's tracks, or an artist's albums as Finamp's artist screen lists them (`artists`: where they're the album artist; `appearsOn`: albums they perform on, without those) |
 | `home` | — | `{recent, newAlbums, actions}` |
-| `search` | `query` | `{artists, albums, playlists, tracks}`, 5 each |
+| `search` | `query` | `{artists, performingArtists, albums, playlists, tracks}`, 5 each; `artists` are album artists, `performingArtists` the artists credited only on tracks; `tracks` those whose name matches, then the found artists' tracks as Finamp plays an artist (`getArtistTracksProvider`); `play` with `search` plays the same list |
 | `play` | `type`, `parentId?`, `startId?`, `shuffle`; `artist` + `albumShuffle`; `tracks` and `favorites` + `index`, `startId`; `search` + `query` | `true` |
-| `artistInfo` | `id` | `{tracks, albums, favorite, downloaded, downloadLock?}` |
+| `artistInfo` | `id` | `{tracks, albums, favorite, downloaded, downloadLock?, sections}`; `albums` counts the album-artist albums, `sections` is the order of the artist page's album sections (`albums`, `appearsOn`) from Finamp's setting |
+| `favoritesCount` | — | how many favourite tracks there are (int): Jellyfin's total, or the downloaded favourites offline |
 | `item` | `id` | one row, as in `list` (e.g. the playing track's album, before Playback opens it) |
 | `downloadState` | `id` | `{downloaded, downloadLock?}` |
 | `deleteDownload` | `id` | `{status: deleted \| notDownloaded, message?}`; the watch asks first, as Finamp's delete button does |
 | `download` | `id`, `transcode?`, `locationId?`, `confirmed?` | `{status: downloading \| alreadyDownloaded}` or `{ask: transcode \| location \| confirm, …}` |
+| `playlistMenu` | `id` | Finamp's playlist menu for a track: `{favorite, color, playlists}`, `color` the track's cover colour Finamp themes the menu with (ARGB, made readable on black), `playlists` as rows sorted by name with `included` (true only for the playlist the track is playing from, which comes first; Finamp doesn't look the others up); an error while offline |
+| `playlistToggle` | `id`, `playlistId`, `add` | whether the playlist now holds the track, added or removed with Finamp's own functions; an error while offline |
 | `favorite` | `id`, `favorite` | Finamp's state right away (bool; the server's answer follows in `favoriteStates`), or an error while offline |
 | `control` | `action`: `playPause`, `next`, `previous`, `toggleLoop`, `togglePlaybackOrder`, `toggleRadio`, or `skipTo` + `id` | `true` |
 | `nowPlaying` | — | the now-playing dict (below) |
@@ -36,16 +39,16 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 | `setSetting` | `name` (`transcoding` \| `offline`), `enabled` | `true`, or `{reload, reloadButton, archive}` when Finamp asks to reload the queue |
 | `reloadQueue` | `archive` | `true` |
 | `showOutputPicker` | — | `"shown"` or `"pending"` (answered by `WatchBridge`, not Flutter) |
-| `artworks` | `items: [{id, size}]` | `{artworks: {"<id>-<size>": JPEG}, missing}` (`WatchBridge` encodes the JPEGs) |
+| `artworks` | `items: [{id, size}]` | `{artworks: {"<id>-<size>": JPEG}, missing}` (`WatchBridge` scales the phone's cover file to a JPEG; a key in neither is left for the watch to ask again) |
 
-**Row:** `{id, name, subtitle, artistId, artworkKey, artworkUrl, blurHash, artistArtworkUrl, duration, year,
+**Row:** `{id, name, subtitle, artistId, artworkKey, blurHash, duration, year,
 releaseDate, trackCount, favorite, downloaded, downloadLock?, kind, artists?}`.
 
-**Now playing:** `{hasTrack, id, title, artist, artworkKey, artworkUrl, blurHash, albumId, album, albumArtist,
+**Now playing:** `{hasTrack, id, title, artist, artworkKey, blurHash, albumId, album, albumArtist,
 albumArtistId, artists, features, duration, position, updatedAt, speed, playing, advancing, loop, shuffled, radio, radioAvailable,
 favorite, upNext, coverColor, shortFeatures}`; `features` holds the player's feature chips as Finamp's player shows them
 (the user's chip settings, in their order; `E` for explicit, empty with chips turned off); `upNext`
-holds the next two tracks' `{id, artworkKey, artworkUrl}` so the watch can load their covers ahead. The watch counts
+holds the next two tracks' `{id, artworkKey}` so the watch can load their covers ahead. The watch counts
 `position` on from `updatedAt` only while `advancing` (playing and not loading or buffering), so its time stops with
 the phone's when a track can't load; `playing` still sets the play/pause button. `loop` (`none` \| `one` \| `all`),
 `shuffled`, `radio` and `radioAvailable` (radio is on and can run for this queue) drive the queue's buttons; the
@@ -66,6 +69,7 @@ Sent live while the watch app is reachable; the application context always holds
 | `account` | `user-id@server-id`, or empty when logged out |
 | `transcoding` | Finamp's transcoding setting |
 | `offline` | Finamp's Offline Mode |
+| `preferFavorites` | Finamp's "prefer adding to favourites over playlists": the heart's tap likes and its long press opens the playlist menu, or (off, Finamp's default) the other way round |
 | `volume` | Finamp's own volume, 0…1 |
 | `airPlay` | whether playback goes to AirPlay |
 | `outputRoute` | `{route, routeType}`, as in `output`, on every audio route change (the Output sheet follows it) |

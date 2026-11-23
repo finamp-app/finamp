@@ -1,6 +1,7 @@
 import SwiftUI
 
-// A page button: an icon over its label, in an equal share of a button strip (`PageButtons`).
+// A page button in a `ButtonStrip`: an icon over its label, centred in its part of the strip; the whole part is its
+// tap area. The strip decides the label's size (`ButtonStrip`); the button only reports its full-size label width.
 struct LabeledIconButton: View {
     let title: LocalizedStringKey
     let systemImage: String
@@ -9,22 +10,12 @@ struct LabeledIconButton: View {
     var titleLines = 1
     let action: () async -> Void
 
-    // Inside a `sameLabelSize()` strip: the size every label in it shares.
     @Environment(\.stripLabelScale) private var stripScale
-    @Environment(\.fontResolutionContext) private var fontContext
-    @State private var naturalWidth: CGFloat = 0
-    @State private var width: CGFloat = 0
-
-    // How far this label must shrink to keep `PageButtons.labelGap` to its neighbours (1 = full size).
-    private var neededScale: CGFloat {
-        guard stripScale != nil, naturalWidth > 0, width > 0 else { return 1 }
-        return min(1, (width - PageButtons.labelGap) / naturalWidth)
-    }
-
-    private var labelFont: Font {
-        guard let stripScale, stripScale < 1 else { return .caption2 }
-        return .system(size: TextSize.current(.caption2, in: fontContext) * stripScale)
-    }
+    // The small text on Apple's curve at the current Text Size; the label size follows it (`PageButtons.labelSize`).
+    @ScaledMetric(relativeTo: .caption2) private var appleScaled = SmallText.atLarge
+    private var labelSize: CGFloat { PageButtons.labelSize(appleScaled: appleScaled) }
+    // The label's full-size width, from a hidden copy the shrink never changes.
+    @State private var labelWidth: CGFloat = 0
 
     var body: some View {
         Button {
@@ -36,26 +27,21 @@ struct LabeledIconButton: View {
                     .fixedIconSize()
                     .foregroundStyle(tint)
                 Text(title)
-                    .font(labelFont)
+                    .font(.system(size: labelSize * stripScale))
                     .foregroundStyle(Color.fgPrimary)
                     .multilineTextAlignment(.center)
                     .lineLimit(titleLines)
-                    .minimumScaleFactor(PageButtons.minimumLabelScale)
-                    .padding(.horizontal, PageButtons.labelGap / 2)
             }
             .frame(maxWidth: .infinity)
             .background {
-                // The label's full-size width, from a hidden copy the shared size never changes (StripLabelScaleKey)
-                if stripScale != nil {
-                    Text(title)
-                        .font(.caption2)
-                        .fixedSize()
-                        .hidden()
-                        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { naturalWidth = $0 }
-                }
+                Text(title)
+                    .font(.system(size: labelSize))
+                    .lineLimit(titleLines)
+                    .fixedSize()
+                    .hidden()
+                    .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { labelWidth = $0 }
             }
-            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
-            .preference(key: StripLabelScaleKey.self, value: neededScale)
+            .preference(key: StripLabelsKey.self, value: StripLabels(widest: labelWidth, count: 1))
             .padding(.vertical, PageButtons.verticalPadding)
             .contentShape(Rectangle())
         }
@@ -87,7 +73,9 @@ struct RetryView: View {
 
     var body: some View {
         if inList {
+            // A list row aligns its content to the leading edge; the full width centres it as on every other page.
             content
+                .frame(maxWidth: .infinity)
         } else {
             // On a short screen the page doesn't fit under the title: it scrolls rather than cutting its text, and is
             // centred when it fits. The text sits on watchOS's margin, in line with the top buttons.
@@ -103,10 +91,7 @@ struct RetryView: View {
 
     private var content: some View {
         VStack(spacing: 8) {
-            Image(systemName: isServer ? "wifi.slash" : "iphone.slash")
-                .font(.title2)
-                .fixedIconSize()
-                .foregroundStyle(.finampGradient)
+            StatusIcon(asset: isServer ? "tabler-cloud-off" : "tabler-device-mobile-off", style: .title2)
             Text(message)
                 .font(.footnote)
                 .multilineTextAlignment(.center)
@@ -137,29 +122,53 @@ struct PageTitleRow<Trailing: View>: View {
     let title: String
     // nil hides the heart.
     var favorite: Bool?
+    // Set when the title is a track's (the queue): its heart works as every track heart (`trackHeart`).
+    var heartTrack: LibraryItem? = nil
     var onFavorite: () -> Void = {}
     @ViewBuilder var trailing: Trailing
     // Follows the title's text.
     @ScaledMetric(relativeTo: .headline) private var heartSize = PageHeader.heartSize
+    @Environment(\.fontResolutionContext) private var fontContext
+    // The width the row leaves the title.
+    @State private var titleWidth: CGFloat = 0
+
+    // SwiftUI splits a word wider than its line with a hyphen ("Gradua-tion" on 40 mm); then the title shrinks just
+    // enough for its longest word to fit, and wraps between words as before.
+    private var titleFont: Font {
+        let normal = Font.headline.weight(.bold)
+        guard titleWidth > 0 else { return normal }
+        let size = TextSize.current(.headline, in: fontContext)
+        let measuring = UIFont.systemFont(ofSize: size, weight: .bold)
+        let widest = title.split(whereSeparator: \.isWhitespace)
+            .map { (String($0) as NSString).size(withAttributes: [.font: measuring]).width }
+            .max() ?? 0
+        guard widest > titleWidth else { return normal }
+        return .system(size: size * titleWidth / widest * PageHeader.longWordFit, weight: .bold)
+    }
 
     var body: some View {
         // A small gap after the title so it keeps as many letters as it can; the buttons keep theirs.
         HStack(alignment: .center, spacing: PageHeader.titleToButtons) {
             Text(title)
-                .font(.headline.weight(.bold))
+                .font(titleFont)
                 .foregroundStyle(Color.fgPrimary)
                 .lineLimit(2)
                 .truncationMode(.tail)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { titleWidth = $0 }
             HStack(spacing: PageHeader.buttonSpacing) {
                 if let favorite {
-                    Button(action: onFavorite) {
-                        FavoriteHeart(filled: favorite, size: heartSize)
-                            .foregroundStyle(Color.fgPrimary)
-                            .iconTapArea(heartSize)
+                    let heart = FavoriteHeart(filled: favorite, size: heartSize)
+                        .foregroundStyle(Color.fgPrimary)
+                        .iconTapArea(heartSize)
+                    Group {
+                        if let heartTrack {
+                            heart.trackHeart(heartTrack, like: onFavorite)
+                        } else {
+                            Button(action: onFavorite) { heart }.buttonStyle(.plain)
+                        }
                     }
-                    .buttonStyle(.plain)
                     .accessibilityLabel(favorite ? String(localized: "Remove Favorite") : String(localized: "Add Favorite"))
                 }
                 trailing
@@ -169,8 +178,8 @@ struct PageTitleRow<Trailing: View>: View {
 }
 
 extension PageTitleRow where Trailing == EmptyView {
-    init(title: String, favorite: Bool? = nil, onFavorite: @escaping () -> Void = {}) {
-        self.init(title: title, favorite: favorite, onFavorite: onFavorite) { EmptyView() }
+    init(title: String, favorite: Bool? = nil, heartTrack: LibraryItem? = nil, onFavorite: @escaping () -> Void = {}) {
+        self.init(title: title, favorite: favorite, heartTrack: heartTrack, onFavorite: onFavorite) { EmptyView() }
     }
 }
 
@@ -191,25 +200,6 @@ struct StatLine: View {
                     .font(.caption2)
                     .foregroundStyle(Color.fgPrimary)
             }
-        }
-    }
-}
-
-// A cover and its text sharing the row in halves, as on the album and artist pages. Used where the page's name is the
-// navigation title instead of a title row.
-struct HalvesCoverRow<Cover: View, Info: View>: View {
-    @ViewBuilder let cover: Cover
-    @ViewBuilder let info: Info
-
-    var body: some View {
-        HStack(alignment: .center, spacing: PageHeader.coverToStats) {
-            cover.frame(maxWidth: .infinity)
-            // Holds its half even when there is no text yet.
-            ZStack(alignment: .leading) {
-                Color.clear.frame(height: 1)
-                info
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
@@ -240,6 +230,21 @@ struct FavoriteHeart: View {
     }
 }
 
+// A page's status icon (the output, a page that couldn't load, nothing playing): a Tabler icon as large as the text style
+// it stands beside, at Large, in the text colour.
+struct StatusIcon: View {
+    let asset: String
+    let style: Font.TextStyle
+
+    var body: some View {
+        Image(asset)
+            .resizable()
+            .scaledToFit()
+            .frame(width: TextSize.atLarge(style), height: TextSize.atLarge(style))
+            .foregroundStyle(Color.fgPrimary)
+    }
+}
+
 // Tabler icons used where they differ from SF Symbols.
 struct FinampIcon: View {
     let systemName: String
@@ -258,6 +263,8 @@ struct FinampIcon: View {
         "radio.off": "tabler-radio-off",
         "list.bullet": "tabler-playlist",
         "hifispeaker": "tabler-device-speaker",
+        // Choose Output: cast, as the AirPlay route's icon (Chap, 23 Nov: not Apple's AirPlay icon)
+        "airplayaudio": "tabler-cast",
         "magnifyingglass": "tabler-search",
         "arrow.down.circle": "tabler-download",
         "arrow.down.circle.fill": "tabler-device-sd-card",
