@@ -904,7 +904,7 @@
         },
         "description": "Localized names of special downloadable collection representing cached images for a certain library."
     },
-    "confirmAddToNextUp": "Aggiunto {type, select, track{Track} album{album} artist{artist} playlist{playlist} genre{genre}  disc{disc} other{item}}alla coda A Seguire",
+    "confirmAddToNextUp": "Aggiunto {type, select, track{Track} album{album} artist{artist} playlist{playlist} genre{genre}  disc{disc} other{item}} alla coda A Seguire",
     "@confirmAddToNextUp": {
         "description": "A confirmation message that is shown after successfully adding a track to the end of the \"Next Up\" queue",
         "placeholders": {
@@ -1510,7 +1510,7 @@
         "description": "Additional details for the setting that controls how frequently (in seconds) the current playback session is reported to the Jellyfin server"
     },
     "bufferSizeTitle": "Dimensione del buffer",
-    "bufferSizeSubtitle": "La dimensione del buffer, in MB. Richiede un riavvio",
+    "bufferSizeSubtitle": "La dimensione del buffer, in MiB. Richiede un riavvio",
     "bufferDisableSizeConstraintsTitle": "Non limitare la dimensione del buffer",
     "bufferDisableSizeConstraintsSubtitle": "Disattiva i vincoli sulla dimensione del buffer (\"Buffer Size\"). Il buffer verrà sempre caricato fino alla durata configurata (\"Buffer Duration\"), anche per file di grandi dimensioni. Può causare arresti anomali. Richiede un riavvio.",
     "swipeLeftToRightActionSubtitle": "Azione attivata facendo swipe su una traccia nella lista da sinistra verso destra.",
@@ -1847,7 +1847,7 @@
             }
         }
     },
-    "createPlaylistFromCurrentQueue": "Etichetta per il pulsante che aggiunge la coda corrente a una playlist esistente o nuova.",
+    "createPlaylistFromCurrentQueue": "Salva la Coda in una Playlist",
     "@createPlaylistFromCurrentQueue": {
         "description": "Label for a button that adds the current queue to an existing or new playlist."
     },
