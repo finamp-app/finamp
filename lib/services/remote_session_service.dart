@@ -103,6 +103,18 @@ class RemoteSessionService {
   static const Duration _watchdogInterval = Duration(seconds: 30);
   Timer? _watchdogTimer;
 
+  // After pushing a queue, the UI keeps presenting the optimistic pushed state
+  // until a session update confirms it. Some setups send no Sessions push for
+  // that (the remote's first report doesn't always trigger one), which left
+  // the output menu without cover/volume until the watchdog fired. So while a
+  // push settles, fetch GET /Sessions once per this interval, at most
+  // [_settleRefreshMaxAttempts] times (the last one lands just past the 10s
+  // settle deadline, so a remote that never reports the pushed queue still
+  // gets its state shown); it stops as soon as the push settled.
+  static const Duration _settleRefreshInterval = Duration(seconds: 3);
+  static const int _settleRefreshMaxAttempts = 4;
+  Timer? _settleRefreshTimer;
+
   // How long the websocket may stay down while controlling a remote before
   // we give up and disconnect. Covers brief drops, which PlayOnService's
   // reconnection loop recovers from (its first retries come after ~5s and
@@ -290,6 +302,7 @@ class RemoteSessionService {
     } catch (e) {
       _log.severe("Connecting to remote session failed", e);
       _teardown();
+      unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
       rethrow;
     }
 
@@ -416,6 +429,8 @@ class RemoteSessionService {
 
   void _teardown() {
     _stopMonitoring();
+    _settleRefreshTimer?.cancel();
+    _settleRefreshTimer = null;
     _activeSessionId = null;
     _lastKnownPositionTicks = null;
     _lastKnownItemId = null;
@@ -494,6 +509,25 @@ class RemoteSessionService {
   /// the remote is paused (no events to push), but also what a silently
   /// pruned session looks like, so confirm via a one-shot GET /Sessions run
   /// through the same handler (which re-arms the watchdog or disconnects).
+  /// Fetches the session list while a pushed queue settles (see
+  /// [_settleRefreshInterval]); re-schedules itself until the push settled.
+  void _scheduleSettleRefresh({int attempt = 1}) {
+    _settleRefreshTimer?.cancel();
+    _settleRefreshTimer = Timer(_settleRefreshInterval, () async {
+      _settleRefreshTimer = null;
+      if (!isRemote || _settleDeadline == null) return;
+      _log.fine("Push not confirmed by a Sessions message yet; fetching GET /Sessions (attempt $attempt)");
+      try {
+        _handleSessions(await _jellyfinApiHelper.getSessions());
+      } catch (e) {
+        _log.warning("Post-push GET /Sessions failed: $e");
+      }
+      if (_settleDeadline != null && attempt < _settleRefreshMaxAttempts) {
+        _scheduleSettleRefresh(attempt: attempt + 1);
+      }
+    });
+  }
+
   Future<void> _checkSessionAlive() async {
     if (!isRemote) return;
     _log.fine("No Sessions message for ${_watchdogInterval.inSeconds}s; confirming session via GET /Sessions");
@@ -1106,6 +1140,7 @@ class RemoteSessionService {
       _settleDeadline = null;
       rethrow;
     }
+    _scheduleSettleRefresh();
     // Present the optimistic post-push state right away instead of after the
     // next remote update.
     unawaited(_audioHandler.refreshPlaybackStateAndMediaNotification());
