@@ -675,9 +675,51 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
 
   void setVolume(final double volume) async {
     if (_remoteSession != null) {
-      return unawaited(_remoteSession!.setVolume(volume));
+      unawaited(_remoteSession!.setVolume(volume));
+      return _updateAndroidPlaybackInfo();
     }
     return _volume.setInternalVolume(volume);
+  }
+
+  /// Volume change per hardware volume key press while controlling a remote
+  /// session, in percent.
+  static const int _remoteVolumeKeyStep = 5;
+
+  /// While controlling a remote session that reports a volume, tells Android
+  /// the media session plays remotely, so the hardware volume keys (and the
+  /// system volume panel) control the remote device's volume via
+  /// [androidSetRemoteVolume] / [androidAdjustRemoteVolume] instead of this
+  /// device's. Switches back to local volume handling otherwise.
+  void _updateAndroidPlaybackInfo() {
+    if (!Platform.isAndroid) return;
+    final remoteVolume = _remoteSession?.remoteVolume;
+    final AndroidPlaybackInfo info = remoteVolume == null
+        ? LocalAndroidPlaybackInfo()
+        : RemoteAndroidPlaybackInfo(
+            volumeControlType: AndroidVolumeControlType.absolute,
+            maxVolume: 100,
+            volume: (remoteVolume * 100).round(),
+          );
+    if (androidPlaybackInfo.valueOrNull == info) return;
+    androidPlaybackInfo.add(info);
+  }
+
+  @override
+  Future<void> androidSetRemoteVolume(int volumeIndex) async {
+    final remote = _remoteSession;
+    if (remote == null) return;
+    await remote.setVolume(volumeIndex / 100);
+    _updateAndroidPlaybackInfo();
+  }
+
+  @override
+  Future<void> androidAdjustRemoteVolume(AndroidVolumeDirection direction) async {
+    final remote = _remoteSession;
+    final current = remote?.remoteVolume;
+    if (remote == null || current == null || direction == AndroidVolumeDirection.same) return;
+    final level = ((current * 100).round() + direction.index * _remoteVolumeKeyStep).clamp(0, 100);
+    await remote.setVolume(level / 100);
+    _updateAndroidPlaybackInfo();
   }
 
   @override
@@ -1228,6 +1270,7 @@ class MusicPlayerBackgroundTask extends BaseAudioHandler with SeekHandler, Queue
   Future<void> refreshPlaybackStateAndMediaNotification() async {
     // re-trigger the playbackState update to update the notification
     final event = _transformEvent(_player.playbackEvent);
+    _updateAndroidPlaybackInfo();
     return playbackState.add(event);
   }
 
