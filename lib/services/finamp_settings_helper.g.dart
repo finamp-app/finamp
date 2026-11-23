@@ -629,9 +629,12 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setOneLineMarqueeTextButton(bool newOneLineMarqueeTextButton) {
+  static void setPreferMarqueeOverOverflowingTwoLine(
+    bool newPreferMarqueeOverOverflowingTwoLine,
+  ) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.oneLineMarqueeTextButton = newOneLineMarqueeTextButton;
+    finampSettingsTemp.preferMarqueeOverOverflowingTwoLine =
+        newPreferMarqueeOverOverflowingTwoLine;
     Hive.box<FinampSettings>(
       "FinampSettings",
     ).put("FinampSettings", finampSettingsTemp);
@@ -1352,6 +1355,22 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setFollowRedirects(bool newFollowRedirects) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.followRedirects = newFollowRedirects;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setPlayerQueueLimit(int? newPlayerQueueLimit) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.playerQueueLimit = newPlayerQueueLimit;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1573,9 +1592,9 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       );
   ProviderListenable<bool> get allowDeleteFromServer => finampSettingsProvider
       .select((value) => value.requireValue.allowDeleteFromServer);
-  ProviderListenable<bool> get oneLineMarqueeTextButton =>
+  ProviderListenable<bool> get preferMarqueeOverOverflowingTwoLine =>
       finampSettingsProvider.select(
-        (value) => value.requireValue.oneLineMarqueeTextButton,
+        (value) => value.requireValue.preferMarqueeOverOverflowingTwoLine,
       );
   ProviderListenable<bool> get showAlbumReleaseDateOnPlayerScreen =>
       finampSettingsProvider.select(
@@ -1809,6 +1828,11 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.autoReloadQueueMaxDroppedTracksPercentage,
       );
+  ProviderListenable<bool> get followRedirects => finampSettingsProvider.select(
+    (value) => value.requireValue.followRedirects,
+  );
+  ProviderListenable<int?> get playerQueueLimit => finampSettingsProvider
+      .select((value) => value.requireValue.playerQueueLimit);
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

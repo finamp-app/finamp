@@ -1,0 +1,15 @@
+Here's what's new:
+
+<ul>
+  <li>Improved Carplay home screen and player</li>
+  <li>Finamp can now live in your system tray on desktop</li>
+  <li>You can now define custom HTTP headers during the login flow</li>
+  <li>The AirPlay button is now shown on macOS too</li>
+  <li>Finamp can now auto-discover Jellyfin-enabled Navidrome servers, and helps you connect to them</li>
+  <li>And more</li>
+  <li>Automatic network switching now works again, and so do the related automatic offline modes (e.g. "Disconnected")</li>
+  <li>Fixed the media notification not working on Android 17</li>
+  <li>And more</li>
+</ul>
+
+Danke, dass du Finamp nutzt!

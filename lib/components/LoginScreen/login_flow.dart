@@ -91,6 +91,7 @@ class _LoginFlowState extends State<LoginFlow> {
             case LoginServerSelectionPage.routeName:
               route = createRoute(
                 LoginServerSelectionPage(
+                  key: loginServerSelectionKey,
                   serverState: serverState,
                   onServerSelected: (PublicSystemInfoResult server, String baseUrl) {
                     serverState.selectedServer = server;
@@ -230,7 +231,7 @@ class ServerState {
     });
   }
 
-  Future<void> testServerConnection(String baseUrl) async {
+  Future<void> testServerConnection(String baseUrl, {bool isNavidromeRetry = false}) async {
     if (baseUrl.isNotEmpty) {
       bool unspecifiedProtocol = false;
       bool unspecifiedPort = false;
@@ -256,11 +257,18 @@ class ServerState {
         baseUrlToTest = baseUrlToTest.substring(0, baseUrlToTest.length - 1);
       }
 
+      if (isNavidromeRetry) {
+        baseUrlToTest = "$baseUrlToTest/jellyfin";
+      }
+
       jellyfinApiHelper.baseUrlTemp = Uri.parse(baseUrlToTest);
 
       PublicSystemInfoResult? publicServerInfo;
       try {
-        publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
+        // Give the server url extra time on the primary check if we don't need to waste time on the variants.
+        publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo(
+          timeout: Duration(seconds: 6 + (unspecifiedPort ? 4 : 0) + (unspecifiedProtocol ? 4 : 0)),
+        );
       } catch (error) {
         if (await ClientCertificateInstaller.isCertificateRequiredError(error, Uri.parse(baseUrlToTest))) {
           clientCertificateRequired = true;
@@ -280,7 +288,7 @@ class ServerState {
         baseUrlToTest = url.toString(); // update the local url
         jellyfinApiHelper.baseUrlTemp = url;
         try {
-          publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
+          publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo(timeout: const Duration(seconds: 4));
         } catch (error) {
           serverStateLogger.severe("Couldn't reach server at $baseUrlToTest (HTTP): $error");
         }
@@ -291,11 +299,11 @@ class ServerState {
 
       if (publicServerInfo == null && unspecifiedPort) {
         // try default port 8096
-        Uri url = Uri.parse(baseUrlToTest).replace(port: 8096);
+        Uri url = Uri.parse(baseUrlToTest).replace(port: isNavidromeRetry ? 4533 : 8096);
         baseUrlToTest = url.toString(); // update the local url
         jellyfinApiHelper.baseUrlTemp = url;
         try {
-          publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo();
+          publicServerInfo = await jellyfinApiHelper.loadServerPublicInfo(timeout: const Duration(seconds: 4));
         } catch (error) {
           serverStateLogger.severe("Couldn't reach server at $baseUrlToTest (default port): $error");
         }
@@ -307,6 +315,8 @@ class ServerState {
       if (publicServerInfo != null) {
         manualServer = publicServerInfo;
         this.baseUrl = baseUrlToTest;
+      } else if (!isNavidromeRetry) {
+        return testServerConnection(baseUrl, isNavidromeRetry: true);
       }
     }
   }

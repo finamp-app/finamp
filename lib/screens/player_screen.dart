@@ -13,6 +13,7 @@ import 'package:finamp/components/PlayerScreen/queue_list.dart';
 import 'package:finamp/components/PlayerScreen/track_name_content.dart';
 import 'package:finamp/components/finamp_app_bar_back_button.dart';
 import 'package:finamp/components/global_snackbar.dart';
+import 'package:finamp/extensions/text_scaler.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/output_menu.dart';
 import 'package:finamp/menus/playlist_actions_menu.dart';
@@ -57,7 +58,8 @@ class PlayerScreen extends StatelessWidget {
         listener?.cancel();
         return;
       }
-      if (currentQueue == null || currentQueue.currentTrack == null && context.mounted) {
+      if ((currentQueue == null || (currentQueue.currentTrack == null && !currentQueue.saveState.isRestoring)) &&
+          context.mounted) {
         Navigator.of(context).popUntil((route) {
           return ![
             PlayerScreen.routeName,
@@ -75,10 +77,8 @@ class PlayerScreen extends StatelessWidget {
         stream: queueService.getQueueStream(),
         initialData: queueService.getQueue(),
         builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.saveState == SavedQueueState.loading) {
-            return buildLoadingScreen(context, null);
-          } else if (snapshot.hasData && snapshot.data!.saveState == SavedQueueState.failed) {
-            return buildLoadingScreen(context, queueService.retryQueueLoad);
+          if (snapshot.hasData && snapshot.data!.saveState.isRestoring) {
+            return buildLoadingScreen(context, snapshot.data!.saveState);
           } else if (snapshot.hasData && snapshot.data!.currentTrack != null) {
             return _PlayerScreenContent(playerScreen: this);
           } else {
@@ -89,12 +89,29 @@ class PlayerScreen extends StatelessWidget {
     );
   }
 
-  Widget buildLoadingScreen(BuildContext context, void Function()? retryCallback) {
+  Widget buildLoadingScreen(BuildContext context, SavedQueueState state) {
+    assert(state.isRestoring);
     double imageSize = min(MediaQuery.widthOf(context), MediaQuery.heightOf(context)) / 2;
 
+    final queueService = GetIt.instance<QueueService>();
+
     return SimpleGestureDetector(
-      onTap: retryCallback,
+      onTap: state == SavedQueueState.failed ? queueService.retryQueueLoad : null,
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          leading: usingPlayerSplitScreen
+              ? null
+              : FinampAppBarBackButton(
+                  dismissDirection: AxisDirection.down,
+                  onPressed: () {
+                    assert(GlobalSnackbar.navigatorState == Navigator.of(context));
+                    GlobalSnackbar.navigatorState?.maybePop();
+                  },
+                ),
+          actions: [],
+          titleSpacing: 0.0,
+        ),
         backgroundColor: Color.alphaBlend(
           Theme.brightnessOf(context) == Brightness.dark
               ? IconTheme.of(context).color!.withValues(alpha: 0.35)
@@ -111,16 +128,43 @@ class PlayerScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Spacer(),
-                (retryCallback != null)
+                state.isFailed
                     ? Icon(Icons.refresh, size: imageSize)
                     : SizedBox(width: imageSize, height: imageSize, child: const CircularProgressIndicator.adaptive()),
                 const Spacer(),
                 BalancedText(
-                  (retryCallback != null)
-                      ? AppLocalizations.of(context)!.queueRetryMessage
-                      : AppLocalizations.of(context)!.queueLoadingMessage,
+                  switch (state) {
+                    SavedQueueState.loading => context.l10n.queueLoadingMessage,
+                    SavedQueueState.failed => context.l10n.queueRetryMessage,
+                    SavedQueueState.failedOversized => context.l10n.queueAutorestoreOversized,
+                    _ => "ERROR",
+                  },
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 20, height: 26 / 20),
+                ),
+                SizedBox(height: 15.0),
+                if (state == SavedQueueState.failedOversized) ...[
+                  SimpleButton(
+                    text: context.l10n.oversizedQueueTruncate(
+                      FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit,
+                    ),
+                    icon: TablerIcons.cut,
+                    onPressed: () =>
+                        queueService.retryQueueLoad(oversizeHandling: OversizedSavedQueueHandling.truncate),
+                  ),
+                  SizedBox(height: 5),
+                  SimpleButton(
+                    text: context.l10n.oversizedQueueContinue,
+                    icon: TablerIcons.arrow_right,
+                    onPressed: () =>
+                        queueService.retryQueueLoad(oversizeHandling: OversizedSavedQueueHandling.loadFully),
+                  ),
+                  SizedBox(height: 5),
+                ],
+                SimpleButton(
+                  text: context.l10n.queueRestoreCancel,
+                  icon: TablerIcons.cancel,
+                  onPressed: queueService.cancelQueueLoad,
                 ),
                 const Spacer(flex: 2),
               ],
@@ -139,17 +183,19 @@ class _PlayerScreenContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var controller = PlayerHideableController();
+    final controller = PlayerHideableController();
 
-    var screenOrientation = MediaQuery.orientationOf(context);
+    final screenOrientation = MediaQuery.orientationOf(context);
+    final textScaler = MediaQuery.textScalerOf(context);
     double toolbarHeight = _defaultToolbarHeight;
     int maxToolbarLines = _defaultMaxToolbarLines;
 
     // If in landscape, only show 2 lines in toolbar instead of 3
-    if (screenOrientation == Orientation.landscape) {
+    if (screenOrientation == Orientation.landscape || textScaler.scale(14) > 18) {
       toolbarHeight = 36.0;
       maxToolbarLines = 1;
     }
+    toolbarHeight = toolbarHeight + textScaler.heightAdjustment(14) + maxToolbarLines * textScaler.heightAdjustment(16);
 
     final metadata = ref.watch(currentTrackMetadataProvider).unwrapPrevious();
 
@@ -198,7 +244,7 @@ class _PlayerScreenContent extends ConsumerWidget {
                     minimizeSplitScreen.value = true;
                   } else {
                     assert(GlobalSnackbar.navigatorState == Navigator.of(context));
-                    GlobalSnackbar.navigatorState?.pop();
+                    GlobalSnackbar.navigatorState?.maybePop();
                   }
                 },
               ),
@@ -480,15 +526,17 @@ class _PlayerScreenContent extends ConsumerWidget {
 }
 
 enum PlayerHideable {
-  bigPlayButton(14, 14, 1),
-  bottomActions(0, 27, 2),
-  progressSlider(0, 20, 4),
-  twoLineTitle(0, 46, 3),
-  features(0, 20, 3),
-  loopShuffleButtons(96, 0, 0),
-  unhideableElements(144, 165, 0),
-  controlsPaddingSmall(0, 8, 2),
-  controlsPaddingBig(0, 12, 1);
+  bigPlayButton(14, 14, 1, []),
+  bottomActions(0, 27, 2, [14]),
+  progressSlider(0, 20, 4, [11]),
+  // The font size here is technically inaccurate, as I have multiplied the textHeight factor before scaling,
+  // hopefully this isn't noticeable.
+  twoLineTitle(0, 46, 3, [21.6]),
+  features(0, 20, 3, [11]),
+  loopShuffleButtons(96, 0, 0, []),
+  unhideableElements(144, 165, 0, [21.6, 14, 14]),
+  controlsPaddingSmall(0, 8, 2, []),
+  controlsPaddingBig(0, 12, 1, []);
 
   // The width/height added to the overall player screen when this item is shown.
   // Calculated by shrinking player screen control area until overflow both with
@@ -502,7 +550,12 @@ enum PlayerHideable {
   // Needs to be multiplied by finampSettings.prioritizeCoverFactor.
   final double maxShrink;
 
-  const PlayerHideable(this.width, this.height, this.maxShrink);
+  // Font sizes of any internal text, to allow size to be updated by the textScaler.  TextScalers can theoretically be
+  // nonlinear, so we take a list of the font sizes of every individual line in the hideable so the scaling height offsets
+  // can be calculated separately.
+  final List<double> textHeight;
+
+  const PlayerHideable(this.width, this.height, this.maxShrink, this.textHeight);
 }
 
 /// Controls what elements of the player screen are shown/hidden.
@@ -521,6 +574,7 @@ class PlayerHideableController {
   Size? _target;
   Size? _album;
   bool? _useLandscape;
+  TextScaler? _textScale;
 
   /// Update player screen hidden elements based on usable area in portrait mode.
   void _updateLayoutPortrait(Size size, WidgetRef ref) {
@@ -639,6 +693,7 @@ class PlayerHideableController {
     _target = null;
     _album = null;
     _useLandscape = null;
+    _textScale = MediaQuery.textScalerOf(ref.context);
     _visible = List.from(PlayerHideable.values);
     if (ref.watch(finampSettingsProvider.hidePlayerBottomActions)) {
       _visible.remove(PlayerHideable.bottomActions);
@@ -664,6 +719,12 @@ class PlayerHideableController {
     double width = 0;
     for (var element in _visible) {
       height += element.height;
+
+      if (_textScale != null) {
+        for (final text in element.textHeight) {
+          height += _textScale!.heightAdjustment(text);
+        }
+      }
       width += element.width;
     }
     return Size(width, height);

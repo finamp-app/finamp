@@ -50,7 +50,9 @@ Future<void> startNetworkAutomation() async {
   }, fireImmediately: true);
 
   container.listen(setOfflineModeProvider, (_, isOffline) {
-    if (isOffline == null || isOffline == FinampSettingsHelper.finampSettings.isOffline) return;
+    if (isOffline == null || isOffline == FinampSettingsHelper.finampSettings.isOffline) {
+      return;
+    }
     _networkAutomationLogger.info('Setting offline mode to $isOffline');
     FinampSetters.setIsOffline(isOffline);
     if (!DataSourceService.willShowQueueReloadPrompt(isOffline: isOffline)) {
@@ -60,20 +62,16 @@ Future<void> startNetworkAutomation() async {
     }
   }, fireImmediately: true);
 
-  container.listen(networkConnectivityProvider, (_, value) {
+  container.listen(networkConnectivityProvider, (previous, value) {
     final state = value.value;
     if (state == null) return;
 
-    if (state != FinampConnectivityState.localNetwork) {
-      final activeDownloads = _getDownloads();
-      if (activeDownloads > 0) {
-        if (state == FinampConnectivityState.none) {
-          GlobalSnackbar.message((context) => AppLocalizations.of(context)!.downloadPaused);
-        } else if ((Platform.isAndroid || Platform.isIOS) &&
-            FinampSettingsHelper.finampSettings.requireWifiForDownloads) {
-          GlobalSnackbar.message((context) => AppLocalizations.of(context)!.downloadPaused);
-        }
-      }
+    if (previous?.value == FinampConnectivityState.localNetwork &&
+        state == FinampConnectivityState.cellular &&
+        _getDownloads() > 0 &&
+        FinampSettingsHelper.finampSettings.requireWifiForDownloads &&
+        (Platform.isAndroid || Platform.isIOS)) {
+      GlobalSnackbar.message((context) => AppLocalizations.of(context)!.downloadPaused);
     }
 
     // Reconnect after every usable transport transition, including a return

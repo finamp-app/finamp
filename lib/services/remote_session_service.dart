@@ -364,7 +364,12 @@ class RemoteSessionService {
     } else if (preConnectQueue != null) {
       // We adopted a foreign queue: restore this device's own queue instead of
       // carrying the remote's over.
-      await _queueService.loadSavedQueue(preConnectQueue, beginPlayingOverride: resumeHere);
+      await _queueService.loadSavedQueue(
+        preConnectQueue,
+        beginPlayingOverride: resumeHere,
+        // It was this device's live queue moments ago, so restore all of it.
+        oversizeHandling: OversizedSavedQueueHandling.loadFully,
+      );
     } else {
       // Adopted a foreign queue with nothing playing here before: clear the
       // mirror rather than keeping the remote's queue on this device.
@@ -417,7 +422,11 @@ class RemoteSessionService {
       if (preConnectQueue != null) {
         // Restore this device's own queue, paused (the remote was stopped, so
         // there's nothing to resume).
-        await _queueService.loadSavedQueue(preConnectQueue, beginPlayingOverride: false);
+        await _queueService.loadSavedQueue(
+          preConnectQueue,
+          beginPlayingOverride: false,
+          oversizeHandling: OversizedSavedQueueHandling.loadFully,
+        );
       } else {
         // Nothing was playing here before: clear the mirror so playback fully
         // stops on this device too.

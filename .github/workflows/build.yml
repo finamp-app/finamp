@@ -133,8 +133,8 @@ jobs:
 
     - name: Run Integration tests on api 25
       if: *do_integration
-      timeout-minutes: 20
-      # android emulator is flaky so we retry once
+      timeout-minutes: 35
+      # android emulator is flaky so we retry twice
       uses: Wandalen/wretry.action@v3.8.0
       with:
         action: reactivecircus/android-emulator-runner@v2
@@ -148,7 +148,7 @@ jobs:
           script: |
             adb logcat -c
             adb logcat *:I &
-            timeout 13m flutter test integration_test/test_cases.dart -d emulator
+            timeout 9m flutter test integration_test/test_cases.dart -d emulator
 
   build-ios:
     name: Build for iOS

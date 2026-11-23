@@ -29,11 +29,6 @@ class PlayerButtons extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
 
-    final showPauseButton = ref.watch(
-      mediaStateProvider.select((x) => x.playbackState.playing && x.fadeDirection != FadeDirection.fadeOut),
-    );
-    final processingState = ref.watch(mediaStateProvider.select((x) => x.playbackState.processingState));
-
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -85,18 +80,7 @@ class PlayerButtons extends ConsumerWidget {
                 Radius.circular(controller.shouldShow(PlayerHideable.bigPlayButton) ? 16 : 12),
               ),
               color: IconTheme.of(context).color!.withAlpha(128),
-              // While the playback state is loading (e.g. a queue pushed to a
-              // remote session hasn't been confirmed playing yet), show a
-              // spinner instead of a play state that isn't known.
-              child: processingState == AudioProcessingState.loading
-                  ? Center(
-                      child: SizedBox(
-                        width: 28,
-                        height: 28,
-                        child: CircularProgressIndicator(strokeWidth: 3, color: IconTheme.of(context).color),
-                      ),
-                    )
-                  : Icon(showPauseButton ? TablerIcons.player_pause : TablerIcons.player_play, size: 32),
+              child: PlayerButtons.buildPlayPauseIcon(ref, shadow: false),
             ),
           ),
         ),
@@ -122,6 +106,56 @@ class PlayerButtons extends ConsumerWidget {
         if (controller.shouldShow(PlayerHideable.loopShuffleButtons)) PlayerButtonsLoopMode(),
       ],
     );
+  }
+
+  static Widget buildPlayPauseIcon(WidgetRef ref, {required bool shadow}) {
+    final playing = ref.watch(
+      mediaStateProvider.select((x) => x.playbackState.playing && x.fadeDirection != FadeDirection.fadeOut),
+    );
+
+    final completed = ref.watch(mediaStateProvider.select((x) => x.playbackState.isCompletedQueue));
+    final loading = ref.watch(
+      mediaStateProvider.select((x) => x.playbackState.processingState == AudioProcessingState.loading),
+    );
+
+    if (loading) {
+      // While the playback state is loading (e.g. a queue pushed to a remote
+      // session hasn't been confirmed playing yet), show a spinner instead of
+      // a play state that isn't known.
+      return SizedBox(
+        width: 32,
+        height: 32,
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child: Builder(
+            builder: (context) =>
+                CircularProgressIndicator(strokeWidth: 3, color: shadow ? Colors.white : IconTheme.of(context).color),
+          ),
+        ),
+      );
+    } else if (playing) {
+      return Icon(
+        TablerIcons.player_pause,
+        shadows: shadow ? <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)] : null,
+        size: 32,
+      );
+    } else if (completed) {
+      // Tabler icons seems to be missing the desired resume icon, so I've rotated eject
+      return RotatedBox(
+        quarterTurns: 1,
+        child: Icon(
+          TablerIcons.player_eject,
+          shadows: shadow ? <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)] : null,
+          size: 32,
+        ),
+      );
+    } else {
+      return Icon(
+        TablerIcons.player_play,
+        shadows: shadow ? <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)] : null,
+        size: 32,
+      );
+    }
   }
 }
 

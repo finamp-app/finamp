@@ -280,11 +280,10 @@ class __PlaybackProgressSliderState extends ConsumerState<_PlaybackProgressSlide
 
                 // Clear drag value so that the slider uses the play
                 // duration again.
-                if (mounted) {
-                  setState(() {
-                    _dragValue = null;
-                  });
-                }
+                if (!mounted) return;
+                setState(() {
+                  _dragValue = null;
+                });
                 widget.onDrag(null);
               }
             : (_) {},
