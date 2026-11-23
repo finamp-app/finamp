@@ -27,12 +27,12 @@ struct FavoritesListView: View {
                     case .loading:
                         SkeletonCoverRows(count: 3, coverShare: kind.coverShare, circular: isArtists)
                     case .failed(let message):
-                        RetryView(message: message) { await pager.load() }
+                        RetryView(message: message, inList: true) { await pager.load() }
                     case .loaded(let items) where items.isEmpty:
-                        Text(isArtists ? String(localized: "No favorite artists yet") : String(localized: "No favorite albums yet"))
-                            .font(.footnote)
-                            .foregroundStyle(Color.fgSecondary)
-                            .frame(maxWidth: .infinity)
+                        EmptyNote(
+                            text: isArtists ? String(localized: "No favorite artists yet") : String(localized: "No favorite albums yet"),
+                            inList: true
+                        )
                     case .loaded(let items):
                         ForEach(items) { item in
                             CollectionLink(item: item, kind: kind)
@@ -52,24 +52,20 @@ struct FavoritesListView: View {
         .task { if case .loading = pager.state { await pager.load() } }
     }
 
-    // The page's name is the title at the top right, as the queue's "Now Playing"; no Play/Shuffle. The logo and
-    // the count in the pages' cover row.
+    // The page's name is the title at the top right, as the queue's "Now Playing"; no Play/Shuffle. Logo and count sit
+    // in the cover row.
     private var header: some View {
         PageCoverRow {
             FavoritesLogo(circular: isArtists)
         } info: {
             if case .loaded(let items) = pager.state, !pager.hasMore {
-                Text(countText(items.count))
-                    .font(.caption2)
-                    .foregroundStyle(Color.fgSecondary)
+                // As the other pages' headers (Finamp's wording, its icon for the kind).
+                if isArtists {
+                    StatLine(symbol: "person", text: FinampFormat.artists(items.count))
+                } else {
+                    StatLine(symbol: "opticaldisc", text: FinampFormat.albums(items.count))
+                }
             }
         }
-    }
-
-    private func countText(_ count: Int) -> String {
-        if isArtists {
-            return count == 1 ? String(localized: "1 artist") : String(localized: "\(count) artists")
-        }
-        return count == 1 ? String(localized: "1 album") : String(localized: "\(count) albums")
     }
 }

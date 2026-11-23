@@ -36,12 +36,10 @@ struct ArtistView: View {
                 case .loading:
                     SkeletonCoverRows(count: 3, coverShare: LibraryKind.albums.coverShare, sectionHeader: true)
                 case .failed(let message):
-                    RetryView(message: message) { await load() }
+                    RetryView(message: message, inList: true) { await load() }
                 case .loaded(let albums):
                     if albums.isEmpty, case .loaded(let other) = appearsOn.state, other.isEmpty {
-                        Text("No albums")
-                            .font(.footnote)
-                            .foregroundStyle(Color.fgSecondary)
+                        EmptyNote(text: String(localized: "No albums"), inList: true)
                     } else {
                         // In the order of Finamp's artist screen setting; a section with nothing in it isn't shown.
                         ForEach(info?.sections ?? ["albums", "appearsOn"], id: \.self) { section in
@@ -61,7 +59,6 @@ struct ArtistView: View {
         .task { if case .loading = pager.state { await load() } }
     }
 
-    // A section of albums under its heading.
     @ViewBuilder
     private func albumSection(_ title: String, _ section: Pager) -> some View {
         if case .loaded(let albums) = section.state, !albums.isEmpty {
@@ -132,7 +129,7 @@ struct ArtistView: View {
             )
             onPlay()
         } catch {
-            pager.fail(error.localizedDescription)
+            PhoneMessage.show(error)
         }
     }
 }

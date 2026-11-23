@@ -18,7 +18,7 @@ extension ShapeStyle where Self == LinearGradient {
 final class ThemeStore {
     static let shared = ThemeStore()
 
-    // Experimental: Finamp's accent colours and tinted backgrounds instead of the original design.
+    // Finamp's accent colours and tinted backgrounds instead of the default design.
     var accentColors = UserDefaults.standard.bool(forKey: "accentColors") {
         didSet { UserDefaults.standard.set(accentColors, forKey: "accentColors") }
     }
@@ -28,7 +28,7 @@ final class ThemeStore {
         didSet { UserDefaults.standard.set(schemes, forKey: "accentSchemes") }
     }
 
-    // nil draws the original design.
+    // nil draws the default design.
     var scheme: AccentScheme? {
         guard accentColors, let colors = schemes["dark"] else { return nil }
         return AccentScheme(colors)
@@ -109,14 +109,14 @@ struct FinampLogoTile: View {
         Image("FinampLogo")
             .resizable()
             .scaledToFit()
-            .padding(size * 0.084)
+            .padding(size * LogoTile.insetShare)
             .frame(width: size, height: size)
             .background(
                 Color(red: 0x0F / 255, green: 0x21 / 255, blue: 0x29 / 255),
-                in: RoundedRectangle(cornerRadius: size * 0.26)
+                in: RoundedRectangle(cornerRadius: size * LogoTile.cornerShare)
             )
             .overlay {
-                RoundedRectangle(cornerRadius: size * 0.26)
+                RoundedRectangle(cornerRadius: size * LogoTile.cornerShare)
                     .stroke(Color(red: 0x26 / 255, green: 0x35 / 255, blue: 0x3D / 255), lineWidth: 1)
             }
     }

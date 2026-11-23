@@ -20,6 +20,11 @@ enum ConnectionPolicy {
     // How long each kind of request waits, and whether it shows the status under the clock (`PhoneActivity`).
     // Covers and the now-playing refresh repeat on their own, and the favourites count only fills in a number, so they
     // wait briefly and stay quiet.
+    // While waiting, reachability is checked this often. Time the app runs is counted in steps of at most this much,
+    // so a gap longer than a step (the app suspended, wrist down) doesn't count as waiting.
+    static let reachabilityPoll: Duration = .milliseconds(100)
+    static let maxAwakeStep: Duration = .milliseconds(500)
+
     static func patience(_ method: String) -> (wait: Patience, shown: Bool) {
         switch method {
         case "artworks", "nowPlaying", "favoritesCount": (.awake(.seconds(5)), false)
@@ -55,13 +60,14 @@ enum ConnectionPolicy {
         // After a send that failed (out of reach, a WatchConnectivity error, a refusal), the next one goes this long
         // after it began, or as soon as the phone is back in reach.
         static let retryAfterError: Duration = .seconds(1)
-        // A send waits this long for its answer before the phone is asked for its volume: requests take 0.1-0.6 s on
-        // the devices, a phone waking Finamp in the background answered in up to 3 s.
+        // A send waits this long for its answer before the phone is asked for its volume: requests take 0.1-0.6 s, a
+        // phone waking Finamp in the background up to 3 s.
         static let noAnswerAfter: Duration = .seconds(3)
         // Nothing confirmed this long after the newest crown turn: give up and show the phone's last known volume
         // (long enough not to give up while the crown is still being turned).
         static let giveUpAfter: Duration = .seconds(30)
-        // Just after the phone accepted a change, a different volume it pushes is taken as an older one on its way.
+        // Just after the phone accepted a change, a different volume it pushes may be an older one on its way: the
+        // phone is asked for its volume instead.
         static let olderPushWindow: TimeInterval = 1.5
     }
 
@@ -82,6 +88,8 @@ enum ConnectionPolicy {
         // try at the earliest), then at most this often while it's on screen.
         static let retryOnWake: TimeInterval = 2
         static let retryEvery: TimeInterval = 10
+        // Rows that appear together join one request.
+        static let batchDelay: Duration = .milliseconds(30)
     }
 
     // MARK: A connection stuck on "not reachable"

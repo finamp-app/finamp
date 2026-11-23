@@ -1,5 +1,4 @@
 import SwiftUI
-import WatchKit
 
 enum WatchPage: String, Hashable {
     case home, playback, artists, albums, playlists, tracks, downloads
@@ -86,16 +85,16 @@ extension View {
 }
 
 extension View {
-    // The status of requests you made (`PhoneActivity`), above everything on the page, always centred across the screen;
-    // only its height depends on the clock (`ActivityPlace.iconCentre`). One view for every place, so a page change
-    // moves it smoothly instead of swapping it. Sheets attach it too, as they do the alert.
+    // The status of requests you made (`PhoneActivity`), above everything on the page, centred across the screen; only
+    // its height depends on the clock (`ActivityPlace.iconCentre`). One view for every place, so a page change moves it
+    // smoothly. Sheets attach it too, as they do the alert.
     func phoneActivityIndicator(_ place: ActivityPlace = .sheet) -> some View {
         overlay(alignment: .top) {
             PhoneActivityIndicator()
                 .frame(maxWidth: .infinity)
                 .frame(height: place.iconCentre(topInset: WatchMetrics.shared.topInset) * 2)
                 .ignoresSafeArea(edges: .top)
-                .animation(.easeInOut(duration: 0.3), value: place)
+                .animation(.easeInOut(duration: ActivityStatus.moveTime), value: place)
         }
     }
 }
@@ -155,10 +154,9 @@ struct PhoneActivityIndicator: View {
         }
         .font(.system(size: ActivityStatus.iconSize, weight: .semibold))
         .allowsHitTesting(false)
-        .animation(.easeInOut(duration: 0.2), value: activity.state)
+        .animation(.easeInOut(duration: ActivityStatus.fadeTime), value: activity.state)
     }
 
-    // One turn every `ActivityStatus.turnTime`.
     private static func angle(at date: Date) -> Double {
         let turn = ActivityStatus.turnTime
         return date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: turn) / turn * 360
@@ -167,8 +165,8 @@ struct PhoneActivityIndicator: View {
 
 struct LoggedOutView: View {
     var body: some View {
-        VStack(spacing: 8) {
-            FinampLogoTile(size: 44)
+        VStack(spacing: StatusPages.spacing) {
+            FinampLogoTile(size: StatusPages.logoSize)
             Text("Connect to Jellyfin")
                 .font(.headline)
                 .foregroundStyle(Color.fgPrimary)
@@ -177,7 +175,7 @@ struct LoggedOutView: View {
                 .foregroundStyle(Color.fgSecondary)
                 .multilineTextAlignment(.center)
         }
-        .padding(.horizontal, 8)
+        .scenePadding(.horizontal)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.appBackground)
     }

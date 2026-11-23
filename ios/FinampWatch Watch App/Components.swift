@@ -54,7 +54,7 @@ struct UpperIcon: View {
     let systemName: String
 
     var body: some View {
-        FinampIcon(systemName: systemName, size: 20)
+        FinampIcon(systemName: systemName, size: IconButtons.upperIconSize)
     }
 }
 
@@ -62,6 +62,29 @@ extension View {
     // watchOS draws these icons white, so tint with the light scheme's primary, which Material pairs with white.
     func upperButtonStyle() -> some View {
         tint(ThemeStore.shared.switchTint)
+    }
+}
+
+// A page's or section's "nothing here" note. In a List the row gives the margins; elsewhere watchOS's margin, in line
+// with the top buttons.
+struct EmptyNote: View {
+    let text: String
+    var inList = false
+
+    var body: some View {
+        if inList {
+            note
+        } else {
+            note.scenePadding(.horizontal)
+        }
+    }
+
+    private var note: some View {
+        Text(text)
+            .font(.footnote)
+            .foregroundStyle(Color.fgSecondary)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
     }
 }
 
@@ -90,7 +113,7 @@ struct RetryView: View {
     }
 
     private var content: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: StatusPages.spacing) {
             StatusIcon(asset: isServer ? "tabler-cloud-off" : "tabler-device-mobile-off", style: .title2)
             Text(message)
                 .font(.footnote)
@@ -132,8 +155,8 @@ struct PageTitleRow<Trailing: View>: View {
     // The width the row leaves the title.
     @State private var titleWidth: CGFloat = 0
 
-    // SwiftUI splits a word wider than its line with a hyphen ("Gradua-tion" on 40 mm); then the title shrinks just
-    // enough for its longest word to fit, and wraps between words as before.
+    // SwiftUI hyphenates a word wider than its line ("Gradua-tion" on 40 mm), so the title shrinks until its longest
+    // word fits and wraps between words.
     private var titleFont: Font {
         let normal = Font.headline.weight(.bold)
         guard titleWidth > 0 else { return normal }
@@ -169,7 +192,7 @@ struct PageTitleRow<Trailing: View>: View {
                             Button(action: onFavorite) { heart }.buttonStyle(.plain)
                         }
                     }
-                    .accessibilityLabel(favorite ? String(localized: "Remove Favorite") : String(localized: "Add Favorite"))
+                    .accessibilityLabel(FavoriteHeart.label(favorite))
                 }
                 trailing
             }
@@ -194,7 +217,7 @@ struct StatLine: View {
     var body: some View {
         HStack(spacing: PageHeader.statIconToText) {
             FinampIcon(systemName: symbol, size: iconSize)
-                .foregroundStyle(Color.fgPrimary.opacity(0.5))
+                .foregroundStyle(Color.fgPrimary.opacity(PageHeader.statIconOpacity))
             Marquee {
                 Text(text)
                     .font(.caption2)
@@ -208,12 +231,14 @@ struct StatLine: View {
 enum FinampFormat {
     static func tracks(_ n: Int) -> String { n == 1 ? String(localized: "1 Track") : String(localized: "\(n) Tracks") }
     static func albums(_ n: Int) -> String { n == 1 ? String(localized: "1 Album") : String(localized: "\(n) Albums") }
+    static func artists(_ n: Int) -> String { n == 1 ? String(localized: "1 Artist") : String(localized: "\(n) Artists") }
 
-    // Two-digit fields with leading zeros: 05:20, 01:02:03.
-    static func duration(_ seconds: Double) -> String {
+    // Fields of two digits with leading zeros (05:20, 01:02:03); unpadded, the first field has no leading zero (5:20).
+    static func duration(_ seconds: Double, padded: Bool = true) -> String {
         let total = max(Int(seconds.rounded()), 0)
         let h = total / 3600, m = total % 3600 / 60, s = total % 60
-        return h > 0 ? String(format: "%02d:%02d:%02d", h, m, s) : String(format: "%02d:%02d", m, s)
+        let first = padded ? "%02d" : "%d"
+        return h > 0 ? String(format: first + ":%02d:%02d", h, m, s) : String(format: first + ":%02d", m, s)
     }
 }
 
@@ -222,11 +247,14 @@ struct FavoriteHeart: View {
     let filled: Bool
     let size: CGFloat
 
+    // VoiceOver's name for a heart button.
+    static func label(_ favorite: Bool) -> String {
+        favorite ? String(localized: "Remove Favorite") : String(localized: "Add Favorite")
+    }
+
     var body: some View {
         Image(filled ? "material-favorite" : "material-favorite-border")
-            .resizable()
-            .scaledToFit()
-            .frame(width: size, height: size)
+            .icon(size)
     }
 }
 
@@ -238,9 +266,7 @@ struct StatusIcon: View {
 
     var body: some View {
         Image(asset)
-            .resizable()
-            .scaledToFit()
-            .frame(width: TextSize.atLarge(style), height: TextSize.atLarge(style))
+            .icon(TextSize.atLarge(style))
             .foregroundStyle(Color.fgPrimary)
     }
 }
@@ -263,28 +289,23 @@ struct FinampIcon: View {
         "radio.off": "tabler-radio-off",
         "list.bullet": "tabler-playlist",
         "hifispeaker": "tabler-device-speaker",
-        // Choose Output: cast, as the AirPlay route's icon (Chap, 23 Nov: not Apple's AirPlay icon)
+        // Choose Output: cast, as the AirPlay route's icon
         "airplayaudio": "tabler-cast",
         "magnifyingglass": "tabler-search",
         "arrow.down.circle": "tabler-download",
-        "arrow.down.circle.fill": "tabler-device-sd-card",
         "lock.circle": "tabler-lock",
         "trash": "tabler-trash",
         // The artist page's counts, as on Finamp's artist screen
         "music.note": "material-music-note",
         "opticaldisc": "tabler-disc",
+        "person": "tabler-user",
         "calendar": "material-event",
-        // Finamp's Material heart, as on Playback and the track rows
-        "heart": "material-favorite-border",
-        "heart.fill": "material-favorite",
     ]
 
     var body: some View {
         if let asset = Self.tabler[systemName] {
             Image(asset)
-                .resizable()
-                .scaledToFit()
-                .frame(width: size, height: size)
+                .icon(size)
         } else {
             Image(systemName: systemName)
         }

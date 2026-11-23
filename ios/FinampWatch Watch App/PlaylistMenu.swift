@@ -56,19 +56,13 @@ private struct PlaylistMenuHost: ViewModifier {
 struct PlaylistMenu: View {
     let track: LibraryItem
 
-    private enum Load {
-        case loading
-        case failed(String)
-        case loaded([LibraryItem])
-    }
-
-    @State private var load = Load.loading
+    @State private var load = ListState.loading
     // Playlists known to hold the track, and those whose state is known (Finamp doesn't look them up until a tap).
     @State private var included: Set<String> = []
     @State private var known: Set<String> = []
     @State private var busy: Set<String> = []
-    // Finamp's menu shows each playlist's track count; here Favorites shows its count too. The counts as loaded, and
-    // what the track was in then: a toggle moves a count by one, as Finamp's reloaded count does.
+    // Finamp's menu shows each playlist's track count; here Favorites shows its count too. The counts as loaded and
+    // what the track was in at load: a toggle moves a count by one, as Finamp's reloaded count does.
     @State private var loadedIncluded: Set<String> = []
     @State private var loadedFavorite = false
     @State private var favoritesCount: Int?

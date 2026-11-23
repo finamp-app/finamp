@@ -7,13 +7,10 @@
     "%lld Albums" : {
 
     },
+    "%lld Artists" : {
+
+    },
     "%lld Tracks" : {
-
-    },
-    "%lld albums" : {
-
-    },
-    "%lld artists" : {
 
     },
     "%lld percent" : {
@@ -22,13 +19,10 @@
     "1 Album" : {
 
     },
+    "1 Artist" : {
+
+    },
     "1 Track" : {
-
-    },
-    "1 album" : {
-
-    },
-    "1 artist" : {
 
     },
     "Accent Colors (Experimental)" : {

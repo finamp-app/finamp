@@ -56,9 +56,8 @@ struct CollectionLink: View {
 struct ArtistChip: View {
     let artist: LibraryItem
     var textColor = Color.fgPrimary
-    var background = Color.white.opacity(0.1)
-    @ScaledMetric(relativeTo: .footnote) private var height: CGFloat = ArtistChip.height
-    static let height: CGFloat = 20
+    var background = Color.white.opacity(ArtistChips.fillOpacity)
+    @ScaledMetric(relativeTo: .footnote) private var height: CGFloat = ArtistChips.height
     @Environment(\.displayScale) private var displayScale
     // The phone sends a URL for every artist, so a missing image is only known once loading fails.
     @State private var image: UIImage?
@@ -77,14 +76,14 @@ struct ArtistChip: View {
                 .foregroundStyle(textColor)
                 .lineLimit(1)
                 .fixedSize()
-                .padding(.horizontal, 5)
+                .padding(.horizontal, ArtistChips.textPadding)
         }
         .frame(height: height)
         .background(background)
         .clipShape(RoundedRectangle(cornerRadius: ArtistChips.cornerRadius))
         .task(id: artist.artworkKey) {
             guard !artist.artworkKey.isEmpty else { return image = nil }
-            let loaded = await ArtworkStore.shared.image(for: artist, size: Int((height * displayScale / 20).rounded(.up)) * 20)
+            let loaded = await ArtworkStore.shared.image(for: artist, size: ArtworkStore.coverPixels(height * displayScale))
             // A slower load for an earlier artist must not replace the current one's photo
             guard !Task.isCancelled else { return }
             image = loaded
@@ -95,8 +94,8 @@ struct ArtistChip: View {
 // A track: title, artist and duration, the playing bars while it plays, and its heart (`TrackRows`).
 struct TrackRow: View {
     let track: LibraryItem
-    var onFavorite: (() -> Void)? = nil
-    var favorite = false
+    // The row's heart: the track's favourite state, as everywhere (`FavoriteOverrides`); a tap likes or unlikes it.
+    var heart = false
     var onTap: (() -> Void)? = nil
     var enlarged = false
 
@@ -112,6 +111,9 @@ struct TrackRow: View {
         footnoteSize * (enlarged ? TrackRows.enlargedHeartScale : 1) * TrackRows.heartScale
     }
 
+    private var favorite: Bool { FavoriteOverrides.shared.value(for: track) }
+    private func like() { Task { await FavoriteOverrides.shared.toggle(track) } }
+
     private var isPlaying: Bool { store.nowPlaying.hasTrack && store.nowPlaying.id == track.id }
 
     private var showsBars: Bool { isPlaying && store.nowPlaying.playing }
@@ -125,7 +127,6 @@ struct TrackRow: View {
     // The title block's height without the card's padding, for the card padding (TrackCardContentHeightKey).
     @State private var contentHeight: CGFloat = 0
 
-    // Title, artist and duration, and the playing bars.
     private var text: some View {
         VStack(alignment: .leading, spacing: TrackRows.titleToSubtitle) {
             Text(track.name)
@@ -138,7 +139,7 @@ struct TrackRow: View {
                 Spacer(minLength: TrackRows.artistToDuration)
                 if track.duration > 0 {
                     // Never wraps or shortens; the artist is cut instead
-                    Text(formatDuration(track.duration))
+                    Text(FinampFormat.duration(track.duration, padded: false))
                         .monospacedDigit()
                         .lineLimit(1)
                         .fixedSize()
@@ -164,10 +165,6 @@ struct TrackRow: View {
             .foregroundStyle(favorite ? Color.fgPrimary : Color.fgSecondary)
     }
 
-    private var heartLabel: String {
-        favorite ? String(localized: "Remove Favorite") : String(localized: "Add Favorite")
-    }
-
     var body: some View {
         Group {
             if let card {
@@ -185,7 +182,7 @@ struct TrackRow: View {
         Button { onTap?() } label: {
             HStack(spacing: TrackRows.textToHeart) {
                 text
-                if onFavorite != nil { heartGlyph.accessibilityHidden(true) }
+                if heart { heartGlyph.accessibilityHidden(true) }
             }
             .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
             // The playing row's content width, for TrackRowMargin.
@@ -198,15 +195,15 @@ struct TrackRow: View {
         }
         .buttonStyle(.plain)
         .overlay(alignment: .trailing) {
-            if let onFavorite {
+            if heart {
                 Color.clear
                     .frame(width: IconButtons.tapSize)
                     .frame(maxHeight: .infinity)
                     .contentShape(Rectangle())
-                    .trackHeart(track, like: onFavorite)
+                    .trackHeart(track, like: like)
                 // Centred on the glyph: the tap area reaches past it on both sides.
                 .padding(.trailing, card.trailing - (IconButtons.tapSize - heartSize) / 2)
-                .accessibilityLabel(heartLabel)
+                .accessibilityLabel(FavoriteHeart.label(favorite))
             }
         }
     }
@@ -219,18 +216,49 @@ struct TrackRow: View {
             }
             .buttonStyle(.plain)
 
-            if let onFavorite {
+            if heart {
                 // The layout gives the heart only its glyph's size, so the row keeps its height and the labels their
                 // room; the tap area reaches past the glyph on every side.
                 heartGlyph
                     .iconTapArea(heartSize)
-                    .trackHeart(track, like: onFavorite)
-                    .accessibilityLabel(heartLabel)
+                    .trackHeart(track, like: like)
+                    .accessibilityLabel(FavoriteHeart.label(favorite))
             }
         }
         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
         // The playing row's content width, for TrackRowMargin.
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { if isPlaying { TrackRowMargin.shared.contentWidth = $0 } }
+    }
+}
+
+// A page header's artists (an album, the queue): their chips in one scrolling line, each opening its artist; the
+// artist name in the accent when the phone sent no artists.
+struct ArtistChipsLine: View {
+    let artists: [LibraryItem]
+    let fallback: String
+    let open: (LibraryItem) -> Void
+
+    var body: some View {
+        if !artists.isEmpty {
+            // A NavigationLink here would make the entire header row tappable.
+            Marquee {
+                HStack(spacing: PageHeader.artistChipSpacing) {
+                    ForEach(artists) { artist in
+                        ArtistChip(artist: artist)
+                            .contentShape(Rectangle())
+                            .onTapGesture { open(artist) }
+                            .accessibilityAddTraits(.isButton)
+                            .accessibilityLabel("Artist \(artist.name)")
+                    }
+                }
+            }
+        } else if !fallback.isEmpty {
+            Marquee {
+                Text(fallback)
+                    .font(.footnote)
+                    .foregroundStyle(Color.finampBlue)
+            }
+        }
     }
 }
 
@@ -242,20 +270,18 @@ struct PlayingBars: View {
     let height: CGFloat
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    private static let durations: [Double] = [0.9, 0.8, 0.7]
-
     // The three bars and the two gaps between them
-    static func width(_ height: CGFloat) -> CGFloat { height * 4 / 15 * 4 }
+    static func width(_ height: CGFloat) -> CGFloat { height * TrackRows.barWidthShare * 4 }
 
     var body: some View {
-        let barWidth = height * 4 / 15
+        let barWidth = height * TrackRows.barWidthShare
         TimelineView(.animation(paused: scenePhase != .active || reduceMotion)) { context in
             let time = context.date.timeIntervalSinceReferenceDate
             HStack(alignment: .bottom, spacing: barWidth / 2) {
                 ForEach(0..<3, id: \.self) { index in
-                    let duration = Self.durations[index]
+                    let duration = TrackRows.barDurations[index]
                     let phase = time.truncatingRemainder(dividingBy: 2 * duration) / duration
-                    let barHeight = 2 + (height - 2) * Self.bounceOut(phase <= 1 ? phase : 2 - phase)
+                    let barHeight = TrackRows.barMinHeight + (height - TrackRows.barMinHeight) * Self.bounceOut(phase <= 1 ? phase : 2 - phase)
                     RoundedRectangle(cornerRadius: min(barWidth / 2, barHeight / 2))
                         .fill(color)
                         .frame(width: barWidth, height: barHeight)
@@ -283,7 +309,7 @@ struct TrackRowBackground: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: Cards.trackCornerRadius)
-            .fill(isPlaying ? Color.finampBlue.opacity(0.22) : Color.listFill)
+            .fill(isPlaying ? Color.finampBlue.opacity(Cards.playingFillOpacity) : Color.listFill)
             // The playing row's full width, for TrackRowMargin.
             .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { if isPlaying { TrackRowMargin.shared.rowWidth = $0 } }
     }
@@ -301,14 +327,7 @@ final class TrackRowMargin {
     // `TrackRows.barsFallbackInset` until both are measured, or if the numbers make no sense.
     var value: CGFloat {
         let margin = (rowWidth - contentWidth) / 2
-        return rowWidth > 0 && contentWidth > 0 && (2...30).contains(margin) ? margin : TrackRows.barsFallbackInset
+        return rowWidth > 0 && contentWidth > 0 && TrackRows.barsInsetRange.contains(margin) ? margin : TrackRows.barsFallbackInset
     }
 }
 
-func formatDuration(_ seconds: Double) -> String {
-    let total = max(Int(seconds.rounded()), 0)
-    let hours = total / 3600
-    let minutes = total % 3600 / 60
-    let secs = total % 60
-    return hours > 0 ? String(format: "%d:%02d:%02d", hours, minutes, secs) : String(format: "%d:%02d", minutes, secs)
-}

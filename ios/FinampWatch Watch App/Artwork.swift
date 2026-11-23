@@ -69,8 +69,11 @@ final class ArtworkStore {
     static let screenPixels: Int = {
         let device = WKInterfaceDevice.current()
         let pixels = max(device.screenBounds.width, device.screenBounds.height) * device.screenScale
-        return Int((pixels / 20).rounded(.up)) * 20
+        return coverPixels(pixels)
     }()
+
+    // Cover sizes are asked for in steps of 20 pixels, so slots of nearly the same size share one cached copy.
+    static func coverPixels(_ pixels: CGFloat) -> Int { Int((pixels / 20).rounded(.up)) * 20 }
 
     func image(for item: LibraryItem, size: Int) async -> UIImage? {
         // Include the image tag and size so replacements and resolutions stay separate.
@@ -83,16 +86,11 @@ final class ArtworkStore {
         }
 
         if let task = inFlight[key] { return await task.value }
-        let task = Task { await load(item, size: size, key: key) }
+        let task = Task { await viaPhone(item, size: size, key: key) }
         inFlight[key] = task
         let image = await task.value
         inFlight[key] = nil
         return image
-    }
-
-    // Covers come only through the phone: the watch never uses its own internet connection.
-    private func load(_ item: LibraryItem, size: Int, key: String) async -> UIImage? {
-        await viaPhone(item, size: size, key: key)
     }
 
     private func viaPhone(_ item: LibraryItem, size: Int, key: String) async -> UIImage? {
@@ -111,8 +109,7 @@ final class ArtworkStore {
         guard !isSending, !queue.isEmpty else { return }
         isSending = true
         Task {
-            // Let rows that appear together join one batch.
-            try? await Task.sleep(for: .milliseconds(30))
+            try? await Task.sleep(for: ConnectionPolicy.Cover.batchDelay)
             let batch = Array(queue.prefix(Self.batchLimit))
             queue.removeFirst(batch.count)
 
@@ -184,22 +181,15 @@ struct CoverView: View {
                 } else if let blur = BlurHash.image(item.blurHash) {
                     Image(uiImage: blur).resizable().scaledToFill()
                 } else if missing || item.artworkKey.isEmpty {
-                    // Icon at Finamp's 24 pt in a list tile's 56 pt cover.
-                    GeometryReader { proxy in
-                        Image("material-album")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: proxy.size.width * 0.43)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-                    .foregroundStyle(Color.fgPrimary)
+                    CentredIcon(asset: "material-album", share: Covers.missingIconShare)
+                        .foregroundStyle(Color.fgPrimary)
                 }
             }
-            .animation(.easeIn(duration: 0.7), value: image)
+            .animation(.easeIn(duration: Covers.fadeIn), value: image)
             .aspectRatio(1, contentMode: .fit)
-            .clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 8)))
+            .coverClip(circular: circular)
             .onGeometryChange(for: Int.self) { proxy in
-                Int((proxy.size.width * displayScale / 20).rounded(.up)) * 20
+                ArtworkStore.coverPixels(proxy.size.width * displayScale)
             } action: { pixelSize = $0 }
             .task(id: "\(item.artworkKey)-\(pixelSize)") {
                 if item.artworkKey.isEmpty { image = nil }

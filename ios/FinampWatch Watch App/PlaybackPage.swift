@@ -1,7 +1,5 @@
 import SwiftUI
-import WatchKit
 
-// Phone playback state with local extrapolation.
 // One of the short chips the phone sends (watch_protocol.md, shortFeatures).
 enum ShortChip: Equatable {
     case explicit
@@ -29,9 +27,12 @@ enum ShortChip: Equatable {
     }
 }
 
+// Phone playback state with local extrapolation.
 struct NowPlaying: Equatable {
     var hasTrack = false
     var id = ""
+    // The queue entry playing (`id` is the track, the same when it's queued twice).
+    var queueEntryID = ""
     var title = ""
     var artist = ""
     var artworkKey = ""
@@ -57,6 +58,8 @@ struct NowPlaying: Equatable {
     var radioAvailable = false
     var favorite = false
     var upNext: [LibraryItem] = []
+    // The queue entries the queue sheet lists, in order: it reloads when they change.
+    var queueEntryIDs: [String] = []
     // The colour Finamp's player takes from this track's cover; nil until the phone sends one.
     var coverColor: Color?
     // The short chips, in the order the user set Finamp's chips.
@@ -113,6 +116,7 @@ final class NowPlayingStore {
         nowPlaying = NowPlaying(
             hasTrack: state["hasTrack"] as? Bool ?? false,
             id: state["id"] as? String ?? "",
+            queueEntryID: state["queueEntryId"] as? String ?? "",
             title: state["title"] as? String ?? "",
             artist: state["artist"] as? String ?? "",
             artworkKey: state["artworkKey"] as? String ?? "",
@@ -142,6 +146,7 @@ final class NowPlayingStore {
                     artworkKey: row["artworkKey"] as? String ?? ""
                 )
             },
+            queueEntryIDs: state["queueEntryIds"] as? [String] ?? [],
             coverColor: (state["coverColor"] as? NSNumber).map { Color(argb: $0.intValue) },
             shortChips: short.compactMap(ShortChip.init)
         )
@@ -185,10 +190,6 @@ struct PlaybackPage: View {
     @ScaledMetric(relativeTo: .caption2) private var smallSize = SmallText.atLarge
 
     private var nowPlaying: NowPlaying { store.nowPlaying }
-
-    private var currentCover: LibraryItem { nowPlaying.trackItem }
-
-    private var artworkPixels: Int { ArtworkStore.screenPixels }
 
     @State private var path: [LibraryDestination] = []
 
@@ -246,12 +247,12 @@ struct PlaybackPage: View {
                         showVolume = true
                         hideVolume?.cancel()
                         hideVolume = Task {
-                            try? await Task.sleep(for: .seconds(1.5))
+                            try? await Task.sleep(for: .seconds(PlaybackLayout.volumeShownFor))
                             if !Task.isCancelled { showVolume = false }
                         }
                     }
             } else {
-                VStack(spacing: 8) {
+                VStack(spacing: StatusPages.spacing) {
                     StatusIcon(asset: "tabler-music", style: .largeTitle)
                     Text("Nothing playing")
                         .font(.headline)
@@ -260,6 +261,7 @@ struct PlaybackPage: View {
                         .foregroundStyle(Color.fgSecondary)
                         .multilineTextAlignment(.center)
                 }
+                .scenePadding(.horizontal)
             }
         }
         .contentShape(Rectangle())
@@ -294,11 +296,11 @@ struct PlaybackPage: View {
             artworkTriedAt = .now
             let key = nowPlaying.artworkKey
             let album = nowPlaying.albumID
-            let loaded = await ArtworkStore.shared.image(for: currentCover, size: artworkPixels)
+            let loaded = await ArtworkStore.shared.image(for: nowPlaying.trackItem, size: ArtworkStore.screenPixels)
             // A slower load for an earlier track must not replace the current one's cover
             guard !Task.isCancelled, key == nowPlaying.artworkKey else { return }
             artworkMissingFor = loaded == nil ? key : ""
-            withAnimation(.easeIn(duration: 0.7)) {
+            withAnimation(.easeIn(duration: Covers.fadeIn)) {
                 artwork = loaded
                 artworkFor = key
                 artworkAlbum = album
@@ -308,10 +310,10 @@ struct PlaybackPage: View {
         .task(id: isActive ? nowPlaying.upNext.map(\.artworkKey) : []) {
             guard isActive else { return }
             if !nowPlaying.artworkKey.isEmpty {
-                _ = await ArtworkStore.shared.image(for: currentCover, size: artworkPixels)
+                _ = await ArtworkStore.shared.image(for: nowPlaying.trackItem, size: ArtworkStore.screenPixels)
             }
             for next in nowPlaying.upNext where !next.artworkKey.isEmpty && !Task.isCancelled {
-                _ = await ArtworkStore.shared.image(for: next, size: artworkPixels)
+                _ = await ArtworkStore.shared.image(for: next, size: ArtworkStore.screenPixels)
             }
         }
         .onChange(of: isActive, initial: true) { _, active in
@@ -336,8 +338,8 @@ struct PlaybackPage: View {
         }
     }
 
-    // Ask again for this track's cover when its last load ended without one (the phone couldn't get it, the phone was
-    // out of reach); `seconds` since the last try keeps it from repeating faster than that.
+    // Ask again for this track's cover when its last load ended without one (the phone couldn't get it or was out of
+    // reach); `seconds` since the last try keeps it from repeating faster than that.
     private func retryCoverIfMissing(after seconds: TimeInterval) {
         guard isActive, !nowPlaying.artworkKey.isEmpty, artworkMissingFor == nowPlaying.artworkKey,
               Date.now.timeIntervalSince(artworkTriedAt) >= seconds
@@ -376,7 +378,7 @@ struct PlaybackPage: View {
         } else {
             // Always dark: this page's text is white
             LinearGradient(
-                colors: [Color.finampPurple.opacity(0.45), .black],
+                colors: [Color.finampPurple.opacity(PlaybackLayout.noCoverGradientOpacity), .black],
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -408,9 +410,9 @@ struct PlaybackPage: View {
         scrub = nil
         Task {
             do {
-                try await PhoneConnection.shared.seek(to: target)
+                try await PhoneConnection.shared.seek(to: target, in: before.queueEntryID)
             } catch {
-                if store.nowPlaying.id == before.id { store.nowPlaying = before }
+                if store.nowPlaying.queueEntryID == before.queueEntryID { store.nowPlaying = before }
                 PhoneMessage.show(error)
             }
         }
@@ -429,14 +431,14 @@ struct PlaybackPage: View {
     }
 
     // `PlaybackLayout.heartToChip`
-    @ScaledMetric(relativeTo: .footnote) private var heartSize = ArtistChip.height * PlaybackLayout.heartToChip
+    @ScaledMetric(relativeTo: .footnote) private var heartSize = ArtistChips.height * PlaybackLayout.heartToChip
 
     private var heartButton: some View {
         FavoriteHeart(filled: nowPlaying.favorite, size: heartSize)
             .foregroundStyle(controlTint)
             .iconTapArea(heartSize)
-            .trackHeart(currentCover) { store.toggleFavorite() }
-            .accessibilityLabel(nowPlaying.favorite ? String(localized: "Remove Favorite") : String(localized: "Add Favorite"))
+            .trackHeart(nowPlaying.trackItem) { store.toggleFavorite() }
+            .accessibilityLabel(FavoriteHeart.label(nowPlaying.favorite))
     }
 
     private func controlsStack(showChips: Bool) -> some View {
@@ -465,7 +467,7 @@ struct PlaybackPage: View {
                 if showVolume {
                     Label("Finamp volume \(Int((PhoneVolume.shared.shown * 100).rounded()))%", systemImage: "speaker.wave.2.fill")
                         .font(.system(size: smallSize))
-                        .foregroundStyle(.white.opacity(0.9))
+                        .foregroundStyle(.white.opacity(PlaybackLayout.volumeOpacity))
                         .frame(maxWidth: .infinity)
                 } else if showChips, showTrackInfo, shortChips ? !nowPlaying.shortChips.isEmpty : !nowPlaying.features.isEmpty {
                     if shortChips { shortFeatureChips } else { featureChips }
@@ -473,7 +475,7 @@ struct PlaybackPage: View {
                 if !showVolume, let lowered = PhoneVolume.shared.lowered {
                     Label("Finamp volume \(lowered)%", systemImage: "speaker.wave.1.fill")
                         .font(.system(size: smallSize))
-                        .foregroundStyle(.white.opacity(0.6))
+                        .foregroundStyle(.white.opacity(PlaybackLayout.loweredOpacity))
                         .frame(maxWidth: .infinity)
                 }
                 // Ticks every second only while the page is on screen and the watch is raised
@@ -489,13 +491,16 @@ struct PlaybackPage: View {
                             onSeek: canSeek ? { seek(toFraction: $0) } : nil,
                             tint: controlTint
                         )
+                        // A new track ends a drag begun on the one before, so its release can't seek the new one.
+                        .id(nowPlaying.queueEntryID)
+                        .onChange(of: nowPlaying.queueEntryID) { scrub = nil }
                         HStack {
-                            Text(formatDuration(position))
+                            Text(FinampFormat.duration(position, padded: false))
                             Spacer(minLength: 0)
-                            Text("-" + formatDuration(nowPlaying.duration - position))
+                            Text("-" + FinampFormat.duration(nowPlaying.duration - position, padded: false))
                         }
                         .font(.system(size: smallSize).monospacedDigit())
-                        .foregroundStyle(.white.opacity(0.75))
+                        .foregroundStyle(.white.opacity(PlaybackLayout.textOpacity))
                     }
                 }
             }
@@ -524,13 +529,11 @@ struct PlaybackPage: View {
                     }
                 } label: {
                     Image(nowPlaying.playing ? "tabler-player-pause" : "tabler-player-play")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: PlaybackLayout.playIconSize, height: PlaybackLayout.playIconSize)
+                        .icon(PlaybackLayout.playIconSize)
                         .foregroundStyle(controlTint)
                         .frame(width: PlaybackLayout.playSize, height: PlaybackLayout.playSize)
                         .background(
-                            controlTint.opacity(0.15),
+                            controlTint.opacity(PlaybackLayout.playFillOpacity),
                             in: RoundedRectangle(cornerRadius: PlaybackLayout.playCornerRadius, style: .continuous)
                         )
                 }
@@ -551,9 +554,7 @@ struct PlaybackPage: View {
                 ForEach(Array(nowPlaying.features.enumerated()), id: \.offset) { _, feature in
                     if feature == "E" {
                         Image("tabler-explicit")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: smallSize + 3, height: smallSize + 3)
+                            .icon(smallSize + PlaybackLayout.chipIconGrowth)
                             .accessibilityLabel("Explicit")
                     } else {
                         Text(feature)
@@ -561,7 +562,7 @@ struct PlaybackPage: View {
                 }
             }
             .font(.system(size: smallSize, weight: .light))
-            .foregroundStyle(.white.opacity(0.75))
+            .foregroundStyle(.white.opacity(PlaybackLayout.textOpacity))
         }
     }
 
@@ -578,7 +579,7 @@ struct PlaybackPage: View {
             Marquee(centered: true) { shortChipsRow(flexible: false) }
         }
         .font(.system(size: smallSize, weight: .light))
-        .foregroundStyle(.white.opacity(0.75))
+        .foregroundStyle(.white.opacity(PlaybackLayout.textOpacity))
         .lineLimit(1)
         .frame(maxWidth: .infinity)
     }
@@ -616,9 +617,7 @@ struct PlaybackPage: View {
 
     private func chipIcon(_ asset: String) -> some View {
         Image(asset)
-            .resizable()
-            .scaledToFit()
-            .frame(width: smallSize + 2, height: smallSize + 2)
+            .icon(smallSize + PlaybackLayout.shortChipIconGrowth)
     }
 
     // Temporary, until one style is chosen: controls in white or in the cover's colour as in Finamp's player, set with
@@ -637,9 +636,7 @@ struct PlaybackPage: View {
             }
         } label: {
             Image(image)
-                .resizable()
-                .scaledToFit()
-                .frame(width: PlaybackLayout.skipIconSize, height: PlaybackLayout.skipIconSize)
+                .icon(PlaybackLayout.skipIconSize)
                 .foregroundStyle(controlTint)
                 .frame(maxWidth: PlaybackLayout.skipMaxWidth)
                 .frame(height: PlaybackLayout.playSize)
@@ -654,7 +651,7 @@ struct PlaybackPage: View {
         if nowPlaying.artists.isEmpty {
             Text(nowPlaying.artist)
                 .font(.footnote)
-                .foregroundStyle(.white.opacity(0.75))
+                .foregroundStyle(.white.opacity(PlaybackLayout.textOpacity))
                 .lineLimit(1)
         } else {
             Marquee {
@@ -665,9 +662,8 @@ struct PlaybackPage: View {
                         } label: {
                             ArtistChip(
                                 artist: artist,
-                                textColor: .white.opacity(0.9),
-                                // White at 16 % in both playback styles
-                                background: .white.opacity(0.16)
+                                textColor: .white.opacity(PlaybackLayout.chipTextOpacity),
+                                background: .white.opacity(PlaybackLayout.chipFillOpacity)
                             )
                         }
                         .buttonStyle(.plain)
@@ -696,15 +692,12 @@ struct QueueView: View {
                 case .loading:
                     SkeletonTrackRows(count: 5)
                 case .failed(let message):
-                    RetryView(message: message) { await load(quiet: false) }
-                        .listRowBackground(Color.clear)
+                    RetryView(message: message, inList: true) { await load(quiet: false) }
+                        .clearListRow()
                 case .loaded(let tracks):
                     if tracks.isEmpty {
-                        Text("Nothing up next")
-                            .font(.footnote)
-                            .foregroundStyle(Color.fgSecondary)
-                            .frame(maxWidth: .infinity)
-                            .listRowBackground(Color.clear)
+                        EmptyNote(text: String(localized: "Nothing up next"), inList: true)
+                            .clearListRow()
                     } else {
                         ForEach(Array(tracks.enumerated()), id: \.offset) { _, track in
                             TrackRow(track: track, onTap: {
@@ -726,9 +719,9 @@ struct QueueView: View {
         .cardList()
         .navigationTitle("Now Playing")
         .accentTitle()
-        // Again whenever the playing track or the tracks after it change (a skip, shuffle, an edit on the phone), as
-        // Finamp's own queue follows its queue; the phone pushes both with now playing.
-        .task(id: [NowPlayingStore.shared.nowPlaying.id] + NowPlayingStore.shared.nowPlaying.upNext.map(\.id)) {
+        // Again whenever the playing entry or the entries it lists change (a skip, shuffle, a reorder or removal on the
+        // phone), as Finamp's own queue follows its queue; the phone pushes both with now playing.
+        .task(id: [NowPlayingStore.shared.nowPlaying.queueEntryID] + NowPlayingStore.shared.nowPlaying.queueEntryIDs) {
             // The first load is the sheet opening; later ones follow the phone, whatever the first one did.
             let quiet = followingPhone
             followingPhone = true
@@ -754,6 +747,8 @@ private struct QueueHeader: View {
     let onOpenArtist: (LibraryItem) -> Void
     private var store: NowPlayingStore { .shared }
     private var nowPlaying: NowPlaying { store.nowPlaying }
+    @State private var textHeight: CGFloat = 0
+    @State private var rowWidth: CGFloat = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: QueueLayout.spacing) {
@@ -761,40 +756,13 @@ private struct QueueHeader: View {
                 PageTitleRow(title: nowPlaying.title, favorite: nowPlaying.favorite, heartTrack: nowPlaying.trackItem) { store.toggleFavorite() }
                     .padding(.bottom, QueueLayout.titleBottom)
                 HStack(alignment: .center, spacing: PageHeader.coverToStats) {
-                    CoverView(
-                        item: LibraryItem(
-                            id: nowPlaying.id,
-                            name: nowPlaying.title,
-                            subtitle: "",
-                            artworkKey: nowPlaying.artworkKey,
-                            blurHash: nowPlaying.blurHash
-                        )
-                    )
+                    CoverView(item: nowPlaying.trackItem)
                     // A square as tall as the title, artist and album next to it, so they read as one block and
                     // grow together with Text Size; capped so a three-line title can't take over the row.
                     .frame(width: coverSide, height: coverSide)
                     // One line each; long ones scroll.
                     VStack(alignment: .leading, spacing: PageHeader.statSpacing) {
-                        if !nowPlaying.artists.isEmpty {
-                            // A NavigationLink here would make the entire row tappable.
-                            Marquee {
-                                HStack(spacing: PageHeader.artistChipSpacing) {
-                                    ForEach(nowPlaying.artists) { artist in
-                                        ArtistChip(artist: artist)
-                                            .contentShape(Rectangle())
-                                            .onTapGesture { onOpenArtist(artist) }
-                                            .accessibilityAddTraits(.isButton)
-                                            .accessibilityLabel("Artist \(artist.name)")
-                                    }
-                                }
-                            }
-                        } else if !nowPlaying.artist.isEmpty {
-                            Marquee {
-                                Text(nowPlaying.artist)
-                                    .font(.footnote)
-                                    .foregroundStyle(Color.finampBlue)
-                            }
-                        }
+                        ArtistChipsLine(artists: nowPlaying.artists, fallback: nowPlaying.artist, open: onOpenArtist)
                         if !nowPlaying.album.isEmpty {
                             Marquee {
                                 Text(nowPlaying.album)
@@ -808,7 +776,7 @@ private struct QueueHeader: View {
                     .background(alignment: .topLeading) {
                         VStack(alignment: .leading, spacing: PageHeader.statSpacing) {
                             if !nowPlaying.artists.isEmpty {
-                                Color.clear.frame(width: 1, height: ArtistChip.height)
+                                Color.clear.frame(width: 1, height: ArtistChips.height)
                             } else if !nowPlaying.artist.isEmpty {
                                 Text(verbatim: "Ag").font(.footnote)
                             }
@@ -845,9 +813,6 @@ private struct QueueHeader: View {
             .padding(.top, PageButtons.queueStripTop)
         }
     }
-
-    @State private var textHeight: CGFloat = 0
-    @State private var rowWidth: CGFloat = 0
 
     private var coverSide: CGFloat {
         let cap = rowWidth * QueueLayout.coverMaxShare
@@ -939,7 +904,7 @@ struct OutputSheet: View {
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(ThemeStore.shared.scheme?.onPrimary ?? .white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, isSmallWatch ? 5 : 8)
+                    .padding(.vertical, OutputLayout.buttonPadding)
                     .background(Color.finampBlue, in: Capsule())
             }
             .buttonStyle(.plain)
@@ -978,9 +943,6 @@ struct OutputSheet: View {
     }
 }
 
-// Tighter spacing for 40 mm and 41 mm watches.
-private let isSmallWatch = WKInterfaceDevice.current().screenBounds.height < 220
-
 // Finamp volume multiplies with iPhone volume and has no effect during AirPlay.
 @Observable
 final class PhoneVolume {
@@ -994,16 +956,21 @@ final class PhoneVolume {
     // The phone's audio route, pushed on every change.
     var route: (name: String, type: String)?
     @ObservationIgnored private var acceptedAt = Date.distantPast
+    @ObservationIgnored private var recheck: Task<Void, Never>?
 
     // What the crown and the volume labels show: the change on its way, else the phone's volume.
     var shown: Double { wanted ?? value ?? 1 }
 
-    // A push or context from the phone. Just after the phone accepted a change, a different pushed value is an older
-    // one still on its way, so it's skipped.
+    // A push or context from the phone. Just after the phone accepted a change, a different pushed value may be an
+    // older one still on its way, or a real change made on the phone: rather than take or drop it, ask the phone.
     func pushed(_ volume: Double) {
-        let older = Date.now.timeIntervalSince(acceptedAt) < ConnectionPolicy.Volume.olderPushWindow && abs(volume - (value ?? -1)) > 0.005
-        guard !older else { return }
-        value = volume
+        let maybeOlder = Date.now.timeIntervalSince(acceptedAt) < ConnectionPolicy.Volume.olderPushWindow && abs(volume - (value ?? -1)) > 0.005
+        guard maybeOlder else {
+            value = volume
+            return
+        }
+        recheck?.cancel()
+        recheck = Task { await PhoneConnection.shared.recheckVolume() }
     }
 
     // A fresh read of the phone's volume, or (`accepted`) the phone's acceptance of a change to it.
@@ -1023,15 +990,10 @@ final class PhoneVolume {
 private struct OutputControls: View {
     let route: String
     let routeType: String
-    private var phoneVolume = PhoneVolume.shared
-
-    init(route: String, routeType: String) {
-        self.route = route
-        self.routeType = routeType
-    }
+    private var phoneVolume: PhoneVolume { .shared }
 
     var body: some View {
-        VStack(spacing: isSmallWatch ? 4 : 8) {
+        VStack(spacing: OutputLayout.spacing) {
             StatusIcon(asset: routeIcon, style: .title2)
             Text("Playing on")
                 .font(.caption2)
@@ -1040,7 +1002,7 @@ private struct OutputControls: View {
                 .font(.headline)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
-            HStack(spacing: 6) {
+            HStack(spacing: OutputLayout.volumeRowSpacing) {
                 Image(systemName: "speaker.fill").font(.caption2).fixedIconSize()
                 ProgressView(value: phoneVolume.airPlay ? 1 : phoneVolume.shown)
                     .tint(Color.finampBlue)
@@ -1087,31 +1049,24 @@ private struct PhoneVolumeCrown: ViewModifier {
     let showsBar: Bool
     let onTurn: () -> Void
     // Use crown deltas; binding volume directly makes the scroll bar move downward as volume rises.
-    @State private var crown = 500.0
-    // Shown only while the crown turns: with .automatic, watchOS also flashed it when the screen was touched.
+    @State private var crown = VolumeCrown.start
+    // Shown only while the crown turns: with .automatic, watchOS also shows it when the screen is touched.
     @State private var turning = false
     @State private var hideBar: Task<Void, Never>?
-    private var phoneVolume = PhoneVolume.shared
-
-    init(enabled: Bool, showsBar: Bool, onTurn: @escaping () -> Void) {
-        self.enabled = enabled
-        self.showsBar = showsBar
-        self.onTurn = onTurn
-    }
+    private var phoneVolume: PhoneVolume { .shared }
 
     func body(content: Content) -> some View {
         content
             .focusable(enabled && !phoneVolume.airPlay)
-            .digitalCrownRotation($crown, from: 0, through: 1000, by: 0.02, sensitivity: .low, isContinuous: true,
+            .digitalCrownRotation($crown, from: VolumeCrown.range.lowerBound, through: VolumeCrown.range.upperBound, by: VolumeCrown.step, sensitivity: .low, isContinuous: true,
                                   isHapticFeedbackEnabled: true)
             .onChange(of: crown) { old, new in
                 let step = new - old
-                // A jump means the position wrapped at an end of its range
-                guard abs(step) < 1 else { return }
+                guard abs(step) < VolumeCrown.wrapGuard else { return }
                 turning = true
                 hideBar?.cancel()
                 hideBar = Task {
-                    try? await Task.sleep(for: .seconds(1.5))
+                    try? await Task.sleep(for: .seconds(PlaybackLayout.volumeShownFor))
                     if !Task.isCancelled { turning = false }
                 }
                 // From what's shown: the change still on its way, else the phone's volume.
@@ -1123,12 +1078,12 @@ private struct PhoneVolumeCrown: ViewModifier {
             }
             .digitalCrownAccessory {
                 Capsule()
-                    .fill(Color.white.opacity(0.25))
-                    .frame(width: 5, height: 40)
+                    .fill(Color.white.opacity(VolumeCrown.trackOpacity))
+                    .frame(width: VolumeCrown.barWidth, height: VolumeCrown.barHeight)
                     .overlay(alignment: .bottom) {
                         Capsule()
                             .fill(Color.finampBlue)
-                            .frame(width: 5, height: max(5, 40 * phoneVolume.shown))
+                            .frame(width: VolumeCrown.barWidth, height: max(VolumeCrown.barWidth, VolumeCrown.barHeight * phoneVolume.shown))
                     }
             }
             .digitalCrownAccessory(showsBar && turning ? .visible : .hidden)
@@ -1145,29 +1100,26 @@ struct ProgressLine: View {
     var tint: Color = .white
     // The release reports a location up to 20 pt from the last drag point, so seek where the dot was last shown.
     @State private var lastScrub: Double?
-    private static let line = PlaybackLayout.progressLine
-    private static let dot = PlaybackLayout.progressDot
     @Environment(\.displayScale) private var displayScale
 
     var body: some View {
         GeometryReader { geometry in
-            // Whole screen pixels: a dot drawn between pixels is smoothed differently at each position and seemed to
-            // pulse (17x20 to 20x22 px from one second to the next, Ultra 3 simulator).
+            // Whole screen pixels: a dot drawn between pixels is smoothed differently at each position and seems to
+            // pulse.
             let pixel = { (points: CGFloat) in (points * displayScale).rounded() / displayScale }
-            let line = pixel(Self.line)
-            let dot = pixel(Self.dot)
+            let line = pixel(PlaybackLayout.progressLine)
+            let dot = pixel(PlaybackLayout.progressDot)
             let x = pixel(geometry.size.width * min(max(fraction, 0), 1))
             let at = { (location: CGPoint) in min(max(location.x / max(geometry.size.width, 1), 0), 1) }
             ZStack(alignment: .leading) {
-                Capsule().fill(tint.opacity(0.3)).frame(height: line)
+                Capsule().fill(tint.opacity(PlaybackLayout.progressRestOpacity)).frame(height: line)
                 Capsule().fill(tint).frame(width: x, height: line)
                 // Grows while dragging by scaling only, so the bar never shifts
-                Circle().fill(tint).frame(width: dot, height: dot).scaleEffect(dragging ? 1.5 : 1)
+                Circle().fill(tint).frame(width: dot, height: dot).scaleEffect(dragging ? PlaybackLayout.progressDotDragScale : 1)
                     .offset(x: x - dot / 2)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
-            // A taller touch strip than the bar, without making the layout taller (PlaybackLayout.progressTouch…).
-            .padding(.top, PlaybackLayout.progressTouchAbove)
+            // A taller touch strip below the bar, without making the layout taller.
             .padding(.bottom, PlaybackLayout.progressTouchBelow)
             .contentShape(Rectangle())
             .highPriorityGesture(
@@ -1182,7 +1134,6 @@ struct ProgressLine: View {
                     },
                 including: onSeek == nil ? .none : .all
             )
-            .padding(.top, -PlaybackLayout.progressTouchAbove)
             .padding(.bottom, -PlaybackLayout.progressTouchBelow)
         }
         .frame(height: PlaybackLayout.progressHeight)
@@ -1193,8 +1144,8 @@ struct ProgressLine: View {
         .accessibilityAdjustableAction { direction in
             guard let onSeek else { return }
             switch direction {
-            case .increment: onSeek(min(fraction + 0.05, 1))
-            case .decrement: onSeek(max(fraction - 0.05, 0))
+            case .increment: onSeek(min(fraction + PlaybackLayout.progressAdjustStep, 1))
+            case .decrement: onSeek(max(fraction - PlaybackLayout.progressAdjustStep, 0))
             @unknown default: break
             }
         }
@@ -1212,10 +1163,6 @@ struct Marquee<Content: View>: View {
     // start, cut at the edge.
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    private let gap: CGFloat = 24
-    private let speed: CGFloat = 22
-    private let pause: Double = 1.5
 
     var body: some View {
         // Only the content's height counts in the layout (its width would widen the page). The height comes straight
@@ -1235,14 +1182,14 @@ struct Marquee<Content: View>: View {
                         .onGeometryChange(for: CGSize.self) { $0.size } action: { contentSize = $0 }
                     if contentSize.width > containerWidth + 1, scenePhase == .active, !reduceMotion {
                         TimelineView(.animation) { context in
-                            let cycle = Double((contentSize.width + gap) / speed) + pause
+                            let cycle = Double((contentSize.width + MarqueeLayout.gap) / MarqueeLayout.speed) + MarqueeLayout.pause
                             let time = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: cycle)
-                            HStack(spacing: gap) {
+                            HStack(spacing: MarqueeLayout.gap) {
                                 content
                                 content
                             }
                             .fixedSize()
-                            .offset(x: time < pause ? 0 : -CGFloat(time - pause) * speed)
+                            .offset(x: time < MarqueeLayout.pause ? 0 : -CGFloat(time - MarqueeLayout.pause) * MarqueeLayout.speed)
                         }
                     } else {
                         content.fixedSize()

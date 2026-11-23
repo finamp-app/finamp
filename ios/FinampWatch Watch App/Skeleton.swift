@@ -1,13 +1,12 @@
 import SwiftUI
 
-
 private struct Pulse: ViewModifier {
     @State private var dimmed = false
 
     func body(content: Content) -> some View {
         content
-            .opacity(dimmed ? 0.45 : 1)
-            .animation(.easeInOut(duration: 0.85).repeatForever(autoreverses: true), value: dimmed)
+            .opacity(dimmed ? Placeholders.dimmedOpacity : 1)
+            .animation(.easeInOut(duration: Placeholders.pulseTime).repeatForever(autoreverses: true), value: dimmed)
             .onAppear { dimmed = true }
     }
 }
@@ -17,7 +16,7 @@ extension View {
 }
 
 extension Color {
-    static var skeletonFill: Color { .white.opacity(0.14) }
+    static var skeletonFill: Color { .white.opacity(Placeholders.fillOpacity) }
 }
 
 struct SkeletonBar: View {
@@ -32,9 +31,9 @@ struct SkeletonBar: View {
     }
 }
 
-// Placeholders are the real rows and cards, with stand-in text greyed out by SwiftUI's placeholder redaction, placed in
-// the same lists with the same row modifiers as the content they stand in for. So their sizes, padding and gaps come
-// from the same settings (Layout.swift) and can't drift from the real ones.
+// Placeholders are the real rows and cards with SwiftUI's placeholder redaction, placed in the same lists with the same
+// row modifiers as the content they stand in for, so their sizes, padding and gaps come from the same settings
+// (Layout.swift) and can't drift from the real ones.
 // Each is a set of List rows: use it inside a List.
 
 extension LibraryItem {
@@ -51,7 +50,6 @@ extension LibraryItem {
 }
 
 extension View {
-    // A placeholder: the real view, redacted and pulsing, not tappable.
     func placeholderRow() -> some View {
         redacted(reason: .placeholder)
             .allowsHitTesting(false)
@@ -93,7 +91,7 @@ struct SkeletonTrackRows: View {
 
     var body: some View {
         ForEach(0..<count, id: \.self) { index in
-            TrackRow(track: .placeholder(index), onFavorite: hearts ? {} : nil, enlarged: enlarged)
+            TrackRow(track: .placeholder(index), heart: hearts, enlarged: enlarged)
                 .placeholderRow()
                 .cardRow()
         }

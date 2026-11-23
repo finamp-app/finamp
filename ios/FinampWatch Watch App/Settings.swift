@@ -93,7 +93,7 @@ struct SettingsView: View {
         .cardRow()
     }
 
-    // Revert if phone cannot be reached.
+    // Optimistic update; reverts on failure.
     private func set(_ value: ReferenceWritableKeyPath<PhoneSettings, Bool?>, name: String, to enabled: Bool) async {
         let previous = phone[keyPath: value]
         phone[keyPath: value] = enabled

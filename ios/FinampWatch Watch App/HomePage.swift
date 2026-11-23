@@ -18,6 +18,15 @@ struct HomePage: View {
 
     private static let columns = [GridItem(.flexible(), spacing: HomeTiles.gap), GridItem(.flexible(), spacing: HomeTiles.gap)]
 
+    // The tiles in one row, so they keep their gaps; it shrinks at the screen edges as one block. The placeholders use
+    // it too, so the real tiles take their place without a jump.
+    private func tileGrid<Tiles: View>(@ViewBuilder _ tiles: () -> Tiles) -> some View {
+        LazyVGrid(columns: Self.columns, spacing: HomeTiles.gap, content: tiles)
+            .widenToCardEdge()
+            .padding(.top, HomeTiles.topPadding)
+            .clearListRow()
+    }
+
     private func quickAction(_ action: QuickAction) -> some View {
         QuickActionButton(action: action) {
             do {
@@ -41,23 +50,16 @@ struct HomePage: View {
             List {
                 Group {
                     if let actions = sections?.actions ?? QuickAction.cached, !actions.isEmpty {
-                        // One row, so the tiles keep their gaps; it shrinks at the screen edges as one block.
-                        LazyVGrid(columns: Self.columns, spacing: HomeTiles.gap) {
-                            ForEach(actions) { action in quickAction(action) }
-                        }
-                        .widenToCardEdge()
-                        .padding(.top, HomeTiles.topPadding)
-                        .clearListRow()
+                        tileGrid { ForEach(actions) { action in quickAction(action) } }
                     } else if sections == nil {
                         // Wait for cached or fetched actions to avoid briefly showing a different button.
-                        LazyVGrid(columns: Self.columns, spacing: HomeTiles.gap) {
-                            ForEach(0..<4, id: \.self) { _ in
+                        tileGrid {
+                            ForEach(0..<HomeTiles.placeholderCount, id: \.self) { _ in
                                 RoundedRectangle(cornerRadius: HomeTiles.cornerRadius)
-                                    .fill(Color.finampBlue.opacity(0.08))
+                                    .fill(Color.finampBlue.opacity(HomeTiles.placeholderFillOpacity))
                                     .frame(minHeight: HomeTiles.minHeight)
                             }
                         }
-                        .clearListRow()
                     } else {
                         Button {
                             Task {
@@ -72,12 +74,12 @@ struct HomePage: View {
                             Label {
                                 Text("Shuffle all")
                             } icon: {
-                                FinampIcon(systemName: "shuffle", size: 18)
+                                FinampIcon(systemName: "shuffle", size: HomeTiles.shuffleAllIconSize)
                             }
                                 .font(.headline)
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 10)
+                                .padding(.vertical, HomeTiles.shuffleAllPadding)
                                 .background(.finampGradient, in: Capsule())
                         }
                         .buttonStyle(.plain)
@@ -207,11 +209,11 @@ struct QuickActionButton: View {
                     // Two lines kept for a one-line title, so every tile's icon sits at the same height.
                     .lineLimit(2, reservesSpace: true)
                     .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(HomeTiles.minimumLabelScale)
             }
             .padding(HomeTiles.padding)
             .frame(maxWidth: .infinity, minHeight: HomeTiles.minHeight)
-            .background(Color.finampBlue.opacity(0.18), in: RoundedRectangle(cornerRadius: HomeTiles.cornerRadius))
+            .background(Color.finampBlue.opacity(HomeTiles.fillOpacity), in: RoundedRectangle(cornerRadius: HomeTiles.cornerRadius))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(action.title)
@@ -262,7 +264,6 @@ struct HomeCard: View {
                     .font(.headline.weight(Cards.homeTitleWeight))
                     .lineLimit(2)
                 if let detail {
-                    // As the cover rows' subtitle.
                     Text(detail)
                         .font(.footnote)
                         .foregroundStyle(Color.fgSecondary)
@@ -272,9 +273,7 @@ struct HomeCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             if let stateIcon {
                 Image(stateIcon)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: stateIconSize, height: stateIconSize)
+                    .icon(stateIconSize)
             }
         }
         .homeCardBackground()
@@ -292,43 +291,20 @@ struct SearchResultsView: View {
         Group {
             if let results {
                 if results.isEmpty {
-                    Text("No results for “\(query)”")
-                        .font(.footnote)
-                        .foregroundStyle(Color.fgSecondary)
-                        .multilineTextAlignment(.center)
+                    EmptyNote(text: String(localized: "No results for “\(query)”"))
                 } else {
                     // A List like the other pages, for watchOS's shrinking rows and its own row backgrounds.
                     List {
-                        Group {
-                            HomeSection(title: String(localized: "Artists"), items: results.artists) { artist in
-                                NavigationLink(value: LibraryDestination.artistAlbums(artist)) {
-                                    HomeCard(item: artist, circular: true)
+                        ForEach(cardGroups(results), id: \.title) { group in
+                            HomeSection(title: group.title, items: group.items) { item in
+                                NavigationLink(value: group.open(item)) {
+                                    HomeCard(item: item, circular: group.circular)
                                 }
                             }
-                            HomeSection(title: String(localized: "Performing Artists"), items: results.performingArtists) { artist in
-                                NavigationLink(value: LibraryDestination.artistAlbums(artist)) {
-                                    HomeCard(item: artist, circular: true)
-                                }
-                            }
-                            HomeSection(title: String(localized: "Albums"), items: results.albums) { album in
-                                NavigationLink(value: LibraryDestination.tracks(album, type: "albums")) {
-                                    HomeCard(item: album)
-                                }
-                            }
-                            HomeSection(title: String(localized: "Playlists"), items: results.playlists) { playlist in
-                                NavigationLink(value: LibraryDestination.tracks(playlist, type: "playlists")) {
-                                    HomeCard(item: playlist)
-                                }
-                            }
-                            HomeSection(title: String(localized: "Tracks"), items: results.tracks) { track in
-                                TrackRow(
-                                    track: track,
-                                    onFavorite: { Task { await FavoriteOverrides.shared.toggle(track) } },
-                                    favorite: FavoriteOverrides.shared.value(for: track),
-                                    onTap: { Task { await play(track) } }
-                                )
+                        }
+                        HomeSection(title: String(localized: "Tracks"), items: results.tracks) { track in
+                            TrackRow(track: track, heart: true, onTap: { Task { await play(track) } })
                                 .cardRow()
-                            }
                         }
                     }
                     .cardList()
@@ -340,7 +316,6 @@ struct SearchResultsView: View {
                     .cardList()
             }
         }
-        // The query in quotes, as in "No results for “…”".
         .navigationTitle(Text(verbatim: "“\(query)”"))
         .task { if results == nil { await load() } }
     }
@@ -354,13 +329,22 @@ struct SearchResultsView: View {
         }
     }
 
+    // The results' card sections, in Finamp's search order; each opens its item's page.
+    private func cardGroups(_ results: SearchResults) -> [(title: String, items: [LibraryItem], circular: Bool, open: (LibraryItem) -> LibraryDestination)] {
+        [
+            (String(localized: "Artists"), results.artists, true, { .artistAlbums($0) }),
+            (String(localized: "Performing Artists"), results.performingArtists, true, { .artistAlbums($0) }),
+            (String(localized: "Albums"), results.albums, false, { .tracks($0, type: "albums") }),
+            (String(localized: "Playlists"), results.playlists, false, { .tracks($0, type: "playlists") }),
+        ]
+    }
+
     private func play(_ track: LibraryItem) async {
         do {
             try await PhoneConnection.shared.play("search", startId: track.id, extra: ["query": query])
             onPlay()
         } catch {
-            self.error = error.localizedDescription
-            results = nil
+            PhoneMessage.show(error)
         }
     }
 }
@@ -376,17 +360,8 @@ struct FavoritesLogo: View {
         Rectangle()
             .fill(tint.opacity(FavoritesCover.fillOpacity))
             .aspectRatio(1, contentMode: .fit)
-            .overlay {
-                GeometryReader { geometry in
-                    Image("tabler-heart")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundStyle(.white)
-                        .frame(width: geometry.size.width * FavoritesCover.iconShare)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-            }
-            .clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: FavoritesCover.cornerRadius)))
+            .overlay { CentredIcon(asset: "tabler-heart", share: FavoritesCover.iconShare).foregroundStyle(.white) }
+            .coverClip(circular: circular)
             .accessibilityHidden(true)
     }
 }

@@ -58,15 +58,17 @@ struct QuickAction: Identifiable, Hashable {
     static var cached: [QuickAction]? {
         get {
             guard let rows = UserDefaults.standard.array(forKey: "quickActions") as? [[String: Any]] else { return nil }
-            return rows.compactMap { row in
-                guard let index = row["index"] as? Int else { return nil }
-                return QuickAction(index: index, title: row["title"] as? String ?? "", action: row["action"] as? String ?? "")
-            }
+            return rows.compactMap(decode)
         }
         set {
             let rows = newValue?.map { ["index": $0.index, "title": $0.title, "action": $0.action] as [String: Any] }
             UserDefaults.standard.set(rows, forKey: "quickActions")
         }
+    }
+
+    static func decode(_ row: [String: Any]) -> QuickAction? {
+        guard let index = row["index"] as? Int else { return nil }
+        return QuickAction(index: index, title: row["title"] as? String ?? "", action: row["action"] as? String ?? "")
     }
 
     var systemImage: String {
@@ -196,10 +198,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
 
     func home(quiet: Bool = false) async throws -> HomeSections {
         guard let sections = try await request("home", [:], quiet: quiet)["result"] as? [String: Any] else { throw PhoneError.unexpectedReply }
-        let actions = ((sections["actions"] as? [[String: Any]]) ?? []).compactMap { row -> QuickAction? in
-            guard let index = row["index"] as? Int else { return nil }
-            return QuickAction(index: index, title: row["title"] as? String ?? "", action: row["action"] as? String ?? "")
-        }
+        let actions = ((sections["actions"] as? [[String: Any]]) ?? []).compactMap(QuickAction.decode)
         return HomeSections(
             recent: Self.items(from: sections["recent"]),
             newAlbums: Self.items(from: sections["newAlbums"]),
@@ -250,16 +249,15 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         case uncertain
         // The phone answered with an error of its own (e.g. Finamp still starting).
         case refused(String)
-        // It didn't get through.
         case failed
     }
 
     // Sends the crown's newest value until the phone confirms it, for up to `ConnectionPolicy.Volume.giveUpAfter` from
-    // the newest turn (an exact value: the phone applying it twice changes nothing; the phone applies requests in the order they
-    // arrive, so the last to reach it wins). Confirmed only by the phone's `true` to that send, or by reading the
-    // phone's volume when it may have arrived (a slow answer isn't a lost message: a phone waking Finamp answered in up
-    // to 3 s), never by a pushed volume, which may be old. A newer turn is sent instead of checking an older
-    // one. If nothing gets through, the crown shows the phone's last known volume again.
+    // the newest turn (an exact value: applying it twice changes nothing, and the phone applies requests in the order
+    // they arrive, so the last to reach it wins). Confirmed only by the phone's `true` to that send, or by reading the
+    // phone's volume when it may have arrived (a slow answer isn't a lost message: a phone waking Finamp takes up to
+    // 3 s), never by a pushed volume, which may be old. A newer turn is sent instead of checking an older one. If
+    // nothing gets through, the crown shows the phone's last known volume again.
     private func sendVolumes() async {
         let volumes = PhoneVolume.shared
         // The status shows for one send still unanswered after a second, and from the first failure until it's settled;
@@ -318,8 +316,9 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
                     }
                     PhoneActivity.shared.end(check, read.answered ? .answered : .neutral)
                     if read.answered { outcome = .answered }
-                    if let actual = read.volume, abs(actual - volume) < 0.005, volumes.wanted == volume {
-                        volumes.wanted = nil
+                    if let actual = read.volume {
+                        volumes.observed(actual)
+                        if abs(actual - volume) < 0.005, volumes.wanted == volume { volumes.wanted = nil }
                     }
                 case .refused(let message):
                     outcome = .answered
@@ -353,6 +352,15 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         }
     }
 
+    // After a pushed volume that may be an older one still on its way (`PhoneVolume.pushed`): the phone's volume now,
+    // read quietly; not taken if the crown turned meanwhile, since that change's answer brings the volume.
+    func recheckVolume() async {
+        let turnedAt = wantedAt
+        guard let read = try? await readVolume(before: .now + ConnectionPolicy.Volume.noAnswerAfter),
+              let volume = read.volume, wantedAt == turnedAt else { return }
+        PhoneVolume.shared.observed(volume)
+    }
+
     // The phone's volume read now (the Output sheet's request), before `deadline`. `answered`: the phone replied,
     // even if with an error.
     private func readVolume(before deadline: ContinuousClock.Instant) async throws -> (volume: Double?, answered: Bool) {
@@ -362,7 +370,6 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
             let reply = try await request("output", [:], replyTimeout: min(ConnectionPolicy.Volume.noAnswerAfter, left),
                                           quiet: true, patience: .clock(left))
             guard let volume = (reply["result"] as? [String: Any])?["volume"] as? Double else { return (nil, true) }
-            PhoneVolume.shared.observed(volume)
             return (volume, true)
         } catch is CancellationError {
             throw CancellationError()
@@ -385,7 +392,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         let wasReachable = WCSession.default.isReachable
         while ContinuousClock.now < until {
             if !wasReachable && WCSession.default.isReachable { return }
-            try await Task.sleep(until: min(ContinuousClock.now + .milliseconds(100), until), clock: .continuous)
+            try await Task.sleep(until: min(ContinuousClock.now + ConnectionPolicy.reachabilityPoll, until), clock: .continuous)
             if !WCSession.default.isReachable { await noteWaitingForPhone() }
         }
     }
@@ -400,7 +407,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     @MainActor private func noteWaitingForPhone() {
         let now = ContinuousClock.now
         // As in `request`: a long gap is the app suspended (wrist down), not time spent waiting on screen.
-        if let last = stuckLastNoted { stuckFor += min(now - last, .milliseconds(500)) }
+        if let last = stuckLastNoted { stuckFor += min(now - last, ConnectionPolicy.maxAwakeStep) }
         stuckLastNoted = now
         guard !restartedWhileStuck, stuckFor >= ConnectionPolicy.Recovery.restartAfter, WCSession.isSupported() else {
             return
@@ -440,8 +447,9 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         _ = try await request("control", ["action": action])
     }
 
-    func seek(to position: Double) async throws {
-        _ = try await request("seek", ["position": position])
+    // The phone drops it if `queueEntry` is no longer playing.
+    func seek(to position: Double, in queueEntry: String) async throws {
+        _ = try await request("seek", ["position": position, "queueEntryId": queueEntry])
     }
 
     func queue(quiet: Bool = false) async throws -> [LibraryItem] {
@@ -648,10 +656,9 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
             case .awake(let limit): if awake >= limit { break waiting }
             case .clock: if let notAfter, ContinuousClock.now >= notAfter { break waiting }
             }
-            try await Task.sleep(for: .milliseconds(100))
-            // A gap much longer than the sleep is the app suspended (wrist down), not time spent waiting.
+            try await Task.sleep(for: ConnectionPolicy.reachabilityPoll)
             let now = ContinuousClock.now
-            awake += min(now - last, .milliseconds(500))
+            awake += min(now - last, ConnectionPolicy.maxAwakeStep)
             last = now
             await noteWaitingForPhone()
         }
@@ -831,7 +838,6 @@ nonisolated private final class ReplyGate: @unchecked Sendable {
     }
 }
 
-// Milliseconds, for the watch log's timings.
 extension Duration {
     var ms: Int64 { components.seconds * 1000 + components.attoseconds / 1_000_000_000_000_000 }
 }

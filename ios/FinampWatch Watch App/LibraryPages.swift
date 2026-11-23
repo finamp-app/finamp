@@ -24,9 +24,6 @@ enum LibraryKind: String {
     }
 }
 
-// Prefetch next page before reaching the end.
-let pagePrefetchRows = 10
-
 enum ListState {
     case loading
     case loaded([LibraryItem])
@@ -39,6 +36,8 @@ enum ListState {
 @MainActor @Observable
 final class Pager {
     static let pageSize = 50
+    // The next page is asked for this many rows before the end.
+    static let prefetchRows = 10
     private(set) var state: ListState = .loading
     private(set) var hasMore = false
     private(set) var isLoadingMore = false
@@ -80,15 +79,11 @@ final class Pager {
         hasMore = !page.isEmpty
     }
 
-    // A failure shown in place of the list (a play that failed).
-    func fail(_ message: String) {
-        state = .failed(message)
+    func nearsEnd(_ id: String, in items: [LibraryItem]) -> Bool {
+        items.suffix(Self.prefetchRows).contains { $0.id == id }
     }
 
-    // The last rows ask for the next page.
-    func nearsEnd(_ id: String, in items: [LibraryItem]) -> Bool {
-        items.suffix(pagePrefetchRows).contains { $0.id == id }
-    }
+    static func nearsEnd(_ index: Int, of count: Int) -> Bool { index >= count - prefetchRows }
 }
 
 struct LibraryPage: View {
@@ -96,8 +91,6 @@ struct LibraryPage: View {
     // Page views are created at launch; only fetch while visible.
     let isActive: Bool
     let onPlay: () -> Void
-
-    static let pageSize = 50
 
     @State private var items: [LibraryItem]?
     @State private var error: String?
@@ -112,10 +105,7 @@ struct LibraryPage: View {
         LibraryNavigationStack(path: $path) {
             Group {
                 if let items, items.isEmpty {
-                    Text(kind == .downloads ? String(localized: "Nothing downloaded on your iPhone") : String(localized: "Nothing here"))
-                        .font(.footnote)
-                        .foregroundStyle(Color.fgSecondary)
-                        .multilineTextAlignment(.center)
+                    EmptyNote(text: kind == .downloads ? String(localized: "Nothing downloaded on your iPhone") : String(localized: "Nothing here"))
                 } else if let items, kind == .tracks {
                     // List supplies watchOS's shrinking rows at the screen edges.
                     List {
@@ -123,7 +113,7 @@ struct LibraryPage: View {
                             trackRow(item, index: index)
                                 .cardRow(isPlaying: NowPlayingStore.shared.nowPlaying.id == item.id)
                                 .onAppear {
-                                    if index >= items.count - pagePrefetchRows { Task { await loadMore() } }
+                                    if Pager.nearsEnd(index, of: items.count) { Task { await loadMore() } }
                                 }
                         }
                         if isLoadingMore {
@@ -162,11 +152,9 @@ struct LibraryPage: View {
                     .cardList()
                 } else {
                     List {
-                        Group {
-                            SkeletonCoverRows(
-                                coverShare: kind.coverShare, circular: kind == .artists, sectionHeader: kind == .downloads
-                            )
-                        }
+                        SkeletonCoverRows(
+                            coverShare: kind.coverShare, circular: kind == .artists, sectionHeader: kind == .downloads
+                        )
                         .coverListRow()
                     }
                     .coverList()
@@ -197,7 +185,7 @@ struct LibraryPage: View {
         ForEach(Array(zip(indices, items[indices])), id: \.1.id) { index, item in
             CollectionLink(item: item, kind: kind == .downloads ? Self.downloadKind(item.kind) : kind)
                 .onAppear {
-                    if index >= items.count - pagePrefetchRows { Task { await loadMore() } }
+                    if Pager.nearsEnd(index, of: items.count) { Task { await loadMore() } }
                 }
         }
     }
@@ -225,8 +213,7 @@ struct LibraryPage: View {
     private func trackRow(_ item: LibraryItem, index: Int) -> some View {
         TrackRow(
             track: item,
-            onFavorite: { Task { await FavoriteOverrides.shared.toggle(item) } },
-            favorite: FavoriteOverrides.shared.value(for: item),
+            heart: true,
             onTap: { Task { await playTrack(item, index: index) } },
             enlarged: true
         )
@@ -239,15 +226,15 @@ struct LibraryPage: View {
         isReloading = true
         defer { isReloading = false }
         do {
-            // Fetch again if Offline Mode changed while this page was on its way.
+            // Fetch again if Offline Mode changed while this page was loading.
             var firstPage: [LibraryItem]
             var started: Int
             var again = false
             repeat {
                 started = generation
-                // A fetch again because Offline Mode changed meanwhile is the phone's doing.
+                // A refetch after an Offline Mode change is quiet.
                 firstPage = try await PhoneConnection.shared.list(
-                    kind.type, offset: 0, limit: Self.pageSize, quiet: quiet || again
+                    kind.type, offset: 0, limit: Pager.pageSize, quiet: quiet || again
                 )
                 again = true
             } while generation != started
@@ -271,7 +258,7 @@ struct LibraryPage: View {
         defer { isLoadingMore = false }
         let started = generation
         do {
-            let page = try await PhoneConnection.shared.list(kind.type, offset: current.count, limit: Self.pageSize)
+            let page = try await PhoneConnection.shared.list(kind.type, offset: current.count, limit: Pager.pageSize)
             guard generation == started, let latest = items else { return }
             let known = Set(latest.map(\.id))
             items = latest + page.filter { !known.contains($0.id) }

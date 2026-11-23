@@ -10,7 +10,7 @@ file together. `test/watch_protocol_test.dart` fails when the three disagree on 
 
 ## Requests (watch → phone)
 
-Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{artworks, missing}` or `{error}`.
+Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{artworks, missing}` or `{error, code?}`.
 
 | Request | Args | Result |
 |---|---|---|
@@ -34,7 +34,7 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 | `quickAction` | `index`, `action` | `true` (refused if Finamp's list changed) |
 | `output` | — | `{route, routeType, volume}` |
 | `setVolume` | `volume` 0…1 | `true` |
-| `seek` | `position` (seconds) | `true` |
+| `seek` | `position` (seconds), `queueEntryId` | `true`; `false`, not seeking, when that queue entry is no longer playing |
 | `settings` | — | `{transcoding, offline}` |
 | `setSetting` | `name` (`transcoding` \| `offline`), `enabled` | `true`, or `{reload, reloadButton, archive}` when Finamp asks to reload the queue |
 | `reloadQueue` | `archive` | `true` |
@@ -44,11 +44,12 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 **Row:** `{id, name, subtitle, artistId, artworkKey, blurHash, duration, year,
 releaseDate, trackCount, favorite, downloaded, downloadLock?, kind, artists?}`.
 
-**Now playing:** `{hasTrack, id, title, artist, artworkKey, blurHash, albumId, album, albumArtist,
+**Now playing:** `{hasTrack, id, queueEntryId, title, artist, artworkKey, blurHash, albumId, album, albumArtist,
 albumArtistId, artists, features, duration, position, updatedAt, speed, playing, advancing, loop, shuffled, radio, radioAvailable,
-favorite, upNext, coverColor, shortFeatures}`; `features` holds the player's feature chips as Finamp's player shows them
+favorite, upNext, queueEntryIds, coverColor, shortFeatures}`; `features` holds the player's feature chips as Finamp's player shows them
 (the user's chip settings, in their order; `E` for explicit, empty with chips turned off); `upNext`
-holds the next two tracks' `{id, artworkKey}` so the watch can load their covers ahead. The watch counts
+holds the next two tracks' `{id, artworkKey}` so the watch can load their covers ahead; `queueEntryIds` the queue
+entries the `queue` request lists, so the queue sheet reloads when they change. The watch counts
 `position` on from `updatedAt` only while `advancing` (playing and not loading or buffering), so its time stops with
 the phone's when a track can't load; `playing` still sets the play/pause button. `loop` (`none` \| `one` \| `all`),
 `shuffled`, `radio` and `radioAvailable` (radio is on and can run for this queue) drive the queue's buttons; the
@@ -77,5 +78,6 @@ Sent live while the watch app is reachable; the application context always holds
 
 ## Flutter ↔ iOS (same channel)
 
-Flutter → iOS: the pushes above, plus `watchState` (is a watch app installed). iOS → Flutter: every watch request, plus
-`watchState {available}` when the watch app appears or goes away.
+Flutter → iOS: the pushes above, plus `watchState` (is a watch app installed). iOS → Flutter: every watch request
+except `showOutputPicker` (the bridge answers it), `watchState {available}` when the watch app appears or goes away,
+and `watchLog {lines}` with the watch's log lines.

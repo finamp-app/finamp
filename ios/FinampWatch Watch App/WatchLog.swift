@@ -2,9 +2,9 @@ import Foundation
 import OSLog
 import WatchConnectivity
 
-// The watch's log, for finding bugs that only a real watch shows. Each line goes to Apple's unified log (Console, a
-// sysdiagnose), to a capped file on the watch, and in batches to Finamp on the iPhone, which adds them to its own logs
-// (Settings → Logs, with Finamp's copy, share and export). Lines hold states, request names, timings and error kinds:
+// The watch's log. Each line goes to Apple's unified log (Console, a sysdiagnose), to a capped file on the watch, and
+// in batches to Finamp on the iPhone, which adds them to its own logs (Settings → Logs, with Finamp's copy, share and
+// export). Lines hold states, request names, timings and error kinds:
 // never names, IDs or addresses.
 final class WatchLog: @unchecked Sendable {
     enum Level: String {

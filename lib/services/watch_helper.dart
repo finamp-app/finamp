@@ -146,6 +146,9 @@ class WatchHandler {
             );
             return true;
           case 'seek':
+            // Dropped when the track changed while the seek was on its way: it was meant for the one before.
+            final entry = arguments['queueEntryId'];
+            if (entry is String && GetIt.instance<QueueService>().getCurrentTrack()?.id != entry) return false;
             final seconds = (arguments['position'] as num).toDouble();
             await GetIt.instance<MusicPlayerBackgroundTask>().seek(
               Duration(milliseconds: max(0, (seconds * 1000).round())),
@@ -267,6 +270,8 @@ class WatchHandler {
     final container = GetIt.instance<ProviderContainer>();
     _stopListening.addAll([
       GetIt.instance<QueueService>().getCurrentTrackStream().listen((_) => _scheduleNowPlayingPush()).cancel,
+      // Queue edits (reorder, remove, add) change `queueEntryIds`, so the watch's queue sheet reloads.
+      GetIt.instance<QueueService>().getQueueStream().listen((_) => _scheduleNowPlayingPush()).cancel,
       GetIt.instance<MusicPlayerBackgroundTask>().playbackState.listen((_) => _scheduleNowPlayingPush()).cancel,
       // Metadata arrives after the track; this also keeps the provider alive.
       container.listen(currentTrackMetadataProvider, (_, _) => _scheduleNowPlayingPush()).close,
@@ -274,7 +279,6 @@ class WatchHandler {
       GetIt.instance<QueueService>().getPlaybackOrderStream().listen((_) => _scheduleNowPlayingPush()).cancel,
       container.listen(finampSettingsProvider.radioEnabled, (_, _) => _scheduleNowPlayingPush()).close,
       container.listen(currentRadioAvailabilityStatusProvider, (_, _) => _scheduleNowPlayingPush()).close,
-      // The feature chips
       container.listen(finampSettingsProvider.featureChipsConfiguration, (_, _) => _scheduleNowPlayingPush()).close,
       container.listen(finampSettingsProvider.playbackSpeed, (_, _) => _scheduleNowPlayingPush()).close,
       container.listen(finampSettingsProvider.currentVolume, (_, _) => _scheduleNowPlayingPush()).close,
@@ -298,10 +302,7 @@ class WatchHandler {
           _sentItems.clear();
           _playlistFirstTracks.clear();
           _childrenCache = null;
-          for (final subscription in _followedFavorites.values) {
-            subscription.close();
-          }
-          _followedFavorites.clear();
+          _clearFollowedFavorites();
           _pushFavoriteStates();
         }
         _pushIfChanged('account', account);
@@ -343,6 +344,7 @@ class WatchHandler {
       stop();
     }
     _stopListening.clear();
+    _clearFollowedFavorites();
     _nowPlayingPushTimer?.cancel();
     _favoriteSubscription?.close();
     _favoriteSubscription = null;
@@ -352,6 +354,13 @@ class WatchHandler {
     _coverColorSubscriptionItem = null;
     _lastPushed = null;
     _lastPushedValues.clear();
+  }
+
+  static void _clearFollowedFavorites() {
+    for (final subscription in _followedFavorites.values) {
+      subscription.close();
+    }
+    _followedFavorites.clear();
   }
 
   static Timer? _nowPlayingPushTimer;
@@ -419,6 +428,8 @@ class WatchHandler {
     return {
       'hasTrack': true,
       'id': item.id.raw,
+      // The queue entry itself, unlike `id` different for each time a track is queued: a seek names it.
+      'queueEntryId': current.id,
       'title': current.item.title,
       'artist': current.item.artist ?? item.artists?.join(", ") ?? "",
       'artworkKey': _artworkKey(item),
@@ -445,6 +456,7 @@ class WatchHandler {
       'radioAvailable': GetIt.instance<ProviderContainer>().read(currentRadioAvailabilityStatusProvider).isAvailable,
       'favorite': GetIt.instance<ProviderContainer>().read(isFavoriteProvider(item)),
       'upNext': _upNextCovers(),
+      'queueEntryIds': [for (final track in _queueWindow()) track.id],
       'coverColor': _coverColor(item),
     };
   }
@@ -472,10 +484,11 @@ class WatchHandler {
     }).toList();
   }
 
+  // What the watch's queue sheet lists: Next Up, then the queue, as Finamp's queue orders them.
+  static List<FinampQueueItem> _queueWindow() => GetIt.instance<QueueService>().peekQueue(next: _queueLimit);
+
   static List<Map<String, Object>> _upcoming() {
-    final queue = GetIt.instance<QueueService>().getQueue();
-    return CombinedIterableView([queue.nextUp, queue.queue])
-        .take(_queueLimit)
+    return _queueWindow()
         .map(
           (track) => {
             'id': track.id,
@@ -537,8 +550,8 @@ class WatchHandler {
     final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
     switch (action) {
       case 'playPause':
-        // As Finamp's own play buttons: play() completes only when playback stops again, so waiting for it left the
-        // watch without an answer for every "play".
+        // As Finamp's own play buttons: play() completes only when playback stops again, so awaiting it would leave
+        // the watch without an answer for every "play".
         unawaited(audioHandler.togglePlayback());
       case 'next':
         await audioHandler.skipToNext();
@@ -893,7 +906,7 @@ class WatchHandler {
     ContentType contentType, {
     int offset = 0,
     int limit = _defaultPageSize,
-    String? sortBy,
+    required String sortBy,
     String? sortOrder,
     bool? isFavorite,
     String? searchTerm,
@@ -905,17 +918,12 @@ class WatchHandler {
       return await _tabPage(contentType, offset, limit, search: searchTerm, favorites: isFavorite ?? false);
     }
 
-    final tabSortBy = settings.getTabSortBy(contentType);
     return await GetIt.instance<JellyfinApiHelper>().getItems(
           parentItem: contentType == ContentType.playlists
               ? null
               : GetIt.instance<FinampUserHelper>().currentUser?.currentView,
           includeItemTypes: contentType.itemType!.jellyfinName,
-          sortBy:
-              sortBy ??
-              (contentType == ContentType.tracks
-                  ? "${tabSortBy.jellyfinName(contentType)},ParentIndexNumber,IndexNumber"
-                  : tabSortBy.jellyfinName(contentType)),
+          sortBy: sortBy,
           sortOrder: sortOrder ?? settings.getSortOrder(contentType).toString(),
           // As Finamp's music screen: each artist tab asks for its own artist type.
           artistType: switch (contentType) {
@@ -1423,9 +1431,7 @@ class WatchHandler {
 
   // Keep auto-disposed providers alive until their value arrives.
   // Reads one of Finamp's providers once. While one of Finamp's own screens listens to the same provider, it keeps its
-  // last result, a failed load included, and a read would get that error at once without a new request (seen:
-  // Artists stayed "Can't reach your Jellyfin server" after a single timeout, while the phone's Artists tab held the
-  // error). A provider held in a failed state is started again first, as Finamp's own pull-to-refresh does.
+  // last result, a failed load included, and a read would get that error at once without a new request. A provider held in a failed state is started again first, as Finamp's own pull-to-refresh does.
   // `dependsOn`: providers the read depends on that can hold a failure the same way (the library lookup behind every
   // library list, which Finamp's own Retry doesn't clear either).
   static Future<T> _readOnce<T>(
@@ -1578,6 +1584,10 @@ class WatchHandler {
   static final Map<BaseItemId, BaseItemDto?> _playlistFirstTracks = {};
 
   static Future<BaseItemDto?> _firstTrack(BaseItemDto playlist) async {
+    // Offline: from the download, as Finamp's playlist screen lists it; not cached, so going online asks the server.
+    if (FinampSettingsHelper.finampSettings.isOffline) {
+      return (await GetIt.instance<DownloadsService>().getCollectionTracks(playlist, playable: false)).firstOrNull;
+    }
     if (_playlistFirstTracks.containsKey(playlist.id)) return _playlistFirstTracks[playlist.id];
     final tracks = await GetIt.instance<JellyfinApiHelper>().getItems(
       parentItem: playlist,
@@ -1588,8 +1598,7 @@ class WatchHandler {
   }
 
   // A cover's file as it is (JPEG/PNG bytes; `WatchBridge.swift` scales it to the watch's size); null when unavailable.
-  // Never decoded here: Flutter's image decoding stalls with Finamp in the background, and stalled even in the
-  // foreground while the server hung, so the watch got nothing for 25 s.
+  // Never decoded here: Flutter's image decoding stalls with Finamp in the background or while the server hangs.
   static Future<Uint8List?> _artwork(String id, int size) async {
     BaseItemDto? item;
     try {

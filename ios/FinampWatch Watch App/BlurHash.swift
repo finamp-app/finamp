@@ -69,7 +69,6 @@ enum BlurHash {
         return value
     }
 
-    // Square the -9...9 component after scaling, keeping its sign.
     private static func signedSquare(_ quantised: Double) -> Double {
         let value = quantised / 9
         return value < 0 ? -(value * value) : value * value

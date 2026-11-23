@@ -41,17 +41,16 @@ struct CollectionView: View {
                         .clearListRow()
                     tracksSection {
                         if tracks.isEmpty {
-                            Text(type == "favorites" ? String(localized: "No favorite tracks yet") : String(localized: "No tracks"))
-                                .font(.footnote)
-                                .foregroundStyle(Color.fgSecondary)
-                                .frame(maxWidth: .infinity)
-                                .listRowBackground(Color.clear)
+                            EmptyNote(
+                                text: type == "favorites" ? String(localized: "No favorite tracks yet") : String(localized: "No tracks"),
+                                inList: true
+                            )
+                            .clearListRow()
                         }
                         ForEach(tracks) { track in
                             TrackRow(
                                 track: track,
-                                onFavorite: { Task { await FavoriteOverrides.shared.toggle(track) } },
-                                favorite: FavoriteOverrides.shared.value(for: track),
+                                heart: true,
                                 onTap: { Task { await play(startId: track.id, index: tracks.firstIndex { $0.id == track.id }) } },
                                 enlarged: true
                             )
@@ -137,25 +136,8 @@ struct CollectionView: View {
                 // Finamp's stats, one line each (long ones scroll): album artists, tracks (total time), release
                 // date; a playlist has only its tracks.
                 VStack(alignment: .leading, spacing: PageHeader.statSpacing) {
-                    if type != "playlists", !headerArtists.isEmpty {
-                        // A NavigationLink here would make the entire header row tappable.
-                        Marquee {
-                            HStack(spacing: PageHeader.artistChipSpacing) {
-                                ForEach(headerArtists) { artist in
-                                    ArtistChip(artist: artist)
-                                    .contentShape(Rectangle())
-                                    .onTapGesture { open(.artistAlbums(artist)) }
-                                    .accessibilityAddTraits(.isButton)
-                                    .accessibilityLabel("Artist \(artist.name)")
-                                }
-                            }
-                        }
-                    } else if type != "playlists", !collection.subtitle.isEmpty {
-                        Marquee {
-                            Text(collection.subtitle)
-                                .font(.footnote)
-                                .foregroundStyle(Color.finampBlue)
-                        }
+                    if type != "playlists" {
+                        ArtistChipsLine(artists: headerArtists, fallback: collection.subtitle) { open(.artistAlbums($0)) }
                     }
                     StatLine(symbol: "music.note", text: trackSummary(tracks))
                         .redacted(reason: countUnknown ? .placeholder : [])
@@ -194,7 +176,7 @@ struct CollectionView: View {
         return "\(count) (\(FinampFormat.duration(tracks.reduce(0) { $0 + $1.duration })))"
     }
 
-    // In Finamp's chosen release date format, sent by the phone; the year from older phones.
+    // The phone's release date in Finamp's format; the year when there is none.
     private var releaseDate: String {
         if !collection.releaseDate.isEmpty { return collection.releaseDate }
         return collection.year > 0 ? String(collection.year) : String(localized: "No Release Date")
@@ -216,7 +198,7 @@ struct CollectionView: View {
             try await PhoneConnection.shared.play(type, parentId: collection.id, startId: startId, shuffle: shuffle, extra: extra)
             onPlay()
         } catch {
-            pager.fail(error.localizedDescription)
+            PhoneMessage.show(error)
         }
     }
 }

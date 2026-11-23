@@ -11,8 +11,8 @@ import WatchKit
 //    with its reason, so the design and the code never drift apart.
 // 2. watchOS first. watchOS's own parts (top buttons, titles, clock, page dots, List rows, sheets) are never hidden,
 //    replaced or moved. Sizes come from watchOS's own values, read while the app runs (`WatchMetrics`), so every watch
-//    size and watchOS version brings its own: nothing is set per watch model. The two exceptions are measured and say
-//    so: `PlaybackLayout.bottomGap` and `ActivityStatus.clockRowCentre`.
+//    size and watchOS version brings its own: nothing is set per watch model. The three exceptions are measured and say
+//    so: `PlaybackLayout.bottomGap`, `ActivityStatus.clockRowCentre` and `OutputLayout.compact`.
 // 3. Margins. m1 is watchOS's own side margin, the line of its top buttons, titles and clock (`scenePadding`, the inset
 //    watchOS gives List rows). High-contrast content (text, icons, covers, controls) sits on m1. Low-contrast backgrounds
 //    (cards, Home's tiles, the page-button strips) reach out to the card edge: `Margins.cardEdgeShare` of m1 from the
@@ -97,6 +97,14 @@ extension View {
                 .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { WatchMetrics.shared.standardPadding = $0 / 2 }
         }
     }
+
+    func measuresTopInset() -> some View {
+        background(GeometryReader { proxy in
+            Color.clear
+                .onAppear { WatchMetrics.shared.topInset = proxy.safeAreaInsets.top }
+                .onChange(of: proxy.safeAreaInsets.top) { _, top in WatchMetrics.shared.topInset = top }
+        })
+    }
 }
 
 // MARK: - Cards (track, queue, Settings, Home and search cards)
@@ -141,6 +149,8 @@ enum Cards {
     static let homeCoverToTitle: CGFloat = 8
     // The title at the headline size and in its own bold (semibold) weight.
     static let homeTitleWeight: Font.Weight = .semibold
+    // The playing track's row: the accent at this opacity.
+    static let playingFillOpacity: Double = 0.22
 }
 
 // MARK: - Track rows (Rows.swift `TrackRow`)
@@ -169,6 +179,12 @@ enum TrackRows {
     static let textToHeart: CGFloat = 8
     // The row inset the bars assume until it is measured (watchOS's own on the 49 mm).
     static let barsFallbackInset: CGFloat = 14.5
+    // Finamp's playing bars: each bar 4/15 of their height wide, at least 2 pt tall, each bouncing at its own speed.
+    static let barWidthShare: CGFloat = 4.0 / 15
+    static let barMinHeight: CGFloat = 2
+    static let barDurations: [Double] = [0.9, 0.8, 0.7]
+    // A measured inset outside this range is a measurement gone wrong (`barsFallbackInset` is used instead).
+    static let barsInsetRange: ClosedRange<CGFloat> = 2...30
 }
 
 // MARK: - Artist chips (Rows.swift `ArtistChip`: Playback, the album page, the queue)
@@ -176,6 +192,10 @@ enum TrackRows {
 enum ArtistChips {
     // Half of Finamp's 4 pt, so the chip reads closer to a plain label.
     static let cornerRadius: CGFloat = 2
+    static let height: CGFloat = 20
+    static let textPadding: CGFloat = 5
+    // Finamp's chip: the theme's text on 10 % white.
+    static let fillOpacity: Double = 0.1
 }
 
 // MARK: - Favorites cover (HomePage.swift `FavoritesLogo`)
@@ -184,7 +204,68 @@ enum FavoritesCover {
     // Finamp's Favorites tile: the accent colour at 30 %, the heart 36 pt in its 56 pt tile.
     static let fillOpacity: Double = 0.3
     static let iconShare: CGFloat = 36.0 / 56
+}
+
+// MARK: - Covers (Artwork.swift `CoverView`, HomePage.swift `FavoritesLogo`)
+
+enum Covers {
     static let cornerRadius: CGFloat = 8
+    // A missing cover's icon: Finamp's 24 pt in a list tile's 56 pt cover.
+    static let missingIconShare: CGFloat = 0.43
+    static let fadeIn: Double = 0.7
+}
+
+extension View {
+    // A cover's shape: round for artists, rounded corners for the rest.
+    func coverClip(circular: Bool) -> some View {
+        clipShape(circular ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: Covers.cornerRadius)))
+    }
+}
+
+extension Image {
+    // An icon in a square of this side, scaled to fit.
+    func icon(_ size: CGFloat) -> some View {
+        resizable().scaledToFit().frame(width: size, height: size)
+    }
+}
+
+// An icon centred in a square tile, at a share of its width.
+struct CentredIcon: View {
+    let asset: String
+    let share: CGFloat
+
+    var body: some View {
+        GeometryReader { proxy in
+            Image(asset)
+                .resizable()
+                .scaledToFit()
+                .frame(width: proxy.size.width * share)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+}
+
+// MARK: - Status pages (a message with its icon: Retry, nothing playing, not logged in)
+
+enum StatusPages {
+    static let spacing: CGFloat = 8
+    static let logoSize: CGFloat = 44
+}
+
+// MARK: - Placeholders (Skeleton.swift)
+
+enum Placeholders {
+    static let fillOpacity: Double = 0.14
+    // The pulse: down to this opacity and back, at this pace.
+    static let dimmedOpacity: Double = 0.45
+    static let pulseTime: Double = 0.85
+}
+
+// MARK: - Finamp's logo tile (Theme.swift `FinampLogoTile`)
+
+enum LogoTile {
+    static let insetShare: CGFloat = 0.084
+    static let cornerShare: CGFloat = 0.26
 }
 
 // MARK: - Cover rows (Albums, Artists, Playlists, Downloads; the artist page and favourite albums and artists)
@@ -206,8 +287,8 @@ enum CoverRows {
 
 enum SectionHeadings {
     // The space between sections (set on the list, `cardList()` / `coverList()`) and above a heading; the heading then
-    // sits on watchOS's own space under a section header. Both about half of watchOS's defaults (Chap, 23 Nov: too
-    // generous on a watch): about 16 pt from a section's last row to the next heading, 9 pt from the heading to its row.
+    // sits on watchOS's own space under a section header. Both about half of watchOS's defaults, which are
+    // generous on a watch: about 16 pt from a section's last row to the next heading, 9 pt from the heading to its row.
     static let betweenSections: CGFloat = 6
     static let top: CGFloat = 6
     static let toRow: CGFloat = 1
@@ -238,7 +319,6 @@ struct HeadedSection<Content: View>: View {
     }
 }
 
-
 // MARK: - Page headers (album, playlist, artist, favourites and queue pages)
 
 enum PageHeader {
@@ -261,6 +341,7 @@ enum PageHeader {
     static let buttonSpacing: CGFloat = 10
     static let heartSize: CGFloat = 22
     static let downloadIconSize: CGFloat = 22
+    static let statIconOpacity: Double = 0.5
 }
 
 // The cover row of the album, playlist, artist and favourites pages: the cover at `PageHeader.coverShare` of the
@@ -293,6 +374,8 @@ enum IconButtons {
     // the tap area is what a finger needs, the same at every Text Size. Above Apple's 28 pt minimum control size on
     // watchOS (HIG, Accessibility).
     static let tapSize: CGFloat = 34
+    // An icon in the top buttons' row.
+    static let upperIconSize: CGFloat = 20
 }
 
 extension View {
@@ -301,17 +384,6 @@ extension View {
     func iconTapArea(_ size: CGFloat) -> some View {
         let tap = max(IconButtons.tapSize, size)
         return frame(width: tap, height: tap).contentShape(Rectangle()).padding(-(tap - size) / 2)
-    }
-}
-
-extension View {
-    // Reads `WatchMetrics.topInset` at the app's root.
-    func measuresTopInset() -> some View {
-        background(GeometryReader { proxy in
-            Color.clear
-                .onAppear { WatchMetrics.shared.topInset = proxy.safeAreaInsets.top }
-                .onChange(of: proxy.safeAreaInsets.top) { _, top in WatchMetrics.shared.topInset = top }
-        })
     }
 }
 
@@ -334,6 +406,9 @@ enum ActivityStatus {
     // The waiting arrows' speed: one turn in this many seconds.
     static let turnTime: Double = 1.2
     // When it shows and how long the failed sign stays: `ConnectionPolicy.Status`.
+    // Moving between its places, and appearing or going.
+    static let moveTime: Double = 0.3
+    static let fadeTime: Double = 0.2
 }
 
 // MARK: - Page buttons (Play / Shuffle strips and the queue's buttons; Components.swift `LabeledIconButton`)
@@ -377,6 +452,14 @@ enum HomeTiles {
     static let cornerRadius: CGFloat = 12
     static let iconSize: CGFloat = 19
     static let iconToLabel: CGFloat = 3
+    static let fillOpacity: Double = 0.18
+    // Before any quick actions are known: four quiet tiles where they'll be.
+    static let placeholderCount = 4
+    static let placeholderFillOpacity: Double = 0.08
+    static let minimumLabelScale: CGFloat = 0.8
+    // Search's "Shuffle All" button.
+    static let shuffleAllIconSize: CGFloat = 18
+    static let shuffleAllPadding: CGFloat = 10
 }
 
 // MARK: - Small text (Playback's times, info chips and volume; the page buttons' labels)
@@ -416,7 +499,6 @@ enum PlaybackLayout {
     static let progressLine: CGFloat = 3.6
     static let progressDot: CGFloat = 10.8
     static let progressHeight: CGFloat = 10
-    static let progressTouchAbove: CGFloat = 0
     static let progressTouchBelow: CGFloat = 8 * timesToControlsShare
 
     // Feature chips 12 pt apart (Finamp's 4 pt padding each side plus 4 pt spacing), down to `chipGapMin` before the
@@ -424,7 +506,7 @@ enum PlaybackLayout {
     static let chipGap: CGFloat = 12
     static let chipGapMin: CGFloat = 4
 
-    // Artist row: the chips, then the heart at `chipGap` from them, sized from the chip's height (`ArtistChip.height`)
+    // Artist row: the chips, then the heart at `chipGap` from them, sized from the chip's height (`ArtistChips.height`)
     // so it follows Text Size as the chips do. The row is the heart's height, the chips centred in it; the heart's tap
     // area reaches past it without taking room (`iconTapArea`), so the title runs the full width.
     static let artistChipSpacing: CGFloat = 6
@@ -448,6 +530,25 @@ enum PlaybackLayout {
         default: return 12       // 45, 46, 49 mm
         }
     }()
+
+    // Over the cover: the volume line, the same lowered, secondary text, the artist chips' text and fill, the Play
+    // button's square, and the gradient behind a track with no cover.
+    static let volumeOpacity: Double = 0.9
+    static let loweredOpacity: Double = 0.6
+    static let textOpacity: Double = 0.75
+    static let chipTextOpacity: Double = 0.9
+    static let chipFillOpacity: Double = 0.16
+    static let playFillOpacity: Double = 0.15
+    static let noCoverGradientOpacity: Double = 0.45
+    // The feature chips' icons, this much larger than their text (the full chips, then the short ones).
+    static let chipIconGrowth: CGFloat = 3
+    static let shortChipIconGrowth: CGFloat = 2
+    // The volume line and the crown's bar stay this long after the crown stops.
+    static let volumeShownFor: Double = 1.5
+    // The progress bar: the part still to play, the dot while dragged, and VoiceOver's step.
+    static let progressRestOpacity: Double = 0.3
+    static let progressDotDragScale: CGFloat = 1.5
+    static let progressAdjustStep: Double = 0.05
 }
 
 // MARK: - Queue header (PlaybackPage.swift `QueueHeader`)
@@ -465,8 +566,38 @@ enum QueueLayout {
 
 enum OutputLayout {
     // Choose Output's cast icon, as a share of its label's text: Tabler's glyph leaves a margin inside its box, so at the
-    // text's size it looked smaller than the label; this matches the AirPlay symbol it replaced (yalit, 23 Nov).
+    // text's size it looks smaller than the label.
     static let castToText: CGFloat = 1.3
+    static let volumeRowSpacing: CGFloat = 6
+    // The 40 and 41 mm watches (under 220 pt tall): the sheet's rows closer together, Choose Output's button lower, so
+    // the sheet fits without scrolling.
+    static let compact = Margins.screenSize.height < 220
+    static var spacing: CGFloat { compact ? 4 : 8 }
+    static var buttonPadding: CGFloat { compact ? 5 : 8 }
+}
+
+// MARK: - The crown's volume (PlaybackPage.swift `PhoneVolumeCrown`)
+
+enum VolumeCrown {
+    // The crown turns a value in this range, from its middle; only its steps are used (`step` per crown click), and a
+    // jump of `wrapGuard` or more is the value wrapping at an end.
+    static let range: ClosedRange<Double> = 0...1000
+    static let start: Double = 500
+    static let step: Double = 0.02
+    static let wrapGuard: Double = 1
+    // The bar beside the crown.
+    static let barWidth: CGFloat = 5
+    static let barHeight: CGFloat = 40
+    static let trackOpacity: Double = 0.25
+}
+
+// MARK: - Scrolling text (PlaybackPage.swift `Marquee`)
+
+enum MarqueeLayout {
+    // The gap before the text repeats, its speed in points a second, and the pause at the start of each round.
+    static let gap: CGFloat = 24
+    static let speed: CGFloat = 22
+    static let pause: Double = 1.5
 }
 
 // MARK: - Playlist menu (PlaylistMenu.swift)
@@ -505,7 +636,6 @@ extension View {
     // padding on every side, elsewhere watchOS's.
     func cardRow(isPlaying: Bool = false) -> some View { modifier(CardRow(isPlaying: isPlaying)) }
 
-    // A Home or search card's background.
     func homeCardBackground() -> some View { modifier(HomeCardBackground()) }
 
     // Widens content on m1 out to the card edge: Home's tile grid and the page-button strips.
@@ -678,7 +808,6 @@ struct CoverRowLayout: Layout {
     }
 }
 
-
 // MARK: - Button strips (album, playlist and artist pages, the queue)
 
 // The strip design: the strip reaches the card edge on both sides (like the cards) and is split into equal parts with
@@ -774,6 +903,8 @@ enum TextSize {
 
     private static func uiStyle(_ style: Font.TextStyle) -> UIFont.TextStyle {
         switch style {
+        case .largeTitle: .largeTitle
+        case .title2: .title2
         case .title3: .title3
         case .headline: .headline
         case .caption2: .caption2
