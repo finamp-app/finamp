@@ -1,9 +1,11 @@
 import 'package:finamp/components/delete_prompts.dart';
+import 'package:finamp/components/redownload_action.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../models/finamp_models.dart';
@@ -73,6 +75,12 @@ class _DownloadedItemTypeListState extends ConsumerState<DownloadedItemsList> {
                         onPressed: () {
                           _downloadsService.resync(stub, null);
                         },
+                      ),
+                    if (!ref.watch(finampSettingsProvider.isOffline))
+                      IconButton(
+                        icon: const Icon(TablerIcons.reload),
+                        tooltip: AppLocalizations.of(context)!.redownloadItem,
+                        onPressed: () => startRedownload(stub),
                       ),
                     IconButton(
                       icon: const Icon(Icons.delete),
@@ -150,15 +158,31 @@ class _DownloadedChildrenListState extends ConsumerState<DownloadedChildrenList>
               title: Text(stub.baseItem?.name ?? stub.name),
               leading: AlbumImage(item: stub.baseItem),
               subtitle: ItemFileSize(stub: stub),
-              trailing: ref.watch(_downloadsService.statusProvider((stub, null))).isRequired
-                  ? IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => askBeforeDeleteDownloadFromDevice(context, stub),
-                    )
-                  : null,
+              trailing: _buildChildActions(stub),
             ),
         ],
       ),
+    );
+  }
+
+  Widget? _buildChildActions(DownloadStub stub) {
+    final status = ref.watch(_downloadsService.statusProvider((stub, null)));
+    final canRedownload = status.isDownloaded && !ref.watch(finampSettingsProvider.isOffline);
+    if (!canRedownload && !status.isRequired) {
+      return null;
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (canRedownload)
+          IconButton(
+            icon: const Icon(TablerIcons.reload),
+            tooltip: AppLocalizations.of(context)!.redownloadItem,
+            onPressed: () => startRedownload(stub),
+          ),
+        if (status.isRequired)
+          IconButton(icon: const Icon(Icons.delete), onPressed: () => askBeforeDeleteDownloadFromDevice(context, stub)),
+      ],
     );
   }
 }
