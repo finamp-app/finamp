@@ -21,3 +21,36 @@ class HiddenIndicator extends ConsumerWidget {
     return Icon(TablerIcons.eye_off, size: size, semanticLabel: AppLocalizations.of(context)!.hiddenIndicatorLabel);
   }
 }
+
+/// Darkens hidden cover art and puts a crossed-out eye over it, like the visualizer over the playing track's cover.
+class HiddenArtOverlay extends ConsumerWidget {
+  const HiddenArtOverlay({super.key, required this.item, required this.child, this.borderRadius});
+
+  final BaseItemDto item;
+  final Widget child;
+  final BorderRadius? borderRadius;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!ref.watch(isHiddenProvider(item))) return child;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          foregroundDecoration: BoxDecoration(borderRadius: borderRadius, color: Colors.black.withValues(alpha: 0.4)),
+          child: child,
+        ),
+        Positioned.fill(
+          child: LayoutBuilder(
+            builder: (context, constraints) => Icon(
+              TablerIcons.eye_off,
+              color: Colors.white,
+              size: (constraints.biggest.shortestSide * 0.35).clamp(16.0, 48.0),
+              semanticLabel: AppLocalizations.of(context)!.hiddenIndicatorLabel,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

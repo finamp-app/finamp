@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:finamp/components/AlbumScreen/hidden_indicator.dart';
 import 'package:finamp/components/album_image.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/queue_restore_menu.dart';
@@ -60,12 +61,16 @@ class ItemCard extends ConsumerWidget {
                       ),
                     )
                   else
-                    AlbumImage(
+                    HiddenArtOverlay(
                       item: item,
-                      sizePreset: ref.watch(
-                        forHomeScreen
-                            ? finampSettingsProvider.homeScreenImageSize
-                            : finampSettingsProvider.gridImageSize,
+                      borderRadius: AlbumImage.defaultBorderRadius,
+                      child: AlbumImage(
+                        item: item,
+                        sizePreset: ref.watch(
+                          forHomeScreen
+                              ? finampSettingsProvider.homeScreenImageSize
+                              : finampSettingsProvider.gridImageSize,
+                        ),
                       ),
                     ),
                   Positioned.fill(

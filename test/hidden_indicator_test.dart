@@ -13,11 +13,7 @@ BaseItemDto track(String id, {String? albumId}) =>
 final _testHiddenIds = StateProvider<Set<BaseItemId>>((ref) => {});
 
 void main() {
-  Future<ProviderContainer> pumpIndicator(
-    WidgetTester tester,
-    BaseItemDto item, {
-    Set<String> hidden = const {},
-  }) async {
+  Future<ProviderContainer> pumpWidget(WidgetTester tester, Widget widget, {Set<String> hidden = const {}}) async {
     final container = ProviderContainer(
       overrides: [hiddenIdsProvider.overrideWith((ref) => ref.watch(_testHiddenIds))],
     );
@@ -29,12 +25,28 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: HiddenIndicator(item: item)),
+          home: Scaffold(body: widget),
         ),
       ),
     );
     return container;
   }
+
+  Future<ProviderContainer> pumpIndicator(WidgetTester tester, BaseItemDto item, {Set<String> hidden = const {}}) =>
+      pumpWidget(tester, HiddenIndicator(item: item), hidden: hidden);
+
+  Future<ProviderContainer> pumpOverlay(WidgetTester tester, BaseItemDto item, {Set<String> hidden = const {}}) =>
+      pumpWidget(
+        tester,
+        SizedBox.square(
+          dimension: 120,
+          child: HiddenArtOverlay(
+            item: item,
+            child: const ColoredBox(key: Key('art'), color: Colors.blue),
+          ),
+        ),
+        hidden: hidden,
+      );
 
   final eyeOff = find.byIcon(TablerIcons.eye_off);
 
@@ -69,5 +81,38 @@ void main() {
     container.read(_testHiddenIds.notifier).state = {};
     await tester.pump();
     expect(eyeOff, findsNothing);
+  });
+
+  group('HiddenArtOverlay', () {
+    final album = BaseItemDto(id: BaseItemId('a1'), name: 'a1', type: 'MusicAlbum');
+
+    testWidgets('puts the crossed-out eye over hidden art and keeps the art', (tester) async {
+      await pumpOverlay(tester, album, hidden: {'a1'});
+      expect(eyeOff, findsOneWidget);
+      expect(find.byKey(const Key('art')), findsOneWidget);
+      expect(find.bySemanticsLabel('Hidden'), findsOneWidget);
+    });
+
+    testWidgets('leaves art that is not hidden untouched', (tester) async {
+      await pumpOverlay(tester, album);
+      expect(eyeOff, findsNothing);
+      expect(find.byKey(const Key('art')), findsOneWidget);
+    });
+
+    testWidgets('scales the icon with the art', (tester) async {
+      await pumpOverlay(tester, album, hidden: {'a1'});
+      expect(tester.widget<Icon>(eyeOff).size, closeTo(120 * 0.35, 0.01));
+    });
+
+    testWidgets('follows hides and unhides', (tester) async {
+      final container = await pumpOverlay(tester, album);
+      container.read(_testHiddenIds.notifier).state = {BaseItemId('a1')};
+      await tester.pump();
+      expect(eyeOff, findsOneWidget);
+
+      container.read(_testHiddenIds.notifier).state = {};
+      await tester.pump();
+      expect(eyeOff, findsNothing);
+    });
   });
 }
