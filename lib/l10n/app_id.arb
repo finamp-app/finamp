@@ -3889,5 +3889,33 @@
     },
     "advancedLoginOptionsWarning": "Pilihan otentikasi lanjutan untuk pengaturan server yang tidak umum. Pengaturan berikut diberikan sebisa mungkin dan mungkin tidak berfungsi semestinya di semua platform.",
     "customHeaders": "Header HTTP Kustom",
-    "followRedirectsSubtitle": "Biarkan Finamp untuk mengikuti redirect HTTP, termasuk yang mengarah ke domain selain yang diatur.  Mungkin tidak cocok dengan header HTTP kustom."
+    "followRedirectsSubtitle": "Biarkan Finamp untuk mengikuti redirect HTTP, termasuk yang mengarah ke domain selain yang diatur.  Mungkin tidak cocok dengan header HTTP kustom.",
+    "playSomeButtonLabel": "Mainkan beberapa",
+    "addSomeToQueue": "Tambahkan beberapa dalam antrian",
+    "playSomeNext": "Tambahkan beberapa berikutnya",
+    "addSomeToNextUp": "Tambahkan beberapa dalam Next Up",
+    "oversizedQueueItemTruncated": "Item terlalu besar dipotong dari {itemSize} menjadi {maxSize} trek.",
+    "@oversizedQueueItemTruncated": {
+        "description": "Message displayed if an item is truncated while being added to queue",
+        "placeholders": {
+            "itemSize": {
+                "type": "int"
+            },
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueSizeLimitTitle": "Batas antrian trek",
+    "oversizedQueueContinue": "Tetap coba muat",
+    "oversizedQueueTruncate": "Potong maksimal {maxSize} trek dari antrian",
+    "@oversizedQueueTruncate": {
+        "description": "Button to truncate oversized queues while restoring",
+        "placeholders": {
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueRestoreCancel": "Batalkan pengembalian"
 }
