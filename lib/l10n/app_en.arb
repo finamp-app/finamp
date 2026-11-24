@@ -1760,6 +1760,10 @@
     "prioritizePlayerCoverSubtitle": "Prioritize showing a larger album cover on player screen. Non-critical controls will be hidden more aggressively at small screen sizes.",
     "suppressPlayerPadding": "Suppress player controls padding",
     "suppressPlayerPaddingSubtitle": "Fully minimizes padding between player screen controls when album cover is not at full size.",
+    "syncItem": "Sync",
+    "@syncItem": {
+        "description": "Menu entry on the downloads screen to sync a downloaded collection with its current contents on the server."
+    },
     "redownloadItem": "Redownload",
     "@redownloadItem": {
         "description": "Menu entry to replace the downloaded files and metadata of an already downloaded item with fresh copies from the server, without removing the download."
