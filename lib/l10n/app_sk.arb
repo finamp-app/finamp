@@ -327,7 +327,7 @@
     },
     "activeDownloadsTitle": "Aktívne sťahovania",
     "noActiveDownloads": "Žiadne aktívne sťahovania.",
-    "errorScreenError": "Pri načítaní zoznamu chýb sa vyskytla chyba! V tejto chvíli by ste pravdepodobne mali vytvoriť hlásenie problému na GitHube a vymazať údaje aplikácie.",
+    "errorScreenError": "Pri načítaní zoznamu chýb sa vyskytla chyba! V tejto chvíli by ste pravdepodobne mali vytvoriť hlásenie problému na GitHube a vymazať údaje aplikácie",
     "specialDownloads": "Špeciálne sťahovania",
     "@specialDownloads": {
         "description": "Title for the special downloads section on the downloads screen."
@@ -752,7 +752,7 @@
     "bufferDisableSizeConstraintsTitle": "Neobmedzovať veľkosť buffera",
     "bufferDisableSizeConstraintsSubtitle": "Vypne obmedzenia veľkosti buffera („Veľkosť buffera“). Buffer sa vždy naplní na nastavenú dĺžku („Dĺžka buffera“), a to aj pri veľmi veľkých súboroch. Môže spôsobiť pády. Vyžaduje reštart.",
     "bufferSizeTitle": "Veľkosť buffera",
-    "bufferSizeSubtitle": "Veľkosť buffera v MiB. Vyžaduje reštart.",
+    "bufferSizeSubtitle": "Veľkosť buffera v MiB. Vyžaduje reštart",
     "language": "Jazyk",
     "skipToPreviousTrackButtonTooltip": "Preskočiť na začiatok alebo na predchádzajúcu skladbu",
     "@skipToPreviousTrackButtonTooltip": {
@@ -1753,7 +1753,7 @@
     "enableVibration": "Zapnúť vibrácie",
     "enableVibrationSubtitle": "Určuje, či sa majú používať vibrácie.",
     "oneLineMarqueeTextButton": "Automaticky posúvať dlhé názvy",
-    "oneLineMarqueeTextButtonSubtitle": "Automaticky posúvať názvy skladieb, ktoré sú príliš dlhé na zobrazenie v dvoch riadkoch.",
+    "oneLineMarqueeTextButtonSubtitle": "Automaticky posúvať názvy skladieb, ktoré sú príliš dlhé na zobrazenie v dvoch riadkoch",
     "hidePlayerBottomActions": "Skryť spodné akcie",
     "hidePlayerBottomActionsSubtitle": "Skryť tlačidlá frontu a textu skladby na obrazovke prehrávača. Potiahnutím nahor zobrazíte front, potiahnutím doľava (pod obalom albumu) zobrazíte text skladby, ak je k dispozícii.",
     "prioritizePlayerCover": "Uprednostniť obal albumu",
@@ -1844,7 +1844,7 @@
     "trackOfflineFavorites": "Synchronizovať všetky stavy obľúbenosti",
     "trackOfflineFavoritesSubtitle": "Umožňuje zobrazovať aktuálnejšie stavy obľúbenosti v režime offline. Nesťahuje žiadne ďalšie súbory.",
     "allPlaylistsInfoSetting": "Stiahnuť metadáta playlistov",
-    "allPlaylistsInfoSettingSubtitle": "Synchronizovať metadáta všetkých playlistov pre lepšiu prácu s playlistami.",
+    "allPlaylistsInfoSettingSubtitle": "Synchronizovať metadáta všetkých playlistov pre lepšiu prácu s playlistami",
     "downloadFavoritesSetting": "Stiahnuť všetky obľúbené",
     "downloadAllPlaylistsSetting": "Stiahnuť všetky playlisty",
     "downloadAllPlaylistsSettingWarning": "Poznámka: týmto sa stiahnu všetky položky vo všetkých playlistoch bez ohľadu na to, z ktorej knižnice pochádzajú.",
@@ -2596,7 +2596,7 @@
             }
         }
     },
-    "autoReloadPromptMissingTracks": "{amountUndownloadedTracks, plural, =1{1 skladba sa odstráni z frontu, pretože nie je stiahnutá.} few{{amountUndownloadedTracks} skladby sa odstránia z frontu, pretože nie sú stiahnuté.} other{{amountUndownloadedTracks} skladieb sa odstráni z frontu, pretože nie sú stiahnuté.}}",
+    "autoReloadPromptMissingTracks": "{amountUndownloadedTracks, plural, =1{1 skladba sa odstráni z frontu, pretože nie je stiahnutá} few{{amountUndownloadedTracks} skladby sa odstránia z frontu, pretože nie sú stiahnuté} other{{amountUndownloadedTracks} skladieb sa odstráni z frontu, pretože nie sú stiahnuté}}.",
     "@autoReloadPromptMissingTracks": {
         "description": "Additional prompt text shown when the queue needs to be reloaded after changing network settings and some undownloaded tracks are in the queue",
         "placeholders": {
@@ -2749,7 +2749,7 @@
     "@autoExpandPlayerScreenTitle": {
         "description": "Title for the setting that controls if the player screen is opened directly after starting a new queue"
     },
-    "autoExpandPlayerScreenSubtitle": "Pri spustení prehrávania nového frontu sa otvorí obrazovka prehrávača.",
+    "autoExpandPlayerScreenSubtitle": "Pri spustení prehrávania nového frontu sa otvorí obrazovka prehrávača",
     "@autoExpandPlayerScreenSubtitle": {
         "description": "Subtitle for the setting that controls if the player screen is opened directly after starting a new queue"
     },
@@ -3680,7 +3680,7 @@
     "@carPlayLoginPrompt": {
         "description": "Label shown when the user is trying to use CarPlay without being logged in."
     },
-    "offlineSortFallback": "Zoradenie podľa „{onlineSort}“ je dostupné iba online. Momentálne sa používa predvolené poradie.",
+    "offlineSortFallback": "Zoradenie podľa „{onlineSort}“ je dostupné iba online. Momentálne sa používa predvolené poradie",
     "@offlineSortFallback": {
         "description": "Warning presented in sort and filter menu when an online-only sort is chosen.",
         "placeholders": {
