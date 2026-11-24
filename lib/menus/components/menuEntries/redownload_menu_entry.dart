@@ -23,7 +23,7 @@ class RedownloadMenuEntry extends DownloadActionMenuEntry {
   @override
   Widget buildEntry(BuildContext context, WidgetRef ref, DownloadItemStatus status) {
     return MenuEntry(
-      icon: TablerIcons.reload,
+      icon: TablerIcons.replace,
       title: AppLocalizations.of(context)!.redownloadItem,
       onTap: () async {
         if (await startRedownload(context, downloadStub) && context.mounted) {

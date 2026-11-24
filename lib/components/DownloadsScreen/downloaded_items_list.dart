@@ -78,7 +78,7 @@ class _DownloadedItemTypeListState extends ConsumerState<DownloadedItemsList> {
                       ),
                     if (!ref.watch(finampSettingsProvider.isOffline))
                       IconButton(
-                        icon: const Icon(TablerIcons.reload),
+                        icon: const Icon(TablerIcons.replace),
                         tooltip: AppLocalizations.of(context)!.redownloadItem,
                         onPressed: () => startRedownload(context, stub),
                       ),
@@ -176,7 +176,7 @@ class _DownloadedChildrenListState extends ConsumerState<DownloadedChildrenList>
       children: [
         if (canRedownload)
           IconButton(
-            icon: const Icon(TablerIcons.reload),
+            icon: const Icon(TablerIcons.replace),
             tooltip: AppLocalizations.of(context)!.redownloadItem,
             onPressed: () => startRedownload(context, stub),
           ),
