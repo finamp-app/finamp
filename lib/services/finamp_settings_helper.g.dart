@@ -1371,6 +1371,30 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setHiddenItemsDisplay(HiddenItemsDisplay newHiddenItemsDisplay) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.hiddenItemsDisplay = newHiddenItemsDisplay;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setHideScope(HideScope newHideScope) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.hideScope = newHideScope;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setHideLocalNoticeShown(bool newHideLocalNoticeShown) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.hideLocalNoticeShown = newHideLocalNoticeShown;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1833,6 +1857,14 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   );
   ProviderListenable<int?> get playerQueueLimit => finampSettingsProvider
       .select((value) => value.requireValue.playerQueueLimit);
+  ProviderListenable<HiddenItemsDisplay> get hiddenItemsDisplay =>
+      finampSettingsProvider.select(
+        (value) => value.requireValue.hiddenItemsDisplay,
+      );
+  ProviderListenable<HideScope> get hideScope =>
+      finampSettingsProvider.select((value) => value.requireValue.hideScope);
+  ProviderListenable<bool> get hideLocalNoticeShown => finampSettingsProvider
+      .select((value) => value.requireValue.hideLocalNoticeShown);
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

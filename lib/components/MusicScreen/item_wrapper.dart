@@ -22,6 +22,7 @@ import 'package:finamp/services/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:finamp/services/hidden_items_provider.dart';
 
 /// This is a wrapper around ItemCollectionCard and ItemCollectionListTile.
 /// It receives an item, and automatically handles displaying the item appropriately.
@@ -152,15 +153,18 @@ class _ItemCollectionWrapperState extends ConsumerState<ItemWrapper> {
       },
       onLongPressStart: (details) => widget.interactive ? openItemMenu(context: context, item: widget.item) : null,
       onSecondaryTapDown: (details) => widget.interactive ? openItemMenu(context: context, item: widget.item) : null,
-      child: widget.isGrid
-          ? ItemCard(item: mutableItem, onTap: onTap, forHomeScreen: widget.forHomeScreen)
-          : ItemCollectionListTile(
-              item: mutableItem,
-              onTap: onTap,
-              albumShowsYearAndDurationInstead: widget.albumShowsYearAndDurationInstead,
-              adaptiveAdditionalInfoSortBy: widget.adaptiveAdditionalInfoSortBy,
-              showFavoriteIconOnlyWhenFilterDisabled: widget.showFavoriteIconOnlyWhenFilterDisabled,
-            ),
+      child: Opacity(
+        opacity: ref.watch(isHiddenProvider(widget.item)) ? 0.5 : 1,
+        child: widget.isGrid
+            ? ItemCard(item: mutableItem, onTap: onTap, forHomeScreen: widget.forHomeScreen)
+            : ItemCollectionListTile(
+                item: mutableItem,
+                onTap: onTap,
+                albumShowsYearAndDurationInstead: widget.albumShowsYearAndDurationInstead,
+                adaptiveAdditionalInfoSortBy: widget.adaptiveAdditionalInfoSortBy,
+                showFavoriteIconOnlyWhenFilterDisabled: widget.showFavoriteIconOnlyWhenFilterDisabled,
+              ),
+      ),
     );
   }
 }

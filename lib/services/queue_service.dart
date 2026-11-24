@@ -17,6 +17,8 @@ import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/current_album_image_provider.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/hidden_items.dart';
+import 'package:finamp/services/hidden_items_provider.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
@@ -704,10 +706,19 @@ class QueueService {
     FinampPlaybackOrder? order,
     int? startingIndex,
     bool skipRadioCacheInvalidation = false,
+    // the user picked the starting track, so play it even if it's hidden
+    bool keepStartTrack = false,
+    // remote control commands play exactly what was sent
+    bool filterHidden = true,
   }) async {
     // _initialQueue = list; // save original PlaybackList for looping/restarting and meta info
 
     order ??= FinampPlaybackOrder.linear;
+
+    if (filterHidden) {
+      (items, startingIndex) = prepareQueueItems(items, startingIndex, _hiddenIds, keepStart: keepStartTrack);
+      if (items.isEmpty) return _reportAllHidden();
+    }
 
     final limit = FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit;
     if (items.length > limit) {
@@ -736,9 +747,15 @@ class QueueService {
     _queueServiceLogger.info("Items for queue: [${items.map((e) => e.name).join(", ")}]");
   }
 
-  Future<void> startSlicePlayback(PlayableSlice slice) async => _startSlicePlayback(slice: slice);
+  /// [keepStartTrack] plays the starting track even if it's hidden, because the user tapped it.
+  Future<void> startSlicePlayback(PlayableSlice slice, {bool keepStartTrack = false}) async =>
+      _startSlicePlayback(slice: slice, keepStartTrack: keepStartTrack);
 
-  Future<void> _startSlicePlayback({required PlayableSlice slice, bool beginPlaying = true}) async {
+  Future<void> _startSlicePlayback({
+    required PlayableSlice slice,
+    bool beginPlaying = true,
+    bool keepStartTrack = false,
+  }) async {
     final limit = FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit;
     switch (slice) {
       case BasePlayableSlice():
@@ -754,38 +771,50 @@ class QueueService {
         };
 
         List<jellyfin_models.BaseItemDto> items = base.items;
-        if (base.items.length > limit) {
+        int? startIndex = order == FinampPlaybackOrder.linear ? base.startingIndex : null;
+        (items, startIndex) = prepareQueueItems(items, startIndex, _hiddenIds, keepStart: keepStartTrack);
+        if (items.isEmpty) return _reportAllHidden();
+        if (items.length > limit) {
           // If item is to be shuffled, we need to preshuffle before the limit is applied to reach all tracks
+          final fullSize = items.length;
           if (order == FinampPlaybackOrder.shuffled) {
             order = FinampPlaybackOrder.linear;
-            items = List.of(base.items);
+            items = List.of(items);
             items.shuffle();
           }
           items = items.safeSliceByLength(0, limit);
-          GlobalSnackbar.message(
-            (context) => context.l10n.oversizedQueueItemTruncated(base.items.length, items.length),
-          );
+          GlobalSnackbar.message((context) => context.l10n.oversizedQueueItemTruncated(fullSize, items.length));
         }
 
         await _replaceWholeQueue(
           itemList: items,
           source: base.source,
           order: order,
-          initialIndex: order == FinampPlaybackOrder.linear ? base.startingIndex : null,
+          initialIndex: order == FinampPlaybackOrder.linear ? startIndex : null,
           beginPlaying: beginPlaying,
         );
         _queueServiceLogger.info(
           "Started playing '${base.source.name.getLocalized(GlobalSnackbar.requireL10n)}' (${base.source.type}) in order $order from index ${base.startingIndex}",
         );
-        _queueServiceLogger.info("Items for queue: [${base.items.map((e) => e.name).join(", ")}]");
+        _queueServiceLogger.info("Items for queue: [${items.map((e) => e.name).join(", ")}]");
       // TODO also do pre-cache work in other queue add methods?
       case PreCachedPlayableSlice slice:
+        final (cachedTracks, startingOffset) = prepareQueueItems(
+          slice.cachedTracks,
+          slice.startingOffset,
+          _hiddenIds,
+          keepStart: keepStartTrack,
+        );
+        if (cachedTracks.isEmpty) {
+          // Every cached track is hidden; resolve the whole slice so the fetched tracks can still play.
+          return _startSlicePlayback(slice: await slice.resolve(), beginPlaying: beginPlaying);
+        }
         // Shuffle state is linear or preshuffled, so ignore.
         await _replaceWholeQueue(
-          itemList: slice.cachedTracks,
+          itemList: cachedTracks,
           source: slice.source,
           order: FinampPlaybackOrder.linear,
-          initialIndex: slice.startingOffset,
+          initialIndex: startingOffset,
           beginPlaying: beginPlaying,
         );
         _queueServiceLogger.info(
@@ -806,17 +835,26 @@ class QueueService {
             additionalTracks.remove(track);
           }
         }
-        final itemSize = additionalTracks.length + slice.cachedTracks.length;
-        if (additionalTracks.length + slice.cachedTracks.length > limit) {
-          additionalTracks = additionalTracks.safeSliceByLength(0, limit - slice.cachedTracks.length);
+        final hiddenIds = _hiddenIds;
+        additionalTracks = additionalTracks.where((track) => !isItemHidden(track, hiddenIds)).toList();
+        final itemSize = additionalTracks.length + cachedTracks.length;
+        if (additionalTracks.length + cachedTracks.length > limit) {
+          additionalTracks = additionalTracks.safeSliceByLength(0, limit - cachedTracks.length);
           GlobalSnackbar.message(
             (context) =>
-                context.l10n.oversizedQueueItemTruncated(itemSize, additionalTracks.length + slice.cachedTracks.length),
+                context.l10n.oversizedQueueItemTruncated(itemSize, additionalTracks.length + cachedTracks.length),
           );
         }
         // TODO verify we haven't made other queue changes?
-        await _insertFollowupItems(additionalTracks, slice.source, slice.cachedTracks.length);
+        await _insertFollowupItems(additionalTracks, slice.source, cachedTracks.length);
     }
+  }
+
+  Set<jellyfin_models.BaseItemId> get _hiddenIds => _providers.read(hiddenIdsProvider);
+
+  void _reportAllHidden() {
+    _queueServiceLogger.info("Not starting playback: every track is hidden");
+    GlobalSnackbar.message((context) => context.l10n.allTracksHidden);
   }
 
   /// Replaces the queue with the given list of items. If startAtIndex is specified, Any items below it
@@ -1049,15 +1087,15 @@ class QueueService {
       return _startSlicePlayback(slice: slice, beginPlaying: false);
     }
     final baseSlice = await slice.resolve(preShuffle: true);
+    final (visibleItems, _) = prepareQueueItems(baseSlice.items, null, _hiddenIds);
+    if (visibleItems.isEmpty) return _reportAllHidden();
     List<jellyfin_models.BaseItemDto> items;
     final limit = FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit;
-    if (baseSlice.items.length > limit) {
-      items = baseSlice.items.safeSliceByLength(0, limit);
-      GlobalSnackbar.message(
-        (context) => context.l10n.oversizedQueueItemTruncated(baseSlice.items.length, items.length),
-      );
+    if (visibleItems.length > limit) {
+      items = visibleItems.safeSliceByLength(0, limit);
+      GlobalSnackbar.message((context) => context.l10n.oversizedQueueItemTruncated(visibleItems.length, items.length));
     } else {
-      items = baseSlice.items;
+      items = visibleItems;
     }
 
     try {
@@ -1093,15 +1131,15 @@ class QueueService {
       return _startSlicePlayback(slice: slice, beginPlaying: false);
     }
     final baseSlice = await slice.resolve(preShuffle: true);
+    final (visibleItems, _) = prepareQueueItems(baseSlice.items, null, _hiddenIds);
+    if (visibleItems.isEmpty) return _reportAllHidden();
     List<jellyfin_models.BaseItemDto> items;
     final limit = FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit;
-    if (baseSlice.items.length > limit) {
-      items = baseSlice.items.safeSliceByLength(0, limit);
-      GlobalSnackbar.message(
-        (context) => context.l10n.oversizedQueueItemTruncated(baseSlice.items.length, items.length),
-      );
+    if (visibleItems.length > limit) {
+      items = visibleItems.safeSliceByLength(0, limit);
+      GlobalSnackbar.message((context) => context.l10n.oversizedQueueItemTruncated(visibleItems.length, items.length));
     } else {
-      items = baseSlice.items;
+      items = visibleItems;
     }
 
     try {
@@ -1138,15 +1176,15 @@ class QueueService {
       return _startSlicePlayback(slice: slice, beginPlaying: false);
     }
     final baseSlice = await slice.resolve(preShuffle: true);
+    final (visibleItems, _) = prepareQueueItems(baseSlice.items, null, _hiddenIds);
+    if (visibleItems.isEmpty) return _reportAllHidden();
     List<jellyfin_models.BaseItemDto> items;
     final limit = FinampSettingsHelper.finampSettings.playerQueueLimit ?? DefaultSettings.playerQueueLimit;
-    if (baseSlice.items.length > limit) {
-      items = baseSlice.items.safeSliceByLength(0, limit);
-      GlobalSnackbar.message(
-        (context) => context.l10n.oversizedQueueItemTruncated(baseSlice.items.length, items.length),
-      );
+    if (visibleItems.length > limit) {
+      items = visibleItems.safeSliceByLength(0, limit);
+      GlobalSnackbar.message((context) => context.l10n.oversizedQueueItemTruncated(visibleItems.length, items.length));
     } else {
-      items = baseSlice.items;
+      items = visibleItems;
     }
 
     try {

@@ -334,6 +334,9 @@ class DefaultSettings {
   static const minimizeToTray = false;
   static const startMinimizedToTray = false;
   static const followRedirects = false;
+  static const hiddenItemsDisplay = HiddenItemsDisplay.remove;
+  static const hideScope = HideScope.ask;
+  static const hideLocalNoticeShown = false;
   // iOS/macos player can start to struggle at 2000 tracks.  Android can run out of memory with 10,000-20,000 tracks.
   // Linux/Windows use mpv shim which handles all queueing in dart, so they shouldn't have any limitations.
   static final playerQueueLimit = Platform.isIOS || Platform.isMacOS
@@ -492,6 +495,9 @@ class FinampSettings {
     this.minimizeToTray = DefaultSettings.minimizeToTray,
     this.startMinimizedToTray = DefaultSettings.startMinimizedToTray,
     this.followRedirects = DefaultSettings.followRedirects,
+    this.hiddenItemsDisplay = DefaultSettings.hiddenItemsDisplay,
+    this.hideScope = DefaultSettings.hideScope,
+    this.hideLocalNoticeShown = DefaultSettings.hideLocalNoticeShown,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -1019,6 +1025,15 @@ class FinampSettings {
   /// when adding to queue and we will cancel auto-restore for queues over this size.
   int? playerQueueLimit;
 
+  @HiveField(167, defaultValue: DefaultSettings.hiddenItemsDisplay)
+  HiddenItemsDisplay hiddenItemsDisplay;
+
+  @HiveField(168, defaultValue: DefaultSettings.hideScope)
+  HideScope hideScope;
+
+  @HiveField(169, defaultValue: DefaultSettings.hideLocalNoticeShown)
+  bool hideLocalNoticeShown;
+
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
       name: DownloadLocation.internalStorageName,
@@ -1326,6 +1341,25 @@ enum ContentType {
     ContentType.inPerformingArtistAlbums => false,
     ContentType.inAlbumArtistAlbums => false,
   };
+}
+
+@HiveType(typeId: 129)
+enum HiddenItemsDisplay {
+  @HiveField(0)
+  remove,
+  @HiveField(1)
+  greyOut,
+}
+
+/// Where an admin's "Hide" stores the hidden flag; non-admins always hide on this device.
+@HiveType(typeId: 128)
+enum HideScope {
+  @HiveField(0)
+  ask,
+  @HiveField(1)
+  thisDevice,
+  @HiveField(2)
+  everyone,
 }
 
 @HiveType(typeId: 39)

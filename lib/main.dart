@@ -20,6 +20,7 @@ import 'package:finamp/screens/advanced_login_options_screen.dart';
 import 'package:finamp/screens/album_settings_screen.dart';
 import 'package:finamp/screens/artist_settings_screen.dart';
 import 'package:finamp/screens/content_view_type_settings_screen.dart';
+import 'package:finamp/screens/hidden_items_settings_screen.dart';
 import 'package:finamp/screens/downloads_settings_screen.dart';
 import 'package:finamp/screens/genre_settings_screen.dart';
 import 'package:finamp/screens/home_screen_settings_screen.dart';
@@ -47,6 +48,7 @@ import 'package:finamp/services/downloads_service_backend.dart';
 import 'package:finamp/services/finamp_logs_helper.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/hidden_items_provider.dart';
 import 'package:finamp/services/ios_helpers.dart';
 import 'package:finamp/services/item_by_id_provider.dart';
 import 'package:finamp/services/item_helper.dart';
@@ -340,6 +342,7 @@ Future<void> setupHive() async {
     Hive.openBox<FinampStorableQueueInfo>("Queues", path: dir.path),
     Hive.openBox<OfflineListen>("OfflineListens", path: dir.path),
     Hive.openBox<RawThemeResult>("CachedThemes", path: dir.path),
+    Hive.openBox<List<dynamic>>(hiddenItemsBoxName, path: dir.path),
   ]);
 
   // If the settings box is empty, we add an initial settings value here.
@@ -1062,6 +1065,7 @@ class FinampApp extends ConsumerWidget {
         InteractionSettingsScreen.routeName: (context) => const InteractionSettingsScreen(),
         TabsSettingsScreen.routeName: (context) => const TabsSettingsScreen(),
         ContentViewTypeSettingsScreen.routeName: (context) => const ContentViewTypeSettingsScreen(),
+        HiddenItemsSettingsScreen.routeName: (context) => const HiddenItemsSettingsScreen(),
         LayoutSettingsScreen.routeName: (context) => const LayoutSettingsScreen(),
         CustomizationSettingsScreen.routeName: (context) => const CustomizationSettingsScreen(),
         PlayerSettingsScreen.routeName: (context) => const PlayerSettingsScreen(),

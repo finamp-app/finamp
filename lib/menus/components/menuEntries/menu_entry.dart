@@ -32,7 +32,8 @@ class MenuEntry extends ConsumerWidget {
     );
 
     if (tooltip != null) {
-      return Tooltip(message: tooltip, child: entry);
+      // A disabled entry ignores taps, so show why it's disabled on tap too.
+      return Tooltip(message: tooltip, triggerMode: enabled ? null : TooltipTriggerMode.tap, child: entry);
     } else {
       return entry;
     }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:finamp/components/AlbumScreen/hidden_indicator.dart';
 import 'package:finamp/components/AlbumScreen/downloaded_indicator.dart';
 import 'package:finamp/components/AlbumScreen/track_list_tile.dart';
 import 'package:finamp/components/album_image.dart';
@@ -255,9 +256,13 @@ class ItemCollectionListTile extends ConsumerWidget {
             minVerticalPadding: 0.0,
             contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
             onTap: onTap,
-            leading: AlbumImage(
+            leading: HiddenArtOverlay(
               item: item,
               borderRadius: BorderRadius.circular(TrackListItemTile.albumCoverBorderRadius),
+              child: AlbumImage(
+                item: item,
+                borderRadius: BorderRadius.circular(TrackListItemTile.albumCoverBorderRadius),
+              ),
             ),
             title: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: TrackListItemTile.defaultTileHeight),

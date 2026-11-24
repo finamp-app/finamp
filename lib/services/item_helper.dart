@@ -20,6 +20,8 @@ import '../screens/artist_screen.dart';
 import '../screens/genre_screen.dart';
 import '../screens/music_screen.dart';
 import 'music_screen_provider.dart';
+import 'package:finamp/services/hidden_items.dart';
+import 'package:finamp/services/hidden_items_provider.dart';
 
 // TODO remove this and use getSliceProvider for all cases.
 Future<List<BaseItemDto>> loadChildTracksFromBaseItem({
@@ -60,14 +62,20 @@ Future<List<BaseItemDto>> loadChildTracksFromBaseItem({
         );
         break;
       case BaseItemDtoType.genre:
-        newItemsFuture = jellyfinApiHelper.getItems(
-          parentItem: finampUserHelper.currentUser?.currentView,
-          includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
-          limit: FinampSettingsHelper.finampSettings.trackShuffleItemCount,
-          genreFilter: item.id,
-          isFavorite: sortConfig.favoritesFilter,
-          sortBy: "Random", // important, as we load limited tracks and otherwise would always get the same
-        );
+        final count = FinampSettingsHelper.finampSettings.trackShuffleItemCount;
+        final hiddenIds = GetIt.instance<ProviderContainer>().read(hiddenIdsProvider);
+        final (:exclude, :fetchLimit) = excludeIdsFor(hiddenIds, limit: count);
+        newItemsFuture = jellyfinApiHelper
+            .getItems(
+              parentItem: finampUserHelper.currentUser?.currentView,
+              includeItemTypes: [BaseItemDtoType.track.jellyfinName].join(","),
+              excludeItemIds: exclude,
+              limit: fetchLimit,
+              genreFilter: item.id,
+              isFavorite: sortConfig.favoritesFilter,
+              sortBy: "Random", // important, as we load limited tracks and otherwise would always get the same
+            )
+            .then((items) => items?.where((track) => !isItemHidden(track, hiddenIds)).take(count).toList());
         break;
       default:
         newItemsFuture = jellyfinApiHelper.getItems(

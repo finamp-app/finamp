@@ -22,6 +22,9 @@ import '../../models/finamp_models.dart';
 import '../../models/jellyfin_models.dart';
 import '../../services/downloads_service.dart';
 import '../../services/finamp_settings_helper.dart';
+import '../../services/hidden_items.dart';
+import '../../services/hidden_items_provider.dart';
+import '../hidden_item_gate.dart';
 import '../../services/music_screen_provider.dart';
 import '../AlbumScreen/track_list_tile.dart';
 import 'alphabet_item_list.dart';
@@ -226,6 +229,15 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
 
   PagedContentProvider get pageControl => pagedContentProvider(widget.displayable);
 
+  PagingState<int, FinampDisplayableOrPlayable> _withoutHiddenItems(
+    PagingState<int, FinampDisplayableOrPlayable> state,
+  ) {
+    if (ref.watch(finampSettingsProvider.hiddenItemsDisplay) != HiddenItemsDisplay.remove) return state;
+    final hiddenIds = ref.watch(hiddenIdsProvider);
+    bool visible(FinampDisplayableOrPlayable item) => item is! FinampPlayableDto || !isItemHidden(item.item, hiddenIds);
+    return state.copyWith(pages: state.pages?.map((page) => page.where(visible).toList()).toList());
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -310,60 +322,63 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
                 itemBuilder: (context, item, index) {
                   // Use right padding inherited from fast scroller minus
                   // built-in icon padding
-                  return Padding(
-                    padding: EdgeInsets.only(right: max(0, MediaQuery.paddingOf(context).right - 20)),
-                    child: CachedBuilder(
-                      key: ValueKey(item.id),
-                      cacheKey: (item.id, index),
-                      builder: (context) {
-                        return AutoScrollTag(
-                          key: ValueKey(index),
-                          controller: controller,
-                          index: index,
-                          child: switch (item) {
-                            Track() => Consumer(
-                              builder: (context, ref, _) {
-                                return TrackListTile(
-                                  key: ValueKey(item.item.id),
-                                  item: item.item,
-                                  index: index,
-                                  // when the tabBar was filtered and we only have the tracks tab,
-                                  // we can allow Dismiss gestures in the track list
-                                  allowDismiss: widget.allowTrackGestures,
-                                  parentItem: switch (true) {
-                                    _ when widget.sortConfig.genreFilter != null =>
-                                      ref.watch(itemByIdProvider(widget.sortConfig.genreFilter!.id)).value,
-                                    _ when widget.sortConfig.artistFilter != null =>
-                                      ref.watch(itemByIdProvider(widget.sortConfig.artistFilter!.id)).value,
-                                    _ => null,
-                                  },
-                                  forceAlbumArtists: (widget.sortConfig.sortBy == SortBy.albumArtist),
-                                  adaptiveAdditionalInfoSortBy: widget.sortConfig.sortBy,
-                                  parentPlayable:
-                                      ref.watch(finampSettingsProvider.startInstantMixForIndividualTracks) &&
-                                          !ref.watch(finampSettingsProvider.isOffline)
-                                      ? InstantMix(item.item)
-                                      : widget.displayable is FinampPlayable
-                                      ? (widget.displayable as FinampPlayable)
-                                      : item,
-                                );
-                              },
-                            ),
-                            FinampPlayableDto() => ItemWrapper(
-                              key: ValueKey(item.item.id),
-                              item: item.item,
-                              genreFilter: widget.sortConfig.genreFilter,
-                              adaptiveAdditionalInfoSortBy: widget.sortConfig.sortBy,
-                              showFavoriteIconOnlyWhenFilterDisabled: true,
-                            ),
-                            PlayableQueue() => QueueRestoreTile(info: item.queue),
-                            LatestQueues() ||
-                            PrecalculatedPlayable() ||
-                            MusicScreenPlayable<FinampPlayableDto>() ||
-                            UnavailableHomeSectionPlayable() => throw UnsupportedError("Unsupported type $item"),
-                          },
-                        );
-                      },
+                  return HiddenItemGate(
+                    item: item is FinampPlayableDto ? item.item : null,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: max(0, MediaQuery.paddingOf(context).right - 20)),
+                      child: CachedBuilder(
+                        key: ValueKey(item.id),
+                        cacheKey: (item.id, index),
+                        builder: (context) {
+                          return AutoScrollTag(
+                            key: ValueKey(index),
+                            controller: controller,
+                            index: index,
+                            child: switch (item) {
+                              Track() => Consumer(
+                                builder: (context, ref, _) {
+                                  return TrackListTile(
+                                    key: ValueKey(item.item.id),
+                                    item: item.item,
+                                    index: index,
+                                    // when the tabBar was filtered and we only have the tracks tab,
+                                    // we can allow Dismiss gestures in the track list
+                                    allowDismiss: widget.allowTrackGestures,
+                                    parentItem: switch (true) {
+                                      _ when widget.sortConfig.genreFilter != null =>
+                                        ref.watch(itemByIdProvider(widget.sortConfig.genreFilter!.id)).value,
+                                      _ when widget.sortConfig.artistFilter != null =>
+                                        ref.watch(itemByIdProvider(widget.sortConfig.artistFilter!.id)).value,
+                                      _ => null,
+                                    },
+                                    forceAlbumArtists: (widget.sortConfig.sortBy == SortBy.albumArtist),
+                                    adaptiveAdditionalInfoSortBy: widget.sortConfig.sortBy,
+                                    parentPlayable:
+                                        ref.watch(finampSettingsProvider.startInstantMixForIndividualTracks) &&
+                                            !ref.watch(finampSettingsProvider.isOffline)
+                                        ? InstantMix(item.item)
+                                        : widget.displayable is FinampPlayable
+                                        ? (widget.displayable as FinampPlayable)
+                                        : item,
+                                  );
+                                },
+                              ),
+                              FinampPlayableDto() => ItemWrapper(
+                                key: ValueKey(item.item.id),
+                                item: item.item,
+                                genreFilter: widget.sortConfig.genreFilter,
+                                adaptiveAdditionalInfoSortBy: widget.sortConfig.sortBy,
+                                showFavoriteIconOnlyWhenFilterDisabled: true,
+                              ),
+                              PlayableQueue() => QueueRestoreTile(info: item.queue),
+                              LatestQueues() ||
+                              PrecalculatedPlayable() ||
+                              MusicScreenPlayable<FinampPlayableDto>() ||
+                              UnavailableHomeSectionPlayable() => throw UnsupportedError("Unsupported type $item"),
+                            },
+                          );
+                        },
+                      ),
                     ),
                   );
                 },
@@ -380,7 +395,8 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
           )
         : PagedGridView<int, FinampDisplayableOrPlayable>(
             // If we made it here, we must be in a non-track music screen, so pageControl should only return FinampPlayableItem
-            state: ref.watch(pageControl),
+            // Grid items aren't played by index, so hidden ones can be dropped from the pages.
+            state: _withoutHiddenItems(ref.watch(pageControl)),
             fetchNextPage: () {
               ref.read(pageControl.notifier).newPage();
             },

@@ -408,6 +408,7 @@ class PlayOnService {
                           ),
                           // seems like Jellyfin isn't always sending the correct index
                           startingIndex: request['Data']['StartIndex'] as int,
+                          filterHidden: false,
                         ),
                       );
                     } else {

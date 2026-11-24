@@ -9,6 +9,7 @@ import 'package:finamp/menus/components/menuEntries/menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/mix_builder_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/restore_queue_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/start_radio_menu_entry.dart';
+import 'package:finamp/menus/components/menuEntries/hide_item_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/toggle_favorite_menu_entry.dart';
 import 'package:finamp/menus/components/menu_item_info_header.dart';
 import 'package:finamp/menus/components/playbackActions/playback_action_row.dart';
@@ -48,6 +49,7 @@ Future<void> showModalAlbumMenu({
         AdaptiveDownloadLockDeleteMenuEntry(baseItem: baseItem),
         // backend is not flexible too
         ToggleFavoriteMenuEntry(baseItem: baseItem),
+        HideItemMenuEntry(baseItem: baseItem),
         DeleteFromServerMenuEntry(baseItem: baseItem),
       ],
     ];
