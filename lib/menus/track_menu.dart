@@ -265,10 +265,10 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
       InstantMixMenuEntry(baseItem: widget.item),
       StartRadioMenuEntry(baseItem: widget.item),
       AdaptiveDownloadLockDeleteMenuEntry(baseItem: widget.item),
-      RedownloadMenuEntry(baseItem: widget.item),
       ToggleFavoriteMenuEntry(baseItem: widget.item),
       if (widget.showQueueActions) CreatePlaylistFromCurrentQueueMenuEntry(),
       if (widget.showQueueActions) ClearQueueMenuEntry(baseItem: widget.item),
+      RedownloadMenuEntry(baseItem: widget.item),
       DeleteFromServerMenuEntry(baseItem: widget.item),
       RemoveFromQueueMenuEntry(queueItem: widget.queueItem),
       if (widget.showPlaybackControls && widget.showHiddenPlayerActions) ...[

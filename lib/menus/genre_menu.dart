@@ -38,8 +38,8 @@ Future<void> showModalGenreMenu({
       MixBuilderMenuEntry(baseItem: item),
       StartRadioMenuEntry(baseItem: item),
       AdaptiveDownloadLockDeleteMenuEntry(baseItem: item),
-      RedownloadMenuEntry(baseItem: item),
       ToggleFavoriteMenuEntry(baseItem: item),
+      RedownloadMenuEntry(baseItem: item),
     ];
   }
 

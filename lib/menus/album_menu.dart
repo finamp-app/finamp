@@ -47,9 +47,9 @@ Future<void> showModalAlbumMenu({
         StartRadioMenuEntry(baseItem: baseItem),
         // download system is not that flexible
         AdaptiveDownloadLockDeleteMenuEntry(baseItem: baseItem),
-        RedownloadMenuEntry(baseItem: baseItem),
         // backend is not flexible too
         ToggleFavoriteMenuEntry(baseItem: baseItem),
+        RedownloadMenuEntry(baseItem: baseItem),
         DeleteFromServerMenuEntry(baseItem: baseItem),
       ],
     ];

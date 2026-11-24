@@ -39,9 +39,9 @@ Future<void> showModalPlaylistMenu({
       MixBuilderMenuEntry(baseItem: item),
       StartRadioMenuEntry(baseItem: item),
       AdaptiveDownloadLockDeleteMenuEntry(baseItem: item),
-      RedownloadMenuEntry(baseItem: item),
       ToggleFavoriteMenuEntry(baseItem: item),
       EditItemMenuEntry(baseItem: item),
+      RedownloadMenuEntry(baseItem: item),
       DeleteFromServerMenuEntry(baseItem: item),
     ];
   }
