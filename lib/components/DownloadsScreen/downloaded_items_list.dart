@@ -80,7 +80,7 @@ class _DownloadedItemTypeListState extends ConsumerState<DownloadedItemsList> {
                       IconButton(
                         icon: const Icon(TablerIcons.reload),
                         tooltip: AppLocalizations.of(context)!.redownloadItem,
-                        onPressed: () => startRedownload(stub),
+                        onPressed: () => startRedownload(context, stub),
                       ),
                     IconButton(
                       icon: const Icon(Icons.delete),
@@ -178,7 +178,7 @@ class _DownloadedChildrenListState extends ConsumerState<DownloadedChildrenList>
           IconButton(
             icon: const Icon(TablerIcons.reload),
             tooltip: AppLocalizations.of(context)!.redownloadItem,
-            onPressed: () => startRedownload(stub),
+            onPressed: () => startRedownload(context, stub),
           ),
         if (status.isRequired)
           IconButton(icon: const Icon(Icons.delete), onPressed: () => askBeforeDeleteDownloadFromDevice(context, stub)),

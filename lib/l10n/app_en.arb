@@ -1768,6 +1768,16 @@
     "@redownloadQueued": {
         "description": "Snackbar confirmation shown after the user starts redownloading an already downloaded item."
     },
+    "redownloadConfirmation": "Replace {size} of downloaded files?",
+    "@redownloadConfirmation": {
+        "description": "Confirmation prompt shown before redownloading a large item, replacing its downloaded files with fresh copies from the server. The size is the current size of the files on disk.",
+        "placeholders": {
+            "size": {
+                "type": "String",
+                "example": "1.2 GB"
+            }
+        }
+    },
     "lockDownload": "Always Keep on Device",
     "@lockDownload": {
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."

@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:file_sizes/file_sizes.dart';
+import 'package:finamp/components/confirmation_prompt_dialog.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/menus/components/menuEntries/download_action_menu_entry.dart';
@@ -22,15 +26,39 @@ class RedownloadMenuEntry extends DownloadActionMenuEntry {
       icon: TablerIcons.reload,
       title: AppLocalizations.of(context)!.redownloadItem,
       onTap: () async {
-        Navigator.pop(context);
-        await startRedownload(downloadStub);
+        if (await startRedownload(context, downloadStub) && context.mounted) {
+          Navigator.pop(context);
+        }
       },
     );
   }
 }
 
-/// Starts a redownload of the given item and informs the user about the result.
-Future<void> startRedownload(DownloadStub stub) async {
+/// Items larger than this ask for confirmation before being redownloaded.
+const _redownloadConfirmationThresholdBytes = 500 * 1024 * 1024;
+
+/// Starts a redownload of the given item, asking for confirmation first if its files are large.
+/// Returns whether the redownload was started.
+Future<bool> startRedownload(BuildContext context, DownloadStub stub) async {
+  final size = await GetIt.instance<DownloadsService>().getFileSize(stub);
+  if (size > _redownloadConfirmationThresholdBytes) {
+    if (!context.mounted) return false;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => ConfirmationPromptDialog(
+        promptText: AppLocalizations.of(context)!.redownloadConfirmation(FileSize.getSize(size)),
+        confirmButtonText: AppLocalizations.of(context)!.redownloadItem,
+        centerText: true,
+      ),
+    );
+    if (confirmed != true) return false;
+  }
+  unawaited(_redownload(stub));
+  return true;
+}
+
+/// Redownloads the given item and informs the user about the result.
+Future<void> _redownload(DownloadStub stub) async {
   final viewId = GetIt.instance<FinampUserHelper>().currentUser?.currentViewId;
   GlobalSnackbar.message((context) => AppLocalizations.of(context)!.redownloadQueued, isConfirmation: true);
   try {
