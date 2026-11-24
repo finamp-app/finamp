@@ -1,6 +1,6 @@
 import 'package:finamp/components/delete_prompts.dart';
-import 'package:finamp/components/redownload_action.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/components/menuEntries/redownload_menu_entry.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
