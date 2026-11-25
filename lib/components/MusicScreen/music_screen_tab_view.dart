@@ -105,7 +105,7 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
     if (letter.isEmpty) return;
 
     letterToSearch = letter;
-    var codePointToScrollTo = (widget.contentType == ContentType.tracks ? letter.toUpperCase() : letter.toLowerCase())
+    var codePointToScrollTo = letter.toLowerCase()
         .codeUnitAt(0);
 
     if (letter == '#') {
@@ -144,6 +144,9 @@ class _MusicScreenTabViewState extends ConsumerState<MusicScreenTabView>
       }
       sortName = removeDiacritics(sortName).toLowerCase();
       if (sortName.isEmpty) continue; // assume empty names are at the start
+      if (sortName.startsWith(RegExp(r'[^a-zA-Z]'))) {
+        sortName = '#';
+      }
       int itemCodePoint = sortName.codeUnitAt(0);
       final comparisonResult = itemCodePoint - codePointToScrollTo;
       if (comparisonResult == 0) {
