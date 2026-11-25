@@ -499,6 +499,31 @@ class DownloadsService {
     restartDownloads();
   }
 
+  /// Marks all downloaded files required by the given stub and its descendants as needing a redownload
+  /// and queues them for syncing, then resyncs the stub.
+  /// This replaces the local files without removing and re-adding the download.
+  Future<void> redownload(DownloadStub stub, BaseItemId? viewId) async {
+    _isar.writeTxnSync(() {
+      final redownloadIds = <int>[];
+      final visited = <int>{};
+      final pending = [_isar.downloadItems.getSync(stub.isarId)].nonNulls.toList();
+      while (pending.isNotEmpty) {
+        final item = pending.removeLast();
+        if (!visited.add(item.isarId)) continue;
+        if (item.type.hasFiles && item.state != DownloadItemState.notDownloaded) {
+          updateItemState(
+            item,
+            item.state.isComplete ? DownloadItemState.needsRedownloadComplete : DownloadItemState.needsRedownload,
+          );
+          redownloadIds.add(item.isarId);
+        }
+        pending.addAll(item.requires.filter().findAllSync());
+      }
+      syncBuffer.addAll(redownloadIds, [], viewId);
+    });
+    await resync(stub, viewId);
+  }
+
   /// Re-syncs every download node.
   Future<void> resyncAll({bool forceSync = false}) => resync(_anchor, null, forceSync: forceSync);
 

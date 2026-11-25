@@ -1,9 +1,11 @@
 import 'package:finamp/components/delete_prompts.dart';
 import 'package:finamp/l10n/app_localizations.dart';
+import 'package:finamp/menus/components/menuEntries/redownload_menu_entry.dart';
 import 'package:finamp/models/jellyfin_models.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../models/finamp_models.dart';
@@ -52,6 +54,7 @@ class _DownloadedItemTypeListState extends ConsumerState<DownloadedItemsList> {
   @override
   Widget build(BuildContext context) {
     final items = ref.watch(_downloadsService.userDownloadedItemsProvider(widget.type));
+    final isOffline = ref.watch(finampSettingsProvider.isOffline);
     return items.isNotEmpty
         ? SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
@@ -63,22 +66,13 @@ class _DownloadedItemTypeListState extends ConsumerState<DownloadedItemsList> {
                     : AlbumImage(item: stub.baseItem),
                 title: Text(stub.baseItem?.name ?? stub.name),
                 subtitle: buildDownloadedItemSubtitle(context, stub),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if ((!(stub.baseItemType == BaseItemDtoType.album || stub.baseItemType == BaseItemDtoType.track)) &&
-                        !ref.watch(finampSettingsProvider.isOffline))
-                      IconButton(
-                        icon: const Icon(Icons.sync),
-                        onPressed: () {
-                          _downloadsService.resync(stub, null);
-                        },
-                      ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => askBeforeDeleteDownloadFromDevice(context, stub),
-                    ),
-                  ],
+                trailing: _DownloadedItemActionsMenu(
+                  stub: stub,
+                  canSync:
+                      !(stub.baseItemType == BaseItemDtoType.album || stub.baseItemType == BaseItemDtoType.track) &&
+                      !isOffline,
+                  canRedownload: !isOffline,
+                  canDelete: true,
                 ),
                 tilePadding: const EdgeInsets.symmetric(horizontal: 16),
                 shape: LinearBorder(),
@@ -150,15 +144,79 @@ class _DownloadedChildrenListState extends ConsumerState<DownloadedChildrenList>
               title: Text(stub.baseItem?.name ?? stub.name),
               leading: AlbumImage(item: stub.baseItem),
               subtitle: ItemFileSize(stub: stub),
-              trailing: ref.watch(_downloadsService.statusProvider((stub, null))).isRequired
-                  ? IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => askBeforeDeleteDownloadFromDevice(context, stub),
-                    )
-                  : null,
+              trailing: _buildChildActions(stub),
             ),
         ],
       ),
+    );
+  }
+
+  Widget? _buildChildActions(DownloadStub stub) {
+    final status = ref.watch(_downloadsService.statusProvider((stub, null)));
+    final canRedownload = status.isDownloaded && !ref.watch(finampSettingsProvider.isOffline);
+    if (!canRedownload && !status.isRequired) {
+      return null;
+    }
+    return _DownloadedItemActionsMenu(
+      stub: stub,
+      canSync: false,
+      canRedownload: canRedownload,
+      canDelete: status.isRequired,
+    );
+  }
+}
+
+enum _DownloadedItemAction { sync, redownload, delete }
+
+class _DownloadedItemActionsMenu extends StatelessWidget {
+  const _DownloadedItemActionsMenu({
+    required this.stub,
+    required this.canSync,
+    required this.canRedownload,
+    required this.canDelete,
+  });
+
+  final DownloadStub stub;
+  final bool canSync;
+  final bool canRedownload;
+  final bool canDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<_DownloadedItemAction>(
+      icon: const Icon(TablerIcons.dots_vertical),
+      onSelected: (action) {
+        switch (action) {
+          case _DownloadedItemAction.sync:
+            GetIt.instance<DownloadsService>().resync(stub, null);
+          case _DownloadedItemAction.redownload:
+            startRedownload(context, stub);
+          case _DownloadedItemAction.delete:
+            askBeforeDeleteDownloadFromDevice(context, stub);
+        }
+      },
+      itemBuilder: (context) => [
+        if (canSync) _buildItem(_DownloadedItemAction.sync, Icons.sync, AppLocalizations.of(context)!.syncItem),
+        if (canRedownload)
+          _buildItem(
+            _DownloadedItemAction.redownload,
+            TablerIcons.replace,
+            AppLocalizations.of(context)!.redownloadItem,
+          ),
+        if (canDelete)
+          _buildItem(
+            _DownloadedItemAction.delete,
+            Icons.delete_outlined,
+            AppLocalizations.of(context)!.deleteFromTargetConfirmButton("device"),
+          ),
+      ],
+    );
+  }
+
+  PopupMenuItem<_DownloadedItemAction> _buildItem(_DownloadedItemAction action, IconData icon, String title) {
+    return PopupMenuItem(
+      value: action,
+      child: ListTile(leading: Icon(icon), title: Text(title), contentPadding: EdgeInsets.zero),
     );
   }
 }

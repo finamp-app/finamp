@@ -14,6 +14,7 @@ import 'package:finamp/menus/components/menuEntries/lyrics_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/output_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/queue_menu_entry.dart';
+import 'package:finamp/menus/components/menuEntries/redownload_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/remove_from_current_playlist_menu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/remove_from_queue_menbu_entry.dart';
 import 'package:finamp/menus/components/menuEntries/restore_queue_menu_entry.dart';
@@ -267,6 +268,7 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
       ToggleFavoriteMenuEntry(baseItem: widget.item),
       if (widget.showQueueActions) CreatePlaylistFromCurrentQueueMenuEntry(),
       if (widget.showQueueActions) ClearQueueMenuEntry(baseItem: widget.item),
+      RedownloadMenuEntry(baseItem: widget.item),
       DeleteFromServerMenuEntry(baseItem: widget.item),
       RemoveFromQueueMenuEntry(queueItem: widget.queueItem),
       if (widget.showPlaybackControls && widget.showHiddenPlayerActions) ...[

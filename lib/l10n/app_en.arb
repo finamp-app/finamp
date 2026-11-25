@@ -1760,6 +1760,28 @@
     "prioritizePlayerCoverSubtitle": "Prioritize showing a larger album cover on player screen. Non-critical controls will be hidden more aggressively at small screen sizes.",
     "suppressPlayerPadding": "Suppress player controls padding",
     "suppressPlayerPaddingSubtitle": "Fully minimizes padding between player screen controls when album cover is not at full size.",
+    "syncItem": "Sync",
+    "@syncItem": {
+        "description": "Menu entry on the downloads screen to sync a downloaded collection with its current contents on the server."
+    },
+    "redownloadItem": "Redownload",
+    "@redownloadItem": {
+        "description": "Menu entry to replace the downloaded files and metadata of an already downloaded item with fresh copies from the server, without removing the download."
+    },
+    "redownloadQueued": "Redownload started",
+    "@redownloadQueued": {
+        "description": "Snackbar confirmation shown after the user starts redownloading an already downloaded item."
+    },
+    "redownloadConfirmation": "Replace {size} of downloaded files?",
+    "@redownloadConfirmation": {
+        "description": "Confirmation prompt shown before redownloading a large item, replacing its downloaded files with fresh copies from the server. The size is the current size of the files on disk.",
+        "placeholders": {
+            "size": {
+                "type": "String",
+                "example": "1.2 GB"
+            }
+        }
+    },
     "lockDownload": "Always Keep on Device",
     "@lockDownload": {
         "description": "Text shown on button to require an item which is already downloaded by a parent collection, preventing it from being deleted if the parent is removed."
