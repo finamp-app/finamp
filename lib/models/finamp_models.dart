@@ -4154,7 +4154,7 @@ sealed class HomeScreenSectionBase {
 }
 
 @HiveType(typeId: 113)
-@JsonSerializable(includeIfNull: false)
+@JsonSerializable(includeIfNull: false, createFactory: false)
 class QueuesHomeSection extends HomeScreenSectionBase {
   QueuesHomeSection();
 
@@ -4164,6 +4164,7 @@ class QueuesHomeSection extends HomeScreenSectionBase {
   }
 
   @override
+  @JsonKey(includeToJson: false)
   int get hashCode => 765346;
 
   @override
@@ -4171,7 +4172,7 @@ class QueuesHomeSection extends HomeScreenSectionBase {
 }
 
 @HiveType(typeId: 114)
-@JsonSerializable(converters: [LibraryIdConverter()], includeIfNull: false)
+@JsonSerializable(converters: [LibraryIdConverter()], includeIfNull: false, createFactory: false)
 class TabsHomeSection extends HomeScreenSectionBase {
   TabsHomeSection({required this.libraryId, required this.contentType});
   @HiveField(0)
@@ -4185,6 +4186,7 @@ class TabsHomeSection extends HomeScreenSectionBase {
   }
 
   @override
+  @JsonKey(includeToJson: false)
   int get hashCode => Object.hash(contentType, libraryId);
 
   @override
@@ -4192,7 +4194,7 @@ class TabsHomeSection extends HomeScreenSectionBase {
 }
 
 @HiveType(typeId: 115)
-@JsonSerializable(converters: [LibraryIdConverter(), BaseItemIdConverter()], includeIfNull: false)
+@JsonSerializable(converters: [LibraryIdConverter(), BaseItemIdConverter()], includeIfNull: false, createFactory: false)
 class CollectionHomeSection extends HomeScreenSectionBase {
   CollectionHomeSection({required this.itemId, required this.libraryId, required this.contentType});
   @HiveField(0)
@@ -4211,6 +4213,7 @@ class CollectionHomeSection extends HomeScreenSectionBase {
   }
 
   @override
+  @JsonKey(includeToJson: false)
   int get hashCode => Object.hash(itemId, libraryId, contentType);
 
   @override
