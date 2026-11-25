@@ -24,6 +24,9 @@ part 'music_providers.g.dart';
 
 @riverpod
 Future<List<BaseItemDto>> globalSearch(Ref ref, String searchTerm, {required bool includeTracks}) async {
+  // Discard results from a request interrupted by a local/public route change.
+  ref.watch(FinampUserHelper.finampCurrentUserProvider.select((user) => user?.baseURL));
+
   final jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
   final baseFuture = jellyfinApiHelper.getItems(
     includeItemTypes: [
@@ -466,6 +469,11 @@ Future<List<FinampDisplayableOrPlayable>> getChildren(
   Ref ref, {
   required FinampUnpagedDisplayable<FinampDisplayableOrPlayable> item,
 }) async {
+  // See [loadHomeSectionItems]: a route change must invalidate child lists as
+  // well, otherwise a request cancelled during the hand-off remains visible as
+  // a permanent error until the user taps Retry.
+  ref.watch(FinampUserHelper.finampCurrentUserProvider.select((user) => user?.baseURL));
+
   switch (item) {
     case FinampUnpagedDisplayable<Track>():
       // TODO figure out how to get refreshing working for non MusicScreenPlayables
