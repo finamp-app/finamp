@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:finamp/components/PlayerScreen/player_buttons_loop_mode.dart';
 import 'package:finamp/components/PlayerScreen/player_buttons_playback_order.dart';
 import 'package:finamp/components/Shortcuts/global_shortcut_manager.dart';
@@ -113,8 +114,26 @@ class PlayerButtons extends ConsumerWidget {
     );
 
     final completed = ref.watch(mediaStateProvider.select((x) => x.playbackState.isCompletedQueue));
+    final loading = ref.watch(
+      mediaStateProvider.select((x) => x.playbackState.processingState == AudioProcessingState.loading),
+    );
 
-    if (playing) {
+    if (loading) {
+      // While the playback state is loading (e.g. a queue pushed to a remote
+      // session hasn't been confirmed playing yet), show a spinner instead of
+      // a play state that isn't known.
+      return SizedBox(
+        width: 32,
+        height: 32,
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child: Builder(
+            builder: (context) =>
+                CircularProgressIndicator(strokeWidth: 3, color: shadow ? Colors.white : IconTheme.of(context).color),
+          ),
+        ),
+      );
+    } else if (playing) {
       return Icon(
         TablerIcons.player_pause,
         shadows: shadow ? <Shadow>[Shadow(color: Colors.black, blurRadius: 10.0)] : null,

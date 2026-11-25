@@ -28,6 +28,7 @@ import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
+import 'package:finamp/services/remote_session_service.dart';
 import 'package:finamp/services/queue_service.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/radio_service_helper.dart';
@@ -86,7 +87,7 @@ class FixtureQueue extends Fake implements QueueService {
   @override
   double get playbackSpeed => speed.value;
   @override
-  Future<void> skipByOffset(int offset) async {}
+  Future<void> skipByOffset(int offset, {Duration position = Duration.zero}) async {}
   final order = BehaviorSubject<FinampPlaybackOrder>.seeded(FinampPlaybackOrder.linear);
   final loop = BehaviorSubject<FinampLoopMode>.seeded(FinampLoopMode.none);
   final speed = BehaviorSubject<double>.seeded(1);
@@ -135,6 +136,15 @@ class FixtureAudioHelper extends Fake implements AudioServiceHelper {}
 
 class FixtureApi extends Fake implements JellyfinApiHelper {}
 
+class FixtureRemoteSession extends Fake implements RemoteSessionService {
+  @override
+  bool get isRemote => false;
+  @override
+  SessionInfo? get currentRemoteState => null;
+  @override
+  Stream<SessionInfo?> getRemoteStateStream() => Stream.value(null);
+}
+
 class FixtureMetadata extends Fake implements MetadataProvider {
   FixtureMetadata({this.hasLyrics = true});
   @override
@@ -179,6 +189,7 @@ Future<RouteLog> mount(
   GetIt.instance.registerSingleton<DownloadsService>(FixtureDownloads());
   GetIt.instance.registerSingleton<AudioServiceHelper>(FixtureAudioHelper());
   GetIt.instance.registerSingleton<JellyfinApiHelper>(FixtureApi());
+  GetIt.instance.registerSingleton<RemoteSessionService>(FixtureRemoteSession());
   final settings = FinampSettings(
     downloadLocations: [],
     downloadLocationsMap: {},
