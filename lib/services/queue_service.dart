@@ -38,6 +38,15 @@ import '../models/music_slices.dart';
 
 enum OversizedSavedQueueHandling { abort, truncate, loadFully }
 
+/// Jellyfin ProviderIds -> MediaMetadata keys that Pano Scrobbler reads for MBIDs.
+/// Finamp's audio_service fork copies MediaItem.extras into MediaMetadata.
+const _musicBrainzMediaMetadataKeys = {
+  "MusicBrainzTrack": "org.musicbrainz.MUSICBRAINZ_TRACKID",
+  "MusicBrainzAlbum": "org.musicbrainz.MUSICBRAINZ_ALBUMID",
+  "MusicBrainzAlbumArtist": "org.musicbrainz.MUSICBRAINZ_ALBUMARTISTID",
+  "MusicBrainzReleaseGroup": "org.musicbrainz.MUSICBRAINZ_RELEASEGROUPID",
+};
+
 /// A track queueing service for Finamp.
 class QueueService {
   static const savedQueueSource = QueueItemSource.rawId(
@@ -1695,6 +1704,8 @@ class QueueService {
         "android.media.IS_EXPLICIT": item.isExplicit ? 1 : 0,
         "isOffline": FinampSettingsHelper.finampSettings.isOffline,
         "contextNormalizationGain": contextNormalizationGain,
+        for (final entry in _musicBrainzMediaMetadataKeys.entries)
+          if (item.providerIds?[entry.key] is String) entry.value: item.providerIds![entry.key],
       },
       // Jellyfin returns microseconds * 10 for some reason
       duration: item.runTimeTicksDuration(),
