@@ -3805,5 +3805,58 @@
                 "example": "Rick Astley - Never Gonna Give You Up"
             }
         }
-    }
+    },
+    "playSomeButtonLabel": "Přehrát nějaké",
+    "addSomeToQueue": "Přidat nějaké do fronty",
+    "playSomeNext": "Přehrát nějaké další",
+    "addSomeToNextUp": "Přidat nějaké do dalších na řadě",
+    "customHeaders": "Vlastní hlavičky HTTP",
+    "httpHeaderNotAuth": "Název je používaný interně.",
+    "@httpHeaderNotAuth": {
+        "description": "Error message when the user configures a custom authorization header that overlaps with one finamp already uses."
+    },
+    "httpHeaderConflict": "Duplicitní název hlavičky.",
+    "@httpHeaderConflict": {
+        "description": "Error message when the user configures two custom authorization headers with duplicate names."
+    },
+    "customHeaderNameLabel": "Název hlavičky",
+    "@customHeaderNameLabel": {
+        "description": "Label for custom HTTP header name entry field."
+    },
+    "customHeaderValueLabel": "Hodnota hlavičky",
+    "@customHeaderValueLabel": {
+        "description": "Label for custom HTTP header value entry field."
+    },
+    "followRedirectsTitle": "Povolit přesměrování",
+    "@followRedirectsTitle": {
+        "description": "Title of setting that allows Finamp to follow redirects."
+    },
+    "followRedirectsSubtitle": "Povoluje aplikaci Finamp následovat přesměrování HTTP, včetně těch vedoucích na jiné domény, než na nastavenou.  Potenciálně nekompatibilní s vlastními hlavičkami HTTP.",
+    "advancedLoginOptionsWarning": "Pokročilé možnosti autentifikace pro nestandardně provozované servery.  Tyto funkce jsou poskytovány v rámci možností a nemusejí fungovat správně na všech platformách.",
+    "queueAutorestoreOversized": "Obnovení přerušeno – uložená fronta je příliš velká.",
+    "oversizedQueueItemTruncated": "Příliš velká položka zkrácena z {itemSize} na {maxSize} skladeb.",
+    "@oversizedQueueItemTruncated": {
+        "description": "Message displayed if an item is truncated while being added to queue",
+        "placeholders": {
+            "itemSize": {
+                "type": "int"
+            },
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueSizeLimitTitle": "Limit skladeb ve frontě",
+    "queueSizeLimitSubtitle": "Na frontu se aplikuje měkký limit tím, že se omezí velikost jednotlivých přidávaných položek. Přidáním více položek do jedné fronty však může dojít k vytvoření nadměrně velkých front. Pokus o přehrání fronty, která je pro dané zařízení příliš velká, může vést k selhání aplikace.",
+    "oversizedQueueContinue": "Přesto se pokusit o načtení",
+    "oversizedQueueTruncate": "Zkrátit frontu na maximálně {maxSize} skladeb",
+    "@oversizedQueueTruncate": {
+        "description": "Button to truncate oversized queues while restoring",
+        "placeholders": {
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueRestoreCancel": "Zrušit obnovení"
 }
