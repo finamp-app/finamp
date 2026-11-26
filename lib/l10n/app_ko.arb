@@ -3781,5 +3781,10 @@
                 "type": "int"
             }
         }
-    }
+    },
+    "minimizeToTrayTitle": "시스템 트레이로 최소화",
+    "@minimizeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray when it is minimized"
+    },
+    "minimizeToTraySubtitle": "창을 최소화 할 때 시스템 트레이로 숨깁니다."
 }
