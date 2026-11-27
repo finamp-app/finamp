@@ -3942,5 +3942,7 @@
             }
         }
     },
-    "queueRestoreCancel": "Cancel Restore"
+    "queueRestoreCancel": "Cancel Restore",
+    "enableTextScaleOverride": "Override System Text Scaler",
+    "enableTextScaleOverrideSubtitle": "Use a custom text scaling factor instead of following the OS configuration"
 }

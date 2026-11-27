@@ -51,7 +51,19 @@ class _FinampProviderBuilderState extends ConsumerState<FinampProviderBuilder> w
   }
 
   @override
-  Widget build(BuildContext context) => _initialized ? widget.child : SizedBox.shrink();
+  Widget build(BuildContext context) {
+    if (!_initialized) {
+      return SizedBox.shrink();
+    }
+    final textScaling = ref.watch(finampSettingsProvider.textScaleOverride);
+    if (textScaling != null) {
+      return MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaler: FinampTextScaler(textScaling)),
+        child: widget.child,
+      );
+    }
+    return widget.child;
+  }
 
   @override
   void didChangePlatformBrightness() {
@@ -74,4 +86,20 @@ class _FinampProviderBuilderState extends ConsumerState<FinampProviderBuilder> w
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
+}
+
+class FinampTextScaler extends TextScaler {
+  const FinampTextScaler(this.scaleFactor);
+  final double scaleFactor;
+
+  @override
+  double scale(double fontSize) {
+    // This is calibrated to roughly match android scaling.
+    // Scaling is fully applied at 8.0, not applied at all at 100.0
+    final applicationFactor = (100 - fontSize) / 92;
+    return fontSize * (1.0 + (scaleFactor - 1.0) * applicationFactor);
+  }
+
+  @override
+  double get textScaleFactor => scaleFactor;
 }
