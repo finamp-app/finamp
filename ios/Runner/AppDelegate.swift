@@ -20,6 +20,9 @@ let flutterEngine = FlutterEngine(name: "SharedEngine", project: nil, allowHeadl
         // Set up method channel for Siri media intent handling
         setupSiriIntentChannel()
 
+        // Relay Apple Watch requests to Flutter (WatchBridge.swift)
+        setupWatchChannel()
+
         // Exclude the documents and support folders from iCloud backup since we keep songs there.
         if let documentsDir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
             try? setExcludeFromiCloudBackup(documentsDir, isExcluded: true)

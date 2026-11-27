@@ -1,0 +1,354 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+      "shouldTranslate" : false
+    },
+    "%lld Albums" : {
+
+    },
+    "%lld Artists" : {
+
+    },
+    "%lld Tracks" : {
+
+    },
+    "%lld percent" : {
+
+    },
+    "1 Album" : {
+
+    },
+    "1 Artist" : {
+
+    },
+    "1 Track" : {
+
+    },
+    "Accent Colors (Experimental)" : {
+
+    },
+    "Add Favorite" : {
+
+    },
+    "Add items to a playlist" : {
+
+    },
+    "Add to playlist" : {
+
+    },
+    "Advanced Track Info" : {
+
+    },
+    "AirPlay sets the volume on the receiving device" : {
+
+    },
+    "Albums" : {
+
+    },
+    "Already downloaded on your iPhone" : {
+
+    },
+    "Appears On" : {
+
+    },
+    "Artist %@" : {
+
+    },
+    "Artists" : {
+
+    },
+    "Can't reach your Jellyfin server" : {
+
+    },
+    "Can't reach your iPhone" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Choose Output" : {
+
+    },
+    "Choose the output on your iPhone" : {
+
+    },
+    "Connect to Jellyfin" : {
+
+    },
+    "Couldn't reach your iPhone" : {
+
+    },
+    "Couldn't reach your iPhone. Closing Finamp." : {
+
+    },
+    "Delete from Device" : {
+
+    },
+    "Direct Playing" : {
+
+    },
+    "Download" : {
+
+    },
+    "Download Location" : {
+
+    },
+    "Download on iPhone" : {
+
+    },
+    "Download?" : {
+
+    },
+    "Downloaded as part of another download" : {
+
+    },
+    "Downloaded on your iPhone" : {
+
+    },
+    "Downloading on your iPhone" : {
+
+    },
+    "Downloads" : {
+
+    },
+    "Enable Transcoding" : {
+
+    },
+    "Explicit" : {
+
+    },
+    "Favorite Albums" : {
+
+    },
+    "Favorite Artists" : {
+
+    },
+    "Favorite Tracks" : {
+
+    },
+    "Favorites" : {
+
+    },
+    "Finamp volume %lld%%" : {
+
+    },
+    "Finamp volume %lld%% · turn the crown" : {
+
+    },
+    "In\nOrder" : {
+
+    },
+    "Local" : {
+
+    },
+    "Log in to your server in Finamp on your iPhone." : {
+
+    },
+    "Loop\nAll" : {
+
+    },
+    "Loop\nOne" : {
+
+    },
+    "Newly Added Albums" : {
+
+    },
+    "Next" : {
+
+    },
+    "No\nLoop" : {
+
+    },
+    "No Release Date" : {
+
+    },
+    "No albums" : {
+
+    },
+    "No favorite albums yet" : {
+
+    },
+    "No favorite artists yet" : {
+
+    },
+    "No favorite tracks yet" : {
+
+    },
+    "No results for “%@”" : {
+
+    },
+    "No tracks" : {
+
+    },
+    "Not available while radio is on" : {
+
+    },
+    "Not sent: your iPhone wasn't in reach in time" : {
+
+    },
+    "Nothing downloaded on your iPhone" : {
+
+    },
+    "Nothing here" : {
+
+    },
+    "Nothing playing" : {
+
+    },
+    "Nothing up next" : {
+
+    },
+    "Now Playing" : {
+
+    },
+    "OK" : {
+
+    },
+    "Offline Mode" : {
+
+    },
+    "Open Finamp on your iPhone" : {
+
+    },
+    "Open Finamp on your iPhone to choose the output" : {
+
+    },
+    "Original" : {
+
+    },
+    "Output and Volume" : {
+
+    },
+    "Pause" : {
+
+    },
+    "Performing Artists" : {
+
+    },
+    "Pick something on the other pages" : {
+
+    },
+    "Play" : {
+
+    },
+    "Playing" : {
+
+    },
+    "Playing on" : {
+
+    },
+    "Playlists" : {
+
+    },
+    "Previous" : {
+
+    },
+    "Progress" : {
+
+    },
+    "Queue" : {
+
+    },
+    "Radio\nOff" : {
+
+    },
+    "Radio\nOn" : {
+
+    },
+    "Recently Played" : {
+
+    },
+    "Reconnecting to your iPhone" : {
+
+    },
+    "Remove Favorite" : {
+
+    },
+    "Retry" : {
+
+    },
+    "Search" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Short Track Info" : {
+
+    },
+    "Shuffle" : {
+
+    },
+    "Shuffle\nAlbums" : {
+
+    },
+    "Shuffle all" : {
+
+    },
+    "Shuffled" : {
+
+    },
+    "The chips you chose in Finamp, under the artist on Playback." : {
+
+    },
+    "The chips you chose in Finamp, under the artist on Playback. Short shows only how the track plays: streamed, downloaded or transcoded, with its format and bitrate." : {
+
+    },
+    "This is Finamp's setting on your iPhone: changing it here changes it there. Playback follows Finamp's transcoding settings (bitrate and format)." : {
+
+    },
+    "This is Finamp's setting on your iPhone: changing it here changes it there. While it's on, only downloaded music plays." : {
+
+    },
+    "Tracks" : {
+
+    },
+    "Transcode?" : {
+
+    },
+    "Transcoded" : {
+
+    },
+    "Transcoding" : {
+
+    },
+    "Turn on Offline Mode in Settings to play your downloads" : {
+
+    },
+    "Unexpected reply from your iPhone" : {
+
+    },
+    "Up Next" : {
+
+    },
+    "Uses your accent color from Finamp, with matching backgrounds. Turn it off for the original look." : {
+
+    },
+    "Waiting for your iPhone" : {
+
+    },
+    "You are about to delete this album from this device." : {
+
+    },
+    "You are about to delete this artist from this device." : {
+
+    },
+    "You are about to delete this item from this device." : {
+
+    },
+    "You are about to delete this playlist from this device." : {
+
+    },
+    "Your iPhone answers again" : {
+
+    },
+    "Your iPhone didn't answer" : {
+
+    },
+    "iPhone not reachable" : {
+
+    }
+  },
+  "version" : "1.0"
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- No App Transport Security exception: the watch never connects to the internet; everything, covers included,
+	     comes from Finamp on the iPhone over WatchConnectivity -->
+</dict>
+</plist>
