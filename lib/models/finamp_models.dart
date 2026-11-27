@@ -1016,12 +1016,12 @@ class FinampSettings {
   @HiveField(165, defaultValue: DefaultSettings.followRedirects)
   bool followRedirects;
 
-  @HiveField(166, defaultValue: DefaultSettings.textScaleOverride)
+  @HiveField(166)
   /// The maximum size we want a queue to reach.  We will not hard-enforce this, but individual items will be trimmed
   /// when adding to queue and we will cancel auto-restore for queues over this size.
   int? playerQueueLimit;
 
-  @HiveField(167)
+  @HiveField(167, defaultValue: DefaultSettings.textScaleOverride)
   double? textScaleOverride;
 
   static Future<FinampSettings> create() async {

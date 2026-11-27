@@ -95,7 +95,7 @@ class FinampTextScaler extends TextScaler {
   @override
   double scale(double fontSize) {
     // This is calibrated to roughly match android scaling.
-    // Scaling is fully applied at 8.0, not applied al at 100.0l
+    // Scaling is fully applied at 8.0, not applied at all at 100.0
     final applicationFactor = (100 - fontSize) / 92;
     return fontSize * (1.0 + (scaleFactor - 1.0) * applicationFactor);
   }
