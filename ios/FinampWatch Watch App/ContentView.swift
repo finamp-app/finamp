@@ -32,6 +32,7 @@ struct ContentView: View {
                 .id(AccountStore.shared.generation)
                 // For the log: watchOS limits what the app may do while dimmed, wrist down or in the background.
                 .onChange(of: scenePhase, initial: true) { _, phase in
+                    PhoneConnection.shared.noteScene("\(phase)")
                     WatchLog.info("scene \(phase)")
                     if phase != .active { WatchLog.shared.flush() }
                 }
@@ -40,24 +41,33 @@ struct ContentView: View {
         }
     }
 
+    // Playback started from another page: go to the player itself, also when Playback still had an album or artist
+    // page open from before (it keeps its own stack of pages).
+    @State private var playStarted = 0
+
+    private func showPlayer() {
+        playStarted += 1
+        page = .playback
+    }
+
     private var pages: some View {
         TabView(selection: $page) {
-            HomePage(isActive: page == .home, onPlay: { page = .playback })
+            HomePage(isActive: page == .home, onPlay: showPlayer)
                 .inFront(page == .home)
                 .tag(WatchPage.home)
             // Inactive while dimmed: no polling or ticking, and one refresh when the screen is raised
-            PlaybackPage(isActive: page == .playback && scenePhase == .active)
+            PlaybackPage(isActive: page == .playback && scenePhase == .active, playStarted: playStarted)
                 .inFront(page == .playback)
                 .tag(WatchPage.playback)
-            LibraryPage(kind: .artists, isActive: page == .artists, onPlay: { page = .playback })
+            LibraryPage(kind: .artists, isActive: page == .artists, onPlay: showPlayer)
                 .tag(WatchPage.artists)
-            LibraryPage(kind: .albums, isActive: page == .albums, onPlay: { page = .playback })
+            LibraryPage(kind: .albums, isActive: page == .albums, onPlay: showPlayer)
                 .tag(WatchPage.albums)
-            LibraryPage(kind: .playlists, isActive: page == .playlists, onPlay: { page = .playback })
+            LibraryPage(kind: .playlists, isActive: page == .playlists, onPlay: showPlayer)
                 .tag(WatchPage.playlists)
-            LibraryPage(kind: .tracks, isActive: page == .tracks, onPlay: { page = .playback })
+            LibraryPage(kind: .tracks, isActive: page == .tracks, onPlay: showPlayer)
                 .tag(WatchPage.tracks)
-            LibraryPage(kind: .downloads, isActive: page == .downloads, onPlay: { page = .playback })
+            LibraryPage(kind: .downloads, isActive: page == .downloads, onPlay: showPlayer)
                 .tag(WatchPage.downloads)
         }
         .tabViewStyle(.page)
@@ -150,6 +160,16 @@ struct PhoneActivityIndicator: View {
                 Image(systemName: "exclamationmark.triangle")
                     .foregroundStyle(.orange)
                     .accessibilityLabel("Couldn't reach your iPhone")
+            case .reconnecting, .reconnected:
+                // One symbol view for both, so the iPhone turns into the tick. An iPhone fading in and out: the watch
+                // is trying to reach it (yalit, 27 Nov 2026, in place of the striped waves); a ticked circle: it did.
+                // Finamp's blue, as the waiting arrows.
+                let done = activity.state == .reconnected
+                Image(systemName: done ? "checkmark.circle" : "iphone")
+                    .symbolEffect(.pulse, options: .repeating, isActive: !done && !reduceMotion)
+                    .contentTransition(.symbolEffect(.replace))
+                    .foregroundStyle(Color.jellyfinBlue)
+                    .accessibilityLabel(done ? "Your iPhone answers again" : "Reconnecting to your iPhone")
             }
         }
         .font(.system(size: ActivityStatus.iconSize, weight: .semibold))

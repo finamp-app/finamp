@@ -233,9 +233,27 @@ enum FinampFormat {
     static func albums(_ n: Int) -> String { n == 1 ? String(localized: "1 Album") : String(localized: "\(n) Albums") }
     static func artists(_ n: Int) -> String { n == 1 ? String(localized: "1 Artist") : String(localized: "\(n) Artists") }
 
+    // A 0-1 fraction as a whole percentage. Outside 0-1 it shows the nearest end, and a value that isn't a number shows
+    // 0, where converting it would trap (security review M-20).
+    static func percent(_ fraction: Double) -> Int {
+        fraction.isFinite ? Int((min(max(fraction, 0), 1) * 100).rounded()) : 0
+    }
+
+    // A count moved by one for a change not yet reloaded; a count at the edge of Int stays as it is rather than
+    // overflow (security review M-20).
+    static func adjusted(_ count: Int, by change: Int) -> Int {
+        let (sum, overflow) = count.addingReportingOverflow(change)
+        return overflow ? count : sum
+    }
+
     // Fields of two digits with leading zeros (05:20, 01:02:03); unpadded, the first field has no leading zero (5:20).
+    // A length no Int can hold (a server's impossible value, or NaN) would trap converting; it shows as the largest one
+    // instead (security review M-20; `Int` is 32 bits on older watches).
+    // Part seconds are cut off, not rounded, as Finamp's `printDuration` does: a playlist of 3:33:59.6 reads 03:33:59
+    // on both. Finamp's player rounds its times before printing them; Playback does the same before calling this.
     static func duration(_ seconds: Double, padded: Bool = true) -> String {
-        let total = max(Int(seconds.rounded()), 0)
+        let whole = seconds.isFinite ? max(seconds.rounded(.down), 0) : 0
+        let total = whole < Double(Int.max) ? Int(whole) : Int.max
         let h = total / 3600, m = total % 3600 / 60, s = total % 60
         let first = padded ? "%02d" : "%d"
         return h > 0 ? String(format: first + ":%02d:%02d", h, m, s) : String(format: first + ":%02d", m, s)

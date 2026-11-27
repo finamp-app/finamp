@@ -71,6 +71,13 @@ const _upNextCoverCount = 2;
 // Split pages early to stay under WatchConnectivity's ~64 KB reply limit.
 const _replyBudget = 40 * 1024;
 
+// The most log lines the watch sends at once (`WatchLog.batchSize` in the watch app); the iPhone's own lines come one
+// at a time.
+const _watchLogBatch = 50;
+
+// A cover's file for the bridge to scale; `fetched`: downloaded for the watch, to delete afterwards.
+typedef _Cover = ({String path, bool fetched});
+
 class WatchHandler {
   static const _watchChannel = MethodChannel('com.unicornsonlsd.finamp-ios/watch');
 
@@ -96,24 +103,41 @@ class WatchHandler {
     if (_sentItems.length > _sentItemsLimit) _sentItems.remove(_sentItems.keys.first);
   }
 
-  // Each line keeps the time it happened (the watch can send its lines much later).
+  // Each line keeps the time it happened (the watch can send its lines much later). What the watch sends is held to
+  // what it can legitimately send (security review M-16): at most one batch (`WatchLog.batchSize` in the watch app),
+  // each line on one line of the log (its messages have no line breaks), and a time that is missing or out of range
+  // becomes the time it arrived instead of stopping the rest of the batch.
   static void _logFromWatch(List<Object?> lines) {
-    for (final line in lines.whereType<Map<Object?, Object?>>()) {
-      final time = DateTime.fromMillisecondsSinceEpoch(((line['t'] as num? ?? 0) * 1000).round());
+    String oneLine(Object? text) => "$text".replaceAll(RegExp(r'[\x00-\x1F\x7F]'), ' ');
+    for (final line in lines.whereType<Map<Object?, Object?>>().take(_watchLogBatch)) {
+      final seconds = line['t'];
+      DateTime time;
+      try {
+        time = DateTime.fromMillisecondsSinceEpoch(((seconds as num) * 1000).round());
+      } catch (_) {
+        time = DateTime.now();
+      }
       final level = switch (line['l']) {
         'warning' => Level.WARNING,
         'info' => Level.INFO,
         _ => Level.FINE,
       };
-      _watchLogger.log(level, "${line['s'] ?? 'Watch'} ${time.toIso8601String()} ${line['m']}");
+      _watchLogger.log(level, "${oneLine(line['s'] ?? 'Watch')} ${time.toIso8601String()} ${oneLine(line['m'])}");
     }
   }
 
   static void setup() {
     if (!Platform.isIOS) return;
+    _deleteFetchedCovers();
 
     _watchChannel.setMethodCallHandler((call) async {
-      final arguments = Map<String, dynamic>.from(call.arguments as Map? ?? {});
+      // The watch sends its arguments as a map or not at all. Anything else is answered like every request Finamp
+      // can't carry out, where the failed cast used to send Dart's own error text to the watch (security review M-27).
+      final sent = call.arguments;
+      if (sent != null && sent is! Map) {
+        throw PlatformException(code: "error", message: "Finamp couldn't do that on your iPhone");
+      }
+      final arguments = Map<String, dynamic>.from(sent as Map? ?? {});
       _logger.fine("Watch request: ${call.method} $arguments");
       if (call.method == 'watchLog') {
         _logFromWatch(arguments['lines'] as List<Object?>? ?? const []);
@@ -121,6 +145,7 @@ class WatchHandler {
       }
       if (call.method != 'watchState') _startPushing();
       try {
+        if (call.method != 'watchState') _refuseWhenLoggedOut();
         switch (call.method) {
           case 'list':
             return await _list(arguments);
@@ -147,8 +172,9 @@ class WatchHandler {
             return true;
           case 'seek':
             // Dropped when the track changed while the seek was on its way: it was meant for the one before.
+            // The watch always names it; a seek that doesn't is dropped too (security review M-11).
             final entry = arguments['queueEntryId'];
-            if (entry is String && GetIt.instance<QueueService>().getCurrentTrack()?.id != entry) return false;
+            if (entry is! String || GetIt.instance<QueueService>().getCurrentTrack()?.id != entry) return false;
             final seconds = (arguments['position'] as num).toDouble();
             await GetIt.instance<MusicPlayerBackgroundTask>().seek(
               Duration(milliseconds: max(0, (seconds * 1000).round())),
@@ -299,9 +325,7 @@ class WatchHandler {
       container.listen(FinampUserHelper.finampCurrentUserProvider, (_, _) {
         final account = _account();
         if (account != _lastPushedValues['account']) {
-          _sentItems.clear();
-          _playlistFirstTracks.clear();
-          _childrenCache = null;
+          _clearAccountCaches();
           _clearFollowedFavorites();
           _pushFavoriteStates();
         }
@@ -425,7 +449,7 @@ class WatchHandler {
     _rememberSent(item);
     _watchFavorite(item);
     final queueService = GetIt.instance<QueueService>();
-    return {
+    return _fitRow({
       'hasTrack': true,
       'id': item.id.raw,
       // The queue entry itself, unlike `id` different for each time a track is queued: a seek names it.
@@ -433,7 +457,7 @@ class WatchHandler {
       'title': current.item.title,
       'artist': current.item.artist ?? item.artists?.join(", ") ?? "",
       'artworkKey': _artworkKey(item),
-      'blurHash': item.blurHash ?? "",
+      'blurHash': _blurHash(item) ?? "",
       'albumId': item.albumId?.raw ?? "",
       'album': item.album ?? "",
       'albumArtist': item.albumArtists?.firstOrNull?.name ?? item.albumArtist ?? "",
@@ -458,7 +482,7 @@ class WatchHandler {
       'upNext': _upNextCovers(),
       'queueEntryIds': [for (final track in _queueWindow()) track.id],
       'coverColor': _coverColor(item),
-    };
+    });
   }
 
   // Find the item by ID: the queue may have moved since the watch listed it.
@@ -490,13 +514,13 @@ class WatchHandler {
   static List<Map<String, Object>> _upcoming() {
     return _queueWindow()
         .map(
-          (track) => {
+          (track) => _fitRow({
             'id': track.id,
             'name': track.item.title,
             'subtitle': track.item.artist ?? "",
             'artworkKey': "",
             'duration': (track.item.duration ?? Duration.zero).inMilliseconds / 1000,
-          },
+          }),
         )
         .toList();
   }
@@ -553,6 +577,11 @@ class WatchHandler {
         // As Finamp's own play buttons: play() completes only when playback stops again, so awaiting it would leave
         // the watch without an answer for every "play".
         unawaited(audioHandler.togglePlayback());
+      // Not toggles: the iPhone's bridge pauses for a phone call taken on another device and plays again after it.
+      case 'pause':
+        await audioHandler.pause();
+      case 'play':
+        unawaited(audioHandler.play());
       case 'next':
         await audioHandler.skipToNext();
       case 'previous':
@@ -602,6 +631,31 @@ class WatchHandler {
       items = _childrenCache!.$2.skip(offset).take(limit).toList();
     }
     return _withinReplyBudget(_rows(items));
+  }
+
+  // A row too big for any reply fails today, and its page with it (WatchConnectivity refuses about 64 KB). Its
+  // longest text or list is halved until the row fits one; a row within the budget is returned as it is, and Finamp
+  // on the phone keeps the full values (security review M-14).
+  static Map<String, Object> _fitRow(Map<String, Object> row) {
+    // Never throws: a value JSON can't hold counts as its text.
+    int size(Object value) => utf8.encode(jsonEncode(value, toEncodable: (other) => "$other")).length;
+    var fitted = row;
+    while (size(fitted) > _replyBudget) {
+      final shrinkable = fitted.entries.where((entry) {
+        final value = entry.value;
+        return (value is String && value.runes.length > 1) || (value is List && value.length > 1);
+      });
+      if (shrinkable.isEmpty) break;
+      final longest = maxBy(shrinkable, (entry) => size(entry.value))!;
+      final value = longest.value;
+      fitted = {
+        ...fitted,
+        longest.key: value is String
+            ? String.fromCharCodes(value.runes.take(value.runes.length ~/ 2))
+            : (value as List).take(value.length ~/ 2).toList(),
+      };
+    }
+    return fitted;
   }
 
   static List<Map<String, Object>> _withinReplyBudget(List<Map<String, Object>> rows) {
@@ -721,6 +775,32 @@ class WatchHandler {
         _logger.warning("Couldn't push the $key to the watch: $error");
       }),
     );
+  }
+
+  // Signed out on the phone, the watch shows its login screen. Nothing the last account left behind (downloads, the
+  // paused queue, items remembered for the watch) may be read or changed from the watch, and no setting changed.
+  // Every request after an account change also starts from empty caches: the account listener clears them only
+  // while the watch is in reach (`_startPushing`), and a cover still being fetched for the old account would
+  // otherwise answer the new one (security review M-06, M-08).
+  static void _refuseWhenLoggedOut() {
+    final account = _account();
+    if (account.isEmpty) {
+      throw PlatformException(code: "loggedOut", message: "Log in to your server in Finamp on your iPhone.");
+    }
+    if (account != _cachesAccount) _clearAccountCaches();
+  }
+
+  // The account whose items the caches below hold.
+  static String _cachesAccount = "";
+
+  static void _clearAccountCaches() {
+    _sentItems.clear();
+    _playlistFirstTracks.clear();
+    _childrenCache = null;
+    _coversInFlight.clear();
+    _deleteFetchedCovers();
+    _warnedDownloads.clear();
+    _cachesAccount = _account();
   }
 
   // Server IDs survive local/public address changes.
@@ -876,28 +956,47 @@ class WatchHandler {
       _query(contentType, offset: offset, limit: limit, isFavorite: true, sortBy: "SortName");
 
   // WatchConnectivity requires non-null property-list values.
+  // Finamp's own readers throw on a release date they can't parse and on an empty BlurHash list, and one such item
+  // made every reply holding it fail: search, Home and every list (security review M-18, seen in the rig). The watch
+  // gets the item with the year alone, or without a BlurHash.
+  static String _releaseDate(BaseItemDto item) {
+    try {
+      return ReleaseDateHelper.autoFormat(item) ?? "";
+    } on FormatException {
+      return item.productionYear?.toString() ?? "";
+    }
+  }
+
+  static String? _blurHash(BaseItemDto item) {
+    try {
+      return item.blurHash;
+    } on StateError {
+      return null;
+    }
+  }
+
   static List<Map<String, Object>> _rows(List<BaseItemDto> items) {
     for (final item in items) {
       _rememberSent(item);
     }
     return items
         .map(
-          (item) => {
+          (item) => _fitRow({
             'id': item.id.raw,
             'name': item.name ?? "",
             'subtitle': _subtitle(item),
             'artistId': _mainArtist(item)?.id.raw ?? "",
             'artworkKey': _artworkKey(item),
-            'blurHash': item.blurHash ?? "",
+            'blurHash': _blurHash(item) ?? "",
             'duration': (item.runTimeTicksDuration() ?? Duration.zero).inMilliseconds / 1000,
             'year': item.productionYear ?? 0,
-            'releaseDate': ReleaseDateHelper.autoFormat(item) ?? "",
+            'releaseDate': _releaseDate(item),
             'trackCount': item.childCount ?? 0,
             'favorite': item.userData?.isFavorite ?? false,
             ..._downloadState(item),
             'kind': _kind(item),
             if (BaseItemDtoType.fromItem(item) == BaseItemDtoType.album) 'artists': _artists(item.albumArtists),
-          },
+          }),
         )
         .toList();
   }
@@ -1191,8 +1290,13 @@ class WatchHandler {
     final holds = add
         ? await addItemsToPlaylist(context, [item], playlist)
         : !await removeFromPlaylist(context, item, playlist, entry!, confirm: false);
-    // The playlist's tracks are read again, as Finamp's playlist editor does after a change.
-    GetIt.instance<ProviderContainer>().invalidate(getAlbumOrPlaylistTracksProvider(playlist));
+    // The playlist's tracks are read again, as Finamp's playlist editor does after a change. So is the playlist
+    // itself: an open playlist page on the watch asks for it again (`item`) for its count and total time, and the copy
+    // remembered for the watch is the one from before the change (seen against a real server, 25 Nov 2026).
+    final container = GetIt.instance<ProviderContainer>();
+    container.invalidate(getAlbumOrPlaylistTracksProvider(playlist));
+    container.invalidate(itemByIdProvider(playlist.id));
+    _sentItems.remove(playlist.id);
     if (_childrenCache?.$1 == "playlists:$playlistId") _childrenCache = null;
     return holds;
   }
@@ -1217,6 +1321,9 @@ class WatchHandler {
   static void _pushFavoriteStates() => _pushIfChanged('favoriteStates', {
     for (final entry in _followedFavorites.entries) entry.key.raw: entry.value.read(),
   });
+
+  // Items whose large-download warning the watch was shown and hasn't answered yet.
+  static final Set<BaseItemId> _warnedDownloads = {};
 
   static Future<Map<String, Object>> _download(Map<String, dynamic> arguments) async {
     final item = await _itemById(arguments['id'] as String);
@@ -1246,12 +1353,17 @@ class WatchHandler {
         transcode = answer;
     }
 
-    String? location = arguments['locationId'] as String? ?? settings.defaultDownloadLocation;
+    final candidates = settings.downloadLocationsMap.values
+        .where((element) => element.baseDirectory != DownloadLocationType.internalDocuments)
+        .toList();
+    // A location the watch names must be one it was offered (`candidates`), as Finamp's own picker offers; Finamp's
+    // default needs no such check (security review M-10).
+    final chosen = arguments['locationId'] as String?;
+    String? location = chosen != null
+        ? (candidates.any((candidate) => candidate.id == chosen) ? chosen : null)
+        : settings.defaultDownloadLocation;
     if (!settings.downloadLocationsMap.containsKey(location)) location = null;
     if (location == null) {
-      final candidates = settings.downloadLocationsMap.values
-          .where((element) => element.baseDirectory != DownloadLocationType.internalDocuments)
-          .toList();
       if (candidates.length == 1) {
         location = candidates.first.id;
       } else {
@@ -1272,7 +1384,11 @@ class WatchHandler {
               ))?.fold<int>(0, (count, album) => count + (album.childCount ?? 0)) ??
               0
         : item.childCount ?? 0;
-    if (trackCount >= settings.downloadSizeWarningCutoff && arguments['confirmed'] != true) {
+    // The watch's "Download" answer counts only for a warning this phone gave for this item, so a request can't skip
+    // the warning by saying it was confirmed (security review M-10). No time limit: the warning waits for the user.
+    if (trackCount >= settings.downloadSizeWarningCutoff &&
+        !(arguments['confirmed'] == true && _warnedDownloads.remove(item.id))) {
+      _warnedDownloads.add(item.id);
       return {'ask': 'confirm', 'message': GlobalSnackbar.requireL10n.largeDownloadWarning(trackCount)};
     }
 
@@ -1516,7 +1632,7 @@ class WatchHandler {
     final settled = List<Map<String, Object>?>.filled(ids.length, null);
     final all = Future.wait([
       for (var i = 0; i < ids.length; i++)
-        _coverJoined(ids[i], sizes[i]).then((cover) => settled[i] = {'id': ids[i], 'data': ?cover}),
+        _coverJoined(ids[i], sizes[i]).then((cover) => settled[i] = {'id': ids[i], 'path': ?cover?.path}),
     ]);
     await Future.any([all, Future<void>.delayed(_watchCoverAnswerAfter)]);
     return [
@@ -1524,28 +1640,48 @@ class WatchHandler {
     ];
   }
 
-  // Covers being fetched, by "<id>-<size>", so the watch asking again joins the fetch; kept briefly after it ends so
-  // that a cover finished between two answers is ready for the next one.
-  static final Map<String, Future<Uint8List?>> _coversInFlight = {};
+  // Covers being fetched, by "<id>-<size>", so the watch asking again joins the fetch; kept for `_coverKeptFor` after
+  // it ends so that a cover finished between two answers is ready for the next one.
+  static final Map<String, Future<_Cover?>> _coversInFlight = {};
+  static const _coverKeptFor = Duration(seconds: 30);
 
-  static Future<Uint8List?> _coverJoined(String id, int size) {
+  // Covers fetched from the server for the watch, as files until the bridge has scaled them. Emptied when Finamp
+  // starts and when the account changes; each file goes once its answer is no longer kept.
+  static final _fetchedCovers = Directory("${Directory.systemTemp.path}/finamp-watch-covers");
+  static var _fetchedCoverCount = 0;
+
+  static void _deleteFetchedCovers() {
+    if (_fetchedCovers.existsSync()) _fetchedCovers.delete(recursive: true).ignore();
+  }
+
+  static Future<_Cover?> _coverJoined(String id, int size) {
     final key = "$id-$size";
     final running = _coversInFlight[key];
     if (running != null) return running;
     final cover = _coverWithinLimit(id, size);
     _coversInFlight[key] = cover;
-    cover.whenComplete(
-      () => Future<void>.delayed(const Duration(seconds: 30), () {
-        if (_coversInFlight[key] == cover) _coversInFlight.remove(key);
+    unawaited(
+      cover.then((found) async {
+        await Future<void>.delayed(_coverKeptFor);
+        if (_coversInFlight[key] == cover) unawaited(_coversInFlight.remove(key));
+        if (found == null || !found.fetched) return;
+        // The bridge may still be scaling the file for an answer given just before.
+        await Future<void>.delayed(_coverKeptFor);
+        File(found.path).delete().ignore();
       }),
     );
     return cover;
   }
 
-  static Future<Uint8List?> _coverWithinLimit(String id, int size) async {
+  static Future<_Cover?> _coverWithinLimit(String id, int size) async {
+    final search = _artwork(id, size);
     try {
-      return await _artwork(id, size).timeout(_watchCoverLimit);
+      return await search.timeout(_watchCoverLimit);
     } on TimeoutException {
+      // A cover that still arrives is too late for its answer: its fetched file isn't kept.
+      search.then((late) {
+        if (late != null && late.fetched) File(late.path).delete().ignore();
+      }).ignore();
       _logger.warning(
         "Watch artwork for $id: nothing after ${_watchCoverLimit.inSeconds} s "
         "(app ${WidgetsBinding.instance.lifecycleState?.name ?? "unknown"})",
@@ -1597,9 +1733,11 @@ class WatchHandler {
     return _playlistFirstTracks[playlist.id] = tracks?.firstOrNull;
   }
 
-  // A cover's file as it is (JPEG/PNG bytes; `WatchBridge.swift` scales it to the watch's size); null when unavailable.
-  // Never decoded here: Flutter's image decoding stalls with Finamp in the background or while the server hangs.
-  static Future<Uint8List?> _artwork(String id, int size) async {
+  // Where a cover's file is (JPEG/PNG; `WatchBridge.swift` scales it to the watch's size with ImageIO, straight from
+  // the file); null when unavailable. Never decoded here: Flutter's image decoding stalls with Finamp in the background
+  // or while the server hangs. And never read into memory: the bytes used to be held here, copied to the bridge and
+  // kept for the next answer, so one 200 MB response took Finamp past 1 GB (security review M-07, measured in the rig).
+  static Future<_Cover?> _artwork(String id, int size) async {
     BaseItemDto? item;
     try {
       item = await _itemById(id);
@@ -1621,15 +1759,15 @@ class WatchHandler {
     final file = GetIt.instance<DownloadsService>().getImageDownload(item: item)?.file;
     if (file != null && await file.exists()) {
       _logger.fine("Watch artwork for $id: the downloaded file");
-      return await file.readAsBytes();
+      return (path: file.path, fetched: false);
     }
 
     // 2. The copy Finamp's player saved, full size, under the key `album_image_provider.dart` gives it (BlurHash, or
     // image ID, plus the size, which is "null" for full size). Needs no server, so it also works with no connection.
-    final saved = await DefaultCacheManager().getFileFromCache("${item.blurHash ?? item.imageId}nullnull");
+    final saved = await DefaultCacheManager().getFileFromCache("${_blurHash(item) ?? item.imageId}nullnull");
     if (saved != null && await saved.file.exists()) {
       _logger.fine("Watch artwork for $id: the player's saved copy");
-      return await saved.file.readAsBytes();
+      return (path: saved.file.path, fetched: false);
     }
 
     // 3. The watch's size from the server, unless Finamp is offline.
@@ -1639,12 +1777,45 @@ class WatchHandler {
     }
     final url = GetIt.instance<JellyfinApiHelper>().getImageUrl(item: item, maxWidth: size, maxHeight: size);
     if (url == null) return null;
-    final response = await http.get(url);
-    if (response.statusCode != 200) {
-      _logger.warning("Watch artwork for $id: server answered ${response.statusCode}");
-      return null;
+    // Written to a file as it arrives. The download ends with the cover's time (`_watchCoverLimit`): the watch has its
+    // "no cover" answer by then, and closing the client stops a response that never ends (security review M-30).
+    final client = http.Client();
+    final target = File("${_fetchedCovers.path}/$id-$size-${_fetchedCoverCount++}");
+    var givenUp = false;
+    Future<_Cover?> fetch() async {
+      final response = await client.send(http.Request('GET', url));
+      if (response.statusCode != 200) {
+        _logger.warning("Watch artwork for $id: server answered ${response.statusCode}");
+        return null;
+      }
+      await _fetchedCovers.create(recursive: true);
+      final sink = target.openWrite();
+      try {
+        await sink.addStream(response.stream);
+      } catch (_) {
+        // Given up or broken off: what arrived of it is no cover. Closing a writer whose stream failed fails too, so
+        // the file is deleted whatever the close comes to.
+        sink.close().ignore();
+        target.delete().ignore();
+        rethrow;
+      }
+      await sink.close();
+      // A closed connection can also end the response without an error: what arrived after giving up is no cover.
+      if (givenUp) {
+        target.delete().ignore();
+        return null;
+      }
+      _logger.fine("Watch artwork for $id: from the server");
+      return (path: target.path, fetched: true);
     }
-    _logger.fine("Watch artwork for $id: from the server");
-    return response.bodyBytes;
+
+    try {
+      return await fetch().timeout(_watchCoverLimit);
+    } on TimeoutException {
+      givenUp = true;
+      rethrow;
+    } finally {
+      client.close();
+    }
   }
 }

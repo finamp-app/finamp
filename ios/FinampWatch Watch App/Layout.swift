@@ -344,6 +344,31 @@ enum PageHeader {
     static let statIconOpacity: Double = 0.5
 }
 
+extension View {
+    // A stat line that swaps what it shows on a tap (the track total: count, total time): the old text fades into the
+    // new one, with SwiftUI's standard animation. Its tap area is as wide as the line and at least
+    // `IconButtons.tapSize` tall. It reaches down from the line's top and never up: the artist chips sit
+    // `PageHeader.statSpacing` above with taps of their own, while nothing under the line in the cover row takes taps
+    // (`StatTapArea`).
+    @ViewBuilder
+    func statTap(enabled: Bool, _ action: @escaping () -> Void) -> some View {
+        if enabled {
+            contentTransition(.opacity)
+                .contentShape(StatTapArea())
+                .onTapGesture { withAnimation { action() } }
+                .accessibilityAddTraits(.isButton)
+        } else {
+            self
+        }
+    }
+}
+
+private struct StatTapArea: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path(CGRect(x: rect.minX, y: rect.minY, width: rect.width, height: max(rect.height, IconButtons.tapSize)))
+    }
+}
+
 // The cover row of the album, playlist, artist and favourites pages: the cover at `PageHeader.coverShare` of the
 // screen's width, its stats beside it in the rest of the row, aligned by `PageHeader.coverRowAlignment`; the stats may
 // run taller than the cover (a small watch, a large Text Size), and the row is then as tall as the stats.
@@ -405,7 +430,10 @@ enum ActivityStatus {
     }
     // The waiting arrows' speed: one turn in this many seconds.
     static let turnTime: Double = 1.2
-    // When it shows and how long the failed sign stays: `ConnectionPolicy.Status`.
+    // Four signs, one at a time. Turning arrows in Finamp's blue: waiting for an answer or a page. An orange warning
+    // triangle: a request failed. Blue waves running outwards: the phone is in reach and not answering, and the watch is
+    // reconnecting. A blue ticked circle: that reconnection worked (never shown after ordinary waiting).
+    // When each shows and how long it stays: `ConnectionPolicy.Status`.
     // Moving between its places, and appearing or going.
     static let moveTime: Double = 0.3
     static let fadeTime: Double = 0.2

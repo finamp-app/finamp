@@ -163,6 +163,9 @@ final class NowPlayingStore {
 
 struct PlaybackPage: View {
     let isActive: Bool
+    // Counts playback started from another page (`ContentView.showPlayer`): each one closes whatever page Playback had
+    // open, so the player shows what was just started. Coming here by swiping leaves the open page as it was.
+    let playStarted: Int
 
     @State private var store = NowPlayingStore.shared
     @State private var artwork: UIImage?
@@ -197,6 +200,7 @@ struct PlaybackPage: View {
         LibraryNavigationStack(path: $path) {
             page
                 .libraryDestinations(onPlay: { path = [] })
+                .onChange(of: playStarted) { path = [] }
                 .themedBackground()
         }
         // Playback's own screen has buttons on both sides (clock centred); a page opened from it has the clock right.
@@ -465,7 +469,7 @@ struct PlaybackPage: View {
             // Finamp's player order: feature chips, then the bar, then the times under it.
             VStack(spacing: PlaybackLayout.chipsToBar) {
                 if showVolume {
-                    Label("Finamp volume \(Int((PhoneVolume.shared.shown * 100).rounded()))%", systemImage: "speaker.wave.2.fill")
+                    Label("Finamp volume \(FinampFormat.percent(PhoneVolume.shared.shown))%", systemImage: "speaker.wave.2.fill")
                         .font(.system(size: smallSize))
                         .foregroundStyle(.white.opacity(PlaybackLayout.volumeOpacity))
                         .frame(maxWidth: .infinity)
@@ -495,9 +499,10 @@ struct PlaybackPage: View {
                         .id(nowPlaying.queueEntryID)
                         .onChange(of: nowPlaying.queueEntryID) { scrub = nil }
                         HStack {
-                            Text(FinampFormat.duration(position, padded: false))
+                            // As Finamp's player (`progress_slider.dart`): both rounded to the second, then subtracted.
+                            Text(FinampFormat.duration(position.rounded(), padded: false))
                             Spacer(minLength: 0)
-                            Text("-" + FinampFormat.duration(nowPlaying.duration - position, padded: false))
+                            Text("-" + FinampFormat.duration(nowPlaying.duration.rounded() - position.rounded(), padded: false))
                         }
                         .font(.system(size: smallSize).monospacedDigit())
                         .foregroundStyle(.white.opacity(PlaybackLayout.textOpacity))
@@ -982,7 +987,7 @@ final class PhoneVolume {
     // Shown only below 100% so a lowered volume isn't forgotten.
     var lowered: Int? {
         guard let value, value < 0.995, !airPlay else { return nil }
-        return Int((value * 100).rounded())
+        return FinampFormat.percent(value)
     }
 }
 
@@ -1013,7 +1018,7 @@ private struct OutputControls: View {
                 if phoneVolume.airPlay {
                     Text("AirPlay sets the volume on the receiving device")
                 } else {
-                    Text("Finamp volume \(Int((phoneVolume.shown * 100).rounded()))% · turn the crown")
+                    Text("Finamp volume \(FinampFormat.percent(phoneVolume.shown))% · turn the crown")
                 }
             }
                 .font(.caption2)
@@ -1139,7 +1144,7 @@ struct ProgressLine: View {
         .frame(height: PlaybackLayout.progressHeight)
         .accessibilityElement()
         .accessibilityLabel("Progress")
-        .accessibilityValue(String(localized: "\(Int((min(max(fraction, 0), 1) * 100).rounded())) percent"))
+        .accessibilityValue(String(localized: "\(FinampFormat.percent(fraction)) percent"))
         // VoiceOver seeks in 5% steps by swiping up or down
         .accessibilityAdjustableAction { direction in
             guard let onSeek else { return }

@@ -1,3 +1,4 @@
+import CallKit
 import Foundation
 import WatchConnectivity
 
@@ -136,6 +137,9 @@ enum PhoneError: LocalizedError {
     case unexpectedReply
     // A command not sent: the phone wasn't in reach within its time, and sent later it would surprise.
     case expired
+    // A command not sent: the phone is in reach and answers nothing (`ConnectionPolicy.Health`). Sent anyway it may be
+    // carried out without the watch ever learning it, so a second tap undoes the first (seen 26 Nov 2026).
+    case notAnswering
 
     var errorDescription: String? {
         switch self {
@@ -145,6 +149,8 @@ enum PhoneError: LocalizedError {
         case .phone(let message): return message
         case .unexpectedReply: return String(localized: "Unexpected reply from your iPhone")
         case .expired: return String(localized: "Not sent: your iPhone wasn't in reach in time")
+        // Never shown: like every connection failure it is only the sign under the clock (`PhoneMessage.show`).
+        case .notAnswering: return String(localized: "Your iPhone didn't answer")
         }
     }
 }
@@ -159,6 +165,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         guard WCSession.isSupported() else { return }
         WCSession.default.delegate = self
         WCSession.default.activate()
+        callObserver.setDelegate(self, queue: .main)
         let stored = WCSession.default.receivedApplicationContext
         WatchLog.fine("context at launch: \(stored.keys.sorted().joined(separator: ", "))")
         apply(stored)
@@ -405,6 +412,12 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
 
     // Called by every loop that waits for the phone to come in reach.
     @MainActor private func noteWaitingForPhone() {
+        // Only time on screen counts: off screen (wrist down, or woken in the background by an update from the
+        // phone) "not reachable" is the normal state, and on 26 Nov 2026 the restart fired there three times.
+        guard scene == "active" else {
+            stuckLastNoted = nil
+            return
+        }
         let now = ContinuousClock.now
         // As in `request`: a long gap is the app suspended (wrist down), not time spent waiting on screen.
         if let last = stuckLastNoted { stuckFor += min(now - last, ConnectionPolicy.maxAwakeStep) }
@@ -419,6 +432,176 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         session.activate()
     }
 
+    // For the log: "in reach, but nothing answers" (26 Nov 2026: 43 requests in two minutes failed while the session
+    // said reachable, and only single lines showed it). Logged at the 3rd in a row, then every 10th, with when the
+    // phone was last heard on each path; and once when answers come back.
+    @MainActor private var unanswered = 0
+    @MainActor private var unansweredSince: Date?
+    @MainActor private var lastAnswer: Date?
+    @MainActor private var lastLiveUpdate: Date?
+    @MainActor private var lastContext: Date?
+
+    @MainActor private func noteUnanswered(_ session: WCSession) {
+        if unanswered == 0 { unansweredSince = Date() }
+        unanswered += 1
+        guard unanswered == 3 || unanswered % 10 == 0 else { return }
+        func ago(_ date: Date?) -> String { date.map { "\(Int(-$0.timeIntervalSinceNow)) s ago" } ?? "not since launch" }
+        WatchLog.warning("connection: in reach, but \(unanswered) requests in a row got no answer, for \(Int(-(unansweredSince ?? Date()).timeIntervalSinceNow)) s (last answer \(ago(lastAnswer)), last live update \(ago(lastLiveUpdate)), last context \(ago(lastContext)); \(Self.describe(session)))")
+    }
+
+    @MainActor private func noteAnswered() {
+        if unanswered >= 3, let since = unansweredSince {
+            WatchLog.info("connection: answers again after \(unanswered) unanswered requests in \(Int(-since.timeIntervalSinceNow)) s")
+        }
+        unanswered = 0
+        unansweredSince = nil
+        lastAnswer = Date()
+        noteReceived()
+    }
+
+    // MARK: In reach, but not answering (`ConnectionPolicy.Health`)
+
+    // When the oldest request was sent since anything last arrived from the phone; nil while nothing is waiting.
+    @MainActor private var silentSince: ContinuousClock.Instant?
+    @MainActor private var received = 0
+    @MainActor private var notAnswering = false
+    @MainActor private var notAnsweringSince: Date?
+    @MainActor private var probing = false
+    @MainActor private var probeWhenReached = false
+    private let callObserver = CXCallObserver()
+
+    // A request is about to be handed to WatchConnectivity.
+    @MainActor private func noteSent() {
+        guard silentSince == nil else { return }
+        let since = ContinuousClock.now
+        silentSince = since
+        Task { @MainActor in
+            try? await Task.sleep(for: ConnectionPolicy.Health.probeAfter)
+            guard silentSince == since else { return }
+            await probe("nothing received for \((ContinuousClock.now - since).ms) ms")
+        }
+    }
+
+    // Anything arrived from the phone: an answer, a live update, a context.
+    @MainActor private func noteReceived() {
+        silentSince = nil
+        received += 1
+        guard notAnswering else { return }
+        notAnswering = false
+        PhoneActivity.shared.setNotAnswering(false)
+        WatchLog.info("connection: the iPhone answers again, after \(Int(-(notAnsweringSince ?? Date()).timeIntervalSinceNow)) s of not answering")
+        notAnsweringSince = nil
+        // Pages that failed meanwhile load again, as when the phone comes back in reach.
+        NotificationCenter.default.post(name: .phoneBecameReachable, object: nil)
+    }
+
+    // Off screen or out of reach nothing is expected to arrive: that time doesn't count.
+    @MainActor private func stopCountingSilence() { silentSince = nil }
+
+    private enum Probe { case answered, unanswered, notSent }
+
+    // The basic request: `nowPlaying`, which the phone answers at once without its server.
+    @discardableResult
+    @MainActor private func probe(_ reason: String) async -> Probe {
+        let session = WCSession.default
+        guard !probing, scene == "active", session.activationState == .activated, session.isReachable else { return .notSent }
+        probing = true
+        defer { probing = false }
+        let before = received
+        do {
+            let reply = try await request(
+                "nowPlaying", [:], replyTimeout: ConnectionPolicy.Health.probeAnswer, quiet: true,
+                patience: .clock(.seconds(1)), probe: true)
+            if let state = reply["result"] as? [String: Any] { NowPlayingStore.shared.update(from: state) }
+            return .answered
+        } catch {
+            // Only a basic request that went out and got nothing back counts.
+            if case PhoneError.expired = error { return .notSent }
+            guard Self.outcome(of: error) == .connectionFailed, received == before, scene == "active", session.isReachable
+            else { return .notSent }
+            guard !notAnswering else {
+                unansweredChecks += 1
+                return .unanswered
+            }
+            notAnswering = true
+            notAnsweringSince = Date()
+            unansweredChecks = 0
+            PhoneActivity.shared.setNotAnswering(true)
+            func ago(_ date: Date?) -> String { date.map { "\(Int(-$0.timeIntervalSinceNow)) s ago" } ?? "not since launch" }
+            WatchLog.warning("connection: the iPhone is in reach and not answering (\(reason); the basic request got no answer in \(ConnectionPolicy.Health.probeAnswer.ms) ms; last answer \(ago(lastAnswer)), last live update \(ago(lastLiveUpdate)), last context \(ago(lastContext)); \(Self.describe(session)))")
+            Task { @MainActor in await recover() }
+            return .unanswered
+        }
+    }
+
+    // Recovery while not answering. What is known to end it is a fresh status update from the watch to the iPhone
+    // (Finamp leaving the front and returning; a notification), which an app can't send; so the session is activated
+    // again (decision 70's restart, here for "in reach, no answers"), the basic request keeps asking, and a command
+    // tapped meanwhile is held back (`holdBack`). The user is told nothing beyond the sign under the clock (yalit,
+    // 27 Nov 2026: no instruction on screen).
+    @MainActor private func recover() async {
+        let session = WCSession.default
+        var attempts = 0
+        func activateAgain() {
+            attempts += 1
+            WatchLog.info("connection: recovery: activating the session again (\(attempts) of \(ConnectionPolicy.Health.reconnectAttempts))")
+            session.delegate = self
+            session.activate()
+        }
+        activateAgain()
+        while notAnswering {
+            try? await Task.sleep(for: ConnectionPolicy.Health.probeEvery)
+            guard notAnswering else { break }
+            // Only a basic request that went out and came back empty counts: not time off screen or out of reach.
+            // Every such request counts, not only this loop's own (27 Nov 2026 05:35-05:39: with the wrist raised
+            // for a few seconds at a time, this loop's checks were all skipped, off screen or behind another check,
+            // and the app never got past the first restart in four minutes).
+            await probe("still not answering")
+            guard notAnswering, scene == "active" else { continue }
+            if unansweredChecks >= ConnectionPolicy.Health.closeAfterUnanswered {
+                await closeAsLastResort(unansweredChecks, attempts: attempts)
+                return
+            }
+            if attempts < min(1 + unansweredChecks / 2, ConnectionPolicy.Health.reconnectAttempts) { activateAgain() }
+        }
+    }
+
+    // Basic requests unanswered since the state began, whoever sent them.
+    @MainActor private var unansweredChecks = 0
+
+    // Nothing brought the phone back: say so, and close. Anything arriving during the notice calls it off.
+    @MainActor private func closeAsLastResort(_ unanswered: Int, attempts: Int) async {
+        let notice = String(localized: "Couldn't reach your iPhone. Closing Finamp.")
+        WatchLog.warning("connection: last resort: closing the app (not answering for \(Int(-(notAnsweringSince ?? Date()).timeIntervalSinceNow)) s, \(unanswered) basic requests unanswered, the session activated again \(attempts) times)")
+        PhoneMessage.shared.text = notice
+        WatchLog.shared.flush()
+        try? await Task.sleep(for: ConnectionPolicy.Health.closingNoticeFor)
+        guard notAnswering else {
+            if PhoneMessage.shared.text == notice { PhoneMessage.shared.text = nil }
+            WatchLog.info("connection: last resort called off, the iPhone answered")
+            return
+        }
+        exit(0)
+    }
+
+    // A command while the phone isn't answering: not sent; the sign under the clock is all that shows.
+    @MainActor private func holdBack(_ method: String) -> Bool {
+        guard notAnswering else { return false }
+        WatchLog.fine("\(method): held back, the iPhone isn't answering")
+        return true
+    }
+
+    @MainActor private func callEnded() {
+        Task { @MainActor in
+            try? await Task.sleep(for: ConnectionPolicy.Health.probeAfterCall)
+            if scene == "active", WCSession.default.isReachable {
+                await probe("a phone call just ended")
+            } else {
+                probeWhenReached = true
+            }
+        }
+    }
+
     @MainActor private func phoneReachedAgain() {
         if restartedWhileStuck {
             WatchLog.info("connection: reachable again \(stuckFor.ms) ms after it got stuck")
@@ -426,6 +609,12 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         stuckFor = .zero
         stuckLastNoted = nil
         restartedWhileStuck = false
+        // Back in reach after a call, or while the phone wasn't answering: ask at once.
+        if probeWhenReached || notAnswering {
+            let reason = probeWhenReached ? "a phone call ended while the app was off screen" : "in reach again while not answering"
+            probeWhenReached = false
+            Task { @MainActor in await probe(reason) }
+        }
     }
 
     // The phone checks the action name against its current index after reordering.
@@ -629,7 +818,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     // Every wait and timeout here comes from `ConnectionPolicy`.
     private func request(
         _ method: String, _ args: [String: Any], replyTimeout: Duration? = nil, quiet: Bool = false,
-        patience override: ConnectionPolicy.Patience? = nil
+        patience override: ConnectionPolicy.Patience? = nil, probe: Bool = false
     ) async throws -> [String: Any] {
         let replyTimeout = replyTimeout ?? ConnectionPolicy.Reply.timeout(for: method)
         let session = WCSession.default
@@ -641,6 +830,11 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
             // Any reply shows the connection works, shown request or not.
             if outcome == .answered { PhoneActivity.shared.answered() }
             if let token { PhoneActivity.shared.end(token, outcome) }
+        }
+        // Commands (the ones that wait by the clock) are held back while the phone isn't answering.
+        if case .clock = patience, !probe, await holdBack(method) {
+            outcome = .connectionFailed
+            throw PhoneError.notAnswering
         }
         let start = ContinuousClock.now
         // A command carries its deadline to the moment it's handed to WatchConnectivity.
@@ -674,10 +868,12 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
             throw PhoneError.expired
         }
 
+        if !probe { await noteSent() }
         // A reply that never comes must still end in an error, not in endless placeholders
+        let number = SentNumber()
         do {
             let reply = try await withThrowingTaskGroup(of: [String: Any].self) { group in
-                group.addTask { try await Self.send(method, args, notAfter: notAfter) }
+                group.addTask { try await Self.send(method, args, notAfter: notAfter, number: number) }
                 group.addTask {
                     try await Task.sleep(for: replyTimeout)
                     throw PhoneError.noAnswer
@@ -685,13 +881,20 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
                 defer { group.cancelAll() }
                 return try await group.next()!
             }
-            WatchLog.fine("\(method): ok in \((ContinuousClock.now - start).ms) ms (waited \(waited.ms) ms)")
+            WatchLog.fine("\(method) #\(number.value): ok in \((ContinuousClock.now - start).ms) ms (waited \(waited.ms) ms)")
             outcome = .answered
+            await noteAnswered()
             return reply
         } catch {
             let level = error is CancellationError ? WatchLog.fine : WatchLog.warning
-            level("\(method): \(Self.describe(error)) after \((ContinuousClock.now - start).ms) ms (waited \(waited.ms) ms, \(Self.describe(session)))")
+            level("\(method) #\(number.value): \(Self.describe(error)) after \((ContinuousClock.now - start).ms) ms (waited \(waited.ms) ms, \(Self.describe(session)))")
             outcome = Self.outcome(of: error)
+            if outcome == .answered {
+                await noteAnswered()
+            } else if outcome == .connectionFailed, session.isReachable {
+                // Sent, the phone in reach, and still nothing came back.
+                await noteUnanswered(session)
+            }
             throw error
         }
     }
@@ -708,7 +911,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         case PhoneError.phone, PhoneError.serverUnreachable, PhoneError.unexpectedReply:
             return .answered
         // Not sent: the phone wasn't in reach in time.
-        case PhoneError.expired:
+        case PhoneError.expired, PhoneError.notAnswering:
             return .connectionFailed
         case let error as WCError:
             switch error.code {
@@ -735,6 +938,7 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
             case .noAnswer: return "no answer"
             case .unexpectedReply: return "unexpected reply"
             case .expired: return "not sent in time"
+            case .notAnswering: return "held back, the phone isn't answering"
             }
         case is CancellationError: return "cancelled"
         default:
@@ -744,11 +948,45 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
     }
 
     nonisolated private static func describe(_ session: WCSession) -> String {
-        "session \(session.activationState.rawValue), reachable \(session.isReachable)"
+        "session \(session.activationState.rawValue), reachable \(session.isReachable), scene \(shared.scene)"
     }
 
+    // For the log: where the app is (active, inactive, background), as SwiftUI last reported it. A request can wait or
+    // fail while the app runs off screen, and the same line means something else there.
+    private let sceneLock = NSLock()
+    private var sceneName = "starting"
+    @MainActor func noteScene(_ name: String) {
+        sceneLock.lock()
+        sceneName = name
+        sceneLock.unlock()
+        if name != "active" { stopCountingSilence() }
+        if name == "inactive" || name == "background" { closeWhileOffScreen() }
+    }
+
+    // In reach and not answering, and the wrist went down: close now, while nothing is on screen, so the next time
+    // Finamp is opened it starts fresh. On 27 Nov 2026 (05:34:21) a fresh start answered within 4 s, and nothing
+    // else has ever ended this state; it never ended by itself (05:35-05:39). No notice: the screen is off (yalit,
+    // 27 Nov 2026: "close while the wrist down").
+    @MainActor private func closeWhileOffScreen() {
+        guard notAnswering else { return }
+        WatchLog.warning("connection: closing while off screen (not answering for \(Int(-(notAnsweringSince ?? Date()).timeIntervalSinceNow)) s, \(unansweredChecks) basic requests unanswered)")
+        WatchLog.shared.flush()
+        exit(0)
+    }
+    private var scene: String {
+        sceneLock.lock()
+        defer { sceneLock.unlock() }
+        return sceneName
+    }
+
+    // For the log: every request handed to WatchConnectivity carries the next number ("n"), in the order they are
+    // handed over, so Finamp on the iPhone can log which never arrived.
+    private static let numberLock = NSLock()
+    private static var lastNumber = 0
+    private final class SentNumber: @unchecked Sendable { var value = 0 }
+
     nonisolated private static func send(
-        _ method: String, _ args: [String: Any], notAfter: ContinuousClock.Instant? = nil
+        _ method: String, _ args: [String: Any], notAfter: ContinuousClock.Instant? = nil, number: SentNumber
     ) async throws -> [String: Any] {
         let gate = ReplyGate()
         return try await withTaskCancellationHandler {
@@ -758,8 +996,12 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
                     gate.finish(.failure(PhoneError.expired))
                     return
                 }
+                numberLock.lock()
+                defer { numberLock.unlock() }
+                lastNumber += 1
+                number.value = lastNumber
                 WCSession.default.sendMessage(
-                    ["method": method, "args": args],
+                    ["method": method, "args": args, "n": lastNumber],
                     replyHandler: { reply in
                         if let message = reply["error"] as? String {
                             gate.finish(.failure(reply["code"] as? String == "server"
@@ -785,20 +1027,38 @@ final class PhoneConnection: NSObject, WCSessionDelegate {
         }
     }
 
+    // The phone's live updates: it sends one at a time and waits for this empty reply before the next (`WatchBridge`).
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
+        replyHandler([:])
+        self.session(session, didReceiveMessage: message)
+    }
+
+    // An update sent without asking for a reply (a Finamp from before the phone confirmed its updates).
     nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         WatchLog.fine("push: \(message.keys.sorted().joined(separator: ", "))")
-        DispatchQueue.main.async { self.apply(message) }
+        DispatchQueue.main.async {
+            self.noteReceived()
+            self.lastLiveUpdate = Date()
+            self.apply(message)
+        }
     }
 
     nonisolated func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         WatchLog.fine("context: \(applicationContext.keys.sorted().joined(separator: ", "))")
-        DispatchQueue.main.async { self.apply(applicationContext) }
+        DispatchQueue.main.async {
+            self.noteReceived()
+            self.lastContext = Date()
+            self.apply(applicationContext)
+        }
     }
 
     // Post notification when phone becomes reachable to retry failed loads.
     nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
         WatchLog.info("reachable \(session.isReachable)")
-        guard session.isReachable else { return }
+        guard session.isReachable else {
+            DispatchQueue.main.async { self.stopCountingSilence() }
+            return
+        }
         DispatchQueue.main.async {
             self.phoneReachedAgain()
             NotificationCenter.default.post(name: .phoneBecameReachable, object: nil)
@@ -840,4 +1100,15 @@ nonisolated private final class ReplyGate: @unchecked Sendable {
 
 extension Duration {
     var ms: Int64 { components.seconds * 1000 + components.attoseconds / 1_000_000_000_000_000 }
+}
+
+// Phone calls, as the watch sees them (CallKit's observer: only that a call rings, connects and ends, never who).
+// After one ends the connection is checked at once (`ConnectionPolicy.Health.probeAfterCall`).
+extension PhoneConnection: CXCallObserverDelegate {
+    nonisolated func callObserver(_ callObserver: CXCallObserver, callChanged call: CXCall) {
+        let state = call.hasEnded ? "ended" : call.hasConnected ? "connected" : call.isOutgoing ? "dialling" : "ringing"
+        WatchLog.info("phone call \(state) (\(Self.describe(WCSession.default)))")
+        guard call.hasEnded else { return }
+        DispatchQueue.main.async { self.callEnded() }
+    }
 }

@@ -11,6 +11,10 @@ file together. `test/watch_protocol_test.dart` fails when the three disagree on 
 ## Requests (watch → phone)
 
 Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{artworks, missing}` or `{error, code?}`.
+Each also carries `n`, the watch's count of requests handed to WatchConnectivity since its launch: only for the logs
+(`WatchBridge` logs a gap as requests that never arrived); no answer depends on it.
+While no one is logged in to Finamp on the phone, every request is refused with code `loggedOut` (the watch shows its
+login screen from the `account` push).
 
 | Request | Args | Result |
 |---|---|---|
@@ -27,7 +31,7 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 | `playlistMenu` | `id` | Finamp's playlist menu for a track: `{favorite, color, playlists}`, `color` the track's cover colour Finamp themes the menu with (ARGB, made readable on black), `playlists` as rows sorted by name with `included` (true only for the playlist the track is playing from, which comes first; Finamp doesn't look the others up); an error while offline |
 | `playlistToggle` | `id`, `playlistId`, `add` | whether the playlist now holds the track, added or removed with Finamp's own functions; an error while offline |
 | `favorite` | `id`, `favorite` | Finamp's state right away (bool; the server's answer follows in `favoriteStates`), or an error while offline |
-| `control` | `action`: `playPause`, `next`, `previous`, `toggleLoop`, `togglePlaybackOrder`, `toggleRadio`, or `skipTo` + `id` | `true` |
+| `control` | `action`: `playPause`, `next`, `previous`, `toggleLoop`, `togglePlaybackOrder`, `toggleRadio`, or `skipTo` + `id`; also `pause` and `play`, which `WatchBridge` itself uses around a phone call taken on another device (the watch sends `playPause`) | `true` |
 | `nowPlaying` | — | the now-playing dict (below) |
 | `queue` | — | up to 30 upcoming rows |
 | `shuffleAll` | — | `true` |
@@ -39,7 +43,7 @@ Sent as `sendMessage(["method": m, "args": {…}])`; the reply is `{result}`, `{
 | `setSetting` | `name` (`transcoding` \| `offline`), `enabled` | `true`, or `{reload, reloadButton, archive}` when Finamp asks to reload the queue |
 | `reloadQueue` | `archive` | `true` |
 | `showOutputPicker` | — | `"shown"` or `"pending"` (answered by `WatchBridge`, not Flutter) |
-| `artworks` | `items: [{id, size}]` | `{artworks: {"<id>-<size>": JPEG}, missing}` (`WatchBridge` scales the phone's cover file to a JPEG; a key in neither is left for the watch to ask again) |
+| `artworks` | `items: [{id, size}]` | `{artworks: {"<id>-<size>": JPEG}, missing}` (Flutter names the cover's file, `WatchBridge` scales it to a JPEG straight from the file; a key in neither is left for the watch to ask again) |
 
 **Row:** `{id, name, subtitle, artistId, artworkKey, blurHash, duration, year,
 releaseDate, trackCount, favorite, downloaded, downloadLock?, kind, artists?}`.
@@ -61,7 +65,10 @@ play count text), `{type: mode, mode: local \| transcoding \| direct}`, `{type: 
 
 ## Pushes (phone → watch)
 
-Sent live while the watch app is reachable; the application context always holds the latest of each.
+Sent live while the watch app is reachable; the application context always holds the latest of each. Live updates
+go one at a time: a message holds every value that changed since the last one (all of them when the watch comes back
+in reach), the watch confirms it with an empty reply, and only then the next is sent. One that fails is not repeated;
+the application context carries its values.
 
 | Push | Value |
 |---|---|

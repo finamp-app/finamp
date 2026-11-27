@@ -12,6 +12,10 @@ struct CollectionView: View {
     @State private var favoritesTotal: Int?
     // The collection again from the phone, after the playlist menu changed it.
     @State private var latest: LibraryItem?
+    // The track total shows the count, or after a tap the total time, and back (`trackTotal`). Back on the count once
+    // the page is left.
+    @State private var showsDuration = false
+    @Environment(\.scenePhase) private var scenePhase
 
     init(collection: LibraryItem, type: String, onPlay: @escaping () -> Void) {
         self.collection = collection
@@ -68,6 +72,9 @@ struct CollectionView: View {
         .navigationTitle(type == "favorites" ? collection.name : "")
         .accentTitle()
         .task { if case .loading = pager.state { await load() } }
+        // The swap doesn't outlive the visit: another page opened over this one, another tab, or the app left.
+        .onDisappear { showsDuration = false }
+        .onChange(of: scenePhase) { _, phase in if phase == .background { showsDuration = false } }
         // A playlist the playlist menu changed: its tracks, count and duration again.
         .onChange(of: PlaylistEdits.shared.edits[collection.id]) {
             Task {
@@ -98,8 +105,7 @@ struct CollectionView: View {
             PageCoverRow {
                 FavoritesLogo()
             } info: {
-                StatLine(symbol: "music.note", text: trackSummary(tracks))
-                    .redacted(reason: countUnknown ? .placeholder : [])
+                trackTotal(tracks)
             }
         } else {
             collectionHeader(tracks)
@@ -133,14 +139,13 @@ struct CollectionView: View {
             PageCoverRow {
                 CoverView(item: collection)
             } info: {
-                // Finamp's stats, one line each (long ones scroll): album artists, tracks (total time), release
-                // date; a playlist has only its tracks.
+                // Finamp's stats, one line each (long ones scroll): album artists, the track total, release date; a
+                // playlist has only its track total.
                 VStack(alignment: .leading, spacing: PageHeader.statSpacing) {
                     if type != "playlists" {
                         ArtistChipsLine(artists: headerArtists, fallback: collection.subtitle) { open(.artistAlbums($0)) }
                     }
-                    StatLine(symbol: "music.note", text: trackSummary(tracks))
-                        .redacted(reason: countUnknown ? .placeholder : [])
+                    trackTotal(tracks)
                     if type == "albums" {
                         StatLine(symbol: "calendar", text: releaseDate)
                     }
@@ -166,14 +171,23 @@ struct CollectionView: View {
         )]
     }
 
-    // As Finamp: "13 Tracks (51:20)".
-    private func trackSummary(_ tracks: [LibraryItem]) -> String {
-        let known = max(favoritesTotal ?? stats.trackCount, tracks.count)
-        let count = FinampFormat.tracks(known)
-        // The duration only when it covers every track (Favourite Tracks loads in pages and has no total duration).
-        if stats.duration > 0 { return "\(count) (\(FinampFormat.duration(stats.duration)))" }
-        guard tracks.count >= known else { return count }
-        return "\(count) (\(FinampFormat.duration(tracks.reduce(0) { $0 + $1.duration })))"
+    // The track total, Finamp's "13 Tracks (51:20)" as one value at a time: the count ("13 Tracks"), and after a tap
+    // the total time ("51:20"), back and forth. While the time isn't known the line shows the count and takes no tap.
+    private func trackTotal(_ tracks: [LibraryItem]) -> some View {
+        let duration = totalDuration(tracks)
+        let text = if showsDuration, let duration { FinampFormat.duration(duration) } else { FinampFormat.tracks(trackCount(tracks)) }
+        return StatLine(symbol: "music.note", text: text)
+            .redacted(reason: countUnknown ? .placeholder : [])
+            .statTap(enabled: duration != nil) { showsDuration.toggle() }
+    }
+
+    private func trackCount(_ tracks: [LibraryItem]) -> Int { max(favoritesTotal ?? stats.trackCount, tracks.count) }
+
+    // Known only when it covers every track (Favourite Tracks loads in pages and has no total duration).
+    private func totalDuration(_ tracks: [LibraryItem]) -> Double? {
+        if stats.duration > 0 { return stats.duration }
+        guard tracks.count >= trackCount(tracks) else { return nil }
+        return tracks.reduce(0) { $0 + $1.duration }
     }
 
     // The phone's release date in Finamp's format; the year when there is none.

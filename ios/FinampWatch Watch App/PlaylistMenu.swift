@@ -86,7 +86,7 @@ struct PlaylistMenu: View {
                                 item: LibraryItem(id: "favorites", name: String(localized: "Favorites"), subtitle: "", artworkKey: ""),
                                 favorites: true,
                                 favoritesTint: tint,
-                                detail: favoritesCount.map { FinampFormat.tracks($0 + change(favorites.value(for: track), loadedFavorite)) },
+                                detail: favoritesCount.map { FinampFormat.tracks(FinampFormat.adjusted($0, by: change(favorites.value(for: track), loadedFavorite))) },
                                 stateIcon: favorites.value(for: track) ? "material-favorite" : "material-favorite-border"
                             )
                         }
@@ -120,7 +120,7 @@ struct PlaylistMenu: View {
     }
 
     private func trackCount(_ playlist: LibraryItem) -> String {
-        FinampFormat.tracks(playlist.trackCount + change(included.contains(playlist.id), loadedIncluded.contains(playlist.id)))
+        FinampFormat.tracks(FinampFormat.adjusted(playlist.trackCount, by: change(included.contains(playlist.id), loadedIncluded.contains(playlist.id))))
     }
 
     private func change(_ now: Bool, _ loaded: Bool) -> Int { now == loaded ? 0 : (now ? 1 : -1) }

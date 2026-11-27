@@ -50,11 +50,14 @@ final class PhoneMessage {
 // The small status under the clock (`phoneActivityIndicator`): waiting while a request you made has gone
 // `ConnectionPolicy.Status.showAfter` without an answer; failed when one couldn't reach the phone (not when the phone
 // answered with an error of its own). A failure shows for `ConnectionPolicy.Status.failedFor`, or until the phone
-// answers anything.
+// answers anything. Reconnecting: the whole time the phone is in reach and not answering (`ConnectionPolicy.Health`),
+// while the watch restarts its connection and keeps asking; this is not ordinary waiting, so it has its own sign.
+// Reconnected: for `ConnectionPolicy.Status.reconnectedFor` once such a phone answers again; never after ordinary
+// waiting or a wrist raise.
 @Observable
 final class PhoneActivity {
     static let shared = PhoneActivity()
-    enum State { case idle, waiting, failed }
+    enum State { case idle, waiting, failed, reconnecting, reconnected }
     enum Outcome {
         // The phone replied, with a result or an error of its own: the connection works.
         case answered
@@ -68,6 +71,29 @@ final class PhoneActivity {
     @ObservationIgnored private var slow: Set<Int> = []
     @ObservationIgnored private var failedUntil: ContinuousClock.Instant?
     @ObservationIgnored private var next = 0
+    // The phone is in reach and answers nothing (`ConnectionPolicy.Health`): the reconnecting sign shows until it does.
+    @ObservationIgnored private var notAnswering = false
+    @ObservationIgnored private var reconnectedUntil: ContinuousClock.Instant?
+
+    func setNotAnswering(_ value: Bool) {
+        let answersAgain = notAnswering && !value
+        notAnswering = value
+        if answersAgain {
+            // A request that failed during the silence must not turn the sign orange again now.
+            failedUntil = nil
+            let until = ContinuousClock.now + ConnectionPolicy.Status.reconnectedFor
+            reconnectedUntil = until
+            Task {
+                try? await Task.sleep(until: until, clock: .continuous)
+                guard reconnectedUntil == until else { return }
+                reconnectedUntil = nil
+                update()
+            }
+        } else if value {
+            reconnectedUntil = nil
+        }
+        update()
+    }
 
     func begin() -> Int {
         next += 1
@@ -95,6 +121,8 @@ final class PhoneActivity {
         case .answered:
             failedUntil = nil
         case .connectionFailed:
+            // Just reconnected: a request left over from the silence ends now, and says nothing new.
+            guard reconnectedUntil == nil else { break }
             let until = ContinuousClock.now + ConnectionPolicy.Status.failedFor
             failedUntil = until
             Task {
@@ -109,9 +137,11 @@ final class PhoneActivity {
         update()
     }
 
-    // A shown failure wins over waiting until it ends.
+    // Reconnecting wins over everything while it lasts (single requests failing or waiting meanwhile say nothing new);
+    // then a shown failure wins over the reconnected sign, and that over waiting.
     private func update() {
-        let new: State = failedUntil != nil ? .failed : (slow.isEmpty ? .idle : .waiting)
+        let new: State = notAnswering ? .reconnecting : failedUntil != nil ? .failed
+            : reconnectedUntil != nil ? .reconnected : (slow.isEmpty ? .idle : .waiting)
         if new != state { state = new }
     }
 }

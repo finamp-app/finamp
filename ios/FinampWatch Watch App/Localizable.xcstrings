@@ -79,6 +79,9 @@
     "Couldn't reach your iPhone" : {
 
     },
+    "Couldn't reach your iPhone. Closing Finamp." : {
+
+    },
     "Delete from Device" : {
 
     },
@@ -256,6 +259,9 @@
     "Recently Played" : {
 
     },
+    "Reconnecting to your iPhone" : {
+
+    },
     "Remove Favorite" : {
 
     },
@@ -332,6 +338,9 @@
 
     },
     "You are about to delete this playlist from this device." : {
+
+    },
+    "Your iPhone answers again" : {
 
     },
     "Your iPhone didn't answer" : {
