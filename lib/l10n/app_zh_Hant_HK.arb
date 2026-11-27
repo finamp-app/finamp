@@ -1631,7 +1631,7 @@
     "@itemDeletedSnackbar": {
         "description": "Used whenever item gets deleted from the device or server, message in snackbar"
     },
-    "deleteFromTargetDialogText": "你即將{device, select, device{從此裝置} server{從伺服器的檔案系統及媒體庫}}刪除此{itemType, select, album{專輯} playlist{播放清單} artist{歌手} genre{曲風} track{歌曲} library{媒體庫} other{項目}}{device, select, device{。} server{。{deleteType, select, canDelete{此操作亦會從此裝置刪除此項目。} cantDelete{此項目會保留在此裝置，直至下次同步。} notDownloaded{} other{}}\n此操作無法復原。}}",
+    "deleteFromTargetDialogText": "你即將{device, select, device{從此裝置} server{從伺服器的檔案系統及媒體庫}}刪除此{itemType, select, album{專輯} playlist{播放清單} artist{歌手} genre{曲風} track{歌曲} library{媒體庫} other{項目}}{device, select, device{。} server{。{deleteType, select, canDelete{此操作亦會從此裝置刪除此項目。} cantDelete{此項目會保留在此裝置，直至下次同步。} notDownloaded{} other{}}\n此操作無法復原} other{}}。",
     "@deleteFromTargetDialogText": {
         "description": "(Important: Note the space in front of some cases) A Confirm Prompt used whenever an item is about to be deleted from the device or server. The Server case should explain that this cannot be reverted, this information is not needed for the device since the user can just download the track again. The delete Type adapts the server text even more in can the user can or cant delete the item."
     },
