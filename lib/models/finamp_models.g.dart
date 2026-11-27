@@ -470,6 +470,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         minimizeToTray: fields[162] == null ? false : fields[162] as bool,
         startMinimizedToTray: fields[163] == null ? false : fields[163] as bool,
         followRedirects: fields[165] == null ? false : fields[165] as bool,
+        textScaleOverride: fields[167] == null
+            ? DefaultSettings.textScaleOverride
+            : (fields[167] as num?)?.toDouble(),
       )
       ..sortBy = fields[7] as SortBy?
       ..sortOrder = fields[8] as SortOrder?
@@ -494,7 +497,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(155)
+      ..writeByte(156)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -804,7 +807,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(165)
       ..write(obj.followRedirects)
       ..writeByte(166)
-      ..write(obj.playerQueueLimit);
+      ..write(obj.playerQueueLimit)
+      ..writeByte(167)
+      ..write(obj.textScaleOverride);
   }
 
   @override

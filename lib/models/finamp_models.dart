@@ -339,6 +339,7 @@ class DefaultSettings {
   static final playerQueueLimit = Platform.isIOS || Platform.isMacOS
       ? 1500
       : (Platform.isLinux || Platform.isWindows ? 30000 : 5000);
+  static const double? textScaleOverride = null;
 }
 
 @HiveType(typeId: 28)
@@ -492,6 +493,7 @@ class FinampSettings {
     this.minimizeToTray = DefaultSettings.minimizeToTray,
     this.startMinimizedToTray = DefaultSettings.startMinimizedToTray,
     this.followRedirects = DefaultSettings.followRedirects,
+    this.textScaleOverride = DefaultSettings.textScaleOverride,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -1014,10 +1016,13 @@ class FinampSettings {
   @HiveField(165, defaultValue: DefaultSettings.followRedirects)
   bool followRedirects;
 
-  @HiveField(166)
+  @HiveField(166, defaultValue: DefaultSettings.textScaleOverride)
   /// The maximum size we want a queue to reach.  We will not hard-enforce this, but individual items will be trimmed
   /// when adding to queue and we will cancel auto-restore for queues over this size.
   int? playerQueueLimit;
+
+  @HiveField(167)
+  double? textScaleOverride;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(

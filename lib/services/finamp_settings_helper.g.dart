@@ -1371,6 +1371,14 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setTextScaleOverride(double? newTextScaleOverride) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.textScaleOverride = newTextScaleOverride;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1833,6 +1841,8 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   );
   ProviderListenable<int?> get playerQueueLimit => finampSettingsProvider
       .select((value) => value.requireValue.playerQueueLimit);
+  ProviderListenable<double?> get textScaleOverride => finampSettingsProvider
+      .select((value) => value.requireValue.textScaleOverride);
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,
