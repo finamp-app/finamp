@@ -3726,5 +3726,140 @@
     "downloadDialogTranscodedIntoSemanticLabel": "轉碼為",
     "@downloadDialogTranscodedIntoSemanticLabel": {
         "description": "Screen reader label for the arrow icon in the download dialog's transcode summary. It sits between the original value and the transcoded value, e.g. 'FLAC, transcoded into, OPUS'."
-    }
+    },
+    "playSomeButtonLabel": "播放一些歌曲",
+    "addSomeToQueue": "將一些歌曲加入佇列",
+    "playSomeNext": "接著播放部分歌曲",
+    "addSomeToNextUp": "將部分歌曲加入即將播放清單",
+    "noMusicLibrariesLogsCTA": "如果您認為這是錯誤，請與我們分享以下記錄，協助我們修正問題：",
+    "@noMusicLibrariesLogsCTA": {
+        "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
+    },
+    "noMusicLibrariesLogout": "您也可以嘗試登出後再試一次。",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "自動重新載入佇列時的歌曲遺失上限",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "切換至離線模式時，僅在將被移除的歌曲比例不超過此百分比時，自動重新載入佇列。您隨時都可以手動重新載入。",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "歌曲移除比例上限：{percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "autoReloadPromptDroppedTracks": "這將移除佇列中 {removedPercentage}% 的歌曲（共 {amountUndownloadedTracks} 首）。",
+    "@autoReloadPromptDroppedTracks": {
+        "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "removedPercentage": {
+                "type": "int"
+            }
+        }
+    },
+    "closeToTrayTitle": "關閉時縮小至系統匣",
+    "@closeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray instead of quitting when it is closed"
+    },
+    "closeToTraySubtitle": "關閉視窗時，讓 Finamp 繼續在系統匣中執行。若要結束程式，請從系統匣選單中選擇「結束」。",
+    "minimizeToTrayTitle": "最小化至系統匣",
+    "@minimizeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray when it is minimized"
+    },
+    "minimizeToTraySubtitle": "視窗最小化時，將其隱藏至系統匣。",
+    "minimizeToTrayWaylandNote": "視窗最小化時，將其隱藏至系統匣。由於 Wayland 不會通知應用程式視窗已最小化，因此不支援此功能。請改用「關閉時縮小至系統匣」。",
+    "@minimizeToTrayWaylandNote": {
+        "description": "Subtitle of the minimize to tray setting when running on a Linux Wayland session, where minimizing cannot be detected"
+    },
+    "startMinimizedToTrayTitle": "啟動時縮小至系統匣",
+    "@startMinimizedToTrayTitle": {
+        "description": "Desktop only. Title of the setting that starts Finamp with the window hidden in the system tray"
+    },
+    "startMinimizedToTraySubtitle": "啟動Finamp時，將視窗隱藏至系統匣。您也可以透過命令列傳入 `--minimized` 參數。",
+    "trayShowWindow": "顯示Finamp",
+    "@trayShowWindow": {
+        "description": "System tray menu entry that shows the main window"
+    },
+    "trayHideWindow": "將Finamp縮小至系統匣",
+    "@trayHideWindow": {
+        "description": "System tray menu entry that hides the main window to the tray"
+    },
+    "trayQuit": "結束Finamp",
+    "@trayQuit": {
+        "description": "System tray menu entry that fully quits the app"
+    },
+    "trayNothingPlaying": "目前未播放任何歌曲",
+    "@trayNothingPlaying": {
+        "description": "Disabled system tray menu entry shown in place of the current track when nothing is playing"
+    },
+    "trayTooltipPlaying": "{track} - Finamp",
+    "@trayTooltipPlaying": {
+        "description": "System tray icon tooltip shown while a track is loaded",
+        "placeholders": {
+            "track": {
+                "type": "String",
+                "example": "Rick Astley - Never Gonna Give You Up"
+            }
+        }
+    },
+    "customHeaders": "自訂HTTP標頭",
+    "httpHeaderNotAuth": "供內部使用的名稱。",
+    "@httpHeaderNotAuth": {
+        "description": "Error message when the user configures a custom authorization header that overlaps with one finamp already uses."
+    },
+    "httpHeaderConflict": "標頭名稱重複。",
+    "@httpHeaderConflict": {
+        "description": "Error message when the user configures two custom authorization headers with duplicate names."
+    },
+    "customHeaderNameLabel": "標頭名稱",
+    "@customHeaderNameLabel": {
+        "description": "Label for custom HTTP header name entry field."
+    },
+    "customHeaderValueLabel": "標頭值",
+    "@customHeaderValueLabel": {
+        "description": "Label for custom HTTP header value entry field."
+    },
+    "followRedirectsTitle": "啟用重新導向",
+    "@followRedirectsTitle": {
+        "description": "Title of setting that allows Finamp to follow redirects."
+    },
+    "followRedirectsSubtitle": "允許Finamp遵循HTTP重新導向，包括導向至與原先設定不同的網域。此功能可能與自訂HTTP標頭不相容。",
+    "advancedLoginOptionsWarning": "適用於特殊伺服器設定的進階驗證選項。這些功能以盡可能支援為原則，可能無法在所有平台上正常運作。",
+    "queueAutorestoreOversized": "已中止還原 - 儲存的佇列過於龐大。",
+    "oversizedQueueItemTruncated": "項目歌曲數量超過上限，已從 {itemSize} 首縮減至 {maxSize} 首。",
+    "@oversizedQueueItemTruncated": {
+        "description": "Message displayed if an item is truncated while being added to queue",
+        "placeholders": {
+            "itemSize": {
+                "type": "int"
+            },
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueSizeLimitTitle": "佇列歌曲數量上限",
+    "queueSizeLimitSubtitle": "透過限制單次加入項目的歌曲數量，為佇列設定非強制性上限。將多個項目加入同一佇列時，仍可能使佇列過於龐大。若嘗試播放超出裝置負荷的佇列，可能導致應用程式當機。",
+    "oversizedQueueContinue": "仍然嘗試載入",
+    "oversizedQueueTruncate": "將佇列歌曲數量縮減至最多 {maxSize} 首",
+    "@oversizedQueueTruncate": {
+        "description": "Button to truncate oversized queues while restoring",
+        "placeholders": {
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueRestoreCancel": "取消還原"
 }
