@@ -146,7 +146,6 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
   // Define heights for each submenu state
   double closedHeight = 0;
   double speedMenuHeight = 140;
-  double sleepTimerMenuHeight = 265;
 
   Track get playableItem => Track(widget.item, source: widget.source ?? QueueItemSource.fromBaseItem(widget.item));
 
@@ -156,21 +155,6 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
 
     initialSheetExtent = widget.showPlaybackControls ? 0.6 : 0.45;
     oldExtent = initialSheetExtent;
-
-    // set correct initial height for sleep timer menu based on previous mode
-    var oldTimer = FinampSettingsHelper.finampSettings.sleepTimer;
-    var newSleepTimer = SleepTimer(
-      oldTimer?.secondsLength ?? DefaultSettings.sleepTimerDurationSeconds,
-      oldTimer?.tracksLength ?? 0,
-    );
-    sleepTimerMenuHeight = switch (newSleepTimer) {
-      // after current track
-      SleepTimer(tracksLength: 1) => SleepTimerMenu.afterCurrentTrackTypeMenuHeight,
-      // after duration
-      SleepTimer(secondsLength: > 0) => SleepTimerMenu.durationTypeMenuHeight,
-      // after track count
-      _ => SleepTimerMenu.tracksTypeMenuHeight,
-    };
   }
 
   bool isBaseItemInQueueItem(BaseItemDto baseItem, FinampQueueItem? queueItem) {
@@ -282,17 +266,11 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
   // All track menu slivers, including headers
   List<Widget> menu(BuildContext context, List<Widget> menuEntries, MetadataProvider? metadata) {
     var iconColor = Theme.of(context).colorScheme.primary;
-    double menuHeight;
-    switch (activeMenu) {
-      case SubMenu.speed:
-        menuHeight = speedMenuHeight;
-        break;
-      case SubMenu.sleepTimer:
-        menuHeight = sleepTimerMenuHeight;
-        break;
-      default:
-        menuHeight = closedHeight;
-    }
+    final menuHeight = switch (activeMenu) {
+      SubMenu.speed => speedMenuHeight,
+      SubMenu.sleepTimer => null, // Size to the controls, including any wrapped mode labels.
+      null => closedHeight,
+    };
 
     final radioMode = ref.watch(finampSettingsProvider.radioMode);
     final radioEnabled = ref.watch(finampSettingsProvider.radioEnabled);
@@ -498,11 +476,6 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
                         iconColor: iconColor,
                         onStartTimer: () {
                           toggleSleepTimerMenu();
-                        },
-                        onSizeChange: (double height) {
-                          setState(() {
-                            sleepTimerMenuHeight = height;
-                          });
                         },
                       ),
                       _ => null,
