@@ -3871,5 +3871,27 @@
         }
     },
     "queueRestoreCancel": "Cancelar Restauro",
-    "queueSizeLimitSubtitle": "Aplica uma tampa flexível à fila ao limitar o tamanho dos items individuais adicionados.  As filas excessivamente grandes podem ainda ser criadas através da adição de vários items a uma fila.  A tentativa de reproduzir uma fila demasiado grande pode resultar em colisões na aplicação."
+    "queueSizeLimitSubtitle": "Aplica uma tampa flexível à fila ao limitar o tamanho dos items individuais adicionados.  As filas excessivamente grandes podem ainda ser criadas através da adição de vários items a uma fila.  A tentativa de reproduzir uma fila demasiado grande pode resultar em colisões na aplicação.",
+    "syncItem": "Sincronizar",
+    "@syncItem": {
+        "description": "Menu entry on the downloads screen to sync a downloaded collection with its current contents on the server."
+    },
+    "redownloadItem": "Re-descarregar",
+    "@redownloadItem": {
+        "description": "Menu entry to replace the downloaded files and metadata of an already downloaded item with fresh copies from the server, without removing the download."
+    },
+    "redownloadQueued": "Re-descarga iniciada",
+    "@redownloadQueued": {
+        "description": "Snackbar confirmation shown after the user starts redownloading an already downloaded item."
+    },
+    "redownloadConfirmation": "Substituir {size} de ficheiros descarregados?",
+    "@redownloadConfirmation": {
+        "description": "Confirmation prompt shown before redownloading a large item, replacing its downloaded files with fresh copies from the server. The size is the current size of the files on disk.",
+        "placeholders": {
+            "size": {
+                "type": "String",
+                "example": "1.2 GB"
+            }
+        }
+    }
 }
