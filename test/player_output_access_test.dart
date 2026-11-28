@@ -102,6 +102,8 @@ class FixtureQueue extends Fake implements QueueService {
 
 class FixtureAudio extends Fake implements MusicPlayerBackgroundTask {
   @override
+  double get speed => 1;
+  @override
   Future<List<FinampOutputRoute>> getRoutes() async => [];
   @override
   final ValueNotifier<SleepTimer?> timer = ValueNotifier<SleepTimer?>(null);
@@ -163,6 +165,7 @@ Future<RouteLog> mount(
   bool artworkMenu = false,
   bool openMenu = true,
   bool legacyCaller = false,
+  SleepTimer? savedTimer,
   Size size = const Size(700, 1400),
   AsyncValue<MetadataProvider?>? metadata,
 }) async {
@@ -197,6 +200,7 @@ Future<RouteLog> mount(
     enableVibration: false,
   );
   settings.disableGesture = disableGestures;
+  settings.sleepTimer = savedTimer;
   await Hive.box<FinampSettings>("FinampSettings").put("FinampSettings", settings);
   final container = ProviderContainer(
     overrides: [
@@ -459,6 +463,17 @@ void main() {
     for (final title in ['Output', 'Queue', 'Lyrics']) {
       expect(menuTile(title), findsNothing);
     }
+  }, variant: nativeTarget);
+  testWidgets('reopening a minutes timer with Finish Last Track keeps Start Timer reachable', (tester) async {
+    // Allow the three mode labels to fit the sheet with Flutter's wide test font.
+    tester.platformDispatcher.textScaleFactorTestValue = 0.75;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await mount(tester, legacyCaller: true, savedTimer: SleepTimer(15 * 60, 1));
+    await tester.tap(find.byIcon(TablerIcons.bell_z));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isTrue);
+    expect(find.text('Start Timer').hitTestable(), findsOneWidget);
   }, variant: nativeTarget);
   testWidgets('existing callers with playback controls retain their default menu', (tester) async {
     await mount(tester, legacyCaller: true);

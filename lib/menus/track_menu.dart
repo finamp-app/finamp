@@ -146,7 +146,7 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
   // Define heights for each submenu state
   double closedHeight = 0;
   double speedMenuHeight = 140;
-  double sleepTimerMenuHeight = 265;
+  late double sleepTimerMenuHeight;
 
   Track get playableItem => Track(widget.item, source: widget.source ?? QueueItemSource.fromBaseItem(widget.item));
 
@@ -156,21 +156,6 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
 
     initialSheetExtent = widget.showPlaybackControls ? 0.6 : 0.45;
     oldExtent = initialSheetExtent;
-
-    // set correct initial height for sleep timer menu based on previous mode
-    var oldTimer = FinampSettingsHelper.finampSettings.sleepTimer;
-    var newSleepTimer = SleepTimer(
-      oldTimer?.secondsLength ?? DefaultSettings.sleepTimerDurationSeconds,
-      oldTimer?.tracksLength ?? 0,
-    );
-    sleepTimerMenuHeight = switch (newSleepTimer) {
-      // after current track
-      SleepTimer(tracksLength: 1) => SleepTimerMenu.afterCurrentTrackTypeMenuHeight,
-      // after duration
-      SleepTimer(secondsLength: > 0) => SleepTimerMenu.durationTypeMenuHeight,
-      // after track count
-      _ => SleepTimerMenu.tracksTypeMenuHeight,
-    };
   }
 
   bool isBaseItemInQueueItem(BaseItemDto baseItem, FinampQueueItem? queueItem) {
@@ -185,6 +170,9 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
     setState(() {
       previousMenu = activeMenu;
       activeMenu = menu;
+      if (menu == SubMenu.sleepTimer) {
+        sleepTimerMenuHeight = SleepTimerMenu.initialHeight(FinampSettingsHelper.finampSettings.sleepTimer);
+      }
     });
     if (widget.dragController.isAttached) {
       scrollToExtent(widget.dragController, menu != null ? inputStep : null);

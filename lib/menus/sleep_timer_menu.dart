@@ -16,7 +16,20 @@ import 'package:rxdart/rxdart.dart';
 
 import '../extensions/localizations.dart';
 
-enum _MenuPage { minutes, tracks, currentTrack }
+enum _MenuPage {
+  minutes(265),
+  tracks(220),
+  currentTrack(140);
+
+  const _MenuPage(this.height);
+  final double height;
+
+  static _MenuPage fromTimer(SleepTimer? timer) => switch (timer) {
+    null || SleepTimer(secondsLength: > 0) => minutes,
+    SleepTimer(tracksLength: 1) => currentTrack,
+    _ => tracks,
+  };
+}
 
 class SleepTimerMenu extends StatefulWidget {
   const SleepTimerMenu({super.key, required this.iconColor, this.scrollFunction, this.onStartTimer, this.onSizeChange});
@@ -26,9 +39,7 @@ class SleepTimerMenu extends StatefulWidget {
   final void Function()? onStartTimer;
   final void Function(double)? onSizeChange;
 
-  static const double durationTypeMenuHeight = 265;
-  static const double tracksTypeMenuHeight = 220;
-  static const double afterCurrentTrackTypeMenuHeight = 140;
+  static double initialHeight(SleepTimer? timer) => _MenuPage.fromTimer(timer).height;
 
   @override
   State<SleepTimerMenu> createState() => _SleepTimerMenuState();
@@ -42,7 +53,7 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
   late SleepTimer newSleepTimer;
   late bool finishTrack;
 
-  _MenuPage selectedMode = _MenuPage.minutes;
+  late _MenuPage selectedMode;
 
   @override
   void initState() {
@@ -53,11 +64,7 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
       oldTimer?.tracksLength ?? 0,
     );
     finishTrack = (oldTimer?.tracksLength ?? 0) > 0;
-    selectedMode = switch (newSleepTimer) {
-      SleepTimer(secondsLength: > 0) => _MenuPage.minutes,
-      SleepTimer(tracksLength: 1) => _MenuPage.currentTrack,
-      _ => _MenuPage.tracks,
-    };
+    selectedMode = _MenuPage.fromTimer(oldTimer);
     _updateControllers();
   }
 
@@ -81,11 +88,6 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
       AppLocalizations.of(context)!.minutes,
       AppLocalizations.of(context)!.tracks,
       AppLocalizations.of(context)!.sleepTimerAfterCurrentTrack,
-    ];
-    final List<double> menuHeights = [
-      SleepTimerMenu.durationTypeMenuHeight,
-      SleepTimerMenu.tracksTypeMenuHeight,
-      SleepTimerMenu.afterCurrentTrackTypeMenuHeight,
     ];
 
     return Container(
@@ -139,7 +141,7 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                               newSleepTimer.tracksLength = 1;
                               newSleepTimer.secondsLength = 0;
                           }
-                          widget.onSizeChange?.call(menuHeights[i]);
+                          widget.onSizeChange?.call(selectedMode.height);
                           _updateControllers();
                         });
                       },
