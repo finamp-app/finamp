@@ -380,7 +380,7 @@
     "@customizationSettingsTitle": {
         "description": "Title for the customization settings screen"
     },
-    "shuffleNext": "Zamíchat další",
+    "shuffleNext": "Zamíchat do dalších",
     "@shuffleNext": {
         "description": "Used for shuffling a list (album, playlist, etc.) to the \"Next Up\" queue at the first position, to play right after the current track finishes playing"
     },
@@ -3723,5 +3723,140 @@
     "downloadDialogTranscodedIntoSemanticLabel": "Překódováno do",
     "@downloadDialogTranscodedIntoSemanticLabel": {
         "description": "Screen reader label for the arrow icon in the download dialog's transcode summary. It sits between the original value and the transcoded value, e.g. 'FLAC, transcoded into, OPUS'."
-    }
+    },
+    "noMusicLibrariesLogsCTA": "Pokud si myslíte, že jde o chybu, pomozte nám ji opravit sdílením následujících protokolů s námi:",
+    "@noMusicLibrariesLogsCTA": {
+        "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
+    },
+    "noMusicLibrariesLogout": "Můžete se také zkusit odhlásit a znovu přihlásit.",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "Limit ztráty skladeb při automatickém načtení fronty",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "Při přepnutí do offline režimu znovu načíst frontu pouze v případě, že nebude odstraněno více než toto procento skladeb. Přepnutí můžete vždy provést ručně.",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "Maximum odstraněných skladeb: {percentage} %",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "autoReloadPromptDroppedTracks": "Toto odstraní {removedPercentage} procent fronty ({amountUndownloadedTracks} skladeb).",
+    "@autoReloadPromptDroppedTracks": {
+        "description": "Additional prompt text shown when an offline queue reload would remove tracks that are not downloaded.",
+        "placeholders": {
+            "amountUndownloadedTracks": {
+                "type": "int"
+            },
+            "removedPercentage": {
+                "type": "int"
+            }
+        }
+    },
+    "closeToTrayTitle": "Zavřít do systémové lišty",
+    "@closeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray instead of quitting when it is closed"
+    },
+    "closeToTraySubtitle": "Nechat Finamp běžet v systémové liště po zavření okna. Použijte „Ukončit“ z nabídky lišty pro ukončení aplikace.",
+    "minimizeToTrayTitle": "Minimalizovat do systémové lišty",
+    "@minimizeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray when it is minimized"
+    },
+    "minimizeToTraySubtitle": "Skrýt okno do systémové lišty po minimalizaci.",
+    "minimizeToTrayWaylandNote": "Skrýt okno do systémové lišty po minimalizaci. Nepodporováno na systému Wayland, který neupozorňuje aplikace, když jsou minimalizovány. Použijte místo toho „Zavřít do systémové lišty“.",
+    "@minimizeToTrayWaylandNote": {
+        "description": "Subtitle of the minimize to tray setting when running on a Linux Wayland session, where minimizing cannot be detected"
+    },
+    "startMinimizedToTrayTitle": "Spustit v systémové liště",
+    "@startMinimizedToTrayTitle": {
+        "description": "Desktop only. Title of the setting that starts Finamp with the window hidden in the system tray"
+    },
+    "startMinimizedToTraySubtitle": "Spustit Finamp s oknem skrytým v systémové liště. Lze provést také argumentem --minimized v příkazové řádce.",
+    "trayShowWindow": "Zobrazit Finamp",
+    "@trayShowWindow": {
+        "description": "System tray menu entry that shows the main window"
+    },
+    "trayHideWindow": "Sbalit Finamp do lišty",
+    "@trayHideWindow": {
+        "description": "System tray menu entry that hides the main window to the tray"
+    },
+    "trayQuit": "Ukončit Finamp",
+    "@trayQuit": {
+        "description": "System tray menu entry that fully quits the app"
+    },
+    "trayNothingPlaying": "Nic nehraje",
+    "@trayNothingPlaying": {
+        "description": "Disabled system tray menu entry shown in place of the current track when nothing is playing"
+    },
+    "trayTooltipPlaying": "{track} – Finamp",
+    "@trayTooltipPlaying": {
+        "description": "System tray icon tooltip shown while a track is loaded",
+        "placeholders": {
+            "track": {
+                "type": "String",
+                "example": "Rick Astley - Never Gonna Give You Up"
+            }
+        }
+    },
+    "playSomeButtonLabel": "Přehrát nějaké",
+    "addSomeToQueue": "Přidat nějaké do fronty",
+    "playSomeNext": "Přehrát nějaké další",
+    "addSomeToNextUp": "Přidat nějaké do dalších na řadě",
+    "customHeaders": "Vlastní hlavičky HTTP",
+    "httpHeaderNotAuth": "Název je používaný interně.",
+    "@httpHeaderNotAuth": {
+        "description": "Error message when the user configures a custom authorization header that overlaps with one finamp already uses."
+    },
+    "httpHeaderConflict": "Duplicitní název hlavičky.",
+    "@httpHeaderConflict": {
+        "description": "Error message when the user configures two custom authorization headers with duplicate names."
+    },
+    "customHeaderNameLabel": "Název hlavičky",
+    "@customHeaderNameLabel": {
+        "description": "Label for custom HTTP header name entry field."
+    },
+    "customHeaderValueLabel": "Hodnota hlavičky",
+    "@customHeaderValueLabel": {
+        "description": "Label for custom HTTP header value entry field."
+    },
+    "followRedirectsTitle": "Povolit přesměrování",
+    "@followRedirectsTitle": {
+        "description": "Title of setting that allows Finamp to follow redirects."
+    },
+    "followRedirectsSubtitle": "Povoluje aplikaci Finamp následovat přesměrování HTTP, včetně těch vedoucích na jiné domény, než na nastavenou.  Potenciálně nekompatibilní s vlastními hlavičkami HTTP.",
+    "advancedLoginOptionsWarning": "Pokročilé možnosti autentifikace pro nestandardně provozované servery.  Tyto funkce jsou poskytovány v rámci možností a nemusejí fungovat správně na všech platformách.",
+    "queueAutorestoreOversized": "Obnovení přerušeno – uložená fronta je příliš velká.",
+    "oversizedQueueItemTruncated": "Příliš velká položka zkrácena z {itemSize} na {maxSize} skladeb.",
+    "@oversizedQueueItemTruncated": {
+        "description": "Message displayed if an item is truncated while being added to queue",
+        "placeholders": {
+            "itemSize": {
+                "type": "int"
+            },
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueSizeLimitTitle": "Limit skladeb ve frontě",
+    "queueSizeLimitSubtitle": "Na frontu se aplikuje měkký limit tím, že se omezí velikost jednotlivých přidávaných položek. Přidáním více položek do jedné fronty však může dojít k vytvoření nadměrně velkých front. Pokus o přehrání fronty, která je pro dané zařízení příliš velká, může vést k selhání aplikace.",
+    "oversizedQueueContinue": "Přesto se pokusit o načtení",
+    "oversizedQueueTruncate": "Zkrátit frontu na maximálně {maxSize} skladeb",
+    "@oversizedQueueTruncate": {
+        "description": "Button to truncate oversized queues while restoring",
+        "placeholders": {
+            "maxSize": {
+                "type": "int"
+            }
+        }
+    },
+    "queueRestoreCancel": "Zrušit obnovení"
 }

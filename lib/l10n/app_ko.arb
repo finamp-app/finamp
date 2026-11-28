@@ -3752,5 +3752,39 @@
     "quickSettingsLayoutLink": "모든 레이아웃 및 테마 설정",
     "quickSettingsAllSettingsLink": "모든 설정",
     "quickSettingsNetworkLink": "서버의 근거리 네트워크 주소 설정",
-    "loginFlowLocalNetworkServersNoResults": "서버가 아직 찾을 수 없습니다 - 서버 주소를 직접 입력해야 할 수 있습니다."
+    "loginFlowLocalNetworkServersNoResults": "서버가 아직 찾을 수 없습니다 - 서버 주소를 직접 입력해야 할 수 있습니다.",
+    "noMusicLibrariesLogsCTA": "이 상황이 오류라고 생각한다면 로그를 우리에게 공유해주세요. 문제를 고치는데 도움이 됩니다.",
+    "@noMusicLibrariesLogsCTA": {
+        "description": "Message shown above the 'Share Logs' button when no music libraries have been detected after logging into the server."
+    },
+    "noMusicLibrariesLogout": "로그아웃 했다가 다시 로그인을 시도해보는 것도 좋습니다.",
+    "@noMusicLibrariesLogout": {
+        "description": "Message above the logout button when no music libraries have been detected after logging into the server. 'Also' as in 'another thing you can try'"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageTitle": "자동 대기열 새로고침시 노래 삭제 제한",
+    "@autoReloadQueueMaxDroppedTracksPercentageTitle": {
+        "description": "Title for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "addSomeToQueue": "대기열에 추가합니다",
+    "playSomeNext": "다음 곡 재생",
+    "addSomeToNextUp": "'Next Up'에 추가하기",
+    "playSomeButtonLabel": "재생",
+    "autoReloadQueueMaxDroppedTracksPercentageSubtitle": "오프라인 모드로 전환할 때, 삭제되는 노래들이 이 비율을 넘지 않을 때만 자동으로 새로 불러옵니다. 수동 새로 불러오기는 언제든 할 수 있습니다.",
+    "@autoReloadQueueMaxDroppedTracksPercentageSubtitle": {
+        "description": "Subtitle for the setting that limits how many tracks an automatic offline queue reload may remove"
+    },
+    "autoReloadQueueMaxDroppedTracksPercentageLabel": "최대 삭제 곡수: {percentage}%",
+    "@autoReloadQueueMaxDroppedTracksPercentageLabel": {
+        "description": "Current automatic queue reload track loss limit",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "minimizeToTrayTitle": "시스템 트레이로 최소화",
+    "@minimizeToTrayTitle": {
+        "description": "Desktop only. Title of the setting that hides the window to the system tray when it is minimized"
+    },
+    "minimizeToTraySubtitle": "창을 최소화 할 때 시스템 트레이로 숨깁니다."
 }
