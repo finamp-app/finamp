@@ -17,12 +17,9 @@ import 'package:rxdart/rxdart.dart';
 import '../extensions/localizations.dart';
 
 enum _MenuPage {
-  minutes(265),
-  tracks(220),
-  currentTrack(140);
-
-  const _MenuPage(this.height);
-  final double height;
+  minutes,
+  tracks,
+  currentTrack;
 
   static _MenuPage fromTimer(SleepTimer? timer) => switch (timer) {
     null || SleepTimer(secondsLength: > 0) => minutes,
@@ -32,14 +29,11 @@ enum _MenuPage {
 }
 
 class SleepTimerMenu extends StatefulWidget {
-  const SleepTimerMenu({super.key, required this.iconColor, this.scrollFunction, this.onStartTimer, this.onSizeChange});
+  const SleepTimerMenu({super.key, required this.iconColor, this.scrollFunction, this.onStartTimer});
 
   final Color iconColor;
   final void Function()? scrollFunction;
   final void Function()? onStartTimer;
-  final void Function(double)? onSizeChange;
-
-  static double initialHeight(SleepTimer? timer) => _MenuPage.fromTimer(timer).height;
 
   @override
   State<SleepTimerMenu> createState() => _SleepTimerMenuState();
@@ -103,11 +97,11 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Chips row styled like SpeedMenu
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                runSpacing: 4,
                 children: List<Widget>.generate(_MenuPage.values.length, (int i) {
                   bool active = selectedMode.index == i;
                   return Padding(
@@ -141,7 +135,6 @@ class _SleepTimerMenuState extends State<SleepTimerMenu> {
                               newSleepTimer.tracksLength = 1;
                               newSleepTimer.secondsLength = 0;
                           }
-                          widget.onSizeChange?.call(selectedMode.height);
                           _updateControllers();
                         });
                       },

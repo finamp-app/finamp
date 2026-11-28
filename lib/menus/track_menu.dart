@@ -146,7 +146,6 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
   // Define heights for each submenu state
   double closedHeight = 0;
   double speedMenuHeight = 140;
-  late double sleepTimerMenuHeight;
 
   Track get playableItem => Track(widget.item, source: widget.source ?? QueueItemSource.fromBaseItem(widget.item));
 
@@ -170,9 +169,6 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
     setState(() {
       previousMenu = activeMenu;
       activeMenu = menu;
-      if (menu == SubMenu.sleepTimer) {
-        sleepTimerMenuHeight = SleepTimerMenu.initialHeight(FinampSettingsHelper.finampSettings.sleepTimer);
-      }
     });
     if (widget.dragController.isAttached) {
       scrollToExtent(widget.dragController, menu != null ? inputStep : null);
@@ -270,17 +266,11 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
   // All track menu slivers, including headers
   List<Widget> menu(BuildContext context, List<Widget> menuEntries, MetadataProvider? metadata) {
     var iconColor = Theme.of(context).colorScheme.primary;
-    double menuHeight;
-    switch (activeMenu) {
-      case SubMenu.speed:
-        menuHeight = speedMenuHeight;
-        break;
-      case SubMenu.sleepTimer:
-        menuHeight = sleepTimerMenuHeight;
-        break;
-      default:
-        menuHeight = closedHeight;
-    }
+    final menuHeight = switch (activeMenu) {
+      SubMenu.speed => speedMenuHeight,
+      SubMenu.sleepTimer => null, // Size to the controls, including any wrapped mode labels.
+      null => closedHeight,
+    };
 
     final radioMode = ref.watch(finampSettingsProvider.radioMode);
     final radioEnabled = ref.watch(finampSettingsProvider.radioEnabled);
@@ -486,11 +476,6 @@ class _TrackMenuState extends ConsumerState<TrackMenu> with TickerProviderStateM
                         iconColor: iconColor,
                         onStartTimer: () {
                           toggleSleepTimerMenu();
-                        },
-                        onSizeChange: (double height) {
-                          setState(() {
-                            sleepTimerMenuHeight = height;
-                          });
                         },
                       ),
                       _ => null,

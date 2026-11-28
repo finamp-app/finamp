@@ -465,15 +465,28 @@ void main() {
     }
   }, variant: nativeTarget);
   testWidgets('reopening a minutes timer with Finish Last Track keeps Start Timer reachable', (tester) async {
-    // Allow the three mode labels to fit the sheet with Flutter's wide test font.
-    tester.platformDispatcher.textScaleFactorTestValue = 0.75;
-    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
     await mount(tester, legacyCaller: true, savedTimer: SleepTimer(15 * 60, 1));
     await tester.tap(find.byIcon(TablerIcons.bell_z));
     await tester.pumpAndSettle();
 
     expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isTrue);
     expect(find.text('Start Timer').hitTestable(), findsOneWidget);
+  }, variant: nativeTarget);
+  testWidgets('all sleep timer modes stay reachable on a narrow player', (tester) async {
+    await mount(tester, legacyCaller: true, size: const Size(400, 800));
+    await tester.tap(find.byIcon(TablerIcons.bell_z));
+    await tester.pumpAndSettle();
+
+    for (final mode in ['After Current Track', 'Tracks', 'Minutes']) {
+      final button = find.widgetWithText(TextButton, mode).hitTestable();
+      expect(button, findsOneWidget);
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Slider), mode == 'After Current Track' ? findsNothing : findsOneWidget);
+      expect(find.byType(Checkbox), mode == 'Minutes' ? findsOneWidget : findsNothing);
+      expect(find.text('Start Timer').hitTestable(), findsOneWidget);
+    }
   }, variant: nativeTarget);
   testWidgets('existing callers with playback controls retain their default menu', (tester) async {
     await mount(tester, legacyCaller: true);
